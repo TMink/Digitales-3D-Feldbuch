@@ -4,8 +4,8 @@
   "name": "Feldbuch",
   "short_name": "Feldbuch",
   "version": "io.cordova.hellocordova",
-  "description": "First proof of concept for the planned archeological 3d-feldbuch application",
-  "author": "Aileen Jurkosek\n        Oliver Mertens\n        Tobias Mink\n        Julian Hardtung",
+  "description": "A first PoC of the archeological 3D-Fieldbook",
+  "author": "Julian hardtung\n        Aileen Jurkosek\n        Tobias Mink\n        Oliver Mertens",
   "icons": [],
   "start_url": "index.html"
 }
