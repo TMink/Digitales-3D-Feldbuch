@@ -4,6 +4,11 @@
 
 ## Requirements
 
+### Downloads 
+ - [Java JDK-11](https://www.oracle.com/java/technologies/javase/jdk11-archive-downloads.html)
+ - [Gradle v7.6](https://gradle.org/releases/)
+ - [Android Studio](https://developer.android.com/studio)
+
 ### System Variables
 - JAVA_HOME:  link to jdk-11
 - PATH: add gradle
