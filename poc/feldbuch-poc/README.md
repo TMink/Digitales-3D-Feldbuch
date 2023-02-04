@@ -10,7 +10,7 @@
  - [Android Studio](https://developer.android.com/studio)
 
 ### System Variables
-- JAVA_HOME:  link to jdk-11
+- JAVA_HOME: add jdk-11
 - PATH: add gradle
 
 ### Further requirements
