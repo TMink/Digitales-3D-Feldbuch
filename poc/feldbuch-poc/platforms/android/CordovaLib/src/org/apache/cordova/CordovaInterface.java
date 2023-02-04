@@ -18,10 +18,11 @@
 */
 package org.apache.cordova;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.appcompat.app.AppCompatActivity;
+import org.apache.cordova.CordovaPlugin;
 
 import java.util.concurrent.ExecutorService;
 
@@ -55,7 +56,7 @@ public interface CordovaInterface {
      *
      * @return the Activity
      */
-    public abstract AppCompatActivity getActivity();
+    public abstract Activity getActivity();
 
     /**
      * Get the Android context.
@@ -72,7 +73,7 @@ public interface CordovaInterface {
      * @return              Object or null
      */
     public Object onMessage(String id, Object data);
-
+    
     /**
      * Returns a shared thread pool that can be used for background tasks.
      */

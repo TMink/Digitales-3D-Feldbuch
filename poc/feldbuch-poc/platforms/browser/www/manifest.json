@@ -5,7 +5,7 @@
   "short_name": "Feldbuch",
   "version": "io.cordova.hellocordova",
   "description": "A first PoC of the archeological 3D-Fieldbook",
-  "author": "Julian hardtung\n        Aileen Jurkosek\n        Tobias Mink\n        Oliver Mertens",
+  "author": "Julian hardtung\r\n        Aileen Jurkosek\r\n        Tobias Mink\r\n        Oliver Mertens",
   "icons": [],
   "start_url": "index.html"
 }
