@@ -5,6 +5,12 @@
 <script>
 import * as Three from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+import { GUI } from 'dat.gui';
+
+let params = {
+	animate: true,
+};
 
 export default {
   name: 'Viewer',
@@ -14,6 +20,7 @@ export default {
       scene: null,
       renderer: null,
       controls: null,
+      gui:null,
       mesh: null
     }
   },
@@ -34,8 +41,6 @@ export default {
         this.scene.add(this.mesh);
 
         this.renderer = new Three.WebGLRenderer({antialias: true});
-        this.renderer.shadowMap.enabled = true;
-        this.renderer.setPixelRatio( window.devicePixelRatio );
         this.renderer.setSize(container.clientWidth, container.clientHeight);
         this.renderer.setClearColor( 0x263238 );
         container.appendChild(this.renderer.domElement);
@@ -43,6 +48,9 @@ export default {
         this.controls = new OrbitControls( this.camera, this.renderer.domElement );
         this.controls.update();
 
+        this.gui = new GUI(); //TODO: Match GUI placement with other elements on screen; currently behint topBar
+        this.gui.add( params, 'animate' ); 
+        
     },
     animate: function() {
         requestAnimationFrame(this.animate);
