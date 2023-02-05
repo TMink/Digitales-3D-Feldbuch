@@ -88,8 +88,8 @@ module.exports = {
     net: 'empty',
     tls: 'empty',
     child_process: 'empty'
-  },
+  }/* ,
   experiments: {
-    topLevelAwait: true,
-  }
+    topLevelAwait: true,  //TODO: fix top level awaits for async model loading in three.js
+  } */
 }
