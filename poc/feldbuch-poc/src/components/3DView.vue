@@ -4,6 +4,7 @@
 
 <script>
 import * as Three from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 export default {
   name: 'Viewer',
@@ -12,6 +13,7 @@ export default {
       camera: null,
       scene: null,
       renderer: null,
+      controls: null,
       mesh: null
     }
   },
@@ -32,8 +34,14 @@ export default {
         this.scene.add(this.mesh);
 
         this.renderer = new Three.WebGLRenderer({antialias: true});
+        this.renderer.shadowMap.enabled = true;
+        this.renderer.setPixelRatio( window.devicePixelRatio );
         this.renderer.setSize(container.clientWidth, container.clientHeight);
+        this.renderer.setClearColor( 0x263238 );
         container.appendChild(this.renderer.domElement);
+
+        this.controls = new OrbitControls( this.camera, this.renderer.domElement );
+        this.controls.update();
 
     },
     animate: function() {
