@@ -8,6 +8,8 @@ var logger = require('morgan');
 var cors = require('cors');
 
 var indexRouter = require('./routes/index');
+var projectRouter = require('./routes/projects');
+var excavationRouter = require('./routes/excavations');
 
 var app = express();
 
@@ -21,6 +23,8 @@ app.use(cors());
 app.set('view engine', 'jade');
 
 app.use('/', indexRouter);
+app.use('/projects', projectRouter);
+app.use('/excavations', excavationRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
