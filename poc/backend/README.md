@@ -17,7 +17,7 @@ ___
 
 
 <details>
-<summary>**Example Values:**</summary>
+<summary>Example Values:</summary>
 <pre>
 "name": "Testprojekt",
 "description": "Dies ist ein Testobjekt, um die DB mit Daten zu füllen"
@@ -30,7 +30,7 @@ ___
  1. Create new Database named "excavations"
  2.  Create new Doc inside "excavations" with additional fields "name", "description", "organization", "client", "location", "length", "focus":
 <details>
-<summary>**Example Values:**</summary>
+<summary>Example Values:</summary>
 <pre>
 "name": "Xanten",
 "description": "Dies ist die Ausgrabung in Xanten",
