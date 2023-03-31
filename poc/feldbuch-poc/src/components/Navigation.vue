@@ -1,11 +1,11 @@
 <template>
     <div id="navbar">
         <v-row justify="center">
-      <v-card outlined class="ma-2" color="#BC987D" v-on:click="toCampaign" dark>
+      <v-card outlined class="ma-2" color="#BC987D" v-on:click="toProjects" dark>
         <v-card-title class="justify-center"> Projekt </v-card-title>
       </v-card>
 
-    <v-card :disabled="!excavationIsSet" class="ma-2" color="#BC987D" v-on:click="toExcavation" dark>
+    <v-card class="ma-2" color="#BC987D" v-on:click="toExcavation" dark>
           <v-card-title class="justify-center"> Ausgrabung </v-card-title>
       </v-card>
 
@@ -35,8 +35,8 @@
       return {
         excavationIsSet: false,
         excavation_id: '',
-        campaignIsSet: false,
-        campaign_id: '',
+        projectIsSet: false,
+        project_id: '',
         sectionIsSet: false,
         section_id: ''
       }
@@ -46,9 +46,9 @@
       if (this.excavation_id !== null) {
         this.excavationIsSet = true
       }
-      this.campaign_id = VueCookies.get('currentCampaign')
-      if (this.campaign_id !== null){
-        this.campaignIsSet = true
+      this.project_id = VueCookies.get('currentProject')
+      if (this.project_id !== null){
+        this.projectIsSet = true
       }
       this.section_id = VueCookies.get('currentSection')
       if( this.section_id !== null)
@@ -56,19 +56,19 @@
       this.$emit('view','Digitales Feldbuch')
     },
     methods: {
-      toCampaign: function (){
-        if (this.campaignIsSet){
-          this.$router.push({ name: 'CampaignCreation', params: { campaign_id: this.campaign_id}})
-        }else {
-          this.$router.push({name: 'CampaignsOverview'})
-        }
+      toProjects: function (){
+        /* if (this.projectIsSet){
+          this.$router.push({ name: 'ProjectCreation', params: { project_id: this.project_id }})
+        } else { */
+          this.$router.push({name: 'ProjectsOverview'})
+        /* } */
       },
       toExcavation: function () {
-        this.$router.push({ name: 'ExcavationForm', params: { campaign_id: this.campaign_id, excavation_id: this.excavation_id }})
+        this.$router.push({ name: 'ExcavationsOverview', params: { project_id: this.project_id, excavation_id: this.excavation_id } })
       },
       toSection: function (excavation_tab) {
         VueCookies.set('excavationTab', excavation_tab)
-        this.$router.push({ name: 'SectionOverview', params: { campaign_id: this.campaign_id, excavation_id: this.excavation_id, section_id: this.section_id }})
+        this.$router.push({ name: 'SectionOverview', params: { project_id: this.project_id, excavation_id: this.excavation_id, section_id: this.section_id }})
       }
     }
   }
