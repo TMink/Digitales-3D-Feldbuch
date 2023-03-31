@@ -11,10 +11,10 @@
       <v-btn icon @click.stop="navdrawer = !navdrawer" x-large> <v-icon>mdi-menu</v-icon></v-btn>
     </v-app-bar>
     
-    <v-content>
+    <v-main>
       <Sidebar :drawer="navdrawer"/>
       <router-view @view="onViewChange"></router-view>
-    </v-content>
+    </v-main>
     <AppFooter/>
   </v-app>
 </template>
@@ -22,12 +22,11 @@
 <script>
 import Sidebar from './components/Sidebar.vue'
 import AppFooter from './components/AppFooter.vue'
-import {initializedatabases} from './adress'
 
 export default {
   name: 'App',
   created() {
-    initializedatabases()
+    
   },
   data: function () {
     return {

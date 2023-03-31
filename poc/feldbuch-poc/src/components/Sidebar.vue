@@ -21,7 +21,6 @@
 </template>
   
   <script>
-  import {setpath} from '../adress'
   
   export default {
     name: 'Navigation',
