@@ -5,17 +5,15 @@
 
 ## Requirements
 
-### Downloads 
+### CouchDB Setup 
  1. Follow the installation guide of [CouchDB](https://docs.couchdb.org/en/stable/install/windows.html#installation-on-windows)
  2. Open [Fauxton](http://localhost:5984/_utils) to check and edit the CouchDB
-
+ 3. Create User "admin" with pw "1234"
 ___
 #### Database 1: projects
 
- 1. Create new Database named "projects"
- 2. Create new Doc inside "projects" with additional fields "name" and "description":
-
-
+ 4. Create new Database named "projects"
+ 5. Create new Doc inside "projects" with additional fields "name" and "description":
 <details>
 <summary>Example Values:</summary>
 <pre>
@@ -24,11 +22,25 @@ ___
 </pre>
 </details>
 
+ 6. Create new View inside "projects" with Design Document name "projects" and Index name "all":
+ <details>
+<summary>Example Values:</summary>
+<pre>
+ function (doc) {
+  emit(doc._id, {name: doc.name,
+        description: doc.description
+  });
+}
+</pre>
+</details>
+ 
+
+
 ___
 #### Database 2: excavations
 
- 1. Create new Database named "excavations"
- 2.  Create new Doc inside "excavations" with additional fields "name", "description", "organization", "client", "location", "length", "focus":
+ 7. Create new Database named "excavations"
+ 8.  Create new Doc inside "excavations" with additional fields "name", "description", "organization", "client", "location", "length", "focus":
 <details>
 <summary>Example Values:</summary>
 <pre>
@@ -41,6 +53,26 @@ ___
 "focus": "Interessante Funde"
 </pre>
 </details>
+
+ 9. Create new View inside "excavations" with Design Document name "excavations" and Index name "all":
+<details>
+<summary>Example Values:</summary>
+<pre>
+function (doc) {
+  emit(doc._id, {name: doc.name, 
+                  date: doc.date, 
+                  description: doc.description, 
+                  organization: doc.organization, 
+                  client: doc.client, 
+                  location: doc.location,
+                  length: doc.length,
+                  focus: doc.focus
+  });
+}
+</pre>
+</details>
+
+___
 
 ## Build Setup
 
