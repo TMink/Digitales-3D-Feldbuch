@@ -5,24 +5,23 @@ var request = require("request");
 var db_name = "projects";
 var db = nano.use(db_name);
 
-/* GET users listing. */
+/* GET ALL projects */
 router.get("/", function (req, res, next) {
-  console.log("GET ALL PROJECTS");
 
-  db.get("_design/projects/_view/all", function (error, body, headers) {
-    if (error) {
-      return response.status(200).send(error.message);
+  db.get("_design/projects/_view/all", function (err, body, headers) {
+    if (err) {
+      return res.status(404).send("Could not retrieve all projects");
     }
     res.send(body);
   });
 });
 
+/* GET project by ID */
 router.get("/:project_id", function (req, res, next) {
-  console.log("GET PROJECT WITH ID + " + req.params.project_id);
 
-  db.get(req.params.project_id, function (error, body, headers) {
-    if (error) {
-      return response.status(200).send(error.message);
+  db.get(req.params.project_id, function (err, body, headers) {
+    if (err) {
+      return res.status(404).send("Could not find project with ID: " + req.params.project_id);
     }
     res.send(body);
   });
