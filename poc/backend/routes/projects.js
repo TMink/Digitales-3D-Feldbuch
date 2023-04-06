@@ -27,4 +27,54 @@ router.get("/:project_id", function (req, res, next) {
   });
 });
 
+/* POST new project */
+router.post("/", function (req, res, next) {
+
+  db.insert(req.body, function(err, body, headers) {
+    if (err) {
+      return res
+        .status(404)
+        .send("Could not save project: " + req.params.name);
+    }
+    return res.status(200).send("added " + body.id);
+  });
+});
+
+/* UPDATE project by ID*/
+router.put("/:project_id", function (req, res, next) {
+
+  db.insert(req.body, req.params.project_id, function (err, body, headers) {
+    if (err) {
+      return res
+        .status(404)
+        .send("Could not find project with ID: " + req.params.project_id);
+    }
+    return res.status(200).send("updated " + body.id);
+  });
+});
+
+/* DELETE project by ID*/
+router.delete("/:project_id", async function (req, res, next) {
+
+  db.get(req.params.project_id, function (err, body, headers) {
+    if (err) {
+      return res
+        .status(404)
+        .send(
+          "Could not find the project with ID: " + req.params.project_id
+        );
+    }
+    db.destroy(req.params.project_id, body._rev, function (err, body, header) {
+      if (err) {
+        return res
+          .status(404)
+          .send(
+            "Could not delete the project with ID: " + req.params.project_id
+          );
+      }
+      return res.status(200).send("deleted " + body.id);
+    });
+  });
+});
+
 module.exports = router;
