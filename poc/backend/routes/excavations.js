@@ -32,7 +32,7 @@ router.get("/:excavation_id", function (req, res, next) {
 /* POST new excavation */
 router.post("/", function (req, res, next) {
 
-  db.insert(req.body, function(err, body, headers) {
+  db.insert(req.body, function (err, body, headers) {
     if (err) {
       return res
         .status(404)
@@ -45,7 +45,7 @@ router.post("/", function (req, res, next) {
 /* UPDATE excavation by ID*/
 router.put("/:excavation_id", function (req, res, next) {
 
-  db.insert(req.body, req.params.excavation_id, function(err, body, headers) {
+  db.insert(req.body, req.params.excavation_id, function (err, body, headers) {
     if (err) {
       return res
         .status(404)
@@ -58,6 +58,8 @@ router.put("/:excavation_id", function (req, res, next) {
 /* DELETE excavation by ID*/
 router.delete("/:excavation_id", async function (req, res, next) {
 
+  //TODO: when deleting an excavation, check if there are associated cuts/findings etc.
+  // and either delete them or delete the associated excavation_id from them
   db.get(req.params.excavation_id, function (err, body, headers) {
     if (err) {
       return res
@@ -66,12 +68,13 @@ router.delete("/:excavation_id", async function (req, res, next) {
           "Could not find the excavation with ID: " + req.params.excavation_id
         );
     }
-    db.destroy(req.params.excavation_id, body._rev, function(err, body, header) {
+    db.destroy(req.params.excavation_id, body._rev, function (err, body, header) {
       if (err) {
-       return res.status(404).send("Could not delete the excavation with ID: " + req.params.excavation_id);
+        return res.status(404).send("Could not delete the excavation with ID: " + req.params.excavation_id);
       }
       return res.status(200).send("deleted " + body.id);
-    });
+      }
+    );
   });
 });
 

@@ -56,6 +56,8 @@ router.put("/:project_id", function (req, res, next) {
 /* DELETE project by ID*/
 router.delete("/:project_id", async function (req, res, next) {
 
+  //TODO: when deleting a project, check if there are associated excavations/cuts/findings etc.
+  // and either delete them or delete the associated project_id from them
   db.get(req.params.project_id, function (err, body, headers) {
     if (err) {
       return res
