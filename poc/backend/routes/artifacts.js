@@ -5,6 +5,8 @@ var request = require("request");
 var db_name = "artifacts";
 var db = nano.use(db_name);
 
+//an artifact is any portable object made by humans or used by humans
+
 /* GET ALL artifacts */
 router.get("/", function (req, res, next) {
   db.get("_design/artifacts/_view/all", function (err, body, headers) {
