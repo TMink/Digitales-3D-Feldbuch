@@ -23,7 +23,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 
-app.set('view engine', 'jade');
+app.set('view engine', 'pug');
 
 app.use('/', indexRouter);
 app.use('/projects', projectRouter);

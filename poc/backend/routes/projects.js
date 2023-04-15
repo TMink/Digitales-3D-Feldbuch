@@ -1,82 +1,89 @@
-var express = require("express");
-var router = express.Router();
-const nano = require("nano")("http://admin:1234@127.0.0.1:5984");
-var request = require("request");
-var db_name = "projects";
-var db = nano.use(db_name);
+const express = require("express");
+const router = express.Router();
+const db = require("../fb");
+const projects = db.collection("projects");
 
 /* GET ALL projects */
 router.get("/", function (req, res, next) {
-
-  db.get("_design/projects/_view/all", function (err, body, headers) {
-    if (err) {
-      return res.status(404).send("Could not retrieve all projects");
-    }
-    res.send(body);
-  });
+  var projectsArray = [];
+  projects
+    .get()
+    .then((data) => {
+      data.forEach((doc) => {
+        var project = {
+          id: doc.id,
+          name: doc.data().name,
+          description: doc.data().description,
+        };
+        projectsArray.push(project);
+      });
+      res.send(projectsArray);
+    })
+    .catch((err) => {
+      res.status(404).send("No projects found");
+    });
 });
 
 /* GET project by ID */
 router.get("/:project_id", function (req, res, next) {
-
-  db.get(req.params.project_id, function (err, body, headers) {
-    if (err) {
-      return res.status(404).send("Could not find project with ID: " + req.params.project_id);
-    }
-    res.send(body);
-  });
+  projects
+    .doc(req.params.project_id)
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        var project = {
+          id: doc.id,
+          name: doc.data().name,
+          description: doc.data().description,
+        };
+        res.send(project);
+      } else {
+        res.status(404).send("No such document: ");
+      }
+    })
+    .catch((err) => {
+      res.status(404).send("Project not found: " + err);
+    });
 });
 
 /* POST new project */
 router.post("/", function (req, res, next) {
-
-  db.insert(req.body, function(err, body, headers) {
-    if (err) {
-      return res
-        .status(404)
-        .send("Could not save project: " + req.params.name);
-    }
-    return res.status(200).send("added " + body.id);
-  });
+  projects
+    .doc()
+    .set(req.body)
+    .then((response) => {
+      res.status(200).send("Added project");
+    })
+    .catch((err) => {
+      res.status(404).send("Couldn't add project: " + err);
+    });
 });
 
 /* UPDATE project by ID*/
 router.put("/:project_id", function (req, res, next) {
-
-  db.insert(req.body, req.params.project_id, function (err, body, headers) {
-    if (err) {
-      return res
-        .status(404)
-        .send("Could not find project with ID: " + req.params.project_id);
-    }
-    return res.status(200).send("updated " + body.id);
-  });
+  projects
+    .doc(req.params.project_id)
+    .update(req.body)
+    .then((response) => {
+      res.status(200).send("Updated project: " + req.params.project_id);
+    })
+    .catch((err) => {
+      res.status(404).send("Couldn't update project: " + err);
+    });
 });
 
 /* DELETE project by ID*/
 router.delete("/:project_id", async function (req, res, next) {
-
-  //TODO: when deleting a project, check if there are associated excavations/cuts/findings etc.
-  // and either delete them or delete the associated project_id from them
-  db.get(req.params.project_id, function (err, body, headers) {
-    if (err) {
-      return res
-        .status(404)
-        .send(
-          "Could not find the project with ID: " + req.params.project_id
-        );
-    }
-    db.destroy(req.params.project_id, body._rev, function (err, body, header) {
-      if (err) {
-        return res
-          .status(404)
-          .send(
-            "Could not delete the project with ID: " + req.params.project_id
-          );
-      }
-      return res.status(200).send("deleted " + body.id);
+  //TODO: when deleting a project, also delete all subcollections
+  projects
+    .doc(req.params.project_id)
+    .delete({ exists: true })
+    .then((response) => {
+      res.status(200).send("Deleted project: " + req.params.project_id);
+    })
+    .catch((err) => {
+      res.status(404).send("Couldn't delete project: " + err);
     });
-  });
 });
 
 module.exports = router;
