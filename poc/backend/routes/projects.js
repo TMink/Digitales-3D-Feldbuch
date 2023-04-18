@@ -12,7 +12,7 @@ router.get("/", function (req, res, next) {
       data.forEach((doc) => {
         var project = {
           id: doc.id,
-          name: doc.data().name,
+          title: doc.data().title,
           description: doc.data().description,
         };
         projectsArray.push(project);
@@ -33,7 +33,7 @@ router.get("/:project_id", function (req, res, next) {
       if (doc.exists) {
         var project = {
           id: doc.id,
-          name: doc.data().name,
+          title: doc.data().title,
           description: doc.data().description,
         };
         res.send(project);
@@ -48,6 +48,7 @@ router.get("/:project_id", function (req, res, next) {
 
 /* POST new project */
 router.post("/", function (req, res, next) {
+  console.log(req.body)
   projects
     .doc()
     .set(req.body)

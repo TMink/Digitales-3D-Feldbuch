@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Home from '@/components/Home'
 import Viewer from '@/components/3dView'
 import ProjectsOverview from '@/components/ProjectsOverview'
+import ProjectForm from "@/components/ProjectForm";
 import ExcavationsOverview from '@/components/ExcavationsOverview'
 
 
@@ -29,10 +30,16 @@ export default new Router({
       component: ProjectsOverview
     },
     {
+      path: '/projectform',
+      name: 'ProjectCreation',
+      alias: '',
+      component: ProjectForm
+    },
+    {
       path: '/excavations',
       name: 'ExcavationsOverview',
       alias: '',
       component: ExcavationsOverview
     }
   ]
-})
+});
