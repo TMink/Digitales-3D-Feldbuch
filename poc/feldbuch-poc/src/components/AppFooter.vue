@@ -1,7 +1,7 @@
 <template>
     <v-footer padless>
         <v-col class="text-center">
-            {{ new Date().getFullYear() }} — <strong>Th-Köln</strong>
+            {{ new Date().getFullYear() }} — <strong>TH-Köln</strong>
         </v-col>
     </v-footer>
 </template>
