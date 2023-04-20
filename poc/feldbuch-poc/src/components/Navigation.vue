@@ -1,30 +1,30 @@
 <template>
     <div id="navbar">
         <v-row justify="center">
-      <v-card outlined class="ma-2" color="#BC987D" v-on:click="toProjects" dark>
-        <v-card-title class="justify-center"> Projekt </v-card-title>
-      </v-card>
+          <v-card class="ma-2" color="#BC987D" v-on:click="toProjects" dark>
+            <v-card-title class="justify-center"> Projekt </v-card-title>
+          </v-card>
 
-    <v-card class="ma-2" color="#BC987D" v-on:click="toExcavation" dark>
-          <v-card-title class="justify-center"> Ausgrabung </v-card-title>
-      </v-card>
+          <v-card class="ma-2" color="#BC987D" v-on:click="toExcavation" dark>
+            <v-card-title class="justify-center"> Ausgrabung </v-card-title>
+          </v-card>
 
-      <v-card class="ma-2" color="#BC987D" v-on:click="toCuts" dark>
-          <v-card-title class="justify-center"> Schnitte </v-card-title>
-      </v-card>
+          <v-card class="ma-2" color="#BC987D" v-on:click="toCuts" dark>
+            <v-card-title class="justify-center"> Schnitte </v-card-title>
+          </v-card>
 
-      <v-card class="ma-2" color="#BC987D" v-on:click="toFeatures" dark>
-          <v-card-title class="justify-center"> Befunde </v-card-title>
-      </v-card>
+          <v-card class="ma-2" color="#BC987D" v-on:click="toFeatures" dark>
+            <v-card-title class="justify-center"> Befunde </v-card-title>
+          </v-card>
 
-      <v-card class="ma-2" color="#BC987D" v-on:click="toArtifacts" dark>
-          <v-card-title class="justify-center"> Funde </v-card-title>
-      </v-card>
+          <v-card class="ma-2" color="#BC987D" v-on:click="toArtifacts" dark>
+            <v-card-title class="justify-center"> Funde </v-card-title>
+          </v-card>
 
-      <v-card class="ma-2" color="#BC987D" v-on:click="toSamples" dark>
-          <v-card-title class="justify-center"> Proben </v-card-title>
-      </v-card>
-    </v-row>
+          <v-card class="ma-2" color="#BC987D" v-on:click="toSamples" dark>
+            <v-card-title class="justify-center"> Proben </v-card-title>
+          </v-card>
+        </v-row>
     </div>
 </template>
 
