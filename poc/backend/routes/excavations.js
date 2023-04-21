@@ -12,7 +12,7 @@ router.get("/", function (req, res, next) {
       var excavation = {
         id: doc.id,
         project_id: doc.data().project_id,
-        name: doc.data().name,
+        title: doc.data().title,
         description: doc.data().description,
         client: doc.data().client,
         focus: doc.data().focus,
@@ -37,7 +37,7 @@ router.get("/:excavation_id", function (req, res, next) {
       var excavation = {
         id: doc.id,
         project_id: doc.data().project_id,
-        name: doc.data().name,
+        title: doc.data().title,
         description: doc.data().description,
         client: doc.data().client,
         focus: doc.data().focus,

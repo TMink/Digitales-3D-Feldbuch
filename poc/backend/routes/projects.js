@@ -48,7 +48,6 @@ router.get("/:project_id", function (req, res, next) {
 
 /* POST new project */
 router.post("/", function (req, res, next) {
-  console.log(req.body)
   projects
     .doc()
     .set(req.body)

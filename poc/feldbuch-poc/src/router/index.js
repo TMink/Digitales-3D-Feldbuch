@@ -6,6 +6,7 @@ import ProjectsOverview from '@/components/ProjectsOverview'
 import ProjectForm from "@/components/ProjectForm";
 import CutForm from "@/components/CutForm";
 import ExcavationsOverview from '@/components/ExcavationsOverview'
+import ExcavationForm from '@/components/ExcavationForm';
 import CutsOverview from '@/components/CutsOverview'
 import ArtifactsOverview from '@/components/ArtifactsOverview'
 import FeaturesOverview from '@/components/FeaturesOverview'
@@ -50,6 +51,12 @@ export default new Router({
       name: 'ExcavationsOverview',
       alias: '',
       component: ExcavationsOverview
+    },
+    {
+      path: '/excavationform',
+      name: 'ExcavationCreation',
+      alias: '',
+      component: ExcavationForm
     },
     {
       path: '/cutsoverview',

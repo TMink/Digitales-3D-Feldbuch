@@ -1,33 +1,48 @@
 <template>
-    <v-form>
-        <div>
-            <!-- <v-subheader v-if="excavations.length === 0"> Bisher wurden dem Projekt keine Grabungen
-                hinzugefügt</v-subheader>
-            <v-subheader v-else>Zugehörige Grabungen</v-subheader> 
-            TODO: check if loaded excavations are part of the currently active project -->
-            <v-list>
-                <template v-for="(excavation, i) in excavations">
-                    <v-list-item>
-                        <v-list-item-content>
-                            <v-list-item-title> {{ excavation.value.name }} </v-list-item-title>
-                        </v-list-item-content>
-                    </v-list-item>
-                    <v-divider></v-divider>
-                </template>
-            </v-list>
-            <v-btn color="secondary"> Grabung hinzufügen</v-btn>
-        </div>
-    </v-form>
+    <div id="wrapper">
+        <Navigation/>
+
+        <v-form>
+            <div>
+                <v-subheader v-if="excavations.length === 0"> Bisher wurden dem Projekt keine Grabungen
+                    hinzugefügt</v-subheader>
+                <v-subheader v-else>Zugehörige Grabungen</v-subheader> 
+                <v-list>
+                    <template v-for="(excavation, i) in excavations">
+                        <v-list-item v-on:click="modifyExcavation(excavation.id)">
+                            <v-list-item-content>
+                                <v-list-item-title> {{ excavation.title }} </v-list-item-title>
+                                <v-list-item-subtitle> {{ excavation.description }} </v-list-item-subtitle>
+                            </v-list-item-content>
+                        </v-list-item>
+                        <v-divider></v-divider>
+                    </template>
+                </v-list>
+                <v-btn v-on:click="modifyExcavation('new')" color="secondary"> Grabung hinzufügen</v-btn>
+            </div>
+        </v-form>
+    </div>
+    
 </template>
 
 <script>
+import Navigation from './Navigation.vue'
 import axios from 'axios';
+import VueCookies from 'vue-cookies';
+
 
 
 export default {
     name: 'ExcavationsOverview',
+    components: {
+        Navigation
+    },
+    created() {
+        var context = this;
+        context.project_id = VueCookies.get('currentProject');
+    },
     methods: {
-        getExcavations: function () {
+        getExcavations() {
             var context = this;
 
             axios({
@@ -36,11 +51,12 @@ export default {
                 responseType: 'json'
             })
             .then(function (response) {
-                console.log(response.data.rows)
-                for (let item of response.data.rows) {
-                    //TODO: check if the loaded excavations are part of the currently active project
-                    //if (item.value.project_id === context.project_id) 
-                    context.excavations.push(item)
+                for (let item of response.data) {
+                    
+                    if (context.project_id === item.project_id.trim()) {
+                        context.excavations.push(item)
+                        
+                    }
                 }
             })
             .catch(error => {
@@ -50,6 +66,12 @@ export default {
                     this.errorStatus = error.response.data.message;
                 }
             });
+        },
+        modifyExcavation(item_id) {
+            if (item_id !== 'new') {
+                VueCookies.set('currentExcavation', item_id)
+            }
+            this.$router.push({ name: 'ExcavationCreation', params: { excavation_id: item_id } })
         }
     },
     beforeMount() {
@@ -68,4 +90,8 @@ export default {
 
 </script>
 
-<style scoped></style>
+<style scoped>
+    #wrapper {
+        height: 100%;
+    }
+</style>

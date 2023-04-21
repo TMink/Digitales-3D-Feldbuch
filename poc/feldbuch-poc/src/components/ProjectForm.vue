@@ -130,7 +130,6 @@ export default {
       .then(function (res) {
         context.$emit("view", "Projektübersicht");
         context.$router.push({ name: "ProjectsOverview" });
-        console.log(res);
       })
       .catch(function (error) {
         console.log(error);
