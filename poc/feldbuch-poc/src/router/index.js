@@ -1,10 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from '@/components/Home'
 import Viewer from '@/components/3dView'
 import ProjectsOverview from '@/components/ProjectsOverview'
-import ProjectForm from "@/components/ProjectForm";
-import CutForm from "@/components/CutForm";
+import ProjectForm from '@/components/ProjectForm';
+import CutForm from '@/components/CutForm';
 import ExcavationsOverview from '@/components/ExcavationsOverview'
 import ExcavationForm from '@/components/ExcavationForm';
 import CutsOverview from '@/components/CutsOverview'
@@ -18,15 +17,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Home',
-      alias: '',
-      component: Home
-    },
-    {
-      path: '/3dview',
-      name: '3D-Ansicht',
-      alias: '',
-      component: Viewer
+      redirect: { path: '/projects' }
     },
     {
       path: '/projects',
@@ -81,6 +72,12 @@ export default new Router({
       name: 'SamplesOverview',
       alias: '',
       component: SamplesOverview
+    },
+    {
+      path: '/3dview',
+      name: '3D-Ansicht',
+      alias: '',
+      component: Viewer
     }
   ]
 });
