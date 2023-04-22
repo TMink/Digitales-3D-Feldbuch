@@ -89,7 +89,7 @@ export default {
 
         axios({
           method: "get",
-          url: "http://127.0.0.1:3000/excavations/" + this.$route.params.excavation_id,
+          url: "/excavations/" + this.$route.params.excavation_id,
           responseType: "json"
         })
         .then(function (res) {
@@ -114,11 +114,11 @@ export default {
 
       var context = this;
       var httpRequest = 'put';
-      var requestURL = 'http://127.0.0.1:3000/excavations/' + this.$route.params.excavation_id;
+      var requestURL = '/excavations/' + this.$route.params.excavation_id;
 
       if (this.is_new == true) {
         httpRequest = 'post';
-        requestURL = 'http://127.0.0.1:3000/excavations';
+        requestURL = '/excavations';
       }
 
       axios({
