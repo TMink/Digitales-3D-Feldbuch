@@ -87,7 +87,7 @@ export default {
 
         axios({
           method: "get",
-          url: "http://127.0.0.1:3000/projects/" + this.$route.params.project_id,
+          url: "/projects/" + this.$route.params.project_id,
           responseType: "json"
         })
         .then(function(res) {
@@ -112,11 +112,11 @@ export default {
 
       var context = this;
       var httpRequest = "put";
-      var requestURL = "http://127.0.0.1:3000/projects/" + this.$route.params.project_id;
+      var requestURL = "/projects/" + this.$route.params.project_id;
 
       if (this.is_new == true) {
         httpRequest = "post";
-        requestURL = "http://127.0.0.1:3000/projects";
+        requestURL = "/projects";
       }
 
       axios({

@@ -38,7 +38,7 @@ export default {
 
       axios({
         method: 'get',
-        url: 'http://127.0.0.1:3000/projects',
+        url: '/projects',
         responseType: 'json'
       })
       .then(function (response) {
