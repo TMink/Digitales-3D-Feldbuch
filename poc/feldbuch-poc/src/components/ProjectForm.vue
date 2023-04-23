@@ -28,7 +28,7 @@
 
       <v-tab> Kontaktpersonen </v-tab>
       <v-tab-item class="px-4">
-        <DocContactPersons :persons="project_doc.persons" />
+        <DocContacts/>
       </v-tab-item>
 
       <v-btn 
@@ -54,12 +54,13 @@
 </template>
 
 <script>
-import ExcavationsOverview from "./ExcavationsOverview";
-import axios from "axios";
+import ExcavationsOverview from './ExcavationsOverview';
+import DocContacts from './DocContacts.vue';
+import axios from 'axios';
 
 export default {
   name: "ProjectCreation",
-  components: { ExcavationsOverview },
+  components: { ExcavationsOverview, DocContacts },
   data() {
     return {
       project_doc: {

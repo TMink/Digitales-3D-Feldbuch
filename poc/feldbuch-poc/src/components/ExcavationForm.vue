@@ -22,7 +22,7 @@
       </v-tab-item>
 
       <v-tab-item>
-        TODO
+        <DocContacts/>
       </v-tab-item>
 
       <v-tab-item>
@@ -45,11 +45,13 @@
 </template>
 
 <script>
+import DocContacts from './DocContacts.vue';
 import VueCookies from 'vue-cookies';
-import axios from "axios";
+import axios from 'axios';
 
 export default {
   name: 'ExcavationForm',
+  components: { DocContacts},
   data() {
     return {
       excavation_doc: {
