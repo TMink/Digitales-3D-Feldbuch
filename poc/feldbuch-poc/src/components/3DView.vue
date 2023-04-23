@@ -37,7 +37,10 @@ export default {
 
   },
 
-  mounted() {
+  async mounted() {
+
+    await this.updateLocalDB()
+    await this.updateLocalStore()
 
     this.init();
     this.animate();
