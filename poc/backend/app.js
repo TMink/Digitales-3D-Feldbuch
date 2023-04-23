@@ -13,6 +13,7 @@ var excavationRouter = require('./routes/excavations');
 var cutRouter = require('./routes/cuts');
 var artifactRouter = require("./routes/artifacts");
 var featureRouter = require("./routes/features");
+var contactRouter = require("./routes/contacts");
 
 var app = express();
 
@@ -31,6 +32,7 @@ app.use('/excavations', excavationRouter);
 app.use("/cuts", cutRouter);
 app.use("/artifacts", artifactRouter);
 app.use("/features", featureRouter);
+app.use("/contacts", contactRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
