@@ -8,9 +8,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { GUI } from 'dat.gui';
 
-let params = {
-	animate: true,
-};
+
 
 export default {
   name: 'Viewer',
