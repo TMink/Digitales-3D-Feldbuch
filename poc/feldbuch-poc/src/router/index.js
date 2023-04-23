@@ -3,10 +3,10 @@ import Router from 'vue-router'
 import Viewer from '@/components/3dView'
 import ProjectsOverview from '@/components/ProjectsOverview'
 import ProjectForm from '@/components/ProjectForm';
-//import CutForm from '@/components/CutForm';
+import CutForm from '@/components/CutForm';
 import ExcavationsOverview from '@/components/ExcavationsOverview'
 import ExcavationForm from '@/components/ExcavationForm';
-//import CutsOverview from '@/components/CutsOverview'
+import CutsOverview from '@/components/CutsOverview'
 import ArtifactsOverview from '@/components/ArtifactsOverview'
 import FeaturesOverview from '@/components/FeaturesOverview'
 import SamplesOverview from '@/components/SamplesOverview'
@@ -31,14 +31,12 @@ export default new Router({
       alias: '',
       component: ProjectForm
     },
-    /*
     {
       path: '/cutform',
       name: 'CutCreation',
       alias: '',
       component: CutForm
     },
-    */
     {
       path: '/excavations',
       name: 'ExcavationsOverview',
@@ -51,14 +49,12 @@ export default new Router({
       alias: '',
       component: ExcavationForm
     },
-    /*
     {
       path: '/cutsoverview',
       name: 'CutsOverview',
       alias: '',
       component: CutsOverview
     },
-    */
     {
       path: '/featuresoverview',
       name: 'FeaturesOverview',
