@@ -6,9 +6,6 @@
 import * as Three from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
-import { GUI } from 'dat.gui';
-
-
 
 export default {
   name: 'Viewer',
