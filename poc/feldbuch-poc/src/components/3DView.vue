@@ -28,27 +28,7 @@ export default {
 
     init: function() {
 
-        let container = document.getElementById('container');
-
-        this.camera = new THREE.PerspectiveCamera(70, container.clientWidth/container.clientHeight, 0.01, 10);
-        this.camera.position.z = 1;
-
-        console.log(container)
-        this.scene = new THREE.Scene();
-
-        let geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
-        let material = new THREE.MeshNormalMaterial();
-
-        this.mesh = new THREE.Mesh(geometry, material);
-        this.scene.add(this.mesh);
-
-        this.renderer = new THREE.WebGLRenderer({antialias: true});
-        this.renderer.setSize(container.clientWidth, container.clientHeight);
-        this.renderer.setClearColor( 0x263238 );
-        container.appendChild(this.renderer.domElement);
-
-        this.controls = new OrbitControls( this.camera, this.renderer.domElement );
-        this.controls.update();
+        
         
     },
 
