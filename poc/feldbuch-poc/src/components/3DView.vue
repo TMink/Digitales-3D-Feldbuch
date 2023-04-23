@@ -111,6 +111,112 @@ export default {
 
     },
 
+    /**
+     * @param {any} whichDB   - Database which contains the object store
+     * @param {String} storeName - Object store, data is copied from
+     */
+     getObjects: async function( whichDB, storeName ) {
+      
+      return new Promise( ( resolve, reject ) => {
+
+        const trans = whichDB.transaction( [ storeName ], 'readonly' );
+        trans.oncomplete = e => {
+          resolve( data );
+        }
+
+        const store = trans.objectStore( storeName );
+        let data = [];
+
+        store.openCursor().onsuccess = e => {
+          const cursor = e.target.result;
+          if ( cursor ) {
+            data.push( cursor.value );
+            cursor.continue();
+          }
+        }
+
+      });
+    
+    },
+
+    /**
+     * @param {*} data      - Data to be added
+     * @param {*} whichDB   - Database which contains the object store
+     * @param {*} storeName - Object store, data is going to be added to
+     * @param {*} localArr  - Local array with data (gets updated)
+     */
+    addObject: async function(data, whichDB, storeName, localArr) {
+      
+      this.addDisabled = true;
+
+      /* --- DEBUGGING --- */
+      console.log( 'about to add ' + JSON.stringify( data ) );
+
+      await new Promise( ( resolve, reject ) => {
+
+        const trans = whichDB.transaction( storeName, 'readwrite' );
+        trans.oncomplete = e => {
+          resolve();
+        }
+
+        const store = trans.objectStore( storeName );
+        store.add( data );
+
+      })
+
+      localArr = await this.getObjects( whichDB, storeName );
+
+      this.addDisabled = false;
+
+    },
+
+    /**
+     * @param {*} id        - ID of Data to be deleted
+     * @param {*} whichDB   - Database which contains the object store
+     * @param {*} storeName - Object store, data is going to be deleted from
+     * @param {*} localArr  - Local array with data (gets updated)
+     */
+    deleteObject: async function(id, whichDB, storeName, localArr) {
+
+      /* --- DEBUGGING --- */
+      console.log( 'about to delete Object id: ' + id );
+
+      await new Promise( ( resolve, reject ) => {
+
+        const trans = whichDB.transaction( [ storeName ], 'readwrite' );
+        trans.oncomplete = e => {
+          resolve();
+        }
+
+        const store = trans.objectStore( storeName );
+        store.delete(id);
+
+      });
+      
+      localArr = await this.getObjects( whichDB, storeName );
+
+    },
+
+    /**
+     * @param {*} whichDB   - Database which contains the object store
+     * @param {*} storeName - Object store which is going to be deleted
+     * @param {*} localArr  - Local array with data (gets updated)
+     */
+    deleteAllObjects: async function(whichDB, storeName, localArr) {
+
+      const trans = whichDB.transaction( [ storeName ], 'readwrite' );
+      
+      const store = trans.objectStore( storeName );
+
+      const storeRequest = store.clear();
+      storeRequest.onsuccess = e => {
+        console.log( storeName + ' erased' );
+      }
+
+      localArr = await this.getObjects( whichDB, storeName );
+
+    },
+
     init: function() {
 
       /* ##### Container ##### */
