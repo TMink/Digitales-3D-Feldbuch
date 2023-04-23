@@ -24,6 +24,13 @@ export default {
 
   },
 
+  mounted() {
+
+    this.init();
+    this.animate();
+
+  },
+
   methods: {
 
     init: function() {
@@ -94,13 +101,6 @@ export default {
         this.renderer.render(this.scene, this.camera);
 
     }
-
-  },
-
-  mounted() {
-
-      this.init();
-      this.animate();
 
   }
 
