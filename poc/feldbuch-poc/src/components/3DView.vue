@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import * as Three from 'three';
+import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 
@@ -23,19 +23,19 @@ export default {
     init: function() {
         let container = document.getElementById('container');
 
-        this.camera = new Three.PerspectiveCamera(70, container.clientWidth/container.clientHeight, 0.01, 10);
+        this.camera = new THREE.PerspectiveCamera(70, container.clientWidth/container.clientHeight, 0.01, 10);
         this.camera.position.z = 1;
 
         console.log(container)
-        this.scene = new Three.Scene();
+        this.scene = new THREE.Scene();
 
-        let geometry = new Three.BoxGeometry(0.2, 0.2, 0.2);
-        let material = new Three.MeshNormalMaterial();
+        let geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
+        let material = new THREE.MeshNormalMaterial();
 
-        this.mesh = new Three.Mesh(geometry, material);
+        this.mesh = new THREE.Mesh(geometry, material);
         this.scene.add(this.mesh);
 
-        this.renderer = new Three.WebGLRenderer({antialias: true});
+        this.renderer = new THREE.WebGLRenderer({antialias: true});
         this.renderer.setSize(container.clientWidth, container.clientHeight);
         this.renderer.setClearColor( 0x263238 );
         container.appendChild(this.renderer.domElement);
