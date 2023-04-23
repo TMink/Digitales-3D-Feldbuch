@@ -78,7 +78,7 @@ export default {
   },
   created() {
     this.excavation_id = this.$route.params.excavation_id;
-    this.project_id = VueCookies.get('currentProject');//this.$route.params.project_id
+    this.project_id = this.$route.params.project_id
     this.get_doc();
   },
   methods: {
@@ -122,7 +122,7 @@ export default {
         httpRequest = 'post';
         requestURL = '/excavations';
       }
-
+      //put/post request of edited/new excavation
       axios({
         method: httpRequest,
         url: requestURL,
@@ -148,7 +148,7 @@ export default {
     //go back to excavations overview
     goBack: function() {
       this.$emit("view", "Ausgrabungsübersicht");
-      this.$router.push({ name: 'ExcavationsOverview'})
+      this.$router.go(-1);
     }
   }
 };

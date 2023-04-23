@@ -14,7 +14,7 @@
                     <v-divider v-if="i !== contacts.length - 1"></v-divider>
                 </template>
             </v-list>
-            <v-btn v-on:click="modifycontact('new')" color="primary"> Neuer Kontakt  </v-btn>
+            <v-btn v-on:click="modifyContact('new')" color="primary"> Neuer Kontakt  </v-btn>
         </v-form>
     </div>
 </template>

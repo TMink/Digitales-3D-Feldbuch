@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import VueCookies from 'vue-cookies';
 import Router from 'vue-router'
 import Viewer from '@/components/3dView'
 import ProjectsOverview from '@/components/ProjectsOverview'
@@ -10,10 +11,11 @@ import CutsOverview from '@/components/CutsOverview'
 import ArtifactsOverview from '@/components/ArtifactsOverview'
 import FeaturesOverview from '@/components/FeaturesOverview'
 import SamplesOverview from '@/components/SamplesOverview'
+import ContactForm from '@/components/DocContactForm';
 
-Vue.use(Router)
+Vue.use(Router);
 
-export default new Router({
+const router =  new Router({
   routes: [
     {
       path: '/',
@@ -26,7 +28,7 @@ export default new Router({
       component: ProjectsOverview
     },
     {
-      path: '/projectform',
+      path: '/projects/:project_id',
       name: 'ProjectCreation',
       alias: '',
       component: ProjectForm
@@ -44,7 +46,7 @@ export default new Router({
       component: ExcavationsOverview
     },
     {
-      path: '/excavationform',
+      path: '/excavations/:excavation_id',
       name: 'ExcavationCreation',
       alias: '',
       component: ExcavationForm
@@ -74,6 +76,12 @@ export default new Router({
       component: SamplesOverview
     },
     {
+      path: '/contacts/:contact_id',
+      name: 'ContactCreation',
+      alias: '',
+      component: ContactForm
+    },
+    {
       path: '/3dview',
       name: '3D-Ansicht',
       alias: '',
@@ -81,3 +89,13 @@ export default new Router({
     }
   ]
 });
+
+/**
+ * Set routing path history
+ */
+router.afterEach(to => {
+  VueCookies.set('LAST_ROUTE_KEY', VueCookies.get('ROUTE_KEY'));
+  VueCookies.set('ROUTE_KEY', to.path);
+});
+
+export default router;
