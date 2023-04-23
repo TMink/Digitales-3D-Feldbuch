@@ -17,9 +17,7 @@ export default {
       camera: null,
       scene: null,
       renderer: null,
-      controls: null,
-      gui:null,
-      mesh: null
+      controls: null
     }
 
   },
