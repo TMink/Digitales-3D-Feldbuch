@@ -19,6 +19,7 @@ router.get("/", function (req, res, next) {
         length: doc.data().length,
         location: doc.data().location,
         organization: doc.data().organization,
+        dates: doc.data().dates
       };
       excavationsArray.push(excavation);
     });
@@ -44,6 +45,7 @@ router.get("/:excavation_id", function (req, res, next) {
         length: doc.data().length,
         location: doc.data().location,
         organization: doc.data().organization,
+        dates: doc.data().dates
       };
       res.send(excavation);
     })
