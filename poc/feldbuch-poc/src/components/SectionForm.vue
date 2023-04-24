@@ -129,7 +129,7 @@
           data: {
             title: context.section_doc.title,
             description: context.section_doc.description,
-            excavation_id: "YDl5ywopFQvVBzlaLS9T",
+            excavation_id: VueCookies.get('currentExcavation'),
             startLevel: context.section_doc.startLevel,
             endLevel: context.section_doc.endLevel
           }
