@@ -27,9 +27,9 @@
         </v-tab-item>
   
         <v-tab> Kontaktpersonen </v-tab>
-        <v-tab-item class="px-4">
-          <DocContactPersons :persons="cut_doc.persons" />
-        </v-tab-item>
+      <v-tab-item class="px-4">
+        <DocContacts/>
+      </v-tab-item>
   
         <v-btn 
           v-on:click="logForm()" 
@@ -55,11 +55,12 @@
   
   <script>
   import ExcavationsOverview from "./ExcavationsOverview";
+  import DocContacts from './DocContacts.vue';
   import axios from "axios";
   
   export default {
     name: "CutCreation",
-    components: { ExcavationsOverview },
+    components: { ExcavationsOverview, DocContacts },
     data() {
       return {
         cut_doc: {
@@ -82,12 +83,12 @@
       get_doc() {
         var context = this;
   
-        if (this.$route.params.cut_id !== "new") {
+        if (this.$route.params.project_id !== "new") {
           this.is_new = false;
   
           axios({
             method: "get",
-            url: "/cuts/" + this.$route.params.cut_id,
+            url: "/cuts/" + this.$route.params.project_id,
             responseType: "json"
           })
           .then(function(res) {
@@ -112,11 +113,11 @@
   
         var context = this;
         var httpRequest = "put";
-        var requestURL = "http://127.0.0.1:3000/cuts/" + this.$route.params.project_id;
+        var requestURL = "/cuts/" + this.$route.params.project_id;
   
         if (this.is_new == true) {
           httpRequest = "post";
-          requestURL = "http://127.0.0.1:3000/cuts";
+          requestURL = "/cuts";
         }
   
         axios({
