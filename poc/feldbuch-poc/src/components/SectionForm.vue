@@ -15,15 +15,16 @@
             label="Beschreibung"
             hint="Geben sie hier eine kurze Beschreibung des Schnittes an (Ziele, Foki etc.)"
           ></v-textarea>
-        </v-tab-item>
-  
-        <v-tab> Startniveau</v-tab>
-        <v-tab-item class="px-4">
-          <v-subheader v-if="is_new">
-            Startniveaus können erst angelegt werden, wenn das Projekt gespeichert
-            wurde
-          </v-subheader>
-          <ExcavationsOverview v-else v-on:save_excavation="logForm(false)" />
+          <v-text-field
+            v-model="section_doc.startLevel"
+            label="Startniveau"
+            hint="Geben sie hier das Starnievau des Schnittes an"
+          ></v-text-field>
+          <v-text-field
+            v-model="section_doc.endLevel"
+            label="Endniveau"
+            hint="Geben sie hier das Endnievau des Schnittes an"
+          ></v-text-field>
         </v-tab-item>
   
         <v-tab> Kontaktpersonen </v-tab>
@@ -56,10 +57,11 @@
   <script>
   import ExcavationsOverview from "./ExcavationsOverview";
   import DocContacts from './DocContacts.vue';
+  import VueCookies from 'vue-cookies'
   import axios from "axios";
   
   export default {
-    name: "sectionCreation",
+    name: "SectionCreation",
     components: { ExcavationsOverview, DocContacts },
     data() {
       return {
@@ -120,17 +122,21 @@
           requestURL = "/sections";
         }
   
+        console.log(context.section_doc)
         axios({
           method: httpRequest,
           url: requestURL,
           data: {
-            title: context.sections_doc.title,
-            description: context.sections_doc.description
+            title: context.section_doc.title,
+            description: context.section_doc.description,
+            excavation_id: "YDl5ywopFQvVBzlaLS9T",
+            startLevel: context.section_doc.startLevel,
+            endLevel: context.section_doc.endLevel
           }
         })
         .then(function (res) {
           context.$emit("view", "Schnittübersicht");
-          context.$router.push({ name: "sectionsOverview" });
+          context.$router.push({ name: "SectionsOverview" });
           console.log(res);
         })
         .catch(function (error) {
@@ -140,7 +146,7 @@
       //go back to project overview
       goBack() {
         this.$emit("view", "Schnittübersicht");
-        this.$router.push({ name: "sectionsOverview" });
+        this.$router.push({ name: "SectionsOverview" });
       }
     }
   };
