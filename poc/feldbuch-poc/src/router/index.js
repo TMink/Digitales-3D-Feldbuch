@@ -10,8 +10,10 @@ import SectionsOverview from '@/components/SectionsOverview'
 import SectionForm from '@/components/SectionForm';
 import ArtifactsOverview from '@/components/ArtifactsOverview'
 import FeaturesOverview from '@/components/FeaturesOverview'
+import FeatureForm from '@/components/FeatureForm'
 import SamplesOverview from '@/components/SamplesOverview'
 import ContactForm from '@/components/DocContactForm';
+
 
 Vue.use(Router);
 
@@ -58,12 +60,6 @@ const router =  new Router({
       component: SectionsOverview
     },
     {
-      path: '/featuresoverview',
-      name: 'FeaturesOverview',
-      alias: '',
-      component: FeaturesOverview
-    },
-    {
       path: '/artifactsoverview',
       name: 'ArtifactsOverview',
       alias: '',
@@ -86,7 +82,19 @@ const router =  new Router({
       name: '3D-Ansicht',
       alias: '',
       component: Viewer
-    }
+    },
+    {
+      path: '/featuresoverview',
+      name: 'FeaturesOverview',
+      alias: '',
+      component: FeaturesOverview
+    },
+    {
+      path: '/featureform',
+      name: 'FeatureCreation',
+      alias: '',
+      component: FeatureForm
+    },
   ]
 });
 
