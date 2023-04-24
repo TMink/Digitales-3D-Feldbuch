@@ -1,73 +1,126 @@
-var express = require("express");
-var router = express.Router();
-const nano = require("nano")("http://admin:1234@127.0.0.1:5984");
-var request = require("request");
-var db_name = "features";
-var db = nano.use(db_name);
-
- //a feature is defined as a nonmoveable element of an archaeological site
+const express = require("express");
+const router = express.Router();
+const db = require("../fb");
+const excavations = db.collection("excavations");
+const features = db.collection("features");
 
 /* GET ALL features */
 router.get("/", function (req, res, next) {
-  db.get("_design/features/_view/all", function (err, body, headers) {
-    if (err) {
-      return res.status(404).send("Could not retrieve all features");
-    }
-    res.send(body);
-  });
+  var featuresArray = [];
+  features
+    .get()
+    .then((data) => {
+      data.forEach((doc) => {
+        var feature = {
+          id: doc.id,
+          section_id: doc.data().section_id,
+          number: doc.data().number,
+          title: doc.data().title,
+          description: doc.data().description,
+          rel_localization: doc.data().rel_localization,
+          type_id: doc.data().type_id
+        };
+        featuresArray.push(feature);
+      });
+      res.send(featuresArray);
+    })
+    .catch((err) => {
+      res.status(404).send("No features found");
+    });
 });
 
 /* GET feature by ID */
 router.get("/:feature_id", function (req, res, next) {
-  db.get(req.params.feature_id, function (err, body, headers) {
-    if (err) {
-      return res
-        .status(404)
-        .send("Could not find feature with ID: " + req.params.feature_id);
-    }
-    res.send(body);
-  });
+  features
+    .doc(req.params.feature_id)
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        var feature = {
+          id: doc.id,
+          section_id: doc.data().section_id,
+          number: doc.data().number,
+          title: doc.data().title,
+          description: doc.data().description,
+          rel_localization: doc.data().rel_localization,
+          type_id: doc.data().type_id,
+        };
+        res.send(feature);
+      } else {
+        res.status(404).send("No such document: ");
+      }
+    })
+    .catch((err) => {
+      res.status(404).send("feature not found: " + err);
+    });
 });
 
 /* POST new feature */
 router.post("/", function (req, res, next) {
-  db.insert(req.body, function (err, body, headers) {
-    if (err) {
-      return res.status(404).send("Could not save feature: " + req.params.name);
-    }
-    return res.status(200).send("added " + body.id);
-  });
+  //check if excavation_id exists
+  excavations
+    .doc(req.body.excavation_id)
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        //if it exists, add the feature to DB
+        features
+          .doc()
+          .set(req.body)
+          .then((response) => {
+            res.status(200).send("Added Feature");
+          })
+          .catch((err) => {
+            res.status(404).send("Couldn't add feature: " + err);
+          });
+      } else {
+        res.status(404).send("No such excavation");
+      }
+    })
+    .catch((err) => {
+      res.status(404).send("Excavation not found: " + err);
+    });
 });
 
 /* UPDATE feature by ID*/
 router.put("/:feature_id", function (req, res, next) {
-  db.insert(req.body, req.params.feature_id, function (err, body, headers) {
-    if (err) {
-      return res
-        .status(404)
-        .send("Could not find feature with ID: " + req.params.feature_id);
-    }
-    return res.status(200).send("updated " + body.id);
-  });
+  //check if excavation_id exists
+  excavations
+    .doc(req.body.excavation_id)
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        //if it exists, add the feature to DB
+        features
+          .doc(req.params.feature_id)
+          .update(req.body)
+          .then((response) => {
+            res.status(200).send("Updated Feature");
+          })
+          .catch((err) => {
+            res.status(404).send("Couldn't update feature: " + err);
+          });
+      } else {
+        res.status(404).send("No such excavation");
+      }
+    })
+    .catch((err) => {
+      res.status(404).send("Excavation not found: " + err);
+    });
 });
 
 /* DELETE feature by ID*/
 router.delete("/:feature_id", async function (req, res, next) {
-  db.get(req.params.feature_id, function (err, body, headers) {
-    if (err) {
-      return res
-        .status(404)
-        .send("Could not find the feature with ID: " + req.params.feature_id);
-    }
-    db.destroy(req.params.feature_id, body._rev, function (err, body, header) {
-      if (err) {
-        return res
-          .status(404)
-          .send("Could not delete the feature with ID: " + req.params.feature_id);
-      }
-      return res.status(200).send("deleted " + body.id);
+  //TODO: when deleting a feature, also delete all subcollections
+  features
+    .doc(req.params.feature_id)
+    .delete({ exists: true })
+    .then((response) => {
+      res.status(200).send("Deleted feature: " + req.params.feature_id);
+    })
+    .catch((err) => {
+      res.status(404).send("Couldn't delete feature: " + err);
     });
-  });
 });
 
 module.exports = router;
