@@ -9,7 +9,7 @@
             <v-card-title class="justify-center"> Ausgrabung </v-card-title>
           </v-card>
 
-          <v-card class="ma-2" color="#BC987D" v-on:click="toCuts" dark>
+          <v-card class="ma-2" color="#BC987D" v-on:click="toSections" dark>
             <v-card-title class="justify-center"> Schnitte </v-card-title>
           </v-card>
 
@@ -63,8 +63,8 @@
           this.$router.push({name: 'ProjectsOverview'})
         /* } */
       },
-      toCuts: function () {
-        this.$router.push({ name: 'CutsOverview', params: { project_id: this.project_id, excavation_id: this.excavation_id } })
+      toSections: function () {
+        this.$router.push({ name: 'SectionsOverview', params: { project_id: this.project_id, excavation_id: this.excavation_id } })
       },
       toExcavation: function () {
         this.$router.push({ name: 'ExcavationsOverview', params: { project_id: this.project_id, excavation_id: this.excavation_id } })

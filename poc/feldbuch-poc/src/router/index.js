@@ -4,10 +4,10 @@ import Router from 'vue-router'
 import Viewer from '@/components/3dView'
 import ProjectsOverview from '@/components/ProjectsOverview'
 import ProjectForm from '@/components/ProjectForm';
-import sectionForm from '@/components/sectionForm';
 import ExcavationsOverview from '@/components/ExcavationsOverview'
 import ExcavationForm from '@/components/ExcavationForm';
-import sectionsOverview from '@/components/sectionsOverview'
+import SectionsOverview from '@/components/SectionsOverview'
+import SectionForm from '@/components/SectionForm';
 import ArtifactsOverview from '@/components/ArtifactsOverview'
 import FeaturesOverview from '@/components/FeaturesOverview'
 import SamplesOverview from '@/components/SamplesOverview'
@@ -35,9 +35,9 @@ const router =  new Router({
     },
     {
       path: '/sectionform',
-      name: 'sectionCreation',
+      name: 'SectionCreation',
       alias: '',
-      component: sectionForm
+      component: SectionForm
     },
     {
       path: '/excavations',
@@ -53,9 +53,9 @@ const router =  new Router({
     },
     {
       path: '/sectionsoverview',
-      name: 'sectionsOverview',
+      name: 'SectionsOverview',
       alias: '',
-      component: sectionsOverview
+      component: SectionsOverview
     },
     {
       path: '/featuresoverview',
