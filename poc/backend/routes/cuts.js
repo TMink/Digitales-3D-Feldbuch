@@ -14,10 +14,10 @@ router.get("/", function (req, res, next) {
         var cut = {
           id: doc.id,
           excavation_id: doc.data().excavation_id,
-          name: doc.data().name,
+          title: doc.data().title,
           description: doc.data().description,
           startLevel: doc.data().startLevel,
-          endLevel: doc.data().endLevel
+          endLevel: doc.data().endLevel,
         };
         cutsArray.push(cut);
       });
@@ -38,7 +38,7 @@ router.get("/:cut_id", function (req, res, next) {
         var cut = {
           id: doc.id,
           excavation_id: doc.data().excavation_id,
-          name: doc.data().name,
+          title: doc.data().title,
           description: doc.data().description,
           startLevel: doc.data().startLevel,
           endLevel: doc.data().endLevel,
