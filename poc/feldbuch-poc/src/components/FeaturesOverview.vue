@@ -1,0 +1,90 @@
+<template>
+    <div id="wrapper">
+        <Navigation/>
+        <v-form>
+                <v-subheader v-if="features.length === 0"> Bisher wurden dem Projekt keine Befunde
+                    hinzugefügt</v-subheader>
+                <v-subheader v-else>Zugehörige Befunde</v-subheader> 
+                <v-list>
+                    <template v-for="(feature, i) in features">
+                        <v-list-item v-on:click="modifyFeature(feature.id)">
+                            <v-list-item-content>
+                                <v-list-item-title> {{ feature.title }} </v-list-item-title>
+                                <v-list-item-subtitle> {{ feature.description }} </v-list-item-subtitle>
+                            </v-list-item-content>
+                        </v-list-item>
+                        <v-divider v-if="i !== features.length - 1"></v-divider>
+                    </template>
+                </v-list>
+                <v-btn v-on:click="modifyFeature('new')" color="secondary"> Befund hinzufügen</v-btn>
+        </v-form>
+    </div>
+    
+</template>
+
+<script>
+import axios from 'axios';
+import VueCookies from 'vue-cookies';
+import Navigation from './Navigation.vue'
+
+
+export default {
+    name: 'FeaturesOverview',
+    components: {
+        Navigation
+    },
+    //created() {
+    //    var context = this;
+    //    context.project_id = VueCookies.get('currentFeatures');
+    //},
+    methods: {
+        getFeatures() {
+            var context = this;
+
+            axios({
+                method: 'get',
+                url: '/features',
+                responseType: 'json'
+            })
+            .then(function (response) {
+                for (let item of response.data) {
+                    
+                    if (context.project_id === item.project_id.trim()) {
+                        context.features.push(item)
+                        
+                    }
+                }
+            })
+            .catch(error => {
+                if (!error.response) {
+                    this.errorStatus = 'Error: Network Error';
+                } else {
+                    this.errorStatus = error.response.data.message;
+                }
+            });
+        },
+        modifyFeature(item_id) {
+            if (item_id !== 'new') {
+                VueCookies.set('currentFeature', item_id)
+            }
+            this.$router.push({ name: 'featureCreation', params: { project_id: item_id } })
+        }
+    },
+    created() {
+        this.getFeatures()
+    },
+    data() {
+        return {
+            features: [],
+        }
+    }
+
+}
+
+</script>
+
+<style scoped>
+    #wrapper {
+        height: 100%;
+    }
+</style>
