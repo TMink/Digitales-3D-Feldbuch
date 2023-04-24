@@ -26,8 +26,8 @@
       </v-tab-item>
 
       <v-tab-item>
-        TODO
-      </v-tab-item>
+        <DocDates :dateslist="excavation_doc.dates" @addDate="addDate($event)"/>
+      </v-tab-item >
 
       <v-tab-item>
         TODO
@@ -46,12 +46,13 @@
 
 <script>
 import DocContacts from './DocContacts.vue';
+import DocDates from './DocDates.vue';
 import VueCookies from 'vue-cookies';
 import axios from 'axios';
 
 export default {
   name: 'ExcavationForm',
-  components: { DocContacts},
+  components: { DocContacts, DocDates},
   data() {
     return {
       excavation_doc: {
@@ -105,6 +106,19 @@ export default {
         context.$emit("view", "Neues Ausgrabung anlegen");
       }
     },
+    addDate: function(date_id) {
+      var context = this;
+
+      if (context.excavation_doc.dates == undefined) {
+        console.log("undefghghined")
+        context.excavation_doc.dates = [date_id];
+      } else {
+        console.log("addsdsd")
+        context.excavation_doc.dates.push(date_id);
+      }
+      
+
+    },
     //submit the form (either POST new excavation or PUT existing excavation)
     logForm: function () {
       // show error message if form is not valid
@@ -122,19 +136,21 @@ export default {
         httpRequest = 'post';
         requestURL = '/excavations';
       }
+      console.log(context.project_id)
       //put/post request of edited/new excavation
       axios({
         method: httpRequest,
         url: requestURL,
         data: {
-          project_id: context.project_id,
+          project_id: VueCookies.get('currentProject'),
           title: context.excavation_doc.title,
           description: context.excavation_doc.description,
           client: context.excavation_doc.client,
           focus: context.excavation_doc.focus,
           length: context.excavation_doc.length,
           location: context.excavation_doc.location,
-          organization: context.excavation_doc.organization
+          organization: context.excavation_doc.organization,
+          dates: context.excavation_doc.dates
         }
       })
       .then(function (res) {

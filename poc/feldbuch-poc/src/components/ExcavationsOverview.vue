@@ -75,7 +75,6 @@ export default {
         }
     },
     beforeMount() {
-        //this.project_id = this.$route.params.project_id
         this.getExcavations()
     },
     data: function () {
