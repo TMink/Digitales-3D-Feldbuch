@@ -59,7 +59,7 @@
   import axios from "axios";
   
   export default {
-    name: "sectionCreation",
+    name: "SectionCreation",
     components: { ExcavationsOverview, DocContacts },
     data() {
       return {
@@ -130,7 +130,7 @@
         })
         .then(function (res) {
           context.$emit("view", "Schnittübersicht");
-          context.$router.push({ name: "sectionsOverview" });
+          context.$router.push({ name: "SectionsOverview" });
           console.log(res);
         })
         .catch(function (error) {
@@ -140,7 +140,7 @@
       //go back to project overview
       goBack() {
         this.$emit("view", "Schnittübersicht");
-        this.$router.push({ name: "sectionsOverview" });
+        this.$router.push({ name: "SectionsOverview" });
       }
     }
   };

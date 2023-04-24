@@ -5,7 +5,7 @@
         <v-subheader v-if="sections.length === 0"> Bisher wurden keine Schnitte angelegt</v-subheader>
           <v-list>
             <template v-for="(section, i) in sections">
-              <v-list-item v-on:click="modifysection(section.id)">
+              <v-list-item v-on:click="modifySection(section.id)">
                 <v-list-item-content>
                   <v-list-item-title> {{ section.title }} </v-list-item-title>
                   <v-list-item-subtitle> {{ section.description }} </v-list-item-subtitle>
@@ -14,7 +14,7 @@
               <v-divider v-if="i !== sections.length - 1"></v-divider>
             </template>
           </v-list>
-          <v-btn v-on:click="modifysection('new')" color="primary"> Schnitt hinzufügen </v-btn>
+          <v-btn v-on:click="modifySection('new')" color="primary"> Schnitt hinzufügen </v-btn>
         </v-form>
     </div>
   </template>
@@ -25,13 +25,13 @@
   import Navigation from './Navigation.vue'
   
   export default {
-    name: 'sectionsOverview',
+    name: 'SectionsOverview',
     components: {
         Navigation
     },
     methods: {
       //retrieve all projects
-      getsections() {
+      getSections() {
         var context = this;
   
         axios({
@@ -52,15 +52,15 @@
           }
         });
       },
-      modifysection(item_id) {
+      modifySection(item_id) {
         if (item_id !== 'new') {
-          VueCookies.set('currentsection', item_id)
+          VueCookies.set('currentSection', item_id)
         }
-        this.$router.push({ name: 'sectionCreation', params: { project_id: item_id } })
+        this.$router.push({ name: 'SectionCreation', params: { project_id: item_id } })
       }
     },
     created() {
-      this.getsections();
+      this.getSections();
     },
     data() {
       return {
