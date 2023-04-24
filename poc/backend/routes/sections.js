@@ -2,16 +2,16 @@ const express = require("express");
 const router = express.Router();
 const db = require("../fb");
 const excavations = db.collection("excavations");
-const cuts = db.collection("cuts");
+const sections = db.collection("sections");
 
-/* GET ALL cuts */
+/* GET ALL sections */
 router.get("/", function (req, res, next) {
-  var cutsArray = [];
-  cuts
+  var sectionsArray = [];
+  sections
     .get()
     .then((data) => {
       data.forEach((doc) => {
-        var cut = {
+        var section = {
           id: doc.id,
           excavation_id: doc.data().excavation_id,
           title: doc.data().title,
@@ -19,23 +19,23 @@ router.get("/", function (req, res, next) {
           startLevel: doc.data().startLevel,
           endLevel: doc.data().endLevel,
         };
-        cutsArray.push(cut);
+        sectionsArray.push(section);
       });
-      res.send(cutsArray);
+      res.send(sectionsArray);
     })
     .catch((err) => {
-      res.status(404).send("No cuts found");
+      res.status(404).send("No sections found");
     });
 });
 
-/* GET cut by ID */
-router.get("/:cut_id", function (req, res, next) {
-  cuts
-    .doc(req.params.cut_id)
+/* GET section by ID */
+router.get("/:section_id", function (req, res, next) {
+  sections
+    .doc(req.params.section_id)
     .get()
     .then((doc) => {
       if (doc.exists) {
-        var cut = {
+        var section = {
           id: doc.id,
           excavation_id: doc.data().excavation_id,
           title: doc.data().title,
@@ -43,17 +43,17 @@ router.get("/:cut_id", function (req, res, next) {
           startLevel: doc.data().startLevel,
           endLevel: doc.data().endLevel,
         };
-        res.send(cut);
+        res.send(section);
       } else {
         res.status(404).send("No such document: ");
       }
     })
     .catch((err) => {
-      res.status(404).send("cut not found: " + err);
+      res.status(404).send("section not found: " + err);
     });
 });
 
-/* POST new cut */
+/* POST new section */
 router.post("/", function (req, res, next) {
   //check if excavation_id exists
   excavations
@@ -61,15 +61,15 @@ router.post("/", function (req, res, next) {
     .get()
     .then((doc) => {
       if (doc.exists) {
-        //if it exists, add the cut to DB
-        cuts
+        //if it exists, add the section to DB
+        sections
           .doc()
           .set(req.body)
           .then((response) => {
-            res.status(200).send("Added Cut");
+            res.status(200).send("Added section");
           })
           .catch((err) => {
-            res.status(404).send("Couldn't add cut: " + err);
+            res.status(404).send("Couldn't add section: " + err);
           });
       } else {
         res.status(404).send("No such excavation");
@@ -80,23 +80,23 @@ router.post("/", function (req, res, next) {
     });
 });
 
-/* UPDATE cut by ID*/
-router.put("/:cut_id", function (req, res, next) {
+/* UPDATE section by ID*/
+router.put("/:section_id", function (req, res, next) {
   //check if excavation_id exists
   excavations
     .doc(req.body.excavation_id)
     .get()
     .then((doc) => {
       if (doc.exists) {
-        //if it exists, add the cut to DB
-        cuts
-          .doc(req.params.cut_id)
+        //if it exists, add the section to DB
+        sections
+          .doc(req.params.section_id)
           .update(req.body)
           .then((response) => {
-            res.status(200).send("Updated Cut");
+            res.status(200).send("Updated section");
           })
           .catch((err) => {
-            res.status(404).send("Couldn't update cut: " + err);
+            res.status(404).send("Couldn't update section: " + err);
           });
       } else {
         res.status(404).send("No such excavation");
@@ -107,17 +107,17 @@ router.put("/:cut_id", function (req, res, next) {
     });
 });
 
-/* DELETE cut by ID*/
-router.delete("/:cut_id", async function (req, res, next) {
-  //TODO: when deleting a cut, also delete all subcollections
-  cuts
-    .doc(req.params.cut_id)
+/* DELETE section by ID*/
+router.delete("/:section_id", async function (req, res, next) {
+  //TODO: when deleting a section, also delete all subcollections
+  sections
+    .doc(req.params.section_id)
     .delete({ exists: true })
     .then((response) => {
-      res.status(200).send("Deleted cut: " + req.params.cut_id);
+      res.status(200).send("Deleted section: " + req.params.section_id);
     })
     .catch((err) => {
-      res.status(404).send("Couldn't delete cut: " + err);
+      res.status(404).send("Couldn't delete section: " + err);
     });
 });
 
