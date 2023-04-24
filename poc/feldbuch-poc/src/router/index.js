@@ -12,6 +12,7 @@ import ArtifactsOverview from '@/components/ArtifactsOverview'
 import FeaturesOverview from '@/components/FeaturesOverview'
 import FeatureForm from '@/components/FeatureForm'
 import SamplesOverview from '@/components/SamplesOverview'
+import SamplesForm from '@/components/SamplesForm'
 import ContactForm from '@/components/DocContactForm';
 
 
@@ -70,6 +71,12 @@ const router =  new Router({
       name: 'SamplesOverview',
       alias: '',
       component: SamplesOverview
+    },
+    {
+      path: '/samples/:sample_id',
+      name: 'SampleCreation',
+      alias: '',
+      component: SamplesForm
     },
     {
       path: '/contacts/:contact_id',
