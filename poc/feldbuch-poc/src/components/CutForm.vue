@@ -87,7 +87,7 @@
   
           axios({
             method: "get",
-            url: "http://127.0.0.1:3000/cuts/" + this.$route.params.cut_id,
+            url: "/cuts/" + this.$route.params.cut_id,
             responseType: "json"
           })
           .then(function(res) {
