@@ -2,19 +2,19 @@
    <div id="wrapper">
         <Navigation/>
         <v-form>
-        <v-subheader v-if="cuts.length === 0"> Bisher wurden keine Schnitte angelegt</v-subheader>
+        <v-subheader v-if="sections.length === 0"> Bisher wurden keine Schnitte angelegt</v-subheader>
           <v-list>
-            <template v-for="(cut, i) in cuts">
-              <v-list-item v-on:click="modifyCut(cut.id)">
+            <template v-for="(section, i) in sections">
+              <v-list-item v-on:click="modifysection(section.id)">
                 <v-list-item-content>
-                  <v-list-item-title> {{ cut.title }} </v-list-item-title>
-                  <v-list-item-subtitle> {{ cut.description }} </v-list-item-subtitle>
+                  <v-list-item-title> {{ section.title }} </v-list-item-title>
+                  <v-list-item-subtitle> {{ section.description }} </v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
-              <v-divider v-if="i !== cuts.length - 1"></v-divider>
+              <v-divider v-if="i !== sections.length - 1"></v-divider>
             </template>
           </v-list>
-          <v-btn v-on:click="modifyCut('new')" color="primary"> Schnitt hinzufügen </v-btn>
+          <v-btn v-on:click="modifysection('new')" color="primary"> Schnitt hinzufügen </v-btn>
         </v-form>
     </div>
   </template>
@@ -25,23 +25,23 @@
   import Navigation from './Navigation.vue'
   
   export default {
-    name: 'CutsOverview',
+    name: 'sectionsOverview',
     components: {
         Navigation
     },
     methods: {
       //retrieve all projects
-      getCuts() {
+      getsections() {
         var context = this;
   
         axios({
           method: 'get',
-          url: '/cuts',
+          url: '/sections',
           responseType: 'json'
         })
         .then(function (response) {
           for (let item of response.data) {
-            context.cuts.push(item);
+            context.sections.push(item);
           }
         })
         .catch(error => {
@@ -52,19 +52,19 @@
           }
         });
       },
-      modifyCut(item_id) {
+      modifysection(item_id) {
         if (item_id !== 'new') {
-          VueCookies.set('currentCut', item_id)
+          VueCookies.set('currentsection', item_id)
         }
-        this.$router.push({ name: 'CutCreation', params: { project_id: item_id } })
+        this.$router.push({ name: 'sectionCreation', params: { project_id: item_id } })
       }
     },
     created() {
-      this.getCuts();
+      this.getsections();
     },
     data() {
       return {
-        cuts: []
+        sections: []
       };
     }
   }

@@ -5,13 +5,13 @@
         <v-tab> Allgemeine Daten </v-tab>
         <v-tab-item class="px-4">
           <v-text-field
-            v-model="cut_doc.title"
+            v-model="section_doc.title"
             label="Bezeichnung *"
             hint="Geben sie hier die Bezeichnung des Schnittes an *(Pflichtfeld)"
             :rules="is_required"
           ></v-text-field>
           <v-textarea
-            v-model="cut_doc.description"
+            v-model="section_doc.description"
             label="Beschreibung"
             hint="Geben sie hier eine kurze Beschreibung des Schnittes an (Ziele, Foki etc.)"
           ></v-textarea>
@@ -59,11 +59,11 @@
   import axios from "axios";
   
   export default {
-    name: "CutCreation",
+    name: "sectionCreation",
     components: { ExcavationsOverview, DocContacts },
     data() {
       return {
-        cut_doc: {
+        section_doc: {
           title: "",
           description: "",
           persons: []
@@ -88,11 +88,11 @@
   
           axios({
             method: "get",
-            url: "/cuts/" + this.$route.params.project_id,
+            url: "/sections/" + this.$route.params.project_id,
             responseType: "json"
           })
           .then(function(res) {
-            context.cut_doc = res.data;
+            context.section_doc = res.data;
             context.$emit("view", res.data.title + " bearbeiten");
           })
           .catch(function(error) {
@@ -113,24 +113,24 @@
   
         var context = this;
         var httpRequest = "put";
-        var requestURL = "/cuts/" + this.$route.params.project_id;
+        var requestURL = "/sections/" + this.$route.params.project_id;
   
         if (this.is_new == true) {
           httpRequest = "post";
-          requestURL = "/cuts";
+          requestURL = "/sections";
         }
   
         axios({
           method: httpRequest,
           url: requestURL,
           data: {
-            title: context.cuts_doc.title,
-            description: context.cuts_doc.description
+            title: context.sections_doc.title,
+            description: context.sections_doc.description
           }
         })
         .then(function (res) {
           context.$emit("view", "Schnittübersicht");
-          context.$router.push({ name: "CutsOverview" });
+          context.$router.push({ name: "sectionsOverview" });
           console.log(res);
         })
         .catch(function (error) {
@@ -140,7 +140,7 @@
       //go back to project overview
       goBack() {
         this.$emit("view", "Schnittübersicht");
-        this.$router.push({ name: "CutsOverview" });
+        this.$router.push({ name: "sectionsOverview" });
       }
     }
   };
