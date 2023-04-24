@@ -13,6 +13,7 @@ var excavationRouter = require('./routes/excavations');
 var cutRouter = require('./routes/cuts');
 var artifactRouter = require("./routes/artifacts");
 var featureRouter = require("./routes/features");
+var modelRouter = require("./routes/models");
 var contactRouter = require("./routes/contacts");
 var dateRouter = require("./routes/dates");
 
@@ -33,6 +34,7 @@ app.use('/excavations', excavationRouter);
 app.use("/cuts", cutRouter);
 app.use("/artifacts", artifactRouter);
 app.use("/features", featureRouter);
+app.use("/models", modelRouter);
 app.use("/contacts", contactRouter);
 app.use("/dates", dateRouter);
 
