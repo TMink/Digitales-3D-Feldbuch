@@ -14,6 +14,7 @@ var cutRouter = require('./routes/cuts');
 var artifactRouter = require("./routes/artifacts");
 var featureRouter = require("./routes/features");
 var contactRouter = require("./routes/contacts");
+var dateRouter = require("./routes/dates");
 
 var app = express();
 
@@ -33,6 +34,7 @@ app.use("/cuts", cutRouter);
 app.use("/artifacts", artifactRouter);
 app.use("/features", featureRouter);
 app.use("/contacts", contactRouter);
+app.use("/dates", dateRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
