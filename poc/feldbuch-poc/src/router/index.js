@@ -9,6 +9,7 @@ import ExcavationForm from '@/components/ExcavationForm';
 import SectionsOverview from '@/components/SectionsOverview'
 import SectionForm from '@/components/SectionForm';
 import ArtifactsOverview from '@/components/ArtifactsOverview'
+import ArtifactForm from '@/components/ArtifactForm'
 import FeaturesOverview from '@/components/FeaturesOverview'
 import FeatureForm from '@/components/FeatureForm'
 import SamplesOverview from '@/components/SamplesOverview'
@@ -65,6 +66,12 @@ const router =  new Router({
       name: 'ArtifactsOverview',
       alias: '',
       component: ArtifactsOverview
+    },
+    {
+      path: '/artifactform',
+      name: 'ArtifactCreation',
+      alias: '',
+      component: ArtifactForm
     },
     {
       path: '/samplesoverview',
