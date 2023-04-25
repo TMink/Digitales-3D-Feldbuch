@@ -16,7 +16,7 @@
                         <v-divider v-if="i !== features.length - 1"></v-divider>
                     </template>
                 </v-list>
-                <v-btn v-on:click="modifyFeature('new')" color="secondary"> Befund hinzufügen</v-btn>
+                <v-btn v-on:click="modifyFeature('new')" color="primary"> Befund hinzufügen</v-btn>
         </v-form>
     </div>
     
@@ -48,11 +48,7 @@ export default {
             })
             .then(function (response) {
                 for (let item of response.data) {
-                    
-                    if (context.project_id === item.project_id.trim()) {
-                        context.features.push(item)
-                        
-                    }
+                    context.features.push(item);
                 }
             })
             .catch(error => {
@@ -67,7 +63,7 @@ export default {
             if (item_id !== 'new') {
                 VueCookies.set('currentFeature', item_id)
             }
-            this.$router.push({ name: 'featureCreation', params: { project_id: item_id } })
+            this.$router.push({ name: 'FeatureCreation', params: { feature_id: item_id } })
         }
     },
     created() {
@@ -75,8 +71,8 @@ export default {
     },
     data() {
         return {
-            features: [],
-        }
+            features: []
+        };
     }
 
 }

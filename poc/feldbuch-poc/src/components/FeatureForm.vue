@@ -8,7 +8,8 @@
         <v-tab> Zugehörige Funde</v-tab>
   
         <v-tab-item class="px-4">
-            <v-text-field v-model="feature.featurenumber" label="Befundnummer *" hint="Geben sie hier die Befundnummer ein *(Pflichtfeld)" :rules="is_required"></v-text-field>
+          <v-text-field v-model="feature_doc.title" label="Titel *" hint="Geben sie hier den Befundtitel ein *(Pflichtfeld)" :rules="is_required"></v-text-field>
+            <v-text-field v-model="feature_doc.featurenumber" label="Befundnummer *" hint="Geben sie hier die Befundnummer ein *(Pflichtfeld)" :rules="is_required"></v-text-field>
             <v-textarea v-model="feature_doc.description" label="Beschreibung" hint="Geben sie hier eine kurze Beschreibung des Befunds an"></v-textarea>
             <v-select v-model="feature_doc.short" label="Kurzansprache" :items="availableConditions" hint="Geben sie hier die Kurzansprache des Befunds ein"></v-select>
             <v-select v-model="feature_doc.localisation" label="Lokalisierung" :items="availableExcavations" item-value="_id" item-text="title" :rules="is_required" hint=" *(Pflichtfeld)"> </v-select>
@@ -47,10 +48,11 @@
 import ExcavationsOverview from "./ExcavationsOverview";
 import DocContacts from './DocContacts.vue';
 import axios from "axios";
+import { del } from 'vue';
 
 export default {
-  name: 'featureCreation',
-  components: { ExcavationsOverview, DocContacts},
+  name: 'FeatureCreation',
+  //components: { ExcavationsOverview, DocContacts},
   data() {
     return {
       feature_doc: {
@@ -71,10 +73,10 @@ export default {
         'Baulicher Bestand'
       ],
 
-      feature_id: '',
-      project_id: '',
-      projects: [],
-      sections: [],
+      //feature_id: '',
+      //project_id: '',
+      //projects: [],
+      //sections: [],
       error_dialog: false,
       error_message: '',
       is_new: true,
@@ -91,12 +93,12 @@ export default {
     get_doc() {
       var context = this;
 
-      if (this.$route.params.project_id !== "new") {
+      if (this.$route.params.feature_id !== "new") {
         this.is_new = false;
 
         axios({
           method: "get",
-          url: "/features/" + this.$route.params.project_id,
+          url: "/features/" + this.$route.params.feature_id,
           responseType: "json"
         })
         .then(function(res) {
@@ -132,15 +134,15 @@ export default {
         method: httpRequest,
         url: requestURL,
         data: {
-          project_id: context.project_id,
-          title: context.features_doc.title,
-          description: context.features_doc.description,
-          short: context.features_doc.short,
-          location: context.features_doc.location,
-          interpretation: context.features_doc.interpretation,
-          featureType: context.features_doc.featureType,
-          sections: context.features_doc.sections,
-          finds: context.features_doc.finds
+          //project_id: context.project_id,
+          title: context.feature_doc.title,
+          description: context.feature_doc.description,
+          short: context.feature_doc.short,
+          location: context.feature_doc.location,
+          interpretation: context.feature_doc.interpretation,
+          featureType: context.feature_doc.featureType,
+          sections: context.feature_doc.sections,
+          finds: context.feature_doc.finds
         }
       })
       .then(function (res) {
