@@ -1,13 +1,23 @@
 <template>
     <div id="wrapper">
         <Navigation/>
-
         <v-form>
-            <div>
+            <v-list>
+                <v-list-item class="mt-5" v-if="current_excavation.id !== undefined" v-on:click="modifyExcavation(current_excavation.id)">
+                      <v-chip>
+                        Derzeit ausgewählt
+                      </v-chip>      
+                      <v-list-item-content>
+                          <v-list-item-title> {{ current_excavation.title }} </v-list-item-title>
+                          <v-list-item-subtitle>  {{ current_excavation.description }} </v-list-item-subtitle>
+                      </v-list-item-content>
+                      <v-chip variant="elevated">
+                        Derzeit ausgewählt
+                      </v-chip>
+                </v-list-item>
+                <v-divider></v-divider>
                 <v-subheader v-if="excavations.length === 0"> Bisher wurden dem Projekt keine Grabungen
                     hinzugefügt</v-subheader>
-                <v-subheader v-else>Zugehörige Grabungen</v-subheader> 
-                <v-list>
                     <template v-for="(excavation, i) in excavations">
                         <v-list-item v-on:click="modifyExcavation(excavation.id)">
                             <v-list-item-content>
@@ -15,21 +25,18 @@
                                 <v-list-item-subtitle> {{ excavation.description }} </v-list-item-subtitle>
                             </v-list-item-content>
                         </v-list-item>
-                        <v-divider></v-divider>
-                    </template>
-                </v-list>
-                <v-btn v-on:click="modifyExcavation('new')" color="secondary"> Grabung hinzufügen</v-btn>
-            </div>
+                    <v-divider></v-divider>
+                </template>
+            </v-list>
+            <v-btn v-on:click="modifyExcavation('new')" color="secondary"> Grabung hinzufügen</v-btn>
         </v-form>
     </div>
-    
 </template>
 
 <script>
 import Navigation from './Navigation.vue'
 import axios from 'axios';
 import VueCookies from 'vue-cookies';
-
 
 
 export default {
@@ -52,10 +59,13 @@ export default {
             })
             .then(function (response) {
                 for (let item of response.data) {
-                    
                     if (context.project_id === item.project_id.trim()) {
-                        context.excavations.push(item)
-                        
+                        //if the excavation id is saved in cookies => mark is as current excavation
+                        if (VueCookies.get('currentExcavation') === item.id.trim()) {
+                            context.current_excavation = item;
+                        } else {
+                            context.excavations.push(item)
+                        }
                     }
                 }
             })
@@ -80,11 +90,11 @@ export default {
     data: function () {
         return {
             excavations: [],
+            current_excavation: {},
             new_excavation: false,
             project_id: ''
         }
     }
-
 }
 
 </script>

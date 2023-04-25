@@ -1,10 +1,22 @@
 <template>
   <div id="wrapper">
     <Navigation/>
-
     <v-form>
-      <v-subheader v-if="projects.length === 0"> Bisher wurde kein Projekt angelegt</v-subheader>
       <v-list>
+          <v-list-item class="mt-5" v-if="current_project.id !== undefined" v-on:click="modifyProject(current_project.id)">
+                  <v-chip>
+                    Derzeit ausgewählt
+                  </v-chip>      
+                  <v-list-item-content>
+                      <v-list-item-title> {{ current_project.title }} </v-list-item-title>
+                      <v-list-item-subtitle>  {{ current_project.description }} </v-list-item-subtitle>
+                  </v-list-item-content>
+                  <v-chip variant="elevated">
+                    Derzeit ausgewählt
+                  </v-chip>
+            </v-list-item>
+      <v-divider></v-divider>
+      <v-subheader v-if="projects.length === 0"> Bisher wurde kein Projekt angelegt</v-subheader>
         <template v-for="(project, i) in projects">
           <v-list-item v-on:click="modifyProject(project.id)">
             <v-list-item-content>
@@ -18,7 +30,6 @@
       <v-btn v-on:click="modifyProject('new')" color="primary"> Projekt hinzufügen </v-btn>
     </v-form>
   </div>
-  
 </template>
 
 <script>
@@ -43,7 +54,12 @@ export default {
       })
       .then(function (response) {
         for (let item of response.data) {
-          context.projects.push(item);
+          //if the project id is saved in cookies => mark is as current project
+          if( VueCookies.get('currentProject') === item.id){
+            context.current_project = item;
+          } else {
+            context.projects.push(item);
+          }
         }
       })
       .catch(error => {
@@ -66,7 +82,8 @@ export default {
   },
   data() {
     return {
-      projects: []
+      projects: [],
+      current_project:{},
     };
   }
 }
