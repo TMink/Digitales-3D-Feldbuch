@@ -1,6 +1,15 @@
 <template>
   <div id="wrapper">
     <Navigation/>
+    <div class="ma-10" v-if="loading === true">
+      <v-progress-circular d-flex 
+            color="primary" 
+            :active="loading"          
+            :indeterminate="loading" 
+            :size="86"
+            :width="8">
+        </v-progress-circular>
+    </div>    
     <v-form>
       <v-list>
           <v-list-item class="mt-5" v-if="current_project.id !== undefined" v-on:click="modifyProject(current_project.id)">
@@ -16,7 +25,7 @@
                   </v-chip>
             </v-list-item>
       <v-divider></v-divider>
-      <v-subheader v-if="projects.length === 0"> Bisher wurde kein Projekt angelegt</v-subheader>
+      <v-subheader v-if="projects.length === 0 && loading===false"> Bisher wurde kein Projekt angelegt</v-subheader>
         <template v-for="(project, i) in projects">
           <v-list-item v-on:click="modifyProject(project.id)">
             <v-list-item-content>
@@ -61,6 +70,8 @@ export default {
             context.projects.push(item);
           }
         }
+        //hide the loading circle
+        context.loading = false;
       })
       .catch(error => {
         if (!error.response) {
@@ -84,6 +95,7 @@ export default {
     return {
       projects: [],
       current_project:{},
+      loading: true
     };
   }
 }

@@ -1,8 +1,17 @@
 <template>
    <div id="wrapper">
         <Navigation/>
+        <div class="ma-10" v-if="loading === true">
+        <v-progress-circular d-flex 
+              color="primary" 
+              :active="loading"          
+              :indeterminate="loading" 
+              :size="86"
+              :width="8">
+          </v-progress-circular>
+      </div>    
         <v-form>
-        <v-subheader v-if="sections.length === 0"> Bisher wurden keine Schnitte angelegt</v-subheader>
+        <v-subheader v-if="sections.length === 0 && loading===false"> Bisher wurden keine Schnitte angelegt</v-subheader>
           <v-list>
             <template v-for="(section, i) in sections">
               <v-list-item v-on:click="modifySection(section.id)">
@@ -43,6 +52,8 @@
           for (let item of response.data) {
             context.sections.push(item);
           }
+          //hide the loading circle
+          context.loading = false;
         })
         .catch(error => {
           if (!error.response) {
@@ -64,7 +75,8 @@
     },
     data() {
       return {
-        sections: []
+        sections: [],
+        loading: true
       };
     }
   }

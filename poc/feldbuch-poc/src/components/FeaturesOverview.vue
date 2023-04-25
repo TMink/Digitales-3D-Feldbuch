@@ -1,8 +1,17 @@
 <template>
     <div id="wrapper">
         <Navigation/>
+        <div class="ma-10" v-if="loading === true">
+              <v-progress-circular d-flex 
+                    color="primary" 
+                    :active="loading"          
+                    :indeterminate="loading" 
+                    :size="86"
+                    :width="8">
+                </v-progress-circular>
+            </div>  
         <v-form>
-                <v-subheader v-if="features.length === 0"> Bisher wurden dem Projekt keine Befunde
+                <v-subheader v-if="features.length === 0 && loading==false"> Bisher wurden dem Projekt keine Befunde
                     hinzugefügt</v-subheader>
                 <v-subheader v-else>Zugehörige Befunde</v-subheader> 
                 <v-list>
@@ -50,6 +59,8 @@ export default {
                 for (let item of response.data) {
                     context.features.push(item);
                 }
+                //hide the loading circle
+                context.loading = false;
             })
             .catch(error => {
                 if (!error.response) {
@@ -71,7 +82,8 @@ export default {
     },
     data() {
         return {
-            features: []
+            features: [],
+            loading: true
         };
     }
 

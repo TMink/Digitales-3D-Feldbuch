@@ -1,9 +1,17 @@
 <template>
   <div id="wrapper">
     <Navigation/>
-
+    <div class="ma-10" v-if="loading === true">
+        <v-progress-circular d-flex 
+              color="primary" 
+              :active="loading"          
+              :indeterminate="loading" 
+              :size="86"
+              :width="8">
+        </v-progress-circular>
+    </div> 
     <v-form>
-      <v-subheader v-if="samples.length === 0"> Bisher wurde keine Probe angelegt</v-subheader>
+      <v-subheader v-if="samples.length === 0 && loading===false"> Bisher wurde keine Probe angelegt</v-subheader>
       <v-list>
         <template v-for="(sample, i) in samples">
           <v-list-item v-on:click="modifySample(sample.id)">
@@ -45,6 +53,8 @@ export default {
         for (let item of response.data) {
           context.samples.push(item);
         }
+        //hide the loading circle
+          context.loading = false;
       })
       .catch(error => {
         if (!error.response) {
@@ -67,7 +77,8 @@ export default {
   },
   data() {
     return {
-      samples: []
+      samples: [],
+      loading: true
     };
   }
 }

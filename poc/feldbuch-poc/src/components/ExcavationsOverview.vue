@@ -1,6 +1,15 @@
 <template>
     <div id="wrapper">
         <Navigation/>
+        <div class="ma-10" v-if="loading === true">
+          <v-progress-circular d-flex 
+                color="primary" 
+                :active="loading"          
+                :indeterminate="loading" 
+                :size="86"
+                :width="8">
+            </v-progress-circular>
+        </div>  
         <v-form>
             <v-list>
                 <v-list-item class="mt-5" v-if="current_excavation.id !== undefined" v-on:click="modifyExcavation(current_excavation.id)">
@@ -16,7 +25,7 @@
                       </v-chip>
                 </v-list-item>
                 <v-divider></v-divider>
-                <v-subheader v-if="excavations.length === 0"> Bisher wurden dem Projekt keine Grabungen
+                <v-subheader v-if="excavations.length === 0 && loading===false"> Bisher wurden dem Projekt keine Grabungen
                     hinzugefügt</v-subheader>
                     <template v-for="(excavation, i) in excavations">
                         <v-list-item v-on:click="modifyExcavation(excavation.id)">
@@ -68,6 +77,8 @@ export default {
                         }
                     }
                 }
+                //hide the loading circle
+                context.loading = false;
             })
             .catch(error => {
                 if (!error.response) {
@@ -92,7 +103,8 @@ export default {
             excavations: [],
             current_excavation: {},
             new_excavation: false,
-            project_id: ''
+            project_id: '',
+            loading: true
         }
     }
 }
