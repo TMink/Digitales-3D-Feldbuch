@@ -16,12 +16,22 @@
             </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item link v-on:click="deleteCookies()">
+            <v-list-item-content>
+              <v-list-item-title>
+                Delete Cookies
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
       </v-navigation-drawer>
     </div>
 </template>
   
-  <script>
-  
+<script>
+
+import VueCookies from 'vue-cookies';
+
+
   export default {
     name: 'Navigation',
     props: {
@@ -46,6 +56,13 @@
     methods: {
       savepath (){
         setpath(this.path)
+      },
+      deleteCookies() {
+        VueCookies.remove('currentProject');
+        VueCookies.remove('currentContact');
+        VueCookies.remove('currentContact');
+        VueCookies.remove('currentSection');
+        VueCookies.remove('currentFeature');
       }
     }
   }
