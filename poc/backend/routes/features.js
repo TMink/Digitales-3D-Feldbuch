@@ -122,30 +122,30 @@ router.get("/", async function (req, res, next) {
   }
 
   //map through all features and combine them with the type specific data
-  var features_with_type = await Promise.all(featuresArray.docs.map(async (item) => {
+  var fullFeaturesArray = await Promise.all(featuresArray.docs.map(async (item) => {
       // get the type specific data for each feature
-      var feature_type = await feature_typesDB.doc(item.data().type_id).get()
+      var featureType = await feature_typesDB.doc(item.data().type_id).get()
 
       // combine general feature data with the type specific data
       // depending if the type is remains, statigrafic or structural
-      var feature_type_data = {};
+      var fullFeature = {};
 
-      if (feature_type.data().type == "Stratigrafische Einheit") {
-        feature_type_data = getStatigraphicUnit(item, feature_type.data());
+      if (featureType.data().type == "Stratigrafische Einheit") {
+        fullFeature = getStatigraphicUnit(item, featureType.data());
 
-      } else if (feature_type.data().type === "Überreste") {
-        feature_type_data = getRemains(item, feature_type.data());
+      } else if (featureType.data().type === "Überreste") {
+        fullFeature = getRemains(item, featureType.data());
 
-      } else if (feature_type.data().type === "Baulicher Bestand") {
-        feature_type_data = getStructuralInventory(item, feature_type.data());
+      } else if (featureType.data().type === "Baulicher Bestand") {
+        fullFeature = getStructuralInventory(item, featureType.data());
 
       } else {
         res.status(404).send("Couldn't find feature type")
       }
-      return feature_type_data;
+      return fullFeature;
     })
   );
-  res.status(200).send(features_with_type);
+  res.status(200).send(fullFeaturesArray);
 });
 
 /* GET feature by ID */
@@ -155,16 +155,28 @@ router.get("/:feature_id", function (req, res, next) {
     .get()
     .then((doc) => {
       if (doc.exists) {
-        var feature = {
-          id: doc.id,
-          section_id: doc.data().section_id,
-          number: doc.data().number,
-          title: doc.data().title,
-          description: doc.data().description,
-          rel_localization: doc.data().rel_localization,
-          type_id: doc.data().type_id,
-        };
-        res.send(feature);
+
+      // get the type specific data for the feature
+        feature_typesDB
+          .doc(doc.data().type_id)
+          .get()
+          .then((featureType) => {
+            // combine general feature data with the type specific data
+            // depending if the type is remains, statigrafic or structural
+            var fullFeature = {};
+
+            if (featureType.data().type == "Stratigrafische Einheit") {
+              fullFeature = getStatigraphicUnit(doc, featureType.data());
+            } else if (featureType.data().type === "Überreste") {
+              fullFeature = getRemains(doc, featureType.data());
+            } else if (featureType.data().type === "Baulicher Bestand") {
+              fullFeature = getStructuralInventory(doc, featureType.data());
+            } else {
+              res.status(404).send("Couldn't find feature type");
+            }
+
+            res.status(200).send(fullFeature);
+          });
       } else {
         res.status(404).send("No such document: ");
       }
