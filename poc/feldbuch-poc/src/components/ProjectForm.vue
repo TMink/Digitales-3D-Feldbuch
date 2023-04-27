@@ -23,7 +23,7 @@
           Grabungen können erst angelegt werden, wenn das Projekt gespeichert
           wurde
         </v-subheader>
-        <ExcavationsOverview v-else v-on:save_excavation="logForm(false)" />
+        <DocExcavations :excavationslist="project_doc.excavations"/>
       </v-tab-item>
 
       <v-tab> Kontaktpersonen </v-tab>
@@ -54,18 +54,19 @@
 </template>
 
 <script>
-import ExcavationsOverview from './ExcavationsOverview';
+import DocExcavations from './DocExcavations.vue';
 import DocContacts from './DocContacts.vue';
 import axios from 'axios';
 
 export default {
   name: "ProjectCreation",
-  components: { ExcavationsOverview, DocContacts },
+  components: { DocExcavations, DocContacts },
   data() {
     return {
       project_doc: {
         title: "",
         description: "",
+        excavations: [],
         persons: []
       },
       is_new: true,
@@ -125,7 +126,8 @@ export default {
         url: requestURL,
         data: {
           title: context.project_doc.title,
-          description: context.project_doc.description
+          description: context.project_doc.description,
+          excavations: context.project_doc.excavations
         }
       })
       .then(function (res) {
