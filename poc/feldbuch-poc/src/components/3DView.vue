@@ -6,6 +6,23 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+import axios from 'axios';
+import ConnectionToOfflineDB from '../ConnectionToOfflineDB.js';
+
+/**
+ * Init objects for offline database
+ */
+ const offlineDBGeometries = {
+  name: 'Geometry',
+  version: 1,
+  storeNames : [ 'excavation' ]
+};
+
+const offlineDBImages = {
+  name: 'Image',
+  version: 1,
+  storeNames: [ 'excavation' ]
+};
 
 export default {
 
@@ -20,11 +37,25 @@ export default {
       renderer: null,
       controls: null,
 
+      localDBGeometry: { data: null },
+      localDBImage: { data: null },
+      localObjectGeometry: { data: [] },
+      localObjectImage: { data: [] },
+
     }
 
   },
 
   async mounted() {
+
+    const offlineConnection = new ConnectionToOfflineDB(
+        [offlineDBGeometries, offlineDBImages],
+        [this.localDBGeometry, this.localDBImage],
+        [this.localObjectGeometry, this.localObjectImage]
+      );
+    
+    await offlineConnection.syncLocalDBs();
+    await offlineConnection.syncLocalObjects();
 
     this.init();
     this.animate();
