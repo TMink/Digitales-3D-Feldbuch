@@ -122,7 +122,6 @@
           requestURL = "/sections";
         }
   
-        console.log(context.section_doc)
         axios({
           method: httpRequest,
           url: requestURL,
