@@ -25,7 +25,7 @@
                       </v-chip>
                 </v-list-item>
                 <v-divider></v-divider>
-                <v-subheader v-if="excavations.length === 0 && loading===false"> Bisher wurden dem Projekt keine Grabungen
+                <v-subheader v-if="excavations.length === 0 && current_excavation.id == undefined  && loading===false"> Bisher wurden dem Projekt keine Grabungen
                     hinzugefügt</v-subheader>
                     <template v-for="(excavation, i) in excavations">
                         <v-list-item v-on:click="modifyExcavation(excavation.id)">
