@@ -122,9 +122,10 @@ router.get("/", async function (req, res, next) {
   }
 
   //map through all features and combine them with the type specific data
-  var fullFeaturesArray = await Promise.all(featuresArray.docs.map(async (item) => {
+  var fullFeaturesArray = await Promise.all(
+    featuresArray.docs.map(async (item) => {
       // get the type specific data for each feature
-      var featureType = await feature_typesDB.doc(item.data().type_id).get()
+      var featureType = await feature_typesDB.doc(item.data().type_id).get();
 
       // combine general feature data with the type specific data
       // depending if the type is remains, statigrafic or structural
@@ -132,15 +133,12 @@ router.get("/", async function (req, res, next) {
 
       if (featureType.data().type == "Stratigrafische Einheit") {
         fullFeature = getStatigraphicUnit(item, featureType.data());
-
       } else if (featureType.data().type === "Überreste") {
         fullFeature = getRemains(item, featureType.data());
-
       } else if (featureType.data().type === "Baulicher Bestand") {
         fullFeature = getStructuralInventory(item, featureType.data());
-
       } else {
-        res.status(404).send("Couldn't find feature type")
+        res.status(404).send("Couldn't find feature type");
       }
       return fullFeature;
     })
@@ -155,8 +153,7 @@ router.get("/:feature_id", function (req, res, next) {
     .get()
     .then((doc) => {
       if (doc.exists) {
-
-      // get the type specific data for the feature
+        // get the type specific data for the feature
         feature_typesDB
           .doc(doc.data().type_id)
           .get()
@@ -188,66 +185,112 @@ router.get("/:feature_id", function (req, res, next) {
 
 /* POST new feature */
 router.post("/", function (req, res, next) {
-  //check if excavation_id exists
-  excavations
-    .doc(req.body.excavation_id)
-    .get()
-    .then((doc) => {
-      if (doc.exists) {
-        //if it exists, add the feature to DB
-        featuresDB
-          .doc()
-          .set(req.body)
-          .then((response) => {
-            res.status(200).send("Added Feature");
-          })
-          .catch((err) => {
-            res.status(404).send("Couldn't add feature: " + err);
-          });
-      } else {
-        res.status(404).send("No such excavation");
-      }
+  //create feature JSON object for updating the featureDB
+  var feature = {
+    section_id: req.body.section_id,
+    number: req.body.number,
+    title: req.body.title,
+    description: req.body.description,
+    interpretation: req.body.interpretation,
+    rel_localization: req.body.rel_localization,
+    type_id: req.body.type_id,
+  };
+
+  var feature_type = req.body;
+
+  //remove all feature fields so only the type data remains
+  delete feature_type.section_id;
+  delete feature_type.number;
+  delete feature_type.title;
+  delete feature_type.description;
+  delete feature_type.interpretation;
+  delete feature_type.rel_localization;
+  delete feature_type.type_id;
+
+  //add the feature_type to DB
+  feature_typesDB
+    .add(feature_type)
+    .then((response) => {
+      //add the newly created type_id to the feature json and write to DB
+      feature.type_id = response.id;
+
+      featuresDB
+        .add(feature)
+        .then((response) => {
+          res.status(200).send("Added Feature + Type Documents");
+        })
+        .catch((err) => {
+          res.status(404).send("Couldn't add feature: " + err);
+        });
     })
     .catch((err) => {
-      res.status(404).send("Excavation not found: " + err);
+      res.status(404).send("Couldn't add feature: " + err);
     });
 });
 
 /* UPDATE feature by ID*/
 router.put("/:feature_id", function (req, res, next) {
-  //check if excavation_id exists
-  excavations
-    .doc(req.body.excavation_id)
-    .get()
-    .then((doc) => {
-      if (doc.exists) {
-        //if it exists, add the feature to DB
-        featuresDB
-          .doc(req.params.feature_id)
-          .update(req.body)
-          .then((response) => {
-            res.status(200).send("Updated Feature");
-          })
-          .catch((err) => {
-            res.status(404).send("Couldn't update feature: " + err);
-          });
-      } else {
-        res.status(404).send("No such excavation");
-      }
+  //create feature JSON object for updating the featureDB
+  var feature = {
+    section_id: req.body.section_id,
+    number: req.body.number,
+    title: req.body.title,
+    description: req.body.description,
+    interpretation: req.body.interpretation,
+    rel_localization: req.body.rel_localization,
+    type_id: req.body.type_id,
+  };
+
+  //update featureDB
+  featuresDB
+    .doc(req.params.feature_id)
+    .update(feature)
+    .then((res) => {
+      var feature_type = req.body;
+
+      //remove all feature fields so only the type data remains
+      delete feature_type.section_id;
+      delete feature_type.number;
+      delete feature_type.title;
+      delete feature_type.description;
+      delete feature_type.interpretation;
+      delete feature_type.rel_localization;
+      delete feature_type.type_id;
+
+      //update the feature_typesDB
+      feature_typesDB
+        .doc(feature.type_id)
+        .update(feature_type)
+        .then((res) => {
+          res.status(200).send("Updated feature and feature type ");
+        })
+        .catch((err) => {
+          res.status(404).send("Couldn't update feature_type: " + err);
+        });
     })
     .catch((err) => {
-      res.status(404).send("Excavation not found: " + err);
+      res.status(404).send("Couldn't update feature: " + err);
     });
 });
 
 /* DELETE feature by ID*/
-router.delete("/:feature_id", async function (req, res, next) {
-  //TODO: when deleting a feature, also delete all subcollections
+router.delete("/:feature_id/:feature_type_id", async function (req, res, next) {
+  //delete the feature document
   featuresDB
     .doc(req.params.feature_id)
     .delete({ exists: true })
-    .then((response) => {
-      res.status(200).send("Deleted feature: " + req.params.feature_id);
+    .then((res) => {
+
+      //delete the connected feature_type document
+      feature_typesDB
+        .doc(req.params.feature_type_id)
+        .delete({ exists: true })
+        .then((res) => {
+          res.status(200).send("Deleted feature: " + req.params.feature_id);
+        })
+        .catch((err) => {
+          res.status(404).send("Couldn't delete feature: " + err);
+        });
     })
     .catch((err) => {
       res.status(404).send("Couldn't delete feature: " + err);
