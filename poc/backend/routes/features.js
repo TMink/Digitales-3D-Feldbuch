@@ -5,22 +5,21 @@ const excavations = db.collection("excavations");
 const featuresDB = db.collection("features");
 const feature_typesDB = db.collection("feature-types");
 
-
 /**
- * Returns a full 'feature' object combined 
+ * Returns a full 'feature' object combined
  * with the specific type data for remains
  * @param {JSON} feature general feature data
  * @param {JSON} type type specific feature data
- * @returns 
+ * @returns
  */
 function getRemains(feature, type) {
-
   var feature = {
     id: feature.id,
     section_id: feature.data().section_id,
     number: feature.data().number,
     title: feature.data().title,
     description: feature.data().description,
+    interpretation: feature.data().interpretation,
     rel_localization: feature.data().rel_localization,
     type_id: feature.data().type_id,
     preserved_bones: type.preserved_bones,
@@ -36,21 +35,21 @@ function getRemains(feature, type) {
 }
 
 /**
- * Returns a full 'feature' object combined with 
+ * Returns a full 'feature' object combined with
  * the specific type data for a statigrafic unit
- * 
+ *
  * @param {JSON} feature general feature data
  * @param {JSON} type type specific feature data
- * @returns 
+ * @returns
  */
 function getStatigraphicUnit(feature, type) {
-
   var feature = {
     id: feature.id,
     section_id: feature.data().section_id,
     number: feature.data().number,
     title: feature.data().title,
     description: feature.data().description,
+    interpretation: feature.data().interpretation,
     rel_localization: feature.data().rel_localization,
     type_id: feature.data().type_id,
     type: type.type,
@@ -63,12 +62,12 @@ function getStatigraphicUnit(feature, type) {
 }
 
 /**
- * Returns a full 'feature' object combined with 
+ * Returns a full 'feature' object combined with
  * the specific type data for a structural inventory
- * 
+ *
  * @param {JSON} feature general feature data
  * @param {JSON} type type specific feature data
- * @returns 
+ * @returns
  */
 function getStructuralInventory(feature, type) {
   var feature = {
@@ -77,6 +76,7 @@ function getStructuralInventory(feature, type) {
     number: feature.data().number,
     title: feature.data().title,
     description: feature.data().description,
+    interpretation: feature.data().interpretation,
     rel_localization: feature.data().rel_localization,
     type_id: feature.data().type_id,
     type: type.type,
