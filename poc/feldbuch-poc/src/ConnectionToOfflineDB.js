@@ -2,35 +2,33 @@
  * Function overview:
  *  syncLocalDBs      - Update/Create DBs in IndexedDB and get transaction 
                         Data for communtcation.
- *  syncLocalObjects  - Update local Objects with IndexedDB
  *  getDB             - Gets the current state of the database, or creates 
  *                      a new database and objectstore
- *  getObjects        - Gets all objects from object store
  *  addObject         - Add object to object store
  *  deleteObject      - Delete object from object store
  *  deleteAllObjects  - Delete object store from database
  */
+export { offlineConnection }
 
 export default class ConnectionToOfflineDB {
 
-  constructor( offlineDBData, localDBData, localObjectsData ) {
+  constructor(offlineDB) {
 
-    this.offlineDBData = offlineDBData;
-    this.localDBData = localDBData;
-    this.localObjectsData = localObjectsData;
+    this.offlineDB = offlineDB;
+    this.localDB = [];
 
   }
 
   async syncLocalDBs() {
 
-    var countDooku = this.localDBData.length - 1
+    var countDooku = this.offlineDB.length - 1;
 
       while( countDooku >= 0 ) {
 
-        this.localDBData[ countDooku ].data = 
-          await this.getDB( this.offlineDBData[ countDooku ].name, 
-                            this.offlineDBData[ countDooku ].version, 
-                            this.offlineDBData[ countDooku ].storeNames );
+        this.localDB[ countDooku ] = 
+          await this.getDB( this.offlineDB[ countDooku ].name, 
+                            this.offlineDB[ countDooku ].version, 
+                            this.offlineDB[ countDooku ].storeNames );
 
         countDooku -= 1;
 
@@ -38,31 +36,8 @@ export default class ConnectionToOfflineDB {
 
   }
 
-  async syncLocalObjects() {
-
-    var countDooku = this.offlineDBData.length - 1;
-
-    while( countDooku >= 0 ) {
-
-      for( var i=0; i < this.offlineDBData[ countDooku ].storeNames.length; 
-           i++ ) {
-
-        const data = await this.getObjects( 
-          this.localDBData[ countDooku ].data,
-          this.offlineDBData[ countDooku ].storeNames[ i ] );
-
-        await this.localObjectsData[ countDooku ].data.push( data );
-
-      };
-
-      countDooku -= 1;
-      
-    };
-
-  }
-
   /**
-   * @param {String} dbName    - Database Name 
+   * @param {String} dbName    - Database Name
    * @param {Int} dbVersion    - Database Version
    * @param {String} storeName - Object store which is going to be compared, 
    *                             created
@@ -97,12 +72,14 @@ export default class ConnectionToOfflineDB {
   }
 
   /**
+   * @param {Int} id           - Key for identifying the value which will be 
+   *                             deleted
    * @param {Object} localDB   - Database object, which contains the object
    *                             store
    * @param {String} storeName - Object store name
    * @returns -> Promise
    */
-  async getObjects( localDB, storeName ) {
+  async getObject( id, localDB, storeName ) {
       
     return new Promise( ( resolve, reject ) => {
 
@@ -112,17 +89,9 @@ export default class ConnectionToOfflineDB {
       }
 
       const store = trans.objectStore( storeName );
-      let data = [];
+      let data = store.get(id);
 
-      store.openCursor().onsuccess = e => {
-        const cursor = e.target.result;
-        if ( cursor ) {
-          data.push( cursor.value );
-          cursor.continue();
-        }
-      }
-
-    });
+    })
     
   }
 
@@ -134,9 +103,9 @@ export default class ConnectionToOfflineDB {
   async addObject( data, localDBName, storeName ) {
 
     /* --- DEBUGGING --- */
-    console.log( 'about to add ' + JSON.stringify(data) );
+    console.log( 'about to add ' + JSON.stringify(data));
     
-    var localDB = this.getLocalDBFromName( localDBName );
+    const localDB = this.getLocalDBFromName( localDBName );
     
     await new Promise( (resolve, reject) => {
       
@@ -153,10 +122,7 @@ export default class ConnectionToOfflineDB {
       const store = trans.objectStore( storeName );
       store.add( data );
       
-      
     })
-    
-    await this.syncLocalObjects();
     
   }
 
@@ -186,8 +152,6 @@ export default class ConnectionToOfflineDB {
 
     });
 
-    await this.syncLocalObjects();
-
   }
 
   /**
@@ -203,11 +167,9 @@ export default class ConnectionToOfflineDB {
     const store = trans.objectStore( storeName );
 
     const storeRequest = store.clear();
-    storeRequest.onsuccess = e => {
+      storeRequest.onsuccess = e => {
       console.log( storeName + ' erased' );
     }
-
-    await this.syncLocalObjects();
 
   }
 
@@ -218,14 +180,33 @@ export default class ConnectionToOfflineDB {
    */
   getLocalDBFromName( localDBName ) {
 
-    for( var i = 0; i < this.localDBData.length; i++ ) {
+    for( var i = 0; i < this.localDB.length; i++ ) {
 
-      if( this.localDBData[ i ].data.name == localDBName ) {
-        return this.localDBData[ i ].data
+      if( this.localDB[i].name == localDBName ) {
+        return this.localDB[ i ]
       }
 
     }
 
   }
 
-}
+};
+
+/**
+* Create/Change new databases in IndexedDB (offline database)
+*/
+const offlineDBGeometries = {
+  name: 'Geometry',
+  version: 1,
+  storeNames : [ 'excavation' ]
+};
+
+const offlineDBImages = {
+  name: 'Image',
+  version: 1,
+  storeNames: [ 'excavation' ]
+};
+
+const offlineConnection = new ConnectionToOfflineDB(
+  [offlineDBGeometries, offlineDBImages]
+);
