@@ -1,15 +1,16 @@
 <template>
     <div>
-      <v-navigation-drawer app nav right v-model="drawer" color="#e8e4d9">
+      <v-navigation-drawer app nav right
+      v-model="drawer" color="#e8e4d9">
         <v-list-item>
           <v-list-item-content>
             <v-list-item-title class="title">
-              Digitales Feldbuch
+              Menü
             </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-divider></v-divider>
-        <v-list-item v-for="item in items" :key="item.title" link :to="item.link">
+        <v-list-item v-for="item in items" :key="item.title" link :to="item.link"">
           <v-list-item-content>
             <v-list-item-title>
               {{item.title}}
@@ -26,7 +27,7 @@
       </v-navigation-drawer>
     </div>
 </template>
-  
+
 <script>
 
 import VueCookies from 'vue-cookies';
@@ -39,11 +40,15 @@ import VueCookies from 'vue-cookies';
     },
     data: function () {
       return {
-        bottom_sheet: false,
+      /*bottom_sheet: false,*/
         path: '127.0.0.1:5984',
         items: [
           {link: "/", title:"Startseite"},
           {link: "/3dview", title:"3D-Ansicht"},
+          {link: "/", title:"UTM"},
+          {link: "/", title:"Datierung"},
+          {link: "/", title:"Kalenderdaten"},
+          {link: "/", title:"Kontakt"},
           /*{link: "/campaigns", title: "Übergeordnete Projekte"},
           {link: "/excavation", title: "Grabungen" },
           {link: "/excavation/sections", title: "Schnitte"},
@@ -66,9 +71,9 @@ import VueCookies from 'vue-cookies';
       }
     }
   }
-  
+
 </script>
-  
+
 <style>
+
 </style>
-  
