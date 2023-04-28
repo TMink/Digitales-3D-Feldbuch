@@ -85,12 +85,12 @@
       get_doc() {
         var context = this;
   
-        if (this.$route.params.project_id !== "new") {
+        if (this.$route.params.section_id !== "new") {
           this.is_new = false;
   
           axios({
             method: "get",
-            url: "/sections/" + this.$route.params.project_id,
+            url: "/sections/" + this.$route.params.section_id,
             responseType: "json"
           })
           .then(function(res) {
@@ -115,14 +115,13 @@
   
         var context = this;
         var httpRequest = "put";
-        var requestURL = "/sections/" + this.$route.params.project_id;
+        var requestURL = "/sections/" + this.$route.params.section_id;
   
         if (this.is_new == true) {
           httpRequest = "post";
           requestURL = "/sections";
         }
   
-        console.log(context.section_doc)
         axios({
           method: httpRequest,
           url: requestURL,

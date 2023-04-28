@@ -101,7 +101,6 @@ export default {
         add_date: function () {
             this.dates_overlay = false
             var context = this;
-            console.log(context.dates_list)
             var myDate = context.new_date.date.split("-");
             var newDate = new Date(myDate[2], myDate[1] - 1, myDate[0]);
             //post request of edited/new excavation

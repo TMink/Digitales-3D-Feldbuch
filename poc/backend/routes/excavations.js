@@ -3,6 +3,43 @@ const router = express.Router();
 const db = require("../fb");
 const projects = db.collection("projects");
 const excavations = db.collection("excavations");
+var admin = require("firebase-admin");
+
+
+
+/* GET excavations by id-array in params seperated by ,*/
+router.get("/list/:excavation_ids", function (req, res, next) {
+  excavation_ids = req.params.excavation_ids.split(",");
+  console.log(excavation_ids)
+
+  var excavationsArray = [];
+  excavations
+    .where(admin.firestore.FieldPath.documentId(), "in", excavation_ids)
+    .get()
+    .then((data) => {
+      data.forEach((doc) => {
+        console.log(doc)
+        var excavation = {
+          id: doc.id,
+          project_id: doc.data().project_id,
+          title: doc.data().title,
+          description: doc.data().description,
+          client: doc.data().client,
+          focus: doc.data().focus,
+          length: doc.data().length,
+          location: doc.data().location,
+          organization: doc.data().organization,
+          dates: doc.data().dates,
+        };
+        excavationsArray.push(excavation);
+      });
+      res.send(excavationsArray);
+    })
+    .catch((err) => {
+      res.status(404).send("No excavations found");
+    });
+});
+
 
 /* GET ALL excavations */
 router.get("/", function (req, res, next) {

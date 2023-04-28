@@ -4,7 +4,7 @@
     <v-tabs vertical color="secondary">
       <v-tab> Allgemeine Daten </v-tab>
       <v-tab> Kontaktpersonen</v-tab>
-      <v-tab> Kalenderdaten</v-tab>
+      <v-tab> Kalenderdaten</v-tab>                                         
       <v-tab> Schnitte</v-tab>
 
       <v-tab-item class="px-4">
@@ -29,10 +29,13 @@
         <DocDates :dateslist="excavation_doc.dates" @addDate="addDate($event)"/>
       </v-tab-item >
 
-      <v-tab-item>
-        TODO
+      <v-tab-item class="px-4">
+        <v-subheader v-if="is_new">
+          Schnitte können erst angelegt werden, wenn das Projekt gespeichert
+          wurde
+        </v-subheader>
+        <DocSections :sectionslist="excavation_doc.sections"/>
       </v-tab-item>
-
 
       <v-btn v-on:click="logForm" color="primary" class="py-6" tile depressed> Speichern </v-btn>
       <v-btn v-on:click="goBack" color="secondary" class="py-6" tile depressed> Abbrechen</v-btn>
@@ -47,12 +50,13 @@
 <script>
 import DocContacts from './DocContacts.vue';
 import DocDates from './DocDates.vue';
+import DocSections from './DocSections.vue';
 import VueCookies from 'vue-cookies';
 import axios from 'axios';
 
 export default {
   name: 'ExcavationForm',
-  components: { DocContacts, DocDates},
+  components: { DocContacts, DocDates, DocSections},
   data() {
     return {
       excavation_doc: {
@@ -65,7 +69,8 @@ export default {
         length: '',
         project_id: '',
         dates: [],
-        persons: []
+        persons: [],
+        sections: []
       },
       excavation_id: '',
       project_id: '',
@@ -110,14 +115,10 @@ export default {
       var context = this;
 
       if (context.excavation_doc.dates == undefined) {
-        console.log("undefghghined")
         context.excavation_doc.dates = [date_id];
       } else {
-        console.log("addsdsd")
         context.excavation_doc.dates.push(date_id);
       }
-      
-
     },
     //submit the form (either POST new excavation or PUT existing excavation)
     logForm: function () {
@@ -136,7 +137,6 @@ export default {
         httpRequest = 'post';
         requestURL = '/excavations';
       }
-      console.log(context.project_id)
       //put/post request of edited/new excavation
       axios({
         method: httpRequest,

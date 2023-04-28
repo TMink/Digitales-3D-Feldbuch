@@ -13,7 +13,6 @@
         <v-form>
                 <v-subheader v-if="features.length === 0 && loading==false"> Bisher wurden dem Projekt keine Befunde
                     hinzugefügt</v-subheader>
-                <v-subheader v-else>Zugehörige Befunde</v-subheader> 
                 <v-list>
                     <template v-for="(feature, i) in features">
                         <v-list-item v-on:click="modifyFeature(feature.id)">

@@ -5,23 +5,23 @@
             <v-card-title class="justify-center"> Projekt </v-card-title>
           </v-card>
 
-          <v-card class="ma-2" color="#BC987D" v-on:click="toExcavation" dark>
+          <v-card class="ma-2" color="#BC987D" v-on:click="toExcavation" dark :disabled="!projectIsSet">
             <v-card-title class="justify-center"> Ausgrabung </v-card-title>
           </v-card>
 
-          <v-card class="ma-2" color="#BC987D" v-on:click="toSections" dark>
+          <v-card class="ma-2" color="#BC987D" v-on:click="toSections" dark :disabled="!excavationIsSet">
             <v-card-title class="justify-center"> Schnitte </v-card-title>
           </v-card>
 
-          <v-card class="ma-2" color="#BC987D" v-on:click="toFeatures" dark>
+          <v-card class="ma-2" color="#BC987D" v-on:click="toFeatures" dark :disabled="!excavationIsSet">
             <v-card-title class="justify-center"> Befunde </v-card-title>
           </v-card>
 
-          <v-card class="ma-2" color="#BC987D" v-on:click="toArtifacts" dark>
+          <v-card class="ma-2" color="#BC987D" v-on:click="toArtifacts" dark :disabled="!excavationIsSet">
             <v-card-title class="justify-center"> Funde </v-card-title>
           </v-card>
 
-          <v-card class="ma-2" color="#BC987D" v-on:click="toSamples" dark>
+          <v-card class="ma-2" color="#BC987D" v-on:click="toSamples" dark :disabled="!excavationIsSet">
             <v-card-title class="justify-center"> Proben </v-card-title>
           </v-card>
         </v-row>

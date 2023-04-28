@@ -14,6 +14,7 @@ router.get("/", function (req, res, next) {
           id: doc.id,
           title: doc.data().title,
           description: doc.data().description,
+          excavations: doc.data().excavations
         };
         projectsArray.push(project);
       });
@@ -35,6 +36,7 @@ router.get("/:project_id", function (req, res, next) {
           id: doc.id,
           title: doc.data().title,
           description: doc.data().description,
+          excavations: doc.data().excavations,
         };
         res.send(project);
       } else {
