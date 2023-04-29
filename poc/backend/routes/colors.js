@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../fb");
-const contacts = db.collection("colors");
+const colors = db.collection("colors");
 
 /* GET ALL colors */
 router.get("/", function (req, res, next) {
@@ -66,10 +66,10 @@ router.post("/", function (req, res, next) {
     });
 });
 
-/* UPDATE contact by ID*/
+/* UPDATE color by ID*/
 router.put("/:color_id", function (req, res, next) {
-  contacts
-    .doc(req.params.contact_id)
+  colors
+    .doc(req.params.color_id)
     .update(req.body)
     .then((response) => {
       res.status(200).send("Updated color: " + req.params.color_id);
@@ -82,7 +82,7 @@ router.put("/:color_id", function (req, res, next) {
 /* DELETE color by ID*/
 router.delete("/:color_id", async function (req, res, next) {
   colors
-    .doc(req.params.contact_id)
+    .doc(req.params.color_id)
     .delete({ exists: true })
     .then((response) => {
       res.status(200).send("Deleted color: " + req.params.color_id);
