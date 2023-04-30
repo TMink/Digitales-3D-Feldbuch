@@ -17,7 +17,7 @@
                     <template v-for="(artifact, i) in artifacts">
                         <v-list-item v-on:click="modifyArtifact(artifact.id)">
                             <v-list-item-content>
-                                <v-list-item-title> {{ artifact.title }} </v-list-item-title>
+                                <v-list-item-title> {{ "Fund Nr. " + artifact.number }} </v-list-item-title>
                                 <v-list-item-subtitle> {{ artifact.description }} </v-list-item-subtitle>
                             </v-list-item-content>
                         </v-list-item>

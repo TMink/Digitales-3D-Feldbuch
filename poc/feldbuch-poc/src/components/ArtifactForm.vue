@@ -38,7 +38,7 @@
         </v-tab-item>
 
         <v-tab-item>
-          TODO
+          <DocDates :dateslist="artifact_doc.dates" @addDate="addDate($event)"/>
         </v-tab-item>
   
   
@@ -55,12 +55,13 @@
 <script>
 import ExcavationsOverview from "./ExcavationsOverview";
 import DocContacts from './DocContacts.vue';
+import DocDates from './DocDates.vue';
 import axios from "axios";
 import { del } from 'vue';
 
 export default {
   name: 'ArtifactCreation',
-  //components: { ExcavationsOverview, DocContacts},
+  components: { DocDates},
   data() {
     return {
       artifact_doc: {
@@ -81,6 +82,7 @@ export default {
         max:'',
         unit:'',
         interpretation:'',
+        dates: [],
       },
 
       project_id: '',
@@ -112,7 +114,7 @@ export default {
         })
         .then(function(res) {
           context.artifact_doc = res.data;
-          context.$emit("view", "Schnitt Nr. " + res.data.number + " bearbeiten");
+          context.$emit("view", "Fund Nr. " + res.data.number + " bearbeiten");
         })
         .catch(function (error) {
           console.log(error);
@@ -121,6 +123,17 @@ export default {
         context.$emit("view", "Neuen Fund anlegen");
       }
     },
+
+    addDate: function(date_id) {
+      var context = this;
+
+      if (context.artifact_doc.dates == undefined) {
+        context.artifact_doc.dates = [date_id];
+      } else {
+        context.artifact_doc.dates.push(date_id);
+      }
+    },
+
     //submit the form (either POST new artifacts or PUT existing artifacts)
     logForm() {
       // show error message if form is not valid
@@ -159,13 +172,14 @@ export default {
           unit: context.artifact_doc.unit,
           interpretation: context.artifact_doc.interpretation,
           sections: context.artifact_doc.sections,
-          features: context.artifact_doc.features
+          features: context.artifact_doc.features,
+          dates: context.artifact_doc.dates,
 
         }
       })
       .then(function (res) {
         context.$emit("view", "Fundübersicht");
-        context.$router.push({ name: 'artifactsOverview' });
+        context.$router.push({ name: 'ArtifactsOverview' });
       })
       .catch(function (error) {
         console.log(error);
@@ -174,7 +188,7 @@ export default {
     //go back to artifacts overview
     goBack: function() {
       this.$emit("view", "Fundübersicht");
-      this.$router.go(-1);
+      this.$router.push({ name: "ArtifactsOverview" });
     }
   }
 };
