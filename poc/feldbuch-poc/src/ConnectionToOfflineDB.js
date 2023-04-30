@@ -8,7 +8,7 @@
  *  deleteObject      - Delete object from object store
  *  deleteAllObjects  - Delete object store from database
  */
-export { offlineConnection }
+export { fromOfflineDB }
 
 export default class ConnectionToOfflineDB {
 
@@ -207,6 +207,6 @@ const offlineDBImages = {
   storeNames: [ 'excavation' ]
 };
 
-const offlineConnection = new ConnectionToOfflineDB(
+const fromOfflineDB = new ConnectionToOfflineDB(
   [offlineDBGeometries, offlineDBImages]
 );
