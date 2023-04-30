@@ -6,7 +6,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
-import axios from 'axios';
 import {fromOfflineDB} from '../ConnectionToOfflineDB.js';
 import {fromBackend} from '../ConnectionToBackend.js';
 
