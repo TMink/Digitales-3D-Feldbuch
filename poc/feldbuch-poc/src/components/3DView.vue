@@ -8,6 +8,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import {fromOfflineDB} from '../ConnectionToOfflineDB.js';
 import {fromBackend} from '../ConnectionToBackend.js';
+import axios from 'axios';
 
 export default {
 
@@ -36,6 +37,69 @@ export default {
   },
 
   methods: {
+
+    /**
+     * 
+     * @param {String} url 
+     * @param {String} dataCategory - Category that is searched for
+     * @param {String} identifier   - Term in Category that is searched for
+     * @param {String} localDBName  - Database name
+     * @param {String} storeName    - Object store name
+     */
+     getModel: async function( url, dataCategory, identifier, localDBName,
+                              storeName) {
+
+      /* Get Data from backend */
+      const modelFromBackend = await fromBackend.getData( url, dataCategory,
+                                                          identifier );                                                      
+
+      /* Get model and texture from seperate url */
+      const modelData = await this.getDataFromURL( 
+        modelFromBackend[0].model );
+      const textureData = await this.getDataFromURL( 
+        modelFromBackend[0].texture );
+
+      /* Create new Object from backend-Data and model-/texture-Data */
+      const newModelData = { id: modelFromBackend[0].id,
+                             project_id: modelFromBackend[0].project_id,
+                             title: modelFromBackend[0].title,
+                             model: modelData.data,
+                             texture: textureData.data }
+
+      /* Save Data in offline DB */
+      await fromOfflineDB.addObject( newModelData, localDBName, storeName );
+
+    },
+
+    /**
+     * @param {String} url 
+     * @returns -> Promise(object)  
+     */
+    getDataFromURL: async function( url ) {
+
+      return new Promise( (resolve, reject ) => {
+
+        try {
+
+          axios
+          .get( url )
+          .then( res => {
+
+            resolve(res)
+
+          })
+
+
+        }
+        catch( error ) {
+
+          console.log( error )
+
+        }
+
+      })
+
+    },
 
     init: function() {
 
