@@ -9,25 +9,32 @@
         <v-tab> Kalenderdaten</v-tab>
   
         <v-tab-item class="px-4">
-            <v-text-field v-model="artifact_doc.number" label="Titel *" hint="Geben sie hier den Fundtitel ein *(Pflichtfeld)" :rules="is_required"></v-text-field>
             <v-text-field v-model="artifact_doc.title" label="Nummer *" hint="Geben sie hier die Fundnummer ein *(Pflichtfeld)" :rules="is_required"></v-text-field>
             <v-textarea v-model="artifact_doc.description" label="Beschreibung" hint="Geben sie hier eine kurze Beschreibung des Fundes an"></v-textarea>
             <v-textarea v-model="artifact_doc.state" label="Erhaltungszustand" hint="Geben sie hier den Erhaltungszustand des Fundes an"></v-textarea>
-            <v-select v-model="artifact_doc.excavation" label="Zugehörige Grabung *" :items="availableExcavationss" item-value="_id" item-text="title" :rules="is_required" hint=" *(Pflichtfeld)"> </v-select>
+            <v-select v-model="artifact_doc.excavation" label="Zugehörige Grabung *" :items="availableExcavations" item-value="_id" item-text="title" :rules="is_required" hint=" *(Pflichtfeld)"> </v-select>
             <v-select v-model="artifact_doc.sections" label="Zugehörige Schnitte *" :items="availableSections" item-value="_id" item-text="title" :rules="is_required" hint=" *(Pflichtfeld)"> </v-select>
             <v-select v-model="artifact_doc.feature" label="Zugehöriger Befund *" :items="availableFeatures" item-value="_id" item-text="title" :rules="is_required" hint=" *(Pflichtfeld)"> </v-select>
         </v-tab-item>
   
-        <v-tab-item>
-          TODO
+        <v-tab-item class="px-4">
+            <v-text-field v-model="artifact_doc.tachymeter" label="Tachymeter ID *" hint="Geben sie hier die Tachymeter ID ein *(Pflichtfeld)" :rules="is_required"></v-text-field>
+            <v-text-field v-model="artifact_doc.comment" label="Kommentar *" hint="Geben Sie einen Kommentar an" :rules="is_required"></v-text-field>
+            <v-textarea v-model="artifact_doc.east" label="Ostwert" hint="Geben sie den Ostwert an"></v-textarea>
+            <v-textarea v-model="artifact_doc.north" label="Nordwert" hint="Geben sie hier den Nordwert an"></v-textarea>
+            <v-textarea v-model="artifact_doc.height" label="Höhenwert" hint="Geben sie hier den Höhenwert an"></v-textarea>
         </v-tab-item>
   
-        <v-tab-item>
-          TODO
+        <v-tab-item class="px-4">
+            <v-text-field v-model="artifact_doc.dimension" label="Dimension" hint="Geben sie hier die die Beschreibung der Dimension an"></v-text-field>
+            <v-text-field v-model="artifact_doc.accuracy" label="Genauigkeit" hint="Geben Sie hier die Genauigkeit an"></v-text-field>
+            <v-textarea v-model="artifact_doc.min" label="Von" hint="Geben sie das Minimum des Messwertes an"></v-textarea>
+            <v-textarea v-model="artifact_doc.max" label="Bis" hint="Geben sie das Maximum des Messwertes"></v-textarea>
+            <v-textarea v-model="artifact_doc.unit" label="Einheit" hint="Geben sie hier die gemessene Einheit an"></v-textarea>
         </v-tab-item>
   
-        <v-tab-item>
-          TODO
+        <v-tab-item class="px-4">
+          <v-textarea v-model="artifact_doc.interpretation" label="Interpretation" hint="Geben sie hier die Interpretation an"></v-textarea>
         </v-tab-item>
 
         <v-tab-item>
@@ -58,18 +65,27 @@ export default {
     return {
       artifact_doc: {
         description: '',
-        title: '',
         number: '',
         state: '',
-        excavation: '',
+        excavation_id: '',
         sections: [],
         features: '',
+        tachymeter: '',
+        comment: '',
+        east:'',
+        north:'',
+        height:'',
+        dimension:'',
+        accuracy:'',
+        min:'',
+        max:'',
+        unit:'',
+        interpretation:'',
       },
 
-      //artifact_id: '',
-      //project_id: '',
-      //projects: [],
-      //sections: [],
+      project_id: '',
+      projects: [],
+      sections: [],
       error_dialog: false,
       error_message: '',
       is_new: true,
@@ -96,7 +112,7 @@ export default {
         })
         .then(function(res) {
           context.artifact_doc = res.data;
-          context.$emit("view", res.data.title + " bearbeiten");
+          context.$emit("view", "Schnitt Nr. " + res.data.number + " bearbeiten");
         })
         .catch(function (error) {
           console.log(error);
@@ -127,9 +143,24 @@ export default {
         method: httpRequest,
         url: requestURL,
         data: {
-          //project_id: context.project_id,
-          title: context.artifact_doc.title,
+          number: context.artifact_doc.number,
           description: context.artifact_doc.description,
+          excavation_id: VueCookies.get('currentExcavation'),
+          state: context.artifact_doc.state,
+          tachymeter: context.artifact_doc.tachymeter,
+          comment: context.artifact_doc.comment,
+          east: context.artifact_doc.east,
+          north: context.artifact_doc.north,
+          height: context.artifact_doc.height,
+          dimension: context.artifact_doc.dimension,
+          accuracy: context.artifact_doc.accuracy,
+          min: context.artifact_doc.min,
+          max: context.artifact_doc.max,
+          unit: context.artifact_doc.unit,
+          interpretation: context.artifact_doc.interpretation,
+          sections: context.artifact_doc.sections,
+          features: context.artifact_doc.features
+
         }
       })
       .then(function (res) {
