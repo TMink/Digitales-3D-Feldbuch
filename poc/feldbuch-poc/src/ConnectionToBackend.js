@@ -6,9 +6,9 @@
 
 import axios from 'axios';
 
-export { onlineConnection }
+export { fromBackend }
 
-class ConnectionToServer {
+class ConnectionToBackend {
 
   /**
    * 
@@ -102,4 +102,4 @@ class ConnectionToServer {
 
 }
 
-const onlineConnection = new ConnectionToServer();
+const fromBackend = new ConnectionToBackend();

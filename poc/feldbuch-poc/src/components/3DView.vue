@@ -8,7 +8,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import axios from 'axios';
 import {offlineConnection} from '../ConnectionToOfflineDB.js';
-import {onlineConnection} from '../ConnectionToOnlineDB.js';
+import {fromBackend} from '../ConnectionToBackend.js';
 
 export default {
 
