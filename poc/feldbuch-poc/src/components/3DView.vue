@@ -39,6 +39,16 @@ export default {
   methods: {
 
     /**
+     * Function overview: 
+     *  getModel        - Get model-Data from backend and transfer it to offline
+     *                    DB for furthor useage
+     *  getDataFromUrl  - Get model-/texture-Data from given url
+     *  ------------------------------------------------------------------------
+     *  init            - Initialize the scene
+     *  animate         - Animate the scene
+     */
+
+    /**
      * 
      * @param {String} url 
      * @param {String} dataCategory - Category that is searched for
