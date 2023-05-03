@@ -63,19 +63,12 @@ export default {
 
             axios({
                 method: 'get',
-                url: '/excavations',
+                url: '/excavations/project_id/' + VueCookies.get('currentProject'),
                 responseType: 'json'
             })
             .then(function (response) {
                 for (let item of response.data) {
-                    if (context.project_id === item.project_id.trim()) {
-                        //if the excavation id is saved in cookies => mark is as current excavation
-                        if (VueCookies.get('currentExcavation') === item.id.trim()) {
-                            context.current_excavation = item;
-                        } else {
-                            context.excavations.push(item)
-                        }
-                    }
+                    context.excavations.push(item)
                 }
                 //hide the loading circle
                 context.loading = false;

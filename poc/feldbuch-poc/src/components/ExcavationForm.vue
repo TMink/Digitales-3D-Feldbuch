@@ -17,8 +17,6 @@
         <v-text-field v-model="excavation_doc.location" label="Ort"></v-text-field>
         <v-text-field v-model="excavation_doc.focus" label="Grabungsfokus"></v-text-field>
         <v-text-field v-model="excavation_doc.length" label="Zeitliche Länge"></v-text-field>
-        <v-select v-model="excavation_doc.project_id" :items="projects" item-text="title" item-value="_id"
-          label="Zugehörige Grabung"> </v-select>
       </v-tab-item>
 
       <v-tab-item>
@@ -38,6 +36,7 @@
       </v-tab-item>
 
       <v-btn v-on:click="logForm" color="primary" class="py-6" tile depressed> Speichern </v-btn>
+      <v-btn v-on:click="deleteExcavation" color="primary" class="py-6" tile depressed> Löschen </v-btn>
       <v-btn v-on:click="goBack" color="secondary" class="py-6" tile depressed> Abbrechen</v-btn>
 
     </v-tabs>
@@ -135,14 +134,13 @@ export default {
 
       if (this.is_new == true) {
         httpRequest = 'post';
-        requestURL = '/excavations';
+        requestURL = '/excavations/' + VueCookies.get('currentProject');
       }
       //put/post request of edited/new excavation
       axios({
         method: httpRequest,
         url: requestURL,
         data: {
-          project_id: VueCookies.get('currentProject'),
           title: context.excavation_doc.title,
           description: context.excavation_doc.description,
           client: context.excavation_doc.client,
@@ -160,6 +158,25 @@ export default {
       .catch(function (error) {
         console.log(error);
       });
+    },
+    deleteExcavation: function () {
+      var context = this;
+
+      var curProject = VueCookies.get('currentProject');
+      var curExcavation = VueCookies.get('currentExcavation');
+
+      axios({
+        method: 'delete',
+        url: '/excavations/' + curProject + '/' + curExcavation,
+      })
+        .then(function (res) {
+          console.log(res)
+          context.$emit("view", "Ausgrabungsübersicht");
+          context.$router.push({ name: "ExcavationsOverview" });
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     },
     //go back to excavations overview
     goBack: function() {
