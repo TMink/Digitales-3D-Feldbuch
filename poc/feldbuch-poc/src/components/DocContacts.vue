@@ -32,7 +32,7 @@ export default {
 
             axios({
                 method: 'get',
-                url: '/contacts',
+                url: '/contacts/project_id/' + VueCookies.get('currentProject'),
                 responseType: 'json'
             })
                 .then(function (response) {

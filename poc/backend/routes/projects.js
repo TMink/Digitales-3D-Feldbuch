@@ -10,12 +10,7 @@ router.get("/", function (req, res, next) {
     .get()
     .then((data) => {
       data.forEach((doc) => {
-        var project = {
-          id: doc.id,
-          title: doc.data().title,
-          description: doc.data().description,
-          excavations: doc.data().excavations
-        };
+        var project = getProjectJson(doc);
         projectsArray.push(project);
       });
       res.send(projectsArray);
@@ -32,12 +27,7 @@ router.get("/:project_id", function (req, res, next) {
     .get()
     .then((doc) => {
       if (doc.exists) {
-        var project = {
-          id: doc.id,
-          title: doc.data().title,
-          description: doc.data().description,
-          excavations: doc.data().excavations,
-        };
+        var project = getProjectJson(doc);
         res.send(project);
       } else {
         res.status(404).send("No such document: ");
@@ -87,5 +77,24 @@ router.delete("/:project_id", async function (req, res, next) {
       res.status(404).send("Couldn't delete project: " + err);
     });
 });
+
+
+/**
+ * Takes the retrieved data from DB and builds a JSON-object
+ * with all fields for a project. Also creates empty fields,
+ * when there is no data for them.
+ *
+ * @param {*} doc The raw project data from database
+ * @returns project Json-Object with all required fields
+ */
+function getProjectJson(doc) {
+  return {
+    id: doc.id,
+    title: doc.data().title,
+    description: doc.data().description,
+    excavations: doc.data().excavations,
+    contacts: doc.data().contacts,
+  };
+}
 
 module.exports = router;
