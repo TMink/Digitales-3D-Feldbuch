@@ -64,19 +64,17 @@ export default {
 
           axios({
               method: 'get',
-              url: '/sections',
+              url: '/sections/excavation_id/' + VueCookies.get('currentExcavation'),
               responseType: 'json'
           })
           .then(function (response) {
               for (let item of response.data) {
-                  if (context.excavation_id === item.excavation_id.trim()) {
-                      //if the section id is saved in cookies => mark is as current section
-                      if (VueCookies.get('currentSection') === item.id.trim()) {
-                          context.current_section = item;
-                      } else {
-                          context.sections.push(item)
-                      }
-                  }
+                //if the section id is saved in cookies => mark is as current section
+                if (VueCookies.get('currentSection') === item.id.trim()) {
+                    context.current_section = item;
+                } else {
+                    context.sections.push(item)
+                }
               }
               //hide the loading circle
               context.loading = false;

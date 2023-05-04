@@ -52,16 +52,13 @@ export default {
             })
             .then(function (res) {
                 res.data.forEach(item => {
+                    console.log(item)
                     var section = {
                         id: item.id,
                         title: item.title,
                         description: item.description,
-                        client: item.client,
-                        focus: item.focus,
-                        length: item.length,
-                        location: item.location,
-                        organization: item.organization,
-                        dates: item.dates
+                        startLevel: item.startLevel,
+                        endLevel: item.endLevel
                 }
                     context.sections_list.push(section);
                 });

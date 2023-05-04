@@ -32,20 +32,9 @@
         <DocContacts/>
       </v-tab-item>
   
-        <v-btn 
-          v-on:click="logForm()" 
-          color="secondary" 
-          class="py-6" 
-          tile depressed>
-          Speichern
-        </v-btn>
-        <v-btn 
-          v-on:click="goBack" 
-          color="primary" 
-          class="py-6" 
-          tile depressed>
-          Abbrechen
-        </v-btn>
+        <v-btn v-on:click="logForm()" color="secondary" class="py-6" tile depressed> Speichern </v-btn>
+        <v-btn v-on:click="deleteSection()" color="primary" class="py-6" tile depressed> Löschen </v-btn>
+        <v-btn v-on:click="goBack()" color="primary" class="py-6" tile depressed> Abbrechen </v-btn>
       </v-tabs>
   
       <v-alert v-model="error_dialog" type="error" dense outlined dismissible>
@@ -119,7 +108,7 @@
   
         if (this.is_new == true) {
           httpRequest = "post";
-          requestURL = "/sections";
+          requestURL = "/sections/" + VueCookies.get('currentExcavation');
         }
   
         axios({
@@ -128,19 +117,34 @@
           data: {
             title: context.section_doc.title,
             description: context.section_doc.description,
-            excavation_id: VueCookies.get('currentExcavation'),
             startLevel: context.section_doc.startLevel,
-            endLevel: context.section_doc.endLevel
+            endLevel: context.section_doc.endLevel,
           }
         })
         .then(function (res) {
           context.$emit("view", "Schnittübersicht");
           context.$router.push({ name: "SectionsOverview" });
-          console.log(res);
         })
         .catch(function (error) {
           console.log(error);
         });
+      },
+      deleteSection: function () {
+        var context = this;
+        var curExcavation = VueCookies.get('currentExcavation');
+        var curSection = VueCookies.get('currentSection');
+
+        axios({
+          method: 'delete',
+          url: '/sections/' + curExcavation + '/' + curSection,
+        })
+          .then(function (res) {
+            context.$emit("view", "Schnittübersicht");
+            context.$router.push({ name: "SectionsOverview" });
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
       },
       //go back to project overview
       goBack() {
