@@ -68,7 +68,12 @@ export default {
             })
             .then(function (response) {
                 for (let item of response.data) {
-                    context.excavations.push(item)
+                    //if the project id is saved in cookies => mark is as current project
+                    if (VueCookies.get('currentExcavation') === item.id) {
+                        context.current_excavation = item;
+                    } else {
+                        context.excavations.push(item);
+                    }
                 }
                 //hide the loading circle
                 context.loading = false;

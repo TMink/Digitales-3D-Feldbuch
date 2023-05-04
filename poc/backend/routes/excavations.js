@@ -5,6 +5,7 @@ const projects = db.collection("projects");
 const excavations = db.collection("excavations");
 var admin = require("firebase-admin");
 
+
 /**
  * GET excavations by id-array in params seperated by ,
  */
@@ -28,6 +29,7 @@ router.get("/list/:excavation_ids", function (req, res, next) {
     });
 });
 
+
 /**
  * GET ALL excavations
  */
@@ -48,6 +50,7 @@ router.get("/", function (req, res, next) {
       res.status(404).send("No excavations found");
     });
 });
+
 
 /**
  * GET excavations by project_id
@@ -82,6 +85,7 @@ router.get("/project_id/:project_id", async function (req, res, next) {
     });
 });
 
+
 /**
  * GET excavation by ID
  */
@@ -97,6 +101,7 @@ router.get("/:excavation_id", function (req, res, next) {
       res.status(404).send("Excavation not found: " + err);
     });
 });
+
 
 /**
  * POST new excavation
@@ -130,6 +135,7 @@ router.post("/:project_id", async function (req, res, next) {
   res.status(200).send("Successfully added excavation");
 });
 
+
 /**
  * UPDATE excavation by ID
  */
@@ -144,6 +150,7 @@ router.put("/:excavation_id", function (req, res, next) {
       res.status(404).send("Couldn't update excavation: " + err);
     });
 });
+
 
 /**
  * DELETE excavation by ID
@@ -162,7 +169,7 @@ router.delete("/:project_id/:excavation_id", async function (req, res, next) {
   // update project data with the removed excavation_id
   var response = await updateProjectById(req.params.project_id, newProject);
 
-  // delete excavation from db
+  // delete excavation from DB
   excavations
     .doc(req.params.excavation_id)
     .delete({ exists: true })
@@ -173,6 +180,7 @@ router.delete("/:project_id/:excavation_id", async function (req, res, next) {
       res.status(404).send("Couldn't delete excavation: " + err);
     });
 });
+
 
 /**
  * Takes the retrieved data from DB and builds a JSON-object
@@ -193,8 +201,10 @@ function getExcavationJson(doc) {
     location: doc.data().location,
     organization: doc.data().organization,
     dates: doc.data().dates,
+    sections: doc.data().sections
   };
 }
+
 
 /**
  * Returns project data from DB by searching with the project ID
@@ -206,6 +216,7 @@ async function getProjectById(project_id) {
 
   return project.data();
 }
+
 
 /**
  * Returns project data from DB by searching with the project ID

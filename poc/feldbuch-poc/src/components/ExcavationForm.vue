@@ -161,7 +161,6 @@ export default {
     },
     deleteExcavation: function () {
       var context = this;
-
       var curProject = VueCookies.get('currentProject');
       var curExcavation = VueCookies.get('currentExcavation');
 
@@ -170,7 +169,6 @@ export default {
         url: '/excavations/' + curProject + '/' + curExcavation,
       })
         .then(function (res) {
-          console.log(res)
           context.$emit("view", "Ausgrabungsübersicht");
           context.$router.push({ name: "ExcavationsOverview" });
         })
