@@ -28,14 +28,14 @@
         </template>
         <v-card>
           <v-card-title class="text-h5">
-            Do you really want to delete the feature?
+            Do you really want to delete the section <br> "{{ section_doc.title }}"?
           </v-card-title>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn text v-on:click="deleteSection()" @click="dialog = false">
+            <v-btn color="secondary" v-on:click="deleteSection()" @click="dialog = false">
               Yes
             </v-btn>
-            <v-btn text @click="dialog = false">
+            <v-btn color="primary" @click="dialog = false">
               No
             </v-btn>
           </v-card-actions>

@@ -21,14 +21,14 @@
                 </template>
                 <v-card>
                     <v-card-title class="text-h5">
-                        Do you really want to delete the sample?
+                        Do you really want to delete the sample <br> "{{ sample_doc.type }}"?
                     </v-card-title>
                     <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn text v-on:click="deleteSample()" @click="dialog = false">
+                        <v-btn color="secondary" v-on:click="deleteSample()" @click="dialog = false">
                             Yes
                         </v-btn>
-                        <v-btn text @click="dialog = false">
+                        <v-btn color="primary" @click="dialog = false">
                             No
                         </v-btn>
                     </v-card-actions>

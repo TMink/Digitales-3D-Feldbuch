@@ -53,7 +53,7 @@
         <DocDates :dateslist="artifact_doc.dates" @addDate="addDate($event)" />
       </v-tab-item>
 
-      <v-btn v-on:click="logForm" color="primary" class="py-6" tile> Speichern </v-btn>
+      <v-btn v-on:click="logForm" color="secondary" class="py-6" tile> Speichern </v-btn>
       <v-dialog v-model="dialog" max-width="290">
         <template v-slot:activator="{ on, attrs }">
           <v-btn color="secondary" class="py-6" tile v-bind="attrs" v-on="on">
@@ -62,20 +62,20 @@
         </template>
         <v-card>
           <v-card-title class="text-h5">
-            Do you really want to delete the artifact?
+            Do you really want to delete the artifact <br> "Fund Nr.{{ artifact_doc.number }}"?
           </v-card-title>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn text v-on:click="deleteArtifact()" @click="dialog = false">
+            <v-btn color="secondary" v-on:click="deleteArtifact()" @click="dialog = false">
               Yes
             </v-btn>
-            <v-btn text @click="dialog = false">
+            <v-btn color="primary" @click="dialog = false">
               No
             </v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
-      <v-btn v-on:click="goBack" color="secondary" class="py-6" tile> Abbrechen</v-btn>
+      <v-btn v-on:click="goBack" color="primary" class="py-6" tile> Abbrechen</v-btn>
 
     </v-tabs>
     <v-alert v-model="error_dialog" type="error" dense outlined dismissible>

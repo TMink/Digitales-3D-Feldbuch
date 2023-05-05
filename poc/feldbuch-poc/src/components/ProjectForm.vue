@@ -32,11 +32,11 @@
             </v-btn>
           </template>
           <v-card>
-            <v-card-title class="text-h5"> Do you really want to delete the feature? </v-card-title>
+            <v-card-title class="text-h5"> Do you really want to delete the project <br> "{{project_doc.title}}"? </v-card-title>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn text v-on:click="deleteProject()" @click="dialog = false"> Yes </v-btn>
-              <v-btn text @click="dialog = false"> No </v-btn>
+              <v-btn color="secondary" v-on:click="deleteProject()" @click="dialog = false" > Yes </v-btn>
+              <v-btn color="primary" @click="dialog = false"> No </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
