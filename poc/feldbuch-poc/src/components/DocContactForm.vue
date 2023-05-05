@@ -17,6 +17,27 @@
             </v-tab-item>
 
             <v-btn v-on:click="logForm()" color="secondary" class="py-6" tile> Speichern </v-btn>
+            <v-dialog v-model="dialog" max-width="290">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn color="secondary" class="py-6" tile v-bind="attrs" v-on="on">
+                Löschen
+              </v-btn>
+            </template>
+            <v-card>
+              <v-card-title class="text-h5">
+                Do you really want to delete the contact <br> "{{ contact_doc.surname }}"?
+              </v-card-title>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="secondary" v-on:click="deleteContact()" @click="dialog = false">
+                  Yes
+                </v-btn>
+                <v-btn color="primary" @click="dialog = false">
+                  No
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
             <v-btn v-on:click="goBack" color="primary" class="py-6" tile> Abbrechen </v-btn>
         </v-tabs>
 
@@ -47,7 +68,8 @@ export default {
             is_required: [v => !!v || "Pflichtfeld"],
 
             error_message: "",
-            error_dialog: false
+            error_dialog: false,
+            dialog: false
         };
     },
     created() {
@@ -110,6 +132,24 @@ export default {
             })
             .then(function (res) {
                 context.$router.push(VueCookies.get("LAST_ROUTE_KEY"));
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+        },
+        deleteContact: function () {
+            var context = this;
+            var subdomain = context.$route.params.mode;
+
+            // delete contact with 'id' (contact_id) from 'subdomain' (projects or excavations) 
+            // with 'id' (project_id or excavation_id)
+            axios({
+                method: 'delete',
+                url: '/contacts/' + subdomain + '/' + context.$route.params.id + '/'+ context.$route.params.contact_id,
+            })
+            .then(function (res) {
+                context.$emit("view", "Ausgrabungsübersicht");
+                context.$router.push({ name: "ExcavationsOverview" });
             })
             .catch(function (error) {
                 console.log(error);

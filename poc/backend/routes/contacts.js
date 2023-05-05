@@ -179,7 +179,51 @@ router.put("/:contact_id", function (req, res, next) {
 });
 
 /* DELETE contact by ID*/
-router.delete("/:contact_id", async function (req, res, next) {
+router.delete("/projects/:project_id/:contact_id", async function (req, res, next) {
+  // get project data
+  var project = await getProjectById(req.params.project_id);
+
+  // remove the excavation_id from project data
+  var newProject = project;
+  var index = newProject.contacts.indexOf(req.params.contact_id);
+  newProject.contacts.splice(index, 1);
+
+  // update project data with the removed excavation_id
+  var response = await updateProjectById(req.params.project_id, newProject);
+
+  contacts
+    .doc(req.params.contact_id)
+    .delete({ exists: true })
+    .then((response) => {
+      res.status(200).send("Deleted contact: " + req.params.contact_id);
+    })
+    .catch((err) => {
+      res.status(404).send("Couldn't delete contact: " + err);
+    });
+});
+
+
+/* DELETE contact by ID*/
+router.delete("/excavations/:excavation_id/:contact_id", async function (req, res, next) {
+  // check if excavation_id exists
+  try {
+    var excavation = await getExcavationById(req.params.excavation_id);
+  } catch (error) {
+    res.status(404).send("Couldn't find excavation with id: " + req.params.excavation_id);
+  }
+
+  // remove the contact_id from excavation data
+  var newExcavation = excavation;
+  var index = newExcavation.contacts.indexOf(req.params.contact_id);
+  newExcavation.contacts.splice(index, 1);
+
+  // update project data with the removed excavation_id
+  try {
+    var response = await updateExcavationById(req.params.excavation_id, newExcavation);
+  } catch (error) {
+    res.status(404).send("Couldn't update the contacts of excavation")
+  }
+  
   contacts
     .doc(req.params.contact_id)
     .delete({ exists: true })
