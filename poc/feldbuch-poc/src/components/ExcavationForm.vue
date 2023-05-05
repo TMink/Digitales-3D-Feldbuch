@@ -20,7 +20,10 @@
       </v-tab-item>
 
       <v-tab-item>
-        <DocContacts />
+        <DocContacts 
+          :contactslist="excavation_doc.contacts" 
+          :mode="'excavations'" 
+          :id="excavation_doc.id"/>
       </v-tab-item>
 
       <v-tab-item>
@@ -88,7 +91,7 @@ export default {
         length: '',
         project_id: '',
         dates: [],
-        persons: [],
+        contacts: [],
         sections: []
       },
       excavation_id: '',
@@ -169,7 +172,8 @@ export default {
           length: context.excavation_doc.length,
           location: context.excavation_doc.location,
           organization: context.excavation_doc.organization,
-          dates: context.excavation_doc.dates
+          dates: context.excavation_doc.dates,
+          contacts: context.excavation_doc.contacts
         }
       })
         .then(function (res) {

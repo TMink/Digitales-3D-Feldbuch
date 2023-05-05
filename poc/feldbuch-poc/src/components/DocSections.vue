@@ -52,7 +52,6 @@ export default {
             })
             .then(function (res) {
                 res.data.forEach(item => {
-                    console.log(item)
                     var section = {
                         id: item.id,
                         title: item.title,

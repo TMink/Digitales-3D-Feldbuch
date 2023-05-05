@@ -7,6 +7,31 @@ var admin = require("firebase-admin");
 
 
 /**
+ * Takes the retrieved data from DB and builds a JSON-object
+ * with all fields for an excavation. Also creates empty fields,
+ * when there is no data for them.
+ *
+ * @param {*} doc The raw excavation data from database
+ * @returns excavation Json-Object with all required fields
+ */
+function getExcavationJson(doc) {
+  return {
+    id: doc.id,
+    title: doc.data().title,
+    description: doc.data().description,
+    client: doc.data().client,
+    focus: doc.data().focus,
+    length: doc.data().length,
+    location: doc.data().location,
+    organization: doc.data().organization,
+    dates: doc.data().dates,
+    sections: doc.data().sections,
+    contacts: doc.data().contacts
+  };
+}
+
+
+/**
  * GET excavations by id-array in params seperated by ,
  */
 router.get("/list/:excavation_ids", function (req, res, next) {
@@ -65,9 +90,9 @@ router.get("/project_id/:project_id", async function (req, res, next) {
 
   // check if there are excavations in this project
   var excavationsArray = [];
-  if (project.excavations.length === 0) {
+/*   if (project.excavations.length === 0) {
     res.status(404).send("No excavations in this project");
-  }
+  } */
 
   // get excavations from DB
   excavations
@@ -180,30 +205,6 @@ router.delete("/:project_id/:excavation_id", async function (req, res, next) {
       res.status(404).send("Couldn't delete excavation: " + err);
     });
 });
-
-
-/**
- * Takes the retrieved data from DB and builds a JSON-object
- * with all fields for an excavation. Also creates empty fields,
- * when there is no data for them.
- *
- * @param {*} doc The raw excavation data from database
- * @returns excavation Json-Object with all required fields
- */
-function getExcavationJson(doc) {
-  return {
-    id: doc.id,
-    title: doc.data().title,
-    description: doc.data().description,
-    client: doc.data().client,
-    focus: doc.data().focus,
-    length: doc.data().length,
-    location: doc.data().location,
-    organization: doc.data().organization,
-    dates: doc.data().dates,
-    sections: doc.data().sections
-  };
-}
 
 
 /**

@@ -16,12 +16,8 @@
                         hint="Geben sie hier die Telefonnummer des Kontaktes an"></v-text-field>
             </v-tab-item>
 
-            <v-btn v-on:click="logForm()" color="secondary" class="py-6" tile depressed>
-                Speichern
-            </v-btn>
-            <v-btn v-on:click="goBack" color="primary" class="py-6" tile depressed>
-                Abbrechen
-            </v-btn>
+            <v-btn v-on:click="logForm()" color="secondary" class="py-6" tile> Speichern </v-btn>
+            <v-btn v-on:click="goBack" color="primary" class="py-6" tile> Abbrechen </v-btn>
         </v-tabs>
 
         <v-alert v-model="error_dialog" type="error" dense outlined dismissible>
@@ -91,13 +87,15 @@ export default {
             }
 
             var context = this;
+            var subdomain = this.$route.params.mode;
             var httpRequest = "put";
-            var requestURL = "/contacts/" + this.$route.params.contact_id;
+            var requestURL = "/contacts/" + context.$route.params.contact_id;
 
             if (this.is_new == true) {
                 httpRequest = "post";
-                requestURL = "/contacts";
+                requestURL = "/contacts/" + subdomain + "/" + context.$route.params.id;
             }
+
             // put/post request of edited/new contact
             axios({
                 method: httpRequest,

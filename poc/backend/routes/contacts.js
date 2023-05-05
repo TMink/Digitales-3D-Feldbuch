@@ -2,8 +2,35 @@ const express = require("express");
 const router = express.Router();
 const db = require("../fb");
 const projects = db.collection("projects");
+const excavations = db.collection("excavations");
 const contacts = db.collection("contacts");
 var admin = require("firebase-admin");
+
+
+
+/**
+ * GET contacts by id-array in params seperated by ,
+ */
+router.get("/list/:contact_ids", function (req, res, next) {
+  var contact_ids = req.params.contact_ids.split(",");
+  var contactsArray = [];
+
+  // get contacts from id_list
+  contacts
+    .where(admin.firestore.FieldPath.documentId(), "in", contact_ids)
+    .get()
+    .then((data) => {
+      data.forEach((doc) => {
+        var contact = getContactJson(doc);
+        contactsArray.push(contact);
+      });
+      res.status(200).send(contactsArray);
+    })
+    .catch((err) => {
+      res.status(404).send("No contacts found");
+    });
+});
+
 
 
 /* GET ALL contacts */
@@ -75,8 +102,9 @@ router.get("/:contact_id", function (req, res, next) {
     });
 });
 
-/* POST new contact */
-router.post("/:project_id", async function (req, res, next) {
+/* POST new contact of a project */
+router.post("/projects/:project_id", async function (req, res, next) {
+
   // check if project_id exists
   try {
     var project = await getProjectById(req.params.project_id);
@@ -104,6 +132,38 @@ router.post("/:project_id", async function (req, res, next) {
 
   res.status(200).send("Successfully added contact");
 });
+
+
+/* POST new contact of an excavation*/
+router.post("/excavations/:excavation_id", async function (req, res, next) {
+  // check if excavation_id exists
+  try {
+    var excavation = await getExcavationById(req.params.excavation_id);
+  } catch (error) {
+    res.status(404).send("Couldn't find excavation with id: " + req.params.excavation_id);
+  }
+
+  // add new contact to DB
+  try {
+    var contact_id = await contacts.add(req.body);
+  } catch (error) {
+    res.status(404).send("Couldn't add contact");
+  }
+
+  // add new contact_id to the excavation list of contact ids
+  var newExcavation = excavation;
+  newExcavation.contacts.push(contact_id.id);
+
+  // update excavation in DB
+  try {
+    var response = await updateExcavationById(req.params.excavation_id, newExcavation);
+  } catch (error) {
+    res.status(404).send("Couldn't update excavation");
+  }
+
+  res.status(200).send("Successfully added contact");
+});
+
 
 /* UPDATE contact by ID*/
 router.put("/:contact_id", function (req, res, next) {
@@ -171,6 +231,29 @@ async function getProjectById(project_id) {
  */
 async function updateProjectById(project_id, newProject) {
   var response = await projects.doc(project_id).update(newProject);
+
+  return response;
+}
+
+
+/**
+ * Returns excavation data from DB by searching with the excavation ID
+ * @param {String} excavation_id
+ * @returns
+ */
+async function getExcavationById(excavation_id) {
+  var excavation = await excavations.doc(excavation_id).get();
+
+  return excavation.data();
+}
+
+/**
+ * Returns excavation data from DB by searching with the excavation ID
+ * @param {String} excavation_id
+ * @returns
+ */
+async function updateExcavationById(excavation_id, newExcavation) {
+  var response = await excavations.doc(excavation_id).update(newExcavation);
 
   return response;
 }

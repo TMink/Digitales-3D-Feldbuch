@@ -16,12 +16,12 @@
           Grabungen können erst angelegt werden, wenn das Projekt gespeichert
           wurde
         </v-subheader>
-        <DocExcavations :excavationslist="project_doc.excavations" />
+        <DocExcavations :excavationslist="project_doc.excavations"/>
       </v-tab-item>
 
       <v-tab> Kontaktpersonen </v-tab>
       <v-tab-item class="px-4">
-        <DocContacts />
+        <DocContacts :contactslist="project_doc.contacts" :mode="'projects'" :id="project_doc.id"/>
       </v-tab-item>
 
       <v-btn v-on:click="logForm()" color="secondary" class="py-6" tile > Speichern </v-btn>
@@ -64,7 +64,7 @@ export default {
         title: "",
         description: "",
         excavations: [],
-        persons: []
+        contacts: []
       },
       is_new: true,
       is_required: [v => !!v || "Pflichtfeld"],

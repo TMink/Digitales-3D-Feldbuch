@@ -25,34 +25,58 @@ import VueCookies from 'vue-cookies'
 
 export default {
     name: 'ContactsOverview',
+    data: function () {
+        return {
+            contacts_list: [],
+            selected_contact: [],
+            new_contact: {
+                id: doc.id,
+                firstname: '',
+                surname: '',
+                role: '',
+                mail: '',
+                phone: '',
+            }
+        }
+    },
+    props: {
+        contactslist: Array,
+        mode: String,
+        id: String
+    },
     methods: {
         //retrieve all contacts
         getContacts() {
             var context = this;
+            if (context.contactslist == undefined) {
+                console.log("No contacts added")
+                return;
+            }
 
             axios({
                 method: 'get',
-                url: '/contacts/project_id/' + VueCookies.get('currentProject'),
+                url: '/contacts/list/' + context.contactslist.toString(),
                 responseType: 'json'
             })
-                .then(function (response) {
-                    for (let item of response.data) {
-                        context.contacts.push(item);
-                    }
-                })
-                .catch(error => {
-                    if (!error.response) {
-                        this.errorStatus = 'Error: Network Error';
-                    } else {
-                        this.errorStatus = error.response.data.message;
-                    }
-                });
+            .then(function (response) {
+                for (let item of response.data) {
+                     context.contacts.push(item);
+                }
+            })
+            .catch(error => {
+                if (!error.response) {
+                    this.errorStatus = 'Error: Network Error';
+                } else {
+                    this.errorStatus = error.response.data.message;
+                }
+            });
         },
         modifyContact(item_id) {
+            var context = this;
             if (item_id !== 'new') {
                 VueCookies.set('currentContact', item_id)
             }
-            this.$router.push({ name: 'ContactCreation', params: { contact_id: item_id } })
+            this.$router.push({ name: 'ContactCreation', params: { contact_id: item_id, mode: context.mode, id: context.id } })
         }
     },
     created() {
