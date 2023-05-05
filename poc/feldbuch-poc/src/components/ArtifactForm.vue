@@ -13,14 +13,18 @@
           hint="Geben sie hier die Fundnummer ein *(Pflichtfeld)" :rules="is_required"></v-text-field>
         <v-textarea v-model="artifact_doc.description" label="Beschreibung"
           hint="Geben sie hier eine kurze Beschreibung des Fundes an"></v-textarea>
-        <v-textarea v-model="artifact_doc.state" label="Erhaltungszustand"
-          hint="Geben sie hier den Erhaltungszustand des Fundes an"></v-textarea>
-        <v-select v-model="artifact_doc.excavation" label="Zugehörige Grabung *" :items="availableExcavations"
-          item-value="_id" item-text="title" :rules="is_required" hint=" *(Pflichtfeld)"> </v-select>
-        <v-select v-model="artifact_doc.sections" label="Zugehörige Schnitte *" :items="availableSections"
-          item-value="_id" item-text="title" :rules="is_required" hint=" *(Pflichtfeld)"> </v-select>
-        <v-select v-model="artifact_doc.feature" label="Zugehöriger Befund *" :items="availableFeatures" item-value="_id"
-          item-text="title" :rules="is_required" hint=" *(Pflichtfeld)"> </v-select>
+        <v-textarea v-model="artifact_doc.inscriptions" label="Inschirften"
+          hint="Geben sie hier die Inschriften des Fundes an"></v-textarea>
+        <v-text-field v-model="artifact_doc.literature" label="Zugehörige Literatur"> </v-text-field>
+        <v-text-field v-model="artifact_doc.material" label="Material"> </v-text-field>
+        <v-text-field v-model="artifact_doc.number" label="Nummer"> </v-text-field>
+        <v-text-field v-model="artifact_doc.producer" label="Erzeuger"> </v-text-field>
+        <v-text-field v-model="artifact_doc.state" label="Erhaltungszustand"> </v-text-field>
+        <v-text-field v-model="artifact_doc.type" label="Typ"> </v-text-field>
+        <v-text-field v-model="artifact_doc.section_id" label="Zugehörige Schnitte *" :items="availableSections"
+          item-value="_id" item-text="title" :rules="is_required" hint=" *(Pflichtfeld)"> </v-text-field>
+        <v-text-field v-model="artifact_doc.feature_id" label="Zugehöriger Befund *" :items="availableFeatures" item-value="_id"
+          item-text="title" :rules="is_required" hint=" *(Pflichtfeld)"> </v-text-field>
       </v-tab-item>
 
       <v-tab-item class="px-4">
@@ -34,12 +38,12 @@
       </v-tab-item>
 
       <v-tab-item class="px-4">
-        <v-text-field v-model="artifact_doc.dimension" label="Dimension"
+        <v-text-field v-model="artifact_doc.designation" label="Dimension"
           hint="Geben sie hier die die Beschreibung der Dimension an"></v-text-field>
         <v-text-field v-model="artifact_doc.accuracy" label="Genauigkeit"
           hint="Geben Sie hier die Genauigkeit an"></v-text-field>
-        <v-textarea v-model="artifact_doc.min" label="Von" hint="Geben sie das Minimum des Messwertes an"></v-textarea>
-        <v-textarea v-model="artifact_doc.max" label="Bis" hint="Geben sie das Maximum des Messwertes"></v-textarea>
+        <v-textarea v-model="artifact_doc.from" label="Von" hint="Geben sie das Minimum des Messwertes an"></v-textarea>
+        <v-textarea v-model="artifact_doc.to" label="Bis" hint="Geben sie das Maximum des Messwertes"></v-textarea>
         <v-textarea v-model="artifact_doc.unit" label="Einheit"
           hint="Geben sie hier die gemessene Einheit an"></v-textarea>
       </v-tab-item>
@@ -85,35 +89,44 @@
 </template>
 
 <script>
-import ExcavationsOverview from "./ExcavationsOverview";
-import DocContacts from './DocContacts.vue';
+
 import DocDates from './DocDates.vue';
+import DocSections from './DocSections.vue';
+import DocExcavations from './DocExcavations.vue';
+import DocFeatures from './DocFeatures.vue';
 import axios from "axios";
-import { del } from 'vue';
 
 export default {
   name: 'ArtifactCreation',
-  components: { DocDates },
+  components: { DocDates, DocSections, DocFeatures, DocExcavations },
   data() {
     return {
       artifact_doc: {
+        title: '',
         description: '',
         number: '',
         state: '',
-        excavation_id: '',
+        material: '',
+        producer: '',
+        type: '',
+        inscriptions: '',
         sections: [],
-        features: '',
+        features: [],
+
         tachymeter: '',
         comment: '',
         east: '',
         north: '',
         height: '',
-        dimension: '',
+
+        designation: '',
         accuracy: '',
-        min: '',
-        max: '',
+        from: '',
+        to: '',
         unit: '',
+
         interpretation: '',
+
         dates: [],
       },
 
@@ -190,22 +203,32 @@ export default {
         url: requestURL,
         data: {
           number: context.artifact_doc.number,
+          title: context.artifact_doc.title,
           description: context.artifact_doc.description,
           excavation_id: VueCookies.get('currentExcavation'),
           state: context.artifact_doc.state,
+          sections: context.artifact_doc.sections,
+          features: context.artifact_doc.features,
+          literature: context.artifact_doc.literature,
+          inscriptions: context.artifact_doc.inscriptions,
+          producer: context.artifact_doc.producer,
+          type: context.artifact_doc.type,
+          material: context.artifact_doc.material,
+
           tachymeter: context.artifact_doc.tachymeter,
           comment: context.artifact_doc.comment,
           east: context.artifact_doc.east,
           north: context.artifact_doc.north,
           height: context.artifact_doc.height,
-          dimension: context.artifact_doc.dimension,
+
+          designation: context.artifact_doc.designation,
           accuracy: context.artifact_doc.accuracy,
-          min: context.artifact_doc.min,
-          max: context.artifact_doc.max,
+          from: context.artifact_doc.from,
+          to: context.artifact_doc.to,
           unit: context.artifact_doc.unit,
+
           interpretation: context.artifact_doc.interpretation,
-          sections: context.artifact_doc.sections,
-          features: context.artifact_doc.features,
+
           dates: context.artifact_doc.dates,
 
         }
