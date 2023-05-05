@@ -10,17 +10,34 @@
                     hint="Geben sie hier eine kurze Beschreibung der Probe an."></v-textarea>
             </v-tab-item>
 
-            <v-btn v-on:click="logForm()" color="secondary" class="py-6" tile depressed>
+            <v-btn v-on:click="logForm()" color="secondary" class="py-6" tile>
                 Speichern
             </v-btn>
-            <v-btn v-on:click="deleteSample()" color="secondary" class="py-6" tile depressed>
-                Löschen
-            </v-btn>
-            <v-btn v-on:click="goBack" color="primary" class="py-6" tile depressed>
+            <v-dialog v-model="dialog" max-width="290">
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn color="secondary" class="py-6" tile v-bind="attrs" v-on="on">
+                        Löschen
+                    </v-btn>
+                </template>
+                <v-card>
+                    <v-card-title class="text-h5">
+                        Do you really want to delete the sample?
+                    </v-card-title>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn text v-on:click="deleteSample()" @click="dialog = false">
+                            Yes
+                        </v-btn>
+                        <v-btn text @click="dialog = false">
+                            No
+                        </v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+            <v-btn v-on:click="goBack" color="primary" class="py-6" tile>
                 Abbrechen
             </v-btn>
         </v-tabs>
-
         <v-alert v-model="error_dialog" type="error" dense outlined dismissible>
             {{ error_message }}
         </v-alert>
@@ -43,7 +60,8 @@ export default {
             is_required: [v => !!v || "Pflichtfeld"],
 
             error_message: "",
-            error_dialog: false
+            error_dialog: false,
+            dialog: false,
         };
     },
     created() {
@@ -116,13 +134,13 @@ export default {
                 data: {
                 }
             })
-                .then(function (res) {
-                    context.$emit("view", "Probenübersicht");
-                    context.$router.push({ name: "SamplesOverview" });
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
+            .then(function (res) {
+                context.$emit("view", "Probenübersicht");
+                context.$router.push({ name: "SamplesOverview" });
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
         },
         //go back to sample overview
         goBack() {

@@ -4,7 +4,7 @@
     <v-tabs vertical color="secondary">
       <v-tab> Allgemeine Daten </v-tab>
       <v-tab> Kontaktpersonen</v-tab>
-      <v-tab> Kalenderdaten</v-tab>                                         
+      <v-tab> Kalenderdaten</v-tab>
       <v-tab> Schnitte</v-tab>
 
       <v-tab-item class="px-4">
@@ -20,24 +20,44 @@
       </v-tab-item>
 
       <v-tab-item>
-        <DocContacts/>
+        <DocContacts />
       </v-tab-item>
 
       <v-tab-item>
-        <DocDates :dateslist="excavation_doc.dates" @addDate="addDate($event)"/>
-      </v-tab-item >
+        <DocDates :dateslist="excavation_doc.dates" @addDate="addDate($event)" />
+      </v-tab-item>
 
       <v-tab-item class="px-4">
         <v-subheader v-if="is_new">
           Schnitte können erst angelegt werden, wenn das Projekt gespeichert
           wurde
         </v-subheader>
-        <DocSections :sectionslist="excavation_doc.sections"/>
+        <DocSections :sectionslist="excavation_doc.sections" />
       </v-tab-item>
 
-      <v-btn v-on:click="logForm" color="primary" class="py-6" tile depressed> Speichern </v-btn>
-      <v-btn v-on:click="deleteExcavation" color="primary" class="py-6" tile depressed> Löschen </v-btn>
-      <v-btn v-on:click="goBack" color="secondary" class="py-6" tile depressed> Abbrechen</v-btn>
+      <v-btn v-on:click="logForm" color="primary" class="py-6" tile> Speichern </v-btn>
+      <v-dialog v-model="dialog" max-width="290">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn color="secondary" class="py-6" tile v-bind="attrs" v-on="on">
+            Löschen
+          </v-btn>
+        </template>
+        <v-card>
+          <v-card-title class="text-h5">
+            Do you really want to delete the feature?
+          </v-card-title>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn text v-on:click="deleteExcavation()" @click="dialog = false">
+              Yes
+            </v-btn>
+            <v-btn text @click="dialog = false">
+              No
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-btn v-on:click="goBack" color="secondary" class="py-6" tile> Abbrechen</v-btn>
 
     </v-tabs>
     <v-alert v-model="error_dialog" type="error" dense outlined dismissible>
@@ -55,7 +75,7 @@ import axios from 'axios';
 
 export default {
   name: 'ExcavationForm',
-  components: { DocContacts, DocDates, DocSections},
+  components: { DocContacts, DocDates, DocSections },
   data() {
     return {
       excavation_doc: {
@@ -78,7 +98,8 @@ export default {
       error_dialog: false,
       error_message: '',
       is_new: true,
-      is_required: [v => !!v || 'Pflichtfeld']
+      is_required: [v => !!v || 'Pflichtfeld'],
+      dialog: false
     }
   },
   created() {
@@ -88,7 +109,7 @@ export default {
   },
   methods: {
     //retrieve excavation if one exists
-    get_doc: function() {
+    get_doc: function () {
       var context = this;
 
       if (this.$route.params.excavation_id !== "new") {
@@ -99,18 +120,18 @@ export default {
           url: "/excavations/" + this.$route.params.excavation_id,
           responseType: "json"
         })
-        .then(function (res) {
-          context.excavation_doc = res.data;
-          context.$emit("view", res.data.title + " bearbeiten");
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
+          .then(function (res) {
+            context.excavation_doc = res.data;
+            context.$emit("view", res.data.title + " bearbeiten");
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
       } else {
         context.$emit("view", "Neues Ausgrabung anlegen");
       }
     },
-    addDate: function(date_id) {
+    addDate: function (date_id) {
       var context = this;
 
       if (context.excavation_doc.dates == undefined) {
@@ -151,13 +172,13 @@ export default {
           dates: context.excavation_doc.dates
         }
       })
-      .then(function (res) {
-        context.$emit("view", "Ausgrabungsübersicht");
-        context.$router.push({ name: 'ExcavationsOverview' });
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+        .then(function (res) {
+          context.$emit("view", "Ausgrabungsübersicht");
+          context.$router.push({ name: 'ExcavationsOverview' });
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     },
     deleteExcavation: function () {
       var context = this;
@@ -177,7 +198,7 @@ export default {
         });
     },
     //go back to excavations overview
-    goBack: function() {
+    goBack: function () {
       this.$emit("view", "Ausgrabungsübersicht");
       this.$router.go(-1);
     }
