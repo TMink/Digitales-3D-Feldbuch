@@ -8,29 +8,67 @@
         <v-tab> Zugehörige Funde</v-tab>
   
         <v-tab-item class="px-4">
-          <v-text-field v-model="feature_doc.title" label="Titel *" hint="Geben sie hier den Befundtitel ein *(Pflichtfeld)" :rules="is_required"></v-text-field>
-            <v-text-field v-model="feature_doc.featurenumber" label="Befundnummer *" hint="Geben sie hier die Befundnummer ein *(Pflichtfeld)" :rules="is_required"></v-text-field>
-            <v-textarea v-model="feature_doc.description" label="Beschreibung" hint="Geben sie hier eine kurze Beschreibung des Befunds an"></v-textarea>
-            <v-select v-model="feature_doc.short" label="Kurzansprache" :items="availableConditions" hint="Geben sie hier die Kurzansprache des Befunds ein"></v-select>
-            <v-select v-model="feature_doc.localisation" label="Lokalisierung" :items="availableExcavations" item-value="_id" item-text="title" :rules="is_required" hint=" *(Pflichtfeld)"> </v-select>
-            <v-select v-model="feature_doc.interpretation" label="Interpretation" :items="availableSections" item-value="_id" item-text="title" :rules="is_required" hint=" *(Pflichtfeld)"> </v-select>
-            <v-select v-model="feature_doc.connectedfeatures" label="Zugehöriger Befund *" :items="availableStructures" item-value="_id" item-text="structurenumber" :rules="is_required" hint="Zugehörigen Befund oder Streufund angeben *(Pflichtfeld)"> </v-select>
-            <v-select v-model="feature_doc.featureType" label="Befundtyp *" > </v-select>
-            <v-select v-model="feature_doc.sections" label="Zugehörige Schnitte *" :items="availableSections" item-value="_id" item-text="title" :rules="is_required" hint=" *(Pflichtfeld)"> </v-select>
-            <v-select v-model="feature_doc.find" label="Zugehörige Funde" :items="availableFinds" item-value="_id" item-text="title" :rules="is_required" hint=" *(Pflichtfeld)"> </v-select>
+          <v-text-field v-model="feature_doc.title" label="Titel *" hint="Geben Sie hier den Befundtitel ein *(Pflichtfeld)" :rules="is_required"></v-text-field>
+            <v-text-field v-model="feature_doc.number" label="Befundnummer *" hint="Geben Sie hier die Befundnummer ein *(Pflichtfeld)" :rules="is_required"></v-text-field>
+            <v-textarea v-model="feature_doc.description" label="Beschreibung" hint="Geben Sie hier eine kurze Beschreibung des Befunds an"></v-textarea>
+            <v-select v-model="feature_doc.rel_localization" label="Lokalisierung" item-value="_id" item-text="title"  hint=" *(Pflichtfeld)"> </v-select>
+            <v-select v-model="feature_doc.interpretation" label="Interpretation" item-value="_id" item-text="title"  hint=" *(Pflichtfeld)"> </v-select>
+            <v-select v-model="feature_doc.type_id" label="Befundtyp *" :items="['Überreste', 'Stratigrafische Einheit', 'Baulicher Bestand']"></v-select>
+            <v-select v-model="feature_doc.section_id" label="Zugehörige Schnitte *" :items="sections" item-value="_id" item-text="title" > </v-select>
+            <v-select v-model="feature_doc.artifacts" label="Zugehörige Funde *" :items="artifacts" item-value="_id" item-text="title" > </v-select>
 
         </v-tab-item>
-  
-        <v-tab-item>
-          <DocContacts/>
+
+        <v-tab-item class="px-4">
+          <template v-if="feature_doc.type_id === 'Überreste'">
+            <v-text-field v-model="feature_doc.age" label="Alter" hint="Geben Sie das Alter an"></v-text-field>
+            <v-text-field v-model="feature_doc.gender" label="Geschlecht" hint="Geben Sie das Geschlecht an"></v-text-field>
+            <v-text-field v-model="feature_doc.pathology" label="Pathologie" hint="Geben Sie die Pathologie an"></v-text-field>
+            <v-text-field v-model="feature_doc.preserved_bones" label="Erhaltene Knochen" hint="Geben Sie an, welche Knochen erhalten sind"></v-text-field>
+            <v-text-field v-model="feature_doc.burial_type" label="Bestattungsart" hint="Geben Sie die Bestattungsart an"></v-text-field>
+            <v-text-field v-model="feature_doc.funeral_type" label="Grabtyp" hint="Geben Sie den Grabtyp an"></v-text-field>
+            <v-text-field v-model="feature_doc.burial_construction" label="Grabkonstruktion" hint="Geben Sie die Grabkonstruktion an)"></v-text-field>
+          </template>
+          <template v-if="feature_doc.type_id === 'Baulicher Bestand'">
+            <v-text-field v-model="feature_doc.construction" label="Bauart" hint="Geben Sie die Bauart an"></v-text-field>
+            <v-text-field v-model="feature_doc.masonry" label="Mauerwert" hint="Geben Sie das Mauerwerk an"></v-text-field>
+            <v-text-field v-model="feature_doc.structure" label="Struktur" hint="Geben Sie die Struktur an"></v-text-field>
+            <v-text-field v-model="feature_doc.style_features" label="Stilmerkmale" hint="Geben Sie die Stilmerkmale"></v-text-field>
+            <v-text-field v-model="feature_doc.material" label="Material" hint="Geben Sie das Material an"></v-text-field>
+            <v-text-field v-model="feature_doc.stone_material" label="Steingröße" hint="Geben Sie die Steingröße an"></v-text-field>
+            <v-text-field v-model="feature_doc.stone_processing" label="Steinbearbeitung" hint="Geben Sie die Steinbearbeitung an"></v-text-field>
+            <v-text-field v-model="feature_doc.spolia" label="Spolien" hint="Geben Sie Spolien an"></v-text-field>
+            <v-text-field v-model="feature_doc.brick_type" label="Ziegelart" hint="Geben Sie die Ziegelart an"></v-text-field>
+            <v-text-field v-model="feature_doc.brick_size" label="Ziegelgröße" hint="Geben Sie die Ziegelgröße an"></v-text-field>
+            <v-text-field v-model="feature_doc.production_characteristica" label="Herstellungsmerkmale" hint="Geben Sie die Herstellungsmerkmale an"></v-text-field>
+            <v-text-field v-model="feature_doc.binding" label="Bindung" hint="Geben Sie die Bindung an"></v-text-field>
+            <v-text-field v-model="feature_doc.plaster_composition" label="Zusammensetzung" hint="Geben Sie die Zusammensetzung an"></v-text-field>
+            <v-text-field v-model="feature_doc.grain_size" label="Korngröße" hint="Geben Sie die Korngröße an"></v-text-field>
+            <v-text-field v-model="feature_doc.bond_consistency" label="Bindungskonsistenz" hint="Geben Sie die Bindungskonsistenz an"></v-text-field>
+            <v-text-field v-model="feature_doc.joint_pattern" label="Fugenbild" hint="Geben Sie das Fugenbild an"></v-text-field>
+            <v-text-field v-model="feature_doc.joint_dimensions" label="Fugendimension" hint="Geben Sie die Fugendimension an"></v-text-field>
+            <v-text-field v-model="feature_doc.plaster_surface_design" label="Oberflächengestaltung" hint="Geben Sie die Oberflächengestaltung"></v-text-field>
+            <v-text-field v-model="feature_doc.plaster_thickness" label="Stärke" hint="Geben Sie die Stärke an"></v-text-field>
+            <v-text-field v-model="feature_doc.plaster_expansion" label="Ausdehnung" hint="Geben Sie die Ausdehnung"></v-text-field>
+            <v-text-field v-model="feature_doc.plaster_consistency" label="Verputzungskonsistenz" hint="Geben Sie die VErputzungskonsistenz an"></v-text-field>
+            <v-text-field v-model="feature_doc.plaster_aggregates" label="Zuschlagstoffe" hint="Geben Sie das Alter an"></v-text-field>
+            <v-text-field v-model="feature_doc.multilayer" label="Mehrlagigkeit" hint="Geben Sie die Mehrlagigkeit an"></v-text-field>
+            
+          </template>
+          <template v-if="feature_doc.type_id === 'Stratigrafische Einheit'">
+            <v-text-field v-model="feature_doc.expansion" label="Ausdehnung" hint="Geben Sie die Ausdehnung an"></v-text-field>
+            <v-text-field v-model="feature_doc.consistency_in" label="Konistenz Schichtinneres" hint="Geben Sie die innere Schichtkonsistenz an"></v-text-field>
+            <v-text-field v-model="feature_doc.consistency_out" label="Konsistenz Schichtäußeres" hint="Geben Sie die äußere Schichtkonsistenz an"></v-text-field>
+            <v-text-field v-model="feature_doc.height_values" label="Niveau" hint="Geben Sie das Niveau an"></v-text-field>
+          </template>
         </v-tab-item>
   
-        <v-tab-item>
-          TODO
+        <v-tab-item class="px-4">
+          <DocSections :sectionslist="feature_doc.sections"/>
         </v-tab-item>
   
-        <v-tab-item>
-          TODO
+        <v-tab-item class="px-4">
+          <DocArtifacts :artifactslist="feature_doc.artifacts"/>
         </v-tab-item>
   
   
@@ -66,38 +104,65 @@
   </template>
 
 <script>
-import ExcavationsOverview from "./ExcavationsOverview";
-import DocContacts from './DocContacts.vue';
+import DocArtifacts from './DocArtifacts.vue';
+import DocSections from './DocSections.vue';
+import DocFeatures from './DocFeatures.vue';
+import VueCookies from 'vue-cookies';
 import axios from "axios";
-import { del } from 'vue';
 
 export default {
   name: 'FeatureCreation',
-  //components: { ExcavationsOverview, DocContacts},
+  components: {DocArtifacts, DocSections, DocFeatures},
   data() {
     return {
       feature_doc: {
         description: '',
         title: '',
-        short: '',
-        location: '',
+        number: '',
+        rel_localization: '',
         interpretation: '',
-        featureType: '',
+        type_id: '',
         sections: [],
-        finds: [],
-        persons: []
+        artifacts: [],
+
+        age: '',
+        gender: '',
+        pathology: '',
+        preserved_bones: '',
+        burial_type: '',
+        funeral_type: '',
+        burial_construction: '',
+
+        construction: '',
+        masonry: '',
+        structure: '',
+        style_features: '',
+        material: '',
+        stone_material: '',
+        stone_processing: '',
+        spolia: '',
+        brick_type: '',
+        brick_size: '',
+        production_characteristica: '',
+        binding: '',
+        plaster_composition: '',
+        grain_size: '',
+        bond_consistency: '',
+        joint_pattern: '',
+        joint_dimensions: '',
+        plaster_surface_design: '',
+        plaster_thickness: '',
+        plaster_expansion: '',
+        plaster_consistency: '',
+        plaster_aggregates: '',
+        multilayer: '',
+
+        expansion: '',
+        consistency_in: '',
+        consistency_out: '',
+        height_values: ''
       },
 
-      availableFeatureTypes: [
-        'Überreste',
-        'Stratigrafische Einheit',
-        'Baulicher Bestand'
-      ],
-
-      //feature_id: '',
-      //project_id: '',
-      //projects: [],
-      //sections: [],
       error_dialog: false,
       error_message: '',
       is_new: true,
@@ -149,7 +214,7 @@ export default {
 
       if (this.is_new == true) {
         httpRequest = 'post';
-        requestURL = '/features';
+        requestURL = '/features/' + VueCookies.get('currentExcavation');
       }
       //put/post request of edited/new feature
       axios({
@@ -159,12 +224,49 @@ export default {
           //project_id: context.project_id,
           title: context.feature_doc.title,
           description: context.feature_doc.description,
-          short: context.feature_doc.short,
-          location: context.feature_doc.location,
+          number: context.feature_doc.number,
+          rel_localization: context.feature_doc.rel_localization,
           interpretation: context.feature_doc.interpretation,
-          featureType: context.feature_doc.featureType,
+          type_id: context.feature_doc.featureType,
           sections: context.feature_doc.sections,
-          finds: context.feature_doc.finds
+          artifacts: context.feature_doc.artifacts,
+
+          age: context.feature_doc.age,
+          gender: context.feature_doc.gender,
+          pathology: context.feature_doc.pathology,
+          preserved_bones: context.feature_doc.preserved_bones,
+          burial_construction: context.feature_doc.burial_construction,
+          burial_type: context.feature_doc.burial_type,
+          funeral_type: context.feature_doc.funeral_type,
+
+          construction: context.feature_doc.construction,
+          masonry: context.feature_doc.masonry,
+          structure: context.feature_doc.structure,
+          style_features: context.feature_doc.style_features,
+          material: context.feature_doc.material,
+          stone_material: context.feature_doc.stone_material,
+          stone_processing: context.feature_doc.stone_processing,
+          spolia: context.feature_doc.spolia,
+          brick_type: context.feature_doc.brick_type,
+          brick_size: context.feature_doc.brick_size,
+          production_characteristica: context.feature_doc.production_characteristica,
+          binding: context.feature_doc.binding,
+          plaster_composition: context.feature_doc.plaster_composition,
+          grain_size: context.feature_doc.grain_size,
+          bond_consistency: context.feature_doc.bond_consistency,
+          joint_pattern: context.feature_doc.joint_pattern,
+          joint_dimensions: context.feature_doc.joint_dimensions,
+          plaster_surface_design: context.feature_doc.plaster_surface_design,
+          plaster_thickness: context.feature_doc.plaster_thickness,
+          plaster_expansion: context.feature_doc.plaster_expansion,
+          plaster_consistency: context.feature_doc.plaster_consistency,
+          plaster_aggregates: context.feature_doc.plaster_aggregates,
+          multilayer: context.feature_doc.multilayer,
+
+          expansion: context.feature_doc.expansion,
+          consistency_in: context.feature_doc.consistency_in,
+          consistency_out: context.feature_doc.consistency_out,
+          height_values: context.feature_doc.height_values
         }
       })
       .then(function (res) {
