@@ -4,6 +4,7 @@ const db = require("../fb");
 const excavations = db.collection("excavations");
 const featuresDB = db.collection("features");
 const feature_typesDB = db.collection("feature-types");
+var admin = require("firebase-admin");
 
 /**
  * Returns a full 'feature' object combined
@@ -109,6 +110,49 @@ function getStructuralInventory(feature, type) {
 
   return feature;
 }
+
+/**
+ * Takes the retrieved data from DB and builds a JSON-object
+ * with only the basic fields for a feature. Also creates empty fields,
+ * when there is no data for them. LEaves out type_fields
+ *
+ * @param {*} doc The raw excavation data from database
+ * @returns excavation Json-Object with all required fields
+ */
+function getBasicFeatureJson(doc) {
+  return {
+    id: doc.id,
+    section_id: doc.data().section_id,
+    number: doc.data().number,
+    title: doc.data().title,
+    description: doc.data().description,
+    interpretation: doc.data().interpretation,
+    rel_localization: doc.data().rel_localization,
+    type_id: doc.data().type_id,
+  };
+}
+
+
+/* GET feature by ID */
+router.get("/basiclist/:feature_ids", function (req, res, next) {
+  var feature_ids = req.params.feature_ids.split(",");
+  var featuresArray = [];
+  featuresDB
+    .where(admin.firestore.FieldPath.documentId(), "in", feature_ids)
+    .get()
+    .then((data) => {
+
+      data.forEach((doc) => {
+        var feature = getBasicFeatureJson(doc);
+        featuresArray.push(feature);
+      });
+      res.status(200).send(featuresArray);
+    })
+    .catch((err) => {
+      res.status(404).send("feature not found: " + err);
+    });
+});
+
 
 /* GET ALL features */
 router.get("/", async function (req, res, next) {
@@ -280,7 +324,6 @@ router.delete("/:feature_id/:feature_type_id", async function (req, res, next) {
     .doc(req.params.feature_id)
     .delete({ exists: true })
     .then((res) => {
-
       //delete the connected feature_type document
       feature_typesDB
         .doc(req.params.feature_type_id)

@@ -3,6 +3,10 @@
     <v-tabs vertical color="secondary">
 
       <v-tab> Allgemeine Daten </v-tab>
+      <v-tab> Kontaktpersonen </v-tab>
+      <v-tab> Befunde </v-tab>
+      <v-tab> Funde </v-tab>
+
       <v-tab-item class="px-4">
         <v-text-field v-model="section_doc.title" label="Bezeichnung *"
           hint="Geben sie hier die Bezeichnung des Schnittes an *(Pflichtfeld)" :rules="is_required"></v-text-field>
@@ -14,9 +18,17 @@
           hint="Geben sie hier das Endnievau des Schnittes an"></v-text-field>
       </v-tab-item>
 
-      <v-tab> Kontaktpersonen </v-tab>
+      
       <v-tab-item class="px-4">
         <DocContacts />
+      </v-tab-item>
+
+      <v-tab-item class="px-4">
+          <DocFeatures :featureslist="section_doc.features" />
+      </v-tab-item>
+
+      <v-tab-item class="px-4">
+          <DocArtifacts :artifactslist="section_doc.artifacts"/>
       </v-tab-item>
 
       <v-btn v-on:click="logForm()" color="secondary" class="py-6" tile> Speichern </v-btn>
@@ -53,18 +65,22 @@
 <script>
 import ExcavationsOverview from "./ExcavationsOverview";
 import DocContacts from './DocContacts.vue';
+import DocFeatures from './DocFeatures.vue';
+import DocArtifacts from './DocArtifacts.vue';
 import VueCookies from 'vue-cookies'
 import axios from "axios";
 
 export default {
   name: "SectionCreation",
-  components: { ExcavationsOverview, DocContacts },
+  components: { ExcavationsOverview, DocContacts, DocFeatures, DocArtifacts },
   data() {
     return {
       section_doc: {
         title: "",
         description: "",
-        persons: []
+        contacts: [],
+        features: [],
+        artifacts: []
       },
       is_new: true,
       is_required: [v => !!v || "Pflichtfeld"],
@@ -127,6 +143,8 @@ export default {
           description: context.section_doc.description,
           startLevel: context.section_doc.startLevel,
           endLevel: context.section_doc.endLevel,
+          contacts: context.section_doc.contacts,
+          features: context.section_doc.features
         }
       })
         .then(function (res) {
