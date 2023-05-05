@@ -1,27 +1,27 @@
 <template>
     <div id="navbar">
         <v-row justify="center">
-          <v-card class="ma-2" color="#BC987D" v-on:click="toProjects" dark>
+          <v-card class="ma-2" color="#BC987D" @click="changePage('ProjectsOverview')" dark>
             <v-card-title class="justify-center"> Projekt </v-card-title>
           </v-card>
 
-          <v-card class="ma-2" color="#BC987D" v-on:click="toExcavation" dark :disabled="!projectIsSet">
+          <v-card class="ma-2" color="#BC987D" @click="changePage('ExcavationsOverview')" dark :disabled="!projectIsSet">
             <v-card-title class="justify-center"> Ausgrabung </v-card-title>
           </v-card>
 
-          <v-card class="ma-2" color="#BC987D" v-on:click="toSections" dark :disabled="!excavationIsSet">
+          <v-card class="ma-2" color="#BC987D" @click="changePage('SectionsOverview')" dark :disabled="!excavationIsSet">
             <v-card-title class="justify-center"> Schnitte </v-card-title>
           </v-card>
 
-          <v-card class="ma-2" color="#BC987D" v-on:click="toFeatures" dark :disabled="!excavationIsSet">
+          <v-card class="ma-2" color="#BC987D" @click="changePage('FeaturesOverview')" dark :disabled="!excavationIsSet">
             <v-card-title class="justify-center"> Befunde </v-card-title>
           </v-card>
 
-          <v-card class="ma-2" color="#BC987D" v-on:click="toArtifacts" dark :disabled="!excavationIsSet">
+          <v-card class="ma-2" color="#BC987D" @click="changePage('ArtifactsOverview')" dark :disabled="!excavationIsSet">
             <v-card-title class="justify-center"> Funde </v-card-title>
           </v-card>
 
-          <v-card class="ma-2" color="#BC987D" v-on:click="toSamples" dark :disabled="!excavationIsSet">
+          <v-card class="ma-2" color="#BC987D" @click="changePage('SamplesOverview')" dark :disabled="!excavationIsSet">
             <v-card-title class="justify-center"> Proben </v-card-title>
           </v-card>
         </v-row>
@@ -56,31 +56,15 @@
       this.$emit('view','Digitales Feldbuch')
     },
     methods: {
-      toProjects: function (){
-        /* if (this.projectIsSet){
-          this.$router.push({ name: 'ProjectCreation', params: { project_id: this.project_id }})
-        } else { */
-          this.$router.push({name: 'ProjectsOverview'})
-        /* } */
-      },
-      toSections: function () {
-        this.$router.push({ name: 'SectionsOverview', params: { project_id: this.project_id, excavation_id: this.excavation_id } })
-      },
-      toExcavation: function () {
-        this.$router.push({ name: 'ExcavationsOverview', params: { project_id: this.project_id, excavation_id: this.excavation_id } })
-      },
-      toFeatures: function () {
-        this.$router.push({ name: 'FeaturesOverview', params: { project_id: this.project_id, excavation_id: this.excavation_id } })
-      },
-      toArtifacts: function () {
-        this.$router.push({ name: 'ArtifactsOverview', params: { project_id: this.project_id, excavation_id: this.excavation_id } })
-      },
-      toSamples: function () {
-        this.$router.push({ name: 'SamplesOverview', params: { project_id: this.project_id, excavation_id: this.excavation_id } })
-      },
-      toSection: function (excavation_tab) {
-        VueCookies.set('excavationTab', excavation_tab)
-        this.$router.push({ name: 'SectionOverview', params: { project_id: this.project_id, excavation_id: this.excavation_id, section_id: this.section_id }})
+      changePage: function(routeName) {
+      this.$router.push({ name: routeName, params: { project_id: this.project_id, excavation_id: this.excavation_id } }).catch(error => {
+        if (
+          error.name !== 'NavigationDuplicated' &&
+          !error.message.includes('Avoided redundant navigation to current location')
+        ) {
+          console.log(error)
+        }
+      })
       }
     }
   }
