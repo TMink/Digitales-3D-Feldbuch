@@ -3,10 +3,13 @@
 
     <v-tabs vertical color="secondary">
       <v-tab> Allgemeine Daten </v-tab>
-      <v-tab> Messpunkte</v-tab>
-      <v-tab> Abmessungen</v-tab>
-      <v-tab> Interpretation</v-tab>
-      <v-tab> Kalenderdaten</v-tab>
+      <v-tab> Messpunkte </v-tab>
+      <v-tab> Abmessungen </v-tab>
+      <v-tab> Kalenderdaten </v-tab>
+      <v-tab> Bilder </v-tab>
+      <v-tab> Farbwerte </v-tab>
+      <v-tab> Datierungen </v-tab>
+      
 
       <v-tab-item class="px-4">
         <v-text-field v-model="artifact_doc.title" label="Nummer *"
@@ -21,40 +24,56 @@
         <v-text-field v-model="artifact_doc.producer" label="Erzeuger"> </v-text-field>
         <v-text-field v-model="artifact_doc.state" label="Erhaltungszustand"> </v-text-field>
         <v-text-field v-model="artifact_doc.type" label="Typ"> </v-text-field>
-        <v-text-field v-model="artifact_doc.section_id" label="Zugehörige Schnitte *" :items="availableSections"
+        <!-- <v-text-field v-model="artifact_doc.section_id" label="Zugehörige Schnitte *" :items="availableSections"
           item-value="_id" item-text="title" :rules="is_required" hint=" *(Pflichtfeld)"> </v-text-field>
         <v-text-field v-model="artifact_doc.feature_id" label="Zugehöriger Befund *" :items="availableFeatures" item-value="_id"
-          item-text="title" :rules="is_required" hint=" *(Pflichtfeld)"> </v-text-field>
+          item-text="title" :rules="is_required" hint=" *(Pflichtfeld)"> </v-text-field> -->
       </v-tab-item>
 
       <v-tab-item class="px-4">
-        <v-text-field v-model="artifact_doc.tachymeter" label="Tachymeter ID *"
+        Messpunkte TODO
+        <!-- <v-text-field v-model="artifact_doc.tachymeter" label="Tachymeter ID *"
           hint="Geben sie hier die Tachymeter ID ein *(Pflichtfeld)" :rules="is_required"></v-text-field>
         <v-text-field v-model="artifact_doc.comment" label="Kommentar *" hint="Geben Sie einen Kommentar an"
           :rules="is_required"></v-text-field>
         <v-textarea v-model="artifact_doc.east" label="Ostwert" hint="Geben sie den Ostwert an"></v-textarea>
         <v-textarea v-model="artifact_doc.north" label="Nordwert" hint="Geben sie hier den Nordwert an"></v-textarea>
-        <v-textarea v-model="artifact_doc.height" label="Höhenwert" hint="Geben sie hier den Höhenwert an"></v-textarea>
+        <v-textarea v-model="artifact_doc.height" label="Höhenwert" hint="Geben sie hier den Höhenwert an"></v-textarea> -->
       </v-tab-item>
 
       <v-tab-item class="px-4">
-        <v-text-field v-model="artifact_doc.designation" label="Dimension"
+        Abmessungen TODO
+        <!-- <v-text-field v-model="artifact_doc.designation" label="Dimension"
           hint="Geben sie hier die die Beschreibung der Dimension an"></v-text-field>
         <v-text-field v-model="artifact_doc.accuracy" label="Genauigkeit"
           hint="Geben Sie hier die Genauigkeit an"></v-text-field>
         <v-textarea v-model="artifact_doc.from" label="Von" hint="Geben sie das Minimum des Messwertes an"></v-textarea>
         <v-textarea v-model="artifact_doc.to" label="Bis" hint="Geben sie das Maximum des Messwertes"></v-textarea>
         <v-textarea v-model="artifact_doc.unit" label="Einheit"
-          hint="Geben sie hier die gemessene Einheit an"></v-textarea>
+          hint="Geben sie hier die gemessene Einheit an"></v-textarea> -->
       </v-tab-item>
 
       <v-tab-item class="px-4">
-        <v-textarea v-model="artifact_doc.interpretation" label="Interpretation"
-          hint="Geben sie hier die Interpretation an"></v-textarea>
+        Kalenderdaten TODO
+        <DocDates :dateslist="artifact_doc.dates" @addDate="addDate($event)" />
       </v-tab-item>
 
       <v-tab-item>
-        <DocDates :dateslist="artifact_doc.dates" @addDate="addDate($event)" />
+        Bilder TODO
+        <!-- <v-textarea v-model="artifact_doc.interpretation" label="Interpretation"
+          hint="Geben sie hier die Interpretation an"></v-textarea> -->
+      </v-tab-item>
+
+      <v-tab-item>
+        <DocColors :colorslist="artifact_doc.colors"/>
+        <!-- <v-textarea v-model="artifact_doc.interpretation" label="Interpretation"
+        hint="Geben sie hier die Interpretation an"></v-textarea> -->
+      </v-tab-item>
+
+      <v-tab-item>
+        Datierungen TODO
+        <!-- <v-textarea v-model="artifact_doc.interpretation" label="Interpretation"
+        hint="Geben sie hier die Interpretation an"></v-textarea> -->
       </v-tab-item>
 
       <v-btn v-on:click="logForm" color="secondary" class="py-6" tile> Speichern </v-btn>
@@ -94,11 +113,12 @@ import DocDates from './DocDates.vue';
 import DocSections from './DocSections.vue';
 import DocExcavations from './DocExcavations.vue';
 import DocFeatures from './DocFeatures.vue';
+import DocColors from "./DocColors";
 import axios from "axios";
 
 export default {
   name: 'ArtifactCreation',
-  components: { DocDates, DocSections, DocFeatures, DocExcavations },
+  components: { DocDates, DocSections, DocFeatures, DocExcavations, DocColors },
   data() {
     return {
       artifact_doc: {
@@ -169,7 +189,6 @@ export default {
         context.$emit("view", "Neuen Fund anlegen");
       }
     },
-
     addDate: function (date_id) {
       var context = this;
 
@@ -179,7 +198,15 @@ export default {
         context.artifact_doc.dates.push(date_id);
       }
     },
+    addColor: function (color_id) {
+      var context = this;
 
+      if (context.excavation_doc.colors == undefined) {
+        context.excavation_doc.colors = [color_id];
+      } else {
+        context.excavation_doc.colors.push(color_id);
+      }
+    },
     //submit the form (either POST new artifacts or PUT existing artifacts)
     logForm() {
       // show error message if form is not valid

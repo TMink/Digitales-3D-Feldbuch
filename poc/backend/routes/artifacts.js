@@ -27,6 +27,7 @@ function getArtifactJson(doc) {
     producer: doc.data().producer,
     material: doc.data().material,
     type: doc.data().type,
+    colors: doc.data().colors
   };
 }
 

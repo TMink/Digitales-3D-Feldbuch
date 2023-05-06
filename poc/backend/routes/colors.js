@@ -2,6 +2,51 @@ const express = require("express");
 const router = express.Router();
 const db = require("../fb");
 const colors = db.collection("colors");
+var admin = require("firebase-admin");
+
+
+/**
+ * Takes the retrieved data from DB and builds a JSON-object
+ * with all fields for a color. Also creates empty fields,
+ * when there is no data for them.
+ *
+ * @param {*} doc The raw excavation data from database
+ * @returns color Json-Object with all required fields
+ */
+function getColorJson(doc) {
+  return {
+    id: doc.id,
+    title: doc.data().title,
+    hexa: doc.data().hexa,
+    rgba_r: doc.data().rgba_r,
+    rgba_g: doc.data().rgba_g,
+    rgba_b: doc.data().rgba_b,
+    rgba_a: doc.data().rgba_a,
+  };
+}
+
+
+/* GET colors by id-array in params seperated by ,*/
+router.get("/:color_ids", function (req, res, next) {
+  var color_ids = req.params.color_ids.split(",")
+
+  var colorsArray = [];
+  colors
+    .where(admin.firestore.FieldPath.documentId(), "in", color_ids)
+    .get()
+    .then((data) => {
+      data.forEach((doc) => {
+        var color = getColorJson(doc);
+        colorsArray.push(color);
+      });
+      res.send(colorsArray);
+    })
+    .catch((err) => {
+      res.status(404).send("No colors found");
+    });
+});
+
+
 
 /* GET ALL colors */
 router.get("/", function (req, res, next) {
@@ -10,14 +55,7 @@ router.get("/", function (req, res, next) {
     .get()
     .then((data) => {
       data.forEach((doc) => {
-        var color = {
-          id: doc.id,
-          firstname: doc.data().chroma,
-          designation: doc.data().designation,
-          hex-value: doc.data().hex-value,
-          lightness: doc.data().lightness,
-          saturation: doc.data().saturation,
-        };
+        var color = getColorJson(doc);
         colorsArray.push(color);
       });
       res.send(colorsArray);
@@ -35,14 +73,7 @@ router.get("/:color_id", function (req, res, next) {
     .get()
     .then((doc) => {
       if (doc.exists) {
-        var color = {
-          id: doc.id,
-          firstname: doc.data().chroma,
-          designation: doc.data().designation,
-          hex-value: doc.data().hex-value,
-          lightness: doc.data().lightness,
-          saturation: doc.data().saturation,
-        };
+        var color = getColorJson(doc);
         res.send(color);
       } else {
         res.status(404).send("No such document: ");
@@ -56,14 +87,14 @@ router.get("/:color_id", function (req, res, next) {
 /* POST new color */
 router.post("/", function (req, res, next) {
   colors
-    .doc()
-    .set(req.body)
+    .add(req.body)
     .then((response) => {
-      res.status(200).send("Added color");
+      res.status(200).send(response._path.segments[1]); //sends the color id back
     })
     .catch((err) => {
       res.status(404).send("Couldn't add color: " + err);
     });
+    
 });
 
 /* UPDATE color by ID*/

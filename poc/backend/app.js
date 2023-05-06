@@ -17,6 +17,7 @@ var sampleRouter = require("./routes/samples");
 var modelRouter = require("./routes/models");
 var contactRouter = require("./routes/contacts");
 var dateRouter = require("./routes/dates");
+var colorRouter = require('./routes/colors');
 
 var app = express();
 
@@ -39,6 +40,7 @@ app.use("/samples", sampleRouter);
 app.use("/models", modelRouter);
 app.use("/contacts", contactRouter);
 app.use("/dates", dateRouter);
+app.use("/colors", colorRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
