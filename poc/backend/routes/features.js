@@ -23,6 +23,7 @@ function getRemains(feature, type) {
     interpretation: feature.data().interpretation,
     rel_localization: feature.data().rel_localization,
     type_id: feature.data().type_id,
+    artifacts: feature.data().artifacts,
     preserved_bones: type.preserved_bones,
     pathology: type.pathology,
     gender: type.gender,
@@ -53,6 +54,7 @@ function getStatigraphicUnit(feature, type) {
     interpretation: feature.data().interpretation,
     rel_localization: feature.data().rel_localization,
     type_id: feature.data().type_id,
+    artifacts: feature.data().artifacts,
     type: type.type,
     height_values: type.height_values,
     expansion: type.expansion,
@@ -80,6 +82,7 @@ function getStructuralInventory(feature, type) {
     interpretation: feature.data().interpretation,
     rel_localization: feature.data().rel_localization,
     type_id: feature.data().type_id,
+    artifacts: feature.data().artifacts,
     type: type.type,
     construction: type.construction,
     masonry: type.masonry,
@@ -129,6 +132,7 @@ function getBasicFeatureJson(doc) {
     interpretation: doc.data().interpretation,
     rel_localization: doc.data().rel_localization,
     type_id: doc.data().type_id,
+    artifacts: doc.data().artifacts
   };
 }
 

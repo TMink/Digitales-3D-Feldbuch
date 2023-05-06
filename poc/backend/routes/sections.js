@@ -7,6 +7,28 @@ var admin = require("firebase-admin");
 
 
 /**
+ * Takes the retrieved data from DB and builds a JSON-object
+ * with all fields for a section. Also creates empty fields,
+ * when there is no data for them.
+ *
+ * @param {*} doc The raw section data from database
+ * @returns excavation Json-Object with all required fields
+ */
+function getSectionJson(doc) {
+  return {
+    id: doc.id,
+    title: doc.data().title,
+    description: doc.data().description,
+    startLevel: doc.data().startLevel,
+    endLevel: doc.data().endLevel,
+    contacts: doc.data().contacts,
+    features: doc.data().features,
+    artifacts: doc.data().artifacts
+  };
+}
+
+
+/**
  * GET sections by id-array in params seperated by ,
  */
 router.get("/list/:section_ids", function (req, res, next) {
@@ -65,9 +87,9 @@ router.get("/excavation_id/:excavation_id", async function (req, res, next) {
 
   // check if there are sections in this excavation
   var sectionsArray = [];
-  if (excavation.sections.length === 0) {
+/*   if (excavation.sections === undefined) {
     res.status(404).send("No sections for this excavation");
-  }
+  } */
 
   // get sections from DB
   sections
@@ -182,25 +204,6 @@ router.delete("/:excavation_id/:section_id", async function (req, res, next) {
       res.status(404).send("Couldn't delete section: " + err);
     });
 });
-
-
-/**
- * Takes the retrieved data from DB and builds a JSON-object
- * with all fields for a section. Also creates empty fields,
- * when there is no data for them.
- *
- * @param {*} doc The raw section data from database
- * @returns excavation Json-Object with all required fields
- */
-function getSectionJson(doc) {
-  return {
-    id: doc.id,
-    title: doc.data().title,
-    description: doc.data().description,
-    startLevel: doc.data().startLevel,
-    endLevel: doc.data().endLevel,
-  };
-}
 
 
 /**

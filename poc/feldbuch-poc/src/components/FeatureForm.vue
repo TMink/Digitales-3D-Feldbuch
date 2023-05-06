@@ -4,7 +4,6 @@
       <v-tabs vertical color="secondary">
         <v-tab> Allgemeine Daten </v-tab>
         <v-tab> Befundtyp</v-tab>
-        <v-tab> Zugehöriger Schnitt</v-tab>
         <v-tab> Zugehörige Funde</v-tab>
   
         <v-tab-item class="px-4">
@@ -14,9 +13,7 @@
             <v-select v-model="feature_doc.rel_localization" label="Lokalisierung" item-value="_id" item-text="title"  hint=" *(Pflichtfeld)"> </v-select>
             <v-select v-model="feature_doc.interpretation" label="Interpretation" item-value="_id" item-text="title"  hint=" *(Pflichtfeld)"> </v-select>
             <v-select v-model="feature_doc.type_id" label="Befundtyp *" :items="['Überreste', 'Stratigrafische Einheit', 'Baulicher Bestand']"></v-select>
-            <v-select v-model="feature_doc.section_id" label="Zugehörige Schnitte *" :items="sections" item-value="_id" item-text="title" > </v-select>
-            <v-select v-model="feature_doc.artifacts" label="Zugehörige Funde *" :items="artifacts" item-value="_id" item-text="title" > </v-select>
-
+           
         </v-tab-item>
 
         <v-tab-item class="px-4">
@@ -62,10 +59,7 @@
             <v-text-field v-model="feature_doc.height_values" label="Niveau" hint="Geben Sie das Niveau an"></v-text-field>
           </template>
         </v-tab-item>
-  
-        <v-tab-item class="px-4">
-          <DocSections :sectionslist="feature_doc.sections"/>
-        </v-tab-item>
+
   
         <v-tab-item class="px-4">
           <DocArtifacts :artifactslist="feature_doc.artifacts"/>
@@ -101,7 +95,7 @@
         {{ error_message }}
       </v-alert>
     </v-form>
-  </template>
+</template>
 
 <script>
 import DocArtifacts from './DocArtifacts.vue';
@@ -190,6 +184,7 @@ export default {
         })
         .then(function(res) {
           context.feature_doc = res.data;
+          console.log(context.feature_doc)
           context.$emit("view", res.data.title + " bearbeiten");
         })
         .catch(function (error) {
