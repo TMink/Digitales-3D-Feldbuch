@@ -90,24 +90,25 @@ router.get("/project_id/:project_id", async function (req, res, next) {
 
   // check if there are excavations in this project
   var excavationsArray = [];
-/*   if (project.excavations.length === 0) {
-    res.status(404).send("No excavations in this project");
-  } */
 
-  // get excavations from DB
-  excavations
-    .where(admin.firestore.FieldPath.documentId(), "in", project.excavations)
-    .get()
-    .then((data) => {
-      data.forEach((doc) => {
-        var excavation = getExcavationJson(doc);
-        excavationsArray.push(excavation);
+  if (project.excavations == undefined || project.excavations.length === 0) {
+    res.status(404).send("No excavations in this project");
+  } else {
+    // get excavations from DB
+    excavations
+      .where(admin.firestore.FieldPath.documentId(), "in", project.excavations)
+      .get()
+      .then((data) => {
+        data.forEach((doc) => {
+          var excavation = getExcavationJson(doc);
+          excavationsArray.push(excavation);
+        });
+        res.status(200).send(excavationsArray);
+      })
+      .catch((err) => {
+        res.status(404).send("No excavations found");
       });
-      res.status(200).send(excavationsArray);
-    })
-    .catch((err) => {
-      res.status(404).send("No excavations found");
-    });
+  }
 });
 
 

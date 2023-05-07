@@ -87,24 +87,24 @@ router.get("/excavation_id/:excavation_id", async function (req, res, next) {
 
   // check if there are sections in this excavation
   var sectionsArray = [];
-/*   if (excavation.sections === undefined) {
+  if (excavation.sections === undefined) {
     res.status(404).send("No sections for this excavation");
-  } */
-
-  // get sections from DB
-  sections
-    .where(admin.firestore.FieldPath.documentId(), "in", excavation.sections)
-    .get()
-    .then((data) => {
-      data.forEach((doc) => {
-        var section = getSectionJson(doc);
-        sectionsArray.push(section);
+  } else {
+    // get sections from DB
+    sections
+      .where(admin.firestore.FieldPath.documentId(), "in", excavation.sections)
+      .get()
+      .then((data) => {
+        data.forEach((doc) => {
+          var section = getSectionJson(doc);
+          sectionsArray.push(section);
+        });
+        res.status(200).send(sectionsArray);
+      })
+      .catch((err) => {
+        res.status(404).send("No sections found");
       });
-      res.status(200).send(sectionsArray);
-    })
-    .catch((err) => {
-      res.status(404).send("No sections found");
-    });
+  }
 });
 
 

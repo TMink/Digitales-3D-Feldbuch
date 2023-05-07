@@ -85,6 +85,8 @@ export default {
               } else {
                   this.errorStatus = error.response.data.message;
               }
+              //hide the loading circle
+            context.loading = false;
           });
       },
       modifySection(item_id) {

@@ -40,7 +40,7 @@ export default {
     methods: {
         get_doc: function () {
             var context = this;
-            if (context.excavationslist == undefined) {
+            if (context.excavationslist == undefined || context.excavationslist.length == 0) {
                 console.log("No excavations added to project")
                 return;
             }

@@ -55,7 +55,7 @@ export default {
     methods: {
         get_doc: function () {
             var context = this;
-            if (context.colorslist == undefined) {
+            if (context.colorslist == undefined || context.colorslist.length == 0) {
                 console.log("No colors added to excavation")
                 return;
             }

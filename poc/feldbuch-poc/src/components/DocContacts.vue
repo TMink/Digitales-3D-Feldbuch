@@ -48,7 +48,7 @@ export default {
         //retrieve all contacts
         getContacts() {
             var context = this;
-            if (context.contactslist == undefined) {
+            if (context.contactslist == undefined || context.contactslist.length == 0) {
                 console.log("No contacts added")
                 return;
             }

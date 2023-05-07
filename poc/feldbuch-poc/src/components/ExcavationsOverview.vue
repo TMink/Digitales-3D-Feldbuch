@@ -84,6 +84,8 @@ export default {
                 } else {
                     this.errorStatus = error.response.data.message;
                 }
+                //hide the loading circle
+                context.loading = false;
             });
         },
         modifyExcavation(item_id) {

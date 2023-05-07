@@ -60,7 +60,7 @@ export default {
     methods: {
         get_doc: function() {
             var context = this;
-            if (context.dateslist == undefined) {
+            if (context.dateslist == undefined || context.dateslist.length == 0) {
                 console.log("No dates added to excavation")
                 return;
             }

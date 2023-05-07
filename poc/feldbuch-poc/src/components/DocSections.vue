@@ -40,7 +40,7 @@ export default {
     methods: {
         get_doc: function () {
             var context = this;
-            if (context.sectionslist == undefined) {
+            if (context.sectionslist == undefined || context.sectionslist.length == 0) {
                 console.log("No sections added to project")
                 return;
             }

@@ -40,7 +40,7 @@ export default {
     methods: {
         get_doc: function () {
             var context = this;
-            if (context.artifactslist == undefined) {
+            if (context.artifactslist == undefined || context.artifactslist.length == 0) {
                 console.log("No artifacts added to project")
                 return;
             }

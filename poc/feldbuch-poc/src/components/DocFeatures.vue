@@ -40,7 +40,7 @@ export default {
     methods: {
         get_doc: function () {
             var context = this;
-            if (context.featureslist == undefined) {
+            if (context.featureslist == undefined || context.featureslist.length == 0) {
                 console.log("No features added to project")
                 return;
             }
