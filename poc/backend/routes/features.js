@@ -24,6 +24,7 @@ function getRemains(feature, type) {
     rel_localization: feature.data().rel_localization,
     type_id: feature.data().type_id,
     artifacts: feature.data().artifacts,
+    type: type.type,
     preserved_bones: type.preserved_bones,
     pathology: type.pathology,
     gender: type.gender,
