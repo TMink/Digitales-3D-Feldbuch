@@ -10,13 +10,15 @@
           <v-text-field v-model="feature_doc.title" label="Titel *" hint="Geben Sie hier den Befundtitel ein *(Pflichtfeld)" :rules="is_required"></v-text-field>
             <v-text-field v-model="feature_doc.number" label="Befundnummer *" hint="Geben Sie hier die Befundnummer ein *(Pflichtfeld)" :rules="is_required"></v-text-field>
             <v-textarea v-model="feature_doc.description" label="Beschreibung" hint="Geben Sie hier eine kurze Beschreibung des Befunds an"></v-textarea>
-            <v-select v-model="feature_doc.rel_localization" label="Lokalisierung" item-value="_id" item-text="title"  hint=" *(Pflichtfeld)"> </v-select>
-            <v-select v-model="feature_doc.interpretation" label="Interpretation" item-value="_id" item-text="title"  hint=" *(Pflichtfeld)"> </v-select>
+            <v-textarea v-model="feature_doc.rel_localization" label="Lokalisierung" item-value="_id" item-text="title"  hint=" *(Pflichtfeld)"> </v-textarea>
+            <v-textarea v-model="feature_doc.interpretation" label="Interpretation" item-value="_id" item-text="title"  hint=" *(Pflichtfeld)"> </v-textarea>
             <v-select v-model="feature_doc.type_id" label="Befundtyp *" :items="['Überreste', 'Stratigrafische Einheit', 'Baulicher Bestand']"></v-select>
            
         </v-tab-item>
 
         <v-tab-item class="px-4">
+          <v-subheader v-if="feature_doc.type_id !== 'Baulicher Bestand' && feature_doc.type_id !== 'Überreste' && 
+          feature_doc.type_id !== 'Stratigrafische Einheit'"> Bisher wurde kein Befundtyp angegeben</v-subheader>
           <template v-if="feature_doc.type_id === 'Überreste'">
             <v-text-field v-model="feature_doc.age" label="Alter" hint="Geben Sie das Alter an"></v-text-field>
             <v-text-field v-model="feature_doc.gender" label="Geschlecht" hint="Geben Sie das Geschlecht an"></v-text-field>
@@ -66,7 +68,7 @@
         </v-tab-item>
   
   
-        <v-btn v-on:click="logForm" color="secondary" class="py-6" tile> Speichern </v-btn>
+        <v-btn v-on:click="logForm()" color="secondary" class="py-6" tile> Speichern </v-btn>
         <v-dialog v-model="dialog" max-width="290">
           <template v-slot:activator="{ on, attrs }">
             <v-btn color="secondary" class="py-6" tile v-bind="attrs" v-on="on">
@@ -79,7 +81,7 @@
             </v-card-title>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="secondary" v-on:click="deleteArtifact()" @click="dialog = false">
+              <v-btn color="secondary" v-on:click="deleteFeature()" @click="dialog = false">
                 Yes
               </v-btn>
               <v-btn color="primary" @click="dialog = false">
@@ -222,7 +224,7 @@ export default {
           number: context.feature_doc.number,
           rel_localization: context.feature_doc.rel_localization,
           interpretation: context.feature_doc.interpretation,
-          type_id: context.feature_doc.featureType,
+          type_id: context.feature_doc.type_id,
           sections: context.feature_doc.sections,
           artifacts: context.feature_doc.artifacts,
 
@@ -290,7 +292,7 @@ export default {
     //go back to features overview
     goBack: function() {
       this.$emit("view", "Befundübersicht");
-      this.$router.go(-1);
+      this.$router.push({ name: "FeaturesOverview" });
     }
   }
 };
