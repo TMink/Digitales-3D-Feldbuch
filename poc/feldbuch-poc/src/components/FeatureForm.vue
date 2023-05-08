@@ -213,12 +213,11 @@ export default {
         httpRequest = 'post';
         requestURL = '/features/' + VueCookies.get('currentExcavation');
       }
-      //put/post request of edited/new feature
-      axios({
-        method: httpRequest,
-        url: requestURL,
-        data: {
-          //project_id: context.project_id,
+
+      var newFeature 
+
+      if (context.feature_doc.type == 'Überreste'){
+        newFeature = {
           title: context.feature_doc.title,
           description: context.feature_doc.description,
           number: context.feature_doc.number,
@@ -235,6 +234,37 @@ export default {
           burial_construction: context.feature_doc.burial_construction,
           burial_type: context.feature_doc.burial_type,
           funeral_type: context.feature_doc.funeral_type,
+      }
+    }
+
+    if (context.feature_doc.type == 'Stratigrafische Einheit'){
+        newFeature = {
+          title: context.feature_doc.title,
+          description: context.feature_doc.description,
+          number: context.feature_doc.number,
+          rel_localization: context.feature_doc.rel_localization,
+          interpretation: context.feature_doc.interpretation,
+          type: context.feature_doc.type,
+          sections: context.feature_doc.sections,
+          artifacts: context.feature_doc.artifacts,
+
+          expansion: context.feature_doc.expansion,
+          consistency_in: context.feature_doc.consistency_in,
+          consistency_out: context.feature_doc.consistency_out,
+          height_values: context.feature_doc.height_values
+      }
+    }
+
+    if (context.feature_doc.type == 'Baulicher Bestand'){
+        newFeature = {
+          title: context.feature_doc.title,
+          description: context.feature_doc.description,
+          number: context.feature_doc.number,
+          rel_localization: context.feature_doc.rel_localization,
+          interpretation: context.feature_doc.interpretation,
+          type: context.feature_doc.type,
+          sections: context.feature_doc.sections,
+          artifacts: context.feature_doc.artifacts,
 
           construction: context.feature_doc.construction,
           masonry: context.feature_doc.masonry,
@@ -259,12 +289,18 @@ export default {
           plaster_consistency: context.feature_doc.plaster_consistency,
           plaster_aggregates: context.feature_doc.plaster_aggregates,
           multilayer: context.feature_doc.multilayer,
+      }
+    }
 
-          expansion: context.feature_doc.expansion,
-          consistency_in: context.feature_doc.consistency_in,
-          consistency_out: context.feature_doc.consistency_out,
-          height_values: context.feature_doc.height_values
-        }
+    console.log(newFeature);
+
+      //put/post request of edited/new feature
+      axios({
+        method: httpRequest,
+        url: requestURL,
+        data: 
+          newFeature
+        ,
       })
       .then(function (res) {
         context.$emit("view", "Befundübersicht");
