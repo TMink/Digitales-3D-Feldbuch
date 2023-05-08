@@ -149,6 +149,15 @@ export default {
 
     },
 
+    /**
+     * @param {String} model  - Name of model in scene
+     * @param {String} color  - Name of color
+     */
+     loadWithColor: function(model, color) {
+      this.scene.getObjectByName( model ).material.color = 
+        new THREE.Color( color )
+    },
+
     init: function() {
 
       /* ##### Container ##### */
