@@ -1,7 +1,11 @@
 <template>
     <div>
       <v-navigation-drawer app nav right
-      v-model="drawer" color="#e8e4d9">
+      v-model="drawer" color="#e8e4d9" temporary>
+                <v-list-item class="close">
+                   <App :navdrawer="drawer"/>
+                  <button class="button btn-close" @click.stop="drawer = !drawer" >X</button>
+               </v-list-item>
         <v-list-item>
           <v-list-item-content>
             <v-list-item-title class="title">
@@ -29,32 +33,25 @@
 </template>
 
 <script>
-
-import VueCookies from 'vue-cookies';
-
+import VueCookies from 'vue-cookies'
+import App from '../App.vue'
 
   export default {
     name: 'Navigation',
     props: {
-      drawer: Boolean
+      drawer: false
     },
     data: function () {
       return {
-      /*bottom_sheet: false,*/
+        bottom_sheet: false,
         path: '127.0.0.1:5984',
         items: [
           {link: "/", title:"Startseite"},
           {link: "/3dview", title:"3D-Ansicht"},
-          {link: "/", title:"UTM"},
+          /*{link: "/", title:"UTM"},
           {link: "/", title:"Datierung"},
           {link: "/", title:"Kalenderdaten"},
-          {link: "/", title:"Kontakt"},
-          /*{link: "/campaigns", title: "Übergeordnete Projekte"},
-          {link: "/excavation", title: "Grabungen" },
-          {link: "/excavation/sections", title: "Schnitte"},
-          {link: "/excavation/structures", title: "Befunde (SE)"},
-          {link: "/excavation/finds", title: "Funde"},
-          {link: "/excavation/samples", title: "Proben"}*/
+          {link: "/", title:"Kontakt"},*/
         ]
       }
     },
@@ -71,9 +68,28 @@ import VueCookies from 'vue-cookies';
       }
     }
   }
-
 </script>
 
 <style>
+.close{
+  padding-bottom: 0px;
+  background-color: #594743;
 
+}
+
+.btn-close{
+  margin-right: 190px;
+  padding-left: 7px;
+  padding-right: 7px;
+  background-color: #B4A27D;
+  color: white;
+  border: 2px solid black;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.btn-close:hover{
+  background-color: white;
+  color: black;
+}
 </style>
