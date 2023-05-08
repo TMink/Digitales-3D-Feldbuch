@@ -43,6 +43,10 @@ export default {
      *  getModel        - Get model-Data from backend and transfer it to offline
      *                    DB for furthor useage
      *  getDataFromUrl  - Get model-/texture-Data from given url
+     *  loadModel       - Loads a Model from IndexedDB into the scene. This
+     *                    version has the standart texture from the object and
+     *                    the name of the created mesh is the title of the 
+     *                    object.
      *  ------------------------------------------------------------------------
      *  init            - Initialize the scene
      *  animate         - Animate the scene
@@ -112,7 +116,6 @@ export default {
     },
 
     /**
-     * 
      * @param {String} modelID    - Key under which the model is stored in
      *                              Object Store
      * @param {String} dbName     - Name of Database
