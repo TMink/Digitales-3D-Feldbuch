@@ -10,7 +10,7 @@
           <v-text-field v-model="feature_doc.title" label="Titel *" hint="Geben Sie hier den Befundtitel ein *(Pflichtfeld)" :rules="is_required"></v-text-field>
             <v-text-field v-model="feature_doc.number" label="Befundnummer *" hint="Geben Sie hier die Befundnummer ein *(Pflichtfeld)" :rules="is_required"></v-text-field>
             <v-textarea v-model="feature_doc.description" label="Beschreibung" hint="Geben Sie hier eine kurze Beschreibung des Befunds an"></v-textarea>
-            <v-textarea v-model="feature_doc.rel_localization" label="Lokalisierung" item-value="_id" item-text="title"  hint=" *(Pflichtfeld)"> </v-textarea>
+            <v-text-field v-model="feature_doc.rel_localization" label="Lokalisierung" item-value="_id" item-text="title"  hint=" *(Pflichtfeld)"> </v-text-field>
             <v-textarea v-model="feature_doc.interpretation" label="Interpretation" item-value="_id" item-text="title"  hint=" *(Pflichtfeld)"> </v-textarea>
             <v-select v-model="feature_doc.type" label="Befundtyp *" :items="['Überreste', 'Stratigrafische Einheit', 'Baulicher Bestand']"></v-select>
            
@@ -39,7 +39,7 @@
             <v-text-field v-model="feature_doc.spolia" label="Spolien" hint="Geben Sie Spolien an"></v-text-field>
             <v-text-field v-model="feature_doc.brick_type" label="Ziegelart" hint="Geben Sie die Ziegelart an"></v-text-field>
             <v-text-field v-model="feature_doc.brick_size" label="Ziegelgröße" hint="Geben Sie die Ziegelgröße an"></v-text-field>
-            <v-text-field v-model="feature_doc.production_characteristica" label="Herstellungsmerkmale" hint="Geben Sie die Herstellungsmerkmale an"></v-text-field>
+            <v-text-field v-model="feature_doc.production_characteristics" label="Herstellungsmerkmale" hint="Geben Sie die Herstellungsmerkmale an"></v-text-field>
             <v-text-field v-model="feature_doc.binding" label="Bindung" hint="Geben Sie die Bindung an"></v-text-field>
             <v-text-field v-model="feature_doc.plaster_composition" label="Zusammensetzung" hint="Geben Sie die Zusammensetzung an"></v-text-field>
             <v-text-field v-model="feature_doc.grain_size" label="Korngröße" hint="Geben Sie die Korngröße an"></v-text-field>
@@ -118,7 +118,6 @@ export default {
         rel_localization: '',
         interpretation: '',
         type: '',
-        sections: [],
         artifacts: [],
 
         age: '',
@@ -139,7 +138,7 @@ export default {
         spolia: '',
         brick_type: '',
         brick_size: '',
-        production_characteristica: '',
+        production_characteristics: '',
         binding: '',
         plaster_composition: '',
         grain_size: '',
@@ -224,7 +223,7 @@ export default {
           rel_localization: context.feature_doc.rel_localization,
           interpretation: context.feature_doc.interpretation,
           type: context.feature_doc.type,
-          sections: context.feature_doc.sections,
+          type_id: context.feature_doc.type_id,
           artifacts: context.feature_doc.artifacts,
 
           age: context.feature_doc.age,
@@ -245,7 +244,7 @@ export default {
           rel_localization: context.feature_doc.rel_localization,
           interpretation: context.feature_doc.interpretation,
           type: context.feature_doc.type,
-          sections: context.feature_doc.sections,
+          type_id: context.feature_doc.type_id,
           artifacts: context.feature_doc.artifacts,
 
           expansion: context.feature_doc.expansion,
@@ -263,7 +262,7 @@ export default {
           rel_localization: context.feature_doc.rel_localization,
           interpretation: context.feature_doc.interpretation,
           type: context.feature_doc.type,
-          sections: context.feature_doc.sections,
+          type_id: context.feature_doc.type_id,
           artifacts: context.feature_doc.artifacts,
 
           construction: context.feature_doc.construction,
@@ -276,7 +275,7 @@ export default {
           spolia: context.feature_doc.spolia,
           brick_type: context.feature_doc.brick_type,
           brick_size: context.feature_doc.brick_size,
-          production_characteristica: context.feature_doc.production_characteristica,
+          production_characteristics: context.feature_doc.production_characteristics,
           binding: context.feature_doc.binding,
           plaster_composition: context.feature_doc.plaster_composition,
           grain_size: context.feature_doc.grain_size,
@@ -291,8 +290,6 @@ export default {
           multilayer: context.feature_doc.multilayer,
       }
     }
-
-    console.log(newFeature);
 
       //put/post request of edited/new feature
       axios({

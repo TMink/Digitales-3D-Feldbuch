@@ -10,13 +10,12 @@
       <v-tab> Farbwerte </v-tab>
       <v-tab> Datierungen </v-tab>
       
-
       <v-tab-item class="px-4">
-        <v-text-field v-model="artifact_doc.title" label="Nummer *"
+        <v-text-field v-model="artifact_doc.number" label="Nummer *"
           hint="Geben sie hier die Fundnummer ein *(Pflichtfeld)" :rules="is_required"></v-text-field>
         <v-textarea v-model="artifact_doc.description" label="Beschreibung"
           hint="Geben sie hier eine kurze Beschreibung des Fundes an"></v-textarea>
-        <v-textarea v-model="artifact_doc.inscriptions" label="Inschirften"
+        <v-textarea v-model="artifact_doc.inscriptions" label="Inschriften"
           hint="Geben sie hier die Inschriften des Fundes an"></v-textarea>
         <v-text-field v-model="artifact_doc.literature" label="Zugehörige Literatur"> </v-text-field>
         <v-text-field v-model="artifact_doc.material" label="Material"> </v-text-field>
@@ -31,14 +30,7 @@
       </v-tab-item>
 
       <v-tab-item class="px-4">
-        Messpunkte TODO
-        <!-- <v-text-field v-model="artifact_doc.tachymeter" label="Tachymeter ID *"
-          hint="Geben sie hier die Tachymeter ID ein *(Pflichtfeld)" :rules="is_required"></v-text-field>
-        <v-text-field v-model="artifact_doc.comment" label="Kommentar *" hint="Geben Sie einen Kommentar an"
-          :rules="is_required"></v-text-field>
-        <v-textarea v-model="artifact_doc.east" label="Ostwert" hint="Geben sie den Ostwert an"></v-textarea>
-        <v-textarea v-model="artifact_doc.north" label="Nordwert" hint="Geben sie hier den Nordwert an"></v-textarea>
-        <v-textarea v-model="artifact_doc.height" label="Höhenwert" hint="Geben sie hier den Höhenwert an"></v-textarea> -->
+        <DocMeasuringPoints :utmPoints="artifact_doc.utmPoints" @addUtmPoint="addUtmPoint($event)"/>
       </v-tab-item>
 
       <v-tab-item class="px-4">
@@ -109,16 +101,18 @@
 
 <script>
 
+import VueCookies from 'vue-cookies';
 import DocDates from './DocDates.vue';
 import DocSections from './DocSections.vue';
 import DocExcavations from './DocExcavations.vue';
 import DocFeatures from './DocFeatures.vue';
+import DocUtmPoints from "./DocUtmPoints";
 import DocColors from "./DocColors";
 import axios from "axios";
 
 export default {
   name: 'ArtifactCreation',
-  components: { DocDates, DocSections, DocFeatures, DocExcavations, DocColors },
+  components: { DocDates, DocSections, DocFeatures, DocExcavations, DocUtmPoints, DocColors },
   data() {
     return {
       artifact_doc: {
@@ -132,6 +126,8 @@ export default {
         inscriptions: '',
         sections: [],
         features: [],
+        colors: [],
+        utmPoints: [],
 
         tachymeter: '',
         comment: '',
@@ -201,11 +197,23 @@ export default {
     addColor: function (color_id) {
       var context = this;
 
-      if (context.excavation_doc.colors == undefined) {
-        context.excavation_doc.colors = [color_id];
+      if (context.artifact_doc.colors == undefined) {
+        context.artifact_doc.colors = [color_id];
       } else {
-        context.excavation_doc.colors.push(color_id);
+        context.artifact_doc.colors.push(color_id);
       }
+      console.log(context.artifact_doc)
+    },
+    addUtmPoint: function (utmPoint_id) {
+      var context = this;
+
+      console.log("utm point hinzufügen")
+      if (context.artifact_doc.utmPoints == undefined) {
+        context.artifact_doc.utmPoints = [utmPoint_id];
+      } else {
+        context.artifact_doc.utmPoints.push(utmPoint_id);
+      }
+      console.log(context.artifact_doc)
     },
     //submit the form (either POST new artifacts or PUT existing artifacts)
     logForm() {
@@ -257,6 +265,8 @@ export default {
           interpretation: context.artifact_doc.interpretation,
 
           dates: context.artifact_doc.dates,
+          colors: context.artifact_doc.colors,
+          utmPoints: context.artifact_doc.utmPoints
 
         }
       })

@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../fb");
-const excavations = db.collection("excavations");
 const featuresDB = db.collection("features");
 const feature_typesDB = db.collection("feature-types");
 var admin = require("firebase-admin");
@@ -281,7 +280,6 @@ router.post("/", function (req, res, next) {
 router.put("/:feature_id", function (req, res, next) {
   //create feature JSON object for updating the featureDB
   var feature = {
-    section_id: req.body.section_id,
     number: req.body.number,
     title: req.body.title,
     description: req.body.description,
@@ -294,7 +292,7 @@ router.put("/:feature_id", function (req, res, next) {
   featuresDB
     .doc(req.params.feature_id)
     .update(feature)
-    .then((res) => {
+    .then((response) => {
       var feature_type = req.body;
 
       //remove all feature fields so only the type data remains
@@ -310,7 +308,7 @@ router.put("/:feature_id", function (req, res, next) {
       feature_typesDB
         .doc(feature.type_id)
         .update(feature_type)
-        .then((res) => {
+        .then((response) => {
           res.status(200).send("Updated feature and feature type ");
         })
         .catch((err) => {
