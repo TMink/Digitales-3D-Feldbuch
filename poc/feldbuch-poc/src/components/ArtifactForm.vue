@@ -19,7 +19,6 @@
           hint="Geben sie hier die Inschriften des Fundes an"></v-textarea>
         <v-text-field v-model="artifact_doc.literature" label="Zugehörige Literatur"> </v-text-field>
         <v-text-field v-model="artifact_doc.material" label="Material"> </v-text-field>
-        <v-text-field v-model="artifact_doc.number" label="Nummer"> </v-text-field>
         <v-text-field v-model="artifact_doc.producer" label="Erzeuger"> </v-text-field>
         <v-text-field v-model="artifact_doc.state" label="Erhaltungszustand"> </v-text-field>
         <v-text-field v-model="artifact_doc.type" label="Typ"> </v-text-field>
@@ -30,7 +29,7 @@
       </v-tab-item>
 
       <v-tab-item class="px-4">
-        <DocMeasuringPoints :utmPoints="artifact_doc.utmPoints" @addUtmPoint="addUtmPoint($event)"/>
+        <DocUtmPoints :utmPoints="artifact_doc.utmPoints" @addUtmPoint="addUtmPoint($event)"/>
       </v-tab-item>
 
       <v-tab-item class="px-4">
@@ -202,18 +201,15 @@ export default {
       } else {
         context.artifact_doc.colors.push(color_id);
       }
-      console.log(context.artifact_doc)
     },
     addUtmPoint: function (utmPoint_id) {
       var context = this;
 
-      console.log("utm point hinzufügen")
       if (context.artifact_doc.utmPoints == undefined) {
         context.artifact_doc.utmPoints = [utmPoint_id];
       } else {
         context.artifact_doc.utmPoints.push(utmPoint_id);
       }
-      console.log(context.artifact_doc)
     },
     //submit the form (either POST new artifacts or PUT existing artifacts)
     logForm() {
@@ -284,7 +280,7 @@ export default {
 
       axios({
         method: 'delete',
-        url: '/artifact/' + curArtifact,
+        url: '/artifacts/' + curArtifact,
       })
         .then(function (res) {
           context.$emit("view", "Fundübersicht");

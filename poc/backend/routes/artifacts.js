@@ -94,34 +94,21 @@ router.get("/:artifact_id", function (req, res, next) {
 
 /* POST new artifact */
 router.post("/", function (req, res, next) {
-  //check if feature_id exists
-  features
-    .doc(req.body.feature_id)
-    .get()
-    .then((doc) => {
-      if (doc.exists) {
-        //if it exists, add the artifact to DB
-        artifacts
-          .doc()
-          .set(req.body)
-          .then((response) => {
-            res.status(200).send("Added artifact");
-          })
-          .catch((err) => {
-            res.status(404).send("Couldn't add artifact: " + err);
-          });
-      } else {
-        res.status(404).send("No such artifact");
-      }
+
+  //if it exists, add the artifact to DB
+  artifacts
+    .doc()
+    .set(req.body)
+    .then((response) => {
+      res.status(200).send("Added artifact");
     })
     .catch((err) => {
-      res.status(404).send("Feature not found: " + err);
+      res.status(404).send("Couldn't add artifact: " + err);
     });
 });
 
 /* UPDATE artifact by ID*/
 router.put("/:artifact_id", function (req, res, next) {
-  console.log(req.body)
   artifacts
     .doc(req.params.artifact_id)
     .update(req.body)

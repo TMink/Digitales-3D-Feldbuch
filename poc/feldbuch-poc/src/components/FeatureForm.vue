@@ -185,7 +185,6 @@ export default {
         })
         .then(function(res) {
           context.feature_doc = res.data;
-          console.log(context.feature_doc)
           context.$emit("view", res.data.title + " bearbeiten");
         })
         .catch(function (error) {
@@ -210,94 +209,68 @@ export default {
 
       if (this.is_new == true) {
         httpRequest = 'post';
-        requestURL = '/features/' + VueCookies.get('currentExcavation');
+        requestURL = '/features';
       }
 
-      var newFeature 
+      var newFeature = {
+        title: context.feature_doc.title,
+        description: context.feature_doc.description,
+        number: context.feature_doc.number,
+        rel_localization: context.feature_doc.rel_localization,
+        interpretation: context.feature_doc.interpretation,
+        type_id: context.feature_doc.type_id,
+        artifacts: context.feature_doc.artifacts
+      }
 
       if (context.feature_doc.type == 'Überreste'){
-        newFeature = {
-          title: context.feature_doc.title,
-          description: context.feature_doc.description,
-          number: context.feature_doc.number,
-          rel_localization: context.feature_doc.rel_localization,
-          interpretation: context.feature_doc.interpretation,
-          type: context.feature_doc.type,
-          type_id: context.feature_doc.type_id,
-          artifacts: context.feature_doc.artifacts,
+          newFeature.type = context.feature_doc.type;
+          newFeature.age = context.feature_doc.age;
+          newFeature.gender = context.feature_doc.gender;
+          newFeature.pathology = context.feature_doc.pathology;
+          newFeature.preserved_bones = context.feature_doc.preserved_bones;
+          newFeature.burial_construction = context.feature_doc.burial_construction;
+          newFeature.burial_type = context.feature_doc.burial_type;
+          newFeature.funeral_type = context.feature_doc.funeral_type;
 
-          age: context.feature_doc.age,
-          gender: context.feature_doc.gender,
-          pathology: context.feature_doc.pathology,
-          preserved_bones: context.feature_doc.preserved_bones,
-          burial_construction: context.feature_doc.burial_construction,
-          burial_type: context.feature_doc.burial_type,
-          funeral_type: context.feature_doc.funeral_type,
-      }
-    }
+      } else if (context.feature_doc.type == 'Stratigrafische Einheit'){
+          newFeature.type = context.feature_doc.type;
+          newFeature.expansion = context.feature_doc.expansion;
+          newFeature.consistency_in = context.feature_doc.consistency_in;
+          newFeature.consistency_out = context.feature_doc.consistency_out;
+          newFeature.height_values = context.feature_doc.height_values;
 
-    if (context.feature_doc.type == 'Stratigrafische Einheit'){
-        newFeature = {
-          title: context.feature_doc.title,
-          description: context.feature_doc.description,
-          number: context.feature_doc.number,
-          rel_localization: context.feature_doc.rel_localization,
-          interpretation: context.feature_doc.interpretation,
-          type: context.feature_doc.type,
-          type_id: context.feature_doc.type_id,
-          artifacts: context.feature_doc.artifacts,
-
-          expansion: context.feature_doc.expansion,
-          consistency_in: context.feature_doc.consistency_in,
-          consistency_out: context.feature_doc.consistency_out,
-          height_values: context.feature_doc.height_values
-      }
-    }
-
-    if (context.feature_doc.type == 'Baulicher Bestand'){
-        newFeature = {
-          title: context.feature_doc.title,
-          description: context.feature_doc.description,
-          number: context.feature_doc.number,
-          rel_localization: context.feature_doc.rel_localization,
-          interpretation: context.feature_doc.interpretation,
-          type: context.feature_doc.type,
-          type_id: context.feature_doc.type_id,
-          artifacts: context.feature_doc.artifacts,
-
-          construction: context.feature_doc.construction,
-          masonry: context.feature_doc.masonry,
-          structure: context.feature_doc.structure,
-          style_features: context.feature_doc.style_features,
-          material: context.feature_doc.material,
-          stone_material: context.feature_doc.stone_material,
-          stone_processing: context.feature_doc.stone_processing,
-          spolia: context.feature_doc.spolia,
-          brick_type: context.feature_doc.brick_type,
-          brick_size: context.feature_doc.brick_size,
-          production_characteristics: context.feature_doc.production_characteristics,
-          binding: context.feature_doc.binding,
-          plaster_composition: context.feature_doc.plaster_composition,
-          grain_size: context.feature_doc.grain_size,
-          bond_consistency: context.feature_doc.bond_consistency,
-          joint_pattern: context.feature_doc.joint_pattern,
-          joint_dimensions: context.feature_doc.joint_dimensions,
-          plaster_surface_design: context.feature_doc.plaster_surface_design,
-          plaster_thickness: context.feature_doc.plaster_thickness,
-          plaster_expansion: context.feature_doc.plaster_expansion,
-          plaster_consistency: context.feature_doc.plaster_consistency,
-          plaster_aggregates: context.feature_doc.plaster_aggregates,
-          multilayer: context.feature_doc.multilayer,
-      }
+      } else if (context.feature_doc.type == 'Baulicher Bestand'){
+          newFeature.type = context.feature_doc.type;
+          newFeature.construction = context.feature_doc.construction;
+          newFeature.masonry = context.feature_doc.masonry;
+          newFeature.structure = context.feature_doc.structure;
+          newFeature.style_features = context.feature_doc.style_features;
+          newFeature.material = context.feature_doc.material;
+          newFeature.stone_material = context.feature_doc.stone_material;
+          newFeature.stone_processing = context.feature_doc.stone_processing;
+          newFeature.spolia = context.feature_doc.spolia;
+          newFeature.brick_type = context.feature_doc.brick_type;
+          newFeature.brick_size = context.feature_doc.brick_size;
+          newFeature.production_characteristics = context.feature_doc.production_characteristics;
+          newFeature.binding = context.feature_doc.binding;
+          newFeature.plaster_composition = context.feature_doc.plaster_composition;
+          newFeature.grain_size = context.feature_doc.grain_size;
+          newFeature.bond_consistency = context.feature_doc.bond_consistency;
+          newFeature.joint_pattern = context.feature_doc.joint_pattern;
+          newFeature.joint_dimensions = context.feature_doc.joint_dimensions;
+          newFeature.plaster_surface_design = context.feature_doc.plaster_surface_design;
+          newFeature.plaster_thickness = context.feature_doc.plaster_thickness;
+          newFeature.plaster_expansion = context.feature_doc.plaster_expansion;
+          newFeature.plaster_consistency = context.feature_doc.plaster_consistency;
+          newFeature.plaster_aggregates = context.feature_doc.plaster_aggregates;
+          newFeature.multilayer = context.feature_doc.multilayer;
     }
 
       //put/post request of edited/new feature
       axios({
         method: httpRequest,
         url: requestURL,
-        data: 
-          newFeature
-        ,
+        data: newFeature,
       })
       .then(function (res) {
         context.$emit("view", "Befundübersicht");
@@ -310,9 +283,10 @@ export default {
     deleteFeature: function () {
       var context = this;
       var curFeature = VueCookies.get('currentFeature');
+      var curFeature_type_id = context.feature_doc.type_id;
       axios({
         method: 'delete',
-        url: '/features/' + curFeature,
+        url: '/features/' + curFeature + '/' + curFeature_type_id,
       })
       .then(function (res) {
         context.$emit("view", "Befundübersicht");

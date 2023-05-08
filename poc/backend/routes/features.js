@@ -235,19 +235,18 @@ router.get("/:feature_id", function (req, res, next) {
 router.post("/", function (req, res, next) {
   //create feature JSON object for updating the featureDB
   var feature = {
-    section_id: req.body.section_id,
     number: req.body.number,
     title: req.body.title,
     description: req.body.description,
     interpretation: req.body.interpretation,
     rel_localization: req.body.rel_localization,
     type_id: req.body.type_id,
+    artifacts: req.body.artifacts
   };
 
   var feature_type = req.body;
 
   //remove all feature fields so only the type data remains
-  delete feature_type.section_id;
   delete feature_type.number;
   delete feature_type.title;
   delete feature_type.description;
@@ -286,6 +285,7 @@ router.put("/:feature_id", function (req, res, next) {
     interpretation: req.body.interpretation,
     rel_localization: req.body.rel_localization,
     type_id: req.body.type_id,
+    artifacts: req.body.artifacts
   };
 
   //update featureDB
@@ -303,6 +303,7 @@ router.put("/:feature_id", function (req, res, next) {
       delete feature_type.interpretation;
       delete feature_type.rel_localization;
       delete feature_type.type_id;
+      delete feature_type.artifacts;
 
       //update the feature_typesDB
       feature_typesDB
@@ -326,12 +327,12 @@ router.delete("/:feature_id/:feature_type_id", async function (req, res, next) {
   featuresDB
     .doc(req.params.feature_id)
     .delete({ exists: true })
-    .then((res) => {
+    .then((response) => {
       //delete the connected feature_type document
       feature_typesDB
         .doc(req.params.feature_type_id)
         .delete({ exists: true })
-        .then((res) => {
+        .then((response) => {
           res.status(200).send("Deleted feature: " + req.params.feature_id);
         })
         .catch((err) => {
