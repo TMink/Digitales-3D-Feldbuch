@@ -12,14 +12,14 @@
             <v-textarea v-model="feature_doc.description" label="Beschreibung" hint="Geben Sie hier eine kurze Beschreibung des Befunds an"></v-textarea>
             <v-textarea v-model="feature_doc.rel_localization" label="Lokalisierung" item-value="_id" item-text="title"  hint=" *(Pflichtfeld)"> </v-textarea>
             <v-textarea v-model="feature_doc.interpretation" label="Interpretation" item-value="_id" item-text="title"  hint=" *(Pflichtfeld)"> </v-textarea>
-            <v-select v-model="feature_doc.type_id" label="Befundtyp *" :items="['Überreste', 'Stratigrafische Einheit', 'Baulicher Bestand']"></v-select>
+            <v-select v-model="feature_doc.type" label="Befundtyp *" :items="['Überreste', 'Stratigrafische Einheit', 'Baulicher Bestand']"></v-select>
            
         </v-tab-item>
 
         <v-tab-item class="px-4">
-          <v-subheader v-if="feature_doc.type_id !== 'Baulicher Bestand' && feature_doc.type_id !== 'Überreste' && 
-          feature_doc.type_id !== 'Stratigrafische Einheit'"> Bisher wurde kein Befundtyp angegeben</v-subheader>
-          <template v-if="feature_doc.type_id === 'Überreste'">
+          <v-subheader v-if="feature_doc.type !== 'Baulicher Bestand' && feature_doc.type !== 'Überreste' && 
+          feature_doc.type !== 'Stratigrafische Einheit'"> Bisher wurde kein Befundtyp angegeben</v-subheader>
+          <template v-if="feature_doc.type === 'Überreste'">
             <v-text-field v-model="feature_doc.age" label="Alter" hint="Geben Sie das Alter an"></v-text-field>
             <v-text-field v-model="feature_doc.gender" label="Geschlecht" hint="Geben Sie das Geschlecht an"></v-text-field>
             <v-text-field v-model="feature_doc.pathology" label="Pathologie" hint="Geben Sie die Pathologie an"></v-text-field>
@@ -28,7 +28,7 @@
             <v-text-field v-model="feature_doc.funeral_type" label="Grabtyp" hint="Geben Sie den Grabtyp an"></v-text-field>
             <v-text-field v-model="feature_doc.burial_construction" label="Grabkonstruktion" hint="Geben Sie die Grabkonstruktion an)"></v-text-field>
           </template>
-          <template v-if="feature_doc.type_id === 'Baulicher Bestand'">
+          <template v-if="feature_doc.type === 'Baulicher Bestand'">
             <v-text-field v-model="feature_doc.construction" label="Bauart" hint="Geben Sie die Bauart an"></v-text-field>
             <v-text-field v-model="feature_doc.masonry" label="Mauerwert" hint="Geben Sie das Mauerwerk an"></v-text-field>
             <v-text-field v-model="feature_doc.structure" label="Struktur" hint="Geben Sie die Struktur an"></v-text-field>
@@ -54,7 +54,7 @@
             <v-text-field v-model="feature_doc.multilayer" label="Mehrlagigkeit" hint="Geben Sie die Mehrlagigkeit an"></v-text-field>
             
           </template>
-          <template v-if="feature_doc.type_id === 'Stratigrafische Einheit'">
+          <template v-if="feature_doc.type === 'Stratigrafische Einheit'">
             <v-text-field v-model="feature_doc.expansion" label="Ausdehnung" hint="Geben Sie die Ausdehnung an"></v-text-field>
             <v-text-field v-model="feature_doc.consistency_in" label="Konistenz Schichtinneres" hint="Geben Sie die innere Schichtkonsistenz an"></v-text-field>
             <v-text-field v-model="feature_doc.consistency_out" label="Konsistenz Schichtäußeres" hint="Geben Sie die äußere Schichtkonsistenz an"></v-text-field>
@@ -117,7 +117,7 @@ export default {
         number: '',
         rel_localization: '',
         interpretation: '',
-        type_id: '',
+        type: '',
         sections: [],
         artifacts: [],
 
@@ -213,18 +213,17 @@ export default {
         httpRequest = 'post';
         requestURL = '/features/' + VueCookies.get('currentExcavation');
       }
-      //put/post request of edited/new feature
-      axios({
-        method: httpRequest,
-        url: requestURL,
-        data: {
-          //project_id: context.project_id,
+
+      var newFeature 
+
+      if (context.feature_doc.type == 'Überreste'){
+        newFeature = {
           title: context.feature_doc.title,
           description: context.feature_doc.description,
           number: context.feature_doc.number,
           rel_localization: context.feature_doc.rel_localization,
           interpretation: context.feature_doc.interpretation,
-          type_id: context.feature_doc.type_id,
+          type: context.feature_doc.type,
           sections: context.feature_doc.sections,
           artifacts: context.feature_doc.artifacts,
 
@@ -235,6 +234,37 @@ export default {
           burial_construction: context.feature_doc.burial_construction,
           burial_type: context.feature_doc.burial_type,
           funeral_type: context.feature_doc.funeral_type,
+      }
+    }
+
+    if (context.feature_doc.type == 'Stratigrafische Einheit'){
+        newFeature = {
+          title: context.feature_doc.title,
+          description: context.feature_doc.description,
+          number: context.feature_doc.number,
+          rel_localization: context.feature_doc.rel_localization,
+          interpretation: context.feature_doc.interpretation,
+          type: context.feature_doc.type,
+          sections: context.feature_doc.sections,
+          artifacts: context.feature_doc.artifacts,
+
+          expansion: context.feature_doc.expansion,
+          consistency_in: context.feature_doc.consistency_in,
+          consistency_out: context.feature_doc.consistency_out,
+          height_values: context.feature_doc.height_values
+      }
+    }
+
+    if (context.feature_doc.type == 'Baulicher Bestand'){
+        newFeature = {
+          title: context.feature_doc.title,
+          description: context.feature_doc.description,
+          number: context.feature_doc.number,
+          rel_localization: context.feature_doc.rel_localization,
+          interpretation: context.feature_doc.interpretation,
+          type: context.feature_doc.type,
+          sections: context.feature_doc.sections,
+          artifacts: context.feature_doc.artifacts,
 
           construction: context.feature_doc.construction,
           masonry: context.feature_doc.masonry,
@@ -259,12 +289,18 @@ export default {
           plaster_consistency: context.feature_doc.plaster_consistency,
           plaster_aggregates: context.feature_doc.plaster_aggregates,
           multilayer: context.feature_doc.multilayer,
+      }
+    }
 
-          expansion: context.feature_doc.expansion,
-          consistency_in: context.feature_doc.consistency_in,
-          consistency_out: context.feature_doc.consistency_out,
-          height_values: context.feature_doc.height_values
-        }
+    console.log(newFeature);
+
+      //put/post request of edited/new feature
+      axios({
+        method: httpRequest,
+        url: requestURL,
+        data: 
+          newFeature
+        ,
       })
       .then(function (res) {
         context.$emit("view", "Befundübersicht");
