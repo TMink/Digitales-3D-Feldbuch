@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../fb");
-const features = db.collection("features");
 const artifacts = db.collection("artifacts");
 var admin = require("firebase-admin");
 
@@ -27,7 +26,8 @@ function getArtifactJson(doc) {
     producer: doc.data().producer,
     material: doc.data().material,
     type: doc.data().type,
-    colors: doc.data().colors
+    colors: doc.data().colors,
+    utmPoints: doc.data().utmPoints
   };
 }
 
@@ -121,28 +121,15 @@ router.post("/", function (req, res, next) {
 
 /* UPDATE artifact by ID*/
 router.put("/:artifact_id", function (req, res, next) {
-  //check if feature_id exists
-  features
-    .doc(req.body.feature_id)
-    .get()
-    .then((doc) => {
-      if (doc.exists) {
-        //if it exists, add the artifact to DB
-        artifacts
-          .doc(req.params.artifact_id)
-          .update(req.body)
-          .then((response) => {
-            res.status(200).send("Updated artifact");
-          })
-          .catch((err) => {
-            res.status(404).send("Couldn't update artifact: " + err);
-          });
-      } else {
-        res.status(404).send("No such feature");
-      }
+  console.log(req.body)
+  artifacts
+    .doc(req.params.artifact_id)
+    .update(req.body)
+    .then((response) => {
+      res.status(200).send("Updated artifact");
     })
     .catch((err) => {
-      res.status(404).send("Feature not found: " + err);
+      res.status(404).send("Couldn't update artifact: " + err);
     });
 });
 
