@@ -56,8 +56,8 @@ export default {
      * @param {String} localDBName  - Database name
      * @param {String} storeName    - Object store name
      */
-     getModel: async function( url, dataCategory, identifier, localDBName,
-                              storeName) {
+     getModelFromBackend: async function( url, dataCategory, identifier, 
+                                           localDBName, storeName) {
 
       /* Get Data from backend */
       const modelFromBackend = await fromBackend.getData( url, dataCategory,
@@ -108,6 +108,41 @@ export default {
         }
 
       })
+
+    },
+
+    /**
+     * 
+     * @param {String} modelID    - Key under which the model is stored in
+     *                              Object Store
+     * @param {String} dbName     - Name of Database
+     * @param {String} storeName  - Name of Object Store
+     */
+     loadMesh: async function(modelID, dbName, storeName) {
+
+      const mesh = new THREE.Mesh()
+      const model = await fromOfflineDB.getObject( modelID, dbName, storeName );
+
+      const object = new OBJLoader().parse( model.result.model )
+
+      var textLoader = new THREE.TextureLoader().load( model.result.texture )
+
+      const material = new THREE.MeshBasicMaterial( {
+        map: textLoader,
+        shadowSide: THREE.DoubleSide,
+        side: THREE.DoubleSide
+      } )
+
+      object.traverse( (child) => {
+        if( child instanceof THREE.Mesh ) {
+          mesh.geometry = child.geometry
+        }
+      } )
+
+      mesh.material = material
+      mesh.name = model.result.title
+
+      this.scene.add(mesh)
 
     },
 
