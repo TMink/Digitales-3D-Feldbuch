@@ -33,6 +33,7 @@
     </v-navigation-drawer>
 
     <v-main>
+      <Pathbar :key="path_reload" />
       <router-view @view="onViewChange"></router-view>
     </v-main>
 
@@ -43,18 +44,21 @@
 
 <script>
 import AppFooter from './components/AppFooter.vue';
+import Pathbar from './components/Pathbar.vue';
 import VueCookies from 'vue-cookies';
 
 export default {
   name: 'App',
   components: {
-    AppFooter
+    AppFooter,
+    Pathbar
   },
   data: function () {
     return {
       backbutton_link: '',
       navdrawer: false,
       toolbar_title: 'Digitales 3D-Feldbuch',
+      path_reload: 0,
       navbar_items: [
         { link: "/projects", title: "Projektübersicht" },
         { link: "/3dview", title: "3D-Ansicht" },
@@ -67,6 +71,7 @@ export default {
     },
     onViewChange(title) {
       this.toolbar_title = title;
+      this.path_reload += 1;
     },
     savepath() {
       setpath(this.path);
