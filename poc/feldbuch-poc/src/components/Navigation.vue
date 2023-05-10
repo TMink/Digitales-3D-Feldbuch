@@ -1,6 +1,6 @@
 <template>
     <div id="navbar">
-        <v-row justify="center">
+        <v-row id="buttons" justify="center">
           <v-card class="ma-2" color="#BC987D" @click="changePage('ProjectsOverview')" dark>
             <v-card-title class="justify-center"> Projekt </v-card-title>
           </v-card>
@@ -72,6 +72,21 @@
 <style scoped>
     #navbar {
         background-color: #B4A27D;
+        width: auto;
+        height: 70px;
+        transition: 0.08s ease-in-out;
     }
-    
+
+    @media (max-width: 755px){
+      #navbar{
+        height: 150px;
+        transition: 0.08s ease-in-out;
+      }
+    }
+
+    @media (max-width: 405px){
+      #navbar{
+        height: 230px;
+      }
+    }
 </style>
