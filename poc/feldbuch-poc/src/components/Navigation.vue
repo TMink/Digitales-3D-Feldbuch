@@ -72,6 +72,22 @@
 <style scoped>
     #navbar {
         background-color: #B4A27D;
+        height: 70px;
+        transition: 0.08s ease-in-out;
     }
+
+    @media (max-width: 730px){
+        #navbar{
+          height: 150px;
+          transition: 0.08s ease-in-out;
+        }
+    }
+
+    @media (max-width: 385px){
+      #navbar{
+        height: 230px;
+        transition: 0.08s ease-in-out;
+      }
+  }
     
 </style>
