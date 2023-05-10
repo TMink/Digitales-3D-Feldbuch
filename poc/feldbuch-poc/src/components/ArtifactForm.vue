@@ -45,14 +45,11 @@
       </v-tab-item>
 
       <v-tab-item class="px-4">
-        Kalenderdaten TODO
         <DocDates :dateslist="artifact_doc.dates" @addDate="addDate($event)" />
       </v-tab-item>
 
       <v-tab-item>
-        Bilder TODO
-        <!-- <v-textarea v-model="artifact_doc.interpretation" label="Interpretation"
-          hint="Geben sie hier die Interpretation an"></v-textarea> -->
+        <DocImages :imageslist="artifact_doc.images" @addImage="addImage($event)"/>
       </v-tab-item>
 
       <v-tab-item>
@@ -105,13 +102,20 @@ import DocDates from './DocDates.vue';
 import DocSections from './DocSections.vue';
 import DocExcavations from './DocExcavations.vue';
 import DocFeatures from './DocFeatures.vue';
-import DocUtmPoints from "./DocUtmPoints";
-import DocColors from "./DocColors";
-import axios from "axios";
+import DocUtmPoints from './DocUtmPoints';
+import DocImages from './DocImages';
+import DocColors from './DocColors';
+import axios from 'axios';
 
 export default {
   name: 'ArtifactCreation',
-  components: { DocDates, DocSections, DocFeatures, DocExcavations, DocUtmPoints, DocColors },
+  components: { DocDates, 
+    DocSections, 
+    DocFeatures, 
+    DocExcavations, 
+    DocUtmPoints, 
+    DocImages, 
+    DocColors },
   data() {
     return {
       artifact_doc: {
@@ -125,6 +129,7 @@ export default {
         inscriptions: '',
         sections: [],
         features: [],
+        images: [],
         colors: [],
         utmPoints: [],
 
@@ -191,6 +196,15 @@ export default {
         context.artifact_doc.dates = [date_id];
       } else {
         context.artifact_doc.dates.push(date_id);
+      }
+    },
+    addImage: function (image_id) {
+      var context = this;
+
+      if (context.artifact_doc.images == undefined) {
+        context.artifact_doc.images = [image_id];
+      } else {
+        context.artifact_doc.images.push(image_id);
       }
     },
     addColor: function (color_id) {
@@ -261,6 +275,7 @@ export default {
           interpretation: context.artifact_doc.interpretation,
 
           dates: context.artifact_doc.dates,
+          images: context.artifact_doc.images,
           colors: context.artifact_doc.colors,
           utmPoints: context.artifact_doc.utmPoints
 
