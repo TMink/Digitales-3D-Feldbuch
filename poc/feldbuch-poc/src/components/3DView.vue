@@ -4,7 +4,7 @@
 
 <script>
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { ArcballControls } from 'three/examples/jsm/controls/ArcballControls.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import {fromOfflineDB} from '../ConnectionToOfflineDB.js';
 import {fromBackend} from '../ConnectionToBackend.js';
@@ -40,13 +40,16 @@ export default {
 
     /**
      * Function overview: 
-     *  getModel        - Get model-Data from backend and transfer it to offline
-     *                    DB for furthor useage
-     *  getDataFromUrl  - Get model-/texture-Data from given url
-     *  loadModel       - Loads a Model from IndexedDB into the scene. This
-     *                    version has the standart texture from the object and
-     *                    the name of the created mesh is the title of the 
-     *                    object.
+     *  getModel              - Get model-Data from backend and transfer it to 
+     *                          offline DB for furthor useage
+     *  getDataFromUrl        - Get model-/texture-Data from given url
+     *  loadModel             - Loads a Model from IndexedDB into the scene. 
+     *                          This version has the standart texture from the 
+     *                          object and the name of the created mesh is the 
+     *                          title of the object.
+     *  loadWithColor         - Change the current color/texture of a model in
+     *                          the scene to a new color
+     *  updateCameraPosition  - Moves the Camera to specified model in scene
      *  ------------------------------------------------------------------------
      *  init            - Initialize the scene
      *  animate         - Animate the scene
@@ -60,7 +63,7 @@ export default {
      * @param {String} localDBName  - Database name
      * @param {String} storeName    - Object store name
      */
-     getModelFromBackend: async function( url, dataCategory, identifier, 
+    getModelFromBackend: async function( url, dataCategory, identifier, 
                                            localDBName, storeName) {
 
       /* Get Data from backend */
@@ -121,7 +124,7 @@ export default {
      * @param {String} dbName     - Name of Database
      * @param {String} storeName  - Name of Object Store
      */
-     loadMesh: async function(modelID, dbName, storeName) {
+    loadMesh: async function(modelID, dbName, storeName) {
 
       const mesh = new THREE.Mesh()
       const model = await fromOfflineDB.getObject( modelID, dbName, storeName );
@@ -153,9 +156,25 @@ export default {
      * @param {String} model  - Name of model in scene
      * @param {String} color  - Name of color
      */
-     loadWithColor: function(model, color) {
+    loadWithColor: function(model, color) {
       this.scene.getObjectByName( model ).material.color = 
         new THREE.Color( color )
+    },
+
+    /**
+     * @param {String} model  - Name of model in scene
+     */
+    updateCameraPosition: function(model) {
+
+      var center = new THREE.Vector3;
+      const box = new THREE.Box3().setFromObject(this.scene.getObjectByName(model));
+      box.getCenter(center)
+
+      this.controls.target.set(center.x, center.y, center.z);
+      this.camera.position.set(center.x, center.y - 15, center.z);
+
+      this.controls.update();
+
     },
 
     init: function() {
@@ -210,9 +229,9 @@ export default {
 
 
       /* ##### Controls ##### */
-      this.controls = new OrbitControls( this.camera, 
-                                         this.renderer.domElement );
-      this.controls.update();
+      this.controls = new ArcballControls( this.camera, 
+                                           this.renderer.domElement,
+                                           this.scene );
 
       
       /* ##### FOR DEBUGGING ##### */
