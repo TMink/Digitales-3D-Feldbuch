@@ -29,6 +29,8 @@ export default {
 
   async mounted() {
 
+    window.addEventListener( 'resize', this.onWindowResize, false)
+
     await fromOfflineDB.syncLocalDBs();
 
     this.init();
@@ -40,7 +42,7 @@ export default {
 
     /**
      * Function overview: 
-     *  getModel              - Get model-Data from backend and transfer it to 
+     *  getModelFromBackend   - Get model-Data from backend and transfer it to 
      *                          offline DB for furthor useage
      *  getDataFromUrl        - Get model-/texture-Data from given url
      *  loadModel             - Loads a Model from IndexedDB into the scene. 
@@ -50,9 +52,10 @@ export default {
      *  loadWithColor         - Change the current color/texture of a model in
      *                          the scene to a new color
      *  updateCameraPosition  - Moves the Camera to specified model in scene
+     *  onWindowResize        - Resizes the threeJS element
      *  ------------------------------------------------------------------------
-     *  init            - Initialize the scene
-     *  animate         - Animate the scene
+     *  init                  - Initialize the scene
+     *  animate               - Animate the scene
      */
 
     /**
@@ -64,7 +67,7 @@ export default {
      * @param {String} storeName    - Object store name
      */
     getModelFromBackend: async function( url, dataCategory, identifier, 
-                                           localDBName, storeName) {
+                                         localDBName, storeName) {
 
       /* Get Data from backend */
       const modelFromBackend = await fromBackend.getData( url, dataCategory,
@@ -81,7 +84,7 @@ export default {
                              project_id: modelFromBackend[0].project_id,
                              title: modelFromBackend[0].title,
                              model: modelData.data,
-                             texture: textureData.data }
+                             texture: textureData.data };
 
       /* Save Data in offline DB */
       await fromOfflineDB.addObject( newModelData, localDBName, storeName );
@@ -97,24 +100,17 @@ export default {
       return new Promise( (resolve, reject ) => {
 
         try {
-
           axios
           .get( url )
           .then( res => {
-
             resolve(res)
-
-          })
-
-
+          });
         }
         catch( error ) {
-
-          console.log( error )
-
+          console.log( error );
         }
 
-      })
+      });
 
     },
 
@@ -126,29 +122,29 @@ export default {
      */
     loadMesh: async function(modelID, dbName, storeName) {
 
-      const mesh = new THREE.Mesh()
+      const mesh = new THREE.Mesh();
       const model = await fromOfflineDB.getObject( modelID, dbName, storeName );
 
-      const object = new OBJLoader().parse( model.result.model )
+      const object = new OBJLoader().parse( model.result.model );
 
-      var textLoader = new THREE.TextureLoader().load( model.result.texture )
+      var textLoader = new THREE.TextureLoader().load( model.result.texture );
 
       const material = new THREE.MeshBasicMaterial( {
         map: textLoader,
         shadowSide: THREE.DoubleSide,
         side: THREE.DoubleSide
-      } )
+      } );
 
       object.traverse( (child) => {
         if( child instanceof THREE.Mesh ) {
           mesh.geometry = child.geometry
         }
-      } )
+      } );
 
-      mesh.material = material
-      mesh.name = model.result.title
+      mesh.material = material;
+      mesh.name = model.result.title;
 
-      this.scene.add(mesh)
+      this.scene.add(mesh);
 
     },
 
@@ -174,6 +170,14 @@ export default {
       this.camera.position.set(center.x, center.y - 15, center.z);
 
       this.controls.update();
+
+    },
+
+    onWindowResize: function() {
+
+      this.renderer.setSize( window.innerWidth, window.innerHeight );
+      this.camera.aspect = window.innerWidth / window.innerHeight;
+      this.camera.updateProjectionMatrix();
 
     },
 
