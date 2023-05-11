@@ -1,5 +1,7 @@
 <template>
-    <div id="container"></div>
+    <div id="container">
+      <div id="gui_container"></div>
+    </div>
 </template>
 
 <script>
@@ -8,6 +10,7 @@ import { ArcballControls } from 'three/examples/jsm/controls/ArcballControls.js'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import {fromOfflineDB} from '../ConnectionToOfflineDB.js';
 import {fromBackend} from '../ConnectionToBackend.js';
+import { GUI } from 'dat.gui';
 import axios from 'axios';
 
 export default {
@@ -22,6 +25,7 @@ export default {
       scene: null,
       renderer: null,
       controls: null,
+      gui: null,
 
     }
 
@@ -103,7 +107,7 @@ export default {
           axios
           .get( url )
           .then( res => {
-            resolve(res)
+            resolve(res);
           });
         }
         catch( error ) {
@@ -163,7 +167,8 @@ export default {
     updateCameraPosition: function(model) {
 
       var center = new THREE.Vector3;
-      const box = new THREE.Box3().setFromObject(this.scene.getObjectByName(model));
+      const box = new THREE.Box3().setFromObject(
+        this.scene.getObjectByName(model));
       box.getCenter(center)
 
       this.controls.target.set(center.x, center.y, center.z);
@@ -237,6 +242,25 @@ export default {
                                            this.renderer.domElement,
                                            this.scene );
 
+
+      
+      /* ##### GUI ##### */
+      this.gui = new GUI( {autoPlace: false} );
+      this.gui.domElement.id = 'gui';
+      gui_container.appendChild( this.gui.domElement );
+
+      /* Data Examples */
+      var guiFunctions = { 
+        add: () => {
+          // --> Place gui function here <--
+          
+          // Example does not work in current state:
+          // this.loadMesh('E4bhNKOJBQw5ZBQwsWoh', 'Geometry','excavation')
+        }
+      }
+
+      this.gui.add(guiFunctions, 'add')
+
       
       /* ##### FOR DEBUGGING ##### */
       //console.log(this.getData.data.model)
@@ -259,5 +283,8 @@ export default {
 <style scoped>
 
     #container{height: 100%}
+    #gui_container{
+      position: absolute;
+    }
 
 </style>
