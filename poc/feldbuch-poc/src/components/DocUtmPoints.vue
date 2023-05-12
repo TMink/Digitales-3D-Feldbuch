@@ -121,7 +121,6 @@ export default {
             });
         },
         remove_utmPoint: function () {
-            console.log(this.selected_utmPoint)
             var context = this;
             context.selected_utmPoint.forEach(item => {
                 for (var i = 0; i < context.utmPoints_list.length; i++) {

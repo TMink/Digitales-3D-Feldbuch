@@ -94,7 +94,6 @@ router.post("/", function (req, res, next) {
     .catch((err) => {
       res.status(404).send("Couldn't add color: " + err);
     });
-    
 });
 
 /* UPDATE color by ID*/

@@ -67,7 +67,6 @@ export default {
             })
                 .then(function (res) {
                     res.data.forEach(item => {
-                        console.log(item)
                         var color = {
                             id: item.id,
                             title: item.title,
@@ -120,7 +119,6 @@ export default {
             });
         },
         remove_color: function () {
-            console.log(this.selected_color)
             var context = this;
             context.selected_color.forEach(item => {
                 for (var i = 0; i < context.colors_list.length; i++) {
