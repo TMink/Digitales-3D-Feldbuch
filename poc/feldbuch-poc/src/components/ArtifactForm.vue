@@ -99,7 +99,6 @@
 
 import VueCookies from 'vue-cookies';
 import DocDates from './DocDates.vue';
-import DocSections from './DocSections.vue';
 import DocExcavations from './DocExcavations.vue';
 import DocFeatures from './DocFeatures.vue';
 import DocUtmPoints from './DocUtmPoints';
@@ -110,7 +109,6 @@ import axios from 'axios';
 export default {
   name: 'ArtifactCreation',
   components: { DocDates, 
-    DocSections, 
     DocFeatures, 
     DocExcavations, 
     DocUtmPoints, 
@@ -127,7 +125,6 @@ export default {
         producer: '',
         type: '',
         inscriptions: '',
-        sections: [],
         features: [],
         images: [],
         colors: [],
@@ -250,10 +247,7 @@ export default {
           number: context.artifact_doc.number,
           title: context.artifact_doc.title,
           description: context.artifact_doc.description,
-          excavation_id: VueCookies.get('currentExcavation'),
           state: context.artifact_doc.state,
-          sections: context.artifact_doc.sections,
-          features: context.artifact_doc.features,
           literature: context.artifact_doc.literature,
           inscriptions: context.artifact_doc.inscriptions,
           producer: context.artifact_doc.producer,
@@ -274,6 +268,7 @@ export default {
 
           interpretation: context.artifact_doc.interpretation,
 
+          features: context.artifact_doc.features,
           dates: context.artifact_doc.dates,
           images: context.artifact_doc.images,
           colors: context.artifact_doc.colors,

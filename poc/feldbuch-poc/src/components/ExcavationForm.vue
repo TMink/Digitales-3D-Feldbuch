@@ -173,7 +173,8 @@ export default {
           location: context.excavation_doc.location,
           organization: context.excavation_doc.organization,
           dates: context.excavation_doc.dates,
-          contacts: context.excavation_doc.contacts
+          contacts: context.excavation_doc.contacts,
+          sections: context.excavation_doc.sections
         }
       })
         .then(function (res) {

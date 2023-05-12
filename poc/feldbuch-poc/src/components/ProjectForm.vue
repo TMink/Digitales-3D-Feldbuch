@@ -125,7 +125,8 @@ export default {
         data: {
           title: context.project_doc.title,
           description: context.project_doc.description,
-          excavations: context.project_doc.excavations
+          excavations: context.project_doc.excavations,
+          contacts: context.project_doc.contacts
         }
       })
         .then(function (res) {

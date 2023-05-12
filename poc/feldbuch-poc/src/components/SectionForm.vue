@@ -78,9 +78,11 @@ export default {
       section_doc: {
         title: "",
         description: "",
+        startLevel: "",
+        endLevel: "",
         contacts: [],
         features: [],
-        artifacts: []
+        artifacts: [],
       },
       is_new: true,
       is_required: [v => !!v || "Pflichtfeld"],
@@ -144,7 +146,8 @@ export default {
           startLevel: context.section_doc.startLevel,
           endLevel: context.section_doc.endLevel,
           contacts: context.section_doc.contacts,
-          features: context.section_doc.features
+          features: context.section_doc.features,
+          artifacts: context.section_doc.artifacts,
         }
       })
         .then(function (res) {
