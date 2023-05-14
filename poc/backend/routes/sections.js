@@ -23,7 +23,8 @@ function getSectionJson(doc) {
     endLevel: doc.data().endLevel,
     contacts: doc.data().contacts,
     features: doc.data().features,
-    artifacts: doc.data().artifacts
+    artifacts: doc.data().artifacts,
+    models: doc.data().models
   };
 }
 
