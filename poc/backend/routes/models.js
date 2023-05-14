@@ -93,7 +93,6 @@ router.get("/list/:model_ids", async function (req, res, next) {
     res.status(500).send("Error retrieving models from database");
   }
 
-  console.log(model_ids)
   // generate signed URLs for every retrieved model
   var modelsWithURLs = await Promise.all(
     modelsArray.docs.map(async (item) => {
@@ -112,7 +111,7 @@ router.get("/list/:model_ids", async function (req, res, next) {
         res.status(500).send("Error retrieving texture URL: " + error);
       }
 
-      const model = getModelJson(item, modelURL, textureURL);
+      var model = getModelJson(item, modelURL, textureURL);
       return model;
     })
   );
@@ -125,7 +124,7 @@ router.get("/list/:model_ids", async function (req, res, next) {
 router.get("/", async function (req, res, next) {
   //get models from db
   try {
-    var modelsArray = await models.get();
+    var modelsArray = await modelsDB.get();
   } catch (error) {
     res.status(500).send("Error retrieving models from database");
   }
@@ -144,13 +143,7 @@ router.get("/", async function (req, res, next) {
         res.status(500).send("Error retrieving texture URL: " + error);
       }
 
-      const model = {
-        id: item.id,
-        project_id: item.data().project_id,
-        title: item.data().title,
-        model: modelURL,
-        texture: textureURL,
-      };
+      var model = getModelJson(item, modelURL, textureURL);
       return model;
   }));
   res.status(200).send(modelsWithURLs);
@@ -158,19 +151,13 @@ router.get("/", async function (req, res, next) {
 
 /* GET model by ID */
 router.get("/:model_id", function (req, res, next) {
-  models
+  modelsDB
     .doc(req.params.model_id).get()
     .then((doc) => {
 
       generateSignedUrl(req.params.model_id + ".obj").catch(console.error).then(modelURL => {
         generateSignedUrl(req.params.model_id + ".jpg").catch(console.error).then(textureURL => {
-          const model = {
-            id: doc.id,
-            project_id: doc.data().project_id,
-            title: doc.data().title,
-            model: modelURL,
-            texture: textureURL,
-          };
+          var model = getModelJson(item, modelURL, textureURL);
           res.status(200).send(model);
         });
       });
@@ -182,7 +169,7 @@ router.get("/:model_id", function (req, res, next) {
 
 /* POST new model */
 router.post("/", async function (req, res, next) {
-  models
+  modelsDB
     .add(req.body)
     .then((response) => {
       console.log
@@ -245,7 +232,7 @@ router.post("/upload/:model_id",
 
 /* UPDATE model by ID*/
 router.put("/:model_id", function (req, res, next) {
-  models
+  modelsDB
     .doc(req.params.model_id)
     .update(req.body)
     .then((response) => {
@@ -259,7 +246,7 @@ router.put("/:model_id", function (req, res, next) {
 
 /* DELETE model by ID*/
 router.delete("/:model_id", async function (req, res, next) {
-  models
+  modelsDB
     .doc(req.params.model_id)
     .delete({ exists: true })
     .then((response) => {
