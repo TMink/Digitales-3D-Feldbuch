@@ -161,35 +161,35 @@ router.put("/:section_id", async function (req, res, next) {
 router.delete("/:excavation_id/:section_id", async function (req, res, next) {
   // delete section from MongoDB by id
   try {
-    const result = await Section.findByIdAndDelete(req.params.excavation);
+    const result = await Section.findByIdAndDelete(req.params.section_id);
   } catch (error) {
-    res.status(500).send("Couldn't edit Project: " + error.message);
+    res.status(500).send("Couldn't delete Section: " + error.message);
   }
 
-  // get project from MongoDB by id
+  // get excavation from MongoDB by id
   try {
-    var project = await Project.findById(req.params.project_id).exec();
+    var excavation = await Excavation.findById(req.params.excavation_id).exec();
   } catch (error) {
-    res.status(404).send("No project with ID: " + req.params.project_id + " found");
+    res.status(404).send("No excavation with ID: " + req.params.excavation_id + " found");
   }
 
-  // remove the deleted excavation id from this project
-  const index = project.excavations.indexOf(req.params.excavation_id);
+  // remove the deleted section id from this project
+  const index = excavation.sections.indexOf(req.params.section_id);
 
   if (index > -1) {
-    project.excavations.splice(index, 1);
+    excavation.sections.splice(index, 1);
   } else {
-    res.status(400).send("The deleted excavation is not part of the current project");
+    res.status(400).send("The deleted section is not part of the current excavation");
   }
 
-  // update the edited project in MongoDB
+  // update the edited excavation in MongoDB
   try {
-    var project = await Project.findByIdAndUpdate(req.params.project_id, project);
+    var excavation = await Excavation.findByIdAndUpdate(req.params.excavation_id, excavation);
   } catch (error) {
-    res.status(404).send("No project with ID: " + req.params.project_id + " found");
+    res.status(404).send("No excavation with ID: " + req.params.excavation_id + " found");
   }
 
-  res.status(200).send("Successfully deleted excavation");
+  res.status(200).send("Successfully deleted section");
 });
 
 module.exports = router;
