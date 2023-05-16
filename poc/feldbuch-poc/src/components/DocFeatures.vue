@@ -47,7 +47,7 @@ export default {
 
             axios({
                 method: 'get',
-                url: '/features/basiclist/' + context.featureslist.toString(),
+                url: '/features/list/' + context.featureslist.toString(),
                 responseType: 'json'
             })
             .then(function (res) {
