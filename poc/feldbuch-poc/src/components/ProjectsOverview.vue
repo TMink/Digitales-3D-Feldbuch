@@ -12,7 +12,7 @@
     </div>    
     <v-form>
       <v-list>
-          <v-list-item class="mt-5" v-if="current_project.id !== undefined" v-on:click="modifyProject(current_project.id)">
+          <v-list-item class="mt-5" v-if="current_project._id !== undefined" v-on:click="modifyProject(current_project._id)">
                   <v-chip>
                     Derzeit ausgewählt
                   </v-chip>      
@@ -27,7 +27,7 @@
       <v-divider></v-divider>
       <v-subheader v-if="projects.length === 0 && loading===false"> Bisher wurde kein Projekt angelegt</v-subheader>
         <template v-for="(project, i) in projects">
-          <v-list-item v-on:click="modifyProject(project.id)">
+          <v-list-item v-on:click="modifyProject(project._id)">
             <v-list-item-content>
               <v-list-item-title> {{ project.title }} </v-list-item-title>
               <v-list-item-subtitle> {{ project.description }} </v-list-item-subtitle>
@@ -64,7 +64,7 @@ export default {
       .then(function (response) {
         for (let item of response.data) {
           //if the project id is saved in cookies => mark is as current project
-          if( VueCookies.get('currentProject') === item.id){
+          if( VueCookies.get('currentProject') === item._id){
             context.current_project = item;
           } else {
             context.projects.push(item);

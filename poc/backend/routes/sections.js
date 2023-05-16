@@ -5,6 +5,10 @@ const excavations = db.collection("excavations");
 const sections = db.collection("sections");
 var admin = require("firebase-admin");
 
+const Excavation = require("../model/Excavation");
+const Section = require("../model/Section");
+
+
 
 /**
  * Takes the retrieved data from DB and builds a JSON-object
@@ -16,15 +20,14 @@ var admin = require("firebase-admin");
  */
 function getSectionJson(doc) {
   return {
-    id: doc.id,
-    title: doc.data().title,
-    description: doc.data().description,
-    startLevel: doc.data().startLevel,
-    endLevel: doc.data().endLevel,
-    contacts: doc.data().contacts,
-    features: doc.data().features,
-    artifacts: doc.data().artifacts,
-    models: doc.data().models
+    title: doc.title,
+    description: doc.description,
+    startLevel: doc.startLevel,
+    endLevel: doc.endLevel,
+    contacts: doc.contacts,
+    features: doc.features,
+    artifacts: doc.artifacts,
+    models: doc.models
   };
 }
 
@@ -32,29 +35,22 @@ function getSectionJson(doc) {
 /**
  * GET sections by id-array in params seperated by ,
  */
-router.get("/list/:section_ids", function (req, res, next) {
+router.get("/list/:section_ids", async function (req, res, next) {
   var section_ids = req.params.section_ids.split(",");
-  var sectionsArray = [];
 
-  // get sections from id_list
-  sections
-    .where(admin.firestore.FieldPath.documentId(), "in", section_ids)
-    .get()
-    .then((data) => {
-      data.forEach((doc) => {
-        var section = getSectionJson(doc);
-        sectionsArray.push(section);
-      });
-      res.status(200).send(sectionsArray);
-    })
-    .catch((err) => {
-      res.status(404).send("No sections found");
-    });
+  try {
+    var sectionsArray = await Section.find({ _id: section_ids }).exec();
+  } catch (error) {
+    res.status(404).send("No sections found");
+  }
+
+  res.status(200).send(sectionsArray);
 });
 
 
 /**
  * GET ALL sections
+ * @deprecated
  */
 router.get("/", function (req, res, next) {
   var sectionsArray = [];
@@ -79,54 +75,34 @@ router.get("/", function (req, res, next) {
  * GET sections by excavation_id
  */
 router.get("/excavation_id/:excavation_id", async function (req, res, next) {
-  //check if excavation_id exists
+  // get excavation by id from MongoDB
   try {
-    var excavation = await getExcavationById(req.params.excavation_id);
+    var excavation = await Excavation.findById(req.params.excavation_id).exec();
   } catch (error) {
-    res.status(404).send("Couldn't find excavation with id: " + req.params.excavation_id);
+    res.status(404).send("No excavation with id: " + req.params.excavation_id);
   }
 
-  // check if there are sections in this excavation
-  var sectionsArray = [];
-  if (excavation.sections === undefined) {
-    res.status(404).send("No sections for this excavation");
-  } else {
-    // get sections from DB
-    sections
-      .where(admin.firestore.FieldPath.documentId(), "in", excavation.sections)
-      .get()
-      .then((data) => {
-        data.forEach((doc) => {
-          var section = getSectionJson(doc);
-          sectionsArray.push(section);
-        });
-        res.status(200).send(sectionsArray);
-      })
-      .catch((err) => {
-        res.status(404).send("No sections found");
-      });
+  //get all excavations by id from the excavation.sections array
+  try {
+    var sectionsArray = await Section.find({ _id: excavation.sections }).exec();
+  } catch (error) {
+    res.status(404).send("No sections found");
   }
+
+  res.status(200).send(sectionsArray);
 });
 
 
 /**
  * GET section by ID 
  */
-router.get("/:section_id", function (req, res, next) {
-  sections
-    .doc(req.params.section_id)
-    .get()
-    .then((doc) => {
-      if (doc.exists) {
-        var section = getSectionJson(doc);
-        res.status(200).send(section);
-      } else {
-        res.status(404).send("No such document: ");
-      }
-    })
-    .catch((err) => {
-      res.status(404).send("section not found: " + err);
-    });
+router.get("/:section_id", async function (req, res, next) {
+  try {
+    var section = await Section.findById(req.params.section_id).exec();
+  } catch (error) {
+    res.status(404).send("No section with ID: " + req.params.section_id + " found");
+  }
+  res.status(200).send(section);
 });
 
 
@@ -134,100 +110,86 @@ router.get("/:section_id", function (req, res, next) {
  * POST new section 
  */
 router.post("/:excavation_id", async function (req, res, next) {
-  // check if excavation_id exists
-  try {
-    var excavation = await getExcavationById(req.params.excavation_id);
-  } catch (error) {
-    res.status(404).send("Couldn't find excavation with id: " + req.params.excavation_id);
-  }
 
-  // add new section to DB
-  try {
-    var section_id = await sections.add(req.body);
-  } catch (error) {
-    res.status(404).send("Couldn't add section");
-  }
+    var newSection = getSectionJson(req.body);
+    // create new excavation in MongoDB
+    try {
+      var result = await Section.create(newSection);
+    } catch (error) {
+      res.status(500).send("Couldn't create Section: " + error.message);
+    }
 
-  // add new section_id to the excavation list of section ids
-  var newExcavation = excavation;
-  newExcavation.sections.push(section_id.id);
+    // get currently used excavation by id
+    try {
+      var excavation = await Excavation.findById(req.params.excavation_id).exec();
+    } catch (error) {
+      res.status(404).send("No excavation with ID: " + req.params.excavation_id + " found");
+    }
 
-  // update excavation in DB
-  try {
-    var response = await updateExcavationById(req.params.excavation_id, newExcavation);
-  } catch (error) {
-    res.status(404).send("Couldn't update excavation");
-  }
+    // add newly created excavation id to this project
+    excavation.sections.push(result.id);
 
-  res.status(200).send("Successfully added section");
+    // update the edited project in MongoDB
+    try {
+      var excavation = await Excavation.findByIdAndUpdate(req.params.excavation_id, excavation);
+    } catch (error) {
+      res.status(404).send("No excavation with ID: " + req.params.excavation_id + " found");
+    }
+
+    res.status(200).send("Successfully added excavation");
 });
 
 
 /**
  * UPDATE section by ID
  */
-router.put("/:section_id", function (req, res, next) {
-  sections
-    .doc(req.params.section_id)
-    .update(req.body)
-    .then((response) => {
-      res.status(200).send("Updated section");
-    })
-    .catch((err) => {
-      res.status(404).send("Couldn't update section: " + err);
-    });
+router.put("/:section_id", async function (req, res, next) {
+  var updatedSection = getSectionJson(req.body);
+
+  try {
+    const result = await Section.findByIdAndUpdate(req.params.section_id, updatedSection);
+
+    res.status(200).send("Edited Section: " + result);
+  } catch (error) {
+    res.status(500).send("Couldn't edit Section: " + error.message);
+  }
+
 });
 
 
 /* DELETE section by ID*/
 router.delete("/:excavation_id/:section_id", async function (req, res, next) {
-  //TODO: when deleting a section, also delete all subcollections
+  // delete section from MongoDB by id
+  try {
+    const result = await Section.findByIdAndDelete(req.params.excavation);
+  } catch (error) {
+    res.status(500).send("Couldn't edit Project: " + error.message);
+  }
 
-  // get excavation data
-  var excavation = await getExcavationById(req.params.excavation_id);
+  // get project from MongoDB by id
+  try {
+    var project = await Project.findById(req.params.project_id).exec();
+  } catch (error) {
+    res.status(404).send("No project with ID: " + req.params.project_id + " found");
+  }
 
-  // remove the section_id from excavation data
-  var newExcavation = excavation;
-  var index = newExcavation.sections.indexOf(req.params.section_id);
-  newExcavation.sections.splice(index, 1);
+  // remove the deleted excavation id from this project
+  const index = project.excavations.indexOf(req.params.excavation_id);
 
-  // update excavation data with the removed section_id
-  var response = await updateExcavationById(req.params.excavation_id, newExcavation);
+  if (index > -1) {
+    project.excavations.splice(index, 1);
+  } else {
+    res.status(400).send("The deleted excavation is not part of the current project");
+  }
 
-  // delete section from DB
-  sections
-    .doc(req.params.section_id)
-    .delete({ exists: true })
-    .then((response) => {
-      res.status(200).send("Deleted section: " + req.params.section_id);
-    })
-    .catch((err) => {
-      res.status(404).send("Couldn't delete section: " + err);
-    });
+  // update the edited project in MongoDB
+  try {
+    var project = await Project.findByIdAndUpdate(req.params.project_id, project);
+  } catch (error) {
+    res.status(404).send("No project with ID: " + req.params.project_id + " found");
+  }
+
+  res.status(200).send("Successfully deleted excavation");
 });
-
-
-/**
- * Returns excavation data from DB by searching with the project ID
- * @param {String} excavation_id
- * @returns
- */
-async function getExcavationById(excavation_id) {
-  var excavation = await excavations.doc(excavation_id).get();
-
-  return excavation.data();
-}
-
-
-/**
- * Returns excavation data from DB by searching with the excavation ID
- * @param {String} excavation_id
- * @returns
- */
-async function updateExcavationById(excavation_id, newExcavation) {
-  var response = await excavations.doc(excavation_id).update(newExcavation);
-
-  return response;
-}
 
 module.exports = router;
