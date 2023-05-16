@@ -148,7 +148,7 @@ router.put("/:excavation_id", async function (req, res, next) {
 router.delete("/:project_id/:excavation_id", async function (req, res, next) {
   // delete excavation from MongoDB by id
   try {
-    const result = await Excavation.findByIdAndDelete(req.params.excavation);
+    const result = await Excavation.findByIdAndDelete(req.params.excavation_id);
   } catch (error) {
     res.status(500).send("Couldn't edit Project: " + error.message);
   }
