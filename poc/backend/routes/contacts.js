@@ -1,164 +1,115 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../fb");
-const projects = db.collection("projects");
-const excavations = db.collection("excavations");
-const contacts = db.collection("contacts");
-var admin = require("firebase-admin");
 
+const Project = require("../model/Project");
+const Excavation = require("../model/Excavation");
+const Contact = require("../model/Contact");
+
+
+/**
+ * Takes the retrieved data from DB and builds a JSON-object
+ * with all fields for an contact. Also creates empty fields,
+ * when there is no data for them.
+ *
+ * @param {*} doc The raw contact data from database
+ * @returns contact Json-Object with all required fields
+ */
+function getContactJson(doc) {
+  return {
+    firstname: doc.firstname,
+    surname: doc.surname,
+    role: doc.role,
+    mail: doc.mail,
+    phone: doc.phone,
+  };
+}
 
 
 /**
  * GET contacts by id-array in params seperated by ,
  */
-router.get("/list/:contact_ids", function (req, res, next) {
+router.get("/list/:contact_ids", async function (req, res, next) {
   var contact_ids = req.params.contact_ids.split(",");
-  var contactsArray = [];
 
-  // get contacts from id_list
-  contacts
-    .where(admin.firestore.FieldPath.documentId(), "in", contact_ids)
-    .get()
-    .then((data) => {
-      data.forEach((doc) => {
-        var contact = getContactJson(doc);
-        contactsArray.push(contact);
-      });
-      res.status(200).send(contactsArray);
-    })
-    .catch((err) => {
-      res.status(404).send("No contacts found");
-    });
-});
-
-
-
-/* GET ALL contacts */
-router.get("/", function (req, res, next) {
-  var contactsArray = [];
-  contacts
-    .get()
-    .then((data) => {
-      data.forEach((doc) => {
-        var contact = getContactJson(doc);
-        contactsArray.push(contact);
-      });
-      res.send(contactsArray);
-    })
-    .catch((err) => {
-      res.status(404).send("No contacts found");
-    });
-});
-
-
-/**
- * GET contacts by project_id
- */
-router.get("/project_id/:project_id", async function (req, res, next) {
-  //check if project_id exists
   try {
-    var project = await getProjectById(req.params.project_id);
+    var contactsArray = await Contact.find({ _id: contact_ids }).exec();
   } catch (error) {
-    res.status(404).send("Couldn't find project with id: " + req.params.project_id);
+    res.status(404).send("No excavations found");
   }
 
-  // check if there are excavations in this project
-  var contactsArray = [];
-/*   if (project.excavations.length === 0) {
-    res.status(404).send("No excavations in this project");
-  } */
-
-  // get excavations from DB
-  contacts
-    .where(admin.firestore.FieldPath.documentId(), "in", project.contacts)
-    .get()
-    .then((data) => {
-      data.forEach((doc) => {
-        var contact = getContactJson(doc);
-        contactsArray.push(contact);
-      });
-      res.status(200).send(contactsArray);
-    })
-    .catch((err) => {
-      res.status(404).send("No contacts found");
-    });
+  res.status(200).send(contactsArray);
 });
+
 
 /* GET contact by ID */
-router.get("/:contact_id", function (req, res, next) {
-  contacts
-    .doc(req.params.contact_id)
-    .get()
-    .then((doc) => {
-      if (doc.exists) {
-        var contact = getContactJson(doc);
-        res.send(contact);
-      } else {
-        res.status(404).send("No such document: ");
-      }
-    })
-    .catch((err) => {
-      res.status(404).send("contact not found: " + err);
-    });
+router.get("/:contact_id", async function (req, res, next) {
+
+  try {
+    var contact = await Contact.findById(req.params.contact_id).exec();
+  } catch (error) {
+    res.status(404).send("No Contact with ID: " + req.params.contact_id + " found");
+  }
+  res.status(200).send(contact);
 });
+
 
 /* POST new contact of a project */
 router.post("/projects/:project_id", async function (req, res, next) {
+    var newContact = getContactJson(req.body);
+    // create new contact in MongoDB
+    try {
+      var result = await Contact.create(newContact);
+    } catch (error) {
+      res.status(500).send("Couldn't create Project: " + error.message);
+    }
 
-  // check if project_id exists
-  try {
-    var project = await getProjectById(req.params.project_id);
-  } catch (error) {
-    res.status(404).send("Couldn't find project with id: " + req.params.project_id);
-  }
+    // get currently used project by id
+    try {
+      var project = await Project.findById(req.params.project_id).exec();
+    } catch (error) {
+      res.status(404).send("No project with ID: " + req.params.project_id + " found");
+    }
 
-  // add new contact to DB
-  try {
-    var contact_id = await contacts.add(req.body);
-  } catch (error) {
-    res.status(404).send("Couldn't add contact");
-  }
+    // add newly created contact id to this project
+    project.contacts.push(result.id);
 
-  // add new contact_id to the project list of contact ids
-  var newProject = project;
-  newProject.contacts.push(contact_id.id);
+    // update the edited project in MongoDB
+    try {
+      var project = await Project.findByIdAndUpdate(req.params.project_id, project);
+    } catch (error) {
+      res.status(404).send("No project with ID: " + req.params.project_id + " found");
+    }
 
-  // update project in DB
-  try {
-    var response = await updateProjectById(req.params.project_id, newProject);
-  } catch (error) {
-    res.status(404).send("Couldn't update project");
-  }
-
-  res.status(200).send("Successfully added contact");
+    res.status(200).send("Successfully added contact");
 });
 
 
 /* POST new contact of an excavation*/
 router.post("/excavations/:excavation_id", async function (req, res, next) {
-  // check if excavation_id exists
+
+  var newContact = getContactJson(req.body);
+  // create new contact in MongoDB
   try {
-    var excavation = await getExcavationById(req.params.excavation_id);
+    var result = await Contact.create(newContact);
   } catch (error) {
-    res.status(404).send("Couldn't find excavation with id: " + req.params.excavation_id);
+    res.status(500).send("Couldn't create Excavation: " + error.message);
   }
 
-  // add new contact to DB
+  // get currently used excavation by id
   try {
-    var contact_id = await contacts.add(req.body);
+    var excavation = await Excavation.findById(req.params.excavation_id).exec();
   } catch (error) {
-    res.status(404).send("Couldn't add contact");
+    res.status(404).send("No excavation with ID: " + req.params.excavation_id + " found");
   }
 
-  // add new contact_id to the excavation list of contact ids
-  var newExcavation = excavation;
-  newExcavation.contacts.push(contact_id.id);
+  // add newly created contact id to this excavation
+  excavation.contacts.push(result.id);
 
-  // update excavation in DB
+  // update the edited excavation in MongoDB
   try {
-    var response = await updateExcavationById(req.params.excavation_id, newExcavation);
+    var excavation = await Excavation.findByIdAndUpdate(req.params.excavation_id, excavation);
   } catch (error) {
-    res.status(404).send("Couldn't update excavation");
+    res.status(404).send("No excavation with ID: " + req.params.excavation_id + " found");
   }
 
   res.status(200).send("Successfully added contact");
@@ -166,139 +117,89 @@ router.post("/excavations/:excavation_id", async function (req, res, next) {
 
 
 /* UPDATE contact by ID*/
-router.put("/:contact_id", function (req, res, next) {
-  contacts
-    .doc(req.params.contact_id)
-    .update(req.body)
-    .then((response) => {
-      res.status(200).send("Updated contact: " + req.params.contact_id);
-    })
-    .catch((err) => {
-      res.status(404).send("Couldn't update contact: " + err);
-    });
+router.put("/:contact_id", async function (req, res, next) {
+
+  var updatedContact = getContactJson(req.body);
+
+  try {
+    const result = await Contact.findByIdAndUpdate(req.params.contact_id, updatedContact);
+
+    res.status(200).send("Edited Contact: " + result);
+  } catch (error) {
+    res.status(500).send("Couldn't edit Contact: " + error.message);
+  }
 });
+
 
 /* DELETE contact by ID*/
 router.delete("/projects/:project_id/:contact_id", async function (req, res, next) {
-  // get project data
-  var project = await getProjectById(req.params.project_id);
+  // delete contact from MongoDB by id
+  try {
+    const result = await Contact.findByIdAndDelete(req.params.contact_id);
+  } catch (error) {
+    res.status(500).send("Couldn't delete Contact: " + error.message);
+  }
 
-  // remove the excavation_id from project data
-  var newProject = project;
-  var index = newProject.contacts.indexOf(req.params.contact_id);
-  newProject.contacts.splice(index, 1);
+  // get project from MongoDB by id
+  try {
+    var project = await Project.findById(req.params.project_id).exec();
+  } catch (error) {
+    res.status(404).send("No project with ID: " + req.params.project_id + " found");
+  }
 
-  // update project data with the removed excavation_id
-  var response = await updateProjectById(req.params.project_id, newProject);
+  // remove the deleted contact id from this project
+  const index = project.contacts.indexOf(req.params.contact_id);
 
-  contacts
-    .doc(req.params.contact_id)
-    .delete({ exists: true })
-    .then((response) => {
-      res.status(200).send("Deleted contact: " + req.params.contact_id);
-    })
-    .catch((err) => {
-      res.status(404).send("Couldn't delete contact: " + err);
-    });
+  if (index > -1) {
+    project.contacts.splice(index, 1);
+  } else {
+    res.status(400).send("The deleted contact is not part of the current project");
+  }
+
+  // update the edited project in MongoDB
+  try {
+    var project = await Project.findByIdAndUpdate(req.params.project_id, project);
+  } catch (error) {
+    res.status(404).send("No project with ID: " + req.params.project_id + " found");
+  }
+
+  res.status(200).send("Successfully deleted contact");
 });
 
 
 /* DELETE contact by ID*/
 router.delete("/excavations/:excavation_id/:contact_id", async function (req, res, next) {
-  // check if excavation_id exists
+  // delete contact from MongoDB by id
   try {
-    var excavation = await getExcavationById(req.params.excavation_id);
+    const result = await Contact.findByIdAndDelete(req.params.contact_id);
   } catch (error) {
-    res.status(404).send("Couldn't find excavation with id: " + req.params.excavation_id);
+    res.status(500).send("Couldn't delete Contact: " + error.message);
   }
 
-  // remove the contact_id from excavation data
-  var newExcavation = excavation;
-  var index = newExcavation.contacts.indexOf(req.params.contact_id);
-  newExcavation.contacts.splice(index, 1);
-
-  // update project data with the removed excavation_id
+  // get excavation from MongoDB by id
   try {
-    var response = await updateExcavationById(req.params.excavation_id, newExcavation);
+    var excavation = await Excavation.findById(req.params.excavation_id).exec();
   } catch (error) {
-    res.status(404).send("Couldn't update the contacts of excavation")
+    res.status(404).send("No excavation with ID: " + req.params.excavation_id + " found");
   }
-  
-  contacts
-    .doc(req.params.contact_id)
-    .delete({ exists: true })
-    .then((response) => {
-      res.status(200).send("Deleted contact: " + req.params.contact_id);
-    })
-    .catch((err) => {
-      res.status(404).send("Couldn't delete contact: " + err);
-    });
+
+  // remove the deleted contact id from this excavation
+  const index = excavation.contacts.indexOf(req.params.contact_id);
+
+  if (index > -1) {
+    excavation.contacts.splice(index, 1);
+  } else {
+    res.status(400).send("The deleted contact is not part of the current excavation");
+  }
+
+  // update the edited excavation in MongoDB
+  try {
+    var excavation = await Excavation.findByIdAndUpdate(req.params.excavation_id, excavation);
+  } catch (error) {
+    res.status(404).send("No excavation with ID: " + req.params.excavation_id + " found");
+  }
+
+  res.status(200).send("Successfully deleted contact");
 });
 
-
-/**
- * Takes the retrieved data from DB and builds a JSON-object
- * with all fields for an excavation. Also creates empty fields,
- * when there is no data for them.
- *
- * @param {*} doc The raw excavation data from database
- * @returns excavation Json-Object with all required fields
- */
-function getContactJson(doc) {
-  return {
-    id: doc.id,
-    firstname: doc.data().firstname,
-    surname: doc.data().surname,
-    role: doc.data().role,
-    mail: doc.data().mail,
-    phone: doc.data().phone,
-  };
-}
-
-
-/**
- * Returns project data from DB by searching with the project ID
- * @param {String} project_id
- * @returns
- */
-async function getProjectById(project_id) {
-  var project = await projects.doc(project_id).get();
-
-  return project.data();
-}
-
-
-/**
- * Returns project data from DB by searching with the project ID
- * @param {String} project_id
- * @returns
- */
-async function updateProjectById(project_id, newProject) {
-  var response = await projects.doc(project_id).update(newProject);
-
-  return response;
-}
-
-
-/**
- * Returns excavation data from DB by searching with the excavation ID
- * @param {String} excavation_id
- * @returns
- */
-async function getExcavationById(excavation_id) {
-  var excavation = await excavations.doc(excavation_id).get();
-
-  return excavation.data();
-}
-
-/**
- * Returns excavation data from DB by searching with the excavation ID
- * @param {String} excavation_id
- * @returns
- */
-async function updateExcavationById(excavation_id, newExcavation) {
-  var response = await excavations.doc(excavation_id).update(newExcavation);
-
-  return response;
-}
 module.exports = router;

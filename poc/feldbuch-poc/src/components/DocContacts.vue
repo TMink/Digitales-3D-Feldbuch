@@ -5,7 +5,7 @@
             <v-subheader v-if="contacts.length === 0"> Bisher wurde kein Kontakt angelegt</v-subheader>
             <v-list>
                 <template v-for="(contact, i) in contacts">
-                    <v-list-item v-on:click="modifyContact(contact.id)">
+                    <v-list-item v-on:click="modifyContact(contact._id)">
                         <v-list-item-content>
                             <v-list-item-title> {{ contact.firstname  + " " + contact.surname }} </v-list-item-title>
                             <v-list-item-subtitle> {{ contact.role }} </v-list-item-subtitle>
@@ -30,7 +30,7 @@ export default {
             contacts_list: [],
             selected_contact: [],
             new_contact: {
-                id: doc.id,
+                _id: doc._id,
                 firstname: '',
                 surname: '',
                 role: '',

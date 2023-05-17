@@ -23,7 +23,7 @@
         <DocContacts 
           :contactslist="excavation_doc.contacts" 
           :mode="'excavations'" 
-          :id="excavation_doc.id"/>
+          :id="excavation_doc._id"/>
       </v-tab-item>
 
       <v-tab-item>

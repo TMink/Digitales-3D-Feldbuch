@@ -21,7 +21,7 @@
 
       <v-tab> Kontaktpersonen </v-tab>
       <v-tab-item class="px-4">
-        <DocContacts :contactslist="project_doc.contacts" :mode="'projects'" :id="project_doc.id"/>
+        <DocContacts :contactslist="project_doc.contacts" :mode="'projects'" :id="project_doc._id"/>
       </v-tab-item>
 
       <v-btn v-on:click="logForm()" color="secondary" class="py-6" tile > Speichern </v-btn>
