@@ -45,7 +45,11 @@
       </v-tab-item>
 
       <v-tab-item class="px-4">
-        <DocDates :dateslist="artifact_doc.dates" @addDate="addDate($event)" />
+        <DocDates 
+          :dateslist="artifact_doc.dates" 
+          :mode="'artifacts'"
+          :id="artifact_doc._id"
+          @addDate="addDate($event)" />
       </v-tab-item>
 
       <v-tab-item>
