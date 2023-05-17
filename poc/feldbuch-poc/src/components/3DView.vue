@@ -245,7 +245,7 @@ export default {
 
       
       /* ##### GUI ##### */
-      this.gui = new GUI( {autoPlace: false} );
+      this.gui = new GUI( {autoPlace: true, closed: true, closeOnTop: false} );
       this.gui.domElement.id = 'gui';
       gui_container.appendChild( this.gui.domElement );
 
@@ -256,10 +256,19 @@ export default {
           
           // Example does not work in current state:
           // this.loadMesh('E4bhNKOJBQw5ZBQwsWoh', 'Geometry','excavation')
+        },
+        delete: () => {
+
         }
       }
 
-      this.gui.add(guiFunctions, 'add')
+      const dataFolder = this.gui.addFolder('Data')
+      const prepModels = this.gui.addFolder('Prep Models')
+
+      var addButton = dataFolder.add(guiFunctions, 'add')
+      dataFolder.add(guiFunctions, 'delete')
+
+      //addButton.domElement.previousSibling.style.textAlign = "left";
 
       
       /* ##### FOR DEBUGGING ##### */
@@ -285,6 +294,7 @@ export default {
     #container{height: 100%}
     #gui_container{
       position: absolute;
+      width: 101%;
     }
 
 </style>
