@@ -27,6 +27,8 @@ export default {
       controls: null,
       gui: null,
 
+      meshInScene: [],
+
     }
 
   },
@@ -56,9 +58,13 @@ export default {
      *                          This version has the standart texture from the 
      *                          object and the name of the created mesh is the 
      *                          title of the object.
+     *  updateCameraPosition  - Moves the Camera to specified model in scene
+     *  createGuiElements     - Creates all gui Elements in respective order
      *  loadWithColor         - Change the current color/texture of a model in
      *                          the scene to a new color
-     *  updateCameraPosition  - Moves the Camera to specified model in scene
+     *  changeVisibility      - Changes the opacity of a mesh
+     *  changeClipping        - Change if functions, that uses stencil clipping,
+     *                          could manipulate the mesh, or not 
      *  onWindowResize        - Resizes the threeJS element
      *  ------------------------------------------------------------------------
      *  init                  - Initialize the scene
@@ -129,49 +135,58 @@ export default {
      */
     loadMesh: async function(modelID, dbName, storeName) {
 
+      /* Create empty Mesh */
       const mesh = new THREE.Mesh();
+
+      /* Get Model Data from IndexedDB */
       const model = await fromOfflineDB.getObject( modelID, dbName, storeName );
 
+      /* Load object */
       const object = new OBJLoader().parse( model.result.model );
 
+      /* Load texture */
       var textLoader = new THREE.TextureLoader().load( model.result.texture );
 
+      /* Create Material */
       const material = new THREE.MeshBasicMaterial( {
         map: textLoader,
+        transparent: true,
         shadowSide: THREE.DoubleSide,
         side: THREE.DoubleSide
       } );
 
+      /* Get geometry from loaded object */
       object.traverse( (child) => {
         if( child instanceof THREE.Mesh ) {
+          /* Add geometry to mesh */
           mesh.geometry = child.geometry
         }
       } );
 
+      /* Add material to mesh */
       mesh.material = material;
+      mesh.material.alphaTest = 0.5
+      mesh.material.opacity = 0.0;
       mesh.name = model.result.title;
 
-      this.scene.add(mesh);
+      /* Add mesh to scene */
+      this.scene.add(mesh); 
+
+      /* Move camera to mesh position */
+      this.updateCameraPosition(model.result.title)
+
+      this.meshInScene.push(model.result.title);
 
     },
 
     /**
-     * @param {String} model  - Name of model in scene
-     * @param {String} color  - Name of color
+     * @param {String} modelName  - Name of model in scene
      */
-    loadWithColor: function(model, color) {
-      this.scene.getObjectByName( model ).material.color = 
-        new THREE.Color( color )
-    },
-
-    /**
-     * @param {String} model  - Name of model in scene
-     */
-    updateCameraPosition: function(model) {
+    updateCameraPosition: function(modelName) {
 
       var center = new THREE.Vector3;
       const box = new THREE.Box3().setFromObject(
-        this.scene.getObjectByName(model));
+        this.scene.getObjectByName(modelName));
       box.getCenter(center)
 
       this.controls.target.set(center.x, center.y, center.z);
@@ -183,29 +198,71 @@ export default {
 
     createGuiElements: function() {
 
-      /* Prep Models */
-      const prepModelsFolder = this.gui.addFolder( 'Prep Models' );
+      /* #### Prep Models #### */
+      //const prepModelsFolder = this.gui.addFolder( 'Prep Models' );
 
-      for(var i=0; i < this.meshInScene.length; i++) {
+      //for(var i=0; i < this.meshInScene.length; i++) {
 
-        const meshName = this.meshInScene[i];
+      //  const meshName = this.meshInScene[i];
 
-        const modelFolder = prepModelsFolder.addFolder( meshName );
+      //  const modelFolder = prepModelsFolder.addFolder( meshName );
 
-        modelFolder.add( params.guiMesh, "visibility")
-                   .onChange( v => this.changeVisibility(meshName));
+      //  modelFolder.add( params.guiMesh, "visibility")
+      //             .onChange( v => this.changeVisibility(meshName));
 
-        modelFolder.add( params.guiMesh, "clipping")
-                   .onChange( v => this.changeClipping(meshName, this.planes) );
-      }
+      //  modelFolder.add( params.guiMesh, "clipping")
+      //             .onChange( v => this.changeClipping(meshName, this.planes) );
+      //}
 
-      /* Segmentation - Not working with current build */
+      /* #### Segmentation #### - Not working with current build */
       //const planeX = this.gui.addFolder( 'Segmentation' );
       //planeX.add( params.planeX, 'displayHelper' )
       //      .onChange( v => this.planeHelpers[ 0 ].visible = v );
 
       //planeX.add( params.planeX, 'constant' ).min( - 7 ).max( 5 )
       //      .onChange( d => this.planes[ 0 ].constant = d );
+
+    },
+
+    /**
+     * @param {String} model  - Name of model in scene
+     * @param {String} color  - Name of color
+     */
+     loadWithColor: function(modelName, color) {
+      this.scene.getObjectByName( modelName ).material.color = 
+        new THREE.Color( color )
+    },
+
+    /**
+     * @param {String} modelName  - Name of model in scene
+     */
+     changeVisibility: function( modelName ) {
+
+      const model = this.scene.getObjectByName(modelName)
+
+      if(model.material.opacity == 1) {
+        model.material.opacity = 0;
+      } else {
+        model.material.opacity = 1;
+      }
+
+    },
+
+    /**
+     * @param {String} modelName            - Name of model in scene
+     * @param {Array[THREE.Plane[]]} planes - Stencil planes
+     */
+     changeClipping: function(modelName, planes) {
+
+      const model = this.scene.getObjectByName(modelName)
+
+      if(model.material.clipShadows == true) {
+        model.material.clipShadows = false;
+        model.material.clippingPlanes = null;
+      } else {
+        model.material.clipShadows = true;
+        model.material.clippingPlanes = planes;
+      }
 
     },
 
@@ -221,12 +278,6 @@ export default {
 
       /* ##### Container ##### */
       let container = document.getElementById( 'container' );
-
-
-
-      /* ##### Loader ##### */
-      this.texLoader = new THREE.TextureLoader; /* loads '.jpg'-data from 
-                                                   local storage */
 
 
 
@@ -280,6 +331,8 @@ export default {
       this.gui.domElement.id = 'gui';
       gui_container.appendChild( this.gui.domElement );
 
+
+
       /* Data Examples */
       var guiFunctions = { 
         add: () => {
@@ -287,7 +340,10 @@ export default {
           
           // Example does not work in current state:
           // this.loadMesh('E4bhNKOJBQw5ZBQwsWoh', 'Geometry','excavation')
-        },   
+        },
+        delete: () => {
+
+        }
       }
 
       const dataFolder = this.gui.addFolder('Data')
