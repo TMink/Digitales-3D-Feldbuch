@@ -38,6 +38,9 @@ export default {
     await fromOfflineDB.syncLocalDBs();
 
     this.init();
+
+    this.createGuiElements();
+
     this.animate();
 
   },
@@ -178,6 +181,34 @@ export default {
 
     },
 
+    createGuiElements: function() {
+
+      /* Prep Models */
+      const prepModelsFolder = this.gui.addFolder( 'Prep Models' );
+
+      for(var i=0; i < this.meshInScene.length; i++) {
+
+        const meshName = this.meshInScene[i];
+
+        const modelFolder = prepModelsFolder.addFolder( meshName );
+
+        modelFolder.add( params.guiMesh, "visibility")
+                   .onChange( v => this.changeVisibility(meshName));
+
+        modelFolder.add( params.guiMesh, "clipping")
+                   .onChange( v => this.changeClipping(meshName, this.planes) );
+      }
+
+      /* Segmentation - Not working with current build */
+      //const planeX = this.gui.addFolder( 'Segmentation' );
+      //planeX.add( params.planeX, 'displayHelper' )
+      //      .onChange( v => this.planeHelpers[ 0 ].visible = v );
+
+      //planeX.add( params.planeX, 'constant' ).min( - 7 ).max( 5 )
+      //      .onChange( d => this.planes[ 0 ].constant = d );
+
+    },
+
     onWindowResize: function() {
 
       this.renderer.setSize( window.innerWidth, window.innerHeight );
@@ -256,10 +287,7 @@ export default {
           
           // Example does not work in current state:
           // this.loadMesh('E4bhNKOJBQw5ZBQwsWoh', 'Geometry','excavation')
-        },
-        delete: () => {
-
-        }
+        },   
       }
 
       const dataFolder = this.gui.addFolder('Data')
