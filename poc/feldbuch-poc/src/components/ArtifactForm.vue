@@ -237,7 +237,7 @@ export default {
 
       if (this.is_new == true) {
         httpRequest = 'post';
-        requestURL = '/artifacts';
+        requestURL = '/artifacts/' + VueCookies.get('currentSection');
       }
       //put/post request of edited/new artifact
       axios({
@@ -286,11 +286,12 @@ export default {
     },
     deleteArtifact: function () {
       var context = this;
+      var curSection = VueCookies.get('currentSection');
       var curArtifact = VueCookies.get('currentArtifact');
 
       axios({
         method: 'delete',
-        url: '/artifacts/' + curArtifact,
+        url: '/artifacts/' + curSection + "/" + curArtifact,
       })
         .then(function (res) {
           context.$emit("view", "Fundübersicht");

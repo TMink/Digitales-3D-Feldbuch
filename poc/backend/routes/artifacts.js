@@ -1,9 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../fb");
-const artifacts = db.collection("artifacts");
-var admin = require("firebase-admin");
 
+const Section = require("../model/Section");
+const Artifact = require("../model/Artifact");
 
 /**
  * Takes the retrieved data from DB and builds a JSON-object
@@ -15,20 +14,21 @@ var admin = require("firebase-admin");
  */
 function getArtifactJson(doc) {
   return {
-    id: doc.id,
-    section_id: doc.data().section_id,
-    feature_id: doc.data().feature_id,
-    number: doc.data().number,
-    description: doc.data().description,
-    inscriptions: doc.data().inscriptions,
-    state: doc.data().state,
-    literature: doc.data().literature,
-    producer: doc.data().producer,
-    material: doc.data().material,
-    type: doc.data().type,
-    images: doc.data().images,
-    colors: doc.data().colors,
-    utmPoints: doc.data().utmPoints
+    number: doc.number,
+    description: doc.description,
+    inscriptions: doc.inscriptions,
+    state: doc.state,
+    literature: doc.literature,
+    producer: doc.producer,
+    material: doc.material,
+    type: doc.type,
+    images: doc.images,
+    colors: doc.colors,
+    datings: doc.datings,
+    utmPoints: doc.utmPoints,
+    measurements: doc.measurements,
+    dates: doc.dates,
+    features: doc.features
   };
 }
 
@@ -36,103 +36,143 @@ function getArtifactJson(doc) {
 /**
  * GET artifacts by id-array in params seperated by ,
  */
-router.get("/list/:artifact_ids", function (req, res, next) {
+router.get("/list/:artifact_ids", async function (req, res, next) {
+
   var artifact_ids = req.params.artifact_ids.split(",");
-  var artifactsArray = [];
 
-  // get artifacts from id_list
-  artifacts
-    .where(admin.firestore.FieldPath.documentId(), "in", artifact_ids)
-    .get()
-    .then((data) => {
-      data.forEach((doc) => {
-        var artifact = getArtifactJson(doc);
-        artifactsArray.push(artifact);
-      });
-      res.status(200).send(artifactsArray);
-    })
-    .catch((err) => {
-      res.status(404).send("No artifacts found");
-    });
+  try {
+    var artifactsArray = await Artifact.find({ _id: artifact_ids }).exec();
+  } catch (error) {
+    res.status(404).send("No artifacts found");
+  }
+
+  res.status(200).send(artifactsArray);
 });
 
 
+/**
+ * GET artifacts by section_id
+ */
+router.get("/section_id/:section_id", async function (req, res, next) {
+  // get section by id from MongoDB
+  try {
+    var section = await Section.findById(req.params.section_id).exec();
+  } catch (error) {
+    res.status(404).send("No section with id: " + req.params.section_id);
+  }
 
-/* GET ALL artifacts */
-router.get("/", function (req, res, next) {
-  var artifactsArray = [];
-  artifacts
-    .get()
-    .then((data) => {
-      data.forEach((doc) => {
-        var artifact = getArtifactJson(doc);
-        artifactsArray.push(artifact);
-      });
-      res.send(artifactsArray);
-    })
-    .catch((err) => {
-      res.status(404).send("No artifacts found");
-    });
+  //get all artifacts by id from the section.artifacts array
+  try {
+    var artifactsArray = await Artifact.find({ _id: section.artifacts }).exec();
+  } catch (error) {
+    res.status(404).send("No artifacts found");
+  }
+
+  res.status(200).send(artifactsArray);
 });
 
-/* GET artifact by ID */
-router.get("/:artifact_id", function (req, res, next) {
-  artifacts
-    .doc(req.params.artifact_id)
-    .get()
-    .then((doc) => {
-      if (doc.exists) {
-        var artifact = getArtifactJson(doc);
-        res.send(artifact);
-      } else {
-        res.status(404).send("No such document: ");
-      }
-    })
-    .catch((err) => {
-      res.status(404).send("Artifact not found: " + err);
-    });
+
+/**
+ * GET artifact by ID
+ */
+router.get("/:artifact_id", async function (req, res, next) {
+
+  try {
+    var artifact = await Artifact.findById(req.params.artifact_id).exec();
+  } catch (error) {
+    res.status(404).send("No artifact with ID: " + req.params.artifact_id + " found");
+  }
+  res.status(200).send(artifact);
 });
 
-/* POST new artifact */
-router.post("/", function (req, res, next) {
 
-  //if it exists, add the artifact to DB
-  artifacts
-    .doc()
-    .set(req.body)
-    .then((response) => {
-      res.status(200).send("Added artifact");
-    })
-    .catch((err) => {
-      res.status(404).send("Couldn't add artifact: " + err);
-    });
+/**
+ * POST new artifact
+ */
+router.post("/:section_id", async function (req, res, next) {
+  //create artifact JSON object for updating the artifactDB
+
+  var newArtifact = getArtifactJson(req.body);
+
+  // create new artifact in MongoDB
+  try {
+    var result = await Artifact.create(newArtifact);
+  } catch (error) {
+    res.status(500).send("Couldn't create Artifact: " + error.message);
+  }
+
+  // get currently used section by id
+  try {
+    var section = await Section.findById(req.params.section_id).exec();
+  } catch (error) {
+    res.status(404).send("No section with ID: " + req.params.section_id + " found");
+  }
+
+  // add newly created artifact id to this section
+  section.artifacts.push(result.id);
+
+  // update the edited section in MongoDB
+  try {
+    var section = await Section.findByIdAndUpdate(req.params.section_id, section);
+  } catch (error) {
+    res.status(404).send("No section with ID: " + req.params.section_id + " found");
+  }
+
+  res.status(200).send("Successfully added the artifact");
 });
 
-/* UPDATE artifact by ID*/
-router.put("/:artifact_id", function (req, res, next) {
-  artifacts
-    .doc(req.params.artifact_id)
-    .update(req.body)
-    .then((response) => {
-      res.status(200).send("Updated artifact");
-    })
-    .catch((err) => {
-      res.status(404).send("Couldn't update artifact: " + err);
-    });
+/**
+ * PUT existing artifact in MongoDB by ID
+ */
+router.put("/:artifact_id", async function (req, res, next) {
+
+  var updatedArtifact = getArtifactJson(req.body);
+
+  try {
+    const result = await Artifact.findByIdAndUpdate(req.params.artifact_id, updatedArtifact);
+
+    res.status(200).send("Edited Artifact: " + result);
+  } catch (error) {
+    res.status(500).send("Couldn't edit Artifact: " + error.message);
+  }
 });
 
-/* DELETE artifact by ID*/
-router.delete("/:artifact_id", async function (req, res, next) {
-  //TODO: when deleting a artifact, also delete all subcollections
-  artifacts
-    .doc(req.params.artifact_id)
-    .delete({ exists: true })
-    .then((response) => {
-      res.status(200).send("Deleted artifact: " + req.params.artifact_id);
-    })
-    .catch((err) => {
-      res.status(404).send("Couldn't delete artifact: " + err);
-    });
+
+/**
+ * DELETE artifact by ID
+ */
+router.delete("/:section_id/:artifact_id", async function (req, res, next) {
+  // delete artifact from MongoDB by id
+  try {
+    const result = await Artifact.findByIdAndDelete(req.params.artifact_id);
+  } catch (error) {
+    res.status(500).send("Couldn't edit Section: " + error.message);
+  }
+
+  // get section from MongoDB by id
+  try {
+    var section = await Section.findById(req.params.section_id).exec();
+  } catch (error) {
+    res.status(404).send("No section with ID: " + req.params.section_id + " found");
+  }
+
+  // remove the deleted artifact id from this section
+  const index = section.artifacts.indexOf(req.params.artifact_id);
+
+  if (index > -1) {
+    section.artifacts.splice(index, 1);
+  } else {
+    res.status(400).send("The deleted artifact is not part of the current section");
+  }
+
+  // update the edited section in MongoDB
+  try {
+    var section = await Section.findByIdAndUpdate(req.params.section_id, section);
+  } catch (error) {
+    res.status(404).send("No section with ID: " + req.params.section_id + " found");
+  }
+
+  res.status(200).send("Successfully deleted artifact");
 });
 
 module.exports = router;
