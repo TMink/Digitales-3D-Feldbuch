@@ -13,6 +13,20 @@ import {fromBackend} from '../ConnectionToBackend.js';
 import { GUI } from 'dat.gui';
 import axios from 'axios';
 
+const params = {
+	animate: true,
+	planeX: {
+		constant: 0,
+		negated: false,
+		displayHelper: false,
+    model1: false
+	},
+  guiMesh: {
+    visibility: false,
+    clipping: false
+  }
+};
+
 export default {
 
   name: 'Viewer',
