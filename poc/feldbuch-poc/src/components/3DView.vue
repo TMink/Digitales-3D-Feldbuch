@@ -327,7 +327,7 @@ export default {
 
       
       /* ##### GUI ##### */
-      this.gui = new GUI( {autoPlace: true, closed: true, closeOnTop: false} );
+      this.gui = new GUI( {autoPlace: true, closed: false, closeOnTop: false} );
       this.gui.domElement.id = 'gui';
       gui_container.appendChild( this.gui.domElement );
 
