@@ -198,24 +198,29 @@ export default {
 
     createGuiElements: function() {
 
+      const dataFolder = this.gui.addFolder('Data')
+
+      //var addButton = dataFolder.add(guiFunctions, 'add')
+     // dataFolder.add(guiFunctions, 'delete')
+
       /* #### Prep Models #### */
-      //const prepModelsFolder = this.gui.addFolder( 'Prep Models' );
+      const prepModelsFolder = this.gui.addFolder( 'Prep Models' );
 
-      //for(var i=0; i < this.meshInScene.length; i++) {
+      for(var i=0; i < this.meshInScene.length; i++) {
 
-      //  const meshName = this.meshInScene[i];
+        const meshName = this.meshInScene[i];
 
-      //  const modelFolder = prepModelsFolder.addFolder( meshName );
+        const modelFolder = prepModelsFolder.addFolder( meshName );
 
-      //  modelFolder.add( params.guiMesh, "visibility")
-      //             .onChange( v => this.changeVisibility(meshName));
+        modelFolder.add( params.guiMesh, "visibility")
+                   .onChange( v => this.changeVisibility(meshName));
 
-      //  modelFolder.add( params.guiMesh, "clipping")
-      //             .onChange( v => this.changeClipping(meshName, this.planes) );
-      //}
+        modelFolder.add( params.guiMesh, "clipping")
+                   .onChange( v => this.changeClipping(meshName, this.planes) );
+      }
 
       /* #### Segmentation #### - Not working with current build */
-      //const planeX = this.gui.addFolder( 'Segmentation' );
+      const planeX = this.gui.addFolder( 'Segmentation' );
       //planeX.add( params.planeX, 'displayHelper' )
       //      .onChange( v => this.planeHelpers[ 0 ].visible = v );
 
@@ -304,7 +309,7 @@ export default {
 
       /* ##### 3D-Mesh Example: Box ##### */
       let boxGeometry = new THREE.BoxGeometry( 1,1,1);
-      let boxMaterial = new THREE.MeshBasicMaterial( { color: 0x00f00, 
+      let boxMaterial = new THREE.MeshBasicMaterial( { color: 0xfffff, 
                                                        wireframe: true } );
       let box = new THREE.Mesh( boxGeometry, boxMaterial );
       this.scene.add( box );
@@ -330,29 +335,6 @@ export default {
       this.gui = new GUI( {autoPlace: true, closed: false, closeOnTop: false} );
       this.gui.domElement.id = 'gui';
       gui_container.appendChild( this.gui.domElement );
-
-
-
-      /* Data Examples */
-      var guiFunctions = { 
-        add: () => {
-          // --> Place gui function here <--
-          
-          // Example does not work in current state:
-          // this.loadMesh('E4bhNKOJBQw5ZBQwsWoh', 'Geometry','excavation')
-        },
-        delete: () => {
-
-        }
-      }
-
-      const dataFolder = this.gui.addFolder('Data')
-      const prepModels = this.gui.addFolder('Prep Models')
-
-      var addButton = dataFolder.add(guiFunctions, 'add')
-      dataFolder.add(guiFunctions, 'delete')
-
-      //addButton.domElement.previousSibling.style.textAlign = "left";
 
       
       /* ##### FOR DEBUGGING ##### */
