@@ -9,7 +9,7 @@
       <v-tab> Bilder </v-tab>
       <v-tab> Farbwerte </v-tab>
       <v-tab> Datierungen </v-tab>
-      
+
       <v-tab-item class="px-4">
         <v-text-field v-model="artifact_doc.number" label="Nummer *"
           hint="Geben sie hier die Fundnummer ein *(Pflichtfeld)" :rules="is_required"></v-text-field>
@@ -33,15 +33,7 @@
       </v-tab-item>
 
       <v-tab-item class="px-4">
-        Abmessungen TODO
-        <!-- <v-text-field v-model="artifact_doc.designation" label="Dimension"
-          hint="Geben sie hier die die Beschreibung der Dimension an"></v-text-field>
-        <v-text-field v-model="artifact_doc.accuracy" label="Genauigkeit"
-          hint="Geben Sie hier die Genauigkeit an"></v-text-field>
-        <v-textarea v-model="artifact_doc.from" label="Von" hint="Geben sie das Minimum des Messwertes an"></v-textarea>
-        <v-textarea v-model="artifact_doc.to" label="Bis" hint="Geben sie das Maximum des Messwertes"></v-textarea>
-        <v-textarea v-model="artifact_doc.unit" label="Einheit"
-          hint="Geben sie hier die gemessene Einheit an"></v-textarea> -->
+         <DocLengths :lengths="artifact_doc.lengths" @addLength="addLength($event)"/>
       </v-tab-item>
 
       <v-tab-item class="px-4">
@@ -99,21 +91,26 @@
 
 import VueCookies from 'vue-cookies';
 import DocDates from './DocDates.vue';
+import DocSections from './DocSections.vue';
 import DocExcavations from './DocExcavations.vue';
 import DocFeatures from './DocFeatures.vue';
 import DocUtmPoints from './DocUtmPoints';
 import DocImages from './DocImages';
 import DocColors from './DocColors';
+import DocLengths from './DocLengths';
 import axios from 'axios';
 
 export default {
   name: 'ArtifactCreation',
-  components: { DocDates, 
-    DocFeatures, 
-    DocExcavations, 
-    DocUtmPoints, 
-    DocImages, 
-    DocColors },
+  components: { DocDates,
+    DocSections,
+    DocFeatures,
+    DocExcavations,
+    DocUtmPoints,
+    DocLengths,
+    DocImages,
+    DocColors,
+    },
   data() {
     return {
       artifact_doc: {
@@ -125,10 +122,12 @@ export default {
         producer: '',
         type: '',
         inscriptions: '',
+        sections: [],
         features: [],
         images: [],
         colors: [],
         utmPoints: [],
+        lengths: [],
 
         tachymeter: '',
         comment: '',
@@ -222,6 +221,15 @@ export default {
         context.artifact_doc.utmPoints.push(utmPoint_id);
       }
     },
+    addLength: function (length_id) {
+      var context = this;
+
+      if (context.artifact_doc.lengths == undefined) {
+         context.artifact_doc.lengths = [length_id];
+      } else {
+         context.artifact_doc.lengths.push(length_id);
+          }
+     },
     //submit the form (either POST new artifacts or PUT existing artifacts)
     logForm() {
       // show error message if form is not valid
@@ -247,7 +255,10 @@ export default {
           number: context.artifact_doc.number,
           title: context.artifact_doc.title,
           description: context.artifact_doc.description,
+          excavation_id: VueCookies.get('currentExcavation'),
           state: context.artifact_doc.state,
+          sections: context.artifact_doc.sections,
+          features: context.artifact_doc.features,
           literature: context.artifact_doc.literature,
           inscriptions: context.artifact_doc.inscriptions,
           producer: context.artifact_doc.producer,
@@ -268,12 +279,11 @@ export default {
 
           interpretation: context.artifact_doc.interpretation,
 
-          features: context.artifact_doc.features,
           dates: context.artifact_doc.dates,
           images: context.artifact_doc.images,
           colors: context.artifact_doc.colors,
-          utmPoints: context.artifact_doc.utmPoints
-
+          utmPoints: context.artifact_doc.utmPoints,
+          lengths: context.artifact_doc.lengths
         }
       })
         .then(function (res) {
