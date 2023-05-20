@@ -13,6 +13,20 @@ import {fromBackend} from '../ConnectionToBackend.js';
 import { GUI } from 'dat.gui';
 import axios from 'axios';
 
+const params = {
+	animate: true,
+	planeX: {
+		constant: 0,
+		negated: false,
+		displayHelper: false,
+    model1: false
+	},
+  guiMesh: {
+    visibility: false,
+    clipping: false
+  }
+};
+
 export default {
 
   name: 'Viewer',
@@ -27,6 +41,8 @@ export default {
       controls: null,
       gui: null,
 
+      meshInScene: [],
+
     }
 
   },
@@ -38,6 +54,9 @@ export default {
     await fromOfflineDB.syncLocalDBs();
 
     this.init();
+
+    this.createGuiElements();
+
     this.animate();
 
   },
@@ -53,9 +72,13 @@ export default {
      *                          This version has the standart texture from the 
      *                          object and the name of the created mesh is the 
      *                          title of the object.
+     *  updateCameraPosition  - Moves the Camera to specified model in scene
+     *  createGuiElements     - Creates all gui Elements in respective order
      *  loadWithColor         - Change the current color/texture of a model in
      *                          the scene to a new color
-     *  updateCameraPosition  - Moves the Camera to specified model in scene
+     *  changeVisibility      - Changes the opacity of a mesh
+     *  changeClipping        - Change if functions, that uses stencil clipping,
+     *                          could manipulate the mesh, or not 
      *  onWindowResize        - Resizes the threeJS element
      *  ------------------------------------------------------------------------
      *  init                  - Initialize the scene
@@ -126,29 +149,97 @@ export default {
      */
     loadMesh: async function(modelID, dbName, storeName) {
 
+      /* Create empty Mesh */
       const mesh = new THREE.Mesh();
+
+      /* Get Model Data from IndexedDB */
       const model = await fromOfflineDB.getObject( modelID, dbName, storeName );
 
+      /* Load object */
       const object = new OBJLoader().parse( model.result.model );
 
+      /* Load texture */
       var textLoader = new THREE.TextureLoader().load( model.result.texture );
 
+      /* Create Material */
       const material = new THREE.MeshBasicMaterial( {
         map: textLoader,
+        transparent: true,
         shadowSide: THREE.DoubleSide,
         side: THREE.DoubleSide
       } );
 
+      /* Get geometry from loaded object */
       object.traverse( (child) => {
         if( child instanceof THREE.Mesh ) {
+          /* Add geometry to mesh */
           mesh.geometry = child.geometry
         }
       } );
 
+      /* Add material to mesh */
       mesh.material = material;
+      mesh.material.alphaTest = 0.5
+      mesh.material.opacity = 0.0;
       mesh.name = model.result.title;
 
-      this.scene.add(mesh);
+      /* Add mesh to scene */
+      this.scene.add(mesh); 
+
+      /* Move camera to mesh position */
+      this.updateCameraPosition(model.result.title)
+
+      this.meshInScene.push(model.result.title);
+
+    },
+
+    /**
+     * @param {String} modelName  - Name of model in scene
+     */
+    updateCameraPosition: function(modelName) {
+
+      var center = new THREE.Vector3;
+      const box = new THREE.Box3().setFromObject(
+        this.scene.getObjectByName(modelName));
+      box.getCenter(center)
+
+      this.controls.target.set(center.x, center.y, center.z);
+      this.camera.position.set(center.x, center.y - 15, center.z);
+
+      this.controls.update();
+
+    },
+
+    createGuiElements: function() {
+
+      const dataFolder = this.gui.addFolder('Data')
+
+      //var addButton = dataFolder.add(guiFunctions, 'add')
+     // dataFolder.add(guiFunctions, 'delete')
+
+      /* #### Prep Models #### */
+      const prepModelsFolder = this.gui.addFolder( 'Prep Models' );
+
+      for(var i=0; i < this.meshInScene.length; i++) {
+
+        const meshName = this.meshInScene[i];
+
+        const modelFolder = prepModelsFolder.addFolder( meshName );
+
+        modelFolder.add( params.guiMesh, "visibility")
+                   .onChange( v => this.changeVisibility(meshName));
+
+        modelFolder.add( params.guiMesh, "clipping")
+                   .onChange( v => this.changeClipping(meshName, this.planes) );
+      }
+
+      /* #### Segmentation #### - Not working with current build */
+      const planeX = this.gui.addFolder( 'Segmentation' );
+      //planeX.add( params.planeX, 'displayHelper' )
+      //      .onChange( v => this.planeHelpers[ 0 ].visible = v );
+
+      //planeX.add( params.planeX, 'constant' ).min( - 7 ).max( 5 )
+      //      .onChange( d => this.planes[ 0 ].constant = d );
 
     },
 
@@ -156,25 +247,41 @@ export default {
      * @param {String} model  - Name of model in scene
      * @param {String} color  - Name of color
      */
-    loadWithColor: function(model, color) {
-      this.scene.getObjectByName( model ).material.color = 
+     loadWithColor: function(modelName, color) {
+      this.scene.getObjectByName( modelName ).material.color = 
         new THREE.Color( color )
     },
 
     /**
-     * @param {String} model  - Name of model in scene
+     * @param {String} modelName  - Name of model in scene
      */
-    updateCameraPosition: function(model) {
+     changeVisibility: function( modelName ) {
 
-      var center = new THREE.Vector3;
-      const box = new THREE.Box3().setFromObject(
-        this.scene.getObjectByName(model));
-      box.getCenter(center)
+      const model = this.scene.getObjectByName(modelName)
 
-      this.controls.target.set(center.x, center.y, center.z);
-      this.camera.position.set(center.x, center.y - 15, center.z);
+      if(model.material.opacity == 1) {
+        model.material.opacity = 0;
+      } else {
+        model.material.opacity = 1;
+      }
 
-      this.controls.update();
+    },
+
+    /**
+     * @param {String} modelName            - Name of model in scene
+     * @param {Array[THREE.Plane[]]} planes - Stencil planes
+     */
+     changeClipping: function(modelName, planes) {
+
+      const model = this.scene.getObjectByName(modelName)
+
+      if(model.material.clipShadows == true) {
+        model.material.clipShadows = false;
+        model.material.clippingPlanes = null;
+      } else {
+        model.material.clipShadows = true;
+        model.material.clippingPlanes = planes;
+      }
 
     },
 
@@ -190,12 +297,6 @@ export default {
 
       /* ##### Container ##### */
       let container = document.getElementById( 'container' );
-
-
-
-      /* ##### Loader ##### */
-      this.texLoader = new THREE.TextureLoader; /* loads '.jpg'-data from 
-                                                   local storage */
 
 
 
@@ -222,7 +323,7 @@ export default {
 
       /* ##### 3D-Mesh Example: Box ##### */
       let boxGeometry = new THREE.BoxGeometry( 1,1,1);
-      let boxMaterial = new THREE.MeshBasicMaterial( { color: 0x00f00, 
+      let boxMaterial = new THREE.MeshBasicMaterial( { color: 0xfffff, 
                                                        wireframe: true } );
       let box = new THREE.Mesh( boxGeometry, boxMaterial );
       this.scene.add( box );
@@ -245,21 +346,9 @@ export default {
 
       
       /* ##### GUI ##### */
-      this.gui = new GUI( {autoPlace: false} );
+      this.gui = new GUI( {autoPlace: true, closed: false, closeOnTop: false} );
       this.gui.domElement.id = 'gui';
       gui_container.appendChild( this.gui.domElement );
-
-      /* Data Examples */
-      var guiFunctions = { 
-        add: () => {
-          // --> Place gui function here <--
-          
-          // Example does not work in current state:
-          // this.loadMesh('E4bhNKOJBQw5ZBQwsWoh', 'Geometry','excavation')
-        }
-      }
-
-      this.gui.add(guiFunctions, 'add')
 
       
       /* ##### FOR DEBUGGING ##### */
@@ -285,6 +374,7 @@ export default {
     #container{height: 100%}
     #gui_container{
       position: absolute;
+      width: 101%;
     }
 
 </style>

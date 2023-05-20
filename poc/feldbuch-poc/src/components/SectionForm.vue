@@ -6,6 +6,7 @@
       <v-tab> Kontaktpersonen </v-tab>
       <v-tab> Befunde </v-tab>
       <v-tab> Funde </v-tab>
+      <v-tab> Modelle </v-tab>
 
       <v-tab-item class="px-4">
         <v-text-field v-model="section_doc.title" label="Bezeichnung *"
@@ -30,6 +31,10 @@
       <v-tab-item class="px-4">
           <DocArtifacts :artifactslist="section_doc.artifacts"/>
       </v-tab-item>
+
+      <v-tab-item class="px-4">
+            <DocModels :modelslist="section_doc.models" @addModel="addModel($event)"/>
+        </v-tab-item>
 
       <v-btn v-on:click="logForm()" color="secondary" class="py-6" tile> Speichern </v-btn>
       <v-dialog v-model="dialog" max-width="290">
@@ -67,12 +72,13 @@ import ExcavationsOverview from "./ExcavationsOverview";
 import DocContacts from './DocContacts.vue';
 import DocFeatures from './DocFeatures.vue';
 import DocArtifacts from './DocArtifacts.vue';
+import DocModels from './DocModels.vue';
 import VueCookies from 'vue-cookies'
 import axios from "axios";
 
 export default {
   name: "SectionCreation",
-  components: { ExcavationsOverview, DocContacts, DocFeatures, DocArtifacts },
+  components: { ExcavationsOverview, DocContacts, DocFeatures, DocArtifacts, DocModels },
   data() {
     return {
       section_doc: {
@@ -83,6 +89,7 @@ export default {
         contacts: [],
         features: [],
         artifacts: [],
+        models: []
       },
       is_new: true,
       is_required: [v => !!v || "Pflichtfeld"],
@@ -96,7 +103,9 @@ export default {
     this.get_doc();
   },
   methods: {
-    // retrieve project if one exists
+    /**
+     * Retrieve project data, if an existing project is to be edited
+     */
     get_doc() {
       var context = this;
 
@@ -119,7 +128,22 @@ export default {
         context.$emit("view", "Neuen Schnitt anlegen");
       }
     },
-    //submit the form (either POST new project or PUT existing project)
+    /**
+     * Adds a newly created model_id to the connected section
+     * @param {*} model_id 
+     */
+    addModel: function(model_id) {
+      var context = this;
+
+      if (context.section_doc.models == undefined) {
+        context.section_doc.models = [model_id];
+      } else {
+        context.section_doc.models.push(model_id);
+      }
+    },
+    /**
+     * Submits the form (either POST new section or PUT existing section)
+     */
     logForm() {
       // show error message if form is not valid
       if (!this.$refs.form.validate()) {
@@ -148,6 +172,7 @@ export default {
           contacts: context.section_doc.contacts,
           features: context.section_doc.features,
           artifacts: context.section_doc.artifacts,
+          models: context.section_doc.models
         }
       })
         .then(function (res) {
@@ -158,6 +183,9 @@ export default {
           console.log(error);
         });
     },
+    /**
+     * Deletes a selected section
+     */
     deleteSection: function () {
       var context = this;
       var curExcavation = VueCookies.get('currentExcavation');
@@ -175,7 +203,9 @@ export default {
           console.log(error);
         });
     },
-    //go back to project overview
+    /**
+     * Go back to SectionsOverview
+     */
     goBack() {
       this.$emit("view", "Schnittübersicht");
       this.$router.push({ name: "SectionsOverview" });
