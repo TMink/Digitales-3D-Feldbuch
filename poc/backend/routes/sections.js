@@ -1,9 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../fb");
-const excavations = db.collection("excavations");
-const sections = db.collection("sections");
-var admin = require("firebase-admin");
 
 const Excavation = require("../model/Excavation");
 const Section = require("../model/Section");

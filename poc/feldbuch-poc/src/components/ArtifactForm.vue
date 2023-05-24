@@ -9,7 +9,7 @@
       <v-tab> Bilder </v-tab>
       <v-tab> Farbwerte </v-tab>
       <v-tab> Datierungen </v-tab>
-      
+
       <v-tab-item class="px-4">
         <v-text-field v-model="artifact_doc.number" label="Nummer *"
           hint="Geben sie hier die Fundnummer ein *(Pflichtfeld)" :rules="is_required"></v-text-field>
@@ -45,8 +45,8 @@
       </v-tab-item>
 
       <v-tab-item class="px-4">
-        <DocDates 
-          :dateslist="artifact_doc.dates" 
+        <DocDates
+          :dateslist="artifact_doc.dates"
           :mode="'artifacts'"
           :id="artifact_doc._id"
           @addDate="addDate($event)" />
@@ -57,9 +57,7 @@
       </v-tab-item>
 
       <v-tab-item>
-        <DocColors :colorslist="artifact_doc.colors"/>
-        <!-- <v-textarea v-model="artifact_doc.interpretation" label="Interpretation"
-        hint="Geben sie hier die Interpretation an"></v-textarea> -->
+        <DocColors :colorslist="artifact_doc.colors" :id="artifact_doc._id"/>
       </v-tab-item>
 
       <v-tab-item>
@@ -112,11 +110,11 @@ import axios from 'axios';
 
 export default {
   name: 'ArtifactCreation',
-  components: { DocDates, 
-    DocFeatures, 
-    DocExcavations, 
-    DocUtmPoints, 
-    DocImages, 
+  components: { DocDates,
+    DocFeatures,
+    DocExcavations,
+    DocUtmPoints,
+    DocImages,
     DocColors },
   data() {
     return {

@@ -1,12 +1,12 @@
 <template>
     <div>
-        <v-data-table 
-            :headers="colors_headers" 
-            :items="colors_list" 
-            v-model="selected_color" 
-            item-key="id" 
+        <v-data-table
+            :headers="colors_headers"
+            :items="colors_list"
+            v-model="selected_color"
+            item-key="_id"
             show-select
-            :single-select="true" 
+            :single-select="true"
             hide-default-footer> </v-data-table>
         <v-btn v-on:click="colors_overlay = true" color="secondary"> Hinzufügen</v-btn>
         <v-btn v-on:click="remove_color" color="primary"> Entfernen </v-btn>
@@ -47,7 +47,8 @@ export default {
         }
     },
     props: {
-        colorslist: Array
+        colorslist: Array,
+        id: String
     },
     created: function() {
         this.get_doc();
@@ -68,13 +69,13 @@ export default {
                 .then(function (res) {
                     res.data.forEach(item => {
                         var color = {
-                            id: item.id,
+                            _id: item._id,
                             title: item.title,
                             hexa: item.hexa,
-                            rgba_r: item.rgba_r,
-                            rgba_g: item.rgba_g,
-                            rgba_b: item.rgba_b,
-                            rgba_a: item.rgba_a
+                            rgba_r: item.red,
+                            rgba_g: item.green,
+                            rgba_b: item.blue,
+                            rgba_a: item.alpha
                         }
                         context.colors_list.push(color);
                     });
@@ -90,28 +91,28 @@ export default {
             //post request of edited/new excavation
             axios({
                 method: "post",
-                url: '/colors',
+                url: '/colors/' + context.id,
                 data: {
                     title: context.new_color.title,
                     hexa: context.new_color.color.hexa,
-                    rgba_r: context.new_color.color.rgba.r,
-                    rgba_g: context.new_color.color.rgba.g,
-                    rgba_b: context.new_color.color.rgba.b,
-                    rgba_a: context.new_color.color.rgba.a
+                    red: context.new_color.color.rgba.r,
+                    green: context.new_color.color.rgba.g,
+                    blue: context.new_color.color.rgba.b,
+                    alpha: context.new_color.color.rgba.a
                 }
             })
             .then(function (res) {
                 var newColorObject = {
-                    id: res.data,
+                    _id: res.data,
                     title: context.new_color.title,
                     hexa: context.new_color.color.hexa,
-                    rgba_r: context.new_color.color.rgba.r,
-                    rgba_g: context.new_color.color.rgba.g,
-                    rgba_b: context.new_color.color.rgba.b,
-                    rgba_a: context.new_color.color.rgba.a,
+                    red: context.new_color.color.rgba.r,
+                    green: context.new_color.color.rgba.g,
+                    blue: context.new_color.color.rgba.b,
+                    alpha: context.new_color.color.rgba.a,
                 }
                 context.colors_list.push(newColorObject);
-                //add the new color.id to the colors list
+                //add the new color._id to the colors list
                 context.$emit('addColor', res.data);
             })
             .catch(function (error) {
@@ -120,16 +121,30 @@ export default {
         },
         remove_color: function () {
             var context = this;
-            context.selected_color.forEach(item => {
+
+            // delete contact with 'id' (contact_id) from 'subdomain' (projects or excavations)
+            // with 'id' (project_id or excavation_id)
+            axios({
+                method: 'delete',
+                url: '/colors/' + context.id + '/'+ context.selected_color[0]._id,
+            })
+            .then(function (res) {
+                context.$emit("view", "Fundübersicht");
+                context.$router.push({ name: "ArtifactsOverview" });
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+            /* context.selected_color.forEach(item => {
                 for (var i = 0; i < context.colors_list.length; i++) {
 
-                    if (context.colors_list[i].id === item.id) {
+                    if (context.colors_list[i]._id === item._id) {
                         context.colors_list.splice(i, 1);
                         var index = context.colorslist.indexOf(item.id);
                         context.colorslist.splice(index, 1)
                     }
                 }
-            });
+            }); */
         },
     }
 }
