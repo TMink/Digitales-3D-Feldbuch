@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../fb");
-const utmPoints = db.collection("utmPoints");
-var admin = require("firebase-admin");
+
+const Artifact = require("../model/Artifact");
+const UTMPoint = require("../model/UTMPoint");
 
 /**
  * Takes the retrieved data from DB and builds a JSON-object
@@ -12,110 +12,118 @@ var admin = require("firebase-admin");
  * @param {*} doc The raw excavation data from database
  * @returns utmPoint Json-Object with all required fields
  */
-function getUtmPointJson(doc) {
+function getUTMPointJson(doc) {
   return {
     id: doc.id,
-    title: doc.data().title,
-    description: doc.data().description,
-    eastvalue: doc.data().eastvalue,
-    northvalue: doc.data().northvalue,
-    heightvalue: doc.data().heightvalue,
+    title: doc.title,
+    description: doc.description,
+    eastvalue: doc.eastvalue,
+    northvalue: doc.northvalue,
+    heightvalue: doc.heightvalue,
   };
 }
 
 /* GET utmPoints by id-array in params seperated by ,*/
-router.get("/:utmPoint_ids", function (req, res, next) {
+router.get("/:utmPoint_ids", async function (req, res, next) {
   var utmPoint_ids = req.params.utmPoint_ids.split(",");
 
-  var utmPointsArray = [];
-  utmPoints
-    .where(admin.firestore.FieldPath.documentId(), "in", utmPoint_ids)
-    .get()
-    .then((data) => {
-      data.forEach((doc) => {
-        var utmPoint = getUtmPointJson(doc);
-        utmPointsArray.push(utmPoint);
-      });
-      res.send(utmPointsArray);
-    })
-    .catch((err) => {
-      res.status(404).send("No utmPoints found");
-    });
+  try {
+    var utmPointsArray = await UTMPoint.find({ _id: utmPoint_ids }).exec();
+  } catch (error) {
+    res.status(404).send("No utmPoints found");
+  }
+
+  res.status(200).send(utmPointsArray);
 });
 
-/* GET ALL utmPoints */
-router.get("/", function (req, res, next) {
-  var utmPointsArray = [];
-  utmPoints
-    .get()
-    .then((data) => {
-      data.forEach((doc) => {
-        var utmPoint = getUtmPointJson(doc);
-        utmPointsArray.push(utmPoint);
-      });
-      res.send(utmPointsArray);
-    })
-
-    .catch((err) => {
-      res.status(404).send("No utmPoints found");
-    });
-});
 
 /* GET utmPoints by ID */
-router.get("/:utmPoint_id", function (req, res, next) {
-  utmPoints
-    .doc(req.params.utmPoint_id)
-    .get()
-    .then((doc) => {
-      if (doc.exists) {
-        var utmPoint = getUtmPointJson(doc);
-        res.send(utmPoint);
-      } else {
-        res.status(404).send("No such document: ");
-      }
-    })
-    .catch((err) => {
-      res.status(404).send("utmPoint not found: " + err);
-    });
+router.get("/:utmPoint_id", async function (req, res, next) {
+  try {
+    var utmPoint = await UTMPoint.findById(req.params.utmPoint_id).exec();
+  } catch (error) {
+    res.status(404).send("No UTMPoint with ID: " + req.params.utmPoint_id + " found");
+  }
+  res.status(200).send(utmPoint);
 });
 
+
 /* POST new utmPoint */
-router.post("/", function (req, res, next) {
-    console.log(req.body)
-  utmPoints
-    .add(req.body)
-    .then((response) => {
-      res.status(200).send(response._path.segments[1]); //sends the utmPoint id back
-    })
-    .catch((err) => {
-      res.status(404).send("Couldn't add utmPoint: " + err);
-    });
+router.post("/:artifact_id", async function (req, res, next) {
+  var newUTMPoint = getUTMPointJson(req.body);
+  // create new utmPoint in MongoDB
+  try {
+    var result = await UTMPoint.create(newUTMPoint);
+  } catch (error) {
+    res.status(500).send("Couldn't create Artifact: " + error.message);
+  }
+
+  // get currently used artifact by id
+  try {
+    var artifact = await Artifact.findById(req.params.artifact_id).exec();
+  } catch (error) {
+    res.status(404).send("No artifact with ID: " + req.params.artifact_id + " found");
+  }
+
+  // add newly created utmPoint id to this artifact
+  artifact.utmPoints.push(result.id);
+
+  // update the edited artifact in MongoDB
+  try {
+    var artifact = await Artifact.findByIdAndUpdate(req.params.artifact_id, artifact);
+  } catch (error) {
+    res.status(404).send("No artifact with ID: " + req.params.artifact_id + " found");
+  }
+
+  res.status(200).send("Successfully added utmPoint");
 });
 
 /* UPDATE utmPoint by ID*/
-router.put("/:utmPoint_id", function (req, res, next) {
-  utmPoints
-    .doc(req.params.utmPoint_id)
-    .update(req.body)
-    .then((response) => {
-      res.status(200).send("Updated utmPoint: " + req.params.utmPoint_id);
-    })
-    .catch((err) => {
-      res.status(404).send("Couldn't update utmPoint: " + err);
-    });
+router.put("/:utmPoint_id", async function (req, res, next) {
+  var updatedUTMPoint = getUTMPointJson(req.body);
+
+  try {
+    const result = await UTMPoint.findByIdAndUpdate(req.params.utmPoint_id, updatedUTMPoint);
+
+    res.status(200).send("Edited UTMPoint: " + result);
+  } catch (error) {
+    res.status(500).send("Couldn't edit UTMPoint: " + error.message);
+  }
 });
 
 /* DELETE utmPoint by ID*/
-router.delete("/:utmPoint_id", async function (req, res, next) {
-  utmPoints
-    .doc(req.params.utmPoint_id)
-    .delete({ exists: true })
-    .then((response) => {
-      res.status(200).send("Deleted utmPoint: " + req.params.utmPoint_id);
-    })
-    .catch((err) => {
-      res.status(404).send("Couldn't delete utmPoint: " + err);
-    });
+router.delete("/:artifact_id/:utmPoint_id", async function (req, res, next) {
+  // delete utmPoint from MongoDB by id
+  try {
+    const result = await UTMPoint.findByIdAndDelete(req.params.utmPoint_id);
+  } catch (error) {
+    res.status(500).send("Couldn't delete UTMPoint: " + error.message);
+  }
+
+  // get artifact from MongoDB by id
+  try {
+    var artifact = await Artifact.findById(req.params.artifact_id).exec();
+  } catch (error) {
+    res.status(404).send("No artifact with ID: " + req.params.artifact_id + " found");
+  }
+
+  // remove the deleted utmPoint id from this artifact
+  const index = artifact.utmPoints.indexOf(req.params.utmPoint_id);
+
+  if (index > -1) {
+    artifact.utmPoints.splice(index, 1);
+  } else {
+    res.status(400).send("The deleted utmPoint is not part of the current artifact");
+  }
+
+  // update the edited artifact in MongoDB
+  try {
+    var artifact = await Artifact.findByIdAndUpdate(req.params.artifact_id, artifact);
+  } catch (error) {
+    res.status(404).send("No artifact with ID: " + req.params.artifact_id + " found");
+  }
+
+  res.status(200).send("Successfully deleted utmPoint");
 });
 
 module.exports = router;

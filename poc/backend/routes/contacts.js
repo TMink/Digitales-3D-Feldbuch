@@ -3,8 +3,11 @@ const router = express.Router();
 
 const Project = require("../model/Project");
 const Excavation = require("../model/Excavation");
+const Section = require("../model/Section");
 const Contact = require("../model/Contact");
 
+
+//TODO: combine POST/DELETE routes for projects, excavations and sections
 
 /**
  * Takes the retrieved data from DB and builds a JSON-object
@@ -116,6 +119,38 @@ router.post("/excavations/:excavation_id", async function (req, res, next) {
 });
 
 
+/* POST new contact of a section*/
+router.post("/sections/:section_id", async function (req, res, next) {
+
+  var newContact = getContactJson(req.body);
+  // create new contact in MongoDB
+  try {
+    var result = await Contact.create(newContact);
+  } catch (error) {
+    res.status(500).send("Couldn't create Excavation: " + error.message);
+  }
+
+  // get currently used section by id
+  try {
+    var section = await Section.findById(req.params.section_id).exec();
+  } catch (error) {
+    res.status(404).send("No section with ID: " + req.params.section_id + " found");
+  }
+
+  // add newly created contact id to this section
+  section.contacts.push(result.id);
+
+  // update the edited section in MongoDB
+  try {
+    var section = await Section.findByIdAndUpdate(req.params.section_id, section);
+  } catch (error) {
+    res.status(404).send("No section with ID: " + req.params.section_id + " found");
+  }
+
+  res.status(200).send("Successfully added contact");
+});
+
+
 /* UPDATE contact by ID*/
 router.put("/:contact_id", async function (req, res, next) {
 
@@ -197,6 +232,42 @@ router.delete("/excavations/:excavation_id/:contact_id", async function (req, re
     var excavation = await Excavation.findByIdAndUpdate(req.params.excavation_id, excavation);
   } catch (error) {
     res.status(404).send("No excavation with ID: " + req.params.excavation_id + " found");
+  }
+
+  res.status(200).send("Successfully deleted contact");
+});
+
+
+/* DELETE contact by ID*/
+router.delete("/sections/:section_id/:contact_id", async function (req, res, next) {
+  // delete contact from MongoDB by id
+  try {
+    const result = await Contact.findByIdAndDelete(req.params.contact_id);
+  } catch (error) {
+    res.status(500).send("Couldn't delete Contact: " + error.message);
+  }
+
+  // get section from MongoDB by id
+  try {
+    var section = await Section.findById(req.params.section_id).exec();
+  } catch (error) {
+    res.status(404).send("No section with ID: " + req.params.section_id + " found");
+  }
+
+  // remove the deleted contact id from this section
+  const index = section.contacts.indexOf(req.params.contact_id);
+
+  if (index > -1) {
+    section.contacts.splice(index, 1);
+  } else {
+    res.status(400).send("The deleted contact is not part of the current section");
+  }
+
+  // update the edited section in MongoDB
+  try {
+    var section = await Section.findByIdAndUpdate(req.params.section_id, section);
+  } catch (error) {
+    res.status(404).send("No section with ID: " + req.params.section_id + " found");
   }
 
   res.status(200).send("Successfully deleted contact");

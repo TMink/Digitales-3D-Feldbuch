@@ -1,9 +1,9 @@
 <template>
     <div>
-        <v-data-table 
-            :headers="utm_headers" 
-            :items="utmPoints_list" 
-            v-model="selected_utmPoint" 
+        <v-data-table
+            :headers="utm_headers"
+            :items="utmPoints_list"
+            v-model="selected_utmPoint"
             item-key="id"
             show-select
             hide-default-footer> </v-data-table>
@@ -52,7 +52,8 @@ export default {
         }
     },
     props: {
-        utmPoints: Array
+        utmPoints: Array,
+        artifact_id: String
     },
     created: function() {
         this.get_doc();
@@ -94,7 +95,7 @@ export default {
             //post request of edited/new excavation
             axios({
                 method: "post",
-                url: '/utmPoints',
+                url: '/utmPoints/' + context.artifact_id,
                 data: {
                     title: context.new_utm.title,
                     description: context.new_utm.description,

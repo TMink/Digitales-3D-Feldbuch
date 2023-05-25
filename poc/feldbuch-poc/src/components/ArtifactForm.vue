@@ -29,7 +29,10 @@
       </v-tab-item>
 
       <v-tab-item class="px-4">
-        <DocUtmPoints :utmPoints="artifact_doc.utmPoints" @addUtmPoint="addUtmPoint($event)"/>
+        <DocUtmPoints
+          :utmPoints="artifact_doc.utmPoints"
+          :artifact_id="artifact_doc._id"
+          @addUtmPoint="addUtmPoint($event)"/>
       </v-tab-item>
 
       <v-tab-item class="px-4">
