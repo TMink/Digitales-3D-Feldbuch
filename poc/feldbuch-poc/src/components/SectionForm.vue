@@ -19,9 +19,9 @@
           hint="Geben sie hier das Endnievau des Schnittes an"></v-text-field>
       </v-tab-item>
 
-      
+
       <v-tab-item class="px-4">
-        <DocContacts />
+        <DocContacts :contactslist="section_doc.contacts" :mode="'sections'" :id="section_doc._id" />
       </v-tab-item>
 
       <v-tab-item class="px-4">
@@ -57,7 +57,7 @@
             </v-btn>
           </v-card-actions>
         </v-card>
-      </v-dialog> 
+      </v-dialog>
       <v-btn v-on:click="goBack()" color="primary" class="py-6" tile> Abbrechen </v-btn>
     </v-tabs>
 
@@ -66,7 +66,7 @@
     </v-alert>
   </v-form>
 </template>
-  
+
 <script>
 import ExcavationsOverview from "./ExcavationsOverview";
 import DocContacts from './DocContacts.vue';
@@ -130,7 +130,7 @@ export default {
     },
     /**
      * Adds a newly created model_id to the connected section
-     * @param {*} model_id 
+     * @param {*} model_id
      */
     addModel: function(model_id) {
       var context = this;
@@ -213,4 +213,3 @@ export default {
   }
 };
 </script>
-  

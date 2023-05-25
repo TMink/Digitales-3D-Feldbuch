@@ -38,7 +38,7 @@ const router =  new Router({
       component: ProjectForm
     },
     {
-      path: '/sectionform',
+      path: '/sections/:section_id',
       name: 'SectionCreation',
       alias: '',
       component: SectionForm
@@ -56,7 +56,7 @@ const router =  new Router({
       component: ExcavationForm
     },
     {
-      path: '/sectionsoverview',
+      path: '/sections',
       name: 'SectionsOverview',
       alias: '',
       component: SectionsOverview

@@ -141,7 +141,7 @@ export default {
             var context = this;
             var subdomain = context.$route.params.mode;
 
-            // delete contact with 'id' (contact_id) from 'subdomain' (projects or excavations) 
+            // delete contact with 'id' (contact_id) from 'subdomain' (projects or excavations)
             // with 'id' (project_id or excavation_id)
             axios({
                 method: 'delete',
