@@ -72,14 +72,16 @@ export default class ConnectionToOfflineDB {
   }
 
   /**
-   * @param {Int} id           - Key for identifying the value which will be 
-   *                             deleted
-   * @param {Object} localDB   - Database object, which contains the object
-   *                             store
-   * @param {String} storeName - Object store name
+   * @param {String} id           - Key for identifying the value which will be 
+   *                                deleted
+   * @param {String} localDBname  - Database object, which contains the object
+   *                                store
+   * @param {String} storeName    - Object store name
    * @returns -> Promise
    */
-  async getObject( id, localDB, storeName ) {
+  async getObject( id, localDBName, storeName ) {
+
+    const localDB = this.getLocalDBFromName( localDBName );
       
     return new Promise( ( resolve, reject ) => {
 
