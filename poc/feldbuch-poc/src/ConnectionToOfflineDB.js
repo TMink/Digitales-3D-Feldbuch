@@ -246,6 +246,17 @@ const offlineDBActivities = {
   storeNames: [ 'activities' ]
 };
 
+const offlineDBPlaces = {
+  name: 'Places',
+  version: 1,
+  storeNames: [ 'Places' ]
+};
+
+const offlineDBPositions = {
+  name: 'Positions',
+  version: 1,
+  storeNames: [ 'positions' ]
+};
 
 const fromOfflineDB = new ConnectionToOfflineDB(
   [offlineDBGeometries, offlineDBImages, offlineDBActivities]
