@@ -17,7 +17,7 @@
                       Derzeit ausgewählt
                     </v-chip>      
                     <v-list-item-content>
-                        <v-list-item-title> {{ current_activity.title }} </v-list-item-title>
+                        <v-list-item-title> {{ current_activity.id }} </v-list-item-title>
                         <v-list-item-subtitle>  {{ current_activity.description }} </v-list-item-subtitle>
                     </v-list-item-content>
                     <v-chip variant="elevated">
@@ -25,12 +25,31 @@
                     </v-chip>
               </v-list-item>
         <v-divider></v-divider>
-        <v-subheader v-if="activities.length === 0 && loading===false"> Bisher wurde kein Aktivität angelegt</v-subheader>
+        <v-subheader v-if="activities.length === 0 && loading===false"> Bisher wurde keine Aktivität angelegt</v-subheader>
           <template v-for="(activity, i) in activities">
             <v-list-item v-on:click="modifyActivity(activity.id)">
               <v-list-item-content>
-                <v-list-item-title> {{ activity.title }} </v-list-item-title>
-                <v-list-item-subtitle> {{ activity.description }} </v-list-item-subtitle>
+                <v-row>
+                  <v-col cols="12" sm="6" md="7">
+                    <v-list-item-title class="ma-4"> {{ activity.id }} </v-list-item-title>
+                  </v-col>
+                  
+                  <v-col cols="12" sm="6" md="5">
+                    <v-btn class="ma-1" 
+                    icon 
+                    color="purple" 
+                    v-on:click="modifyActivity(activity)">
+                    <v-icon>mdi-pencil</v-icon>
+                  </v-btn>
+
+                  <v-btn class="ma-1" 
+                  icon 
+                  color="red" 
+                  v-on:click="deleteActivity()">
+                  <v-icon>mdi-delete</v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
               </v-list-item-content>
             </v-list-item>
             <v-divider v-if="i !== activities.length - 1"></v-divider>
@@ -83,7 +102,7 @@
               v-on:click="saveActivity(activity)">
                 <v-icon>mdi-content-save-all</v-icon>
               </v-btn>
-              <v-btn class="ma-5" 
+              <v-btn class="ma-1" 
               icon 
               color="red" 
               v-on:click="deleteActivity()">
@@ -115,16 +134,9 @@
 
         /* Recieve all IDs in store */
         const contentIDs = await fromOfflineDB.getIDs('Activities', 'activities');
+        context.activities = await fromOfflineDB.getAllObjects('Activities', 'activities')
 
         if( contentIDs.length > 0) {
-          for( let item of contentIDs ) {
-            //if the activity id is saved in cookies => mark is as current activity
-            if( VueCookies.get('currentActivity') === item){
-              context.current_activity = item;
-            } else {
-              context.activities.push(item);
-            }
-          }
           //hide the loading circle
           context.loading = false;
         }
@@ -141,6 +153,10 @@
 
         /* Add new data to store */
         await fromOfflineDB.addObject(newActivity, 'Activities', 'activities')
+
+        await this.getActivities();
+      },
+      async deleteActivity(activity) {
 
       }
     },
