@@ -43,7 +43,8 @@
         <v-container>
           <v-row>
             <v-col cols="12" sm="6" md="3">
-              <v-text-field :rules="[rules.required]" 
+              <v-text-field :rules="[rules.required]"
+              v-model="activity.außenstelle"
               label="Außenstelle" 
               hide-details="auto" 
               placeholder="Xanten" 
@@ -52,7 +53,8 @@
 
             <v-col cols="12" sm="6" md="3">
               <v-text-field 
-              :rules="[rules.required]" 
+              :rules="[rules.required]"
+              v-model="activity.jahr"
               label="Jahr" 
               hide-details="auto" 
               placeholder="2023" 
@@ -63,7 +65,8 @@
             
             <v-col cols="12" sm="6" md="3">
               <v-text-field 
-              :rules="[rules.required, rules.counter]" 
+              :rules="[rules.required, rules.counter]"
+              v-model="activity.nummer"
               label="Nummer" 
               hide-details="auto" 
               placeholder="1337" 
@@ -77,7 +80,7 @@
               <v-btn class="ma-5" 
               icon 
               color="purple" 
-              v-on:click="saveActivity()">
+              v-on:click="saveActivity(activity)">
                 <v-icon>mdi-content-save-all</v-icon>
               </v-btn>
               <v-btn class="ma-5" 
@@ -106,9 +109,6 @@
       Navigation
     },
     methods: {
-      sendMessage () {
-
-      },
       //retrieve all activities
       async getActivities() {
         var context = this;
@@ -129,22 +129,19 @@
           context.loading = false;
         }
       },
-      async modifyActivity(item_id) {
-        if (item_id !== 'new') {
-          VueCookies.set('currentActivity', item_id)
-        }
+      async saveActivity(activity) {
 
-        /* DEBUGGING: Delete all Objects in store */
-        await fromOfflineDB.deleteAllObjects('Activities', 'activities');
-
-        /* Create new activity data */
         const newActivity = {
-          id: item_id,
-          content: "Success!"
+          id:           activity.außenstelle + " " + activity.jahr + "/"+
+                        activity.nummer,
+          außenstelle:  activity.außenstelle,
+          jahr:         activity.jahr,
+          nummer:       activity.nummer
         }
 
         /* Add new data to store */
         await fromOfflineDB.addObject(newActivity, 'Activities', 'activities')
+
       }
     },
     async created() {
@@ -155,6 +152,11 @@
       return {
         activities: [],
         current_activity:{},
+        activity: {
+          außenstelle: null,
+          jahr: null,
+          nummer: null
+        },
         loading: true,
         rules: {
           required: value => !!value || 'Required.',
