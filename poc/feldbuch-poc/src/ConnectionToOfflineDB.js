@@ -290,5 +290,6 @@ const offlineDBPositions = {
 };
 
 const fromOfflineDB = new ConnectionToOfflineDB(
-  [offlineDBGeometries, offlineDBImages, offlineDBActivities]
+  [offlineDBGeometries, offlineDBImages, offlineDBActivities,
+   offlineDBPlaces, offlineDBPositions]
 );
