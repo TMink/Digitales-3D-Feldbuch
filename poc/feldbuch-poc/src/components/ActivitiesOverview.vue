@@ -38,13 +38,42 @@
         </v-list>
         <v-btn v-on:click="modifyActivity('new')" color="primary"> Aktivität hinzufügen </v-btn>
       </v-form>
+      
+      <v-form>
+        <v-container>
+          <v-row>
+            <v-col cols="12" sm="6" md="3">
+              <v-text-field :rules="[rules.required]" label="Außenstelle" hide-details="auto" placeholder="Xanten" clearable></v-text-field>
+            </v-col>
+
+            <v-col cols="12" sm="6" md="3">
+              <v-text-field :rules="[rules.required]" label="Jahr" hide-details="auto" placeholder="2023" clearable counter maxlength="4"></v-text-field>
+            </v-col>
+            
+            <v-col cols="12" sm="6" md="3">
+              <v-text-field :rules="[rules.required, rules.counter]" label="Nummer" hide-details="auto" placeholder="1337" clearable counter maxlength="4"></v-text-field>
+            </v-col>
+
+            <v-col cols="12" sm="6" md="3">
+              <v-btn class="ma-5" icon color="purple" v-on:click="saveActivity()">
+                <v-icon>mdi-content-save-all</v-icon>
+              </v-btn>
+              <v-btn class="ma-5" icon color="red" v-on:click="deleteActivity()">
+                <v-icon>mdi-delete</v-icon>
+              </v-btn>
+            </v-col>
+            
+          </v-row>
+        </v-container>
+      </v-form>
+
     </div>
   </template>
   
   <script>
   import Navigation from './Navigation.vue'
   import VueCookies from 'vue-cookies'
-  import {fromOfflineDB} from '../ConnectionToOfflineDB.js';
+  import {fromOfflineDB} from '../ConnectionToOfflineDB.js'
   
   export default {
     name: 'ActivitiesOverview',
@@ -52,6 +81,9 @@
       Navigation
     },
     methods: {
+      sendMessage () {
+
+      },
       //retrieve all activities
       async getActivities() {
         var context = this;
@@ -98,7 +130,11 @@
       return {
         activities: [],
         current_activity:{},
-        loading: true
+        loading: true,
+        rules: {
+          required: value => !!value || 'Required.',
+          counter: value => value.length <= 20 || 'Max 20 characters',
+        }
       };
     }
   }
