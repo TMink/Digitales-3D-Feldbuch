@@ -2,12 +2,11 @@ import Vue from 'vue'
 import VueCookies from 'vue-cookies';
 import Router from 'vue-router'
 import Viewer from '@/components/3dView'
-import ProjectsOverview from '@/components/ProjectsOverview'
-import ProjectForm from '@/components/ProjectForm';
-import ExcavationsOverview from '@/components/ExcavationsOverview'
-import ExcavationForm from '@/components/ExcavationForm';
-import SectionsOverview from '@/components/SectionsOverview'
-import SectionForm from '@/components/SectionForm';
+import ActivitiesOverview from '@/components/ActivitiesOverview'
+import PlacesOverview from '@/components/PlacesOverview'
+import PlaceForm from '@/components/PlaceForm';
+import PositionsOverview from '@/components/PositionsOverview'
+import PositionForm from '@/components/PositionForm';
 import ArtifactsOverview from '@/components/ArtifactsOverview'
 import ArtifactForm from '@/components/ArtifactForm'
 import FeaturesOverview from '@/components/FeaturesOverview'
@@ -16,50 +15,48 @@ import SamplesOverview from '@/components/SamplesOverview'
 import SamplesForm from '@/components/SamplesForm'
 import ContactForm from '@/components/DocContactForm';
 
-
 Vue.use(Router);
 
 const router =  new Router({
   routes: [
     {
       path: '/',
-      redirect: { path: '/projects' }
+      redirect: { path: '/activities' }
     },
     {
-      path: '/projects',
-      name: 'ProjectsOverview',
+      path: '/activities',
+      name: 'ActivitiesOverview',
       alias: '',
-      component: ProjectsOverview
+      component: ActivitiesOverview
     },
     {
-      path: '/projects/:project_id',
-      name: 'ProjectCreation',
-      alias: '',
-      component: ProjectForm
+      path: '/activities/:activity_id',
+      name: 'ActivityCreation',
+      alias: ''
     },
     {
-      path: '/sectionform',
-      name: 'SectionCreation',
+      path: '/positionform',
+      name: 'PositionCreation',
       alias: '',
-      component: SectionForm
+      component: PositionForm
     },
     {
-      path: '/excavations',
-      name: 'ExcavationsOverview',
+      path: '/places',
+      name: 'PlacesOverview',
       alias: '',
-      component: ExcavationsOverview
+      component: PlacesOverview
     },
     {
-      path: '/excavations/:excavation_id',
-      name: 'ExcavationCreation',
+      path: '/places/:place_id',
+      name: 'PlaceCreation',
       alias: '',
-      component: ExcavationForm
+      component: PlaceForm
     },
     {
-      path: '/sectionsoverview',
-      name: 'SectionsOverview',
+      path: '/positionsoverview',
+      name: 'PositionsOverview',
       alias: '',
-      component: SectionsOverview
+      component: PositionsOverview
     },
     {
       path: '/artifactsoverview',
