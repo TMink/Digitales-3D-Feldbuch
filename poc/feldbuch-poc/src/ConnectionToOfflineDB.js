@@ -98,6 +98,37 @@ export default class ConnectionToOfflineDB {
   }
 
   /**
+     * @param {String} localDBName 
+     * @param {String} storeName 
+     * @returns -> Promise
+     */
+  async getAllObjects( localDBName, storeName ) {
+
+    const localDB = this.getLocalDBFromName( localDBName );
+      
+    return new Promise( ( resolve, reject ) => {
+
+      const trans = localDB.transaction( [storeName], 'readonly' );
+      trans.oncomplete = e => {
+        resolve( data );
+      }
+
+      const store = trans.objectStore( storeName );
+      let data = [];
+
+      store.openCursor().onsuccess = e => {
+        let cursor = e.target.result;
+        if (cursor) {
+          data.push(cursor.value)
+          cursor.continue();
+        }
+      };
+
+    })
+
+  }
+
+  /**
    * @param {Object} data        - Data to be added to Object Store
    * @param {String} localDBName - Database name
    * @param {String} storeName   - Object store name
