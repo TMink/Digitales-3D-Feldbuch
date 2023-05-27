@@ -43,22 +43,47 @@
         <v-container>
           <v-row>
             <v-col cols="12" sm="6" md="3">
-              <v-text-field :rules="[rules.required]" label="Außenstelle" hide-details="auto" placeholder="Xanten" clearable></v-text-field>
+              <v-text-field :rules="[rules.required]" 
+              label="Außenstelle" 
+              hide-details="auto" 
+              placeholder="Xanten" 
+              clearable></v-text-field>
             </v-col>
 
             <v-col cols="12" sm="6" md="3">
-              <v-text-field :rules="[rules.required]" label="Jahr" hide-details="auto" placeholder="2023" clearable counter maxlength="4"></v-text-field>
+              <v-text-field 
+              :rules="[rules.required]" 
+              label="Jahr" 
+              hide-details="auto" 
+              placeholder="2023" 
+              clearable 
+              counter 
+              maxlength="4"></v-text-field>
             </v-col>
             
             <v-col cols="12" sm="6" md="3">
-              <v-text-field :rules="[rules.required, rules.counter]" label="Nummer" hide-details="auto" placeholder="1337" clearable counter maxlength="4"></v-text-field>
+              <v-text-field 
+              :rules="[rules.required, rules.counter]" 
+              label="Nummer" 
+              hide-details="auto" 
+              placeholder="1337" 
+              clearable 
+              counter 
+              maxlength="4">
+            </v-text-field>
             </v-col>
 
             <v-col cols="12" sm="6" md="3">
-              <v-btn class="ma-5" icon color="purple" v-on:click="saveActivity()">
+              <v-btn class="ma-5" 
+              icon 
+              color="purple" 
+              v-on:click="saveActivity()">
                 <v-icon>mdi-content-save-all</v-icon>
               </v-btn>
-              <v-btn class="ma-5" icon color="red" v-on:click="deleteActivity()">
+              <v-btn class="ma-5" 
+              icon 
+              color="red" 
+              v-on:click="deleteActivity()">
                 <v-icon>mdi-delete</v-icon>
               </v-btn>
             </v-col>
