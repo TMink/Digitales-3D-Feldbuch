@@ -45,7 +45,7 @@
                   <v-btn class="ma-1" 
                   icon 
                   color="red" 
-                  v-on:click="deleteActivity()">
+                  v-on:click="deleteActivity(activity)">
                   <v-icon>mdi-delete</v-icon>
                 </v-btn>
               </v-col>
@@ -105,7 +105,7 @@
               <v-btn class="ma-1" 
               icon 
               color="red" 
-              v-on:click="deleteActivity()">
+              v-on:click="deleteActivity(activity)">
                 <v-icon>mdi-delete</v-icon>
               </v-btn>
             </v-col>
@@ -157,7 +157,9 @@
         await this.getActivities();
       },
       async deleteActivity(activity) {
-
+        console.log(activity)
+        fromOfflineDB.deleteObject(activity.id, 'Activities', 'activities')
+        await this.getActivities();
       }
     },
     async created() {
