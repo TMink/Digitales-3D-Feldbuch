@@ -43,8 +43,8 @@
   
   <script>
   import Navigation from './Navigation.vue'
-  import axios from 'axios'
   import VueCookies from 'vue-cookies'
+  import {fromOfflineDB} from '../ConnectionToOfflineDB.js';
   
   export default {
     name: 'ActivitiesOverview',
@@ -53,18 +53,16 @@
     },
     methods: {
       //retrieve all activities
-      getActivities() {
+      async getActivities() {
         var context = this;
-  
-        axios({
-          method: 'get',
-          url: '/activities',
-          responseType: 'json'
-        })
-        .then(function (response) {
-          for (let item of response.data) {
+
+        /* Recieve all IDs in store */
+        const contentIDs = await fromOfflineDB.getIDs('Activities', 'activities');
+
+        if( contentIDs.length > 0) {
+          for( let item of contentIDs ) {
             //if the activity id is saved in cookies => mark is as current activity
-            if( VueCookies.get('currentActivity') === item.id){
+            if( VueCookies.get('currentActivity') === item){
               context.current_activity = item;
             } else {
               context.activities.push(item);
@@ -72,24 +70,29 @@
           }
           //hide the loading circle
           context.loading = false;
-        })
-        .catch(error => {
-          if (!error.response) {
-            this.errorStatus = 'Error: Network Error';
-          } else {
-            this.errorStatus = error.response.data.message;
-          }
-        });
+        }
       },
-      modifyActivity(item_id) {
+      async modifyActivity(item_id) {
         if (item_id !== 'new') {
           VueCookies.set('currentActivity', item_id)
         }
-        this.$router.push({ name: 'ActivityCreation', params: { activity_id: item_id } })
+
+        /* DEBUGGING: Delete all Objects in store */
+        await fromOfflineDB.deleteAllObjects('Activities', 'activities');
+
+        /* Create new activity data */
+        const newActivity = {
+          id: item_id,
+          content: "Success!"
+        }
+
+        /* Add new data to store */
+        await fromOfflineDB.addObject(newActivity, 'Activities', 'activities')
       }
     },
-    created() {
-      this.getActivities();
+    async created() {
+      await fromOfflineDB.syncLocalDBs();
+      await this.getActivities();
     },
     data() {
       return {
