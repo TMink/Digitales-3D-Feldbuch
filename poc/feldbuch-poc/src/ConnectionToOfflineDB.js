@@ -164,7 +164,7 @@ export default class ConnectionToOfflineDB {
      * @param {String} storeName 
      * @returns -> Promise
      */
-  async getIDs( localDBName, storeName ) {
+  async getSpecificValues( specificValue, localDBName, storeName ) {
 
     const localDB = this.getLocalDBFromName( localDBName );
       
@@ -181,7 +181,15 @@ export default class ConnectionToOfflineDB {
       store.openCursor().onsuccess = e => {
         let cursor = e.target.result;
         if (cursor) {
-          data.push(cursor.value.id)
+          switch(specificValue) {
+            case 'id':
+              data.push(cursor.value.id)
+              break;
+            case 'placeNumber':
+              data.push(cursor.value.placeNumber)
+            default:
+              console.log( "Entries do not contain Attribute: '" + specificValue + "'" );
+          }
           cursor.continue();
         }
       };
