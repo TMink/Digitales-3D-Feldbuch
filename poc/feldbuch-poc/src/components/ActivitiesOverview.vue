@@ -16,7 +16,7 @@
                     </v-chip>
               </v-list-item>
         <v-divider></v-divider>
-        <v-subheader v-if="activities.length === 0"> Bisher wurde keine Aktivitäten angelegt</v-subheader>
+        <v-subheader v-if="activities.length === 0"> Bisher wurden keine Aktivitäten angelegt</v-subheader>
           <template v-for="(activity, i) in activities">
             <v-list-item v-on:click="modifyActivity(activity.id)">
               <v-list-item-content>
@@ -46,11 +46,7 @@
             <v-divider v-if="i !== activities.length - 1"></v-divider>
           </template>
         </v-list>
-        <v-btn v-on:click="modifyActivity('new')" color="primary"> Aktivität hinzufügen </v-btn>
-      </v-form>
-      
-      <v-form>
-        <v-container>
+        <v-container v-if="showInputMask">
           <v-row>
             <v-col cols="12" sm="6" md="3">
               <v-text-field :rules="[rules.required]"
@@ -96,15 +92,14 @@
               <v-btn class="ma-1" 
               icon 
               color="red" 
-              v-on:click="deleteActivity(activity)">
-                <v-icon>mdi-delete</v-icon>
+              v-on:click="clearActivityMask()">
+                <v-icon>mdi-close-circle</v-icon>
               </v-btn>
             </v-col>
-            
           </v-row>
         </v-container>
+        <v-btn v-on:click="modifyActivity('new')" color="primary" v-if="!showInputMask"> Aktivität hinzufügen </v-btn>
       </v-form>
-
     </div>
   </template>
   
@@ -140,11 +135,23 @@
         await fromOfflineDB.addObject(newActivity, 'Activities', 'activities')
 
         await this.getActivities();
+        this.showInputMask = false;
+        this.clearActivityMask();
       },
       async deleteActivity(activity) {
-        console.log(activity)
         fromOfflineDB.deleteObject(activity.id, 'Activities', 'activities')
         await this.getActivities();
+      },
+      async modifyActivity(activity) {
+        if (activity === 'new') {
+                this.showInputMask = true
+            }
+      },
+      async clearActivityMask() {
+        this.showInputMask = false
+        this.activity.außenstelle = ""
+        this.activity.jahr = ""
+        this.activity.nummer = ""
       }
     },
     async created() {
@@ -155,6 +162,7 @@
       return {
         activities: [],
         current_activity:{},
+        showInputMask: false,
         activity: {
           außenstelle: null,
           jahr: null,
