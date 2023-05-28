@@ -1,15 +1,6 @@
 <template>
     <div id="wrapper">
       <Navigation/>
-      <div class="ma-10" v-if="loading === true">
-        <v-progress-circular d-flex 
-              color="primary" 
-              :active="loading"          
-              :indeterminate="loading" 
-              :size="86"
-              :width="8">
-          </v-progress-circular>
-      </div>    
       <v-form>
         <v-list>
             <v-list-item class="mt-5" v-if="current_activity.id !== undefined" v-on:click="modifyActivity(current_activity.id)">
@@ -25,7 +16,7 @@
                     </v-chip>
               </v-list-item>
         <v-divider></v-divider>
-        <v-subheader v-if="activities.length === 0 && loading===false"> Bisher wurde keine Aktivität angelegt</v-subheader>
+        <v-subheader v-if="activities.length === 0"> Bisher wurde keine Aktivität angelegt</v-subheader>
           <template v-for="(activity, i) in activities">
             <v-list-item v-on:click="modifyActivity(activity.id)">
               <v-list-item-content>
@@ -133,13 +124,7 @@
         var context = this;
 
         /* Recieve all IDs in store */
-        const contentIDs = await fromOfflineDB.getIDs('Activities', 'activities');
         context.activities = await fromOfflineDB.getAllObjects('Activities', 'activities')
-
-        if( contentIDs.length > 0) {
-          //hide the loading circle
-          context.loading = false;
-        }
       },
       async saveActivity(activity) {
 
@@ -175,7 +160,6 @@
           jahr: null,
           nummer: null
         },
-        loading: true,
         rules: {
           required: value => !!value || 'Required.',
           counter: value => value.length <= 20 || 'Max 20 characters',
