@@ -47,7 +47,7 @@ const router =  new Router({
       component: PlacesOverview
     },
     {
-      path: '/places/:place_id',
+      path: '/places',
       name: 'PlaceCreation',
       alias: '',
       component: PlaceForm
