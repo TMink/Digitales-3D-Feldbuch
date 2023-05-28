@@ -280,7 +280,7 @@ const offlineDBActivities = {
 const offlineDBPlaces = {
   name: 'Places',
   version: 1,
-  storeNames: [ 'Places' ]
+  storeNames: [ 'places' ]
 };
 
 const offlineDBPositions = {
