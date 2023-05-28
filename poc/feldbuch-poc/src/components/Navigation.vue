@@ -9,7 +9,7 @@
             <v-card-title class="justify-center"> Stellen </v-card-title>
           </v-card>
 
-          <v-card class="ma-2" color="#BC987D" @click="changePage('PositionsOverview')" dark>
+          <v-card class="ma-2" color="#BC987D" @click="changePage('PositionCreation')" dark>
             <v-card-title class="justify-center"> Position </v-card-title>
           </v-card>
 
@@ -59,7 +59,7 @@
     },
     methods: {
       changePage: function(routeName) {
-      this.$router.push({ name: routeName, params: { activity_id: this.activity_id, place_id: this.place_id } }).catch(error => {
+      this.$router.push({ name: routeName, params: { activity_id: this.activity_id, place_id: this.place_id, position_id : this.position_id } }).catch(error => {
         if (
           error.name !== 'NavigationDuplicated' &&
           !error.message.includes('Avoided redundant navigation to current location')

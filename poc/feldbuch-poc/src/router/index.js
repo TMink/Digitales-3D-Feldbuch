@@ -35,7 +35,7 @@ const router =  new Router({
       alias: ''
     },
     {
-      path: '/positionform',
+      path: '/positionform/:position_id',
       name: 'PositionCreation',
       alias: '',
       component: PositionForm

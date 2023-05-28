@@ -1,6 +1,6 @@
 <template>
   <v-form ref="form">
-
+      <Navigation/>
     <v-tabs vertical color="secondary">
       <v-tab> Allgemein </v-tab>
       <v-tab> Positionen </v-tab>
@@ -12,14 +12,11 @@
       </v-tab-item>
 
       <v-tab-item class="px-4">
-        <v-subheader v-if="positions <= 0"> Bisher wurde kein Position angegeben</v-subheader>
+        <v-subheader v-if="positions <= 0"> Bisher wurden keine Positionen angegeben</v-subheader>
         <div id="wrapper">
-          <Navigation />
           <v-form>
             <v-list>
               <v-divider></v-divider>
-              <v-subheader v-if="positions.length === 0"> Bisher wurde keine Positionen
-                angelegt</v-subheader>
               <template v-for="(position, i) in positions">
                 <v-list-item class="positionItem mt-3">
                   <v-list-item-content>
@@ -33,7 +30,7 @@
                 <v-divider v-if="i !== positions.length - 1"></v-divider>
               </template>
             </v-list>
-            <v-btn v-on:click="addPosition(exampleData)" class="mr-16 mt-3" color="primary"> Position hinzufügen </v-btn>
+            <v-btn v-on:click="modifyPosition('new')" class="mr-16 mt-3" color="primary"> Position hinzufügen </v-btn>
           </v-form>
         </div>
       </v-tab-item>
@@ -72,9 +69,13 @@
 <script>
 import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
+import Navigation from './Navigation.vue'
 
 export default {
   name: 'PlaceCreation',
+  components:{
+    Navigation
+  },
   data() {
 
     return {
@@ -108,6 +109,13 @@ export default {
       /* Get all positions of selected place */
       this.positions = await fromOfflineDB.getAllObjects('Positions', 'positions');
 
+      this.positions = this.positions.filter(pos => pos.place_id === currentPlace)
+    },
+    modifyPosition: function(item_id){
+      if (item_id !== 'new') {
+        VueCookies.set('currentPosition', item_id)
+      }
+      this.$router.push({ name: 'PositionCreation', params: { position_id: item_id } })
     },
     savePlace: async function() {
 
