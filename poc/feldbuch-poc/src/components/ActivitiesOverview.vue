@@ -16,7 +16,7 @@
                     </v-chip>
               </v-list-item>
         <v-divider></v-divider>
-        <v-subheader v-if="activities.length === 0"> Bisher wurde keine Aktivität angelegt</v-subheader>
+        <v-subheader v-if="activities.length === 0"> Bisher wurde keine Aktivitäten angelegt</v-subheader>
           <template v-for="(activity, i) in activities">
             <v-list-item v-on:click="modifyActivity(activity.id)">
               <v-list-item-content>
