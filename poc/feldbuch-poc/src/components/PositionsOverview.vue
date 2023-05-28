@@ -6,7 +6,7 @@
     <v-form>
       <v-list>
         <v-divider></v-divider>
-        <v-subheader v-if="positions.length === 0 && loading === false"> Bisher wurde keine Positionen
+        <v-subheader v-if="positions.length === 0"> Bisher wurde keine Positionen
           angelegt</v-subheader>
         <template v-for="(position, i) in positions">
           <v-list-item class="positionItem mt-3">
@@ -47,7 +47,7 @@ export default {
     },
     modifyPosition(exampleDataID) {
       if (exampleDataID !== 'new') {
-        VueCookies.set('currentPlace', exampleDataID)
+        VueCookies.set('currentPosition', exampleDataID)
       }
     },
     async addPosition(exampleData) {
@@ -70,7 +70,6 @@ export default {
   data() {
     return {
       positions: [],
-      loading: true,
       /* DEBUGGING: This exampleData is used a an example of data, 
                     requested from the Position page */
       exampleData: {
