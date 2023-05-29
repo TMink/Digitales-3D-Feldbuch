@@ -125,15 +125,19 @@ export default {
       /* Recieve all IDs in store */
       context.activities = await fromOfflineDB.getAllObjects('Activities', 'activities')
     },
-    async setActivity(item) {
-      VueCookies.set('currentActivity', item)
+    async setActivity(activity) {
+      VueCookies.set('currentActivity', activity)
     },
     async saveActivity(activity) {
+      for (let i of this.activities) {
+        if (activity.id === i.id) {
+          this.deleteActivity(activity)
+        }
+      }
 
       const newActivity = {
         id: String(Date.now()),
-        activityID: activity.außenstelle + " " + activity.jahr + "/" +
-          activity.nummer,
+        activityID: activity.außenstelle + " " + activity.jahr + "/" + activity.nummer,
         außenstelle: activity.außenstelle,
         jahr: activity.jahr,
         nummer: activity.nummer,
@@ -148,38 +152,37 @@ export default {
       this.clearActivityMask();
     },
     async deleteActivity(activity) {
-      console.log(activity.id)
       fromOfflineDB.deleteObject(activity.id, 'Activities', 'activities')
       await this.getActivities();
     },
-    async modifyActivity(item) {
-      if (item === 'new') {
+    async modifyActivity(activity) {
+      if (activity === 'new') {
         this.showInputMask = true
       }
       else {
         for (let i of this.activities) {
-          if (item.id === i.id) {
+          if (activity.id === i.id) {
             i.edit = true
           }
         }
-        
+
       }
     },
     async clearActivityMask() {
-        this.showInputMask = false
-        this.activity.außenstelle = ""
-        this.activity.jahr = ""
-        this.activity.nummer = ""
+      this.showInputMask = false
+      this.activity.außenstelle = ""
+      this.activity.jahr = ""
+      this.activity.nummer = ""
     },
-    async clearActivityEditMask(item) {
+    async clearActivityEditMask(activity) {
       for (let i of this.activities) {
-          if (item.id === i.id) {
-            item.außenstelle = i.außenstelle
-            item.jahr = i.jahr
-            item.nummer = i.nummer
-            item.edit = false
-          }
+        if (activity.id === i.id) {
+          activity.außenstelle = i.außenstelle
+          activity.jahr = i.jahr
+          activity.nummer = i.nummer
+          activity.edit = false
         }
+      }
     }
   },
   async created() {
