@@ -1,26 +1,31 @@
 /**
  * Function overview:
- *  syncLocalDBs      - Update/Create DBs in IndexedDB and get transaction 
-                        Data for communtcation.
- *  getDB             - Gets the current state of the database, or creates 
- *                      a new database and objectstore
- *  addObject         - Add object to object store
- *  deleteObject      - Delete object from object store
- *  deleteAllObjects  - Delete object store from database
+ *  syncLocalDBs            - Updates/Creates databases in IndexedDB and gets 
+ *                            the transaction data for communtcation.
+ *  getDB                   - Gets the current state of the database, or creates 
+ *                            a new database and object store
+ *  getObject               - Gets an specific object trough id
+ *  getAllObjects           - Gets all objects of a specific store
+ *  getProperties           - Gets the values of specific properties of all
+ *                            objects in a specific store
+ *  getPositionsWithPlaceID - Gets the data of all positions, which belong to a
+ *                            specific place
+ *  addObject               - Adds object to a specific object store
+ *  deleteObject            - Deletes an object from a specific object store
+ *  deleteAllObjects        - Deletes all objects from a specific object store
+ *  deleteCascadePositions  - Deletes all positions, which belong to a specific 
+ *                            place
  */
 export { fromOfflineDB }
 
 export default class ConnectionToOfflineDB {
 
   constructor(offlineDB) {
-
     this.offlineDB = offlineDB;
     this.localDB = [];
-
   }
 
   async syncLocalDBs() {
-
     var countDooku = this.offlineDB.length - 1;
 
       while( countDooku >= 0 ) {
@@ -33,14 +38,18 @@ export default class ConnectionToOfflineDB {
         countDooku -= 1;
 
       };
-
   }
 
   /**
-   * @param {String} dbName    - Database Name
-   * @param {Int} dbVersion    - Database Version
-   * @param {String} storeName - Object store which is going to be compared, 
-   *                             created
+   * @param {String} dbName
+   *    Database Name
+   * @param {Int} dbVersion
+   *    Database Version
+   * @param {String} storeName
+   *    Object store name
+   * @returns
+   *    the current state of the database, as Promise, or creates a new database
+   *    + object store.
    */
   async getDB( dbName, dbVersion, storeNames ) {
 
@@ -57,8 +66,7 @@ export default class ConnectionToOfflineDB {
         resolve( e.target.result );
       }
 
-      /* Gets current content of object store, or creates new one */
-      request.onupgradeneeded = e => {
+      request.onupgradeneeded = e => {                                          
         console.log( 'onupgradeneeded' );
         const db = e.target.result;
         storeNames.forEach( storeName => {
@@ -72,12 +80,14 @@ export default class ConnectionToOfflineDB {
   }
 
   /**
-   * @param {String} id           - Key for identifying the value which will be 
-   *                                deleted
-   * @param {String} localDBname  - Database object, which contains the object
-   *                                store
-   * @param {String} storeName    - Object store name
-   * @returns -> Promise
+   * @param {String} id
+   *    Key for identifying the value which will be deleted
+   * @param {String} localDBname
+   *    Database object, which contains the object store
+   * @param {String} storeName
+   *    Object store name
+   * @returns 
+   *    an object, as Promise.
    */
   async getObject( id, localDBName, storeName ) {
 
@@ -98,9 +108,12 @@ export default class ConnectionToOfflineDB {
   }
 
   /**
-     * @param {String} localDBName 
-     * @param {String} storeName 
-     * @returns -> Promise
+     * @param {String} localDBName
+     *    Database name
+     * @param {String} storeName
+     *    Object store name
+     * @returns 
+     *    an array of objects, as Promise.
      */
   async getAllObjects( localDBName, storeName ) {
 
@@ -129,42 +142,15 @@ export default class ConnectionToOfflineDB {
   }
 
   /**
-   * @param {Object} data        - Data to be added to Object Store
-   * @param {String} localDBName - Database name
-   * @param {String} storeName   - Object store name
-   */
-  async addObject( data, localDBName, storeName ) {
-
-    /* --- DEBUGGING --- */
-    console.log( 'about to add ' + JSON.stringify(data));
-    
-    const localDB = this.getLocalDBFromName( localDBName );
-    
-    await new Promise( (resolve, reject) => {
-      
-      const trans = localDB.transaction( [storeName], 'readwrite' );
-      trans.oncomplete = e => {
-        resolve();
-        console.log( 'added object: ' + data.content )
-      }
-      trans.onerror = e => {
-        console.log( 'Error opening db', e );
-        reject( 'Error' );
-      }
-      
-      const store = trans.objectStore( storeName );
-      store.add( data );
-      
-    })
-    
-  }
-
-  /**
-     * @param {String} localDBName 
-     * @param {String} storeName 
-     * @returns -> Promise
+     * @param {String} localDBName
+     *    Database name
+     * @param {String} storeName
+     *    Object Store name
+     * @returns
+     *    the value of an specific property, of all objects in store,
+     *    as Promise.
      */
-  async getSpecificValues( specificValue, localDBName, storeName ) {
+  async getProperties( property, localDBName, storeName ) {
 
     const localDB = this.getLocalDBFromName( localDBName );
       
@@ -181,14 +167,50 @@ export default class ConnectionToOfflineDB {
       store.openCursor().onsuccess = e => {
         let cursor = e.target.result;
         if (cursor) {
-          switch(specificValue) {
+          switch(property) {
             case 'id':
               data.push(cursor.value.id)
               break;
             case 'placeNumber':
               data.push(cursor.value.placeNumber)
             default:
-              console.log( "Entries do not contain Attribute: '" + specificValue + "'" );
+              console.log(
+                "Entries do not contain the propertie: '" + property + "'" );
+          }
+          cursor.continue();
+        }
+      };
+
+    })
+
+  }
+  /**
+     * @param {String} placeID
+     *    ID of the currently selected place
+     * @param {String} localDBName
+     *    Database name
+     * @returns
+     *    an array containing Positions-Data with same placeID, as Promise.
+     */
+  async getPositionsWithPlaceID( placeID, localDBName, storeName ) {
+
+    const localDB = this.getLocalDBFromName( localDBName );
+      
+    return new Promise( ( resolve, reject ) => {
+
+      const trans = localDB.transaction( [storeName], 'readonly' );
+      trans.oncomplete = e => {
+        resolve( data );
+      }
+
+      const store = trans.objectStore( storeName );
+      let data = [];
+
+      store.openCursor().onsuccess = e => {
+        let cursor = e.target.result;
+        if (cursor) {
+          if( cursor.value.placeID === placeID) {
+            data.push(cursor.value)
           }
           cursor.continue();
         }
@@ -199,15 +221,43 @@ export default class ConnectionToOfflineDB {
   }
 
   /**
-   * @param {Int} id        - Key for identifying the value which will be 
-   *                          deleted
-   * @param {*} localDBName - Database name
-   * @param {*} storeName   - Object store name
+   * @param {Object} data
+   *    Data to be added to Object Store
+   * @param {String} localDBName
+   *    Database name
+   * @param {String} storeName
+   *    Store name
+   */
+  async addObject( data, localDBName, storeName ) {
+    
+    const localDB = this.getLocalDBFromName( localDBName );
+    
+    await new Promise( (resolve, reject) => {
+      
+      const trans = localDB.transaction( [storeName], 'readwrite' );
+      trans.oncomplete = e => {
+        resolve();
+      }
+      trans.onerror = e => {
+        reject( 'Error' );
+      }
+      
+      const store = trans.objectStore( storeName );
+      store.add( data );
+      
+    })
+    
+  }
+
+  /**
+   * @param {Int} id
+   *    Key for identifying the object, which will be deleted
+   * @param {String} localDBName
+   *    Database name
+   * @param {String} storeName
+   *    Object store name
    */
   async deleteObject( id, localDBName, storeName ) {
-
-    /* --- DEBUGGING --- */
-    console.log( 'about to delete Object id: ' + id );
 
     var localDB = this.getLocalDBFromName( localDBName );
   
@@ -216,7 +266,6 @@ export default class ConnectionToOfflineDB {
       const trans = localDB.transaction( [storeName], 'readwrite' );
       trans.oncomplete = e => {
         resolve();
-        console.log( 'deleted object: ' + id )
       }
 
       const store = trans.objectStore( storeName );
@@ -227,8 +276,10 @@ export default class ConnectionToOfflineDB {
   }
 
   /**
-   * @param {*} localDBName - Database name
-   * @param {*} storeName   - Object store name
+   * @param {String} localDBName
+   *    Database name
+   * @param {*} storeName
+   *    Object store name
    */
   async deleteAllObjects( localDBName, storeName ) {
 
@@ -240,15 +291,50 @@ export default class ConnectionToOfflineDB {
 
     const storeRequest = store.clear();
       storeRequest.onsuccess = e => {
-      console.log( storeName + ' erased' );
     }
 
   }
 
   /**
-   * 
-   * @param {*} localDBName - Database name
-   * @returns -> Data value of database-object
+   * @param {String} placeID
+   *    ID of the currently selected place
+   * @param {String} localDBName
+   *    Database name
+   * @param {String} storeName
+   *    Store name
+   */
+  async deleteCascadePositions( placeID, localDBName, storeName ) {
+
+    const localDB = this.getLocalDBFromName( localDBName );
+      
+    await new Promise( ( resolve, reject ) => {
+
+      const trans = localDB.transaction( [storeName], 'readwrite' );
+      trans.oncomplete = e => {
+        resolve();
+      }
+
+      const store = trans.objectStore( storeName );
+
+      store.openCursor().onsuccess = e => {
+        let cursor = e.target.result;
+        if (cursor) {
+          if( cursor.value.placeID === placeID) {
+            store.delete( cursor.value.id )
+          }
+          cursor.continue();
+        }
+      };
+
+    })
+
+  }
+
+  /**
+   * @param {String} localDBName
+   *    Database name
+   * @returns
+   *    the localDB for transaction
    */
   getLocalDBFromName( localDBName ) {
 
