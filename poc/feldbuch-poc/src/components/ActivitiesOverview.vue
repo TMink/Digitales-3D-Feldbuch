@@ -20,11 +20,11 @@
         <v-subheader v-if="activities.length === 0"> Bisher wurden keine Aktivitäten angelegt</v-subheader>
 
         <template v-for="(activity, i) in activities">
-          <v-list-item v-on:click="modifyActivity(activity.id)">
+          <v-list-item v-on:click="setActivity(activity.id)">
             <v-list-item-content v-if="!activity.edit">
               <v-row>
                 <v-col cols="12" sm="6" md="7">
-                  <v-list-item-title class="ma-4"> {{ activity.id }} </v-list-item-title>
+                  <v-list-item-title class="ma-4"> {{ activity.activityID }} </v-list-item-title>
                 </v-col>
 
                 <v-col cols="12" sm="6" md="5">
@@ -61,7 +61,7 @@
                     <v-btn class="ma-5" icon color="purple" v-on:click="saveActivity(activity)">
                       <v-icon>mdi-content-save-all</v-icon>
                     </v-btn>
-                    <v-btn class="ma-1" icon color="red" v-on:click="clearActivityMask()">
+                    <v-btn class="ma-1" icon color="red" v-on:click="clearActivityEditMask(activity)">
                       <v-icon>mdi-close-circle</v-icon>
                     </v-btn>
                   </v-col>
@@ -125,10 +125,14 @@ export default {
       /* Recieve all IDs in store */
       context.activities = await fromOfflineDB.getAllObjects('Activities', 'activities')
     },
+    async setActivity(item) {
+      VueCookies.set('currentActivity', item)
+    },
     async saveActivity(activity) {
 
       const newActivity = {
-        id: activity.außenstelle + " " + activity.jahr + "/" +
+        id: String(Date.now()),
+        activityID: activity.außenstelle + " " + activity.jahr + "/" +
           activity.nummer,
         außenstelle: activity.außenstelle,
         jahr: activity.jahr,
@@ -162,10 +166,20 @@ export default {
       }
     },
     async clearActivityMask() {
-      this.showInputMask = false
-      this.activity.außenstelle = ""
-      this.activity.jahr = ""
-      this.activity.nummer = ""
+        this.showInputMask = false
+        this.activity.außenstelle = ""
+        this.activity.jahr = ""
+        this.activity.nummer = ""
+    },
+    async clearActivityEditMask(item) {
+      for (let i of this.activities) {
+          if (item.id === i.id) {
+            item.außenstelle = i.außenstelle
+            item.jahr = i.jahr
+            item.nummer = i.nummer
+            item.edit = false
+          }
+        }
     }
   },
   async created() {
