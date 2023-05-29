@@ -101,7 +101,7 @@ export default class ConnectionToOfflineDB {
       }
 
       const store = trans.objectStore( storeName );
-      let data = store.get(id);
+      let data = store.get( id );
 
     })
     
