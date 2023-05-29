@@ -40,13 +40,23 @@ export default {
     async getInfo(selection) { 
 
       const id = VueCookies.get('current' + selection);
-      const name = await fromOfflineDB.getObject( 
-                            id, 
-                            selection + "s", 
-                            selection.toLowerCase() + "s");
+      
+      let db = null;
+      let st = null;
+      if(selection === "Activity") {
+        db = "Activities"
+        st = "activities"
+      } else {
+        db = selection + "s"
+        st = selection.toLowerCase() + "s"
+      }
+      const name = await fromOfflineDB.getObject( id, db, st);
+
+      console.log(name)
+    
       switch(selection) {
         case "Activity":
-          this.currentActivity = name.result.activityNumber;
+          this.currentActivity = name.result.activityID;
           break;
         case "Place":
           this.currentPlace = name.result.placeNumber;
