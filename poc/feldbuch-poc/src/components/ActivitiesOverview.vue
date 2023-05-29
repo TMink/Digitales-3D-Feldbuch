@@ -125,6 +125,10 @@ export default {
       this.activities = await fromOfflineDB.getAllObjects('Activities', 'activities')
     },
     async setActivity(activity_id) {
+      if(VueCookies.get('currentActivity') !== activity_id) {
+        VueCookies.remove('currentPlace');
+        VueCookies.remove('currentPosition');
+      }
       VueCookies.set('currentActivity', activity_id)
       this.$router.push({ name: 'PlacesOverview' })
       this.$emit('view', 'Stelle')
@@ -153,7 +157,13 @@ export default {
       this.clearActivityMask();
     },
     async deleteActivity(activity) {
-      fromOfflineDB.deleteObject(activity.id, 'Activities', 'activities')
+      VueCookies.remove('currentPosition');
+      VueCookies.remove('currentPlace');
+      VueCookies.remove('currentActivity');
+      this.$emit('view', 'Stelle')
+      await fromOfflineDB.deleteCascade(activity.id, 'place', 'Places', 
+                                        'places');
+      await fromOfflineDB.deleteObject(activity.id, 'Activities', 'activities')
       await this.getActivities();
     },
     async modifyActivity(activity) {
