@@ -85,7 +85,7 @@
         </v-card>
       </v-dialog>
 
-      <v-btn v-on:click="goBack" color="primary" class="py-6" tile> 
+      <v-btn v-on:click="cancelPlace" color="primary" class="py-6" tile> 
         Abbrechen
       </v-btn>
 
@@ -107,6 +107,7 @@
  *  addPosition     - Adds a new position to the list
  *  savePlace       - Saves the current processing status
  *  deletePlace     - Deletes the currently selected place
+ *  cancelPlace     - Cancels all not already saved actions
  */
 import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
@@ -178,6 +179,7 @@ export default {
       VueCookies.remove('currentPlace');                                        /* ... and remove cookie */
       
       this.$router.push({ name: "PlacesOverview" });                            /* Return to PlacesOverview page */
+      this.$emit('view', 'Stellen')
 
       await fromOfflineDB.deleteCascadePositions                                /* Delete all positions wich were connected with the selected place ... */
             (this.place.id, 'Positions', 'positions');
@@ -217,10 +219,10 @@ export default {
 
     },
 
-    goBack() {                                                                  /* ------>> goBack() */
+    cancelPlace() {                                                                  /* ------>> goBack() */
 
-      this.$emit("view", "PlacesOverview");
       this.$router.push({ name: "PlacesOverview" });
+      this.$emit("view", "Stellen");
 
     }
 
