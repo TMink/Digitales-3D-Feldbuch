@@ -18,13 +18,14 @@
         </v-list-item>
         <v-divider></v-divider>
         <v-subheader v-if="activities.length === 0"> Bisher wurden keine Aktivitäten angelegt</v-subheader>
-
         <template v-for="(activity, i) in activities">
-          <v-list-item v-on:click="setActivity(activity.id)">
+          <v-list-item>
             <v-list-item-content v-if="!activity.edit">
               <v-row>
                 <v-col cols="12" sm="6" md="7">
-                  <v-list-item-title class="ma-4"> {{ activity.activityNumber }} </v-list-item-title>
+                  <v-list-item v-on:click="setActivity(activity.id)">
+                    <v-list-item-title class="ma-4"> {{ activity.activityNumber }} </v-list-item-title>
+                  </v-list-item>
                 </v-col>
 
                 <v-col cols="12" sm="6" md="5">
@@ -125,7 +126,7 @@ export default {
     },
     async setActivity(activity_id) {
       VueCookies.set('currentActivity', activity_id)
-      this.$router.push({ name: 'PlacesOverview'})
+      this.$router.push({ name: 'PlacesOverview' })
       this.$emit('view', 'Stelle')
     },
     async saveActivity(activity) {
