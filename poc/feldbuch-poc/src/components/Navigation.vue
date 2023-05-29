@@ -5,11 +5,11 @@
             <v-card-title class="justify-center"> Aktivitäten </v-card-title>
           </v-card>
 
-          <v-card class="ma-2" color="#BC987D" @click="changePage('PlacesOverview')" dark>
+          <v-card class="ma-2" color="#BC987D" @click="changePage('PlacesOverview')" dark :disabled="!activityIsSet">
             <v-card-title class="justify-center"> Stellen </v-card-title>
           </v-card>
 
-          <v-card class="ma-2" color="#BC987D" @click="changePage('PositionCreation')" dark>
+          <v-card class="ma-2" color="#BC987D" @click="changePage('PositionCreation')" dark :disabled="!placeIsSet">
             <v-card-title class="justify-center"> Position </v-card-title>
           </v-card>
 
