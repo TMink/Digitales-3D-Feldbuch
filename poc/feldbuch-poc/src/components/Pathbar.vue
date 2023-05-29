@@ -56,7 +56,7 @@ export default {
     
       switch(selection) {
         case "Activity":
-          this.currentActivity = name.result.activityID;
+          this.currentActivity = name.result.activityNumber;
           break;
         case "Place":
           this.currentPlace = name.result.placeNumber;
