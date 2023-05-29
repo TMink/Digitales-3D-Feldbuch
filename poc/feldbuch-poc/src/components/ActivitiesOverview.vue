@@ -125,8 +125,10 @@ export default {
       /* Recieve all IDs in store */
       context.activities = await fromOfflineDB.getAllObjects('Activities', 'activities')
     },
-    async setActivity(activity) {
-      VueCookies.set('currentActivity', activity)
+    async setActivity(activity_id) {
+      VueCookies.set('currentActivity', activity_id)
+      this.$router.push({ name: 'PlacesOverview'})
+      
     },
     async saveActivity(activity) {
       for (let i of this.activities) {
