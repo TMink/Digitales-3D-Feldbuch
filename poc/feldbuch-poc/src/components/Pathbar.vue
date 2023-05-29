@@ -32,7 +32,7 @@ export default {
       if( VueCookies.get('currentPlace') ) {
         await this.getInfo("Place")
       }
-      if( VueCookies.get('currentPlace') ) {
+      if( VueCookies.get('currentPosition') ) {
         await this.getInfo("Position")
       }
     },
