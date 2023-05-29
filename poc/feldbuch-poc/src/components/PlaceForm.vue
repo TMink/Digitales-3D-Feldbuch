@@ -22,9 +22,10 @@
               </v-subheader>
               
               <template v-for="(position, i) in positions">
-                <v-list-item class="positionItem mt-3" v-on:click="moveToPosition(position.id)">
+                <v-list-item class="positionItem mt-3" 
+                             v-on:click="moveToPosition(position.id)">
                   
-                  <v-list-item-content v-on:click="setPosition(position.positionNumber)">
+                  <v-list-item-content>
                     
                     <v-list-item-title class="text-h6">
                       Nr. {{ position.positionNumber }} - {{ position.date }}
@@ -145,8 +146,9 @@ export default {
 
     async updatePositions() {                                                   /* ------>> updatePositions() */
       
-      this.positions = await fromOfflineDB.getPositionsWithPlaceID              /* Update 'positions' with existing data */
-                             ( this.place.id, 'Positions', 'positions' );
+      this.positions = await fromOfflineDB.getAllObjectsWithID                  /* Update 'positions' with existing data */
+                             ( this.place.id, 'Place', 'Positions', 
+                               'positions' );
 
     },
 
@@ -169,15 +171,15 @@ export default {
 
     async deletePlace() {                                                       /* ------>> deletePlace() */
 
+      await fromOfflineDB.deleteCascade(this.place.id, 'position', 'Positions', /* Delete all positions wich were connected with the selected place ... */
+                                        'positions');
+      VueCookies.remove('currentPosition');                                     /* ... and remove cookies */
+
       await fromOfflineDB.deleteObject(this.place.id, 'Places', 'places');      /* Delete the selected place ... */
       VueCookies.remove('currentPlace');                                        /* ... and remove cookie */
       
       this.$router.push({ name: "PlacesOverview" });                            /* Return to PlacesOverview page */
-      this.$emit('view', 'Stellen')
-
-      await fromOfflineDB.deleteCascadePositions                                /* Delete all positions wich were connected with the selected place ... */
-            (this.place.id, 'Positions', 'positions');
-      VueCookies.remove('currentPosition');                                     /* ... and remove cookies */
+      this.$emit('view', 'Stellen');
 
     },
 
@@ -185,7 +187,7 @@ export default {
 
       const newPosition = {
         id:             String(Date.now()),
-        positionNumber: 0,
+        positionNumber: null,
         placeID:        this.place.id,
         texts:          [],
         images:         [],
@@ -209,7 +211,7 @@ export default {
 
     },
 
-    cancelPlace() {                                                                  /* ------>> goBack() */
+    cancelPlace() {                                                             /* ------>> goBack() */
 
       this.$router.push({ name: "PlacesOverview" });
       this.$emit("view", "Stellen");
