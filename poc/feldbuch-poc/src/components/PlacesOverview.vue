@@ -83,15 +83,20 @@ export default {
 
     async updatePlaces() {                                                      /* ------>> updatePositions() */
 
-      this.places = await fromOfflineDB.getAllObjects('Places', 'places');      /* Recieve all IDs in store */
+      this.places = await fromOfflineDB.getAllObjectsWithID(                    /* Recieve all IDs in store */
+                            String(VueCookies.get('currentActivity')),
+                            'Activity', 'Places', 'places' ); 
       this.places.sort((a, b) => (a.placeNumber > b.placeNumber) ? 1: -1)       /* Sorts all places by their placeNumber value */
 
     },
 
     async addPlace() {                                                          /* ------>> addPlace() */
 
+      const acID = String(VueCookies.get('currentActivity'))
+
       const newPlace = {
         id:           String(Date.now()),
+        activityID:   acID,
         placeNumber:  null,
         date:         null,
         ansprache:    null
@@ -100,25 +105,26 @@ export default {
       if(this.places.length == 0) {
         newPlace.placeNumber = 1
       } else {
-        const placeNumbers = await fromOfflineDB.getProperties                  /* Get all place numbers */
-                                   ( 'placeNumber', 'Places', 'places')
-        const newPlaceNumber = Math.max(...placeNumbers) + 1;                   /* Get the highest placeNumber of the existing properties and increment this value */
+        const placeNumbers = await fromOfflineDB.getPropertiesWithID            /* Get all place numbers */
+                                   ( acID, 'place', 'placeNumber', 
+                                     'Places', 'places' )
+        const newPlaceNumber = Math.max( ...placeNumbers ) + 1;                 /* Get the highest placeNumber of the existing properties and increment this value */
         newPlace.placeNumber = newPlaceNumber;                                  /* Update the current placeNumber */
       }
       
-      await fromOfflineDB.addObject(newPlace, 'Places', 'places')               /* Add new data to store */
-      await this.updatePlaces(newPlace.id)                                      /* Update position list */
+      await fromOfflineDB.addObject( newPlace, 'Places', 'places' )             /* Add new data to store */
+      await this.updatePlaces( newPlace.id )                                    /* Update position list */
 
     },
 
     moveToPlace(placeID) {                                                      /* ------>> moveToPlace() */
       
-      if (placeID !== 'new') {
-        VueCookies.set('currentPlace', placeID)
+      if ( placeID !== 'new' ) {
+        VueCookies.set( 'currentPlace', placeID )
       }
 
-      this.$router.push({ name: 'PlaceCreation'})
-      this.$emit('view', 'Stelle')
+      this.$router.push( { name: 'PlaceCreation'} )
+      this.$emit( 'view', 'Stelle' )
 
     },
 
