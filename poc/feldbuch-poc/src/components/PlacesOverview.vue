@@ -118,6 +118,7 @@ export default {
       }
 
       this.$router.push({ name: 'PlaceCreation'})
+      this.$emit('view', 'Stelle')
 
     },
 
