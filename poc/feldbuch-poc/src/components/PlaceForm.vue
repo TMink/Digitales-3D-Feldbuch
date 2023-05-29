@@ -22,9 +22,9 @@
               </v-subheader>
               
               <template v-for="(position, i) in positions">
-                <v-list-item class="positionItem mt-3">
+                <v-list-item class="positionItem mt-3" v-on:click="moveToPosition(position.id)">
                   
-                  <v-list-item-content>
+                  <v-list-item-content v-on:click="setPosition(position.positionNumber)">
                     
                     <v-list-item-title class="text-h6">
                       Nr. {{ position.positionNumber }} - {{ position.date }}
@@ -35,12 +35,7 @@
                     </v-list-item-subtitle>
 
                   </v-list-item-content>
-                  
-                  <v-btn color="primary" v-on:click="moveToPosition(position.id)">
-                    <v-icon color="white">mdi-pencil
-                    </v-icon>
-                  </v-btn>
-
+          
                 </v-list-item>
                 <v-divider v-if="i !== positions.length - 1"></v-divider>
               </template>
@@ -160,7 +155,7 @@ export default {
       if( positionID !== 'new' ) {
         VueCookies.set( 'currentPosition', positionID );
       };
-
+      this.$emit('view', 'Positionsbearbeitung')
       this.$router.push( { name: 'PositionCreation'} );
 
     },
@@ -220,7 +215,6 @@ export default {
       this.$emit("view", "Stellen");
 
     }
-
   }
 
 };
