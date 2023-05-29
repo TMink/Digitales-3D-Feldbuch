@@ -6,10 +6,32 @@
 
             <v-tab-item class="px-4">
                 <v-text-field v-model="position.positionNumber" label="PositionsNr"
-                    hint="Geben Sie hier eine Positionsnummer ein"></v-text-field>
-                <v-text-field v-model="position.date" label="Datierung" hint="Format: dd.mm.yyyy"></v-text-field>
+                    hint="Geben Sie hier eine Positionsnummer ein" :rules="is_required"></v-text-field>
+                <v-text-field v-model="position.date" label="Datierung" hint="Format: dd.mm.yyyy"
+                    :rules="is_required"></v-text-field>
                 <v-text-field v-model="position.description" label="Beschreibung"
-                    hint="Geben Sie hier eine Beschreibung an:"></v-text-field>
+                    hint="Geben Sie hier eine Beschreibung an:" :rules="is_required"></v-text-field>
+                <template v-for="(image, i) in position.images">
+                    <v-list>
+                        <v-list-item>
+                            <v-file-input v-model="image.data" accept="image/png, image/jpeg, image/bmp" label="Bilddatei"></v-file-input>
+                            <v-btn color="primary" class="ml-2"
+                                v-on:click="position.images.splice(i, 1)"><v-icon>mdi-delete</v-icon></v-btn>
+                        </v-list-item>
+                    </v-list>
+                </template>
+                <template v-for="(text, i) in position.texts">
+                    <v-list>
+                        <v-list-item>
+                            <v-textarea v-model="text.content" hint="Geben Sie hier ihre neue Beschreibung ein"
+                                label="Textfeld"></v-textarea>
+                            <v-btn color="primary" class="ml-2"
+                                v-on:click="position.texts.splice(i, 1)"><v-icon>mdi-delete</v-icon></v-btn>
+                        </v-list-item>
+                    </v-list>
+                </template>
+                <v-btn color="primary" v-on:click="addText()">Add Text</v-btn>
+                <v-btn color="primary" v-on:click="addImage()">Add Image</v-btn>
             </v-tab-item>
 
             <v-btn v-on:click="savePlace()" color="secondary" class="py-6" tile> Speichern </v-btn>
@@ -57,7 +79,9 @@ export default {
                 place_id: '',
                 positionNumber: '',
                 date: '',
-                description: ''
+                description: '',
+                images: [],
+                texts: []
             },
             error_dialog: false,
             error_message: '',
@@ -89,13 +113,13 @@ export default {
         },
         savePlace: async function () {
 
-            const currentPlace = VueCookies.get("currentPlace");
-            //await fromOfflineDB.deleteObject(this.position.id, 'Positions', 'positions')
-            if (this.$route.params.position_id === 'new') {
-                this.position.id = "agrfuzgeuzgfueggf" + parseInt(Math.random() * 100 + 1);
-                this.position.place_id = currentPlace;
-
+            if (!this.$refs.form.validate()) {
+                this.error_message = "Bitte alle Pflichtfelder vor dem Speichern ausfüllen";
+                this.error_dialog = true;
+                return;
             }
+
+            const currentPlace = VueCookies.get("currentPlace");
             await fromOfflineDB.deleteObject(this.position.id, 'Positions', 'positions')
             await fromOfflineDB.addObject(this.position, 'Positions', 'positions')
             this.$emit("view", "bearbeite " + currentPlace);
@@ -117,12 +141,26 @@ export default {
             this.$emit("view", "bearbeite " + currentPlace);
             this.$router.push({ name: "PlaceCreation" });
 
+        },
+        /* Adds a new image-placeholder to the images-array*/
+        addImage: function () {
+
+            this.position.images.push({
+                data: ''
+            });
+
+        },
+        /* Adds a new text-placeholder to the texts-array*/
+        addText: function () {
+
+            this.position.texts.push({
+                content: ''
+            });
+
         }
     }
 };
 </script>
   
-<style scoped>
-
-</style>
+<style scoped></style>
   

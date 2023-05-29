@@ -36,9 +36,8 @@
 
                   </v-list-item-content>
                   
-                  <v-btn color="primary">
-                    <v-icon color="white"
-                      v-on:click="moveToPosition(position.id)">mdi-pencil
+                  <v-btn color="primary" v-on:click="moveToPosition(position.id)">
+                    <v-icon color="white">mdi-pencil
                     </v-icon>
                   </v-btn>
 
@@ -193,12 +192,8 @@ export default {
         id:             String(Date.now()),
         positionNumber: 0,
         placeID:        this.place.id,
-        texts: {
-          firstText: "Imagine ... words ... wooooow! *mind blown*"
-        },
-        images: {
-          firstImage: "The thing with pixels"
-        },
+        texts:          [],
+        images:         [],
         models: {
           firstModel: "Perfect shape!"
         }
