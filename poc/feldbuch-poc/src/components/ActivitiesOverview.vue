@@ -24,7 +24,7 @@
             <v-list-item-content v-if="!activity.edit">
               <v-row>
                 <v-col cols="12" sm="6" md="7">
-                  <v-list-item-title class="ma-4"> {{ activity.activityID }} </v-list-item-title>
+                  <v-list-item-title class="ma-4"> {{ activity.activityNumber }} </v-list-item-title>
                 </v-col>
 
                 <v-col cols="12" sm="6" md="5">
@@ -137,7 +137,7 @@ export default {
 
       const newActivity = {
         id: String(Date.now()),
-        activityID: activity.außenstelle + " " + activity.jahr + "/" + activity.nummer,
+        activityNumber: activity.außenstelle + " " + activity.jahr + "/" + activity.nummer,
         außenstelle: activity.außenstelle,
         jahr: activity.jahr,
         nummer: activity.nummer,
