@@ -120,15 +120,13 @@ export default {
   methods: {
     //retrieve all activities
     async getActivities() {
-      var context = this;
-
       /* Recieve all IDs in store */
-      context.activities = await fromOfflineDB.getAllObjects('Activities', 'activities')
+      this.activities = await fromOfflineDB.getAllObjects('Activities', 'activities')
     },
     async setActivity(activity_id) {
       VueCookies.set('currentActivity', activity_id)
       this.$router.push({ name: 'PlacesOverview'})
-      
+      this.$emit('view', 'Stelle')
     },
     async saveActivity(activity) {
       for (let i of this.activities) {
