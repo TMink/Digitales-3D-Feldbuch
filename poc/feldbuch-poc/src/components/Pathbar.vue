@@ -1,96 +1,64 @@
 <template>
   <div id="pathbar">
-    <v-toolbar-title class="py-1"> <b>Aktuelle Auswahl:</b> {{ currentProject.title }} / {{ currentExcavation.title }} / {{currentSection.title}}</v-toolbar-title>
+    <v-toolbar-title class="py-1"> <b>Aktuelle Auswahl:</b> {{ currentActivity }} / {{ currentPlace }} / {{ currentPosition }}</v-toolbar-title>
   </div>
 </template>
 
 <script>
 import VueCookies from 'vue-cookies'
-import axios from 'axios'
+import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
+
 export default {
   data: function () {
     return {
-      excavationIsSet: false,
-      excavation_id: '',
-      currentExcavation: '',
-      projectIsSet: false,
-      project_id: '',
-      currentProject: '',
-      sectionIsSet: false,
-      section_id: '',
-      currentSection: ''
+
+      currentActivity: null,
+      currentPlace: null,
+      currentPosition: null,
+
     }
   },
-  created() {
-    this.excavation_id = VueCookies.get('currentExcavation')
-    if (this.excavation_id !== null) {
-      this.excavationIsSet = true
-    }
-    this.project_id = VueCookies.get('currentProject')
-    if (this.project_id !== null) {
-      this.projectIsSet = true
-    }
-    this.section_id = VueCookies.get('currentSection')
-    if (this.section_id !== null)
-      this.sectionIsSet = true
+  async created() {
+    await fromOfflineDB.syncLocalDBs();
+    await this.updatePathbar();
     this.$emit('view', 'Digitales Feldbuch')
-    this.setObjects();
   },
   methods: {
-    setObjects() {
-      var context = this;
 
-      if(this.projectIsSet){
-        axios({
-        method: 'get',
-        url: '/projects/' + this.project_id,
-        responseType: 'json'
-      }).then((response) => {
-        this.currentProject = response.data;
-        console.log(this.currentProject.data.title)
-      }).catch((error) =>{
-        if (!error.response) {
-          this.errorStatus = 'Error: Network Error';
-        } else {
-          this.errorStatus = error.response.data.message;
-        }
-      });
+    async updatePathbar() {
+      if( VueCookies.get('currentActivity') ) {
+        await this.getInfo("Activity")
+      } 
+      if( VueCookies.get('currentPlace') ) {
+        await this.getInfo("Place")
       }
+      if( VueCookies.get('currentPlace') ) {
+        await this.getInfo("Position")
+      }
+    },
+    
+    async getInfo(selection) { 
 
-      if(this.excavationIsSet){
-        axios({
-        method: 'get',
-        url: '/excavations/' + this.excavation_id,
-        responseType: 'json'
-      }).then((response) => {
-        this.currentExcavation = response.data;
-        console.log(this.currentExcavation.data.title)
-      }).catch((error) =>{
-        if (!error.response) {
-          this.errorStatus = 'Error: Network Error';
-        } else {
-          this.errorStatus = error.response.data.message;
-        }
-      });
+      const id = VueCookies.get('current' + selection);
+      const name = await fromOfflineDB.getObject( 
+                            id, 
+                            selection + "s", 
+                            selection.toLowerCase() + "s");
+      switch(selection) {
+        case "Activity":
+          this.currentActivity = name.result.activityNumber;
+          break;
+        case "Place":
+          this.currentPlace = name.result.placeNumber;
+          break;
+        case "Position":
+          this.currentPosition = name.result.positionNumber;
+          break;
+        default:
+          console.log( "Error" );
       }
-
-      if(this.sectionIsSet){
-        axios({
-        method: 'get',
-        url: '/sections/' + this.section_id,
-        responseType: 'json'
-      }).then((response) => {
-        this.currentSection = response.data;
-        console.log(this.currentSection.data.title)
-      }).catch((error) =>{
-        if (!error.response) {
-          this.errorStatus = 'Error: Network Error';
-        } else {
-          this.errorStatus = error.response.data.message;
-        }
-      });
-      }
-    }
+      
+    },
   }
 }
 
