@@ -8,8 +8,11 @@
  *  getAllObjects           - Gets all objects of a specific store
  *  getProperties           - Gets the values of specific properties of all
  *                            objects in a specific store
- *  getPositionsWithPlaceID - Gets the data of all positions, which belong to a
- *                            specific place
+ *  getPropertiesWithID - Gets the values of specific properties of all
+ *                            objects in a specific store, which contain the
+ *                            same id (activityID or placeID)
+ *  getAllObjectsWithID     - Gets the data of all objects, which contain the
+ *                            same id (activityID or placeID)
  *  addObject               - Adds object to a specific object store
  *  deleteObject            - Deletes an object from a specific object store
  *  deleteAllObjects        - Deletes all objects from a specific object store
@@ -184,15 +187,17 @@ export default class ConnectionToOfflineDB {
     })
 
   }
+
   /**
-     * @param {String} placeID
-     *    ID of the currently selected place
-     * @param {String} localDBName
-     *    Database name
-     * @returns
-     *    an array containing Positions-Data with same placeID, as Promise.
-     */
-  async getPositionsWithPlaceID( placeID, localDBName, storeName ) {
+   * @param {String} localDBName
+   *    Database name
+   * @param {String} storeName
+   *    Object Store name
+   * @returns
+   *    the value of an specific property, dependent on a given id, of all 
+   *    objects in store, as Promise.
+   */
+  async getPropertiesWithID( id, selection, property, localDBName, storeName ) {
 
     const localDB = this.getLocalDBFromName( localDBName );
       
@@ -209,9 +214,82 @@ export default class ConnectionToOfflineDB {
       store.openCursor().onsuccess = e => {
         let cursor = e.target.result;
         if (cursor) {
-          if( cursor.value.placeID === placeID) {
-            data.push(cursor.value)
+
+          let conv = false;
+
+          switch(selection) {
+            case "place":
+              if(cursor.value.activityID === id) {
+                conv = true
+              };
+              break;
+            case "position":
+              if(cursor.value.placeID === id) {
+                conv = true
+              };
+              break;
+            default:
+              console.log( 'Error' );
           }
+
+          if(conv === true) {
+            switch(property) {
+              case 'id':
+                data.push(cursor.value.id)
+                break;
+              case 'placeNumber':
+                data.push(cursor.value.placeNumber)
+              default:
+                console.log(
+                  "Entries do not contain the propertie: '" + property + "'" );
+            }
+          }
+          
+          cursor.continue();
+        }
+      };
+
+    })
+
+  }
+
+  /**
+   * @param {String} placeID
+   *    ID of the currently selected place
+   * @param {String} localDBName
+   *    Database name
+   * @returns
+   *    an array containing Positions-Data with same id (activityID, placeID),
+   *    as Promise.
+   */
+  async getAllObjectsWithID( id, selection, localDBName, storeName ) {
+
+    const localDB = this.getLocalDBFromName( localDBName );
+      
+    return new Promise( ( resolve, reject ) => {
+
+      const trans = localDB.transaction( [storeName], 'readonly' );
+      trans.oncomplete = e => {
+        resolve( data );
+      }
+
+      const store = trans.objectStore( storeName );
+      let data = [];
+
+      store.openCursor().onsuccess = e => {
+        let cursor = e.target.result;
+        if (cursor) {
+          switch(selection) {
+            case "Activity":
+              if( cursor.value.activityID === id) {
+                data.push(cursor.value)
+              }
+            case "Place":
+              if( cursor.value.placeID === id) {
+                data.push(cursor.value)
+              }
+          }
+          
           cursor.continue();
         }
       };
@@ -303,7 +381,7 @@ export default class ConnectionToOfflineDB {
    * @param {String} storeName
    *    Store name
    */
-  async deleteCascadePositions( placeID, localDBName, storeName ) {
+  async deleteCascade( id, selection, localDBName, storeName ) {
 
     const localDB = this.getLocalDBFromName( localDBName );
       
@@ -319,9 +397,24 @@ export default class ConnectionToOfflineDB {
       store.openCursor().onsuccess = e => {
         let cursor = e.target.result;
         if (cursor) {
-          if( cursor.value.placeID === placeID) {
-            store.delete( cursor.value.id )
+
+          switch(selection) {
+            case "place":
+              if(cursor.value.activityID === id) {
+                this.deleteCascade( cursor.value.id, 'position', 'Positions',
+                                    'positions' );
+                store.delete( cursor.value.id )
+              };
+              break;
+            case "position":
+              if(cursor.value.placeID === id) {
+                store.delete( cursor.value.id )
+              };
+              break;
+            default:
+              console.log( 'Error' );
           }
+
           cursor.continue();
         }
       };
