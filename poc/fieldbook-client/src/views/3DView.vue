@@ -11,6 +11,7 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import {fromOfflineDB} from '../ConnectionToOfflineDB.js';
 import { GUI } from 'dat.gui';
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
+import { SUBTRACTION, Brush, Evaluator } from 'three-bvh-csg';
 
 const params = {
 	animate: true,
@@ -214,13 +215,20 @@ export default {
       
       
       // Example: Box
-      const boxGeometry = new THREE.BoxGeometry( 1,1,1 );
-      const boxMaterial = new THREE.MeshStandardMaterial({
-        color: 0xfffff,
-        wireframe: true,
-      });
-      const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
-      this.scene.add(boxMesh);
+      //const boxGeometry = new THREE.BoxGeometry( 1,1,1 );
+      //const boxMaterial = new THREE.MeshStandardMaterial({
+      //  color: 0xfffff,
+      //  wireframe: true,
+      //});
+      //const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
+      //this.scene.add(boxMesh);
+
+      const csgEvaluator = new Evaluator();
+      const brush1 = new Brush( new THREE.SphereGeometry(0.8, 10, 10) );
+      const brush2 = new Brush( new THREE.BoxGeometry(1, 1, 1) );
+
+      const result = csgEvaluator.evaluate( brush2, brush1, SUBTRACTION );
+      this.scene.add(result)
 
       // Renderer
       this.renderer = new THREE.WebGLRenderer({ antialias: true });
