@@ -13,7 +13,11 @@
       <v-btn icon @click.stop="navdrawer = !navdrawer"> <v-icon>mdi-menu</v-icon></v-btn>
     </v-app-bar>
 
-    <v-navigation-drawer nav v-model="navdrawer" color="#e8e4d9" temporary>
+    <Pathbar :key="path_reload" />
+
+    <v-navigation-drawer
+    v-model="navdrawer"
+    location="right">
       <v-list-item>
         <v-list-item-title class="text-h6">
           Menü
