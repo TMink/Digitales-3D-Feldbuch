@@ -1,5 +1,5 @@
 <template>
-    <div id="container">
+    <div id="canvas">
       <div id="gui_container"></div>
     </div>
 </template>
@@ -9,19 +9,11 @@ import * as THREE from 'three';
 import { ArcballControls } from 'three/examples/jsm/controls/ArcballControls.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import {fromOfflineDB} from '../ConnectionToOfflineDB.js';
-import {fromBackend} from '../ConnectionToBackend.js';
 import { GUI } from 'dat.gui';
-import axios from 'axios';
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
 
 const params = {
 	animate: true,
-	planeX: {
-		constant: 0,
-		negated: false,
-		displayHelper: false,
-    model1: false
-	},
   guiMesh: {
     visibility: false,
     clipping: false
@@ -34,24 +26,14 @@ export default {
 
   data() {
 
-    return {
-
-      /* camera: null,
-      scene: null,
-      renderer: null,
-      controls: null,
-      gui: null,
-
-      meshInScene: [], */
-
-    }
+    return{};
 
   },
 
   async mounted() {
 
-    window.addEventListener( 'resize', this.onWindowResize, false)
-
+    window.addEventListener( 'resize', this.onWindowResize, false )
+    
     await fromOfflineDB.syncLocalDBs();
 
     this.init();
@@ -65,10 +47,7 @@ export default {
   methods: {
 
     /**
-     * Function overview: 
-     *  getModelFromBackend   - Get model-Data from backend and transfer it to 
-     *                          offline DB for furthor useage
-     *  getDataFromUrl        - Get model-/texture-Data from given url
+     * Function overview:
      *  loadModel             - Loads a Model from IndexedDB into the scene. 
      *                          This version has the standart texture from the 
      *                          object and the name of the created mesh is the 
@@ -78,69 +57,11 @@ export default {
      *  loadWithColor         - Change the current color/texture of a model in
      *                          the scene to a new color
      *  changeVisibility      - Changes the opacity of a mesh
-     *  changeClipping        - Change if functions, that uses stencil clipping,
-     *                          could manipulate the mesh, or not 
      *  onWindowResize        - Resizes the threeJS element
      *  ------------------------------------------------------------------------
      *  init                  - Initialize the scene
      *  animate               - Animate the scene
      */
-
-    /**
-     * 
-     * @param {String} url 
-     * @param {String} dataCategory - Category that is searched for
-     * @param {String} identifier   - Term in Category that is searched for
-     * @param {String} localDBName  - Database name
-     * @param {String} storeName    - Object store name
-     */
-    getModelFromBackend: async function( url, dataCategory, identifier, 
-                                         localDBName, storeName) {
-
-      /* Get Data from backend */
-      const modelFromBackend = await fromBackend.getData( url, dataCategory,
-                                                          identifier );                                                      
-
-      /* Get model and texture from seperate url */
-      const modelData = await this.getDataFromURL( 
-        modelFromBackend[0].model );
-      const textureData = await this.getDataFromURL( 
-        modelFromBackend[0].texture );
-
-      /* Create new Object from backend-Data and model-/texture-Data */
-      const newModelData = { id: modelFromBackend[0].id,
-                             project_id: modelFromBackend[0].project_id,
-                             title: modelFromBackend[0].title,
-                             model: modelData.data,
-                             texture: textureData.data };
-
-      /* Save Data in offline DB */
-      await fromOfflineDB.addObject( newModelData, localDBName, storeName );
-
-    },
-
-    /**
-     * @param {String} url 
-     * @returns -> Promise(object)  
-     */
-    getDataFromURL: async function( url ) {
-
-      return new Promise( (resolve, reject ) => {
-
-        try {
-          axios
-          .get( url )
-          .then( res => {
-            resolve(res);
-          });
-        }
-        catch( error ) {
-          console.log( error );
-        }
-
-      });
-
-    },
 
     /**
      * @param {String} modelID    - Key under which the model is stored in
@@ -221,6 +142,7 @@ export default {
       /* #### Prep Models #### */
       const prepModelsFolder = this.gui.addFolder( 'Prep Models' );
 
+      /*
       for(var i=0; i < this.meshInScene.length; i++) {
 
         const meshName = this.meshInScene[i];
@@ -233,14 +155,7 @@ export default {
         modelFolder.add( params.guiMesh, "clipping")
                    .onChange( v => this.changeClipping(meshName, this.planes) );
       }
-
-      /* #### Segmentation #### - Not working with current build */
-      const planeX = this.gui.addFolder( 'Segmentation' );
-      //planeX.add( params.planeX, 'displayHelper' )
-      //      .onChange( v => this.planeHelpers[ 0 ].visible = v );
-
-      //planeX.add( params.planeX, 'constant' ).min( - 7 ).max( 5 )
-      //      .onChange( d => this.planes[ 0 ].constant = d );
+      */
 
     },
 
@@ -268,102 +183,73 @@ export default {
 
     },
 
-    /**
-     * @param {String} modelName            - Name of model in scene
-     * @param {Array[THREE.Plane[]]} planes - Stencil planes
-     */
-     changeClipping: function(modelName, planes) {
-
-      const model = this.scene.getObjectByName(modelName)
-
-      if(model.material.clipShadows == true) {
-        model.material.clipShadows = false;
-        model.material.clippingPlanes = null;
-      } else {
-        model.material.clipShadows = true;
-        model.material.clippingPlanes = planes;
-      }
-
-    },
-
     onWindowResize: function() {
 
-      this.renderer.setSize( window.innerWidth, window.innerHeight );
-      this.camera.aspect = window.innerWidth / window.innerHeight;
+      const canvas = document.getElementById("canvas");
+
+      this.renderer.setSize( canvas.clientWidth, canvas.clientHeight );
+      this.camera.aspect = canvas.clientWidth / canvas.clientHeight;
       this.camera.updateProjectionMatrix();
 
     },
 
     init: function() {
-      THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
 
-      /* ##### Container ##### */
-      let container = document.getElementById( 'container' );
-
-
-
-      /* ##### Scene ##### */
+      // Canvas Object
+      const canvas = document.getElementById("canvas");
+      
+      // Scene
       this.scene = new THREE.Scene();
-      this.scene.add( new THREE.AxesHelper( 5 ) ); /* X-axis = red; 
-                                                      Y-axis = green; 
-                                                      Z-axis = blue */
+      
 
+      // Camera
+      const cameraAspect = canvas.clientWidth / canvas.clientHeight;
+      this.camera = new THREE.PerspectiveCamera(70, cameraAspect, 0.01, 20000);
+      this.camera.position.set( 2,0,0 );
+      this.camera.lookAt(this.scene.position);
+      
+      // Light
+      const ambientLight = new THREE.AmbientLight( 0xffffff );
+      this.scene.add(ambientLight);
+      
+      
+      // Example: Box
+      const boxGeometry = new THREE.BoxGeometry( 1,1,1 );
+      const boxMaterial = new THREE.MeshStandardMaterial({
+        color: 0xfffff,
+        wireframe: true,
+      });
+      const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
+      this.scene.add(boxMesh);
 
-
-      /* ##### Camera ##### */
-      const cameraAspect = container.clientWidth / container.clientHeight;
-      this.camera = new THREE.PerspectiveCamera( 70, cameraAspect, 0.01, 
-                                                 20000 );
-      this.camera.position.set( 1,0,0 );
-
-
-
-      /* ##### Lights ##### */
-      this.scene.add( new THREE.AmbientLight( 0xffffff) );
-
-
-
-      /* ##### 3D-Mesh Example: Box ##### */
-      let boxGeometry = new THREE.BoxGeometry( 1,1,1);
-      let boxMaterial = new THREE.MeshBasicMaterial( { color: 0xfffff, 
-                                                       wireframe: true } );
-      let box = new THREE.Mesh( boxGeometry, boxMaterial );
-      this.scene.add( box );
-
-
-
-      /* ##### Renderer ##### */
-      this.renderer = new THREE.WebGLRenderer( { antialias: true } );
-      this.renderer.setSize( container.clientWidth, container.clientHeight );
+      // Renderer
+      this.renderer = new THREE.WebGLRenderer({ antialias: true });
+      this.renderer.setSize(canvas.clientWidth, canvas.clientHeight);
       this.renderer.setClearColor( 0x263238 );
-      container.appendChild( this.renderer.domElement );
+      canvas.appendChild(this.renderer.domElement);
 
-
-
-      /* ##### Controls ##### */
+      // Controls
       this.controls = new ArcballControls( this.camera, 
                                            this.renderer.domElement,
                                            this.scene );
 
-
-      
-      /* ##### GUI ##### */
-      this.gui = new GUI( {autoPlace: true, closed: false, closeOnTop: false} );
+      // GUI
+      this.gui = new GUI( {autoPlace: false, closed: false, closeOnTop: false} );
       this.gui.domElement.id = 'gui';
       gui_container.appendChild( this.gui.domElement );
 
-      
-      /* ##### FOR DEBUGGING ##### */
-      //console.log(this.getData.data.model)
-        
+
     },
 
-    animate: function() {
+    animate: function () {
 
-        requestAnimationFrame(this.animate);
-        this.renderer.render(this.scene, this.camera);
+      requestAnimationFrame(this.animate);
 
-    }
+      this.controls.update();
+
+      this.renderer.render(this.scene, this.camera);
+
+    },
 
   }
 
@@ -373,7 +259,11 @@ export default {
 
 <style scoped>
 
-    #container{height: 100%}
+    #canvas{ 
+      width: 100%; 
+      height: 100vh; 
+    }
+
     #gui_container{
       position: absolute;
       width: 101%;
