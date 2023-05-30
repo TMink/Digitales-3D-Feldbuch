@@ -6,7 +6,7 @@
       <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
     </head>
 
-    <v-app-bar theme="dark" flat color="#594743">
+    <v-app-bar>
       <v-btn icon v-on:click="goback" > <v-icon>mdi-arrow-left</v-icon> </v-btn>
       <v-toolbar-title> {{ toolbar_title }} </v-toolbar-title>
       <v-spacer></v-spacer>
@@ -33,10 +33,7 @@
     </v-navigation-drawer>
 
     <v-main>
-      <v-container fluid>
-        <Pathbar :key="path_reload" />
         <router-view @view="onViewChange"></router-view>
-      </v-container>
     </v-main>
 
     
@@ -94,13 +91,5 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: var(--ion-color-light-contrast);
-  margin-top: 0px;
-}
-
-body {
-  position: static;
-  max-height: none;
-  height: auto;
-  overflow: auto;
 }
 </style>

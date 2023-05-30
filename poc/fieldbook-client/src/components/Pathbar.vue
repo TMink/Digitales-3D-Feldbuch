@@ -1,7 +1,7 @@
 <template>
-  <div id="pathbar">
+  <v-app-bar id="pathbar">
     <v-toolbar-title class="py-1"> <b>Aktuelle Auswahl:</b> {{ currentActivity }} / {{ currentPlace }} / {{ currentPosition }}</v-toolbar-title>
-  </div>
+  </v-app-bar>
 </template>
 
 <script>
@@ -73,11 +73,4 @@ export default {
 </script>
 
 <style>
-#pathbar{
-  height: 40px;
-  background-color: #876C66;
-  color: white;
-  text-align: center;
-  margin-bottom: 10px;
-}
 </style>

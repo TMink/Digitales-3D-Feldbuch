@@ -216,8 +216,5 @@ export default {
 </script>
   
 <style scoped>
-#wrapper {
-  height: 100%;
-}
 </style>
   
