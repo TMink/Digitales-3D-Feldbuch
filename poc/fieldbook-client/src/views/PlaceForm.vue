@@ -6,6 +6,7 @@
           <v-tabs v-model="tab" direction="vertical" color="secondary" >
             <v-tab value="one" rounded="0"> Allgemein </v-tab>
             <v-tab value="two" rounded="0"> Positionen </v-tab>
+            <v-tab value="three" rounded="0"> Modell </v-tab>
             <v-btn rounded="0" v-on:click="savePlace()" color="secondary"> Speichern </v-btn>
             <v-dialog
         v-model="dialog"
@@ -13,7 +14,7 @@
         width="auto"
       >
         <template v-slot:activator="{ props }">
-          <v-btn rounded="0" color="primary" v-bind="props"> Delete </v-btn>
+          <v-btn rounded="0" color="primary" v-bind="props"> Löschen </v-btn>
         </template>
         <v-card>
           <v-card-title class="text-h5">
@@ -61,9 +62,35 @@
           <v-window-item value="two">
             Two
           </v-window-item>
+          <v-window-item value="three">
+            <v-card>
+              <v-text-field 
+                label="Stellen ID" 
+                hint="Geben Sie hier die Stellen ID ein" 
+                v-model="new_model.place_id"></v-text-field>
+              <v-text-field 
+                label="Titel" 
+                hint="Geben sie hier einen Titel für das Modell ein" 
+                v-model="new_model.title"></v-text-field>
+              <v-file-input 
+                accept=".obj" 
+                show-size 
+                label="File input" 
+                v-model="new_model.model"></v-file-input>
+              <v-file-input 
+                prepend-icon="mdi-camera" 
+                accept="image/png, image/jpeg, image/bmp" 
+                show-size label="Textur input" 
+                v-model="new_model.texture"></v-file-input>
+            </v-card>
+            <v-card-actions class="justify-center">
+              <v-btn variant="outlined" v-on:click="addModel()" color="secondary"> Modell Speichern </v-btn>
+              <v-btn variant="outlined" color="primary" @click="models_overlay = false"> Abbrechen </v-btn>
+            </v-card-actions>
+          </v-window-item>
 
         </v-window>
-            </v-col>
+      </v-col>
     </v-row>
   </v-container>
 </template>
@@ -96,7 +123,13 @@ export default {
         placeNumber: '',
         ansprache: '',
         date: '',
-
+      },
+      new_model: {
+        id: '',
+        place_id: '',
+        title: '',
+        model: '',
+        texture: '', 
       },
       positions: null,
       error_dialog: false,
@@ -122,8 +155,6 @@ export default {
       const currentPlace = VueCookies.get( 'currentPlace' );
       const data = await fromOfflineDB.getObject( currentPlace, 'Places', 'places' );
       this.place = data.result;
-
-      console.log(this.place)
 
     },
 
@@ -188,8 +219,18 @@ export default {
       await fromOfflineDB.addObject(newPosition, "Positions", "positions");
       await this.updatePositions(newPosition.id);
 
-    },
+    }, 
+    async addModel() {
+      const newModel = {
+        id: String(Date.now()),
+        placeID: this.new_model.place_id,
+        title: this.new_model.title,
+        model: this.new_model.model,
+        texture: this.new_model.texture
+      };
 
+      await fromOfflineDB.addObject(newModel, 'Models', 'places');
+    },
     cancelPlace() {
 
       this.$router.push({ name: "PlacesOverview" });
