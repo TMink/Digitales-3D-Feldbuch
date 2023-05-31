@@ -13,7 +13,7 @@
         width="auto"
       >
         <template v-slot:activator="{ props }">
-          <v-btn rounded="0" color="primary" v-bind="props"> Delete </v-btn>
+          <v-btn rounded="0" color="primary" v-bind="props"> Löschen </v-btn>
         </template>
         <v-card>
           <v-card-title class="text-h5">
