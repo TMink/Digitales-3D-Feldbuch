@@ -64,6 +64,7 @@ export default {
       toolbar_title: 'Digitales 3D-Feldbuch',
       path_reload: 0,
       navbar_items: [
+        { link: "/", title: "Projektübersicht" },
         { link: "/3dview", title: "3D-Ansicht" },
       ]
     }
