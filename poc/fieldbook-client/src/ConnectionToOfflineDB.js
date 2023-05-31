@@ -398,6 +398,12 @@ export default class ConnectionToOfflineDB {
  * Create/Change new databases in IndexedDB (offline database)
  */
 
+const offlineDBModels = {
+  name: "Models",
+  version: 1,
+  storeNames: ["places", "positions"],
+};
+
 const offlineDBActivities = {
   name: "Activities",
   version: 1,
@@ -417,6 +423,7 @@ const offlineDBPositions = {
 };
 
 const fromOfflineDB = new ConnectionToOfflineDB([
+  offlineDBModels,
   offlineDBActivities,
   offlineDBPlaces,
   offlineDBPositions,
