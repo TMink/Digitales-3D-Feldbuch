@@ -8,7 +8,7 @@
  *  getAllObjects           - Gets all objects of a specific store
  *  getProperties           - Gets the values of specific properties of all
  *                            objects in a specific store
- *  getPropertiesWithID - Gets the values of specific properties of all
+ *  getPropertiesWithID     - Gets the values of specific properties of all
  *                            objects in a specific store, which contain the
  *                            same id (activityID or placeID)
  *  getAllObjectsWithID     - Gets the data of all objects, which contain the
@@ -397,17 +397,6 @@ export default class ConnectionToOfflineDB {
 /**
  * Create/Change new databases in IndexedDB (offline database)
  */
-const offlineDBGeometries = {
-  name: "Geometry",
-  version: 1,
-  storeNames: ["excavation"],
-};
-
-const offlineDBImages = {
-  name: "Image",
-  version: 1,
-  storeNames: ["excavation"],
-};
 
 const offlineDBActivities = {
   name: "Activities",
@@ -428,8 +417,6 @@ const offlineDBPositions = {
 };
 
 const fromOfflineDB = new ConnectionToOfflineDB([
-  offlineDBGeometries,
-  offlineDBImages,
   offlineDBActivities,
   offlineDBPlaces,
   offlineDBPositions,
