@@ -6,7 +6,7 @@
       <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
     </head>
 
-    <v-app-bar>
+    <v-app-bar color="accent_dark">
       <v-btn icon v-on:click="goback" > <v-icon>mdi-arrow-left</v-icon> </v-btn>
       <v-toolbar-title> {{ toolbar_title }} </v-toolbar-title>
       <v-spacer></v-spacer>
@@ -16,6 +16,7 @@
     
 
     <v-navigation-drawer
+    color="accent_dark"
     v-model="navdrawer"
     location="right">
       <v-list-item>
@@ -39,7 +40,7 @@
     </v-navigation-drawer>
 
     <v-main>
-      <Pathbar :key="path_reload" />
+      <Pathbar color="accent" :key="path_reload" />
         <router-view @view="onViewChange"></router-view>
     </v-main>
 
