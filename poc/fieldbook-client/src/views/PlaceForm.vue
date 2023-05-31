@@ -60,8 +60,36 @@
           </v-window-item>
 
           <v-window-item value="two">
-            Two
+            <v-form>
+              <v-list>
+                <v-divider></v-divider>
+              
+                <v-list-subheader v-if="positions.length === 0"> 
+                  Bisher wurde keine Positionen angelegt
+                </v-list-subheader>
+              
+                <template v-for="(position, i) in positions" :key="position">
+                  <v-list-item class="positionItem mt-3" 
+                               v-on:click="moveToPosition(position.id)">
+                  
+                      <v-list-item-title class="text-h6">
+                        Nr. {{ position.positionNumber }} - {{ position.date }}
+                      </v-list-item-title>
+                    
+                      <v-list-item-subtitle class="text-subtitle-1">
+                        {{ position.description }}
+                      </v-list-item-subtitle>
+
+                  </v-list-item>
+                  <v-divider v-if="i !== positions.length - 1"></v-divider>
+                </template>
+              </v-list>
+              <v-btn v-on:click="addPosition()" class="mr-16 mt-3" 
+                     color="primary"> Position hinzufügen </v-btn>
+            </v-form>
           </v-window-item>
+
+
           <v-window-item value="three">
             <v-card>
               <v-text-field 
@@ -85,7 +113,6 @@
             </v-card>
             <v-card-actions class="justify-center">
               <v-btn variant="outlined" v-on:click="addModel()" color="secondary"> Modell Speichern </v-btn>
-              <v-btn variant="outlined" color="primary" @click="models_overlay = false"> Abbrechen </v-btn>
             </v-card-actions>
           </v-window-item>
 
@@ -159,8 +186,14 @@ export default {
     },
 
     async updatePositions() {
-      
+
       this.positions = await fromOfflineDB.getAllObjectsWithID( this.place.id, 'Place', 'Positions', 'positions' );
+    
+    },
+
+    async updateModels() {
+
+      this.models = await fromOfflineDB.getAllObjectsWithID(this.place.id, 'Place', 'Models', 'places');
 
     },
 
@@ -170,14 +203,17 @@ export default {
         VueCookies.set( 'currentPosition', positionID );
       }
       this.$emit('view', 'Positionsbearbeitung')
-      this.$router.push( { name: 'PositionCreation'} );
+      this.$router.push( { name: 'PositionCreation', params: { position_id: positionID } } );
 
     },
 
     async savePlace() {
 
+      //convert from vue proxy to JSON object
+      const inputPlace = JSON.parse(JSON.stringify(this.place))
+
       await fromOfflineDB.deleteObject( this.place.id, 'Places', 'places' );
-      await fromOfflineDB.addObject( this.place, 'Places', 'places' );
+      await fromOfflineDB.addObject( inputPlace, 'Places', 'places' );
 
     },
 
@@ -203,12 +239,11 @@ export default {
         texts:          [],
         images:         [],
         models: {
-          firstModel: "Perfect shape!"
         }
       };
 
       if(this.positions.length == 0) {
-        newPosition.positionNumber = 1
+        newPosition.positionNumber = 1;
       } else {
         this.updatePositions();
         const positionNumber = Math.max(...this.positions.map(o => o.positionNumber))
@@ -223,13 +258,14 @@ export default {
     async addModel() {
       const newModel = {
         id: String(Date.now()),
-        placeID: this.new_model.place_id,
+        placeID: this.place.id,
         title: this.new_model.title,
         model: this.new_model.model,
         texture: this.new_model.texture
       };
 
       await fromOfflineDB.addObject(newModel, 'Models', 'places');
+      await this.updateModels(newModel.id);
     },
     cancelPlace() {
 
