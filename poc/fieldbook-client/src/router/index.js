@@ -11,7 +11,7 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      name: "ActivitiesView",
+      name: "ActivitiesOverview",
       component: ActivitiesOverview,
     },
     {
