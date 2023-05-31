@@ -27,15 +27,13 @@
               color="secondary"
               variant="outlined"
               v-on:click="deletePlace()"
-              @click="dialog = false"
-            >
+              @click="dialog = false">
               Ja
             </v-btn>
             <v-btn
               color="primary"
               variant="outlined"
-              @click="dialog = false"
-            >
+              @click="dialog = false">
               Nein
             </v-btn>
           </v-card-actions>
@@ -61,9 +59,7 @@
 
           <v-window-item value="two">
             <v-form>
-              <v-list>
-                <v-divider></v-divider>
-              
+              <v-list>              
                 <v-list-subheader v-if="positions.length === 0"> 
                   Bisher wurde keine Positionen angelegt
                 </v-list-subheader>
@@ -91,29 +87,87 @@
 
 
           <v-window-item value="three">
-            <v-card>
+            <v-form>
+                <v-list>              
+                  <v-list-subheader v-if="models.length === 0"> 
+                    Bisher wurde keine Modelle angelegt
+                  </v-list-subheader>
+              
+                  <template v-for="(model, i) in models" :key="model">
+                    <v-list-item class="modelItem mt-3" 
+                                 v-on:click="moveToModel(model.id)">
+                  
+                        <v-list-item-title class="text-h6">
+                          Nr. {{ model.modelNumber }}
+                        </v-list-item-title>
+                    
+                        <v-list-item-subtitle class="text-subtitle-1">
+                          {{ model.title }}
+                        </v-list-item-subtitle>
+
+                    </v-list-item>
+                    <v-divider v-if="i !== models.length - 1"></v-divider>
+                  </template>
+                </v-list>
+                <v-btn @click="models_overlay = true" class="mr-16 mt-3" 
+                       color="primary"> Modell hinzufügen </v-btn>
+              </v-form>
+
+              <v-dialog v-model="models_overlay" max-width="800" persistent>
+                <v-card>
+                  <v-card-title>Modell hinzufügen </v-card-title>
+                  <v-card-text>
+                  <v-text-field 
+                    label="Stellen ID" 
+                    hint="Geben Sie hier die Stellen ID ein" 
+                    disabled
+                    v-model="place.id"> </v-text-field>
+                  <v-text-field 
+                    label="Titel" 
+                    hint="Geben sie hier einen Titel für das Modell ein" 
+                    v-model="model.title"></v-text-field>
+                  <v-file-input 
+                    accept=".obj" 
+                    show-size 
+                    label="File input" 
+                    v-model="model.model"></v-file-input>
+                  <v-file-input 
+                    prepend-icon="mdi-camera" 
+                    accept="image/png, image/jpeg, image/bmp" 
+                    show-size label="Textur input" 
+                    v-model="model.texture"></v-file-input>
+                </v-card-text>
+                <v-card-actions class="justify-center">
+                  <v-btn variant="outlined" v-on:click="addModel()"> Speichern </v-btn>
+                  <v-btn @click="models_overlay = false"> Abbrechen </v-btn>
+                </v-card-actions>
+                </v-card>
+          </v-dialog>
+              
+
+            <!-- <v-card>
               <v-text-field 
                 label="Stellen ID" 
                 hint="Geben Sie hier die Stellen ID ein" 
-                v-model="new_model.place_id"></v-text-field>
+                v-model="model.place_id"></v-text-field>
               <v-text-field 
                 label="Titel" 
                 hint="Geben sie hier einen Titel für das Modell ein" 
-                v-model="new_model.title"></v-text-field>
+                v-model="model.title"></v-text-field>
               <v-file-input 
                 accept=".obj" 
                 show-size 
                 label="File input" 
-                v-model="new_model.model"></v-file-input>
+                v-model="model.model"></v-file-input>
               <v-file-input 
                 prepend-icon="mdi-camera" 
                 accept="image/png, image/jpeg, image/bmp" 
                 show-size label="Textur input" 
-                v-model="new_model.texture"></v-file-input>
+                v-model="model.texture"></v-file-input>
             </v-card>
             <v-card-actions class="justify-center">
               <v-btn variant="outlined" v-on:click="addModel()" color="secondary"> Modell Speichern </v-btn>
-            </v-card-actions>
+            </v-card-actions> -->
           </v-window-item>
 
         </v-window>
@@ -151,7 +205,7 @@ export default {
         ansprache: '',
         date: '',
       },
-      new_model: {
+      model: {
         id: '',
         place_id: '',
         title: '',
@@ -159,6 +213,8 @@ export default {
         texture: '', 
       },
       positions: null,
+      models: null,
+      models_overlay: false,
       error_dialog: false,
       error_message: '',
       is_new: true,
@@ -173,6 +229,7 @@ export default {
     await fromOfflineDB.syncLocalDBs();                                         
     await this.updatePlace();
     await this.updatePositions();
+    await this.updateModels();
   },
 
   methods: {
@@ -251,6 +308,7 @@ export default {
         newPosition.positionNumber = newPositionNumber;
       }
 
+      console.log(newPosition)
       await fromOfflineDB.addObject(newPosition, "Positions", "positions");
       await this.updatePositions(newPosition.id);
 
@@ -259,10 +317,21 @@ export default {
       const newModel = {
         id: String(Date.now()),
         placeID: this.place.id,
-        title: this.new_model.title,
-        model: this.new_model.model,
-        texture: this.new_model.texture
+        title: this.model.title,
+        model: this.model.model,
+        texture: this.model.texture
       };
+
+      if (this.models.length == 0) {
+        newModel.modelNumber = 1;
+      } else {
+        this.updateModels();
+        const modelNumber = Math.max(...this.models.map(o => o.modelNumber))
+        const newModelNumber = modelNumber + 1;
+        newModel.modelNumber = newModelNumber;
+      }
+
+      console.log(newModel)
 
       await fromOfflineDB.addObject(newModel, 'Models', 'places');
       await this.updateModels(newModel.id);
