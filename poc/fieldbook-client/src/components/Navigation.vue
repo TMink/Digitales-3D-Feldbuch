@@ -1,6 +1,6 @@
 <template>
   <v-tabs flat bg-color="accent" color="primary" fixed-tabs align-tabs="center">
-    <v-tab max-width="250px" class="text-h6" @click="changePage('ActivitiesOverview')" > ALLGEMEIN </v-tab>
+    <v-tab max-width="250px" class="text-h6" @click="changePage('ActivitiesOverview')" > AKTIVITÄTEN</v-tab>
     <v-tab max-width="250px" class="text-h6" @click="changePage('PlacesOverview')" :disabled="!activityIsSet"> STELLEN</v-tab>
     <v-tab max-width="250px" class="text-h6" @click="changePage('PositionCreation')" :disabled="!placeIsSet"> POSITIONEN</v-tab>
   </v-tabs>
