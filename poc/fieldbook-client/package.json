@@ -12,6 +12,7 @@
     "axios": "^1.4.0",
     "dat.gui": "^0.7.9",
     "three": "^0.152.2",
+    "three-bvh-csg": "^0.0.5",
     "three-mesh-bvh": "^0.6.0",
     "vite-plugin-vuetify": "^1.0.2",
     "vue": "^3.3.2",
