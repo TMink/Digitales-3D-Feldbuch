@@ -87,50 +87,51 @@
           <v-divider v-if="i !== activities.length - 1"></v-divider>
 
         </template>
+        <v-container v-if="showInputMask">
+
+          <v-row>
+            <v-col cols="12">
+              <v-row no-gutters>
+                <v-col cols="3">
+                  <v-sheet class="pa-2 ma-2">
+                    <v-text-field :rules="[rules.required]" v-model="activity.außenstelle" label="Außenstelle"
+                      hide-details="auto" placeholder="Xanten" clearable></v-text-field>
+                  </v-sheet>
+                </v-col>
+
+                <v-col cols="3">
+                  <v-sheet class="pa-2 ma-2">
+                    <v-text-field :rules="[rules.required]" v-model="activity.jahr" label="Jahr" hide-details="auto"
+                      placeholder="2023" clearable counter maxlength="4"></v-text-field>
+                  </v-sheet>
+                </v-col>
+
+                <v-col cols="3">
+                  <v-sheet class="pa-2 ma-2">
+                    <v-text-field :rules="[rules.required, rules.counter]" v-model="activity.nummer" label="Nummer"
+                      hide-details="auto" placeholder="1337" clearable counter maxlength="4">
+                    </v-text-field>
+                  </v-sheet>
+                </v-col>
+
+                <v-col cols="2">
+                  <v-sheet class="pa-1 ma-2">
+                    <v-btn class="ma-1" icon color="purple" v-on:click="saveActivity(activity)">
+                      <v-icon>mdi-content-save-all</v-icon>
+                    </v-btn>
+                    <v-btn class="ma-1" icon color="red" v-on:click="clearActivityMask()">
+                      <v-icon>mdi-close-circle</v-icon>
+                    </v-btn>
+                  </v-sheet>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+        </v-container>
+        <v-btn v-on:click="modifyActivity('new')" color="primary" v-if="!showInputMask"> Aktivität hinzufügen </v-btn>
       </v-list>
 
-      <v-container v-if="showInputMask">
 
-        <v-row>
-          <v-col cols="12">
-            <v-row no-gutters>
-              <v-col cols="3">
-                <v-sheet class="pa-2 ma-2">
-                  <v-text-field :rules="[rules.required]" v-model="activity.außenstelle" label="Außenstelle"
-                    hide-details="auto" placeholder="Xanten" clearable></v-text-field>
-                </v-sheet>
-              </v-col>
-
-              <v-col cols="3">
-                <v-sheet class="pa-2 ma-2">
-                  <v-text-field :rules="[rules.required]" v-model="activity.jahr" label="Jahr" hide-details="auto"
-                    placeholder="2023" clearable counter maxlength="4"></v-text-field>
-                </v-sheet>
-              </v-col>
-
-              <v-col cols="3">
-                <v-sheet class="pa-2 ma-2">
-                  <v-text-field :rules="[rules.required, rules.counter]" v-model="activity.nummer" label="Nummer"
-                    hide-details="auto" placeholder="1337" clearable counter maxlength="4">
-                  </v-text-field>
-                </v-sheet>
-              </v-col>
-
-              <v-col cols="2">
-                <v-sheet class="pa-1 ma-2">
-                  <v-btn class="ma-1" icon color="purple" v-on:click="saveActivity(activity)">
-                    <v-icon>mdi-content-save-all</v-icon>
-                  </v-btn>
-                  <v-btn class="ma-1" icon color="red" v-on:click="clearActivityMask()">
-                    <v-icon>mdi-close-circle</v-icon>
-                  </v-btn>
-                </v-sheet>
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
-      </v-container>
-      <v-btn v-on:click="modifyActivity('new')" color="primary" v-if="!showInputMask"> Aktivität hinzufügen </v-btn>
     </v-form>
   </div>
 </template>
