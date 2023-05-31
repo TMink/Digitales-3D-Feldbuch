@@ -2,7 +2,7 @@
   <div id="wrapper">
     <Navigation />
     <v-form>
-      <v-list>
+      <v-list class="overflow-hidden">
         <v-list-item class="mt-5" v-if="current_activity.id !== undefined"
           v-on:click="modifyActivity(current_activity.id)">
           <v-chip>
@@ -33,9 +33,29 @@
                       <v-icon>mdi-pencil</v-icon>
                     </v-btn>
 
-                    <v-btn class="ma-1" icon color="red" v-on:click="deleteActivity(activity)">
-                      <v-icon>mdi-delete</v-icon>
-                    </v-btn>
+                    <v-dialog v-model="dialog" persistent width="auto">
+                      <template v-slot:activator="{ props }">
+                        <v-btn icon color="red" v-bind="props">
+                          <v-icon>mdi-delete</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-card>
+                        <v-card-title class="text-h5">
+                          Aktivität löschen?
+                        </v-card-title>
+                        <v-card-text>Möchten Sie die ausgewählte Aktivität wirklich löschen?</v-card-text>
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+                          <v-btn icon color="green-darken-1" variant="text" @click="dialog = false"
+                            v-on:click="deleteActivity(activity)">
+                            <v-icon>mdi-check-circle</v-icon>
+                          </v-btn>
+                          <v-btn icon color="red-darken-1" variant="text" @click="dialog = false">
+                            <v-icon>mdi-close-circle</v-icon>
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
 
                   </v-col>
                 </v-row>
@@ -233,6 +253,7 @@ export default {
       activities: [],
       current_activity: {},
       showInputMask: false,
+      dialog: false,
       activity: {
         außenstelle: null,
         jahr: null,
