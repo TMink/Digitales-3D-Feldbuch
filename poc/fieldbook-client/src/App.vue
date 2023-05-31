@@ -13,7 +13,7 @@
       <v-btn icon @click.stop="navdrawer = !navdrawer"> <v-icon>mdi-menu</v-icon></v-btn>
     </v-app-bar>
 
-    <Pathbar :key="path_reload" />
+    
 
     <v-navigation-drawer
     v-model="navdrawer"
@@ -34,11 +34,12 @@
           Delete Cookies
         </v-list-item-title>
       </v-list-item>
-      <v-btn @click="toggleTheme" color="opp_background">toggle theme</v-btn>
+      <v-btn @click="toggleTheme" color="opp_background">Toggle Theme</v-btn>
       
     </v-navigation-drawer>
 
     <v-main>
+      <Pathbar :key="path_reload" />
         <router-view @view="onViewChange"></router-view>
     </v-main>
 

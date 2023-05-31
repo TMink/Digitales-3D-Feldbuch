@@ -1,7 +1,7 @@
 <template>
-  <v-app-bar id="pathbar">
+  <v-card rounded="0">
     <v-toolbar-title class="py-1"> <b>Aktuelle Auswahl:</b> {{ currentActivity }} / {{ currentPlace }} / {{ currentPosition }}</v-toolbar-title>
-  </v-app-bar>
+  </v-card>
 </template>
 
 <script>
