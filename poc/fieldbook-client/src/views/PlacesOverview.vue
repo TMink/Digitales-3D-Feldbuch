@@ -56,72 +56,67 @@ export default {
 
   name: 'PlacesOverview',
 
-  components: {                                                                 /* -------> components */
-
+  components: {
     Navigation
-
   },
 
-  data() {                                                                      /* -------> data() */
-
+  data() {
     return {
       places: [],
     };
+  },
+
+  async created() {
+
+    await fromOfflineDB.syncLocalDBs();
+    await this.updatePlaces();
 
   },
 
-  async created() {                                                             /* -------> created() */
+  methods: {
 
-    await fromOfflineDB.syncLocalDBs();                                         /* Syncronise local databases */
-    await this.updatePlaces();                                                  /* Update position list */
+    async updatePlaces() {
 
-  },
-
-  methods: {                                                                    /* -------> methods */
-
-    async updatePlaces() {                                                      /* ------>> updatePositions() */
-
-      this.places = await fromOfflineDB.getAllObjectsWithID(                    /* Recieve all IDs in store */
+      this.places = await fromOfflineDB.getAllObjectsWithID(
                             String(VueCookies.get('currentActivity')),
                             'Activity', 'Places', 'places' ); 
-      this.places.sort((a, b) => (a.placeNumber > b.placeNumber) ? 1: -1)       /* Sorts all places by their placeNumber value */
+      this.places.sort((a, b) => (a.placeNumber > b.placeNumber) ? 1: -1)
 
     },
 
-    async addPlace() {                                                          /* ------>> addPlace() */
+    async addPlace() {
 
       const acID = String(VueCookies.get('currentActivity'))
 
       const newPlace = {
         id:           String(Date.now()),
         activityID:   acID,
-        placeNumber:  null,
-        date:         null,
-        ansprache:    null
+        placeNumber:  '',
+        date:         '',
+        ansprache:    ''
       }
 
       if(this.places.length == 0) {
         newPlace.placeNumber = 1
       } else {
         const placeNumbers = await fromOfflineDB.getPropertiesWithID( acID, 'place', 'placeNumber', 'Places', 'places' )
-        const newPlaceNumber = Math.max( ...placeNumbers ) + 1;                 /* Get the highest placeNumber of the existing properties and increment this value */
-        newPlace.placeNumber = newPlaceNumber;                                  /* Update the current placeNumber */
+        const newPlaceNumber = Math.max( ...placeNumbers ) + 1;
+        newPlace.placeNumber = newPlaceNumber;
       }
       
-      await fromOfflineDB.addObject( newPlace, 'Places', 'places' )             /* Add new data to store */
-      await this.updatePlaces( newPlace.id )                                    /* Update position list */
+      await fromOfflineDB.addObject( newPlace, 'Places', 'places' )
+      await this.updatePlaces( newPlace.id )
 
     },
 
-    moveToPlace(placeID) {                                                      /* ------>> moveToPlace() */
+    moveToPlace(placeID) {
       
       if ( placeID !== 'new' ) {
         VueCookies.set( 'currentPlace', placeID )
       }
 
-      this.$router.push( { name: 'PlaceCreation'} )
+      this.$router.push( { name: 'PlaceCreation', params: { place_id: placeID } } )
       this.$emit( 'view', 'Stelle' )
-
     },
 
   }

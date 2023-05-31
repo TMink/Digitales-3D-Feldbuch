@@ -1,93 +1,71 @@
 <template>
-  <v-form ref="form">
-    <v-tabs direction="vertical" color="secondary">
-      <v-tab> Allgemein </v-tab>
-      <v-tab> Positionen </v-tab>
-
-      <v-tab-item class="px-4">
-        <v-text-field v-model="place.ansprache" label="Ansprache"
-          hint="Geben Sie hier eine Ansprache ein"></v-text-field>
-        <v-text-field v-model="place.date" label="Datierung" 
-                      hint="Format: dd.mm.yyyy"></v-text-field>
-      </v-tab-item>
-
-      <v-tab-item class="px-4">
-        <div id="wrapper">
-          <v-form>
-            <v-list>
-              <v-divider></v-divider>
-              
-              <v-list-subheader v-if="positions.length === 0"> 
-                Bisher wurde keine Positionen angelegt
-              </v-list-subheader>
-              
-              <template v-for="(position, i) in positions" :key="position">
-                <v-list-item class="positionItem mt-3" 
-                             v-on:click="moveToPosition(position.id)">
-                    
-                    <v-list-item-title class="text-h6">
-                      Nr. {{ position.positionNumber }} - {{ position.date }}
-                    </v-list-item-title>
-                    
-                    <v-list-item-subtitle class="text-subtitle-1">
-                      {{ position.description }}
-                    </v-list-item-subtitle>
-
-          
-                </v-list-item>
-                <v-divider v-if="i !== positions.length - 1"></v-divider>
-              </template>
-            </v-list>
-            <v-btn v-on:click="addPosition()" class="mr-16 mt-3" 
-                   color="primary"> Position hinzufügen </v-btn>
-          </v-form>
-        </div>
-      </v-tab-item>
-
-      <v-btn v-on:click="savePlace()" color="secondary" class="py-6"> 
-        Speichern
-      </v-btn>
-
-      <v-dialog v-model="dialog" max-width="290">
-        <template v-slot:activator="{ on, attrs }">
-
-          <v-btn color="secondary" class="py-6" v-bind="attrs" v-on="on">
-            Löschen
-          </v-btn>
-
+  <v-container fluid>
+    <v-row>
+      <v-col cols="2">
+        <v-card rounded="0">
+          <v-tabs v-model="tab" direction="vertical" color="secondary" >
+            <v-tab value="one" rounded="0"> Allgemein </v-tab>
+            <v-tab value="two" rounded="0"> Positionen </v-tab>
+            <v-btn rounded="0" v-on:click="savePlace()" color="secondary"> Speichern </v-btn>
+            <v-dialog
+        v-model="dialog"
+        persistent
+        width="auto"
+      >
+        <template v-slot:activator="{ props }">
+          <v-btn rounded="0" color="primary" v-bind="props"> Delete </v-btn>
         </template>
         <v-card>
-
           <v-card-title class="text-h5">
-            Wollen Sie die Stelle "{{ place.placeNumber }}" wirklich löschen?
+             Stelle Löschen!
           </v-card-title>
+          <v-card-text>Wollen Sie die Stelle "{{ place.placeNumber }}" wirklich löschen?</v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-
-            <v-btn color="secondary" v-on:click="deletePlace()"
-                   @click="dialog = false">
+            <v-btn
+              color="secondary"
+              variant="outlined"
+              v-on:click="deletePlace()"
+              @click="dialog = false"
+            >
               Ja
             </v-btn>
-
-            <v-btn color="primary" @click="dialog = false">
+            <v-btn
+              color="primary"
+              variant="outlined"
+              @click="dialog = false"
+            >
               Nein
             </v-btn>
-
           </v-card-actions>
         </v-card>
       </v-dialog>
+        <v-btn rounded="0" v-on:click="cancelPlace" color="primary"> 
+          Abbrechen
+        </v-btn>
+          </v-tabs>
+        </v-card>
+          </v-col>
 
-      <v-btn v-on:click="cancelPlace" color="primary" class="py-6"> 
-        Abbrechen
-      </v-btn>
+            <v-col>
+              <v-window v-model="tab">
+          <v-window-item value="one">
+            <v-card>
+              <v-text-field v-model="place.ansprache" label="Ansprache"
+                            hint="Geben Sie hier eine Ansprache ein"></v-text-field>
+              <v-text-field v-model="place.date" label="Datierung" 
+                        hint="Format: dd.mm.yyyy"></v-text-field>
+            </v-card>
+          </v-window-item>
 
-    </v-tabs>
+          <v-window-item value="two">
+            Two
+          </v-window-item>
 
-    <v-alert v-model="error_dialog" type="error" density="compact" variant="outlined" closable>
-      {{ error_message }}
-    </v-alert>
-
-  </v-form>
+        </v-window>
+            </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
@@ -108,10 +86,18 @@ export default {
 
   name: 'PlaceCreation',
 
-  data() {                                                                      /* -------> data() */
+  data() {
 
     return {
-      place: null,
+      tab:null,
+      place: {
+        id: '',
+        activityID: '',
+        placeNumber: '',
+        ansprache: '',
+        date: '',
+
+      },
       positions: null,
       error_dialog: false,
       error_message: '',
@@ -122,31 +108,32 @@ export default {
 
   },
 
-  async created() {                                                             /* -------> created() */
+  async created() {
 
     await fromOfflineDB.syncLocalDBs();                                         
     await this.updatePlace();
     await this.updatePositions();
-
   },
 
-  methods: {                                                                    /* -------> methods */
+  methods: {
 
-    async updatePlace() {                                                       /* ------>> updatePlace() */
+    async updatePlace() {
 
-      const currentPlace = VueCookies.get( 'currentPlace' );                    /* Get id of selected place */
+      const currentPlace = VueCookies.get( 'currentPlace' );
       const data = await fromOfflineDB.getObject( currentPlace, 'Places', 'places' );
-      this.place = data.result;                                                 /* Update 'place' with existing data */
+      this.place = data.result;
+
+      console.log(this.place)
 
     },
 
-    async updatePositions() {                                                   /* ------>> updatePositions() */
+    async updatePositions() {
       
       this.positions = await fromOfflineDB.getAllObjectsWithID( this.place.id, 'Place', 'Positions', 'positions' );
 
     },
 
-    moveToPosition( positionID ) {                                              /* ------>> moveToPosition() */
+    moveToPosition( positionID ) {
       
       if( positionID !== 'new' ) {
         VueCookies.set( 'currentPosition', positionID );
@@ -163,20 +150,20 @@ export default {
 
     },
 
-    async deletePlace() {                                                       /* ------>> deletePlace() */
+    async deletePlace() {
 
       await fromOfflineDB.deleteCascade(this.place.id, 'position', 'Positions', 'positions');
-      VueCookies.remove('currentPosition');                                     /* ... and remove cookies */
+      VueCookies.remove('currentPosition');
 
-      await fromOfflineDB.deleteObject(this.place.id, 'Places', 'places');      /* Delete the selected place ... */
-      VueCookies.remove('currentPlace');                                        /* ... and remove cookie */
+      await fromOfflineDB.deleteObject(this.place.id, 'Places', 'places');
+      VueCookies.remove('currentPlace');
       
-      this.$router.push({ name: "PlacesOverview" });                            /* Return to PlacesOverview page */
+      this.$router.push({ name: "PlacesOverview" });
       this.$emit('view', 'Stellen');
 
     },
 
-    async addPosition() {                                                       /* ------>> addPositions() */
+    async addPosition() {
 
       const newPosition = {
         id:             String(Date.now()),
@@ -195,15 +182,15 @@ export default {
         this.updatePositions();
         const positionNumber = Math.max(...this.positions.map(o => o.positionNumber))
         const newPositionNumber = positionNumber + 1;                           
-        newPosition.positionNumber = newPositionNumber;                         /* Update the current positionNumber */
+        newPosition.positionNumber = newPositionNumber;
       }
 
-      await fromOfflineDB.addObject(newPosition, "Positions", "positions");     /* Add a new position to the store */
-      await this.updatePositions(newPosition.id);                               /* Update positions list */
+      await fromOfflineDB.addObject(newPosition, "Positions", "positions");
+      await this.updatePositions(newPosition.id);
 
     },
 
-    cancelPlace() {                                                             /* ------>> goBack() */
+    cancelPlace() {
 
       this.$router.push({ name: "PlacesOverview" });
       this.$emit("view", "Stellen");
