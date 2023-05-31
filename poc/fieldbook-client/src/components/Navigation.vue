@@ -1,33 +1,9 @@
 <template>
-    <div id="navbar">
-        <v-row justify="center">
-          <v-card class="ma-2" color="#BC987D" @click="changePage('ActivitiesView')" dark>
-            <v-card-title class="justify-center"> Aktivitäten </v-card-title>
-          </v-card>
-
-          <v-card class="ma-2" color="#BC987D" @click="changePage('PlacesView')" dark :disabled="!activityIsSet">
-            <v-card-title class="justify-center"> Stellen </v-card-title>
-          </v-card>
-
-          <v-card class="ma-2" color="#BC987D" @click="changePage('PositionCreation')" dark :disabled="!placeIsSet">
-            <v-card-title class="justify-center"> Position </v-card-title>
-          </v-card>
-
-          <!--
-          <v-card class="ma-2" color="#BC987D" @click="changePage('FeaturesOverview')" dark :disabled="!placeIsSet">
-            <v-card-title class="justify-center"> Befunde </v-card-title>
-          </v-card>
-
-          <v-card class="ma-2" color="#BC987D" @click="changePage('ArtifactsOverview')" dark :disabled="!placeIsSet">
-            <v-card-title class="justify-center"> Funde </v-card-title>
-          </v-card>
-
-          <v-card class="ma-2" color="#BC987D" @click="changePage('SamplesOverview')" dark :disabled="!placeIsSet">
-            <v-card-title class="justify-center"> Proben </v-card-title>
-          </v-card>
-          -->
-        </v-row>
-    </div>
+  <v-tabs bg-color="surface" fixed-tabs align-tabs="center">
+    <v-tab max-width="250px" @click="changePage('ActivitiesOverview')"> Allgemein </v-tab>
+    <v-tab max-width="250px" @click="changePage('PlacesOverview')" :disabled="!activityIsSet"> Stellen</v-tab>
+    <v-tab max-width="250px" @click="changePage('PositionCreation')" :disabled="!placeIsSet"> Position</v-tab>
+  </v-tabs>
 </template>
 
 <script>
@@ -71,25 +47,7 @@
     }
   }
 </script>
+
 <style scoped>
-    #navbar {
-        background-color: #B4A27D;
-        height: 70px;
-        transition: 0.08s ease-in-out;
-    }
-
-    @media (max-width: 730px){
-        #navbar{
-          height: 150px;
-          transition: 0.08s ease-in-out;
-        }
-    }
-
-    @media (max-width: 385px){
-      #navbar{
-        height: 230px;
-        transition: 0.08s ease-in-out;
-      }
-  }
     
 </style>

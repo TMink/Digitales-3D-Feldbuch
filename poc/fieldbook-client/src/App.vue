@@ -34,6 +34,8 @@
           Delete Cookies
         </v-list-item-title>
       </v-list-item>
+      <v-btn @click="toggleTheme" color="opp_background">toggle theme</v-btn>
+      
     </v-navigation-drawer>
 
     <v-main>
@@ -50,12 +52,21 @@
 import AppFooter from './components/AppFooter.vue';
 import Pathbar from './components/Pathbar.vue';
 import VueCookies from 'vue-cookies';
+import { useTheme } from 'vuetify/lib/framework.mjs';
 
 export default {
   name: 'App',
   components: {
     AppFooter,
     Pathbar
+  },
+  setup() {
+    const theme = useTheme()
+
+    return {
+      theme,
+      toggleTheme: () => theme.global.name.value = theme.global.current.value.dark ? 'fieldbook_light' : 'fieldbook_dark'
+    }
   },
   data: function () {
     return {
