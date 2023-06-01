@@ -172,12 +172,12 @@ export default {
       /* Recieve all IDs in store */
       this.activities = await fromOfflineDB.getAllObjects('Activities', 'activities')
     },
-    async setActivity(activity_id) {
-      if (VueCookies.get('currentActivity') !== activity_id) {
+    async setActivity(activityID) {
+      if (VueCookies.get('currentActivity') !== activityID) {
         VueCookies.remove('currentPlace');
         VueCookies.remove('currentPosition');
       }
-      VueCookies.set('currentActivity', activity_id)
+      VueCookies.set('currentActivity', activityID)
       this.$router.push({ name: 'PlacesOverview' })
       this.$emit('view', 'Stelle')
     },

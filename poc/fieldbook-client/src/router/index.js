@@ -15,7 +15,7 @@ const router = createRouter({
       component: ActivitiesOverview,
     },
     {
-      path: "/activities/:activity_id",
+      path: "/activities/:activityID",
       name: "ActivityCreation",
     },
     {
@@ -24,7 +24,7 @@ const router = createRouter({
       component: PositionsOverview,
     },
     {
-      path: "/positionform/:position_id",
+      path: "/positions/:positionID",
       name: "PositionCreation",
       component: PositionForm,
     },
@@ -34,7 +34,7 @@ const router = createRouter({
       component: PlacesOverview,
     },
     {
-      path: "/places/:place_id",
+      path: "/places/:placeID",
       name: "PlaceCreation",
       component: PlaceForm,
     },

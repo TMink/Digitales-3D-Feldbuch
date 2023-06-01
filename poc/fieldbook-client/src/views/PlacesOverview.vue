@@ -115,7 +115,7 @@ export default {
         VueCookies.set( 'currentPlace', placeID )
       }
 
-      this.$router.push( { name: 'PlaceCreation', params: { place_id: placeID } } )
+      this.$router.push( { name: 'PlaceCreation', params: { placeID: placeID } } )
       this.$emit( 'view', 'Stelle' )
     },
 

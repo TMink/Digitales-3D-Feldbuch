@@ -149,7 +149,7 @@
               <v-text-field 
                 label="Stellen ID" 
                 hint="Geben Sie hier die Stellen ID ein" 
-                v-model="model.place_id"></v-text-field>
+                v-model="model.placeID"></v-text-field>
               <v-text-field 
                 label="Titel" 
                 hint="Geben sie hier einen Titel für das Modell ein" 
@@ -207,7 +207,7 @@ export default {
       },
       model: {
         id: '',
-        place_id: '',
+        placeID: '',
         title: '',
         model: '',
         texture: '', 
@@ -260,7 +260,7 @@ export default {
         VueCookies.set( 'currentPosition', positionID );
       }
       this.$emit('view', 'Positionsbearbeitung')
-      this.$router.push( { name: 'PositionCreation', params: { position_id: positionID } } );
+      this.$router.push( { name: 'PositionCreation', params: { positionID: positionID } } );
 
     },
 
@@ -330,8 +330,6 @@ export default {
         const newModelNumber = modelNumber + 1;
         newModel.modelNumber = newModelNumber;
       }
-
-      console.log(newModel)
 
       await fromOfflineDB.addObject(newModel, 'Models', 'places');
       await this.updateModels(newModel.id);

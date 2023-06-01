@@ -12,30 +12,30 @@
     data: function (){
       return {
         placeIsSet: false,
-        place_id: '',
+        placeID: '',
         activityIsSet: false,
-        activity_id: '',
+        activityID: '',
         positionIsSet: false,
-        position_id: ''
+        positionID: ''
       }
     },
     created () {
-      this.place_id = VueCookies.get('currentPlace')
-      if (this.place_id !== null) {
+      this.placeID = VueCookies.get('currentPlace')
+      if (this.placeID !== null) {
         this.placeIsSet = true
       }
-      this.activity_id = VueCookies.get('currentActivity')
-      if (this.activity_id !== null){
+      this.activityID = VueCookies.get('currentActivity')
+      if (this.activityID !== null){
         this.activityIsSet = true
       }
-      this.position_id = VueCookies.get('currentPosition')
-      if( this.position_id !== null)
+      this.positionID = VueCookies.get('currentPosition')
+      if( this.positionID !== null)
         this.positionIsSet = true
       this.$emit('view','Digitales Feldbuch')
     },
     methods: {
       changePage: function(routeName) {
-      this.$router.push({ name: routeName, params: { activity_id: this.activity_id, place_id: this.place_id, position_id : this.position_id } }).catch(error => {
+      this.$router.push({ name: routeName, params: { activityID: this.activityID, placeID: this.placeID, positionID : this.positionID } }).catch(error => {
         if (
           error.name !== 'NavigationDuplicated' &&
           !error.message.includes('Avoided redundant navigation to current location')
