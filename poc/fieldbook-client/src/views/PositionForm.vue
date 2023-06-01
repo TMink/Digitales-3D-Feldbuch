@@ -240,7 +240,7 @@ export default {
             await fromOfflineDB.deleteObject(inputPosition.id, 'Positions', 'positions')
             await fromOfflineDB.addObject(inputPosition, 'Positions', 'positions')
             this.$emit("view", "Stellenbearbeitung");
-            this.$router.push({ name: "PlaceCreation" });
+            this.$router.push({ name: "PlaceCreation", params:  { placeID: this.position.placeID } });
 
         },
         /* Delete the selected position */
