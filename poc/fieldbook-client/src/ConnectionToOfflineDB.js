@@ -66,7 +66,6 @@ export default class ConnectionToOfflineDB {
       };
 
       request.onupgradeneeded = (e) => {
-        console.log("onupgradeneeded");
         const db = e.target.result;
         storeNames.forEach((storeName) => {
           db.createObjectStore(storeName, { autoIncrement: true, keyPath: "id" });

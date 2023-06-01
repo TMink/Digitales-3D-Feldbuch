@@ -308,7 +308,6 @@ export default {
         newPosition.positionNumber = newPositionNumber;
       }
 
-      console.log(newPosition)
       await fromOfflineDB.addObject(newPosition, "Positions", "positions");
       await this.updatePositions(newPosition.id);
 

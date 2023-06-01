@@ -235,7 +235,6 @@ export default {
 
             //convert from vue proxy to JSON object
             const inputPosition = JSON.parse(JSON.stringify(this.position))
-            console.log(inputPosition)
 
             await fromOfflineDB.deleteObject(inputPosition.id, 'Positions', 'positions')
             await fromOfflineDB.addObject(inputPosition, 'Positions', 'positions')
@@ -254,7 +253,6 @@ export default {
         /* Go back to PlacesOverview */
         goBack: function () {
             const currentPlace = VueCookies.get("currentPlace");
-            console.log(currentPlace);
             this.$emit("view", "Stellenbearbeitung");
             this.$router.push({ name: "PlaceCreation" });
 
