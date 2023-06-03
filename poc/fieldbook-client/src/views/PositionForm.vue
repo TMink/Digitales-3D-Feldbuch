@@ -254,7 +254,7 @@ export default {
         goBack: function () {
             const currentPlace = VueCookies.get("currentPlace");
             this.$emit("view", "Stellenbearbeitung");
-            this.$router.push({ name: "PlaceCreation" });
+            this.$router.push({ name: "PlaceCreation", params: { placeID: this.position.placeID } });
 
         },
         /* Adds a new image-placeholder to the images-array*/
