@@ -1,14 +1,20 @@
 <template>
   <v-tabs flat bg-color="accent" fixed-tabs align-tabs="center" slider-color="primary">
-    <v-tab max-width="250px" class="text-h6" @click="changePage('ActivitiesOverview')">AKTIVITÄTEN</v-tab>
-    <v-tab max-width="250px" class="text-h6" @click="changePage('PlacesOverview')" :disabled="!activityIsSet"> STELLEN</v-tab>
-    <v-tab max-width="250px" class="text-h6" @click="changePage('PositionsOverview')" :disabled="!placeIsSet"> POSITIONEN</v-tab>
+    <v-tab max-width="250px" class="text-h6" @click="changePage('ActivitiesOverview')">{{$t('activity')}}</v-tab>
+    <v-tab max-width="250px" class="text-h6" @click="changePage('PlacesOverview')" :disabled="!activityIsSet"> {{ $t('place') }}</v-tab>
+    <v-tab max-width="250px" class="text-h6" @click="changePage('PositionsOverview')" :disabled="!placeIsSet"> {{ $t('position') }}</v-tab>
   </v-tabs>
 </template>
 
 <script>
  import VueCookies from 'vue-cookies'
+ import { useI18n } from 'vue-i18n'
+ 
   export default {
+    setup () {
+      const { t } = useI18n() // use as global scope
+      return { t }
+    },
     data: function (){
       return {
         placeIsSet: false,

@@ -16,7 +16,7 @@
     
 
     <v-navigation-drawer
-    color="accent_dark"
+    color="surface"
     v-model="navdrawer"
     location="right">
       <v-list-item>
@@ -35,7 +35,13 @@
           Delete Cookies
         </v-list-item-title>
       </v-list-item>
-      <v-btn @click="toggleTheme" color="opp_background">Toggle Theme</v-btn>
+      <v-row class="d-flex justify-center ma-3">
+        <LocaleChanger class="ma-2"/>
+        <v-btn @click="toggleTheme" color="background" class="ma-2">
+          <v-icon>mdi-theme-light-dark</v-icon>
+        </v-btn>
+      </v-row>
+      
       
     </v-navigation-drawer>
 
@@ -43,7 +49,7 @@
       <Pathbar color="accent" :key="path_reload" />
         <router-view @view="onViewChange"></router-view>
     </v-main>
-
+  
     
     <AppFooter />
 
@@ -55,12 +61,14 @@ import AppFooter from './components/AppFooter.vue';
 import Pathbar from './components/Pathbar.vue';
 import VueCookies from 'vue-cookies';
 import { useTheme } from 'vuetify/lib/framework.mjs';
+import LocaleChanger from './components/LocaleChanger.vue'
 
 export default {
   name: 'App',
   components: {
     AppFooter,
-    Pathbar
+    Pathbar,
+    LocaleChanger
   },
   setup() {
     const theme = useTheme()
@@ -110,4 +118,5 @@ export default {
   text-align: center;
   color: var(--ion-color-light-contrast);
 }
+
 </style>
