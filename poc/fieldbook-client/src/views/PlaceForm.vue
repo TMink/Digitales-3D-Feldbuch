@@ -305,6 +305,26 @@ export default {
 
     },
 
+    async toStringModel(rawData) {
+
+      const output = await new Promise((resolve, reject) => {
+
+        let reader = new FileReader();
+        let f = rawData[0];
+        reader.onload = e => {
+          const b64 = e.target.result
+          console.log(b64)
+          resolve(b64)
+        }
+
+        reader.readAsText(f);
+
+      });
+
+      return output;
+
+    },
+
     async addModel() {
       const newModel = {
         id: String(Date.now()),
