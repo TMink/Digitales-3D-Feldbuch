@@ -3,65 +3,35 @@
     <Navigation />
     <v-form>
       <v-list class="overflow-hidden">
-        <v-list-item class="mt-5" v-if="current_activity.id !== undefined"
-          v-on:click="modifyActivity(current_activity.id)">
-          <v-chip>
-            Derzeit ausgewählt
-          </v-chip>
-          <v-list-item-title> {{ current_activity.id }} </v-list-item-title>
-          <v-list-item-subtitle> {{ current_activity.description }} </v-list-item-subtitle>
-          <v-chip variant="elevated">
-            Derzeit ausgewählt
-          </v-chip>
-        </v-list-item>
-        <v-divider></v-divider>
         <v-list-subheader v-if="activities.length === 0"> Bisher wurden keine Aktivitäten angelegt</v-list-subheader>
+        
         <template v-for="(activity, i) in activities" :key="activity">
           <div v-if="!activity.edit">
+            
             <v-row>
-              <v-col cols="12">
-                <v-row no-gutters>
-                  <v-col cols="8">
-                    <v-sheet class="pa-2 ma-2">
-                      <v-list-item v-on:click="setActivity(activity.id)">
-                        <v-list-item-title class="ma-4"> {{ activity.activityNumber }} </v-list-item-title>
-                      </v-list-item>
-                    </v-sheet>
-                  </v-col>
-                  <v-col cols="2" class="pa-4">
-                    <v-btn class="ma-1" icon color="purple" v-on:click="modifyActivity(activity)">
-                      <v-icon>mdi-pencil</v-icon>
-                    </v-btn>
+                <v-col cols="12">
+                  <v-row no-gutters>
+                    <v-col cols="8">
+                      <v-sheet class="pa-2 ma-2">
+                        <v-list-item v-on:click="setActivity(activity.id)">
+                          <v-list-item-title class="ma-4"> {{ activity.activityNumber }} </v-list-item-title>
+                        </v-list-item>
+                      </v-sheet>
+                    </v-col>
+                    <v-col cols="2" class="pa-4">
+                      <v-btn class="ma-1" icon color="purple" v-on:click="modifyActivity(activity)">
+                        <v-icon>mdi-pencil</v-icon>
+                      </v-btn>
+                      <v-btn icon color="red" v-on:click="confirmDeletion(activity)">
+                        <v-icon>mdi-delete</v-icon>
+                      </v-btn>
 
-                    <v-dialog v-model="dialog" persistent width="auto">
-                      <template v-slot:activator="{ props }">
-                        <v-btn icon color="red" v-bind="props">
-                          <v-icon>mdi-delete</v-icon>
-                        </v-btn>
-                      </template>
-                      <v-card>
-                        <v-card-title class="text-h5">
-                          Aktivität löschen?
-                        </v-card-title>
-                        <v-card-text>Möchten Sie die ausgewählte Aktivität wirklich löschen?</v-card-text>
-                        <v-card-actions>
-                          <v-spacer></v-spacer>
-                          <v-btn icon color="green-darken-1" variant="text" @click="dialog = false"
-                            v-on:click="deleteActivity(activity)">
-                            <v-icon>mdi-check-circle</v-icon>
-                          </v-btn>
-                          <v-btn icon color="red-darken-1" variant="text" @click="dialog = false">
-                            <v-icon>mdi-close-circle</v-icon>
-                          </v-btn>
-                        </v-card-actions>
-                      </v-card>
-                    </v-dialog>
-
-                  </v-col>
-                </v-row>
-              </v-col>
-            </v-row>
+                    </v-col>
+                  </v-row>
+                </v-col>
+              </v-row>
           </div>
+
           <div v-if="activity.edit">
             <v-container>
               <v-row>
@@ -105,10 +75,11 @@
             </v-container>
           </div>
           <v-divider v-if="i !== activities.length - 1"></v-divider>
-
         </template>
-        <v-container v-if="showInputMask">
 
+        <ConfirmDialog ref="confirm" />
+        
+        <v-container v-if="showInputMask">
           <v-row>
             <v-col cols="12">
               <v-row no-gutters>
@@ -150,8 +121,6 @@
         </v-container>
         <v-btn v-on:click="modifyActivity('new')" color="primary" v-if="!showInputMask"> {{ $t('add', {msg: $t('activity') }) }} </v-btn>
       </v-list>
-
-
     </v-form>
   </div>
 </template>
@@ -160,11 +129,13 @@
 import Navigation from '../components/Navigation.vue'
 import VueCookies from 'vue-cookies'
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
+import ConfirmDialog from '../components/ConfirmDialog.vue'
 
 export default {
   name: 'ActivitiesOverview',
   components: {
-    Navigation
+    Navigation,
+    ConfirmDialog
   },
   methods: {
     //retrieve all activities
@@ -203,6 +174,16 @@ export default {
       await this.getActivities();
       this.showInputMask = false;
       this.clearActivityMask();
+    },
+    async confirmDeletion(activity) {
+      if (
+        await this.$refs.confirm.open(
+          "Confirm",
+          "Are you sure you want to delete the activity " + activity.activityNumber + "?"
+        )
+      ) {
+        this.deleteActivity(activity);
+      }
     },
     async deleteActivity(activity) {
       VueCookies.remove('currentPosition');
@@ -254,6 +235,7 @@ export default {
       current_activity: {},
       showInputMask: false,
       dialog: false,
+      del_overlay: false,
       activity: {
         außenstelle: null,
         jahr: null,
