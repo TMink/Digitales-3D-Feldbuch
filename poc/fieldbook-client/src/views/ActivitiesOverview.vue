@@ -148,7 +148,7 @@
             </v-col>
           </v-row>
         </v-container>
-        <v-btn v-on:click="modifyActivity('new')" color="primary" v-if="!showInputMask"> Aktivität hinzufügen </v-btn>
+        <v-btn v-on:click="modifyActivity('new')" color="primary" v-if="!showInputMask"> {{ $t('add', {msg: $t('activity') }) }} </v-btn>
       </v-list>
 
 

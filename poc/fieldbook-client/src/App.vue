@@ -21,7 +21,7 @@
     location="right">
       <v-list-item>
         <v-list-item-title class="text-h6">
-          Menü
+          {{ $t('menu')}}
         </v-list-item-title>
       </v-list-item>
       <v-divider></v-divider>
@@ -32,7 +32,7 @@
       </v-list-item>
       <v-list-item link v-on:click="deleteCookies()">
         <v-list-item-title>
-          Delete Cookies
+          {{ $t('delete', {msg: $t('cookies')}) }}
         </v-list-item-title>
       </v-list-item>
       <v-row class="d-flex justify-center ma-3">
@@ -82,11 +82,11 @@ export default {
     return {
       backbutton_link: '',
       navdrawer: false,
-      toolbar_title: 'Digitales 3D-Feldbuch',
+      toolbar_title: this.$t('fieldbook'),
       path_reload: 0,
       navbar_items: [
-        { link: "/", title: "Projektübersicht" },
-        { link: "/3dview", title: "3D-Ansicht" },
+        { link: "/", title: this.$t('activity_overview') },
+        { link: "/3dview", title: this.$t('threeD_view') },
       ]
     }
   },

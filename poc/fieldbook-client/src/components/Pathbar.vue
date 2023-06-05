@@ -1,6 +1,6 @@
 <template>
   <v-card flat rounded="0">
-    <v-toolbar-title class="py-1"> <b>Aktuelle Auswahl:</b> {{ currentActivity }} / {{ currentPlace }} / {{ currentPosition }}</v-toolbar-title>
+    <v-toolbar-title class="py-1"> <b>{{  $t('current_selection') }}:</b> {{ currentActivity }} / {{ currentPlace }} / {{ currentPosition }}</v-toolbar-title>
   </v-card>
 </template>
 

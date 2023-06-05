@@ -36,7 +36,7 @@
           <v-divider v-if="i !== places.length - 1"></v-divider>
         </template>
       </v-list>
-      <v-btn v-on:click="addPlace()" color="primary"> Stelle hinzufügen </v-btn>
+      <v-btn v-on:click="addPlace()" color="primary"> {{ $t('add', {msg: $t('place') }) }} </v-btn>
     </v-form>
   </div>
 </template>

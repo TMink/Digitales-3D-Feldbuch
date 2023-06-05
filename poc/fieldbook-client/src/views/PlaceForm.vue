@@ -4,23 +4,23 @@
       <v-col cols="2">
         <v-card rounded="0">
           <v-tabs v-model="tab" direction="vertical" color="secondary" >
-            <v-tab value="one" rounded="0"> Allgemein </v-tab>
-            <v-tab value="two" rounded="0"> Positionen </v-tab>
-            <v-tab value="three" rounded="0"> Modell </v-tab>
-            <v-btn rounded="0" v-on:click="savePlace()" color="secondary"> Speichern </v-btn>
+            <v-tab value="one" rounded="0"> {{ $t('general')}} </v-tab>
+            <v-tab value="two" rounded="0"> {{ $tc('position', 2) }} </v-tab>
+            <v-tab value="three" rounded="0"> {{ $tc('model', 2)}} </v-tab>
+            <v-btn rounded="0" v-on:click="savePlace()" color="secondary"> {{ $t('save')}} </v-btn>
             <v-dialog
         v-model="dialog"
         persistent
         width="auto"
       >
         <template v-slot:activator="{ props }">
-          <v-btn rounded="0" color="primary" v-bind="props"> Löschen </v-btn>
+          <v-btn rounded="0" color="primary" v-bind="props"> {{$t('delete')}} </v-btn>
         </template>
         <v-card>
           <v-card-title class="text-h5">
-             Stelle Löschen!
+             {{ $t('delete', {msg: $t('place')})}}!
           </v-card-title>
-          <v-card-text>Wollen Sie die Stelle "{{ place.placeNumber }}" wirklich löschen?</v-card-text>
+          <v-card-text>{{ $t('confirm_del', {object: $t('place'), object_nr: place.placeNumber }) }}</v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn
@@ -28,19 +28,19 @@
               variant="outlined"
               v-on:click="deletePlace()"
               @click="dialog = false">
-              Ja
+              {{ $t('yes')}}
             </v-btn>
             <v-btn
               color="primary"
               variant="outlined"
               @click="dialog = false">
-              Nein
+              {{ $t('no')}}
             </v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
         <v-btn rounded="0" v-on:click="cancelPlace" color="primary"> 
-          Abbrechen
+          {{ $t('cancel')}}
         </v-btn>
           </v-tabs>
         </v-card>
@@ -81,7 +81,7 @@
                 </template>
               </v-list>
               <v-btn v-on:click="addPosition()" class="mr-16 mt-3" 
-                     color="primary"> Position hinzufügen </v-btn>
+                     color="primary"> {{ $t('add', {msg: $t('position') }) }} </v-btn>
             </v-form>
           </v-window-item>
 
@@ -110,36 +110,36 @@
                   </template>
                 </v-list>
                 <v-btn @click="models_overlay = true" class="mr-16 mt-3" 
-                       color="primary"> Modell hinzufügen </v-btn>
+                       color="primary"> {{ $t('add', { msg: $t('model') }) }} </v-btn>
               </v-form>
 
               <v-dialog v-model="models_overlay" max-width="800" persistent>
                 <v-card>
-                  <v-card-title>Modell hinzufügen </v-card-title>
+                  <v-card-title>{{ $t('add', { msg: $t('model') }) }} </v-card-title>
                   <v-card-text>
                   <v-text-field 
-                    label="Stellen ID" 
-                    hint="Geben Sie hier die Stellen ID ein" 
+                    :label="$t('place_id')" 
+                    :hint="$t('plase_input', {msg: $t('place_id')})" 
                     disabled
                     v-model="place.id"> </v-text-field>
                   <v-text-field 
-                    label="Titel" 
-                    hint="Geben sie hier einen Titel für das Modell ein" 
+                    :label="$t('title')" 
+                    :hint="$t('plase_input', {msg: $t('title_of_model')})"
                     v-model="model.title"></v-text-field>
                   <v-file-input 
                     accept=".obj" 
                     show-size 
-                    label="File input" 
+                    :label="$t('input', {msg: $t('model')})" 
                     v-model="model.model"></v-file-input>
                   <v-file-input 
                     prepend-icon="mdi-camera" 
                     accept="image/png, image/jpeg, image/bmp" 
-                    show-size label="Textur input" 
+                    show-size :label="$t('input', {msg: $t('texture')})" 
                     v-model="model.texture"></v-file-input>
                 </v-card-text>
                 <v-card-actions class="justify-center">
-                  <v-btn variant="outlined" v-on:click="addModel()"> Speichern </v-btn>
-                  <v-btn @click="models_overlay = false"> Abbrechen </v-btn>
+                  <v-btn variant="outlined" v-on:click="addModel()"> {{ $t('save')}} </v-btn>
+                  <v-btn @click="models_overlay = false"> {{ $t('cancel')}} </v-btn>
                 </v-card-actions>
                 </v-card>
           </v-dialog>

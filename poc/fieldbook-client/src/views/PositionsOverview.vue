@@ -9,7 +9,7 @@
           <v-divider></v-divider>
 
           <v-list-subheader v-if="positions.length === 0"> 
-            Bisher wurde keine Position angelegt 
+            {{ $t('not_created_yet', {object: $tc('position', 2)})}}
           </v-list-subheader>
 
           <template v-for="(position, i) in positions" :key="position">
@@ -40,7 +40,7 @@
           </template>
 
         </v-list>
-        <v-btn v-on:click="addPosition()" color="primary"> Position hinzufügen </v-btn>
+        <v-btn v-on:click="addPosition()" color="primary"> {{ $t('add', {msg: $t('position')}) }} </v-btn>
       </v-form>
     </div>
 </template>
