@@ -32,9 +32,4 @@ export default {
   activity_overview: "Activity Overview",
   threeD_view: "3D-View",
   menu: "Menu",
-
-  dataIterator: {
-    noResultsText: "No matching records found",
-    loadingText: "Loading items...",
-  },
 };
