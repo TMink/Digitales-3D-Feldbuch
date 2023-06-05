@@ -161,6 +161,7 @@
  */
 import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
+import { toRaw } from 'vue';
 
 export default {
 
@@ -330,8 +331,8 @@ export default {
         id: String(Date.now()),
         placeID: this.place.id,
         title: this.model.title,
-        model: this.model.model,
-        texture: this.model.texture
+        model: await this.toStringModel(toRaw(this.model.model)),
+        texture: await this.toBase64(toRaw(this.model.texture)),
       };
 
       if (this.models.length == 0) {
