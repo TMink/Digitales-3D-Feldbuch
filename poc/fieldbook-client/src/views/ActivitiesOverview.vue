@@ -5,9 +5,10 @@
       <v-list class="overflow-hidden">
         <v-list-subheader v-if="activities.length === 0"> Bisher wurden keine Aktivitäten angelegt</v-list-subheader>
 
+        <!--Lists all locally saved activities-->
         <template v-for="(activity, i) in activities" :key="activity">
+          <!--Boolean 'activity.edit' decides whether an element is displayed in list form or in edit form-->
           <div v-if="!activity.edit">
-
             <v-row>
               <v-col cols="12">
                 <v-row no-gutters>
@@ -25,13 +26,13 @@
                     <v-btn icon color="decline" v-on:click="confirmDeletion(activity)">
                       <v-icon>mdi-delete</v-icon>
                     </v-btn>
-
                   </v-col>
                 </v-row>
               </v-col>
             </v-row>
           </div>
 
+          <!--This is where the edit mask will be triggered-->
           <div v-if="activity.edit">
             <v-container>
               <v-row>
@@ -76,9 +77,9 @@
           </div>
           <v-divider v-if="i !== activities.length - 1"></v-divider>
         </template>
-
         <ConfirmDialog ref="confirm" />
 
+        <!--This is where the input mask for new activities will be triggered-->
         <v-container v-if="showInputMask">
           <v-row>
             <v-col cols="12">
@@ -144,6 +145,7 @@ export default {
       /* Recieve all IDs in store */
       this.activities = await fromOfflineDB.getAllObjects('Activities', 'activities')
     },
+    //sets the currently selected activity into the cookies
     async setActivity(activityID) {
       if (VueCookies.get('currentActivity') !== activityID) {
         VueCookies.remove('currentPlace');
@@ -153,6 +155,7 @@ export default {
       this.$router.push({ name: 'PlacesOverview' })
       this.$emit('view', 'Stelle')
     },
+    //saves/updates an activity in the local storage if the activity mask is filled out correctly
     async saveActivity(activity) {
       if (activity.außenstelle != null && activity.jahr != null && activity.nummer != null) {
         for (let i of this.activities) {
@@ -177,6 +180,7 @@ export default {
       await this.getActivities();
       this.showInputMask = false;
     },
+    //opens the confirm dialog if needed
     async confirmDeletion(activity) {
       if (
         await this.$refs.confirm.open(
@@ -187,6 +191,7 @@ export default {
         this.deleteActivity(activity);
       }
     },
+    //removes an activity from the local storage and the cookies
     async deleteActivity(activity) {
       VueCookies.remove('currentPosition');
       VueCookies.remove('currentPlace');
@@ -197,6 +202,7 @@ export default {
       await fromOfflineDB.deleteObject(activity.id, 'Activities', 'activities')
       await this.getActivities();
     },
+    //decides wether to show the input mask for a new activity or the edit mask for an existing one
     async modifyActivity(activity) {
       if (activity === 'new') {
         this.showInputMask = true
@@ -210,15 +216,18 @@ export default {
 
       }
     },
+    //resets the activity masks default values to 'null' and hides it
     async clearActivityMask() {
       this.showInputMask = false
-      this.activity.außenstelle = ""
-      this.activity.jahr = ""
-      this.activity.nummer = ""
+      this.activity.außenstelle = null
+      this.activity.jahr = null
+      this.activity.nummer = null
     },
+    //resets the edit mask for activities to the stored values from the local storage and hides it
     async clearActivityEditMask(activity) {
       for (let i of this.activities) {
         if (activity.id === i.id) {
+          console.log(i.außenstelle)
           activity.außenstelle = i.außenstelle
           activity.jahr = i.jahr
           activity.nummer = i.nummer
