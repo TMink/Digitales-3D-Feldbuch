@@ -20,7 +20,7 @@
                     </v-sheet>
                   </v-col>
                   <v-col cols="2" class="pa-4">
-                    <v-btn class="ma-1" icon color="purple" v-on:click="modifyActivity(activity)">
+                    <v-btn class="ma-1" icon color="primary" v-on:click="modifyActivity(activity)">
                       <v-icon>mdi-pencil</v-icon>
                     </v-btn>
                     <v-btn icon color="decline" v-on:click="confirmDeletion(activity)">
@@ -62,10 +62,10 @@
 
                     <v-col cols="2">
                       <v-sheet class="pa-1 ma-2">
-                        <v-btn class="ma-1" icon color="purple" v-on:click="saveActivity(activity)">
+                        <v-btn class="ma-1" icon color="primary" v-on:click="saveActivity(activity)">
                           <v-icon>mdi-content-save-all</v-icon>
                         </v-btn>
-                        <v-btn class="ma-1" icon color="red" v-on:click="clearActivityEditMask(activity)">
+                        <v-btn class="ma-1" icon color="decline" v-on:click="clearActivityEditMask(activity)">
                           <v-icon>mdi-close-circle</v-icon>
                         </v-btn>
                       </v-sheet>
@@ -108,7 +108,7 @@
 
                 <v-col cols="2">
                   <v-sheet class="pa-1 ma-2">
-                    <v-btn class="ma-1" icon color="purple" v-on:click="saveActivity(activity)">
+                    <v-btn class="ma-1" icon color="primary" v-on:click="saveActivity(activity)">
                       <v-icon>mdi-content-save-all</v-icon>
                     </v-btn>
                     <v-btn class="ma-1" icon color="decline" v-on:click="clearActivityMask()">
