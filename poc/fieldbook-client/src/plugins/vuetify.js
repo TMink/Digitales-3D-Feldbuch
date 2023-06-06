@@ -20,10 +20,11 @@ export default createVuetify({
           info: "#178FFF",
           success: "#16CB49",
           warning: "#FB8C00",
-          confirm: "#16CB49",
-          decline: "#f84141",
+          confirm: "#16CB49",                 //confirm action
+          decline: "#f84141",                 //decline action
           add:"#9EFFE2",                      //add-buttons
-          edit:"#FE9F2E"                      //edit-buttons
+          edit:"#FE9F2E",                     //edit-buttons
+          slider:"#FE9F2E"                    //slider for navigation bar
         },
       },
       fieldbook_light: {
@@ -40,10 +41,11 @@ export default createVuetify({
           info: "#2196F3",
           success: "#4CAF50",
           warning: "#FB8C00",
-          confirm: "#1E9E49",
-          decline: "#CC453B",
+          confirm: "#1E9E49",                 //confirm action
+          decline: "#CC453B",                 //decline action
           add: "#7DC8B1",                     //add-buttons
-          edit:"#DA8E60"                      //edit-buttons
+          edit:"#DA8E60",                     //edit-buttons
+          slider:"#FE9F2E"                    //slider for navigation bar
         },
       },
     },
