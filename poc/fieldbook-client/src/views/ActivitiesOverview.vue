@@ -20,7 +20,7 @@
                     </v-sheet>
                   </v-col>
                   <v-col cols="2" class="pa-4">
-                    <v-btn class="ma-1" icon color="primary" v-on:click="modifyActivity(activity)">
+                    <v-btn class="ma-1" icon color="edit" v-on:click="modifyActivity(activity)">
                       <v-icon>mdi-pencil</v-icon>
                     </v-btn>
                     <v-btn icon color="decline" v-on:click="confirmDeletion(activity)">
@@ -62,7 +62,7 @@
 
                     <v-col cols="2">
                       <v-sheet class="pa-1 ma-2">
-                        <v-btn class="ma-1" icon color="primary" v-on:click="saveActivity(activity)">
+                        <v-btn class="ma-1" icon color="edit" v-on:click="saveActivity(activity)">
                           <v-icon>mdi-content-save-all</v-icon>
                         </v-btn>
                         <v-btn class="ma-1" icon color="decline" v-on:click="clearActivityEditMask(activity)">
@@ -108,7 +108,7 @@
 
                 <v-col cols="2">
                   <v-sheet class="pa-1 ma-2">
-                    <v-btn class="ma-1" icon color="primary" v-on:click="saveActivity(activity)">
+                    <v-btn class="ma-1" icon color="edit" v-on:click="saveActivity(activity)">
                       <v-icon>mdi-content-save-all</v-icon>
                     </v-btn>
                     <v-btn class="ma-1" icon color="decline" v-on:click="clearActivityMask()">
@@ -120,7 +120,7 @@
             </v-col>
           </v-row>
         </v-container>
-        <v-btn v-on:click="modifyActivity('new')" color="primary" v-if="!showInputMask">
+        <v-btn v-on:click="modifyActivity('new')" color="add" v-if="!showInputMask">
           <v-icon>mdi-plus-box-multiple</v-icon> </v-btn>
       </v-list>
     </v-form>
