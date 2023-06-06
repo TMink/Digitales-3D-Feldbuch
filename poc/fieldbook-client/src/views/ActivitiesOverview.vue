@@ -4,32 +4,32 @@
     <v-form>
       <v-list class="overflow-hidden">
         <v-list-subheader v-if="activities.length === 0"> Bisher wurden keine Aktivitäten angelegt</v-list-subheader>
-        
+
         <template v-for="(activity, i) in activities" :key="activity">
           <div v-if="!activity.edit">
-            
-            <v-row>
-                <v-col cols="12">
-                  <v-row no-gutters>
-                    <v-col cols="8">
-                      <v-sheet class="pa-2 ma-2">
-                        <v-list-item v-on:click="setActivity(activity.id)">
-                          <v-list-item-title class="ma-4"> {{ activity.activityNumber }} </v-list-item-title>
-                        </v-list-item>
-                      </v-sheet>
-                    </v-col>
-                    <v-col cols="2" class="pa-4">
-                      <v-btn class="ma-1" icon color="purple" v-on:click="modifyActivity(activity)">
-                        <v-icon>mdi-pencil</v-icon>
-                      </v-btn>
-                      <v-btn icon color="decline" v-on:click="confirmDeletion(activity)">
-                        <v-icon>mdi-delete</v-icon>
-                      </v-btn>
 
-                    </v-col>
-                  </v-row>
-                </v-col>
-              </v-row>
+            <v-row>
+              <v-col cols="12">
+                <v-row no-gutters>
+                  <v-col cols="8">
+                    <v-sheet class="pa-2 ma-2">
+                      <v-list-item v-on:click="setActivity(activity.id)">
+                        <v-list-item-title class="ma-4"> {{ activity.activityNumber }} </v-list-item-title>
+                      </v-list-item>
+                    </v-sheet>
+                  </v-col>
+                  <v-col cols="2" class="pa-4">
+                    <v-btn class="ma-1" icon color="purple" v-on:click="modifyActivity(activity)">
+                      <v-icon>mdi-pencil</v-icon>
+                    </v-btn>
+                    <v-btn icon color="decline" v-on:click="confirmDeletion(activity)">
+                      <v-icon>mdi-delete</v-icon>
+                    </v-btn>
+
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-row>
           </div>
 
           <div v-if="activity.edit">
@@ -78,7 +78,7 @@
         </template>
 
         <ConfirmDialog ref="confirm" />
-        
+
         <v-container v-if="showInputMask">
           <v-row>
             <v-col cols="12">
@@ -119,7 +119,8 @@
             </v-col>
           </v-row>
         </v-container>
-        <v-btn v-on:click="modifyActivity('new')" color="primary" v-if="!showInputMask"> <v-icon>mdi-plus-box-multiple</v-icon> </v-btn>
+        <v-btn v-on:click="modifyActivity('new')" color="primary" v-if="!showInputMask">
+          <v-icon>mdi-plus-box-multiple</v-icon> </v-btn>
       </v-list>
     </v-form>
   </div>
@@ -153,27 +154,28 @@ export default {
       this.$emit('view', 'Stelle')
     },
     async saveActivity(activity) {
-      for (let i of this.activities) {
-        if (activity.id === i.id) {
-          this.deleteActivity(activity)
+      if (activity.außenstelle != null && activity.jahr != null && activity.nummer != null) {
+        for (let i of this.activities) {
+          if (activity.id === i.id) {
+            this.deleteActivity(activity)
+          }
         }
+
+        const newActivity = {
+          id: String(Date.now()),
+          activityNumber: activity.außenstelle + " " + activity.jahr + "/" + activity.nummer,
+          außenstelle: activity.außenstelle,
+          jahr: activity.jahr,
+          nummer: activity.nummer,
+          edit: false
+        }
+
+        /* Add new data to store */
+        await fromOfflineDB.addObject(newActivity, 'Activities', 'activities')
+        this.clearActivityMask();
       }
-
-      const newActivity = {
-        id: String(Date.now()),
-        activityNumber: activity.außenstelle + " " + activity.jahr + "/" + activity.nummer,
-        außenstelle: activity.außenstelle,
-        jahr: activity.jahr,
-        nummer: activity.nummer,
-        edit: false
-      }
-
-      /* Add new data to store */
-      await fromOfflineDB.addObject(newActivity, 'Activities', 'activities')
-
       await this.getActivities();
       this.showInputMask = false;
-      this.clearActivityMask();
     },
     async confirmDeletion(activity) {
       if (
