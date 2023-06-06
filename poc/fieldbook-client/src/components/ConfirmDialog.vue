@@ -7,8 +7,8 @@
             <v-card-text v-show="!!message" class="pa-4">{{ message }}</v-card-text>
             <v-card-actions class="pt-0">
                 <v-spacer></v-spacer>
-                <v-btn  @click="agree">Yes</v-btn>
-                <v-btn color="grey" @click="cancel">Cancel</v-btn>
+                <v-btn icon color="confirm"  @click="agree"><v-icon>mdi-check-circle</v-icon></v-btn>
+                <v-btn icon color="decline" @click="cancel"><v-icon>mdi-close-circle</v-icon></v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
