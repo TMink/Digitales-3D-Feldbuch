@@ -24,7 +24,7 @@ export default {
         message: null,
         title: null,
         options: {
-            color: 'primary',
+            color: 'info',
             width: 290,
             zIndex: 200
         }

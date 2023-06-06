@@ -17,9 +17,9 @@ export default createVuetify({
           primary: "#FE9F2E",                 
           secondary: "#B4A27D",
           error: "#f84141",
-          info: "#178FFF",
+          info: "#45A6FF",                    //infotext from dialog
           success: "#16CB49",
-          warning: "#FB8C00",
+          warning: "#FE9F2E",
           confirm: "#16CB49",                 //confirm action
           decline: "#f84141",                 //decline action
           add:"#9EFFE2",                      //add-buttons
@@ -38,9 +38,9 @@ export default createVuetify({
           primary: "#DA8E60",                 
           secondary: "#594843",
           error: "#B00020",
-          info: "#2196F3",
+          info: "#034E96",                    //infotext from dialog
           success: "#4CAF50",
-          warning: "#FB8C00",
+          warning: "#DA8E60",
           confirm: "#1E9E49",                 //confirm action
           decline: "#CC453B",                 //decline action
           add: "#7DC8B1",                     //add-buttons
