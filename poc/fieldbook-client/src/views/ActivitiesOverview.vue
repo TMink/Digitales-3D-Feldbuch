@@ -22,7 +22,7 @@
                       <v-btn class="ma-1" icon color="purple" v-on:click="modifyActivity(activity)">
                         <v-icon>mdi-pencil</v-icon>
                       </v-btn>
-                      <v-btn icon color="red" v-on:click="confirmDeletion(activity)">
+                      <v-btn icon color="decline" v-on:click="confirmDeletion(activity)">
                         <v-icon>mdi-delete</v-icon>
                       </v-btn>
 
@@ -110,7 +110,7 @@
                     <v-btn class="ma-1" icon color="purple" v-on:click="saveActivity(activity)">
                       <v-icon>mdi-content-save-all</v-icon>
                     </v-btn>
-                    <v-btn class="ma-1" icon color="red" v-on:click="clearActivityMask()">
+                    <v-btn class="ma-1" icon color="decline" v-on:click="clearActivityMask()">
                       <v-icon>mdi-close-circle</v-icon>
                     </v-btn>
                   </v-sheet>
@@ -119,7 +119,7 @@
             </v-col>
           </v-row>
         </v-container>
-        <v-btn v-on:click="modifyActivity('new')" color="primary" v-if="!showInputMask"> {{ $t('add', {msg: $t('activity') }) }} </v-btn>
+        <v-btn v-on:click="modifyActivity('new')" color="primary" v-if="!showInputMask"> <v-icon>mdi-plus-box-multiple</v-icon> </v-btn>
       </v-list>
     </v-form>
   </div>
