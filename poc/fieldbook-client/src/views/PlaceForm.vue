@@ -7,10 +7,10 @@
             <v-tab value="one" rounded="0"> {{ $t('general') }} </v-tab>
             <v-tab value="two" rounded="0"> {{ $tc('position', 2) }} </v-tab>
             <v-tab value="three" rounded="0"> {{ $tc('model', 2) }} </v-tab>
-            <v-btn rounded="0" v-on:click="savePlace()" color="secondary">
+            <v-btn rounded="0" v-on:click="savePlace()" color="edit">
               {{ $t('save') }}
             </v-btn>
-            <v-btn rounded="0" color="primary" v-on:click="confirmDeletion()">
+            <v-btn rounded="0" color="decline" v-on:click="confirmDeletion()">
               {{ $t('delete') }}
             </v-btn>
 
@@ -57,7 +57,7 @@
                 </template>
               </v-list>
 
-              <v-btn v-on:click="addPosition()" class="mr-16 mt-3" color="primary">
+              <v-btn v-on:click="addPosition()" class="mr-16 mt-3" color="add">
                 {{ $t('add', { msg: $t('position') }) }}
               </v-btn>
             </v-form>
@@ -85,7 +85,7 @@
               </template>
             </v-list>
 
-            <v-btn @click="models_overlay = true" class="mr-16 mt-3" color="primary">
+            <v-btn @click="models_overlay = true" class="mr-16 mt-3" color="add">
               {{ $t('add', { msg: $t('model') }) }}
             </v-btn>
 
@@ -109,8 +109,12 @@
                 </v-card-text>
 
                 <v-card-actions class="justify-center">
-                  <v-btn variant="outlined" v-on:click="addModel()"> {{ $t('save') }} </v-btn>
-                  <v-btn @click="models_overlay = false"> {{ $t('cancel') }} </v-btn>
+                  <v-btn icon color="edit" v-on:click="addModel()">
+                    <v-icon>mdi-content-save-all</v-icon>
+                  </v-btn>
+                  <v-btn icon color="decline" @click="models_overlay = false">
+                    <v-icon>mdi-close-circle</v-icon>
+                  </v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>

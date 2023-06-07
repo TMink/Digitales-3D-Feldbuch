@@ -35,7 +35,7 @@
           </v-list-item>
           <v-divider v-if="i !== places.length - 1"></v-divider>
         </template>
-        <v-btn v-on:click="addPlace()" color="add"> <v-icon>mdi-plus-box-multiple</v-icon> </v-btn>
+        <v-btn v-on:click="addPlace()" color="add"> <v-icon>mdi-plus-box-multiple</v-icon></v-btn>
       </v-list>
     </v-form>
   </div>
