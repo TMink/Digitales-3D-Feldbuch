@@ -131,6 +131,8 @@
  *  confirmDeletion - Opens the confirmation dialog
  *  deletePlace     - Deletes the currently selected place
  *  addPosition     - Adds a new position to the list
+ *  textureToBase64 - Change texture data to base64
+ *  modelToString   - Change obj-Model data to String
  *  addModel        - Adds a new model to the list
  *  moveToPosition  - Loads the view of the selected position
  *  cancelPlace     - Cancels all not already saved actions
@@ -276,6 +278,10 @@ export default {
 
     },
 
+    /**
+     * Change texture data to base64
+     * @param {*} rawData 
+     */
     async textureToBase64(rawData) {
 
       const output = await new Promise((resolve) => {
@@ -296,6 +302,10 @@ export default {
 
     },
 
+    /**
+     * Change obj-Model data to String
+     * @param {*} rawData 
+     */
     async modelToString(rawData) {
 
       const output = await new Promise((resolve) => {
