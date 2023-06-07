@@ -7,17 +7,11 @@
             <v-tab value="one" rounded="0"> {{ $t('general') }} </v-tab>
             <v-tab value="two" rounded="0"> {{ $tc('position', 2) }} </v-tab>
             <v-tab value="three" rounded="0"> {{ $tc('model', 2) }} </v-tab>
-            <v-btn 
-              rounded="0" 
-              v-on:click="savePlace()" 
-              color="secondary"> 
-              {{ $t('save') }} 
+            <v-btn rounded="0" v-on:click="savePlace()" color="secondary">
+              {{ $t('save') }}
             </v-btn>
-            <v-btn 
-              rounded="0" 
-              color="primary" 
-              v-on:click="confirmDeletion()"> 
-              {{ $t('delete') }} 
+            <v-btn rounded="0" color="primary" v-on:click="confirmDeletion()">
+              {{ $t('delete') }}
             </v-btn>
 
             <ConfirmDialog ref="confirm" />
@@ -34,14 +28,9 @@
           <!-- Tab item 'general' -->
           <v-window-item value="one">
             <v-card>
-              <v-text-field 
-                v-model="place.ansprache" 
-                label="Ansprache"
+              <v-text-field v-model="place.ansprache" label="Ansprache"
                 hint="Geben Sie hier eine Ansprache ein"></v-text-field>
-              <v-text-field 
-                v-model="place.date" 
-                label="Datierung" 
-                hint="Format: dd.mm.yyyy"></v-text-field>
+              <v-text-field v-model="place.date" label="Datierung" hint="Format: dd.mm.yyyy"></v-text-field>
             </v-card>
           </v-window-item>
 
@@ -68,10 +57,7 @@
                 </template>
               </v-list>
 
-              <v-btn 
-                v-on:click="addPosition()" 
-                class="mr-16 mt-3" 
-                color="primary">
+              <v-btn v-on:click="addPosition()" class="mr-16 mt-3" color="primary">
                 {{ $t('add', { msg: $t('position') }) }}
               </v-btn>
             </v-form>
@@ -99,10 +85,7 @@
               </template>
             </v-list>
 
-            <v-btn 
-              @click="models_overlay = true" 
-              class="mr-16 mt-3" 
-              color="primary">
+            <v-btn @click="models_overlay = true" class="mr-16 mt-3" color="primary">
               {{ $t('add', { msg: $t('model') }) }}
             </v-btn>
 
@@ -112,35 +95,21 @@
                 <v-card-title>{{ $t('add', { msg: $t('model') }) }} </v-card-title>
                 <v-card-text>
 
-                  <v-text-field
-                    :label="$t('place_id')" 
-                    :hint="$t('plase_input', { msg: $t('place_id') })" 
-                    disabled
+                  <v-text-field :label="$t('place_id')" :hint="$t('plase_input', { msg: $t('place_id') })" disabled
                     v-model="place.id"> </v-text-field>
 
-                  <v-text-field 
-                    :label="$t('title')" 
-                    :hint="$t('plase_input', { msg: $t('title_of_model') })"
+                  <v-text-field :label="$t('title')" :hint="$t('plase_input', { msg: $t('title_of_model') })"
                     v-model="model.title"></v-text-field>
 
-                  <v-file-input 
-                    accept=".obj" 
-                    show-size 
-                    :label="$t('input', { msg: $t('model') })"
+                  <v-file-input accept=".obj" show-size :label="$t('input', { msg: $t('model') })"
                     v-model="model.model"></v-file-input>
 
-                  <v-file-input 
-                    prepend-icon="mdi-camera" 
-                    accept="image/png, image/jpeg, image/bmp" 
-                    show-size
-                    :label="$t('input', { msg: $t('texture') })" 
-                    v-model="model.texture"></v-file-input>
+                  <v-file-input prepend-icon="mdi-camera" accept="image/png, image/jpeg, image/bmp" show-size
+                    :label="$t('input', { msg: $t('texture') })" v-model="model.texture"></v-file-input>
                 </v-card-text>
 
                 <v-card-actions class="justify-center">
-                  <v-btn 
-                    variant="outlined" 
-                    v-on:click="addModel()"> {{ $t('save') }} </v-btn>
+                  <v-btn variant="outlined" v-on:click="addModel()"> {{ $t('save') }} </v-btn>
                   <v-btn @click="models_overlay = false"> {{ $t('cancel') }} </v-btn>
                 </v-card-actions>
               </v-card>
@@ -169,7 +138,7 @@
 import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import ConfirmDialog from '../components/ConfirmDialog.vue';
-
+import { toRaw } from 'vue';
 
 export default {
 
@@ -183,7 +152,7 @@ export default {
   data() {
 
     return {
-      tab:null,
+      tab: null,
       place: {
         id: '',
         activityID: '',
@@ -196,7 +165,7 @@ export default {
         placeID: '',
         title: '',
         model: '',
-        texture: '', 
+        texture: '',
       },
       positions: null,
       models: null,
@@ -213,7 +182,7 @@ export default {
    * Initialize data from localDB to the reactive Vue.js data
    */
   async created() {
-    await fromOfflineDB.syncLocalDBs();                                         
+    await fromOfflineDB.syncLocalDBs();
     await this.updatePlace();
     await this.updatePositions();
     await this.updateModels();
@@ -224,15 +193,15 @@ export default {
      * Update reactive Vue.js place data
      */
     async updatePlace() {
-      const currentPlace = VueCookies.get( 'currentPlace' );
-      const data = await fromOfflineDB.getObject( currentPlace, 'Places', 'places' );
+      const currentPlace = VueCookies.get('currentPlace');
+      const data = await fromOfflineDB.getObject(currentPlace, 'Places', 'places');
       this.place = data.result;
     },
     /**
      * Update reactive Vue.js positions data
      */
     async updatePositions() {
-      this.positions = await fromOfflineDB.getAllObjectsWithID( this.place.id, 'Place', 'Positions', 'positions' );
+      this.positions = await fromOfflineDB.getAllObjectsWithID(this.place.id, 'Place', 'Positions', 'positions');
     },
     /**
      * Update reactive Vue.js models data
@@ -247,8 +216,8 @@ export default {
       //convert from vue proxy to JSON object
       const inputPlace = JSON.parse(JSON.stringify(this.place))
 
-      await fromOfflineDB.deleteObject( this.place.id, 'Places', 'places' );
-      await fromOfflineDB.addObject( inputPlace, 'Places', 'places' );
+      await fromOfflineDB.deleteObject(this.place.id, 'Places', 'places');
+      await fromOfflineDB.addObject(inputPlace, 'Places', 'places');
     },
     /**
      * Opens the confirmation dialog
@@ -273,7 +242,7 @@ export default {
 
       await fromOfflineDB.deleteObject(this.place.id, 'Places', 'places');
       VueCookies.remove('currentPlace');
-      
+
       this.$router.push({ name: "PlacesOverview" });
       this.$emit('view', 'Stellen');
 
@@ -284,21 +253,21 @@ export default {
     async addPosition() {
 
       const newPosition = {
-        id:             String(Date.now()),
+        id: String(Date.now()),
         positionNumber: null,
-        placeID:        this.place.id,
-        texts:          [],
-        images:         [],
+        placeID: this.place.id,
+        texts: [],
+        images: [],
         models: {
         }
       };
 
-      if(this.positions.length == 0) {
+      if (this.positions.length == 0) {
         newPosition.positionNumber = 1;
       } else {
         this.updatePositions();
         const positionNumber = Math.max(...this.positions.map(o => o.positionNumber))
-        const newPositionNumber = positionNumber + 1;                           
+        const newPositionNumber = positionNumber + 1;
         newPosition.positionNumber = newPositionNumber;
       }
 
@@ -306,6 +275,47 @@ export default {
       await this.updatePositions(newPosition.id);
 
     },
+
+    async textureToBase64(rawData) {
+
+      const output = await new Promise((resolve) => {
+
+        let reader = new FileReader();
+        let f = rawData[0];
+        reader.onload = e => {
+          const b64 = e.target.result
+          console.log(b64)
+          resolve(b64)
+        }
+
+        reader.readAsDataURL(f);
+
+      });
+
+      return output;
+
+    },
+
+    async modelToString(rawData) {
+
+      const output = await new Promise((resolve) => {
+
+        let reader = new FileReader();
+        let f = rawData[0];
+        reader.onload = e => {
+          const modelString = e.target.result
+          console.log(modelString)
+          resolve(modelString)
+        }
+
+        reader.readAsText(f);
+
+      });
+
+      return output;
+
+    },
+
     /**
      * Adds a new model to the local storage for the current place
      */
@@ -314,8 +324,8 @@ export default {
         id: String(Date.now()),
         placeID: this.place.id,
         title: this.model.title,
-        model: this.model.model,
-        texture: this.model.texture
+        model: await this.modelToString(toRaw(this.model.model)),
+        texture: await this.textureToBase64(toRaw(this.model.texture))
       };
 
       if (this.models.length == 0) {
