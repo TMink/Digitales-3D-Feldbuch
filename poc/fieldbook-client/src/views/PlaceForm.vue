@@ -16,7 +16,7 @@
 
             <ConfirmDialog ref="confirm" />
 
-            <v-btn rounded="0" v-on:click="cancelPlace" color="primary">
+            <v-btn rounded="0" v-on:click="cancelPlace" color="cancel">
               {{ $t('cancel') }}
             </v-btn>
           </v-tabs>
