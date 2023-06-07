@@ -37,7 +37,11 @@
       </v-tab-item>
 
       <v-tab-item class="px-4">
-        <DocDates :dateslist="artifact_doc.dates" @addDate="addDate($event)" />
+        <DocDates
+          :dateslist="artifact_doc.dates"
+          :mode="'artifacts'"
+          :id="artifact_doc._id"
+          @addDate="addDate($event)" />
       </v-tab-item>
 
       <v-tab-item>
@@ -45,9 +49,7 @@
       </v-tab-item>
 
       <v-tab-item>
-        <DocColors :colorslist="artifact_doc.colors"/>
-        <!-- <v-textarea v-model="artifact_doc.interpretation" label="Interpretation"
-        hint="Geben sie hier die Interpretation an"></v-textarea> -->
+        <DocColors :colorslist="artifact_doc.colors" :id="artifact_doc._id"/>
       </v-tab-item>
 
       <v-tab-item>
@@ -245,7 +247,7 @@ export default {
 
       if (this.is_new == true) {
         httpRequest = 'post';
-        requestURL = '/artifacts';
+        requestURL = '/artifacts/' + VueCookies.get('currentSection');
       }
       //put/post request of edited/new artifact
       axios({
@@ -296,11 +298,12 @@ export default {
     },
     deleteArtifact: function () {
       var context = this;
+      var curSection = VueCookies.get('currentSection');
       var curArtifact = VueCookies.get('currentArtifact');
 
       axios({
         method: 'delete',
-        url: '/artifacts/' + curArtifact,
+        url: '/artifacts/' + curSection + "/" + curArtifact,
       })
         .then(function (res) {
           context.$emit("view", "Fundübersicht");

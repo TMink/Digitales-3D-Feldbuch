@@ -15,7 +15,7 @@
                     hinzugefügt</v-subheader>
                 <v-list>
                     <template v-for="(artifact, i) in artifacts">
-                        <v-list-item v-on:click="modifyArtifact(artifact.id)">
+                        <v-list-item v-on:click="modifyArtifact(artifact._id)">
                             <v-list-item-content>
                                 <v-list-item-title> {{ "Fund Nr. " + artifact.number }} </v-list-item-title>
                                 <v-list-item-subtitle> {{ artifact.description }} </v-list-item-subtitle>
@@ -48,7 +48,7 @@ export default {
 
             axios({
                 method: 'get',
-                url: '/artifacts',
+                url: '/artifacts/section_id/' + VueCookies.get('currentSection'),
                 responseType: 'json'
             })
             .then(function (response) {

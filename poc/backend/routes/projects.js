@@ -1,8 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../fb");
-const projects = db.collection("projects");
-
+const Project = require('../model/Project');
 
 /**
  * Takes the retrieved data from DB and builds a JSON-object
@@ -14,88 +12,82 @@ const projects = db.collection("projects");
  */
 function getProjectJson(doc) {
   return {
-    id: doc.id,
-    title: doc.data().title,
-    description: doc.data().description,
-    excavations: doc.data().excavations,
-    contacts: doc.data().contacts,
+    title: doc.title,
+    description: doc.description,
+    excavations: doc.excavations,
+    contacts: doc.contacts,
   };
 }
 
 
-/* GET ALL projects */
-router.get("/", function (req, res, next) {
-  var projectsArray = [];
-  projects
-    .get()
-    .then((data) => {
-      data.forEach((doc) => {
-        var project = getProjectJson(doc);
-        projectsArray.push(project);
-      });
-      res.send(projectsArray);
-    })
-    .catch((err) => {
-      res.status(404).send("No projects found");
-    });
+/**
+ * GET all projects from MongoDB
+ */
+router.get("/", async function (req, res, next) {
+
+  try {
+    var projectsArray = await Project.find({}).exec();
+  } catch (error) {
+    res.status(404).send("No projects found");
+  }
+  
+  res.status(200).send(projectsArray);
 });
 
-/* GET project by ID */
-router.get("/:project_id", function (req, res, next) {
-  projects
-    .doc(req.params.project_id)
-    .get()
-    .then((doc) => {
-      if (doc.exists) {
-        var project = getProjectJson(doc);
-        res.send(project);
-      } else {
-        res.status(404).send("No such document: ");
-      }
-    })
-    .catch((err) => {
-      res.status(404).send("Project not found: " + err);
-    });
+/**
+ * GET one project from MongoDB by project_id
+ */
+router.get("/:project_id", async function (req, res, next) {
+
+  try {
+    var project = await Project.findById(req.params.project_id).exec();
+  } catch (error) {
+    res.status(404).send("No project with ID: "+ req.params.project_id + " found");
+  }
+  res.status(200).send(project);
 });
 
-/* POST new project */
-router.post("/", function (req, res, next) {
-  projects
-    .doc()
-    .set(req.body)
-    .then((response) => {
-      res.status(200).send("Added project");
-    })
-    .catch((err) => {
-      res.status(404).send("Couldn't add project: " + err);
-    });
+/**
+ * POST new project to MongoDB
+ */
+router.post("/", async function (req, res, next) {
+  var newProject = getProjectJson(req.body);
+  try {
+    const result = await Project.create(newProject);
+    
+    res.status(200).send("Created Project: " + result);
+  } catch (error) {
+    res.status(500).send("Couldn't create Project: " + error.message);
+  }
 });
 
-/* UPDATE project by ID*/
-router.put("/:project_id", function (req, res, next) {
-  projects
-    .doc(req.params.project_id)
-    .update(req.body)
-    .then((response) => {
-      res.status(200).send("Updated project: " + req.params.project_id);
-    })
-    .catch((err) => {
-      res.status(404).send("Couldn't update project: " + err);
-    });
+/**
+ * PUT existing project in MongoDB by id
+ */
+router.put("/:project_id", async function (req, res, next) {
+  var updatedProject = getProjectJson(req.body);
+
+  try {
+    const result = await Project.findByIdAndUpdate(req.params.project_id, updatedProject);
+
+    res.status(200).send("Edited Project: " + result);
+  } catch (error) {
+    res.status(500).send("Couldn't edit Project: " + error.message);
+  }
 });
 
-/* DELETE project by ID*/
+/**
+ * DELETE existing project from MongoDB
+ */
 router.delete("/:project_id", async function (req, res, next) {
-  //TODO: when deleting a project, also delete all subcollections
-  projects
-    .doc(req.params.project_id)
-    .delete({ exists: true })
-    .then((response) => {
-      res.status(200).send("Deleted project: " + req.params.project_id);
-    })
-    .catch((err) => {
-      res.status(404).send("Couldn't delete project: " + err);
-    });
+
+  try {
+    const result = await Project.findByIdAndDelete(req.params.project_id);
+
+    res.status(200).send("Edited Project: " + result);
+  } catch (error) {
+    res.status(500).send("Couldn't edit Project: " + error.message);
+  }
 });
 
 module.exports = router;

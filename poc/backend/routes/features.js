@@ -1,36 +1,33 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../fb");
-const featuresDB = db.collection("features");
-const feature_typesDB = db.collection("feature-types");
-var admin = require("firebase-admin");
+
+const Section = require("../model/Section");
+const RemainsFeature = require("../model/RemainsFeature");
+const StratigraphicFeature = require("../model/StratigraphicFeature");
+const StructuralFeature = require("../model/StructuralFeature");
 
 /**
  * Returns a full 'feature' object combined
  * with the specific type data for remains
- * @param {JSON} feature general feature data
- * @param {JSON} type type specific feature data
+ * @param {JSON} feature feature data
  * @returns
  */
-function getRemains(feature, type) {
+function getRemainsJson(feature) {
   var feature = {
-    id: feature.id,
-    section_id: feature.data().section_id,
-    number: feature.data().number,
-    title: feature.data().title,
-    description: feature.data().description,
-    interpretation: feature.data().interpretation,
-    rel_localization: feature.data().rel_localization,
-    type_id: feature.data().type_id,
-    artifacts: feature.data().artifacts,
-    type: type.type,
-    preserved_bones: type.preserved_bones,
-    pathology: type.pathology,
-    gender: type.gender,
-    funeral_type: type.funeral_type,
-    burial_type: type.burial_type,
-    burial_construction: type.burial_construction,
-    age: type.age,
+    number: feature.number,
+    title: feature.title,
+    description: feature.description,
+    interpretation: feature.interpretation,
+    rel_localization: feature.rel_localization,
+    artifacts: feature.artifacts,
+    type: feature.type,
+    preserved_bones: feature.preserved_bones,
+    pathology: feature.pathology,
+    gender: feature.gender,
+    funeral_type: feature.funeral_type,
+    burial_type: feature.burial_type,
+    burial_construction: feature.burial_construction,
+    age: feature.age,
   };
 
   return feature;
@@ -40,26 +37,22 @@ function getRemains(feature, type) {
  * Returns a full 'feature' object combined with
  * the specific type data for a statigrafic unit
  *
- * @param {JSON} feature general feature data
- * @param {JSON} type type specific feature data
+ * @param {JSON} feature feature data
  * @returns
  */
-function getStatigraphicUnit(feature, type) {
+function getStratigraphicJson(feature) {
   var feature = {
-    id: feature.id,
-    section_id: feature.data().section_id,
-    number: feature.data().number,
-    title: feature.data().title,
-    description: feature.data().description,
-    interpretation: feature.data().interpretation,
-    rel_localization: feature.data().rel_localization,
-    type_id: feature.data().type_id,
-    artifacts: feature.data().artifacts,
-    type: type.type,
-    height_values: type.height_values,
-    expansion: type.expansion,
-    consistency_out: type.consistency_out,
-    consistency_in: type.consistency_in,
+    number: feature.number,
+    title: feature.title,
+    description: feature.description,
+    interpretation: feature.interpretation,
+    rel_localization: feature.rel_localization,
+    artifacts: feature.artifacts,
+    type: feature.type,
+    height_values: feature.height_values,
+    expansion: feature.expansion,
+    consistency_out: feature.consistency_out,
+    consistency_in: feature.consistency_in,
   };
   return feature;
 }
@@ -68,280 +61,210 @@ function getStatigraphicUnit(feature, type) {
  * Returns a full 'feature' object combined with
  * the specific type data for a structural inventory
  *
- * @param {JSON} feature general feature data
- * @param {JSON} type type specific feature data
+ * @param {JSON} feature feature data
  * @returns
  */
-function getStructuralInventory(feature, type) {
+function getStructuralJson(feature) {
   var feature = {
-    id: feature.id,
-    section_id: feature.data().section_id,
-    number: feature.data().number,
-    title: feature.data().title,
-    description: feature.data().description,
-    interpretation: feature.data().interpretation,
-    rel_localization: feature.data().rel_localization,
-    type_id: feature.data().type_id,
-    artifacts: feature.data().artifacts,
-    type: type.type,
-    construction: type.construction,
-    masonry: type.masonry,
-    structure: type.structure,
-    style_features: type.style_features,
-    material: type.material,
-    stone_size: type.stone_size,
-    stone_material: type.stone_material,
-    stone_processing: type.stone_processing,
-    spolia: type.spolia,
-    brick_type: type.brick_type,
-    brick_size: type.brick_size,
-    production_characteristics: type.production_characteristics,
-    binding: type.binding,
-    binding_composition: type.binding_composition,
-    grain_size: type.grain_size,
-    bond_consistency: type.bond_consistency,
-    joint_pattern: type.joint_pattern,
-    joint_dimensions: type.joint_dimensions,
-    plaster_surface_design: type.plaster_surface_design,
-    plaster_thickness: type.plaster_thickness,
-    plaster_expansion: type.plaster_expansion,
-    plaster_composition: type.plaster_composition,
-    plaster_consistency: type.plaster_consistency,
-    plaster_aggregates: type.plaster_aggregates,
-    multilayer: type.multilayer,
+    number: feature.number,
+    title: feature.title,
+    description: feature.description,
+    interpretation: feature.interpretation,
+    rel_localization: feature.rel_localization,
+    artifacts: feature.artifacts,
+    type: feature.type,
+    construction: feature.construction,
+    masonry: feature.masonry,
+    structure: feature.structure,
+    style_features: feature.style_features,
+    material: feature.material,
+    stone_size: feature.stone_size,
+    stone_material: feature.stone_material,
+    stone_processing: feature.stone_processing,
+    spolia: feature.spolia,
+    brick_type: feature.brick_type,
+    brick_size: feature.brick_size,
+    production_characteristics: feature.production_characteristics,
+    binding: feature.binding,
+    binding_composition: feature.binding_composition,
+    grain_size: feature.grain_size,
+    bond_consistency: feature.bond_consistency,
+    joint_pattern: feature.joint_pattern,
+    joint_dimensions: feature.joint_dimensions,
+    plaster_surface_design: feature.plaster_surface_design,
+    plaster_thickness: feature.plaster_thickness,
+    plaster_expansion: feature.plaster_expansion,
+    plaster_composition: feature.plaster_composition,
+    plaster_consistency: feature.plaster_consistency,
+    plaster_aggregates: feature.plaster_aggregates,
+    multilayer: feature.multilayer,
   };
 
   return feature;
 }
 
 /**
- * Takes the retrieved data from DB and builds a JSON-object
- * with only the basic fields for a feature. Also creates empty fields,
- * when there is no data for them. LEaves out type_fields
+ * Builds a Json-Object with all information for a feature,
+ * depending on which type `(remains, stratigraphic, structural)` it is
  *
- * @param {*} doc The raw excavation data from database
- * @returns excavation Json-Object with all required fields
+ * @param {*} doc raw feature data 
+ * @returns feature Json-Object with all required fields
  */
-function getBasicFeatureJson(doc) {
-  return {
-    id: doc.id,
-    section_id: doc.data().section_id,
-    number: doc.data().number,
-    title: doc.data().title,
-    description: doc.data().description,
-    interpretation: doc.data().interpretation,
-    rel_localization: doc.data().rel_localization,
-    type_id: doc.data().type_id,
-    artifacts: doc.data().artifacts
-  };
+async function getFeatureJson(doc) {
+  // get correct feature Json data depending on feature type
+  if (doc.type == "remains") {
+    return getRemainsJson(doc);
+  } else if (doc.type == "stratigraphic") {
+    return getStratigraphicJson(doc);
+  } else {
+    return getStructuralJson(doc);
+  }
 }
 
 
-/* GET feature by ID */
-router.get("/basiclist/:feature_ids", function (req, res, next) {
+/**
+ * GET all features by id-array in params seperated by `,`
+ */
+router.get("/list/:feature_ids", async function (req, res, next) {
+
   var feature_ids = req.params.feature_ids.split(",");
-  var featuresArray = [];
-  featuresDB
-    .where(admin.firestore.FieldPath.documentId(), "in", feature_ids)
-    .get()
-    .then((data) => {
 
-      data.forEach((doc) => {
-        var feature = getBasicFeatureJson(doc);
-        featuresArray.push(feature);
-      });
-      res.status(200).send(featuresArray);
-    })
-    .catch((err) => {
-      res.status(404).send("feature not found: " + err);
-    });
-});
-
-
-/* GET ALL features */
-router.get("/", async function (req, res, next) {
-  var featuresArray = [];
-
-  // get features from db
   try {
-    var featuresArray = await featuresDB.get();
+    var featuresArray = await RemainsFeature.find({ _id: feature_ids }).exec();
   } catch (error) {
-    res.status(500).send("Error retrieving features from database");
+    res.status(404).send("No features found");
   }
 
-  //map through all features and combine them with the type specific data
-  var fullFeaturesArray = await Promise.all(
-    featuresArray.docs.map(async (item) => {
-      // get the type specific data for each feature
-      var featureType = await feature_typesDB.doc(item.data().type_id).get();
-
-      // combine general feature data with the type specific data
-      // depending if the type is remains, statigrafic or structural
-      var fullFeature = {};
-
-      if (featureType.data().type == "Stratigrafische Einheit") {
-        fullFeature = getStatigraphicUnit(item, featureType.data());
-      } else if (featureType.data().type === "Überreste") {
-        fullFeature = getRemains(item, featureType.data());
-      } else if (featureType.data().type === "Baulicher Bestand") {
-        fullFeature = getStructuralInventory(item, featureType.data());
-      } else {
-        res.status(404).send("Couldn't find feature type");
-      }
-      return fullFeature;
-    })
-  );
-  res.status(200).send(fullFeaturesArray);
+  res.status(200).send(featuresArray);
 });
 
-/* GET feature by ID */
-router.get("/:feature_id", function (req, res, next) {
-  featuresDB
-    .doc(req.params.feature_id)
-    .get()
-    .then((doc) => {
-      if (doc.exists) {
-        // get the type specific data for the feature
-        feature_typesDB
-          .doc(doc.data().type_id)
-          .get()
-          .then((featureType) => {
-            // combine general feature data with the type specific data
-            // depending if the type is remains, statigrafic or structural
-            var fullFeature = {};
 
-            if (featureType.data().type == "Stratigrafische Einheit") {
-              fullFeature = getStatigraphicUnit(doc, featureType.data());
-            } else if (featureType.data().type === "Überreste") {
-              fullFeature = getRemains(doc, featureType.data());
-            } else if (featureType.data().type === "Baulicher Bestand") {
-              fullFeature = getStructuralInventory(doc, featureType.data());
-            } else {
-              res.status(404).send("Couldn't find feature type");
-            }
-
-            res.status(200).send(fullFeature);
-          });
-      } else {
-        res.status(404).send("No such document: ");
-      }
-    })
-    .catch((err) => {
-      res.status(404).send("feature not found: " + err);
-    });
+/**
+ * GET one feature from MongoDB by feature_id
+ */
+router.get("/:feature_id", async function (req, res, next) {
+  try {
+    var feature = await RemainsFeature.findById(req.params.feature_id).exec();
+  } catch (error) {
+    res.status(404).send("No feature with ID: " + req.params.feature_id + " found");
+  }
+  res.status(200).send(feature);
 });
 
-/* POST new feature */
-router.post("/", function (req, res, next) {
+
+/**
+ * GET features by section_id
+ */
+router.get("/section_id/:section_id", async function (req, res, next) {
+  // get section by id from MongoDB
+  try {
+    var section = await Section.findById(req.params.section_id).exec();
+  } catch (error) {
+    res.status(404).send("No section with id: " + req.params.section_id);
+  }
+
+  //get all excavations by id from the excavation.sections array
+  try {
+    var featuresArray = await RemainsFeature.find({ _id: section.features }).exec();
+  } catch (error) {
+    res.status(404).send("No features found");
+  }
+
+  res.status(200).send(featuresArray);
+});
+
+
+/**
+ * POST new feature to MongoDB
+ */
+router.post("/:section_id", async function (req, res, next) {
   //create feature JSON object for updating the featureDB
-  var feature = {
-    number: req.body.number,
-    title: req.body.title,
-    description: req.body.description,
-    interpretation: req.body.interpretation,
-    rel_localization: req.body.rel_localization,
-    type_id: req.body.type_id,
-    artifacts: req.body.artifacts
-  };
 
-  var feature_type = req.body;
+  var newFeature = await getFeatureJson(req.body);
+  var featRes;
 
-  //remove all feature fields so only the type data remains
-  delete feature_type.number;
-  delete feature_type.title;
-  delete feature_type.description;
-  delete feature_type.interpretation;
-  delete feature_type.rel_localization;
-  delete feature_type.type_id;
+  // create new feature depending on type in MongoDB
+  if (req.body.type == "remains") {
+    featRes = await RemainsFeature.create(newFeature);
+  } else if (req.body.type == "stratigraphic") {
+    featRes = await StratigraphicFeature.create(newFeature);
+  } else {
+    featRes = await StructuralFeature.create(newFeature);
+  }
 
-  //add the feature_type to DB
-  feature_typesDB
-    .add(feature_type)
-    .then((response) => {
-      //add the newly created type_id to the feature json and write to DB
-      feature.type_id = response.id;
+  // get currently used section by id
+  try {
+    var section = await Section.findById(req.params.section_id).exec();
+  } catch (error) {
+    res.status(404).send("No section with ID: " + req.params.section_id + " found");
+  }
 
-      featuresDB
-        .add(feature)
-        .then((response) => {
-          res.status(200).send("Added Feature + Type Documents");
-        })
-        .catch((err) => {
-          res.status(404).send("Couldn't add feature: " + err);
-        });
-    })
-    .catch((err) => {
-      res.status(404).send("Couldn't add feature: " + err);
-    });
+  // add newly created feature id to this section
+  section.features.push(featRes.id);
+
+  // update the edited section in MongoDB
+  try {
+    var section = await Section.findByIdAndUpdate(req.params.section_id, section);
+  } catch (error) {
+    res.status(404).send("No section with ID: " + req.params.section_id + " found");
+  }
+
+  res.status(200).send("Successfully added the feature");
 });
 
-/* UPDATE feature by ID*/
-router.put("/:feature_id", function (req, res, next) {
-  //create feature JSON object for updating the featureDB
-  var feature = {
-    number: req.body.number,
-    title: req.body.title,
-    description: req.body.description,
-    interpretation: req.body.interpretation,
-    rel_localization: req.body.rel_localization,
-    type_id: req.body.type_id,
-    artifacts: req.body.artifacts
-  };
 
-  //update featureDB
-  featuresDB
-    .doc(req.params.feature_id)
-    .update(feature)
-    .then((response) => {
-      var feature_type = req.body;
+/**
+ * PUT existing feature in MongoDB by id
+ */
+router.put("/:feature_id", async function (req, res, next) {
+  var updatedFeature = await getFeatureJson(req.body);
 
-      //remove all feature fields so only the type data remains
-      delete feature_type.section_id;
-      delete feature_type.number;
-      delete feature_type.title;
-      delete feature_type.description;
-      delete feature_type.interpretation;
-      delete feature_type.rel_localization;
-      delete feature_type.type_id;
-      delete feature_type.artifacts;
+  try {
+    const result = await RemainsFeature.findByIdAndUpdate(req.params.feature_id, updatedFeature);
 
-      //update the feature_typesDB
-      feature_typesDB
-        .doc(feature.type_id)
-        .update(feature_type)
-        .then((response) => {
-          res.status(200).send("Updated feature and feature type ");
-        })
-        .catch((err) => {
-          res.status(404).send("Couldn't update feature_type: " + err);
-        });
-    })
-    .catch((err) => {
-      res.status(404).send("Couldn't update feature: " + err);
-    });
+    res.status(200).send("Edited Feature: " + result);
+  } catch (error) {
+    res.status(500).send("Couldn't edit Feature: " + error.message);
+  }
 });
 
-/* DELETE feature by ID*/
-router.delete("/:feature_id/:feature_type_id", async function (req, res, next) {
-  //delete the feature document
-  featuresDB
-    .doc(req.params.feature_id)
-    .delete({ exists: true })
-    .then((response) => {
-      //delete the connected feature_type document
-      feature_typesDB
-        .doc(req.params.feature_type_id)
-        .delete({ exists: true })
-        .then((response) => {
-          res.status(200).send("Deleted feature: " + req.params.feature_id);
-        })
-        .catch((err) => {
-          res.status(404).send("Couldn't delete feature: " + err);
-        });
-    })
-    .catch((err) => {
-      res.status(404).send("Couldn't delete feature: " + err);
-    });
+
+/**
+ * DELETE existing feature from MongoDB
+ * Also deletes its id from the section.features array
+ */
+router.delete("/:section_id/:feature_id", async function (req, res, next) {
+  // delete section from MongoDB by id
+  try {
+    const result = await RemainsFeature.findByIdAndDelete(req.params.feature_id);
+  } catch (error) {
+    res.status(500).send("Couldn't delete Feature: " + error.message);
+  }
+
+  // get section from MongoDB by id
+  try {
+    var section = await Section.findById(req.params.section_id).exec();
+  } catch (error) {
+    res.status(404).send("No section with ID: " + req.params.section_id + " found");
+  }
+
+  // remove the deleted feature id from this section
+  const index = section.features.indexOf(req.params.feature_id);
+
+  if (index > -1) {
+    section.features.splice(index, 1);
+  } else {
+    res.status(400).send("The deleted feature is not part of the current section");
+  }
+
+  // update the edited section in MongoDB
+  try {
+    var section = await Section.findByIdAndUpdate(req.params.section_id, section);
+  } catch (error) {
+    res.status(404).send("No section with ID: " + req.params.section_id + " found");
+  }
+
+  res.status(200).send("Successfully deleted feature");
 });
 
 module.exports = router;

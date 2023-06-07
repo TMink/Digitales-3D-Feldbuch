@@ -8,7 +8,7 @@
         show-select
         hide-default-footer> </v-data-table>
         <v-btn color="primary" @click="dates_overlay = true"> Hinzufügen </v-btn>
-        <v-btn color="secondary" v-on:click="remove_date"> Entfernen </v-btn>
+        <v-btn color="secondary" v-on:click="delete_date"> Entfernen </v-btn>
         <v-dialog v-model="dates_overlay" max-width="800" persistent>
             <v-card>
                 <v-card-title>Datum hinzufügen </v-card-title>
@@ -29,6 +29,7 @@
 <script>
 
 import axios from 'axios';
+import VueCookies from 'vue-cookies';
 
 export default {
     name: "DocDates",
@@ -52,7 +53,9 @@ export default {
         }
     },
     props: {
-        dateslist: Array
+        dateslist: Array,
+        mode: String,
+        id: String
     },
     created: function() {
         this.get_doc();
@@ -73,7 +76,7 @@ export default {
             .then(function (res) {
                 res.data.forEach(item => {
                     var date = {
-                        id: item.id,
+                        id: item._id,
                         title: item.title,
                         date: new Date(item.date._nanoseconds)
                     } 
@@ -85,17 +88,19 @@ export default {
             });
 
         },
-        remove_date: function () {
+        delete_date: function () {
             var context = this;
-            context.selected_date.forEach(item => {
-                for(var i=0; i<context.dates_list.length; i++) {
+            var curDate = context.selected_date[0].id;
 
-                    if (context.dates_list[i].id === item.id) {
-                        context.dates_list.splice(i, 1);
-                        var index = context.dateslist.indexOf(item.id);
-                        context.dateslist.splice(index, 1)
-                    }
-                }
+            axios({
+                method: 'delete',
+                url: '/dates/' + context.mode + "/" + context.id + "/" + curDate,
+            })
+            .then(function (res) {
+                context.$router.push(VueCookies.get("LAST_ROUTE_KEY"));
+            })
+            .catch(function (error) {
+                console.log(error);
             });
         },
         add_date: function () {
@@ -106,7 +111,7 @@ export default {
             //post request of edited/new excavation
             axios({
                 method: "post",
-                url: '/dates',
+                url: '/dates/' + context.mode + "/" + context.id,
                 data: {
                     title: context.new_date.title,
                     date: context.new_date.date,
@@ -119,7 +124,7 @@ export default {
                     date: newDate
                 }
                 context.dates_list.push(newDateObject);
-                //add the new date.id to the excavation dates list
+                //add the new date._id to the excavation dates list
                 context.$emit('addDate', res.data);
             })
             .catch(function (error) {

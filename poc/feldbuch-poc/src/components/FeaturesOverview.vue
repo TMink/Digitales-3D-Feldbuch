@@ -15,7 +15,7 @@
                     hinzugefügt</v-subheader>
                 <v-list>
                     <template v-for="(feature, i) in features">
-                        <v-list-item v-on:click="modifyFeature(feature.id)">
+                        <v-list-item v-on:click="modifyFeature(feature._id)">
                             <v-list-item-content>
                                 <v-list-item-title> {{ feature.title }} </v-list-item-title>
                                 <v-list-item-subtitle> {{ feature.description }} </v-list-item-subtitle>
@@ -51,7 +51,7 @@ export default {
 
             axios({
                 method: 'get',
-                url: '/features',
+                url: '/features/section_id/' + VueCookies.get('currentSection'),
                 responseType: 'json'
             })
             .then(function (response) {

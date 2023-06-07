@@ -1,9 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../fb");
-const colors = db.collection("colors");
-var admin = require("firebase-admin");
 
+const Artifact = require("../model/Artifact");
+const Color = require("../model/Color");
 
 /**
  * Takes the retrieved data from DB and builds a JSON-object
@@ -16,110 +15,116 @@ var admin = require("firebase-admin");
 function getColorJson(doc) {
   return {
     id: doc.id,
-    title: doc.data().title,
-    hexa: doc.data().hexa,
-    rgba_r: doc.data().rgba_r,
-    rgba_g: doc.data().rgba_g,
-    rgba_b: doc.data().rgba_b,
-    rgba_a: doc.data().rgba_a,
+    title: doc.title,
+    hexa: doc.hexa,
+    red: doc.red,
+    green: doc.green,
+    blue: doc.blue,
+    alpha: doc.alpha,
   };
 }
 
 
 /* GET colors by id-array in params seperated by ,*/
-router.get("/:color_ids", function (req, res, next) {
-  var color_ids = req.params.color_ids.split(",")
+router.get("/:color_ids", async function (req, res, next) {
+  var color_ids = req.params.color_ids.split(",");
 
-  var colorsArray = [];
-  colors
-    .where(admin.firestore.FieldPath.documentId(), "in", color_ids)
-    .get()
-    .then((data) => {
-      data.forEach((doc) => {
-        var color = getColorJson(doc);
-        colorsArray.push(color);
-      });
-      res.send(colorsArray);
-    })
-    .catch((err) => {
-      res.status(404).send("No colors found");
-    });
+  try {
+    var colorsArray = await Color.find({ _id: color_ids }).exec();
+  } catch (error) {
+    res.status(404).send("No colors found");
+  }
+
+  res.status(200).send(colorsArray);
 });
 
-
-
-/* GET ALL colors */
-router.get("/", function (req, res, next) {
-  var colorsArray = [];
-  colors
-    .get()
-    .then((data) => {
-      data.forEach((doc) => {
-        var color = getColorJson(doc);
-        colorsArray.push(color);
-      });
-      res.send(colorsArray);
-    })
-
-    .catch((err) => {
-      res.status(404).send("No colors found");
-    });
-});
 
 /* GET colors by ID */
-router.get("/:color_id", function (req, res, next) {
-  colors
-    .doc(req.params.color_id)
-    .get()
-    .then((doc) => {
-      if (doc.exists) {
-        var color = getColorJson(doc);
-        res.send(color);
-      } else {
-        res.status(404).send("No such document: ");
-      }
-    })
-    .catch((err) => {
-      res.status(404).send("color not found: " + err);
-    });
+router.get("/:color_id", async function (req, res, next) {
+  try {
+    var color = await Color.findById(req.params.color_id).exec();
+  } catch (error) {
+    res.status(404).send("No Color with ID: " + req.params.color_id + " found");
+  }
+  res.status(200).send(color);
 });
 
 /* POST new color */
-router.post("/", function (req, res, next) {
-  colors
-    .add(req.body)
-    .then((response) => {
-      res.status(200).send(response._path.segments[1]); //sends the color id back
-    })
-    .catch((err) => {
-      res.status(404).send("Couldn't add color: " + err);
-    });
+router.post("/:artifact_id", async function (req, res, next) {
+  var newColor = getColorJson(req.body);
+  // create new color in MongoDB
+  try {
+    var result = await Color.create(newColor);
+  } catch (error) {
+    res.status(500).send("Couldn't create Artifact: " + error.message);
+  }
+
+  // get currently used artifact by id
+  try {
+    var artifact = await Artifact.findById(req.params.artifact_id).exec();
+  } catch (error) {
+    res.status(404).send("No artifact with ID: " + req.params.artifact_id + " found");
+  }
+
+  // add newly created color id to this artifact
+  artifact.colors.push(result.id);
+
+  // update the edited artifact in MongoDB
+  try {
+    var artifact = await Artifact.findByIdAndUpdate(req.params.artifact_id, artifact);
+  } catch (error) {
+    res.status(404).send("No artifact with ID: " + req.params.artifact_id + " found");
+  }
+
+  res.status(200).send("Successfully added color");
 });
 
 /* UPDATE color by ID*/
-router.put("/:color_id", function (req, res, next) {
-  colors
-    .doc(req.params.color_id)
-    .update(req.body)
-    .then((response) => {
-      res.status(200).send("Updated color: " + req.params.color_id);
-    })
-    .catch((err) => {
-      res.status(404).send("Couldn't update color: " + err);
-    });
-});
+router.put("/:color_id", async function (req, res, next) {
+  var updatedColor = getColorJson(req.body);
+
+  try {
+    const result = await Color.findByIdAndUpdate(req.params.color_id, updatedColor);
+
+    res.status(200).send("Edited Color: " + result);
+  } catch (error) {
+    res.status(500).send("Couldn't edit Color: " + error.message);
+  }});
+
 
 /* DELETE color by ID*/
-router.delete("/:color_id", async function (req, res, next) {
-  colors
-    .doc(req.params.color_id)
-    .delete({ exists: true })
-    .then((response) => {
-      res.status(200).send("Deleted color: " + req.params.color_id);
-    })
-    .catch((err) => {
-      res.status(404).send("Couldn't delete color: " + err);
-    });
+router.delete("/:artifact_id/:color_id", async function (req, res, next) {
+  // delete color from MongoDB by id
+  try {
+    const result = await Color.findByIdAndDelete(req.params.color_id);
+  } catch (error) {
+    res.status(500).send("Couldn't delete Color: " + error.message);
+  }
+
+  // get artifact from MongoDB by id
+  try {
+    var artifact = await Artifact.findById(req.params.artifact_id).exec();
+  } catch (error) {
+    res.status(404).send("No artifact with ID: " + req.params.artifact_id + " found");
+  }
+
+  // remove the deleted color id from this artifact
+  const index = artifact.colors.indexOf(req.params.color_id);
+
+  if (index > -1) {
+    artifact.colors.splice(index, 1);
+  } else {
+    res.status(400).send("The deleted color is not part of the current artifact");
+  }
+
+  // update the edited artifact in MongoDB
+  try {
+    var artifact = await Artifact.findByIdAndUpdate(req.params.artifact_id, artifact);
+  } catch (error) {
+    res.status(404).send("No artifact with ID: " + req.params.artifact_id + " found");
+  }
+
+  res.status(200).send("Successfully deleted color");
 });
 
 module.exports = router;

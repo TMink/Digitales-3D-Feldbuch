@@ -1,10 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../fb");
-const projects = db.collection("projects");
-const excavations = db.collection("excavations");
-var admin = require("firebase-admin");
 
+const Project = require("../model/Project");
+const Excavation = require("../model/Excavation");
 
 /**
  * Takes the retrieved data from DB and builds a JSON-object
@@ -16,64 +14,47 @@ var admin = require("firebase-admin");
  */
 function getExcavationJson(doc) {
   return {
-    id: doc.id,
-    title: doc.data().title,
-    description: doc.data().description,
-    client: doc.data().client,
-    focus: doc.data().focus,
-    length: doc.data().length,
-    location: doc.data().location,
-    organization: doc.data().organization,
-    dates: doc.data().dates,
-    sections: doc.data().sections,
-    contacts: doc.data().contacts
+    title: doc.title,
+    description: doc.description,
+    client: doc.client,
+    focus: doc.focus,
+    length: doc.length,
+    location: doc.location,
+    organization: doc.organization,
+    dates: doc.dates,
+    sections: doc.sections,
+    contacts: doc.contacts,
   };
 }
 
 
 /**
- * GET excavations by id-array in params seperated by ,
+ * GET ALL excavations
+ * @deprecated
  */
-router.get("/list/:excavation_ids", function (req, res, next) {
-  var excavation_ids = req.params.excavation_ids.split(",");
-  var excavationsArray = [];
-
-  // get excavations from id_list
-  excavations
-    .where(admin.firestore.FieldPath.documentId(), "in", excavation_ids)
-    .get()
-    .then((data) => {
-      data.forEach((doc) => {
-        var excavation = getExcavationJson(doc);
-        excavationsArray.push(excavation);
-      });
-      res.status(200).send(excavationsArray);
-    })
-    .catch((err) => {
-      res.status(404).send("No excavations found");
-    });
+router.get("/", async function (req, res, next) {
+  try {
+    var excavationsArray = await Excavation.find({}).exec();
+  } catch (error) {
+    res.status(404).send("No excavations found");
+  }
+  res.status(200).send(excavationsArray);
 });
 
 
 /**
- * GET ALL excavations
+ * GET excavations by id-array in params seperated by ,
  */
-router.get("/", function (req, res, next) {
-  var excavationsArray = [];
+router.get("/list/:excavation_ids", async function (req, res, next) {
+  var excavation_ids = req.params.excavation_ids.split(",");
 
-  // get excavations from DB
-  excavations
-    .get()
-    .then((data) => {
-      data.forEach((doc) => {
-        var excavation = getExcavationJson(doc);
-        excavationsArray.push(excavation);
-      });
-      res.status(200).send(excavationsArray);
-    })
-    .catch((err) => {
-      res.status(404).send("No excavations found");
-    });
+  try {
+    var excavationsArray = await Excavation.find({ _id: excavation_ids }).exec();
+  } catch (error) {
+    res.status(404).send("No excavations found");
+  }
+
+  res.status(200).send(excavationsArray);
 });
 
 
@@ -81,51 +62,34 @@ router.get("/", function (req, res, next) {
  * GET excavations by project_id
  */
 router.get("/project_id/:project_id", async function (req, res, next) {
-  //check if project_id exists
+  // get project by id from MongoDB
   try {
-    var project = await getProjectById(req.params.project_id);
+    var project = await Project.findById(req.params.project_id).exec();
   } catch (error) {
-    res.status(404).send("Couldn't find project with id: " + req.params.project_id);
+    res.status(404).send("No project with id: " + req.params.project_id);
   }
 
-  // check if there are excavations in this project
-  var excavationsArray = [];
-
-  if (project.excavations == undefined || project.excavations.length === 0) {
-    res.status(404).send("No excavations in this project");
-  } else {
-    // get excavations from DB
-    excavations
-      .where(admin.firestore.FieldPath.documentId(), "in", project.excavations)
-      .get()
-      .then((data) => {
-        data.forEach((doc) => {
-          var excavation = getExcavationJson(doc);
-          excavationsArray.push(excavation);
-        });
-        res.status(200).send(excavationsArray);
-      })
-      .catch((err) => {
-        res.status(404).send("No excavations found");
-      });
+  //get all excavations by id from the project.excavations array
+  try {
+    var excavationsArray = await Excavation.find({ _id: project.excavations }).exec();
+  } catch (error) {
+    res.status(404).send("No excavations found");
   }
+
+  res.status(200).send(excavationsArray);
 });
 
 
 /**
  * GET excavation by ID
  */
-router.get("/:excavation_id", function (req, res, next) {
-  excavations
-    .doc(req.params.excavation_id)
-    .get()
-    .then((doc) => {
-      var excavation = getExcavationJson(doc);
-      res.status(200).send(excavation);
-    })
-    .catch((err) => {
-      res.status(404).send("Excavation not found: " + err);
-    });
+router.get("/:excavation_id", async function (req, res, next) {
+  try {
+    var excavation = await Excavation.findById(req.params.excavation_id).exec();
+  } catch (error) {
+    res.status(404).send("No Excavation with ID: " + req.params.excavation_id + " found");
+  }
+  res.status(200).send(excavation);
 });
 
 
@@ -133,29 +97,29 @@ router.get("/:excavation_id", function (req, res, next) {
  * POST new excavation
  */
 router.post("/:project_id", async function (req, res, next) {
-  // check if project_id exists
+  var newExcavation = getExcavationJson(req.body);
+  // create new excavation in MongoDB
   try {
-    var project = await getProjectById(req.params.project_id);
+    var result = await Excavation.create(newExcavation);
   } catch (error) {
-    res.status(404).send("Couldn't find project with id: " + req.params.project_id);
+    res.status(500).send("Couldn't create Project: " + error.message);
   }
 
-  // add new excavation to DB
+  // get currently used project by id
   try {
-    var excavation_id = await excavations.add(req.body);
+    var project = await Project.findById(req.params.project_id).exec();
   } catch (error) {
-    res.status(404).send("Couldn't add excavation");
+    res.status(404).send("No project with ID: " + req.params.project_id + " found");
   }
 
-  // add new excavation_id to the project list of excavation ids
-  var newProject = project;
-  newProject.excavations.push(excavation_id.id);
+  // add newly created excavation id to this project
+  project.excavations.push(result.id);
 
-  // update project in DB
+  // update the edited project in MongoDB
   try {
-    var response = await updateProjectById(req.params.project_id, newProject);
+    var project = await Project.findByIdAndUpdate(req.params.project_id, project);
   } catch (error) {
-    res.status(404).send("Couldn't update project");
+    res.status(404).send("No project with ID: " + req.params.project_id + " found");
   }
 
   res.status(200).send("Successfully added excavation");
@@ -163,18 +127,18 @@ router.post("/:project_id", async function (req, res, next) {
 
 
 /**
- * UPDATE excavation by ID
+ * PUT existing excavation in MongoDB by id
  */
-router.put("/:excavation_id", function (req, res, next) {
-  excavations
-    .doc(req.params.excavation_id)
-    .update(req.body)
-    .then((response) => {
-      res.status(200).send("Updated excavation: " + req.params.excavation_id);
-    })
-    .catch((err) => {
-      res.status(404).send("Couldn't update excavation: " + err);
-    });
+router.put("/:excavation_id", async function (req, res, next) {
+  var updatedExcavation = getExcavationJson(req.body);
+
+  try {
+    const result = await Excavation.findByIdAndUpdate(req.params.excavation_id, updatedExcavation);
+
+    res.status(200).send("Edited Excavation: " + result);
+  } catch (error) {
+    res.status(500).send("Couldn't edit Excavation: " + error.message);
+  }
 });
 
 
@@ -182,53 +146,37 @@ router.put("/:excavation_id", function (req, res, next) {
  * DELETE excavation by ID
  */
 router.delete("/:project_id/:excavation_id", async function (req, res, next) {
-  //TODO: when deleting a excavation, also delete all subcollections
+  // delete excavation from MongoDB by id
+  try {
+    const result = await Excavation.findByIdAndDelete(req.params.excavation_id);
+  } catch (error) {
+    res.status(500).send("Couldn't edit Project: " + error.message);
+  }
 
-  // get project data
-  var project = await getProjectById(req.params.project_id);
+  // get project from MongoDB by id
+  try {
+    var project = await Project.findById(req.params.project_id).exec();
+  } catch (error) {
+    res.status(404).send("No project with ID: " + req.params.project_id + " found");
+  }
 
-  // remove the excavation_id from project data
-  var newProject = project;
-  var index = newProject.excavations.indexOf(req.params.excavation_id);
-  newProject.excavations.splice(index, 1);
+  // remove the deleted excavation id from this project
+  const index = project.excavations.indexOf(req.params.excavation_id);
 
-  // update project data with the removed excavation_id
-  var response = await updateProjectById(req.params.project_id, newProject);
+  if (index > -1) {
+    project.excavations.splice(index, 1);
+  } else {
+    res.status(400).send("The deleted excavation is not part of the current project");
+  }
 
-  // delete excavation from DB
-  excavations
-    .doc(req.params.excavation_id)
-    .delete({ exists: true })
-    .then((response) => {
-      res.status(200).send("Deleted excavation: " + req.params.excavation_id);
-    })
-    .catch((err) => {
-      res.status(404).send("Couldn't delete excavation: " + err);
-    });
+  // update the edited project in MongoDB
+  try {
+    var project = await Project.findByIdAndUpdate(req.params.project_id, project);
+  } catch (error) {
+    res.status(404).send("No project with ID: " + req.params.project_id + " found");
+  }
+
+  res.status(200).send("Successfully deleted excavation");
 });
-
-
-/**
- * Returns project data from DB by searching with the project ID
- * @param {String} project_id
- * @returns
- */
-async function getProjectById(project_id) {
-  var project = await projects.doc(project_id).get();
-
-  return project.data();
-}
-
-
-/**
- * Returns project data from DB by searching with the project ID
- * @param {String} project_id
- * @returns
- */
-async function updateProjectById(project_id, newProject) {
-  var response = await projects.doc(project_id).update(newProject);
-
-  return response;
-}
 
 module.exports = router;

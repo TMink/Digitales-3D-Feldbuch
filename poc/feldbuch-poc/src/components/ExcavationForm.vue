@@ -23,11 +23,15 @@
         <DocContacts 
           :contactslist="excavation_doc.contacts" 
           :mode="'excavations'" 
-          :id="excavation_doc.id"/>
+          :id="excavation_doc._id"/>
       </v-tab-item>
 
       <v-tab-item>
-        <DocDates :dateslist="excavation_doc.dates" @addDate="addDate($event)" />
+        <DocDates 
+          :dateslist="excavation_doc.dates"
+          :mode="'excavations'"
+          :id="excavation_doc._id"
+          @addDate="addDate($event)" />
       </v-tab-item>
 
       <v-tab-item class="px-4">

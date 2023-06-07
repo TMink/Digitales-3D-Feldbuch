@@ -12,7 +12,7 @@
         </div>  
         <v-form>
             <v-list>
-                <v-list-item class="mt-5" v-if="current_excavation.id !== undefined" v-on:click="modifyExcavation(current_excavation.id)">
+                <v-list-item class="mt-5" v-if="current_excavation._id !== undefined" v-on:click="modifyExcavation(current_excavation._id)">
                       <v-chip>
                         Derzeit ausgewählt
                       </v-chip>      
@@ -25,10 +25,10 @@
                       </v-chip>
                 </v-list-item>
                 <v-divider></v-divider>
-                <v-subheader v-if="excavations.length === 0 && current_excavation.id == undefined  && loading===false"> Bisher wurden dem Projekt keine Grabungen
+                <v-subheader v-if="excavations.length === 0 && current_excavation._id == undefined  && loading===false"> Bisher wurden dem Projekt keine Grabungen
                     hinzugefügt</v-subheader>
                     <template v-for="(excavation, i) in excavations">
-                        <v-list-item v-on:click="modifyExcavation(excavation.id)">
+                        <v-list-item v-on:click="modifyExcavation(excavation._id)">
                             <v-list-item-content>
                                 <v-list-item-title> {{ excavation.title }} </v-list-item-title>
                                 <v-list-item-subtitle> {{ excavation.description }} </v-list-item-subtitle>
@@ -69,7 +69,7 @@ export default {
             .then(function (response) {
                 for (let item of response.data) {
                     //if the project id is saved in cookies => mark is as current project
-                    if (VueCookies.get('currentExcavation') === item.id) {
+                    if (VueCookies.get('currentExcavation') === item._id) {
                         context.current_excavation = item;
                     } else {
                         context.excavations.push(item);

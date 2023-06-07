@@ -7,8 +7,8 @@
         </div>
         <v-form>
             <v-list>
-                <v-list-item class="mt-5" v-if="current_section.id !== undefined"
-                    v-on:click="modifySection(current_section.id)">
+                <v-list-item class="mt-5" v-if="current_section._id !== undefined"
+                    v-on:click="modifySection(current_section._id)">
                     <v-chip>
                         Derzeit ausgewählt
                     </v-chip>
@@ -21,11 +21,11 @@
                     </v-chip>
                 </v-list-item>
                 <v-divider></v-divider>
-                <v-subheader v-if="sections.length === 0 && current_section.id == undefined && loading === false"> Bisher
+                <v-subheader v-if="sections.length === 0 && current_section._id == undefined && loading === false"> Bisher
                     wurden dem Projekt keine Schnitte
                     hinzugefügt</v-subheader>
                 <template v-for="(section, i) in sections">
-                    <v-list-item v-on:click="modifySection(section.id)">
+                    <v-list-item v-on:click="modifySection(section._id)">
                         <v-list-item-content>
                             <v-list-item-title> {{ section.title }} </v-list-item-title>
                             <v-list-item-subtitle> {{ section.description }} </v-list-item-subtitle>
@@ -67,7 +67,7 @@ export default {
                 .then(function (response) {
                     for (let item of response.data) {
                         //if the section id is saved in cookies => mark is as current section
-                        if (VueCookies.get('currentSection') === item.id.trim()) {
+                        if (VueCookies.get('currentSection') === item._id.trim()) {
                             context.current_section = item;
                         } else {
                             context.sections.push(item)

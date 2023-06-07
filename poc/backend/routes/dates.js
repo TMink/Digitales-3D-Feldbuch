@@ -1,90 +1,130 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../fb");
-const excavations = db.collection("excavations");
-const dates = db.collection("dates");
-var admin = require("firebase-admin");
+
+const Excavation = require("../model/Excavation");
+const Date = require("../model/Date");
+const Artifact = require("../model/Artifact");
+
+
+/**
+ * Takes the retrieved data from DB and builds a JSON-object
+ * with all fields for an date. Also creates empty fields,
+ * when there is no data for them.
+ *
+ * @param {*} doc The raw date data from database
+ * @returns date Json-Object with all required fields
+ */
+function getDateJson(doc) {
+  return {
+    title: doc.title,
+    date: doc.date,
+  };
+}
 
 /* GET dates by id-array in params seperated by ,*/
-router.get("/:date_ids", function (req, res, next) {
-  date_ids = req.params.date_ids.split(",")
+router.get("/:date_ids", async function (req, res, next) {
+  var date_ids = req.params.date_ids.split(",");
 
-  var datesArray = [];
-  dates
-    .where(admin.firestore.FieldPath.documentId(), "in", date_ids)
-    .get()
-    .then((data) => {
-      data.forEach((doc) => {
-        var date = {
-          id: doc.id,
-          title: doc.data().title,
-          date: doc.data().date,
-        };
-        datesArray.push(date);
-      });
-      res.send(datesArray);
-    })
-    .catch((err) => {
-      res.status(404).send("No dates found");
-    });
+  try {
+    var datesArray = await Date.find({ _id: date_ids }).exec();
+  } catch (error) {
+    res.status(404).send("No dates found");
+  }
+
+  res.status(200).send(datesArray);
 });
 
-/* POST new date */
-router.post("/", function (req, res, next) {
+/* POST new date for a parent*/
+router.post("/:parent/:parent_id", async function (req, res, next) {
+  var parentDB;
+  var parent = req.params.parent;
+  var newDate = getDateJson(req.body);
 
-  splitDate = req.body.date.split("-");
-  var newDate = new Date(splitDate[2], splitDate[1] - 1, splitDate[0]);
-  dates
-    .add({
-      title: req.body.title,
-      date: newDate
-    })
-    .then((response) => {
-      res.status(200).send(response._path.segments[1]);
-    })
-    .catch((err) => {
-      res.status(404).send("Couldn't add date: " + err);
-    });
+  if (parent == 'excavations') {
+    parentDB = Excavation;
+  } else if (parent == 'artifacts') {
+    parentDB = Artifact;
+  } else {
+    res.status(500).send("Couldn't find the parent type")
+  }
+
+  // create new date in MongoDB
+  try {
+    var result = await Date.create(newDate);
+  } catch (error) {
+    res.status(500).send("Couldn't create Date: " + error.message);
+  }
+
+  // get currently used project by id
+  try {
+    var parent = await parentDB.findById(req.params.parent_id).exec();
+  } catch (error) {
+    res.status(404).send("No parent with ID: " + req.params.parent_id + " found");
+  }
+
+  // add newly created date id to this parent
+  parent.dates.push(result.id);
+
+  // update the edited parent object in MongoDB
+  try {
+    var parent = await parentDB.findByIdAndUpdate(req.params.parent_id, parent);
+  } catch (error) {
+    res.status(404).send("No parent with ID: " + req.params.parent_id + " found");
+  }
+
+  res.status(200).send(result.id);
 });
 
 /* UPDATE date by ID*/
 router.put("/:date_id", function (req, res, next) {
-  //check if excavation_id exists
-  excavations
-    .doc(req.body.excavation_id)
-    .get()
-    .then((doc) => {
-      if (doc.exists) {
-        //if it exists, add the date to DB
-        dates
-          .doc(req.params.date_id)
-          .update(req.body)
-          .then((response) => {
-            res.status(200).send("Updated Date");
-          })
-          .catch((err) => {
-            res.status(404).send("Couldn't update date: " + err);
-          });
-      } else {
-        res.status(404).send("No such excavation");
-      }
-    })
-    .catch((err) => {
-      res.status(404).send("Excavation not found: " + err);
-    });
+  //TODO: editing of Dates --> is this even needed?
 });
 
 /* DELETE date by ID*/
-router.delete("/:date_id", async function (req, res, next) {
-  dates
-    .doc(req.params.date_id)
-    .delete({ exists: true })
-    .then((response) => {
-      res.status(200).send("Deleted date: " + req.params.date_id);
-    })
-    .catch((err) => {
-      res.status(404).send("Couldn't delete date: " + err);
-    });
+router.delete("/:parent/:parent_id/:date_id", async function (req, res, next) {
+
+  var parentDB;
+  var parent = req.params.parent;
+
+  if (parent == "excavations") {
+    parentDB = Excavation;
+  } else if (parent == "artifacts") {
+    parentDB = Artifact;
+  } else {
+    res.status(500).send("Couldn't find the parent type");
+  }
+
+  // delete date from MongoDB by id
+  try {
+    const result = await Date.findByIdAndDelete(req.params.date_id);
+  } catch (error) {
+    res.status(500).send("Couldn't edit Parent: " + error.message);
+  }
+
+  // get parent from MongoDB by id
+  try {
+    var parent = await parentDB.findById(req.params.parent_id).exec();
+  } catch (error) {
+    res.status(404).send("No parent with ID: " + req.params.parent_id + " found");
+  }
+
+  // remove the deleted dates id from this parent
+  const index = parent.dates.indexOf(req.params.date_id);
+
+  if (index > -1) {
+    parent.dates.splice(index, 1);
+  } else {
+    res.status(400).send("The deleted date is not part of the current parent");
+  }
+
+  // update the edited parent in MongoDB
+  try {
+    var parent = await parentDB.findByIdAndUpdate(req.params.parent_id, parent);
+  } catch (error) {
+    res.status(404).send("No parent with ID: " + req.params.parent_id + " found");
+  }
+
+  res.status(200).send("Successfully deleted date");
 });
 
 module.exports = router;
