@@ -3,173 +3,149 @@
     <v-row>
       <v-col cols="2">
         <v-card rounded="0">
-          <v-tabs v-model="tab" direction="vertical" color="secondary" >
-            <v-tab value="one" rounded="0"> {{ $t('general')}} </v-tab>
+          <v-tabs v-model="tab" direction="vertical" color="secondary">
+            <v-tab value="one" rounded="0"> {{ $t('general') }} </v-tab>
             <v-tab value="two" rounded="0"> {{ $tc('position', 2) }} </v-tab>
-            <v-tab value="three" rounded="0"> {{ $tc('model', 2)}} </v-tab>
-            <v-btn rounded="0" v-on:click="savePlace()" color="secondary"> {{ $t('save')}} </v-btn>
-            <v-dialog
-        v-model="dialog"
-        persistent
-        width="auto"
-      >
-        <template v-slot:activator="{ props }">
-          <v-btn rounded="0" color="primary" v-bind="props"> {{$t('delete')}} </v-btn>
-        </template>
-        <v-card>
-          <v-card-title class="text-h5">
-             {{ $t('delete', {msg: $t('place')})}}!
-          </v-card-title>
-          <v-card-text>{{ $t('confirm_del', {object: $t('place'), object_nr: place.placeNumber }) }}</v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn
-              color="secondary"
-              variant="outlined"
-              v-on:click="deletePlace()"
-              @click="dialog = false">
-              {{ $t('yes')}}
+            <v-tab value="three" rounded="0"> {{ $tc('model', 2) }} </v-tab>
+            <v-btn 
+              rounded="0" 
+              v-on:click="savePlace()" 
+              color="secondary"> 
+              {{ $t('save') }} 
             </v-btn>
-            <v-btn
-              color="primary"
-              variant="outlined"
-              @click="dialog = false">
-              {{ $t('no')}}
+            <v-btn 
+              rounded="0" 
+              color="primary" 
+              v-on:click="confirmDeletion()"> 
+              {{ $t('delete') }} 
             </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-        <v-btn rounded="0" v-on:click="cancelPlace" color="primary"> 
-          {{ $t('cancel')}}
-        </v-btn>
+
+            <ConfirmDialog ref="confirm" />
+
+            <v-btn rounded="0" v-on:click="cancelPlace" color="primary">
+              {{ $t('cancel') }}
+            </v-btn>
           </v-tabs>
         </v-card>
-          </v-col>
+      </v-col>
 
-            <v-col>
-              <v-window v-model="tab">
+      <v-col>
+        <v-window v-model="tab">
+          <!-- Tab item 'general' -->
           <v-window-item value="one">
             <v-card>
-              <v-text-field v-model="place.ansprache" label="Ansprache"
-                            hint="Geben Sie hier eine Ansprache ein"></v-text-field>
-              <v-text-field v-model="place.date" label="Datierung" 
-                        hint="Format: dd.mm.yyyy"></v-text-field>
+              <v-text-field 
+                v-model="place.ansprache" 
+                label="Ansprache"
+                hint="Geben Sie hier eine Ansprache ein"></v-text-field>
+              <v-text-field 
+                v-model="place.date" 
+                label="Datierung" 
+                hint="Format: dd.mm.yyyy"></v-text-field>
             </v-card>
           </v-window-item>
 
+          <!-- Tab item 'positions' -->
           <v-window-item value="two">
             <v-form>
-              <v-list>              
-                <v-list-subheader v-if="positions.length === 0"> 
+              <v-list>
+                <v-list-subheader v-if="positions.length === 0">
                   Bisher wurde keine Positionen angelegt
                 </v-list-subheader>
-              
-                <template v-for="(position, i) in positions" :key="position">
-                  <v-list-item class="positionItem mt-3" 
-                               v-on:click="moveToPosition(position.id)">
-                  
-                      <v-list-item-title class="text-h6">
-                        Nr. {{ position.positionNumber }} - {{ position.date }}
-                      </v-list-item-title>
-                    
-                      <v-list-item-subtitle class="text-subtitle-1">
-                        {{ position.description }}
-                      </v-list-item-subtitle>
 
+                <template v-for="(position, i) in positions" :key="position">
+                  <v-list-item class="positionItem mt-3" v-on:click="moveToPosition(position.id)">
+
+                    <v-list-item-title class="text-h6">
+                      Nr. {{ position.positionNumber }} - {{ position.date }}
+                    </v-list-item-title>
+
+                    <v-list-item-subtitle class="text-subtitle-1">
+                      {{ position.description }}
+                    </v-list-item-subtitle>
                   </v-list-item>
                   <v-divider v-if="i !== positions.length - 1"></v-divider>
                 </template>
               </v-list>
-              <v-btn v-on:click="addPosition()" class="mr-16 mt-3" 
-                     color="primary"> {{ $t('add', {msg: $t('position') }) }} </v-btn>
+
+              <v-btn 
+                v-on:click="addPosition()" 
+                class="mr-16 mt-3" 
+                color="primary">
+                {{ $t('add', { msg: $t('position') }) }}
+              </v-btn>
             </v-form>
           </v-window-item>
 
-
+          <!-- Tab item 'models' -->
           <v-window-item value="three">
-            <v-form>
-                <v-list>              
-                  <v-list-subheader v-if="models.length === 0"> 
-                    Bisher wurde keine Modelle angelegt
-                  </v-list-subheader>
-              
-                  <template v-for="(model, i) in models" :key="model">
-                    <v-list-item class="modelItem mt-3" 
-                                 v-on:click="moveToModel(model.id)">
-                  
-                        <v-list-item-title class="text-h6">
-                          Nr. {{ model.modelNumber }}
-                        </v-list-item-title>
-                    
-                        <v-list-item-subtitle class="text-subtitle-1">
-                          {{ model.title }}
-                        </v-list-item-subtitle>
+            <v-list>
+              <v-list-subheader v-if="models.length === 0">
+                Bisher wurde keine Modelle angelegt
+              </v-list-subheader>
 
-                    </v-list-item>
-                    <v-divider v-if="i !== models.length - 1"></v-divider>
-                  </template>
-                </v-list>
-                <v-btn @click="models_overlay = true" class="mr-16 mt-3" 
-                       color="primary"> {{ $t('add', { msg: $t('model') }) }} </v-btn>
-              </v-form>
+              <template v-for="(model, i) in models" :key="model">
+                <v-list-item class="modelItem mt-3" v-on:click="moveToModel(model.id)">
 
-              <v-dialog v-model="models_overlay" max-width="800" persistent>
-                <v-card>
-                  <v-card-title>{{ $t('add', { msg: $t('model') }) }} </v-card-title>
-                  <v-card-text>
-                  <v-text-field 
+                  <v-list-item-title class="text-h6">
+                    Nr. {{ model.modelNumber }}
+                  </v-list-item-title>
+
+                  <v-list-item-subtitle class="text-subtitle-1">
+                    {{ model.title }}
+                  </v-list-item-subtitle>
+                </v-list-item>
+                <v-divider v-if="i !== models.length - 1"></v-divider>
+              </template>
+            </v-list>
+
+            <v-btn 
+              @click="models_overlay = true" 
+              class="mr-16 mt-3" 
+              color="primary">
+              {{ $t('add', { msg: $t('model') }) }}
+            </v-btn>
+
+            <!-- Model Creation dialog -->
+            <v-dialog v-model="models_overlay" max-width="800" persistent>
+              <v-card>
+                <v-card-title>{{ $t('add', { msg: $t('model') }) }} </v-card-title>
+                <v-card-text>
+
+                  <v-text-field
                     :label="$t('place_id')" 
-                    :hint="$t('plase_input', {msg: $t('place_id')})" 
+                    :hint="$t('plase_input', { msg: $t('place_id') })" 
                     disabled
                     v-model="place.id"> </v-text-field>
+
                   <v-text-field 
                     :label="$t('title')" 
-                    :hint="$t('plase_input', {msg: $t('title_of_model')})"
+                    :hint="$t('plase_input', { msg: $t('title_of_model') })"
                     v-model="model.title"></v-text-field>
+
                   <v-file-input 
                     accept=".obj" 
                     show-size 
-                    :label="$t('input', {msg: $t('model')})" 
+                    :label="$t('input', { msg: $t('model') })"
                     v-model="model.model"></v-file-input>
+
                   <v-file-input 
                     prepend-icon="mdi-camera" 
                     accept="image/png, image/jpeg, image/bmp" 
-                    show-size :label="$t('input', {msg: $t('texture')})" 
+                    show-size
+                    :label="$t('input', { msg: $t('texture') })" 
                     v-model="model.texture"></v-file-input>
                 </v-card-text>
+
                 <v-card-actions class="justify-center">
-                  <v-btn variant="outlined" v-on:click="addModel()"> {{ $t('save')}} </v-btn>
-                  <v-btn @click="models_overlay = false"> {{ $t('cancel')}} </v-btn>
+                  <v-btn 
+                    variant="outlined" 
+                    v-on:click="addModel()"> {{ $t('save') }} </v-btn>
+                  <v-btn @click="models_overlay = false"> {{ $t('cancel') }} </v-btn>
                 </v-card-actions>
-                </v-card>
-          </v-dialog>
-              
-
-            <!-- <v-card>
-              <v-text-field 
-                label="Stellen ID" 
-                hint="Geben Sie hier die Stellen ID ein" 
-                v-model="model.placeID"></v-text-field>
-              <v-text-field 
-                label="Titel" 
-                hint="Geben sie hier einen Titel für das Modell ein" 
-                v-model="model.title"></v-text-field>
-              <v-file-input 
-                accept=".obj" 
-                show-size 
-                label="File input" 
-                v-model="model.model"></v-file-input>
-              <v-file-input 
-                prepend-icon="mdi-camera" 
-                accept="image/png, image/jpeg, image/bmp" 
-                show-size label="Textur input" 
-                v-model="model.texture"></v-file-input>
-            </v-card>
-            <v-card-actions class="justify-center">
-              <v-btn variant="outlined" v-on:click="addModel()" color="secondary"> Modell Speichern </v-btn>
-            </v-card-actions> -->
+              </v-card>
+            </v-dialog>
           </v-window-item>
-
         </v-window>
       </v-col>
     </v-row>
@@ -181,19 +157,29 @@
  * Methods overview:
  *  updatePlace     - Updates existing presentation of the place
  *  updatePositions - Updates existing presentation of positions
- *  moveToPosition  - Loads the view of the selected position
- *  addPosition     - Adds a new position to the list
+ *  updateModels    - Updates existing presentation of models
  *  savePlace       - Saves the current processing status
+ *  confirmDeletion - Opens the confirmation dialog
  *  deletePlace     - Deletes the currently selected place
+ *  addPosition     - Adds a new position to the list
+ *  addModel        - Adds a new model to the list
+ *  moveToPosition  - Loads the view of the selected position
  *  cancelPlace     - Cancels all not already saved actions
  */
 import VueCookies from 'vue-cookies';
-import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
+import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
+import ConfirmDialog from '../components/ConfirmDialog.vue';
+
 
 export default {
 
   name: 'PlaceCreation',
-
+  components: {
+    ConfirmDialog
+  },
+  /**
+   * Reactive Vue.js data
+   */
   data() {
 
     return {
@@ -223,9 +209,10 @@ export default {
     }
 
   },
-
+  /**
+   * Initialize data from localDB to the reactive Vue.js data
+   */
   async created() {
-
     await fromOfflineDB.syncLocalDBs();                                         
     await this.updatePlace();
     await this.updatePositions();
@@ -233,47 +220,52 @@ export default {
   },
 
   methods: {
-
+    /**
+     * Update reactive Vue.js place data
+     */
     async updatePlace() {
-
       const currentPlace = VueCookies.get( 'currentPlace' );
       const data = await fromOfflineDB.getObject( currentPlace, 'Places', 'places' );
       this.place = data.result;
-
     },
-
+    /**
+     * Update reactive Vue.js positions data
+     */
     async updatePositions() {
-
       this.positions = await fromOfflineDB.getAllObjectsWithID( this.place.id, 'Place', 'Positions', 'positions' );
-    
     },
-
+    /**
+     * Update reactive Vue.js models data
+     */
     async updateModels() {
-
       this.models = await fromOfflineDB.getAllObjectsWithID(this.place.id, 'Place', 'Models', 'places');
-
     },
-
-    moveToPosition( positionID ) {
-      
-      if( positionID !== 'new' ) {
-        VueCookies.set( 'currentPosition', positionID );
-      }
-      this.$emit('view', 'Positionsbearbeitung')
-      this.$router.push( { name: 'PositionCreation', params: { positionID: positionID } } );
-
-    },
-
+    /**
+     * Save a place to local storage for the current activity
+     */
     async savePlace() {
-
       //convert from vue proxy to JSON object
       const inputPlace = JSON.parse(JSON.stringify(this.place))
 
       await fromOfflineDB.deleteObject( this.place.id, 'Places', 'places' );
       await fromOfflineDB.addObject( inputPlace, 'Places', 'places' );
-
     },
-
+    /**
+     * Opens the confirmation dialog
+     */
+    async confirmDeletion() {
+      if (
+        await this.$refs.confirm.open(
+          "Confirm",
+          "Are you sure you want to delete the place " + this.place.placeNumber + "?"
+        )
+      ) {
+        this.deletePlace();
+      }
+    },
+    /**
+     * Removes a place from the local storage and the cookies
+     */
     async deletePlace() {
 
       await fromOfflineDB.deleteCascade(this.place.id, 'position', 'Positions', 'positions');
@@ -286,7 +278,9 @@ export default {
       this.$emit('view', 'Stellen');
 
     },
-
+    /**
+     * Adds a new position to the local storage for the current place
+     */
     async addPosition() {
 
       const newPosition = {
@@ -311,7 +305,10 @@ export default {
       await fromOfflineDB.addObject(newPosition, "Positions", "positions");
       await this.updatePositions(newPosition.id);
 
-    }, 
+    },
+    /**
+     * Adds a new model to the local storage for the current place
+     */
     async addModel() {
       const newModel = {
         id: String(Date.now()),
@@ -333,11 +330,23 @@ export default {
       await fromOfflineDB.addObject(newModel, 'Models', 'places');
       await this.updateModels(newModel.id);
     },
+    /**
+     *  Routes to the PositionForm for the chosen positionID
+     * @param {*} positionID 
+     */
+    moveToPosition(positionID) {
+      if (positionID !== 'new') {
+        VueCookies.set('currentPosition', positionID);
+      }
+      this.$emit('view', 'Positionsbearbeitung')
+      this.$router.push({ name: 'PositionCreation', params: { positionID: positionID } });
+    },
+    /**
+     * Cancels the PositionForm and returns to the PositionOverview
+     */
     cancelPlace() {
-
       this.$router.push({ name: "PlacesOverview" });
       this.$emit("view", "Stellen");
-
     }
   }
 
