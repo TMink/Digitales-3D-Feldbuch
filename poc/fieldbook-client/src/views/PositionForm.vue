@@ -4,26 +4,26 @@
         <v-row>
           <v-col cols="2">
             <v-card rounded="0">
-              <v-tabs v-model="tab" direction="vertical" color="secondary" >
+              <v-tabs v-model="tab" direction="vertical" color="primary" >
                 <v-tab value="one" rounded="0"> {{ $t('general')}} </v-tab>
                 <v-tab value="two" rounded="0"> {{ $tc('picture', 2)}} </v-tab>
                 <v-tab value="three" rounded="0"> {{ $t('additional', {msg: $t('parameter')}) }} </v-tab>
                 <v-btn 
                     rounded="0" 
                     v-on:click="savePosition()" 
-                    color="secondary"> 
+                    color="edit"> 
                     {{ $t('save') }} 
                 </v-btn>
                 <v-btn 
                     rounded="0" 
-                    color="primary" 
+                    color="decline" 
                     v-on:click="confirmDeletion()"> 
                     {{ $t('delete') }} 
                 </v-btn>
                 <v-btn 
                     rounded="0" 
                     v-on:click="goBack" 
-                    color="primary"> 
+                    color="cancel"> 
                     {{ $t('cancel')}}
                 </v-btn>
             <ConfirmDialog ref="confirm" />
@@ -54,12 +54,12 @@
                             <v-list-item>
                                 <v-file-input v-model="image.data" accept="image/tiff, image/jpeg"
                                     label="Bilddatei"></v-file-input>
-                                <v-btn color="primary" class="ml-2"
+                                <v-btn color="decline" class="ml-2"
                                     v-on:click="position.images.splice(i, 1)"><v-icon>mdi-delete</v-icon></v-btn>
                             </v-list-item>
                         </v-list>
                     </template>
-                    <v-btn color="primary" v-on:click="addImage()">{{ $t('add', {msg: $t('image')}) }}</v-btn>
+                    <v-btn color="add" v-on:click="addImage()">{{ $t('add', {msg: $t('image')}) }}</v-btn>
               </v-window-item>
 
 
@@ -72,12 +72,12 @@
                             <v-list-item>
                                 <v-textarea v-model="text.content" :hint="$tc('please_input', 2, {msg: $t('description')} )"
                                     label="Textfeld"></v-textarea>
-                                <v-btn color="primary" class="ml-2"
+                                <v-btn color="decline" class="ml-2"
                                     v-on:click="position.texts.splice(i, 1)"><v-icon>mdi-delete</v-icon></v-btn>
                             </v-list-item>
                         </v-list>
                     </template>
-                    <v-btn color="primary" v-on:click="addText()">{{ $t('add', { msg: $t('text') }) }}</v-btn>
+                    <v-btn color="add" v-on:click="addText()">{{ $t('add', { msg: $t('text') }) }}</v-btn>
               </v-window-item>
             </v-window>
           </v-col>
