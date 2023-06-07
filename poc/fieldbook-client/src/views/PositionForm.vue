@@ -8,41 +8,25 @@
                 <v-tab value="one" rounded="0"> {{ $t('general')}} </v-tab>
                 <v-tab value="two" rounded="0"> {{ $tc('picture', 2)}} </v-tab>
                 <v-tab value="three" rounded="0"> {{ $t('additional', {msg: $t('parameter')}) }} </v-tab>
-                <v-btn rounded="0" v-on:click="savePosition()" color="secondary"> {{ $t('save') }} </v-btn>
-                <v-dialog
-            v-model="dialog"
-            persistent
-            width="auto"
-          >
-            <template v-slot:activator="{ props }">
-              <v-btn rounded="0" color="primary" v-bind="props"> {{ $t('delete')}} </v-btn>
-            </template>
-            <v-card>
-              <v-card-title class="text-h5">
-                 {{ $t('delete', {msg: $t('position')}) }}
-              </v-card-title>
-              <v-card-text>Wollen Sie die Position "{{ position.positionNumber }}" wirklich löschen?</v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn
-                  color="secondary"
-                  variant="outlined"
-                  v-on:click="deletePosition()"
-                  @click="dialog = false">
-                  {{ $t('yes') }}
+                <v-btn 
+                    rounded="0" 
+                    v-on:click="savePosition()" 
+                    color="secondary"> 
+                    {{ $t('save') }} 
                 </v-btn>
-                <v-btn
-                  color="primary"
-                  variant="outlined"
-                  @click="dialog = false">
-                  {{  $t('no') }}
+                <v-btn 
+                    rounded="0" 
+                    color="primary" 
+                    v-on:click="confirmDeletion()"> 
+                    {{ $t('delete') }} 
                 </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-            <v-btn rounded="0" v-on:click="goBack" color="primary"> 
-              {{ $t('cancel')}}
-            </v-btn>
+                <v-btn 
+                    rounded="0" 
+                    v-on:click="goBack" 
+                    color="primary"> 
+                    {{ $t('cancel')}}
+                </v-btn>
+            <ConfirmDialog ref="confirm" />
               </v-tabs>
 
             </v-card>
@@ -99,6 +83,9 @@
           </v-col>
         </v-row>
       </v-container>
+      <v-alert v-model="error_dialog" type="error" density="compact" variant="outlined" closable>
+                {{ error_message }}
+        </v-alert>
     <!-- <v-form ref="form">
 
         <v-tabs direction="vertical" color="secondary">
@@ -172,20 +159,36 @@
             <v-btn v-on:click="goBack" color="primary" class="py-6"> Cancel</v-btn>
 
         </v-tabs>
-        <v-alert v-model="error_dialog" type="error" density="compact" variant="outlined" closable>
-            {{ error_message }}
-        </v-alert>
+        
     </v-form> -->
 </template>
   
 <script>
+/**
+ * Methods overview:
+ *  updatePosition  - Updates existing presentation of the position
+ *  updateImage     - Updates existing presentation of image
+ *  updateText      - Updates existing presentation of text
+ *  savePosition    - Saves the current processing status
+ *  confirmDeletion - Opens the confirmation dialog
+ *  deletePosition  - Deletes the currently selected position
+ *  addImage        - Adds a new image to the list
+ *  addText         - Adds a new text to the list
+ *  goBack          - Goes back to PlaceForm
+ */
 import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
+import ConfirmDialog from '../components/ConfirmDialog.vue';
 
 export default {
     name: 'PositionCreation',
+    components: {
+        ConfirmDialog
+    },
+    /**
+     * Reactive Vue.js data
+     */
     data() {
-
         return {
             position: {
                 id: '',
@@ -196,6 +199,8 @@ export default {
                 images: [],
                 texts: []
             },
+            images: null,
+            texts: null,
             error_dialog: false,
             error_message: '',
             is_new: true,
@@ -203,18 +208,21 @@ export default {
             dialog: false,
             tab: null
         }
-
     },
+    /**
+     * Initialize data from localDB to the reactive Vue.js data
+     */
     async created() {
-
         await fromOfflineDB.syncLocalDBs();
-        await this.updateData();
-
+        await this.updatePosition();
+        await this.updateImages();
+        await this.updateTexts();
     },
     methods: {
-        /* Update existing data */
-        async updateData() {
-
+        /**
+         * Update reactive Vue.js place data
+         */
+        async updatePosition() {
             /* Get id of selected place */
             const currentPosition = VueCookies.get("currentPosition")
 
@@ -223,16 +231,28 @@ export default {
                 const data = await fromOfflineDB.getObject(currentPosition, 'Positions', 'positions');
                 this.position = data.result
             }
-
         },
-        savePosition: async function () {
-
+        /**
+         * Update reactive Vue.js positions data
+         */
+        async updateImages() {
+            this.images = await fromOfflineDB.getAllObjectsWithID(this.position.id, 'Position', 'Images', 'images');
+        },
+        /**
+         * Update reactive Vue.js models data
+         */
+        async updateTexts() {
+            this.texts = await fromOfflineDB.getAllObjectsWithID(this.position.id, 'Position', 'Texts', 'positions');
+        },
+        /**
+         * Save a Position to local storage for the current place
+         */
+        async savePosition() {
             if (!this.$refs.form.validate()) {
                 this.error_message = "Bitte alle Pflichtfelder vor dem Speichern ausfüllen";
                 this.error_dialog = true;
                 return;
             }
-
             //convert from vue proxy to JSON object
             const inputPosition = JSON.parse(JSON.stringify(this.position))
 
@@ -240,39 +260,52 @@ export default {
             await fromOfflineDB.addObject(inputPosition, 'Positions', 'positions')
             this.$emit("view", "Stellenbearbeitung");
             this.$router.push({ name: "PlaceCreation", params:  { placeID: this.position.placeID } });
-
         },
-        /* Delete the selected position */
+        /**
+         * Opens the confirmation dialog
+         */
+        async confirmDeletion() {
+            if (
+                await this.$refs.confirm.open(
+                    "Confirm",
+                    "Are you sure you want to delete the position " + this.position.positionNumber + "?"
+                )
+            ) {
+                this.deletePosition();
+            }
+        },
+        /**
+         * Removes a position from the local storage and the cookies
+         */
         deletePosition: async function () {
-
             await fromOfflineDB.deleteObject(this.position.id, 'Positions', 'positions')
             this.$emit("view", "Stellenbearbeitung");
             this.$router.push({ name: "PlaceCreation" });
-
         },
-        /* Go back to PlacesOverview */
+        /**
+         * Adds a new image-placeholder to the images-array
+         */
+        addImage: function () {
+            this.position.images.push({
+                data: ''
+            });
+        },
+        /**
+         * Adds a new text-placeholder to the texts-array
+         */
+        addText: function () {
+            this.position.texts.push({
+                content: ''
+            });
+        },
+        /**
+         * Cancels the PositionForm and returns to the PlaceForm of current place
+         */
         goBack: function () {
             const currentPlace = VueCookies.get("currentPlace");
             this.$emit("view", "Stellenbearbeitung");
             this.$router.push({ name: "PlaceCreation", params: { placeID: this.position.placeID } });
-
         },
-        /* Adds a new image-placeholder to the images-array*/
-        addImage: function () {
-
-            this.position.images.push({
-                data: ''
-            });
-
-        },
-        /* Adds a new text-placeholder to the texts-array*/
-        addText: function () {
-
-            this.position.texts.push({
-                content: ''
-            });
-
-        }
     }
 };
 </script>
