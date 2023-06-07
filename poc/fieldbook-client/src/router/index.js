@@ -5,6 +5,7 @@ import PlaceForm from "@/views/PlaceForm.vue";
 import PositionsOverview from "@/views/PositionsOverview.vue";
 import PositionForm from "@/views/PositionForm.vue";
 import Viewer from "@/views/3dview.vue";
+import OnlineSync from "@/views/OnlineSync.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -42,6 +43,11 @@ const router = createRouter({
       path: "/3dview",
       name: "3D-Ansicht",
       component: Viewer,
+    },
+    {
+      path: "/onlineSync",
+      name: "OnlineSync",
+      component: OnlineSync,
     },
   ],
 });

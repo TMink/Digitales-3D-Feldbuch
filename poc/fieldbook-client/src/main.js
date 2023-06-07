@@ -1,10 +1,14 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router'
-import vuetify from './plugins/vuetify'
+import { createApp } from 'vue';
+import App from './App.vue';
+import router from './router';
+import axios from "axios";
+import vuetify from './plugins/vuetify';
 import { createI18n } from "vue-i18n";
-import fieldbook_en from './locales/en.mjs'
-import fieldbook_de from './locales/de.mjs'
+import fieldbook_en from './locales/en.mjs';
+import fieldbook_de from './locales/de.mjs';
+
+//baseURL to backend server
+axios.defaults.baseURL = "http://127.0.0.1:3000";
 
 const i18n = createI18n({
     locale: 'en',

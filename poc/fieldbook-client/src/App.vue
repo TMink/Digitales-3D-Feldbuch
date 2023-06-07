@@ -6,22 +6,21 @@
       <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
     </head>
 
+    
+    <!-- App Bar -->
     <v-app-bar color="accent_dark">
-      <v-btn icon v-on:click="goback" > <v-icon>mdi-arrow-left</v-icon> </v-btn>
+      <v-btn icon v-on:click="goback"> <v-icon>mdi-arrow-left</v-icon> </v-btn>
       <v-toolbar-title> {{ toolbar_title }} </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn icon @click.stop="navdrawer = !navdrawer"> <v-icon>mdi-menu</v-icon></v-btn>
     </v-app-bar>
 
-    
 
-    <v-navigation-drawer
-    color="surface"
-    v-model="navdrawer"
-    location="right">
+    <!-- Navigation Drawer -->
+    <v-navigation-drawer color="surface" v-model="navdrawer" location="right">
       <v-list-item>
         <v-list-item-title class="text-h6">
-          {{ $t('menu')}}
+          {{ $t('menu') }}
         </v-list-item-title>
       </v-list-item>
       <v-divider></v-divider>
@@ -32,25 +31,26 @@
       </v-list-item>
       <v-list-item link v-on:click="deleteCookies()">
         <v-list-item-title>
-          {{ $t('delete', {msg: $t('cookies')}) }}
+          {{ $t('delete', { msg: $t('cookies') }) }}
         </v-list-item-title>
       </v-list-item>
       <v-row class="d-flex justify-center ma-3">
-        <LocaleChanger class="ma-2"/>
+        <LocaleChanger class="ma-2" />
         <v-btn @click="toggleTheme" color="background" class="ma-2">
           <v-icon>mdi-theme-light-dark</v-icon>
         </v-btn>
       </v-row>
-      
-      
     </v-navigation-drawer>
 
+
+    <!-- Main Content -->
     <v-main>
       <Pathbar color="accent" :key="path_reload" />
-        <router-view @view="onViewChange"></router-view>
+      <router-view @view="onViewChange"></router-view>
     </v-main>
-  
-    
+
+
+    <!-- App Footer -->
     <AppFooter />
 
   </v-app>
@@ -87,6 +87,7 @@ export default {
       navbar_items: [
         { link: "/", title: this.$t('activity_overview') },
         { link: "/3dview", title: this.$t('threeD_view') },
+        { link: "/onlineSync", title: this.$t('online_sync') },
       ]
     }
   },

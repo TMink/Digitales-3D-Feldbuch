@@ -32,4 +32,5 @@ export default {
   activity_overview: "Activity Overview",
   threeD_view: "3D-View",
   menu: "Menu",
+  online_sync: "Online Sync"
 };
