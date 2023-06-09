@@ -59,7 +59,7 @@
                             </v-list-item>
                         </v-list>
                     </template>
-                    <v-btn color="add" v-on:click="addImage()">{{ $t('add', {msg: $t('image')}) }}</v-btn>
+                    <v-btn color="add" v-on:click="addImage()"><v-icon>mdi-plus-box-multiple</v-icon></v-btn>
               </v-window-item>
 
 
@@ -77,7 +77,7 @@
                             </v-list-item>
                         </v-list>
                     </template>
-                    <v-btn color="add" v-on:click="addText()">{{ $t('add', { msg: $t('text') }) }}</v-btn>
+                    <v-btn color="add" v-on:click="addText()"><v-icon>mdi-plus-box-multiple</v-icon></v-btn>
               </v-window-item>
             </v-window>
           </v-col>

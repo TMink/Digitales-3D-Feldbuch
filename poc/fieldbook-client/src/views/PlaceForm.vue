@@ -58,7 +58,7 @@
               </v-list>
 
               <v-btn v-on:click="addPosition()" class="mr-16 mt-3" color="add">
-                {{ $t('add', { msg: $t('position') }) }}
+                <v-icon>mdi-plus-box-multiple</v-icon>
               </v-btn>
             </v-form>
           </v-window-item>
@@ -86,7 +86,7 @@
             </v-list>
 
             <v-btn @click="models_overlay = true" class="mr-16 mt-3" color="add">
-              {{ $t('add', { msg: $t('model') }) }}
+              <v-icon>mdi-plus-box-multiple</v-icon>
             </v-btn>
 
             <!-- Model Creation dialog -->
