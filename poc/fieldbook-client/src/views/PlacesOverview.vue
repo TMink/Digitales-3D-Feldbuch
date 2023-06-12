@@ -108,7 +108,6 @@ export default {
         lastChanged: Date.now(),
         lastSync: ''
       }
-
       
       if(this.places.length == 0) {
         newPlace.placeNumber = 1

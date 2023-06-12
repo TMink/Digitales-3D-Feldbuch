@@ -1,23 +1,32 @@
 <template>
     <v-container fluid>
         <v-row>
-            <v-col cols="2">
-                <v-card rounded="0">
-                    <v-tabs v-model="tab" direction="vertical" color="secondary">
-                        <v-tab value="one" rounded="0"> {{ $t('general') }} </v-tab>
-                        <v-tab value="two" rounded="0"> {{ $tc('picture', 2) }} </v-tab>
-                        <v-tab value="three" rounded="0"> {{ $t('additional', { msg: $t('parameter') }) }} </v-tab>
-                        <v-btn rounded="0" v-on:click="savePosition()" color="secondary">
-                            {{ $t('save') }}
-                        </v-btn>
-                        <v-btn rounded="0" color="primary" v-on:click="confirmDeletion()">
-                            {{ $t('delete') }}
-                        </v-btn>
-                        <v-btn rounded="0" v-on:click="goBack" color="primary">
-                            {{ $t('cancel') }}
-                        </v-btn>
-                        <ConfirmDialog ref="confirm" />
-                    </v-tabs>
+          <v-col cols="2">
+            <v-card rounded="0">
+              <v-tabs v-model="tab" direction="vertical" color="primary" >
+                <v-tab value="one" rounded="0"> {{ $t('general')}} </v-tab>
+                <v-tab value="two" rounded="0"> {{ $tc('picture', 2)}} </v-tab>
+                <v-tab value="three" rounded="0"> {{ $t('additional', {msg: $t('parameter')}) }} </v-tab>
+                <v-btn 
+                    rounded="0" 
+                    v-on:click="savePosition()" 
+                    color="edit"> 
+                    {{ $t('save') }} 
+                </v-btn>
+                <v-btn 
+                    rounded="0" 
+                    color="decline" 
+                    v-on:click="confirmDeletion()"> 
+                    {{ $t('delete') }} 
+                </v-btn>
+                <v-btn 
+                    rounded="0" 
+                    v-on:click="goBack" 
+                    color="cancel"> 
+                    {{ $t('cancel')}}
+                </v-btn>
+            <ConfirmDialog ref="confirm" />
+              </v-tabs>
 
                 </v-card>
             </v-col>
@@ -43,60 +52,63 @@
                         </v-card>
                     </v-window-item>
 
-                    <v-window-item value="two">
-                        <v-list-subheader v-if="position.images.length === 0">
-                            {{ $t('not_created_yet', { object: $tc('picture', 2) }) }}
-                        </v-list-subheader>
-                        <template v-for="(image, i) in position.images" :key="image">
-                            <v-list>
-                                <v-list-item>
-                                    <v-file-input 
-                                        v-model="image.data" 
-                                        accept="image/tiff, image/jpeg" 
-                                        label="Bilddatei">
-                                    </v-file-input>
-                                    <v-btn 
-                                        color="primary" 
-                                        class="ml-2" 
-                                        v-on:click="position.images.splice(i, 1)">
-                                        <v-icon>mdi-delete</v-icon>
-                                    </v-btn>
-                                </v-list-item>
-                            </v-list>
-                        </template>
-                        <v-btn color="primary" v-on:click="addImage()">
-                            {{ $t('add', { msg: $t('image') }) }}
-                        </v-btn>
-                    </v-window-item>
+              <v-window-item value="two">
+                <v-list-subheader v-if="position.images.length === 0">
+                        {{ $t('not_created_yet', {object: $tc('picture', 2)}) }}
+                    </v-list-subheader>
+                    <template v-for="(image, i) in position.images" :key="image">
+                        <v-list>
+                            <v-list-item>
+                                <v-file-input
+                                    v-model="image.data"
+                                    label="Bilddatei"
+                                    accept="image/tiff, image/jpeg">
+                                </v-file-input>
+                                <v-btn 
+                                    color="decline" 
+                                    class="ml-2"
+                                    v-on:click="position.images.splice(i, 1)">
+                                    <v-icon>mdi-delete</v-icon>
+                                </v-btn>
+                            </v-list-item>
+                        </v-list>
+                    </template>
+                    <v-btn 
+                        color="add" 
+                        v-on:click="addImage()">
+                        <v-icon>mdi-plus-box-multiple</v-icon>
+                    </v-btn>
+              </v-window-item>
 
 
-                    <v-window-item value="three">
-                        <v-list-subheader v-if="position.texts.length === 0">
-                            {{ $t('not_created_yet', { object: $t('additional', { msg: $tc('parameter', 2) }) }) }}
-                        </v-list-subheader>
-                        <template v-for="(text, i) in position.texts" :key="text">
-                            <v-list>
-                                <v-list-item>
-                                    <v-textarea 
-                                        v-model="text.content" 
-                                        label="Textfeld"
-                                        :hint="$tc('please_input', 2, { msg: $t('description') })">
-                                    </v-textarea>
-                                    <v-btn 
-                                        color="primary" 
-                                        class="ml-2" 
-                                        v-on:click="position.texts.splice(i, 1)">
-                                        <v-icon>mdi-delete</v-icon>
-                                    </v-btn>
-                                </v-list-item>
-                            </v-list>
-                        </template>
-                        <v-btn color="primary" v-on:click="addText()">
-                            {{ $t('add', { msg: $t('text') }) }}
-                        </v-btn>
-                    </v-window-item>
-                </v-window>
-            </v-col>
+              <v-window-item value="three">
+                <v-list-subheader v-if="position.texts.length === 0">
+                        {{ $t('not_created_yet', { object: $t('additional', {msg: $tc('parameter', 2)}) }) }}
+                    </v-list-subheader>
+                    <template v-for="(text, i) in position.texts" :key="text">
+                        <v-list>
+                            <v-list-item>
+                                <v-textarea 
+                                    v-model="text.content" 
+                                    :hint="$tc('please_input', 2, {msg: $t('description')} )"
+                                    label="Textfeld"></v-textarea>
+                                <v-btn 
+                                    color="decline" 
+                                    class="ml-2"
+                                    v-on:click="position.texts.splice(i, 1)">
+                                    <v-icon>mdi-delete</v-icon>
+                                </v-btn>
+                            </v-list-item>
+                        </v-list>
+                    </template>
+                    <v-btn 
+                        color="add" 
+                        v-on:click="addText()">
+                       <v-icon>mdi-plus-box-multiple</v-icon>
+                    </v-btn>
+              </v-window-item>
+            </v-window>
+          </v-col>
         </v-row>
     </v-container>
     <v-alert

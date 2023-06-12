@@ -3,20 +3,20 @@
     <v-row>
       <v-col cols="2">
         <v-card rounded="0">
-          <v-tabs v-model="tab" direction="vertical" color="secondary">
+          <v-tabs v-model="tab" direction="vertical" color="primary">
             <v-tab value="one" rounded="0"> {{ $t('general') }} </v-tab>
             <v-tab value="two" rounded="0"> {{ $tc('position', 2) }} </v-tab>
             <v-tab value="three" rounded="0"> {{ $tc('model', 2) }} </v-tab>
-            <v-btn rounded="0" v-on:click="savePlace()" color="secondary">
+            <v-btn rounded="0" v-on:click="savePlace()" color="edit">
               {{ $t('save') }}
             </v-btn>
-            <v-btn rounded="0" color="primary" v-on:click="confirmDeletion()">
+            <v-btn rounded="0" color="decline" v-on:click="confirmDeletion()">
               {{ $t('delete') }}
             </v-btn>
 
             <ConfirmDialog ref="confirm" />
 
-            <v-btn rounded="0" v-on:click="cancelPlace" color="primary">
+            <v-btn rounded="0" v-on:click="cancelPlace" color="cancel">
               {{ $t('cancel') }}
             </v-btn>
           </v-tabs>
@@ -65,10 +65,10 @@
               </v-list>
 
               <v-btn
-                color="primary"
+                color="add"
                 class="mr-16 mt-3" 
                 v-on:click="addPosition()">
-                {{ $t('add', { msg: $t('position') }) }}
+                <v-icon>mdi-plus-box-multiple</v-icon>
               </v-btn>
             </v-form>
           </v-window-item>
@@ -96,10 +96,10 @@
             </v-list>
 
             <v-btn
-              color="primary"
+              color="add"
               class="mr-16 mt-3"
               @click="models_overlay = true">
-              {{ $t('add', { msg: $t('model') }) }}
+              <v-icon>mdi-plus-box-multiple</v-icon>
             </v-btn>
 
             <!-- Model Creation dialog -->
@@ -138,14 +138,17 @@
                 </v-card-text>
 
                 <v-card-actions class="justify-center">
-                  <v-btn 
-                    variant="outlined" 
-                    v-on:click="addModel()"> 
-                    {{ $t('save') }}
+                  <v-btn
+                    icon 
+                    color="edit" 
+                    v-on:click="addModel()">
+                    <v-icon>mdi-content-save-all</v-icon>
                   </v-btn>
                   <v-btn 
-                    @click="models_overlay = false"> 
-                    {{ $t('cancel') }} 
+                    icon 
+                    color="decline" 
+                    @click="models_overlay = false">
+                    <v-icon>mdi-close-circle</v-icon>
                   </v-btn>
                 </v-card-actions>
               </v-card>
@@ -167,6 +170,8 @@
  *  confirmDeletion - Opens the confirmation dialog
  *  deletePlace     - Deletes the currently selected place
  *  addPosition     - Adds a new position to the list
+ *  textureToBase64 - Change texture data to base64
+ *  modelToString   - Change obj-Model data to String
  *  addModel        - Adds a new model to the list
  *  moveToPosition  - Loads the view of the selected position
  *  cancelPlace     - Cancels all not already saved actions
@@ -337,6 +342,10 @@ export default {
 
     },
 
+    /**
+     * Change texture data to base64
+     * @param {*} rawData 
+     */
     async textureToBase64(rawData) {
 
       const output = await new Promise((resolve) => {
@@ -357,6 +366,10 @@ export default {
 
     },
 
+    /**
+     * Change obj-Model data to String
+     * @param {*} rawData 
+     */
     async modelToString(rawData) {
 
       const output = await new Promise((resolve) => {

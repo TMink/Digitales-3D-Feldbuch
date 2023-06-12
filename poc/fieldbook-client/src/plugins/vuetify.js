@@ -24,6 +24,7 @@ export default createVuetify({
           decline: "#f84141",                 //decline action
           add:"#9EFFE2",                      //add-buttons
           edit:"#FE9F2E",                     //edit-buttons
+          cancel:"#8388A4",                   //cancel-buttons
           slider:"#FE9F2E"                    //slider for navigation bar
         },
       },
@@ -45,6 +46,7 @@ export default createVuetify({
           decline: "#CC453B",                 //decline action
           add: "#7DC8B1",                     //add-buttons
           edit:"#DA8E60",                     //edit-buttons
+          cancel:"#52525E",                   //cancel-buttons
           slider:"#FE9F2E"                    //slider for navigation bar
         },
       },

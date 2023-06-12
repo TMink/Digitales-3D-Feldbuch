@@ -38,9 +38,8 @@
             </v-list-item>
             <v-divider v-if="i !== positions.length - 1"></v-divider>
           </template>
-
+          <v-btn v-on:click="addPosition()" color="add"> <v-icon>mdi-plus-box-multiple</v-icon> </v-btn>
         </v-list>
-        <v-btn v-on:click="addPosition()" color="primary"> {{ $t('add', {msg: $t('position')}) }} </v-btn>
       </v-form>
     </div>
 </template>
