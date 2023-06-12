@@ -53,12 +53,15 @@
     <!-- App Footer -->
     <AppFooter />
 
+
+    <VToast ref="vtoast"/>
   </v-app>
 </template>
 
 <script>
 import AppFooter from './components/AppFooter.vue';
 import Pathbar from './components/Pathbar.vue';
+import VToast from './components/VToast.vue';
 import VueCookies from 'vue-cookies';
 import { useTheme } from 'vuetify/lib/framework.mjs';
 import LocaleChanger from './components/LocaleChanger.vue'
@@ -68,7 +71,8 @@ export default {
   components: {
     AppFooter,
     Pathbar,
-    LocaleChanger
+    LocaleChanger,
+    VToast
   },
   setup() {
     const theme = useTheme()
@@ -90,6 +94,9 @@ export default {
         { link: "/onlineSync", title: this.$t('online_sync') },
       ]
     }
+  },
+  mounted() {
+    this.$root.vtoast = this.$refs.vtoast;
   },
   methods: {
     goback() {

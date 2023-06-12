@@ -203,6 +203,7 @@ export default {
 
             await this.updateLastSyncTime(proxyChange, subdomain);
             
+            this.$root.vtoast.show({ message: 'Successfully synchronized with Database!' })
         },
         /**
          * Synchronize all selected changes with the onlineDB
@@ -220,6 +221,7 @@ export default {
             });
 
             //show success message
+            this.$root.vtoast.show({ message: 'Successfully synchronized with Database!' })
         },
         /**
          * Updates `lastSync`- the time when the change was 
