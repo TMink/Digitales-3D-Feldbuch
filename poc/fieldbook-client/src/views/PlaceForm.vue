@@ -28,9 +28,16 @@
           <!-- Tab item 'general' -->
           <v-window-item value="one">
             <v-card>
-              <v-text-field v-model="place.ansprache" label="Ansprache"
-                hint="Geben Sie hier eine Ansprache ein"></v-text-field>
-              <v-text-field v-model="place.date" label="Datierung" hint="Format: dd.mm.yyyy"></v-text-field>
+              <v-text-field 
+                v-model="place.ansprache" 
+                label="Ansprache"
+                hint="Geben Sie hier eine Ansprache ein">
+              </v-text-field>
+              <v-text-field 
+                v-model="place.date" 
+                label="Datierung" 
+                hint="Format: dd.mm.yyyy">
+              </v-text-field>
             </v-card>
           </v-window-item>
 
@@ -57,7 +64,10 @@
                 </template>
               </v-list>
 
-              <v-btn v-on:click="addPosition()" class="mr-16 mt-3" color="primary">
+              <v-btn
+                color="primary"
+                class="mr-16 mt-3" 
+                v-on:click="addPosition()">
                 {{ $t('add', { msg: $t('position') }) }}
               </v-btn>
             </v-form>
@@ -85,7 +95,10 @@
               </template>
             </v-list>
 
-            <v-btn @click="models_overlay = true" class="mr-16 mt-3" color="primary">
+            <v-btn
+              color="primary"
+              class="mr-16 mt-3"
+              @click="models_overlay = true">
               {{ $t('add', { msg: $t('model') }) }}
             </v-btn>
 
@@ -95,22 +108,45 @@
                 <v-card-title>{{ $t('add', { msg: $t('model') }) }} </v-card-title>
                 <v-card-text>
 
-                  <v-text-field :label="$t('place_id')" :hint="$t('plase_input', { msg: $t('place_id') })" disabled
-                    v-model="place.id"> </v-text-field>
+                  <v-text-field
+                    disabled
+                    v-model="place.id"
+                    :label="$t('place_id')" 
+                    :hint="$t('plase_input', { msg: $t('place_id') })">
+                  </v-text-field>
 
-                  <v-text-field :label="$t('title')" :hint="$t('plase_input', { msg: $t('title_of_model') })"
-                    v-model="model.title"></v-text-field>
+                  <v-text-field
+                    v-model="model.title" 
+                    :label="$t('title')" 
+                    :hint="$t('plase_input', { msg: $t('title_of_model') })">
+                  </v-text-field>
 
-                  <v-file-input accept=".obj" show-size :label="$t('input', { msg: $t('model') })"
-                    v-model="model.model"></v-file-input>
+                  <v-file-input
+                    show-size
+                    accept=".obj"
+                    v-model="model.model"
+                    :label="$t('input', { msg: $t('model') })">
+                  </v-file-input>
 
-                  <v-file-input prepend-icon="mdi-camera" accept="image/png, image/jpeg, image/bmp" show-size
-                    :label="$t('input', { msg: $t('texture') })" v-model="model.texture"></v-file-input>
+                  <v-file-input
+                    show-size
+                    v-model="model.texture"
+                    prepend-icon="mdi-camera" 
+                    accept="image/png, image/jpeg, image/bmp" 
+                    :label="$t('input', { msg: $t('texture') })">
+                  </v-file-input>
                 </v-card-text>
 
                 <v-card-actions class="justify-center">
-                  <v-btn variant="outlined" v-on:click="addModel()"> {{ $t('save') }} </v-btn>
-                  <v-btn @click="models_overlay = false"> {{ $t('cancel') }} </v-btn>
+                  <v-btn 
+                    variant="outlined" 
+                    v-on:click="addModel()"> 
+                    {{ $t('save') }}
+                  </v-btn>
+                  <v-btn 
+                    @click="models_overlay = false"> 
+                    {{ $t('cancel') }} 
+                  </v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
@@ -159,6 +195,10 @@ export default {
         placeNumber: '',
         ansprache: '',
         date: '',
+        positions: [],
+        models: [],
+        lastChanged: '',
+        lastSync: ''
       },
       model: {
         id: '',
@@ -195,7 +235,7 @@ export default {
     async updatePlace() {
       const currentPlace = VueCookies.get('currentPlace');
       const data = await fromOfflineDB.getObject(currentPlace, 'Places', 'places');
-      this.place = data.result;
+      this.place = data;
     },
     /**
      * Update reactive Vue.js positions data
@@ -214,10 +254,10 @@ export default {
      */
     async savePlace() {
       //convert from vue proxy to JSON object
-      const inputPlace = JSON.parse(JSON.stringify(this.place))
+      const inputPlace = JSON.parse(JSON.stringify(this.place));
+      inputPlace.lastChanged = Date.now();
 
-      await fromOfflineDB.deleteObject(this.place.id, 'Places', 'places');
-      await fromOfflineDB.addObject(inputPlace, 'Places', 'places');
+      await fromOfflineDB.updateObject(inputPlace, 'Places', 'places');
     },
     /**
      * Opens the confirmation dialog
@@ -233,45 +273,66 @@ export default {
       }
     },
     /**
-     * Removes a place from the local storage and the cookies
+     * Removes a place from the IndexedDB and the Cookies
      */
     async deletePlace() {
 
+      // Remove the placeID from connected activity
+      const acID = String(VueCookies.get('currentActivity'))
+      var activity = await fromOfflineDB.getObject(acID, 'Activities', 'activities')
+      var index = activity.places.indexOf(this.place.id.toString())
+
+      activity.places.splice(index, 1)
+      await fromOfflineDB.updateObject(activity, 'Activities', 'activities');
+
+      // Delete all data that is dependent on the place
       await fromOfflineDB.deleteCascade(this.place.id, 'position', 'Positions', 'positions');
       VueCookies.remove('currentPosition');
 
-      await fromOfflineDB.deleteObject(this.place.id, 'Places', 'places');
+      // Delete the place itself
+      await fromOfflineDB.deleteObject(this.place, 'Places', 'places');
       VueCookies.remove('currentPlace');
 
       this.$router.push({ name: "PlacesOverview" });
       this.$emit('view', 'Stellen');
 
     },
+
     /**
      * Adds a new position to the local storage for the current place
      */
     async addPosition() {
 
+      // Add positionID to the place array of all positions
+      const placeID = String(VueCookies.get('currentPlace'))
+      var newPositionID = String(Date.now())
+      var place = await fromOfflineDB.getObject(placeID, 'Places', 'places')
+
+      place.positions.push(newPositionID)
+      place.lastChanged = Date.now()
+
       const newPosition = {
-        id: String(Date.now()),
+        id: newPositionID,
         positionNumber: null,
         placeID: this.place.id,
         texts: [],
         images: [],
-        models: {
-        }
+        lastChanged: Date.now(),
+        lastSync: ''
       };
 
       if (this.positions.length == 0) {
         newPosition.positionNumber = 1;
       } else {
         this.updatePositions();
-        const positionNumber = Math.max(...this.positions.map(o => o.positionNumber))
+        const positionNumber = Math.max(...this.positions.map(o => o.positionNumber));
         const newPositionNumber = positionNumber + 1;
         newPosition.positionNumber = newPositionNumber;
       }
 
-      await fromOfflineDB.addObject(newPosition, "Positions", "positions");
+      await fromOfflineDB.updateObject(place, 'Places', 'places')
+      var posID = await fromOfflineDB.addObject(newPosition, "Positions", "positions");
+      await fromOfflineDB.addObject({ id: posID, object: 'position' }, 'Changes', 'created');
       await this.updatePositions(newPosition.id);
 
     },
@@ -320,12 +381,24 @@ export default {
      * Adds a new model to the local storage for the current place
      */
     async addModel() {
+      // add model id to place array of all models
+      const placeID = String(VueCookies.get('currentPlace'))
+      var newModelID = String(Date.now())
+
+      var place = await fromOfflineDB.getObject(placeID, 'Places', 'places')
+
+      place.models.push(newModelID)
+      place.lastChanged = Date.now()
+
+
       const newModel = {
-        id: String(Date.now()),
+        id: newModelID,
         placeID: this.place.id,
         title: this.model.title,
         model: await this.modelToString(toRaw(this.model.model)),
-        texture: await this.textureToBase64(toRaw(this.model.texture))
+        texture: await this.textureToBase64(toRaw(this.model.texture)),
+        lastChanged: Date.now(),
+        lastSync: ''
       };
 
       if (this.models.length == 0) {
@@ -337,6 +410,7 @@ export default {
         newModel.modelNumber = newModelNumber;
       }
 
+      await fromOfflineDB.updateObject(place, 'Places', 'places')
       await fromOfflineDB.addObject(newModel, 'Models', 'places');
       await this.updateModels(newModel.id);
     },

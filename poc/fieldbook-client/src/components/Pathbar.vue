@@ -38,7 +38,6 @@ export default {
     },
     
     async getInfo(selection) { 
-
       const id = VueCookies.get('current' + selection);
       
       let db = null;
@@ -54,13 +53,13 @@ export default {
     
       switch(selection) {
         case "Activity":
-          this.currentActivity = name.result.activityNumber;
+          this.currentActivity = name.activityNumber;
           break;
         case "Place":
-          this.currentPlace = name.result.placeNumber;
+          this.currentPlace = name.placeNumber;
           break;
         case "Position":
-          this.currentPosition = name.result.positionNumber;
+          this.currentPosition = name.positionNumber;
           break;
         default:
           console.log( "Error" );

@@ -35,7 +35,11 @@
           </v-list-item>
           <v-divider v-if="i !== places.length - 1"></v-divider>
         </template>
-        <v-btn v-on:click="addPlace()" color="add"> <v-icon>mdi-plus-box-multiple</v-icon> </v-btn>
+        <v-btn
+          color="add"
+          v-on:click="addPlace()"> 
+          <v-icon>mdi-plus-box-multiple</v-icon> 
+        </v-btn>
       </v-list>
     </v-form>
   </div>
@@ -86,16 +90,26 @@ export default {
 
     async addPlace() {
 
-      const acID = String(VueCookies.get('currentActivity'))
+      const acID = String(VueCookies.get('currentActivity'));
+      var newPlaceID = String(Date.now());
+
+      var activity = await fromOfflineDB.getObject(acID, 'Activities', 'activities');
+      activity.places.push(newPlaceID);
+      activity.lastChanged = Date.now();
 
       const newPlace = {
-        id:           String(Date.now()),
+        id:           newPlaceID,
         activityID:   acID,
         placeNumber:  '',
         date:         '',
-        ansprache:    ''
+        ansprache:    '',
+        positions:    [],
+        models:       [],
+        lastChanged: Date.now(),
+        lastSync: ''
       }
 
+      
       if(this.places.length == 0) {
         newPlace.placeNumber = 1
       } else {
@@ -103,8 +117,10 @@ export default {
         const newPlaceNumber = Math.max( ...placeNumbers ) + 1;
         newPlace.placeNumber = newPlaceNumber;
       }
-      
-      await fromOfflineDB.addObject( newPlace, 'Places', 'places' )
+
+      await fromOfflineDB.updateObject(activity, 'Activities', 'activities');
+      var placeID = await fromOfflineDB.addObject( newPlace, 'Places', 'places')
+      await fromOfflineDB.addObject({ id: placeID, object: 'places' }, 'Changes', 'created');
       await this.updatePlaces( newPlace.id )
 
     },

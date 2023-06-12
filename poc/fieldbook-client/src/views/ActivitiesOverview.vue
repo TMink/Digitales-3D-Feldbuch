@@ -40,21 +40,21 @@
                   <v-row no-gutters>
                     <v-col cols="3">
                       <v-sheet class="pa-2 ma-2">
-                        <v-text-field :rules="[rules.required]" v-model="activity.außenstelle" label="Außenstelle"
+                        <v-text-field :rules="[rules.required]" v-model="activity.branchOffice" label="Außenstelle"
                           hide-details="auto" placeholder="Xanten" clearable></v-text-field>
                       </v-sheet>
                     </v-col>
 
                     <v-col cols="3">
                       <v-sheet class="pa-2 ma-2">
-                        <v-text-field :rules="[rules.required]" v-model="activity.jahr" label="Jahr" hide-details="auto"
+                        <v-text-field :rules="[rules.required]" v-model="activity.year" label="Jahr" hide-details="auto"
                           placeholder="2023" clearable counter maxlength="4"></v-text-field>
                       </v-sheet>
                     </v-col>
 
                     <v-col cols="3">
                       <v-sheet class="pa-2 ma-2">
-                        <v-text-field :rules="[rules.required, rules.counter]" v-model="activity.nummer" label="Nummer"
+                        <v-text-field :rules="[rules.required, rules.counter]" v-model="activity.number" label="Nummer"
                           hide-details="auto" placeholder="1337" clearable counter maxlength="4">
                         </v-text-field>
                       </v-sheet>
@@ -86,21 +86,21 @@
               <v-row no-gutters>
                 <v-col cols="3">
                   <v-sheet class="pa-2 ma-2">
-                    <v-text-field :rules="[rules.required]" v-model="activity.außenstelle" label="Außenstelle"
+                    <v-text-field :rules="[rules.required]" v-model="activity.branchOffice" label="Außenstelle"
                       hide-details="auto" placeholder="Xanten" clearable></v-text-field>
                   </v-sheet>
                 </v-col>
 
                 <v-col cols="3">
                   <v-sheet class="pa-2 ma-2">
-                    <v-text-field :rules="[rules.required]" v-model="activity.jahr" label="Jahr" hide-details="auto"
+                    <v-text-field :rules="[rules.required]" v-model="activity.year" label="Jahr" hide-details="auto"
                       placeholder="2023" clearable counter maxlength="4"></v-text-field>
                   </v-sheet>
                 </v-col>
 
                 <v-col cols="3">
                   <v-sheet class="pa-2 ma-2">
-                    <v-text-field :rules="[rules.required, rules.counter]" v-model="activity.nummer" label="Nummer"
+                    <v-text-field :rules="[rules.required, rules.counter]" v-model="activity.number" label="Nummer"
                       hide-details="auto" placeholder="1337" clearable counter maxlength="4">
                     </v-text-field>
                   </v-sheet>
@@ -139,13 +139,43 @@ export default {
     Navigation,
     ConfirmDialog
   },
+  data() {
+    return {
+      activities: [],
+      current_activity: {},
+      showInputMask: false,
+      dialog: false,
+      del_overlay: false,
+      activity: {
+        branchOffice: null,
+        year: null,
+        number: null,
+        places: [],
+        lastChanged: null,
+        lastSync: null
+      },
+      rules: {
+        required: value => !!value || 'Required.',
+        counter: value => value.length <= 20 || 'Max 20 characters',
+      }
+    };
+  },
+  async created() {
+    await fromOfflineDB.syncLocalDBs();
+    await this.getActivities();
+  },
   methods: {
-    //retrieve all activities
+    /**
+     * Get all activities from IndexedDb
+     */
     async getActivities() {
       /* Recieve all IDs in store */
       this.activities = await fromOfflineDB.getAllObjects('Activities', 'activities')
     },
-    //sets the currently selected activity into the cookies
+    /**
+     * Sets the currently selected activity into the cookies
+     * @param {String} activityID 
+     */
     async setActivity(activityID) {
       if (VueCookies.get('currentActivity') !== activityID) {
         VueCookies.remove('currentPlace');
@@ -155,54 +185,85 @@ export default {
       this.$router.push({ name: 'PlacesOverview' })
       this.$emit('view', 'Stelle')
     },
-    //saves/updates an activity in the local storage if the activity mask is filled out correctly
-    async saveActivity(activity) {
-      if (activity.außenstelle != null && activity.jahr != null && activity.nummer != null) {
-        for (let i of this.activities) {
-          if (activity.id === i.id) {
-            this.deleteActivity(activity)
-          }
-        }
+    /**
+     * Saves/updates an `activity` in the IndexedDB if the 
+     * activity mask is filled out correctly
+     * @param {*} proxyActivity 
+     */
+    async saveActivity(proxyActivity) {
+
+      const activity = JSON.parse(JSON.stringify(proxyActivity));
+      //TODO: use form.validate() instead of != null 
+      if (activity.branchOffice != null 
+        && activity.year != null 
+        && activity.number != null) {
 
         const newActivity = {
           id: String(Date.now()),
-          activityNumber: activity.außenstelle + " " + activity.jahr + "/" + activity.nummer,
-          außenstelle: activity.außenstelle,
-          jahr: activity.jahr,
-          nummer: activity.nummer,
-          edit: false
+          activityNumber: activity.branchOffice 
+                          + " " + activity.year 
+                          + "/" + activity.number,
+          branchOffice: activity.branchOffice,
+          year: activity.year,
+          number: activity.number,
+          places: [],
+          lastChanged: Date.now(),
+          lastSync: activity.lastSync
+        }
+        
+        // Edit existing data
+        if (Object.prototype.hasOwnProperty.call(activity, "id")) {
+          newActivity.id = activity.id;
+          await fromOfflineDB.updateObject(newActivity, 'Activities', 'activities');
+
+        } else {
+        // Add new data to store 
+          var activityID = await fromOfflineDB.addObject(newActivity, 'Activities', 'activities');
+
+          await fromOfflineDB.addObject({id: activityID, object: 'activities'}, 'Changes', 'created');
         }
 
-        /* Add new data to store */
-        await fromOfflineDB.addObject(newActivity, 'Activities', 'activities')
         this.clearActivityMask();
       }
+
       await this.getActivities();
       this.showInputMask = false;
     },
-    //opens the confirm dialog if needed
+    /**
+     * Opens the confirmation dialog for deletion
+     * @param {*} activity 
+     */
     async confirmDeletion(activity) {
       if (
         await this.$refs.confirm.open(
           "Confirm",
-          "Are you sure you want to delete the activity " + activity.activityNumber + "?"
+          "Are you sure you want to delete the activity " 
+          + activity.activityNumber + "?"
         )
       ) {
         this.deleteActivity(activity);
       }
     },
-    //removes an activity from the local storage and the cookies
+    /**
+     * Removes an activity from IndexedDB and Cookies
+     * @param {*} activity 
+     */
     async deleteActivity(activity) {
       VueCookies.remove('currentPosition');
       VueCookies.remove('currentPlace');
       VueCookies.remove('currentActivity');
+
       this.$emit('view', 'Stelle')
       await fromOfflineDB.deleteCascade(activity.id, 'place', 'Places',
         'places');
-      await fromOfflineDB.deleteObject(activity.id, 'Activities', 'activities')
+      await fromOfflineDB.deleteObject(activity, 'Activities', 'activities')
       await this.getActivities();
     },
-    //decides wether to show the input mask for a new activity or the edit mask for an existing one
+    /**
+     * Decides wether to show the input mask for a new `activity` 
+     * or the edit mask for an existing one
+     * @param {*} activity 
+     */
     async modifyActivity(activity) {
       if (activity === 'new') {
         this.showInputMask = true
@@ -213,50 +274,32 @@ export default {
             i.edit = true
           }
         }
-
       }
     },
-    //resets the activity masks default values to 'null' and hides it
+    /**
+     * Resets the activity masks default values to 'null' and hides it
+     */
     async clearActivityMask() {
       this.showInputMask = false
-      this.activity.außenstelle = null
-      this.activity.jahr = null
-      this.activity.nummer = null
+      this.activity.branchOffice = null
+      this.activity.year = null
+      this.activity.number = null
     },
-    //resets the edit mask for activities to the stored values from the local storage and hides it
+    /**
+     * Resets the edit mask for activities to the stored values 
+     * from IndexedDb and hides it
+     * @param {*} activity 
+     */
     async clearActivityEditMask(activity) {
       for (let i of this.activities) {
         if (activity.id === i.id) {
-          console.log(i.außenstelle)
-          activity.außenstelle = i.außenstelle
-          activity.jahr = i.jahr
-          activity.nummer = i.nummer
+          activity.branchOffice = i.branchOffice
+          activity.year = i.year
+          activity.number = i.number
           activity.edit = false
         }
       }
     }
-  },
-  async created() {
-    await fromOfflineDB.syncLocalDBs();
-    await this.getActivities();
-  },
-  data() {
-    return {
-      activities: [],
-      current_activity: {},
-      showInputMask: false,
-      dialog: false,
-      del_overlay: false,
-      activity: {
-        außenstelle: null,
-        jahr: null,
-        nummer: null
-      },
-      rules: {
-        required: value => !!value || 'Required.',
-        counter: value => value.length <= 20 || 'Max 20 characters',
-      }
-    };
   }
 }
 </script>

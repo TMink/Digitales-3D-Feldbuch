@@ -105,10 +105,10 @@ export default {
       const model = await fromOfflineDB.getObject(modelID, dbName, storeName);
 
       /* Load object */
-      const object = new OBJLoader().parse(model.result.model);
+      const object = new OBJLoader().parse(model.model);
 
       /* Load texture */
-      var textLoader = new THREE.TextureLoader().load(model.result.texture);
+      var textLoader = new THREE.TextureLoader().load(model.texture);
 
       /* Create Material */
       const material = new THREE.MeshBasicMaterial({
@@ -130,15 +130,15 @@ export default {
       mesh.material = material;
       mesh.material.alphaTest = 0.5
       mesh.material.opacity = 0.0;
-      mesh.name = model.result.title;
+      mesh.name = model.title;
 
       /* Add mesh to scene */
       this.scene.add(mesh);
 
       /* Move camera to mesh position */
-      this.updateCameraPosition(model.result.title)
+      this.updateCameraPosition(model.title)
 
-      this.meshInScene.push(model.result.title);
+      this.meshInScene.push(model.title);
 
     },
 

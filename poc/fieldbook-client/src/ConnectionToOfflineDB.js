@@ -13,6 +13,8 @@
  *                            same id (activityID or placeID)
  *  getAllObjectsWithID     - Gets the data of all objects, which contain the
  *                            same id (activityID or placeID)
+ *  getAllUpdatedObjects    - Gets all objects that have been updated since 
+ *                            last time
  *  addObject               - Adds object to a specific object store
  *  deleteObject            - Deletes an object from a specific object store
  *  deleteAllObjects        - Deletes all objects from a specific object store
@@ -41,6 +43,7 @@ export default class ConnectionToOfflineDB {
     }
   }
 
+  
   /**
    * @param {String} dbName
    *    Database Name
@@ -68,11 +71,13 @@ export default class ConnectionToOfflineDB {
       request.onupgradeneeded = (e) => {
         const db = e.target.result;
         storeNames.forEach((storeName) => {
-          db.createObjectStore(storeName, { autoIncrement: true, keyPath: "id" });
+          const store = db.createObjectStore(storeName, {keyPath: "id" });
+          store.createIndex("lastChangedIDX", "lastChanged", { unique: false });
         });
       };
     });
   }
+
 
   /**
    * @param {String} id
@@ -90,13 +95,14 @@ export default class ConnectionToOfflineDB {
     return new Promise((resolve, _reject) => {
       const trans = localDB.transaction([storeName], "readonly");
       trans.oncomplete = (_e) => {
-        resolve(data);
+        resolve(data.result);
       };
 
       const store = trans.objectStore(storeName);
       let data = store.get(id);
     });
   }
+
 
   /**
    * @param {String} localDBName
@@ -127,6 +133,7 @@ export default class ConnectionToOfflineDB {
       };
     });
   }
+
 
   /**
    * @param {String} localDBName
@@ -167,6 +174,7 @@ export default class ConnectionToOfflineDB {
       };
     });
   }
+
 
   /**
    * @param {String} localDBName
@@ -228,6 +236,7 @@ export default class ConnectionToOfflineDB {
     });
   }
 
+
   /**
    * @param {String} placeID
    *    ID of the currently selected place
@@ -270,7 +279,73 @@ export default class ConnectionToOfflineDB {
     });
   }
 
+
   /**
+   * Return an array of objects from IndexedDB from an array of ObjectIDs
+   * @param {*} idArray 
+   * @param {*} localDBName 
+   * @param {*} storeName 
+   * @returns {[*]} Objects from IndexedDB
+   */
+  async getAllObjectsFromArray(idArray, localDBName, storeName) {
+    const localDB = this.getLocalDBFromName(localDBName);
+
+    return new Promise((resolve, _reject) => {
+      const trans = localDB.transaction([storeName], "readonly");
+      trans.oncomplete = (_e) => {
+        resolve(data);
+      };
+
+      const store = trans.objectStore(storeName);
+      let data = [];
+
+      idArray.forEach(function (key) {
+        store.get(key).onsuccess = function (e) {
+          data.push(e.target.result);
+          if (data.length === idArray.length) {
+            console.log(data);
+          }
+        };
+      });
+    });
+  }
+
+
+  /**
+   * Returns all Objects within the `localDBName` and `storeName` 
+   * that had changes made after last Sync with OnlineDB
+   * @param {String} localDBName 
+   * @param {String} storeName 
+   */
+  async getAllUpdatedObjects(localDBName, storeName) {
+    const localDB = this.getLocalDBFromName(localDBName);
+
+    return new Promise((resolve, _reject) => {
+      const trans = localDB.transaction(storeName, "readonly");
+      trans.oncomplete = (_e) => {
+        resolve(data);
+      };
+
+      const store = trans.objectStore(storeName);
+      let data = [];
+
+      store.openCursor().onsuccess = (e) => {
+        let cursor = e.target.result;
+        if (cursor) {
+            if (cursor.value.lastSync < cursor.value.lastChanged
+              || cursor.value.lastSync == undefined) {
+                data.push(cursor.value)
+              }
+
+          cursor.continue();
+        }
+      };
+    });
+  }
+
+
+  /**
+   * Adds an Object to IndexedDB
    * @param {Object} data
    *    Data to be added to Object Store
    * @param {String} localDBName
@@ -281,43 +356,79 @@ export default class ConnectionToOfflineDB {
   async addObject(data, localDBName, storeName) {
     const localDB = this.getLocalDBFromName(localDBName);
 
-    await new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const trans = localDB.transaction([storeName], "readwrite");
-      trans.oncomplete = (_e) => {
-        resolve();
-      };
+      /* trans.oncomplete = (_e) => {
+      }; */
       trans.onerror = (_e) => {
         reject("Error");
       };
 
       const store = trans.objectStore(storeName);
-      store.add(data);
+      var res = store.add(data);
+      res.onsuccess = function (_e) {
+        resolve(_e.target.result);
+      };
     });
   }
 
+
   /**
+   * Updates an object from IndexedDB
    * @param {Int} id
-   *    Key for identifying the object, which will be deleted
+   *    Key for identifying the object, which will be updated
    * @param {String} localDBName
    *    Database name
    * @param {String} storeName
    *    Object store name
    */
-  async deleteObject(id, localDBName, storeName) {
+  async updateObject(data, localDBName, storeName) {
     var localDB = this.getLocalDBFromName(localDBName);
 
-    await new Promise((resolve, _reject) => {
+    return new Promise((resolve, _reject) => {
       const trans = localDB.transaction([storeName], "readwrite");
       trans.oncomplete = (_e) => {
         resolve();
       };
-
       const store = trans.objectStore(storeName);
-      store.delete(id);
+      store.put(data);
     });
   }
 
+
   /**
+   * Deletes an object from IndexedDB
+   * @param {Int} object
+   *    The object, which will be deleted
+   * @param {String} localDBName
+   *    Database name
+   * @param {String} storeName
+   *    Object store name
+   */
+  async deleteObject(object, localDBName, storeName) {
+    var localDB = this.getLocalDBFromName(localDBName);
+    return new Promise((resolve, _reject) => {
+      const trans = localDB.transaction([storeName], "readwrite");
+      trans.oncomplete = (_e) => {
+        resolve();
+      };
+      
+      const store = trans.objectStore(storeName);
+      store.delete(object.id);
+
+      // Make sure that no 'changes' get marked for synchronization
+      // and don't mark objects, that never got uploaded before deletion
+      if (localDBName != "Changes" && object.lastSync != undefined) {
+        this.addObject({ id: object.id, object: storeName }, "Changes", "deleted");
+        this.deleteObject(object, "Changes", "created");
+      }
+      
+    });
+  }
+
+
+  /**
+   * Delete all objects within IndexedDB `localDBName` -> `storeName`
    * @param {String} localDBName
    *    Database name
    * @param {*} storeName
@@ -333,6 +444,7 @@ export default class ConnectionToOfflineDB {
     const storeRequest = store.clear();
     storeRequest.onsuccess = (_e) => {};
   }
+
 
   /**
    * @param {String} placeID
@@ -378,6 +490,7 @@ export default class ConnectionToOfflineDB {
     });
   }
 
+
   /**
    * @param {String} localDBName
    *    Database name
@@ -392,6 +505,7 @@ export default class ConnectionToOfflineDB {
     }
   }
 }
+
 
 /**
  * Create/Change new databases in IndexedDB (offline database)
@@ -421,9 +535,16 @@ const offlineDBPositions = {
   storeNames: ["positions"],
 };
 
+const offlineDBChanges = {
+  name: "Changes",
+  version: 1,
+  storeNames: ["created", "deleted"],
+};
+
 const fromOfflineDB = new ConnectionToOfflineDB([
   offlineDBModels,
   offlineDBActivities,
   offlineDBPlaces,
   offlineDBPositions,
+  offlineDBChanges
 ]);

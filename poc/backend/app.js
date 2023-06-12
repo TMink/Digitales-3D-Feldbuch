@@ -27,6 +27,10 @@ var colorRouter = require("./routes/colors");
 var utmRouter = require("./routes/utmPoints");
 var imageRouter = require("./routes/images");
 
+var activityRouter = require("./routes/activities");
+var placeRouter = require("./routes/places");
+var positionRouter = require("./routes/positions");
+
 var app = express();
 
 app.use(logger("dev"));
@@ -39,6 +43,7 @@ app.use(cors());
 app.set("view engine", "pug");
 
 app.use("/", indexRouter);
+//####### DEPRECATED
 app.use("/projects", projectRouter);
 app.use("/excavations", excavationRouter);
 app.use("/sections", sectionRouter);
@@ -51,6 +56,13 @@ app.use("/dates", dateRouter);
 app.use("/colors", colorRouter);
 app.use("/utmPoints", utmRouter);
 app.use("/images", imageRouter);
+//####### DEPRECATED
+
+app.use("/activities", activityRouter);
+app.use("/places", placeRouter);
+app.use("/positions", positionRouter);
+
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
