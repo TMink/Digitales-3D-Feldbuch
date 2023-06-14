@@ -52,34 +52,81 @@
                         </v-card>
                     </v-window-item>
 
-              <v-window-item value="two">
-                <v-list-subheader v-if="position.images.length === 0">
-                        {{ $t('not_created_yet', {object: $tc('picture', 2)}) }}
-                    </v-list-subheader>
-                    <template v-for="(image, i) in position.images" :key="image">
-                        <v-list>
-                            <v-list-item>
-                                <v-file-input
-                                    v-model="image.data"
-                                    label="Bilddatei"
-                                    accept="image/tiff, image/jpeg">
-                                </v-file-input>
-                                <v-btn 
-                                    color="decline" 
-                                    class="ml-2"
-                                    v-on:click="position.images.splice(i, 1)">
-                                    <v-icon>mdi-delete</v-icon>
-                                </v-btn>
-                            </v-list-item>
-                        </v-list>
-                    </template>
-                    <v-btn 
-                        color="add" 
-                        v-on:click="addImage()">
-                        <v-icon>mdi-plus-box-multiple</v-icon>
-                    </v-btn>
-              </v-window-item>
+            <!-- Tab item 'images' -->
+            <v-window-item value="two">
+                <v-list>
+                  <v-list-subheader v-if="images.length === 0">
+                    Bisher wurde keine Bilder angelegt
+                  </v-list-subheader>
 
+                  <template v-for="(image, i) in images" :key="image">
+                    <v-card class="imageItem mt-3 d-flex align-center" >
+                        <v-card-title>Nr. {{ image.imageNumber }}</v-card-title>
+                        <v-card-subtitle>{{ image.title }}</v-card-subtitle>
+                        <v-img height="150" :src=image.image></v-img>
+                        <v-btn 
+                            color="decline" 
+                            class="ml-2"
+                            v-on:click="deleteImage(image)">
+                            <v-icon>mdi-delete</v-icon>
+                        </v-btn>
+                    </v-card>
+
+                    <v-divider v-if="i !== image.length - 1"></v-divider>
+                  </template>
+                </v-list>
+
+                <v-btn
+                  color="add"
+                  class="mr-16 mt-3"
+                  @click="images_overlay = true">
+                  <v-icon>mdi-plus-box-multiple</v-icon>
+                </v-btn>
+
+                <!-- Image Creation dialog -->
+                <v-dialog v-model="images_overlay" max-width="800" persistent>
+                  <v-card>
+                    <v-card-title>{{ $t('add', { msg: $t('image') }) }} </v-card-title>
+                    <v-card-text>
+
+                      <v-text-field
+                        disabled
+                        v-model="position.id"
+                        :label="$t('position_id')">
+                      </v-text-field>
+
+                      <v-text-field
+                        v-model="image.title" 
+                        :label="$t('title')" 
+                        :hint="$t('please_input', { msg: $t('title_of', {msg: $t('image')}) })">
+                      </v-text-field>
+
+                      <v-file-input
+                        show-size
+                        v-model="image.image"
+                        prepend-icon="mdi-camera" 
+                        accept="image/png, image/jpeg, image/bmp">
+                      </v-file-input>
+                    </v-card-text>
+
+                    <v-card-actions class="justify-center">
+                      <v-btn
+                        icon 
+                        color="edit" 
+                        v-on:click="addImage()">
+                        <v-icon>mdi-content-save-all</v-icon>
+                      </v-btn>
+                      <v-btn 
+                        icon 
+                        color="decline" 
+                        @click="images_overlay = false">
+                        <v-icon>mdi-close-circle</v-icon>
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+              </v-window-item>
+              
 
               <v-window-item value="three">
                 <v-list-subheader v-if="position.texts.length === 0">
@@ -137,6 +184,7 @@
 import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
 import ConfirmDialog from '../components/ConfirmDialog.vue';
+import { toRaw } from 'vue';
 
 export default {
     name: 'PositionCreation',
@@ -157,14 +205,21 @@ export default {
                 images: [],
                 texts: []
             },
-            images: null,
-            texts: null,
+            image: {
+                id: '',
+                positionID: '',
+                title: '',
+                image: '',
+            },
+            images: [],
+            texts: [],
             error_dialog: false,
             error_message: '',
             is_new: true,
             is_required: [v => !!v || 'Pflichtfeld'],
             dialog: false,
-            tab: null
+            tab: null,
+            images_overlay: false,
         }
     },
     /**
@@ -258,10 +313,55 @@ export default {
         /**
          * Adds a new image-placeholder to the images-array
          */
-        addImage: function () {
-            this.position.images.push({
-                data: ''
-            });
+        addImage: async function () {
+            // Add imageID to the position array of all images
+            const positionID = String(VueCookies.get('currentPosition'))
+            var newImageID = String(Date.now())
+            var position = await fromOfflineDB.getObject(positionID, 'Positions', 'positions')
+
+            position.images.push(newImageID)
+            position.lastChanged = Date.now()
+
+            const newImage = {
+                id: newImageID,
+                imageNumber: null,
+                positionID: this.position.id,
+                title: this.image.title,
+                image: await this.textureToBase64(toRaw(this.image.image)),
+                lastChanged: Date.now(),
+                lastSync: ''
+            };
+
+            if (this.images.length == 0) {
+                newImage.imageNumber = 1;
+            } else {
+                this.updateImages();
+                const imageNumber = Math.max(...this.images.map(o => o.imageNumber));
+                const newImageNumber = imageNumber + 1;
+                newImage.imageNumber = newImageNumber;
+            }
+
+            this.images_overlay = false;
+            await fromOfflineDB.updateObject(position, 'Positions', 'positions')
+            var posID = await fromOfflineDB.addObject(newImage, "Images", "images");
+            await fromOfflineDB.addObject({ id: posID, object: 'images' }, 'Changes', 'created');
+            await this.updateImages(newImage.id);
+        },
+        deleteImage: async function (image) {
+            console.log("DEL")
+            // Remove the imageID from connected position
+            const acID = String(VueCookies.get('currentPosition'))
+            var position = await fromOfflineDB.getObject(acID, 'Positions', 'positions')
+            var index = position.images.indexOf(image.id.toString())
+
+            position.images.splice(index, 1)
+            await fromOfflineDB.updateObject(position, 'Positions', 'positions');
+
+            // Delete the image itself
+            await fromOfflineDB.deleteObject(image, 'Images', 'images');
+            VueCookies.remove('currentImage');
+
+            await this.updateImages();
         },
         /**
          * Adds a new text-placeholder to the texts-array
@@ -270,6 +370,27 @@ export default {
             this.position.texts.push({
                 content: ''
             });
+        },
+        /**
+         * Change texture data to base64
+         * @param {*} rawData 
+         */
+        async textureToBase64(rawData) {
+
+            const output = await new Promise((resolve) => {
+
+                let reader = new FileReader();
+                let f = rawData[0];
+                reader.onload = e => {
+                    const b64 = e.target.result
+                    resolve(b64)
+                }
+
+                reader.readAsDataURL(f);
+
+            });
+            return output;
+
         },
         /**
          * Cancels the PositionForm and returns to the PlaceForm of current place

@@ -1,35 +1,20 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-const multerStorage = multer.memoryStorage();
-const upload = multer({ storage: multerStorage });
-const db = require("../fb");
-const images = db.collection("images");
-var admin = require("firebase-admin");
 
-const { Storage, ref } = require("@google-cloud/storage");
-const storage = new Storage({ keyFilename: "./serviceAccountKey.json" });
-// The ID of your GCS bucket
-const bucketName = "feldbuch-images";
-const imageBucket = storage.bucket("feldbuch-images");
+const Position = require("../model/Position");
+const Image = require("../model/Image");
 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./public/uploads");
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + "-" + req.body.id);
+  },
+});
 
-//Generates a signed URL which is accessable for one hour
-async function generateSignedUrl(fileName) {
-  // These options will allow temporary read access to the file
-  const options = {
-    version: "v2",
-    action: "read",
-    expires: Date.now() + 1000 * 60 * 60, // one hour
-  };
-
-  // Get a v2 signed URL for the file
-  const [url] = await storage.bucket(bucketName).file(fileName).getSignedUrl(options);
-
-  //console.log(`The signed url for ${fileName} is ${url}`);
-  return url;
-}
-
+const upload = multer({ storage: storage });
 
 /**
  * Takes the retrieved data from DB and builds a JSON-object
@@ -40,111 +25,52 @@ async function generateSignedUrl(fileName) {
  * @param {String} imageURL The image URL to gcs
  * @returns image Json-Object with all required fields
  */
-function getImageJson(doc, imageURL) {
+function getImageJson(doc, filename, mimetype) {
   return {
-    id: doc.id,
-    title: doc.data().title,
-    description: doc.data().description,
-    image: imageURL
+    _id: doc.id,
+    imageNumber: doc.imageNumber,
+    positionID: doc.positionID,
+    title: doc.title,
+    image: filename,
   };
 }
-
 
 /**
  * GET images by id-array in params seperated by ,
  */
-router.get("/list/:image_ids", async function (req, res, next) {
-  var image_ids = req.params.image_ids.split(",");
-
-  //get models from db
-  try {
-    var imagesArray = await images
-      .where(admin.firestore.FieldPath.documentId(), "in", image_ids)
-      .get();
-  } catch (error) {
-    res.status(500).send("Error retrieving images from database");
-  }
-
-
-  // generate signed URLs for every retrieved model
-  var imagesWithURLs = await Promise.all(imagesArray.docs.map( async (item) => {
-      try {
-        var imageURL = await generateSignedUrl(item.id + ".jpg");
-      } catch (error) {
-        res.status(500).send("Error retrieving image URL: " + error);
-      }
-
-      const image = getImageJson(item, imageURL);
-      return image;
-  }));
-
-  res.status(200).send(imagesWithURLs);
-});
-
+router.get("/list/:image_ids", async function (req, res, next) {});
 
 /* GET dates by id-array in params seperated by ,*/
 router.get("/:image_id", async function (req, res, next) {
-    var fileName = req.params.image_id + ".jpg";
+  try {
+    var image = await Image.findById(req.params.image_id).exec();
+  } catch (error) {
+    res.status(404).send("No Image with ID: " + req.params.image_id + " found");
+  }
 
-  images
-    .doc(req.params.image_id)
-    .get()
-    .then((doc) => {
-          generateSignedUrl(fileName)
-            .catch(console.error)
-            .then((imageURL) => {
-              const image = {
-                id: doc.id,
-                title: doc.data().title,
-                description: doc.data().description,
-                image: imageURL
-              };
-            res.status(200).send(image);
-        });
-    })
-    .catch((err) => {
-      res.status(404).send("Model not found: " + err);
-    });
+  /* console.log('fileController.download: started')
+  const path = req.body.path;
+  const file = fs.createReadStream(path)
+  const filename = (new Date()).toISOString();
+  res.setHeader('Content-Disposition', 'attachment: filename="' + filename + '"')
+  file.pipe(res) */
+
+  console.log(image);
+  res.status(200).send(image);
 });
-
-
-/**
- * Upload a new image
- */
-router.post("/upload/:image_id", upload.single('upload'), async function (req, res, next) {
-    const { originalname, buffer, mimetype } = req.file;
-    const fileending = originalname.split(".").slice(-1);
-    const blob = imageBucket.file(req.params.image_id + "." + fileending);
-    
-    const blobStream = blob.createWriteStream({
-      contentType: mimetype,
-      resumable: false,
-    });
-
-    blobStream
-      .on("finish", () => {
-        res.status(200).send("Successfully uploaded the image: " + originalname);
-      })
-      .on("error", () => {
-        reject(`Unable to upload image, something went wrong`);
-      })
-      .end(buffer);
-});
-
 
 /* POST new image data */
-router.post("/", function (req, res, next) {
-  images
-    .add(req.body)
-    .then((response) => {
-      res.status(200).send(response._path.segments[1]); //sends the image id back
-    })
-    .catch((err) => {
-      res.status(404).send("Couldn't add image: " + err);
-    });
+router.post("/:position_id", upload.single("image"), async function (req, res, next) {
+  var newImage = getImageJson(req.body, req.file.filename);
+
+  console.log(newImage)
+  try {
+    const result = await Image.create(newImage);
+
+    res.status(200).send("Saved Image: " + result);
+  } catch (error) {
+    res.status(500).send("Couldn't save Image: " + error.message);
+  }
 });
-
-
-
 
 module.exports = router;

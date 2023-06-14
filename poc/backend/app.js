@@ -25,11 +25,12 @@ var contactRouter = require("./routes/contacts");
 var dateRouter = require("./routes/dates");
 var colorRouter = require("./routes/colors");
 var utmRouter = require("./routes/utmPoints");
-var imageRouter = require("./routes/images");
+
 
 var activityRouter = require("./routes/activities");
 var placeRouter = require("./routes/places");
 var positionRouter = require("./routes/positions");
+var imageRouter = require("./routes/images");
 
 var app = express();
 
@@ -55,12 +56,12 @@ app.use("/contacts", contactRouter);
 app.use("/dates", dateRouter);
 app.use("/colors", colorRouter);
 app.use("/utmPoints", utmRouter);
-app.use("/images", imageRouter);
 //####### DEPRECATED
 
 app.use("/activities", activityRouter);
 app.use("/places", placeRouter);
 app.use("/positions", positionRouter);
+app.use("/images", imageRouter);
 
 
 

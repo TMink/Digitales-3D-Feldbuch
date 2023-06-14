@@ -78,10 +78,8 @@ class ConnectionToBackend {
    * @param {*} subdomain to the relevant backend route
    * @returns response from backend
    */
-  async uploadChangedData(data, request, subdomain) {
-        
+  async uploadData(data, request, subdomain) {
     return new Promise((resolve, reject) => {
-
       axios({
         method: request,
         url: "/" + subdomain + "/" + data.id,
@@ -94,14 +92,43 @@ class ConnectionToBackend {
         .catch(function (error) {
           console.log(error);
         });
-    })
+    });
   }
 
+  /**
+   * Uploads an object to the onlineDB (MongoDB)
+   * @param {*} data the data object to upload
+   * @param {*} request the REST request type
+   * @param {*} subdomain to the relevant backend route
+   * @returns response from backend
+   */
+  async uploadFormData(data, request, subdomain) {
 
-  
+    //format the base64 image to a blob
+    var blob = new Blob([data.image], {
+      type: 'image/jpg',
+    });
+    data.image = blob;
+
+    return new Promise((resolve, reject) =>  {
+      axios({
+        method: request,
+        url: "/" + subdomain + "/" + data.id,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        data: data,
+      })
+        .then(function (res) {
+          resolve(res);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    });
+  }
+
   async postData(url) {
-
-
     return new Promise((resolve, reject) => {
       try {
         axios.get(url).then((res) => {
