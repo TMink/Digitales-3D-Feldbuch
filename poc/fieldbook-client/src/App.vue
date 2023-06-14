@@ -6,7 +6,7 @@
       <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
     </head>
 
-    
+
     <!-- App Bar -->
     <v-app-bar color="accent_dark">
       <v-btn icon v-on:click="goback"> <v-icon>mdi-arrow-left</v-icon> </v-btn>
@@ -18,28 +18,49 @@
 
     <!-- Navigation Drawer -->
     <v-navigation-drawer color="surface" v-model="navdrawer" location="right">
-      <v-list-item>
-        <v-list-item-title class="text-h6">
-          {{ $t('menu') }}
-        </v-list-item-title>
-      </v-list-item>
-      <v-divider></v-divider>
-      <v-list-item v-for="item in navbar_items" :key="item.title" link :to="item.link">
-        <v-list-item-title>
-          {{ item.title }}
-        </v-list-item-title>
-      </v-list-item>
-      <v-list-item link v-on:click="deleteCookies()">
-        <v-list-item-title>
-          {{ $t('delete', { msg: $t('cookies') }) }}
-        </v-list-item-title>
-      </v-list-item>
-      <v-row class="d-flex justify-center ma-3">
-        <LocaleChanger class="ma-2" />
-        <v-btn @click="toggleTheme" color="background" class="ma-2">
-          <v-icon>mdi-theme-light-dark</v-icon>
-        </v-btn>
-      </v-row>
+      <v-card height="100%" class="d-flex flex-column">
+
+        <v-list-item>
+          <v-list-item-title class="text-h6">
+            {{ $t('menu') }}
+          </v-list-item-title>
+        </v-list-item>
+
+        <v-divider></v-divider>
+
+        <v-list-item v-for="item in navbar_items" :key="item.title" link :to="item.link">
+          <v-list-item-title>
+            {{ item.title }}
+          </v-list-item-title>
+        </v-list-item>
+
+        <v-row class="d-flex justify-center ma-3">
+          <LocaleChanger class="ma-2" />
+          <v-btn @click="toggleTheme" color="background" class="ma-2">
+            <v-icon>mdi-theme-light-dark</v-icon>
+          </v-btn>
+        </v-row>
+
+        <v-spacer></v-spacer>
+
+        <v-card variant="outlined" class="ma-3 mb-15">
+          <v-card-title>
+            Admin Area
+          </v-card-title>
+          <v-divider></v-divider>
+          <v-list-item link v-on:click="deleteCookies()">
+            <v-list-item-title>
+              {{ $t('delete', { msg: 'Cookies' }) }}
+            </v-list-item-title>
+          </v-list-item>
+          <v-list-item link v-on:click="clearIndexedDB()">
+            <v-list-item-title>
+              {{ $t('delete', { msg: 'IndexedDB' }) }}
+            </v-list-item-title>
+          </v-list-item>
+        </v-card>
+
+      </v-card>
     </v-navigation-drawer>
 
 
@@ -54,7 +75,7 @@
     <AppFooter />
 
 
-    <VToast ref="vtoast"/>
+    <VToast ref="vtoast" />
   </v-app>
 </template>
 
@@ -109,8 +130,17 @@ export default {
     savepath() {
       setpath(this.path);
     },
+    async clearLocalData() {
+      this.deleteCookies();
+      await this.clearIndexedDB();
+    },
     deleteCookies() {
       VueCookies.keys().forEach(cookie => VueCookies.remove(cookie));
+      this.$router.go();
+    },
+    async clearIndexedDB() {
+      const dbs = await window.indexedDB.databases()
+      dbs.forEach(db => { window.indexedDB.deleteDatabase(db.name) })
       this.$router.go();
     }
   }
