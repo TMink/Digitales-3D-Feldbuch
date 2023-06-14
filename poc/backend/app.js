@@ -20,7 +20,6 @@ var sectionRouter = require("./routes/sections");
 var artifactRouter = require("./routes/artifacts");
 var featureRouter = require("./routes/features");
 var sampleRouter = require("./routes/samples");
-var modelRouter = require("./routes/models");
 var contactRouter = require("./routes/contacts");
 var dateRouter = require("./routes/dates");
 var colorRouter = require("./routes/colors");
@@ -30,6 +29,7 @@ var utmRouter = require("./routes/utmPoints");
 var activityRouter = require("./routes/activities");
 var placeRouter = require("./routes/places");
 var positionRouter = require("./routes/positions");
+var modelRouter = require("./routes/models");
 var imageRouter = require("./routes/images");
 
 var app = express();
@@ -51,7 +51,6 @@ app.use("/sections", sectionRouter);
 app.use("/artifacts", artifactRouter);
 app.use("/features", featureRouter);
 app.use("/samples", sampleRouter);
-app.use("/models", modelRouter);
 app.use("/contacts", contactRouter);
 app.use("/dates", dateRouter);
 app.use("/colors", colorRouter);
@@ -61,6 +60,7 @@ app.use("/utmPoints", utmRouter);
 app.use("/activities", activityRouter);
 app.use("/places", placeRouter);
 app.use("/positions", positionRouter);
+app.use("/models", modelRouter);
 app.use("/images", imageRouter);
 
 

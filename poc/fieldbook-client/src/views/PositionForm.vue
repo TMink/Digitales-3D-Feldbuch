@@ -126,7 +126,7 @@
                   </v-card>
                 </v-dialog>
               </v-window-item>
-              
+
 
               <v-window-item value="three">
                 <v-list-subheader v-if="position.texts.length === 0">
@@ -348,7 +348,6 @@ export default {
             await this.updateImages(newImage.id);
         },
         deleteImage: async function (image) {
-            console.log("DEL")
             // Remove the imageID from connected position
             const acID = String(VueCookies.get('currentPosition'))
             var position = await fromOfflineDB.getObject(acID, 'Positions', 'positions')

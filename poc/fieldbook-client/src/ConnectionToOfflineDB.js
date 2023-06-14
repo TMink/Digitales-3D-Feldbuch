@@ -250,7 +250,7 @@ export default class ConnectionToOfflineDB {
     const localDB = this.getLocalDBFromName(localDBName);
 
     return new Promise((resolve, _reject) => {
-      const trans = localDB.transaction([storeName], "readonly");
+      const trans = localDB.transaction([storeName], "readonly");  
       trans.oncomplete = (_e) => {
         resolve(data);
       };
@@ -269,6 +269,12 @@ export default class ConnectionToOfflineDB {
               break;
             case "Place":
               if (cursor.value.placeID === id) {
+                data.push(cursor.value);
+              }
+              break;
+            case "Position":
+              
+              if (cursor.value.positionID === id) {
                 data.push(cursor.value);
               }
           }
@@ -535,6 +541,19 @@ const offlineDBPositions = {
   storeNames: ["positions"],
 };
 
+const offlineDBImages = {
+  name: "Images",
+  version: 1,
+  storeNames: ["images"],
+};
+
+const offlineDBTexts = {
+  name: "Texts",
+  version: 1,
+  storeNames: ["texts"],
+};
+
+
 const offlineDBChanges = {
   name: "Changes",
   version: 1,
@@ -546,5 +565,7 @@ const fromOfflineDB = new ConnectionToOfflineDB([
   offlineDBActivities,
   offlineDBPlaces,
   offlineDBPositions,
-  offlineDBChanges
+  offlineDBChanges,
+  offlineDBImages,
+  offlineDBTexts,
 ]);

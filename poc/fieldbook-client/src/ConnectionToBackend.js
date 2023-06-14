@@ -103,14 +103,26 @@ class ConnectionToBackend {
    * @returns response from backend
    */
   async uploadFormData(data, request, subdomain) {
-
+    console.log(data);
     //format the base64 image to a blob
-    var blob = new Blob([data.image], {
-      type: 'image/jpg',
-    });
-    data.image = blob;
+    if (data.image != undefined) {
+      data.image = new Blob([data.image], {
+        type: "image/jpg",
+      });
+    } else if (data.texture != undefined) {
+      data.texture = new Blob([data.texture], {
+        type: "image/jpg",
+      });
+    }
 
-    return new Promise((resolve, reject) =>  {
+    //format the model image to a blob
+    if (data.model != undefined) {
+      data.model = new Blob([data.texture], {
+        type: "text/plain",
+      });
+    }
+
+    return new Promise((resolve, reject) => {
       axios({
         method: request,
         url: "/" + subdomain + "/" + data.id,

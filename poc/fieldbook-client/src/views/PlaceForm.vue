@@ -337,7 +337,7 @@ export default {
 
       await fromOfflineDB.updateObject(place, 'Places', 'places')
       var posID = await fromOfflineDB.addObject(newPosition, "Positions", "positions");
-      await fromOfflineDB.addObject({ id: posID, object: 'position' }, 'Changes', 'created');
+      await fromOfflineDB.addObject({ id: posID, object: 'positions' }, 'Changes', 'created');
       await this.updatePositions(newPosition.id);
 
     },
@@ -354,7 +354,6 @@ export default {
         let f = rawData[0];
         reader.onload = e => {
           const b64 = e.target.result
-          console.log(b64)
           resolve(b64)
         }
 
@@ -378,7 +377,6 @@ export default {
         let f = rawData[0];
         reader.onload = e => {
           const modelString = e.target.result
-          console.log(modelString)
           resolve(modelString)
         }
 
@@ -423,8 +421,10 @@ export default {
         newModel.modelNumber = newModelNumber;
       }
 
+      this.models_overlay = false;
       await fromOfflineDB.updateObject(place, 'Places', 'places')
-      await fromOfflineDB.addObject(newModel, 'Models', 'places');
+      var modelID = await fromOfflineDB.addObject(newModel, 'Models', 'places');
+      await fromOfflineDB.addObject({ id: modelID, object: 'models' }, 'Changes', 'created');
       await this.updateModels(newModel.id);
     },
     /**

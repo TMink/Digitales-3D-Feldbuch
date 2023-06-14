@@ -82,6 +82,52 @@
                     <v-divider></v-divider>
                 </v-list-item>
 
+                <!-- List of updated models -->
+                    <v-list-item v-for="change in updatedModels" :key="change">
+                        <v-card class="d-flex align-center justify-end">
+                            <v-checkbox 
+                                v-model="selectedChanges" 
+                                :value="change" 
+                                hide-details="true">
+                            </v-checkbox>
+                            <v-card-title class="justify-center">
+                                {{ change.title }}
+                            </v-card-title>
+
+                            <div id="chips-container">
+                                <v-chip class="get">Model</v-chip>
+                            </div>
+                            <v-spacer></v-spacer>
+                            <v-btn class="ml-4" v-on:click="syncChange(change)">
+                                <v-icon>mdi-cloud-upload</v-icon>
+                            </v-btn>
+                        </v-card>
+                        <v-divider></v-divider>
+                    </v-list-item>
+                
+                <!-- List of updated images -->
+                        <v-list-item v-for="change in updatedImages" :key="change">
+                            <v-card class="d-flex align-center justify-end">
+                                <v-checkbox 
+                                    v-model="selectedChanges" 
+                                    :value="change" 
+                                    hide-details="true">
+                                </v-checkbox>
+                                <v-card-title class="justify-center">
+                                    {{ change.imageNumber }}
+                                </v-card-title>
+
+                                <div id="chips-container">
+                                    <v-chip class="get">Image</v-chip>
+                                </div>
+                                <v-spacer></v-spacer>
+                                <v-btn class="ml-4" v-on:click="syncChange(change)">
+                                    <v-icon>mdi-cloud-upload</v-icon>
+                                </v-btn>
+                            </v-card>
+                            <v-divider></v-divider>
+                        </v-list-item>
+
                 <v-divider></v-divider>
 
                 <v-card-title>Deletions</v-card-title>
@@ -141,6 +187,8 @@ export default {
             updatedActivities: [],
             updatedPlaces: [],
             updatedPositions: [],
+            updatedModels: [],
+            updatedImages: [],
             deletedObjects: [],
             selectedChanges: [],
             requestTypes: [{
@@ -172,6 +220,12 @@ export default {
                 await fromOfflineDB.getAllUpdatedObjects('Places', 'places')
             this.updatedPositions =
                 await fromOfflineDB.getAllUpdatedObjects('Positions', 'positions')
+            this.updatedModels =
+                await fromOfflineDB.getAllUpdatedObjects('Models', 'places')
+            this.updatedModels.concat(
+                await fromOfflineDB.getAllUpdatedObjects('Models', 'places'))
+            this.updatedImages =
+                await fromOfflineDB.getAllUpdatedObjects('Images', 'images')
 
             this.deletedObjects =
                 await fromOfflineDB.getAllUpdatedObjects('Changes', 'deleted')
@@ -192,9 +246,14 @@ export default {
             // get subdomain through which this change is uploaded
             var subdomain = this.getSubdomainFromChange(proxyChange);
             
-
             // upload changed data to onlineDB
-            var res = await fromBackend.uploadChangedData(change, request, subdomain);
+            var res;
+            if (subdomain == 'images' || subdomain == 'models') {
+                res = await fromBackend.uploadFormData(change, request, subdomain);
+            } else {
+                res = await fromBackend.uploadData(change, request, subdomain);
+            }
+            
 
             if (res.status == 200) {
                 // delete the change Entry from indexedDB 
@@ -259,6 +318,26 @@ export default {
                     await fromOfflineDB.updateObject(change, 'Positions', 'positions');
                     let index = this.updatedPositions.indexOf(proxyChange);
                     this.updatedPositions.splice(index, 1);
+
+                } else if (subdomain == 'models') {
+                    if (proxyChange.placeID != undefined) {
+
+                        await fromOfflineDB.updateObject(change, 'Models', 'places');
+                        let index = this.updatedModels.indexOf(proxyChange);
+                        this.updatedModels.splice(index, 1);
+
+                    } else if (proxyChange.positionsID != undefined) {
+
+                        await fromOfflineDB.updateObject(change, 'Models', 'positions');
+                        let index = this.updatedModels.indexOf(proxyChange);
+                        this.updatedModels.splice(index, 1);
+                    }
+                } else if (subdomain == 'images') {
+
+                    await fromOfflineDB.updateObject(change, 'Images', 'images');
+                    let index = this.updatedImages.indexOf(proxyChange);
+                    this.updatedImages.splice(index, 1);
+
                 }
             } else {
                 let index = this.deletedObjects.indexOf(proxyChange);
@@ -278,6 +357,10 @@ export default {
                 subdomain = 'places'
             } else if (change.positionNumber != undefined) {
                 subdomain = 'positions'
+            } else if (change.modelNumber != undefined) {
+                subdomain = 'models'
+            } else if (change.imageNumber != undefined) {
+                subdomain = 'images'
             }
             return subdomain;
         },
