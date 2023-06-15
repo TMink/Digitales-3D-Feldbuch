@@ -3,7 +3,9 @@
     <Navigation />
     <v-form>
       <v-list class="overflow-hidden">
-        <v-list-subheader v-if="activities.length === 0"> Bisher wurden keine Aktivitäten angelegt</v-list-subheader>
+        <v-list-subheader v-if="activities.length === 0"> 
+          {{$t('not_created_yet', {object: $tc('activity', 2)})}}
+        </v-list-subheader>
 
         <!--Lists all locally saved activities-->
         <template v-for="(activity, i) in activities" :key="activity">
@@ -86,22 +88,42 @@
               <v-row no-gutters>
                 <v-col cols="3">
                   <v-sheet class="pa-2 ma-2">
-                    <v-text-field :rules="[rules.required]" v-model="activity.branchOffice" label="Außenstelle"
-                      hide-details="auto" placeholder="Xanten" clearable></v-text-field>
+                    <v-text-field
+                      clearable
+                      :label="$t('branchOffice')"
+                      hide-details="auto" 
+                      placeholder="Xanten"
+                      :rules="[rules.required]"
+                      v-model="activity.branchOffice"></v-text-field>
                   </v-sheet>
                 </v-col>
 
                 <v-col cols="3">
                   <v-sheet class="pa-2 ma-2">
-                    <v-text-field :rules="[rules.required]" v-model="activity.year" label="Jahr" hide-details="auto"
-                      placeholder="2023" clearable counter maxlength="4"></v-text-field>
+                    <v-text-field 
+                      counter
+                      clearable
+                      :label="$t('year')"
+                      maxlength="4"
+                      placeholder="2023" 
+                      hide-details="auto"
+                      v-model="activity.year"
+                      :rules="[rules.required]"
+                      ></v-text-field>
                   </v-sheet>
                 </v-col>
 
                 <v-col cols="3">
                   <v-sheet class="pa-2 ma-2">
-                    <v-text-field :rules="[rules.required, rules.counter]" v-model="activity.number" label="Nummer"
-                      hide-details="auto" placeholder="1337" clearable counter maxlength="4">
+                    <v-text-field
+                      counter
+                      clearable 
+                      :label="$t('number')"
+                      maxlength="4"
+                      placeholder="1337"
+                      hide-details="auto"
+                      v-model="activity.number"
+                      :rules="[rules.required, rules.counter]">
                     </v-text-field>
                   </v-sheet>
                 </v-col>
@@ -258,6 +280,9 @@ export default {
         'places');
       await fromOfflineDB.deleteObject(activity, 'Activities', 'activities')
       await this.getActivities();
+    },
+    getNextActivityNumber() {
+      
     },
     /**
      * Decides wether to show the input mask for a new `activity` 

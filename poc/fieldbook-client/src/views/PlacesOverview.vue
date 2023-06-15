@@ -6,7 +6,7 @@
         <v-divider></v-divider>
 
         <v-list-subheader v-if="places.length === 0"> 
-          Bisher wurde keine Stelle angelegt 
+          {{ $t('not_created_yet', { object: $tc('place', 2) }) }}
         </v-list-subheader>
 
         <template v-for="(place, i) in places" :key="place">
@@ -21,7 +21,7 @@
 
                 <v-col cols="12" sm="6" md="4">
                   <v-list-item-title class="ma-4"> 
-                    {{ place.ansprache }} 
+                    {{ place.title }} 
                   </v-list-item-title>
                 </v-col>
 
@@ -102,7 +102,7 @@ export default {
         activityID:   acID,
         placeNumber:  '',
         date:         '',
-        ansprache:    '',
+        title:    '',
         positions:    [],
         models:       [],
         lastChanged: Date.now(),

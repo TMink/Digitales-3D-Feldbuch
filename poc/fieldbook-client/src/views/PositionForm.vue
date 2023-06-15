@@ -56,7 +56,7 @@
             <v-window-item value="two">
                 <v-list>
                   <v-list-subheader v-if="images.length === 0">
-                    Bisher wurde keine Bilder angelegt
+                    {{ $t('not_created_yet', { object: $tc('position', 2) }) }}
                   </v-list-subheader>
 
                   <template v-for="(image, i) in images" :key="image">
@@ -138,7 +138,8 @@
                                 <v-textarea 
                                     v-model="text.content" 
                                     :hint="$tc('please_input', 2, {msg: $t('description')} )"
-                                    label="Textfeld"></v-textarea>
+                                    :label="$t('textfield')">
+                                </v-textarea>
                                 <v-btn 
                                     color="decline" 
                                     class="ml-2"
@@ -209,7 +210,7 @@ export default {
                 id: '',
                 positionID: '',
                 title: '',
-                image: '',
+                image: [],
             },
             images: [],
             texts: [],
@@ -293,7 +294,7 @@ export default {
         /**
          * Removes a position from the local storage and the cookies
          */
-        deletePosition: async function () {
+        async deletePosition() {
 
             // Remove the positionID from connected place
             const placeID = String(VueCookies.get('currentPlace'))
@@ -313,7 +314,7 @@ export default {
         /**
          * Adds a new image-placeholder to the images-array
          */
-        addImage: async function () {
+        async addImage() {
             // Add imageID to the position array of all images
             const positionID = String(VueCookies.get('currentPosition'))
             var newImageID = String(Date.now())
@@ -347,7 +348,7 @@ export default {
             await fromOfflineDB.addObject({ id: posID, object: 'images' }, 'Changes', 'created');
             await this.updateImages(newImage.id);
         },
-        deleteImage: async function (image) {
+        async deleteImage(image) {
             // Remove the imageID from connected position
             const acID = String(VueCookies.get('currentPosition'))
             var position = await fromOfflineDB.getObject(acID, 'Positions', 'positions')

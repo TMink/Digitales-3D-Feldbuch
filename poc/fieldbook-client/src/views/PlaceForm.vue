@@ -29,13 +29,13 @@
           <v-window-item value="one">
             <v-card>
               <v-text-field 
-                v-model="place.ansprache" 
-                label="Ansprache"
-                hint="Geben Sie hier eine Ansprache ein">
+                v-model="place.title" 
+                :label="$t('title')"
+                :hint="$tc('please_input', {msg: $t('title')}, 1)">
               </v-text-field>
               <v-text-field 
                 v-model="place.date" 
-                label="Datierung" 
+                :label="$t('dating')" 
                 hint="Format: dd.mm.yyyy">
               </v-text-field>
             </v-card>
@@ -46,7 +46,7 @@
             <v-form>
               <v-list>
                 <v-list-subheader v-if="positions.length === 0">
-                  Bisher wurde keine Positionen angelegt
+                  {{ $t('not_created_yet', { object: $tc('position', 2) }) }}
                 </v-list-subheader>
 
                 <template v-for="(position, i) in positions" :key="position">
@@ -77,7 +77,7 @@
           <v-window-item value="three">
             <v-list>
               <v-list-subheader v-if="models.length === 0">
-                Bisher wurde keine Modelle angelegt
+                {{ $t('not_created_yet', { object: $tc('model', 2) }) }}
               </v-list-subheader>
 
               <template v-for="(model, i) in models" :key="model">
@@ -112,13 +112,13 @@
                     disabled
                     v-model="place.id"
                     :label="$t('place_id')" 
-                    :hint="$t('plase_input', { msg: $t('place_id') })">
+                    :hint="$t('please_input', { msg: $t('place_id') })">
                   </v-text-field>
 
                   <v-text-field
                     v-model="model.title" 
                     :label="$t('title')" 
-                    :hint="$t('plase_input', { msg: $t('title_of_model') })">
+                    :hint="$t('please_input', { msg: $t('title_of', {msg: $t('model')}) })">
                   </v-text-field>
 
                   <v-file-input
@@ -198,7 +198,7 @@ export default {
         id: '',
         activityID: '',
         placeNumber: '',
-        ansprache: '',
+        title: '',
         date: '',
         positions: [],
         models: [],
@@ -209,8 +209,8 @@ export default {
         id: '',
         placeID: '',
         title: '',
-        model: '',
-        texture: '',
+        model: [],
+        texture: [],
       },
       positions: null,
       models: null,
