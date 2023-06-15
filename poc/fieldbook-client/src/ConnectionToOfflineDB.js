@@ -309,7 +309,7 @@ export default class ConnectionToOfflineDB {
         store.get(key).onsuccess = function (e) {
           data.push(e.target.result);
           if (data.length === idArray.length) {
-            console.log(data);
+            //console.log(data);
           }
         };
       });

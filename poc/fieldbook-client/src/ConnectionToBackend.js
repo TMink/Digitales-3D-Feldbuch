@@ -103,7 +103,6 @@ class ConnectionToBackend {
    * @returns response from backend
    */
   async uploadFormData(data, request, subdomain) {
-    console.log(data);
     //format the base64 image to a blob
     if (data.image != undefined) {
       data.image = new Blob([data.image], {

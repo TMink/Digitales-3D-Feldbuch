@@ -48,14 +48,7 @@ router.get("/:image_id", async function (req, res, next) {
     res.status(404).send("No Image with ID: " + req.params.image_id + " found");
   }
 
-  /* console.log('fileController.download: started')
-  const path = req.body.path;
-  const file = fs.createReadStream(path)
-  const filename = (new Date()).toISOString();
-  res.setHeader('Content-Disposition', 'attachment: filename="' + filename + '"')
-  file.pipe(res) */
 
-  console.log(image);
   res.status(200).send(image);
 });
 
@@ -63,7 +56,6 @@ router.get("/:image_id", async function (req, res, next) {
 router.post("/:position_id", upload.single("image"), async function (req, res, next) {
   var newImage = getImageJson(req.body, req.file.filename);
 
-  console.log(newImage)
   try {
     const result = await Image.create(newImage);
 

@@ -25,8 +25,6 @@ const upload = multer({ storage: storage });
  * @returns image Json-Object with all required fields
  */
 function getModelJson(doc, modelFilename, textureFilename) {
-  console.log(doc)
-  console.log(modelFilename);
   return {
     _id: doc.id,
     modelNumber: doc.modelNumber,
