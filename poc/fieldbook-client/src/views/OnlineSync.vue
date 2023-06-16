@@ -143,7 +143,7 @@
                         </v-card-title>
 
                         <div id="chips-container">
-                            <v-chip class="delete">{{ change.object }}</v-chip>
+                            <v-chip class="delete">{{ change.object.slice(0, -1) }}</v-chip>
                         </div>
                         <v-spacer></v-spacer>
                         <v-btn class="ml-4" v-on:click="syncChange(change)">

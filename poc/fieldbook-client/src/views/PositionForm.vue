@@ -350,12 +350,10 @@ export default {
         },
         async deleteImage(image) {
             // Remove the imageID from connected position
-            const acID = String(VueCookies.get('currentPosition'))
-            var position = await fromOfflineDB.getObject(acID, 'Positions', 'positions')
-            var index = position.images.indexOf(image.id.toString())
+            var index = this.position.images.indexOf(image.id.toString())
 
-            position.images.splice(index, 1)
-            await fromOfflineDB.updateObject(position, 'Positions', 'positions');
+            this.position.images.splice(index, 1)
+            await fromOfflineDB.updateObject(toRaw(this.position), 'Positions', 'positions');
 
             // Delete the image itself
             await fromOfflineDB.deleteObject(image, 'Images', 'images');

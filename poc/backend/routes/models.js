@@ -1,12 +1,14 @@
 const express = require("express");
 const router = express.Router();
+const fs = require('fs');
 const multer = require("multer");
-
 const Model = require("../model/Model");
+
+const FILE_PATH = "./public/uploads/";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "./public/uploads");
+    cb(null, FILE_PATH);
   },
   filename: function (req, file, cb) {
     cb(null, file.fieldname + "-" + req.body.id);
@@ -52,25 +54,39 @@ router.get("/:image_id", async function (req, res, next) {
   res.status(200).send(image);
 });
 
-/* POST new image data */
-router.post("/:position_id", 
-  upload.fields([
-        {name: 'model'}, 
-        {name: 'texture'}
-      ]), async function (req, res, next) {
+/* POST new model data */
+router.post("/:model_id", 
+  upload.fields([{name: 'model'}, {name: 'texture'}]), 
+    async function (req, res, next) {
       var newModel = getModelJson(
                       req.body, 
                       req.files['model'][0].filename, 
                       req.files['texture'][0].filename);
 
-        try {
-          const result = await Model.create(newModel);
+      try {
+        const result = await Model.create(newModel);
 
-          res.status(200).send("Saved Model: " + result);
-        } catch (error) {
-          res.status(500).send("Couldn't save Model: " + error.message);
-        }
+        res.status(200).send("Saved Model: " + result);
+      } catch (error) {
+        res.status(500).send("Couldn't save Model: " + error.message);
+      }
+});
 
-      });
+/**
+ * DELETE existing model from MongoDB
+ */
+router.delete("/:model_id", async function (req, res, next) {
+  try {
+    // delete model from DB
+    const result = await Model.findByIdAndDelete(req.params.model_id);
+    // delete model and texture files
+    fs.unlinkSync(FILE_PATH + result.model);
+    fs.unlinkSync(FILE_PATH + result.texture);
+
+    res.status(200).send("Deleted Model: " + result);
+  } catch (error) {
+    res.status(500).send("Couldn't delete Model: " + error.message);
+  }
+});
 
 module.exports = router;

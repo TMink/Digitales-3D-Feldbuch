@@ -81,16 +81,31 @@
               </v-list-subheader>
 
               <template v-for="(model, i) in models" :key="model">
-                <v-list-item class="modelItem mt-3" v-on:click="moveToModel(model.id)">
+                <v-container class="d-flex align-center">
+                  
+                <v-container class="pa-0">
+                    <v-list-item class="modelItem mt-3" v-on:click="moveToModel(model.id)">
+                    <v-list-item-title class="text-h6">
+                      Nr. {{ model.modelNumber }}
+                    </v-list-item-title>
 
-                  <v-list-item-title class="text-h6">
-                    Nr. {{ model.modelNumber }}
-                  </v-list-item-title>
-
-                  <v-list-item-subtitle class="text-subtitle-1">
-                    {{ model.title }}
-                  </v-list-item-subtitle>
-                </v-list-item>
+                    <v-list-item-subtitle class="text-subtitle-1">
+                      {{ model.title }}
+                    </v-list-item-subtitle>
+                    
+                    </v-list-item>
+                </v-container>
+                    <v-btn 
+                      class="ml-3 mt-2" 
+                      color="decline" 
+                      v-on:click="deleteModel(model)"> 
+                      <v-icon>mdi-delete</v-icon>
+                    </v-btn>
+                </v-container>
+                  
+                  
+                
+                
                 <v-divider v-if="i !== models.length - 1"></v-divider>
               </template>
             </v-list>
@@ -309,13 +324,12 @@ export default {
     async addPosition() {
 
       // Add positionID to the place array of all positions
-      const placeID = String(VueCookies.get('currentPlace'))
       var newPositionID = String(Date.now())
-      var place = await fromOfflineDB.getObject(placeID, 'Places', 'places')
 
-      place.positions.push(newPositionID)
-      place.lastChanged = Date.now()
+      this.place.positions.push(newPositionID)
+      this.place.lastChanged = Date.now()
 
+      
       const newPosition = {
         id: newPositionID,
         positionNumber: null,
@@ -335,11 +349,10 @@ export default {
         newPosition.positionNumber = newPositionNumber;
       }
 
-      await fromOfflineDB.updateObject(place, 'Places', 'places')
+      await fromOfflineDB.updateObject(toRaw(this.place), 'Places', 'places')
       var posID = await fromOfflineDB.addObject(newPosition, "Positions", "positions");
       await fromOfflineDB.addObject({ id: posID, object: 'positions' }, 'Changes', 'created');
       await this.updatePositions(newPosition.id);
-
     },
 
     /**
@@ -396,11 +409,8 @@ export default {
       const placeID = String(VueCookies.get('currentPlace'))
       var newModelID = String(Date.now())
 
-      var place = await fromOfflineDB.getObject(placeID, 'Places', 'places')
-
-      place.models.push(newModelID)
-      place.lastChanged = Date.now()
-
+      this.place.models.push(newModelID)
+      this.place.lastChanged = Date.now()
 
       const newModel = {
         id: newModelID,
@@ -422,10 +432,27 @@ export default {
       }
 
       this.models_overlay = false;
-      await fromOfflineDB.updateObject(place, 'Places', 'places')
+      await fromOfflineDB.updateObject(toRaw(this.place), 'Places', 'places')
       var modelID = await fromOfflineDB.addObject(newModel, 'Models', 'places');
       await fromOfflineDB.addObject({ id: modelID, object: 'models' }, 'Changes', 'created');
       await this.updateModels(newModel.id);
+    },
+    async deleteModel(model) {
+
+      // Remove the modelID from connected place
+      var index = this.place.models.indexOf(model.id);
+      if (index != -1) {
+        this.place.models.splice(index, 1)
+        this.place.lastChanged = Date.now();
+        await fromOfflineDB.updateObject(toRaw(this.place), 'Places', 'places');
+      }
+
+      // Delete the model itself
+      await fromOfflineDB.deleteObject(model, 'Models', 'places');
+      VueCookies.remove('currentModel');
+
+      await this.updateModels();
+      
     },
     /**
      *  Routes to the PositionForm for the chosen positionID
