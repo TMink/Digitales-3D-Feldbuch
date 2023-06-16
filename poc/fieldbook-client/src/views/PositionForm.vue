@@ -56,7 +56,7 @@
             <v-window-item value="two">
                 <v-list>
                   <v-list-subheader v-if="images.length === 0">
-                    {{ $t('not_created_yet', { object: $tc('position', 2) }) }}
+                    {{ $t('not_created_yet', { object: $tc('model', 2) }) }}
                   </v-list-subheader>
 
                   <template v-for="(image, i) in images" :key="image">

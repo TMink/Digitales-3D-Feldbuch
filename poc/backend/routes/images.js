@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
+const fs = require("fs");
 const multer = require("multer");
-
-const Position = require("../model/Position");
 const Image = require("../model/Image");
+
+const FILE_PATH = "./public/uploads/";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -62,6 +63,22 @@ router.post("/:position_id", upload.single("image"), async function (req, res, n
     res.status(200).send("Saved Image: " + result);
   } catch (error) {
     res.status(500).send("Couldn't save Image: " + error.message);
+  }
+});
+
+/**
+ * DELETE existing model from MongoDB
+ */
+router.delete("/:image_id", async function (req, res, next) {
+  try {
+    // delete model from DB
+    const result = await Image.findByIdAndDelete(req.params.image_id);
+    // delete model and texture files
+    fs.unlinkSync(FILE_PATH + result.image);
+
+    res.status(200).send("Deleted Image: " + result);
+  } catch (error) {
+    res.status(500).send("Couldn't delete Image: " + error.message);
   }
 });
 

@@ -82,7 +82,7 @@ class ConnectionToBackend {
     return new Promise((resolve, reject) => {
       axios({
         method: request,
-        url: "/" + subdomain + "/" + data.id,
+        url: "/" + subdomain.toLowerCase() + "/" + data.id,
         data: data,
       })
         .then(function (res) {
