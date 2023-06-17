@@ -154,6 +154,7 @@ import Navigation from '../components/Navigation.vue'
 import VueCookies from 'vue-cookies'
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
+import { toRaw } from 'vue'
 
 export default {
   name: 'ActivitiesOverview',
@@ -169,12 +170,12 @@ export default {
       dialog: false,
       del_overlay: false,
       activity: {
-        branchOffice: null,
-        year: null,
-        number: null,
+        branchOffice: '',
+        year: '',
+        number: '',
         places: [],
-        lastChanged: null,
-        lastSync: null
+        lastChanged: '',
+        lastSync: ''
       },
       rules: {
         required: value => !!value || 'Required.',
@@ -191,7 +192,7 @@ export default {
      * Get all activities from IndexedDb
      */
     async getActivities() {
-      /* Recieve all IDs in store */
+      /* Receive all IDs in store */
       this.activities = await fromOfflineDB.getAllObjects('Activities', 'activities')
     },
     /**
@@ -275,10 +276,9 @@ export default {
       VueCookies.remove('currentPlace');
       VueCookies.remove('currentActivity');
 
-      this.$emit('view', 'Stelle')
       await fromOfflineDB.deleteCascade(activity.id, 'place', 'Places',
         'places');
-      await fromOfflineDB.deleteObject(activity, 'Activities', 'activities')
+      await fromOfflineDB.deleteObject(toRaw(activity), 'Activities', 'activities')
       await this.getActivities();
     },
     getNextActivityNumber() {

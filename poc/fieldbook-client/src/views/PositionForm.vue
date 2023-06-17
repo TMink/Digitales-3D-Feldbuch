@@ -275,8 +275,8 @@ export default {
             inputPosition.lastChanged = Date.now();
 
             await fromOfflineDB.updateObject(inputPosition, 'Positions', 'positions')
-            this.$emit("view", "Stellenbearbeitung");
-            this.$router.push({ name: "PlaceCreation", params:  { placeID: this.position.placeID } });
+            this.$emit("view", "PositionsOverview");
+            this.$router.push({ name: "PositionsOverview" });
         },
         /**
          * Opens the confirmation dialog
@@ -305,11 +305,11 @@ export default {
             await fromOfflineDB.updateObject(place, 'Places', 'places');
 
             // Delete the position itself
-            await fromOfflineDB.deleteObject(this.position, 'Positions', 'positions')
+            await fromOfflineDB.deleteObject(toRaw(this.position), 'Positions', 'positions')
             VueCookies.remove('currentPosition');
 
-            this.$emit("view", "Stellenbearbeitung");
-            this.$router.push({ name: "PlaceCreation" });
+            this.$emit("view", "PositionsOverview");
+            this.$router.push({ name: "PositionsOverview" });
         },
         /**
          * Adds a new image-placeholder to the images-array

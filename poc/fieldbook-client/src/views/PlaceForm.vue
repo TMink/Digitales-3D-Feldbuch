@@ -310,7 +310,7 @@ export default {
       VueCookies.remove('currentPosition');
 
       // Delete the place itself
-      await fromOfflineDB.deleteObject(this.place, 'Places', 'places');
+      await fromOfflineDB.deleteObject(toRaw(this.place), 'Places', 'places');
       VueCookies.remove('currentPlace');
 
       this.$router.push({ name: "PlacesOverview" });

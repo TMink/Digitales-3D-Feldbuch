@@ -171,6 +171,7 @@
 import Navigation from '../components/Navigation.vue'
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
 import { fromBackend } from '../ConnectionToBackend.js'
+import { toRaw } from 'vue'
 
 export default {
     name: 'OnlineSync',
@@ -215,17 +216,19 @@ export default {
         async getLocalStorageChanges() {
             
             this.updatedActivities = 
-                await fromOfflineDB.getAllUpdatedObjects('Activities', 'activities')
+                await fromOfflineDB.getAllUpdatedObjects('Activities', 'activities');
             this.updatedPlaces =
-                await fromOfflineDB.getAllUpdatedObjects('Places', 'places')
+                await fromOfflineDB.getAllUpdatedObjects('Places', 'places');
             this.updatedPositions =
-                await fromOfflineDB.getAllUpdatedObjects('Positions', 'positions')
+                await fromOfflineDB.getAllUpdatedObjects('Positions', 'positions');
             this.updatedModels =
-                await fromOfflineDB.getAllUpdatedObjects('Models', 'places')
+                await fromOfflineDB.getAllUpdatedObjects('Models', 'places');
             this.updatedModels.concat(
-                await fromOfflineDB.getAllUpdatedObjects('Models', 'places'))
+                await fromOfflineDB.getAllUpdatedObjects('Models', 'positions'));
             this.updatedImages =
-                await fromOfflineDB.getAllUpdatedObjects('Images', 'images')
+                await fromOfflineDB.getAllUpdatedObjects('Images', 'images');
+            this.updatedTexts =
+                await fromOfflineDB.getAllUpdatedObjects('Texts', 'texts');
 
             this.deletedObjects =
                 await fromOfflineDB.getAllUpdatedObjects('Changes', 'deleted')
@@ -238,7 +241,7 @@ export default {
             //TODO: OPTIMIZE the whole synchronizatzion process
 
             // convert from vue proxy to JSON object
-            const change = JSON.parse(JSON.stringify(proxyChange));
+            const change = toRaw(proxyChange);
 
             // get request type of the change (post, put, delete)
             var request = await this.getRequestType(proxyChange);
@@ -272,7 +275,10 @@ export default {
             //add together all changes
             var allChanges = this.updatedActivities
                             .concat(this.updatedPlaces)
-                            .concat(this.updatedPositions);
+                            .concat(this.updatedPositions)
+                            .concat(this.updatedModels)
+                            .concat(this.updatedImages)
+                            .concat(this.updatedTexts);
 
             //upload all changes
             allChanges.forEach(change => {
@@ -338,6 +344,12 @@ export default {
                     let index = this.updatedImages.indexOf(proxyChange);
                     this.updatedImages.splice(index, 1);
 
+                } else if (subdomain == 'tests') {
+
+                    await fromOfflineDB.updateObject(change, 'Tests', 'tests');
+                    let index = this.updatedTexts.indexOf(proxyChange);
+                    this.updatedTexts.splice(index, 1);
+
                 }
             } else {
                 let index = this.deletedObjects.indexOf(proxyChange);
@@ -370,11 +382,12 @@ export default {
          * @param {*} change 
          */
         async deleteChangeEntry(change) {
-            //check if it is an object that was jut created
+            //check if it is an object that was just created
             // -> then we need to `post` it to backend
             var changeCreated = await fromOfflineDB.getObject(change.id, 'Changes', 'created')
             var changeDeleted = await fromOfflineDB.getObject(change.id, 'Changes', 'deleted')
 
+            console.log(change)
             if (changeCreated != undefined) {
                 fromOfflineDB.deleteObject(change, 'Changes', 'created');
             } else if (changeDeleted != undefined) {
