@@ -11,8 +11,12 @@ export default defineConfig({
     __VUE_I18N_LEGACY_API__: true,
     __INTLIFY_PROD_DEVTOOLS__: false,
   },
+  test: {
+    globals: true,
+  },
   plugins: [vue(), vuetify({ autoImport: true })],
   resolve: {
+    preserveSymlinks: true,
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
