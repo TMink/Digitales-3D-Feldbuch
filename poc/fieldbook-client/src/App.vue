@@ -127,9 +127,6 @@ export default {
       this.toolbar_title = title;
       this.path_reload += 1;
     },
-    savepath() {
-      setpath(this.path);
-    },
     async clearLocalData() {
       this.deleteCookies();
       await this.clearIndexedDB();
