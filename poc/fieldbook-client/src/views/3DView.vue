@@ -216,6 +216,9 @@ export default {
       // Canvas Object
       const canvas = document.getElementById("canvas");
 
+      // Loader for .gltf and .glb Data
+      this.loader = new GLTFLoader();
+
       // Renderer
       this.renderer = new THREE.WebGLRenderer({ antialias: true });
       this.renderer.setPixelRatio(canvas.devicePixelRatio);
