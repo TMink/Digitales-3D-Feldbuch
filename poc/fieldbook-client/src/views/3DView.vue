@@ -49,6 +49,10 @@ export default {
     */
     await this.loadPlaceObjects();
 
+    /* ++++ Reset camera in according to the position of the last place model ++++
+     */
+    this.updateCameraPosition(this.meshesInScene[this.meshesInScene.length - 1])
+
     this.createGuiElements();
 
     this.animate();
@@ -123,19 +127,21 @@ export default {
     },
 
     /**
-     * @param {String} modelName  - Name of model in scene
-     */
+    * @param {String} modelName  - Name of model in scene
+    */
     updateCameraPosition: function (modelName) {
+      const model = this.scene.getObjectByName(modelName);
 
-      var center = new THREE.Vector3;
-      const box = new THREE.Box3().setFromObject(
-        this.scene.getObjectByName(modelName));
-      box.getCenter(center)
+      const modelGeo = model.geometry;
+      modelGeo.computeBoundingBox();
+      const center = new THREE.Vector3();
+      model.geometry.boundingBox.getCenter(center);
+      model.localToWorld(center);
 
-      this.controls.target.set(center.x, center.y, center.z);
+      this.arcballControls.target.set(center.x, center.y, center.z);
       this.camera.position.set(center.x, center.y - 15, center.z);
 
-      this.controls.update();
+      this.arcballControls.update();
 
     },
 
