@@ -44,18 +44,10 @@ export default {
 
     this.init();
 
-    /* ++++ Load all available meshes ++++
+    /* ++++ Load all available models of selected place ++++
     *  -> Loaded meshes have an opacity value of 0.0
-    *  -> Camera is fixed on center of last loaded mesh
     */
-    const placeID = VueCookies.get('currentPlace')
-    const models = await fromOfflineDB.getAllObjectsWithID
-                              (placeID, 'Place', 'Models', 'places')
-    if( models ) {
-      for( var i=0; i < models.length; i++ ) {
-        await this.loadMesh(models[i].id, 'Models','places');
-      }
-    }
+    await this.loadPlaceObjects();
 
     this.createGuiElements();
 
@@ -66,70 +58,67 @@ export default {
   methods: {
 
     /**
-     * Function overview:
-     *  loadModel             - Loads a Model from IndexedDB into the scene. 
-     *                          This version has the standart texture from the 
-     *                          object and the name of the created mesh is the 
-     *                          title of the object.
-     *  updateCameraPosition  - Moves the Camera to specified model in scene
-     *  createGuiElements     - Creates all gui Elements in respective order
-     *  loadWithColor         - Change the current color/texture of a model in
-     *                          the scene to a new color
-     *  changeVisibility      - Changes the opacity of a mesh
-     *  onWindowResize        - Resizes the threeJS element
-     *  ------------------------------------------------------------------------
-     *  init                  - Initialize the scene
-     *  animate               - Animate the scene
-     */
+    * Function overview:
+    *  loadModel             - Loads a Model from IndexedDB into the scene. 
+    *                          This version has the standart texture from the 
+    *                          object and the name of the created mesh is the 
+    *                          title of the object.
+    *  updateCameraPosition  - Moves the Camera to specified model in scene
+    *  createGuiElements     - Creates all gui Elements in respective order
+    *  loadWithColor         - Change the current color/texture of a model in
+    *                          the scene to a new color
+    *  changeVisibility      - Changes the opacity of a mesh
+    *  onWindowResize        - Resizes the threeJS element
+    *  ------------------------------------------------------------------------
+    *  init                  - Initialize the scene
+    *  animate               - Animate the scene
+    */
+
+    loadPlaceObjects: async function () {
+
+      const placeID = VueCookies.get('currentPlace')
+      const objects = await fromOfflineDB.getAllObjectsWithID
+        (placeID, 'Place', 'Models', 'places')
+      if (objects) {
+        for (var i = 0; i < objects.length; i++) {
+          await this.loadModel(objects[i].id, 'Models', 'places');
+        }
+      }
+
+    },
 
     /**
-     * @param {String} modelID    - Key under which the model is stored in
-     *                              Object Store
-     * @param {String} dbName     - Name of Database
-     * @param {String} storeName  - Name of Object Store
-     */
-    loadMesh: async function (modelID, dbName, storeName) {
+    * @param {*} modelID 
+    * @param {*} dbName 
+    * @param {*} storeName 
+    */
+    loadModel: async function (modelID, dbName, storeName) {
 
-      /* Create empty Mesh */
-      const mesh = new THREE.Mesh();
-
-      /* Get Model Data from IndexedDB */
-      const model = await fromOfflineDB.getObject(modelID, dbName, storeName);
+      /* Get 3D-Model from IndexedDB */
+      const object = await fromOfflineDB.getObject(modelID, dbName, storeName);
+      const model = object.result.model
+      const color = object.result.color
+      const opacity = object.result.opacity
+      const title = object.result.title
 
       /* Load object */
-      const object = new OBJLoader().parse(model.model);
+      const mesh = await new Promise((resolve) => {
+        this.loader.parse(model, "", (glb) => {
+          glb.scene.traverse((child) => {
+            if (child instanceof THREE.Mesh) {
+              // Set mesh name to position title
+              child.material.transparent = true;
+              child.material.opacity = opacity;
+              child.material.color = new THREE.Color(color)
+              child.name = title;
+            }
+          });
+          resolve(glb.scene);
+        });
+      })
 
-      /* Load texture */
-      var textLoader = new THREE.TextureLoader().load(model.texture);
-
-      /* Create Material */
-      const material = new THREE.MeshBasicMaterial({
-        map: textLoader,
-        transparent: true,
-        side: THREE.DoubleSide
-      });
-
-      /* Get geometry from loaded object */
-      object.traverse((child) => {
-        if (child instanceof THREE.Mesh) {
-          /* Add geometry to mesh */
-          mesh.geometry = child.geometry
-        }
-      });
-
-      /* Add material to mesh */
-      mesh.material = material;
-      mesh.material.alphaTest = 0.5
-      mesh.material.opacity = 0.0;
-      mesh.name = model.title;
-
-      /* Add mesh to scene */
-      this.scene.add(mesh);
-
-      /* Move camera to mesh position */
-      this.updateCameraPosition(model.title)
-
-      this.meshInScene.push(model.title);
+      this.scene.add(mesh)
+      this.meshesInScene.push(object.result.title)
 
     },
 
@@ -149,8 +138,6 @@ export default {
       this.controls.update();
 
     },
-
-    
 
     createGuiElements: function () {
 
