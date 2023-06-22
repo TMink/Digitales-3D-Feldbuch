@@ -173,12 +173,17 @@ export default {
     },
 
     /**
-     * @param {String} model  - Name of model in scene
-     * @param {String} color  - Name of color
+     * 
+     * @param {*} modelName 
      */
-    loadWithColor: function (modelName, color) {
-      this.scene.getObjectByName(modelName).material.color =
-        new THREE.Color(color)
+    changeColor: function (modelName) {
+
+      const model = this.scene.getObjectByName(modelName)
+      const color = model.color
+      params.guiMesh.color = color
+      var colorObj = new THREE.Color(params.guiMesh.color);
+      this.scene.getObjectByName(modelName).material.color = colorObj;
+
     },
 
     /**
