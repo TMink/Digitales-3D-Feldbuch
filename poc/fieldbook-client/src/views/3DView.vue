@@ -145,30 +145,51 @@ export default {
 
     },
 
-    createGuiElements: function () {
+    createGui: function () {
 
-      const dataFolder = this.gui.addFolder('Data')
+      /* Positions Folder */
+      const positionsFolder = this.gui.addFolder('Positions');
+      for (var i = 0; i < params.positions.inScene.length; i++) {
 
-      //var addButton = dataFolder.add(guiFunctions, 'add')
-      // dataFolder.add(guiFunctions, 'delete')
+        const positionTitle = params.positions.inScene[i].number;
 
-      /* #### Prep Models #### */
-      const prepModelsFolder = this.gui.addFolder('Prep Models');
+        const positionFolder = positionsFolder.addFolder(positionTitle);
 
-      /*
-      for(var i=0; i < this.meshInScene.length; i++) {
+        const test = params.positions.inScene.filter(
+          obj => { return obj.number === positionTitle }
+        )
 
-        const meshName = this.meshInScene[i];
+        positionFolder.add(params.positions.inScene.find
+          (x => x.number === test[0].number), "move")
+          .listen().onChange(
+            () => this.changeState('position', positionTitle))
+        //.listen().onChange(() => this.attachPosition
+        //  (positionTitle))
 
-        const modelFolder = prepModelsFolder.addFolder( meshName );
-
-        modelFolder.add( params.guiMesh, "visibility")
-                   .onChange( v => this.changeVisibility(meshName));
-
-        modelFolder.add( params.guiMesh, "clipping")
-                   .onChange( v => this.changeClipping(meshName, this.planes) );
       }
-      */
+
+      /* general controls Folder */
+      const controlsFolder = this.gui.addFolder('Controls')
+      controlsFolder.add(params.guiControls, 'visibility')
+      controlsFolder.add(params.guiControls, 'state')
+        .listen().onChange(() => this.changeState('model'))
+
+      /* Models Folder */
+      const modelsFolder = this.gui.addFolder('Models')
+
+      for (var i = 0; i < this.meshesInScene.length; i++) {
+
+        const modelName = this.meshesInScene[i];
+
+        const modelFolder = modelsFolder.addFolder(modelName);
+
+        modelFolder.add(params.guiMesh, "visibility")
+          .onChange(v => this.changeVisibility(modelName));
+
+        modelFolder.addColor(params.guiMesh, "color")
+          .onChange(v => this.changeColor(modelName));
+
+      }
 
     },
 
@@ -263,11 +284,41 @@ export default {
       this.gui.domElement.id = 'gui';
       gui_container.appendChild(this.gui.domElement);
 
+      window.addEventListener('keydown', e => {
+
+        switch (e.code) {
+
+          case 'KeyW':
+            this.transformControls.mode = 'translate';
+            break;
+          case 'KeyE':
+            this.transformControls.mode = 'rotate';
+            break;
+          case 'KeyR':
+            this.transformControls.mode = 'scale';
+            break;
+
+        }
+
+      });
+
     },
 
     animate: function () {
 
       requestAnimationFrame(this.animate);
+
+      if (params.guiControls.visibility === true) {
+        this.arcballControls.setGizmosVisible(true);
+      } else {
+        this.arcballControls.setGizmosVisible(false);
+      }
+
+      if (params.guiControls.state === true) {
+        this.arcballControls.enabled = true;
+      } else {
+        this.arcballControls.enabled = false;
+      }
 
       this.renderer.render(this.scene, this.camera);
 
