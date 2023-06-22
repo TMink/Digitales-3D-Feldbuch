@@ -347,19 +347,19 @@ export default {
          */
         async addImage() {
             // Add imageID to the position array of all images
-            const positionID = String(VueCookies.get('currentPosition'))
-            var newImageID = String(Date.now())
-            var position = await fromOfflineDB.getObject(positionID, 'Positions', 'positions')
+            var newImageID = String(Date.now());
+            var rawPosition = toRaw(this.position);
+            var rawImage = toRaw(this.image);
 
-            position.images.push(newImageID)
-            position.lastChanged = Date.now()
+            rawPosition.images.push(newImageID);
+            rawPosition.lastChanged = Date.now();
 
             const newImage = {
                 id: newImageID,
                 imageNumber: null,
-                positionID: this.position.id,
-                title: this.image.title,
-                image: await this.textureToBase64(toRaw(this.image.image)),
+                positionID: rawPosition.id,
+                title: rawImage.title,
+                image: await this.textureToBase64(toRaw(rawImage.image)),
                 lastChanged: Date.now(),
                 lastSync: ''
             };
@@ -374,17 +374,27 @@ export default {
             }
 
             this.images_overlay = false;
-            await fromOfflineDB.updateObject(position, 'Positions', 'positions')
+            await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions')
             var posID = await fromOfflineDB.addObject(newImage, "Images", "images");
             await fromOfflineDB.addObject({ id: posID, object: 'images' }, 'Changes', 'created');
             await this.updateImages(newImage.id);
         },
+        /**
+         * Removes an image from IndexedDB and the connected position
+         * @param {ProxyObject} image 
+         */
         async deleteImage(image) {
-            // Remove the imageID from connected position
-            var index = this.position.images.indexOf(image.id.toString())
+            
+            var rawImage = toRaw(image);
+            var rawPosition = toRaw(this.position);
+            var index = rawPosition.images.indexOf(rawImage.id.toString())
 
-            this.position.images.splice(index, 1)
-            await fromOfflineDB.updateObject(toRaw(this.position), 'Positions', 'positions');
+            // Remove the imageID from connected position
+            if (index != -1) {
+                rawPosition.images.splice(index, 1);
+                rawPosition.lastChanged = Date.now();
+                await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions');
+            }
 
             // Delete the image itself
             await fromOfflineDB.deleteObject(image, 'Images', 'images');
