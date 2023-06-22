@@ -103,9 +103,6 @@
                     </v-btn>
                 </v-container>
                   
-                  
-                
-                
                 <v-divider v-if="i !== models.length - 1"></v-divider>
               </template>
             </v-list>
@@ -138,18 +135,11 @@
 
                   <v-file-input
                     show-size
-                    accept=".obj"
+                    accept=".glb"
                     v-model="model.model"
                     :label="$t('input', { msg: $t('model') })">
                   </v-file-input>
 
-                  <v-file-input
-                    show-size
-                    v-model="model.texture"
-                    prepend-icon="mdi-camera" 
-                    accept="image/png, image/jpeg, image/bmp" 
-                    :label="$t('input', { msg: $t('texture') })">
-                  </v-file-input>
                 </v-card-text>
 
                 <v-card-actions class="justify-center">
@@ -225,7 +215,6 @@ export default {
         placeID: '',
         title: '',
         model: [],
-        texture: [],
       },
       positions: null,
       models: null,
@@ -356,33 +345,10 @@ export default {
     },
 
     /**
-     * Change texture data to base64
+     * 
      * @param {*} rawData 
      */
-    async textureToBase64(rawData) {
-
-      const output = await new Promise((resolve) => {
-
-        let reader = new FileReader();
-        let f = rawData[0];
-        reader.onload = e => {
-          const b64 = e.target.result
-          resolve(b64)
-        }
-
-        reader.readAsDataURL(f);
-
-      });
-
-      return output;
-
-    },
-
-    /**
-     * Change obj-Model data to String
-     * @param {*} rawData 
-     */
-    async modelToString(rawData) {
+    async modelToArrayBuffer(rawData) {
 
       const output = await new Promise((resolve) => {
 
@@ -393,7 +359,7 @@ export default {
           resolve(modelString)
         }
 
-        reader.readAsText(f);
+        reader.readAsArrayBuffer(f);
 
       });
 
@@ -416,8 +382,9 @@ export default {
         id: newModelID,
         placeID: this.place.id,
         title: this.model.title,
-        model: await this.modelToString(toRaw(this.model.model)),
-        texture: await this.textureToBase64(toRaw(this.model.texture)),
+        model: await this.modelToArrayBuffer(toRaw(this.model.model)),
+        color: "#ffffff",
+        opacity: 0.0,
         lastChanged: Date.now(),
         lastSync: ''
       };
