@@ -243,8 +243,20 @@ export default {
       this.scene.add(ambientLight);
 
       // Controls
-      this.controls = new ArcballControls(this.camera, this.renderer.domElement,
-                                          this.scene);   
+      this.arcballControls = new ArcballControls(this.camera, this.renderer.domElement,
+        this.scene);
+
+      this.transformControls = new TransformControls
+        (this.camera,
+          this.renderer.domElement);
+
+      this.transformControls.addEventListener('dragging-changed', e => {
+
+        this.arcballControls.enabled = !e.value;
+
+      });
+
+      this.scene.add(this.transformControls);
 
       // GUI
       this.gui = new GUI();
