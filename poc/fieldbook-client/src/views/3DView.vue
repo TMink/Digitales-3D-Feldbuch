@@ -191,12 +191,12 @@ export default {
      */
     changeVisibility: function (modelName) {
 
-      const model = this.scene.getObjectByName(modelName)
+      const opacityValue = this.scene.getObjectByName(modelName).material.opacity
 
-      if (model.material.opacity == 1) {
-        model.material.opacity = 0;
+      if (opacityValue == 1.0) {
+        this.scene.getObjectByName(modelName).material.opacity = 0.0
       } else {
-        model.material.opacity = 1;
+        this.scene.getObjectByName(modelName).material.opacity = 1.0
       }
 
     },
