@@ -298,10 +298,10 @@ export default {
                 return;
             }
             //convert from vue proxy to JSON object
-            const inputPosition = JSON.parse(JSON.stringify(this.position));
-            inputPosition.lastChanged = Date.now();
+            const rawPosition = toRaw(this.position);
+            rawPosition.lastChanged = Date.now();
 
-            await fromOfflineDB.updateObject(inputPosition, 'Positions', 'positions')
+            await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions')
             this.$emit("view", "PositionsOverview");
             this.$router.push({ name: "PositionsOverview" });
         },
@@ -324,15 +324,19 @@ export default {
         async deletePosition() {
 
             // Remove the positionID from connected place
-            const placeID = String(VueCookies.get('currentPlace'))
-            var place = await fromOfflineDB.getObject(placeID, 'Places', 'places')
-            var index = place.positions.indexOf(this.position.id.toString())
+            const placeID = String(VueCookies.get('currentPlace'));
+            var place = await fromOfflineDB.getObject(placeID, 'Places', 'places');
+            var rawPosition = toRaw(this.position);
+            var index = place.positions.indexOf(rawPosition.id.toString())
 
-            place.positions.splice(index, 1)
-            await fromOfflineDB.updateObject(place, 'Places', 'places');
-
+            if (index != -1) {
+                place.positions.splice(index, 1);
+                place.lastChanged = Date.now();
+                await fromOfflineDB.updateObject(place, 'Places', 'places');
+            }
+            
             // Delete the position itself
-            await fromOfflineDB.deleteObject(toRaw(this.position), 'Positions', 'positions')
+            await fromOfflineDB.deleteObject(rawPosition, 'Positions', 'positions')
             VueCookies.remove('currentPosition');
 
             this.$emit("view", "PositionsOverview");
