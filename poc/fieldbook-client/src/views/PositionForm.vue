@@ -127,25 +127,46 @@
                 </v-dialog>
               </v-window-item>
 
-
+              <!-- Tab item 'texts' -->
               <v-window-item value="three">
-                <v-list-subheader v-if="position.texts.length === 0">
+                <v-list-subheader v-if="texts.length === 0">
                         {{ $t('not_created_yet', { object: $t('additional', {msg: $tc('parameter', 2)}) }) }}
                     </v-list-subheader>
-                    <template v-for="(text, i) in position.texts" :key="text">
+                    <template v-for="text in texts" :key="text">
                         <v-list>
                             <v-list-item>
-                                <v-textarea 
-                                    v-model="text.content" 
-                                    :hint="$tc('please_input', 2, {msg: $t('description')} )"
-                                    :label="$t('textfield')">
-                                </v-textarea>
-                                <v-btn 
-                                    color="decline" 
-                                    class="ml-2"
-                                    v-on:click="position.texts.splice(i, 1)">
-                                    <v-icon>mdi-delete</v-icon>
-                                </v-btn>
+                                <v-row class="align-center no-gutters">
+                                    <v-col cols="3">
+                                        <v-combobox
+                                            hide-details="true"
+                                            v-model="text.title"
+                                            :label="$t('title')"
+                                            :items="['Höhe', 
+                                                'Gewicht', 
+                                                'Material', 
+                                                'Datum', 
+                                                'Datierung', 
+                                                'Kommentar']"
+                                            @update:modelValue="saveText(text)"
+                                        ></v-combobox>
+                                    </v-col>
+                                    <v-col cols="7">
+                                        <v-text-field
+                                            hide-details="true"
+                                            v-model="text.text" 
+                                            :label="$t('content')"
+                                            @update:modelValue="saveText(text)">
+                                        </v-text-field>
+                                    </v-col>
+                                    <v-col cols="1">
+                                        <v-btn 
+                                            color="decline" 
+                                            class="ma-2"
+                                            v-on:click="deleteText(text)">
+                                            <v-icon>mdi-delete</v-icon>
+                                        </v-btn>
+                                    </v-col>
+                                </v-row>
                             </v-list-item>
                         </v-list>
                     </template>
@@ -212,6 +233,12 @@ export default {
                 title: '',
                 image: [],
             },
+            text: {
+                id: '',
+                positionID: '',
+                title: '',
+                text: '',
+            },
             images: [],
             texts: [],
             error_dialog: false,
@@ -259,7 +286,7 @@ export default {
          */
         async updateTexts() {
             this.texts = await fromOfflineDB.getAllObjectsWithID(
-                            this.position.id, 'Position', 'Texts', 'positions');
+                            this.position.id, 'Position', 'Texts', 'texts');
         },
         /**
          * Save a Position to local storage for the current place
@@ -362,12 +389,61 @@ export default {
             await this.updateImages();
         },
         /**
-         * Adds a new text-placeholder to the texts-array
+         * Adds a new text-placeholder to the position and IndexedDB
          */
-        addText: function () {
-            this.position.texts.push({
-                content: ''
-            });
+        async addText() {
+            // Add textID to the position array of all texts
+            var newTextID = String(Date.now());
+            var rawPosition = toRaw(this.position);
+
+            rawPosition.texts.push(newTextID)
+            rawPosition.lastChanged = Date.now()
+
+            const newText = {
+                id: newTextID,
+                positionID: rawPosition.id,
+                title: '',
+                text: '',
+                lastChanged: Date.now(),
+                lastSync: ''
+            };
+
+            await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions')
+            await fromOfflineDB.addObject(newText, "Texts", "texts");
+            await fromOfflineDB.addObject({ id: newTextID, object: 'texts' }, 'Changes', 'created');
+            await this.updateTexts(newText.id);
+        },
+        /**
+         * Saves the text changes to IndexedDB
+         * @param {ProxyObject} text 
+         */
+        async saveText(text) {
+            //convert from vue proxy to JSON object
+            const rawText = toRaw(text);
+            rawText.lastChanged = Date.now();
+
+            await fromOfflineDB.updateObject(rawText, 'Texts', 'texts')
+        },
+        /**
+         * Removes a text entry from IndexedDB and the connected position
+         * @param {ProxyObject} text 
+         */
+        async deleteText(text) {
+            var rawPosition = toRaw(this.position);
+            var rawText = toRaw(text);
+            var index = rawPosition.texts.indexOf(rawText.id.toString());
+
+            // Remove the textID from connected position
+            if (index != -1) {
+                rawPosition.texts.splice(index, 1);
+                rawPosition.lastChanged = Date.now();
+                await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions');
+            }
+            
+            // Delete the text itself
+            await fromOfflineDB.deleteObject(text, 'Texts', 'texts');
+            VueCookies.remove('currentText');
+            await this.updateTexts();
         },
         /**
          * Change texture data to base64
@@ -383,12 +459,10 @@ export default {
                     const b64 = e.target.result
                     resolve(b64)
                 }
-
                 reader.readAsDataURL(f);
 
             });
             return output;
-
         },
         /**
          * Cancels the PositionForm and returns to the PlaceForm of current place
