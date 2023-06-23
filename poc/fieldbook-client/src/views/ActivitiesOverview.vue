@@ -3,147 +3,110 @@
     <Navigation />
     <v-form>
       <v-list class="overflow-hidden">
-        <v-list-subheader v-if="activities.length === 0"> 
-          {{$t('not_created_yet', {object: $tc('activity', 2)})}}
+        <v-list-subheader v-if="activities.length === 0">
+          {{ $t('not_created_yet', { object: $tc('activity', 2) }) }}
         </v-list-subheader>
 
         <!--Lists all locally saved activities-->
         <template v-for="(activity, i) in activities" :key="activity">
-          <!--Boolean 'activity.edit' decides whether an element is displayed in list form or in edit form-->
-          <div v-if="!activity.edit">
-            <v-row>
-              <v-col cols="12">
-                <v-row no-gutters>
-                  <v-col cols="8">
-                    <v-sheet class="pa-2 ma-2">
-                      <v-list-item v-on:click="setActivity(activity.id)">
-                        <v-list-item-title class="ma-4"> {{ activity.activityNumber }} </v-list-item-title>
-                      </v-list-item>
-                    </v-sheet>
-                  </v-col>
-                  <v-col cols="2" class="pa-4">
-                    <v-btn class="ma-1" icon color="edit" v-on:click="modifyActivity(activity)">
-                      <v-icon>mdi-pencil</v-icon>
-                    </v-btn>
-                    <v-btn icon color="decline" v-on:click="confirmDeletion(activity)">
-                      <v-icon>mdi-delete</v-icon>
-                    </v-btn>
-                  </v-col>
-                </v-row>
-              </v-col>
-            </v-row>
-          </div>
+          <!--Boolean 'activity.edit' decides whether an element is 
+            displayed in list form or in edit form-->
+          <v-row no-gutters v-if="!activity.edit" class="px-5">
+
+            <v-col cols="9">
+              <v-list-item class="pa-2 ma-2" v-on:click="setActivity(activity.id)">
+                <v-list-item-title class="ma-4">
+                  {{ activity.activityNumber }}
+                </v-list-item-title>
+              </v-list-item>
+            </v-col>
+
+            <v-col cols="3" class="pa-4">
+              <v-btn 
+                icon 
+                class="ma-1" 
+                color="edit" 
+                v-on:click="activity.edit = !activity.edit">
+                <v-icon>mdi-pencil</v-icon>
+              </v-btn>
+
+              <v-btn 
+                icon 
+                color="decline" 
+                class="ma-1" 
+                v-on:click="confirmDeletion(activity)">
+                <v-icon>mdi-delete</v-icon>
+              </v-btn>
+            </v-col>
+          </v-row>
 
           <!--This is where the edit mask will be triggered-->
-          <div v-if="activity.edit">
-            <v-container>
-              <v-row>
-                <v-col cols="12">
-                  <v-row no-gutters>
-                    <v-col cols="3">
-                      <v-sheet class="pa-2 ma-2">
-                        <v-text-field :rules="[rules.required]" v-model="activity.branchOffice" label="Außenstelle"
-                          hide-details="auto" placeholder="Xanten" clearable></v-text-field>
-                      </v-sheet>
-                    </v-col>
+          <v-row no-gutters v-if="activity.edit">
 
-                    <v-col cols="3">
-                      <v-sheet class="pa-2 ma-2">
-                        <v-text-field :rules="[rules.required]" v-model="activity.year" label="Jahr" hide-details="auto"
-                          placeholder="2023" clearable counter maxlength="4"></v-text-field>
-                      </v-sheet>
-                    </v-col>
+            <v-col cols="9">
+              <v-row no-gutters class="justify-center">
 
-                    <v-col cols="3">
-                      <v-sheet class="pa-2 ma-2">
-                        <v-text-field :rules="[rules.required, rules.counter]" v-model="activity.number" label="Nummer"
-                          hide-details="auto" placeholder="1337" clearable counter maxlength="4">
-                        </v-text-field>
-                      </v-sheet>
-                    </v-col>
+                <v-col cols="3" class="pt-4 px-2">
+                  <v-text-field
+                    counter
+                    clearable
+                    maxlength="20"
+                    label="Außenstelle" 
+                    :rules="[rules.required]" 
+                    v-model="activity.branchOffice">
+                  </v-text-field>
+                </v-col>
 
-                    <v-col cols="2">
-                      <v-sheet class="pa-1 ma-2">
-                        <v-btn class="ma-1" icon color="edit" v-on:click="saveActivity(activity)">
-                          <v-icon>mdi-content-save-all</v-icon>
-                        </v-btn>
-                        <v-btn class="ma-1" icon color="decline" v-on:click="clearActivityEditMask(activity)">
-                          <v-icon>mdi-close-circle</v-icon>
-                        </v-btn>
-                      </v-sheet>
-                    </v-col>
-                  </v-row>
+                <v-col cols="2" class="pt-4 px-2">
+                  <v-text-field 
+                    counter 
+                    clearable 
+                    label="Jahr" 
+                    maxlength="4" 
+                    v-model="activity.year" 
+                    :rules="[rules.required]">
+                  </v-text-field>
+                </v-col>
+
+                <v-col cols="2" class="pt-4 px-2">
+                  <v-text-field 
+                    counter 
+                    clearable 
+                    maxlength="4" 
+                    label="Nummer" 
+                    v-model="activity.number" 
+                    :rules="[rules.required]">
+                  </v-text-field>
                 </v-col>
               </v-row>
-            </v-container>
-          </div>
+            </v-col>
+
+            <v-col cols="3" class="pa-4">
+              <v-btn 
+                icon 
+                class="ma-1" 
+                color="edit" 
+                v-on:click="saveActivity(activity)">
+                <v-icon>mdi-content-save-all</v-icon>
+              </v-btn>
+              <v-btn 
+                icon 
+                class="ma-1" 
+                color="decline" 
+                v-on:click="closeActivityEdit(activity)">
+                <v-icon>mdi-close-circle</v-icon>
+              </v-btn>
+            </v-col>
+
+          </v-row>
           <v-divider v-if="i !== activities.length - 1"></v-divider>
         </template>
         <ConfirmDialog ref="confirm" />
 
-        <!--This is where the input mask for new activities will be triggered-->
-        <v-container v-if="showInputMask">
-          <v-row>
-            <v-col cols="12">
-              <v-row no-gutters>
-                <v-col cols="3">
-                  <v-sheet class="pa-2 ma-2">
-                    <v-text-field
-                      clearable
-                      :label="$t('branchOffice')"
-                      hide-details="auto" 
-                      placeholder="Xanten"
-                      :rules="[rules.required]"
-                      v-model="activity.branchOffice"></v-text-field>
-                  </v-sheet>
-                </v-col>
+        <v-btn v-on:click="addActivity()" color="add">
+          <v-icon>mdi-plus-box-multiple</v-icon>
+        </v-btn>
 
-                <v-col cols="3">
-                  <v-sheet class="pa-2 ma-2">
-                    <v-text-field 
-                      counter
-                      clearable
-                      :label="$t('year')"
-                      maxlength="4"
-                      placeholder="2023" 
-                      hide-details="auto"
-                      v-model="activity.year"
-                      :rules="[rules.required]"
-                      ></v-text-field>
-                  </v-sheet>
-                </v-col>
-
-                <v-col cols="3">
-                  <v-sheet class="pa-2 ma-2">
-                    <v-text-field
-                      counter
-                      clearable 
-                      :label="$t('number')"
-                      maxlength="4"
-                      placeholder="1337"
-                      hide-details="auto"
-                      v-model="activity.number"
-                      :rules="[rules.required, rules.counter]">
-                    </v-text-field>
-                  </v-sheet>
-                </v-col>
-
-                <v-col cols="2">
-                  <v-sheet class="pa-1 ma-2">
-                    <v-btn class="ma-1" icon color="edit" v-on:click="saveActivity(activity)">
-                      <v-icon>mdi-content-save-all</v-icon>
-                    </v-btn>
-                    <v-btn class="ma-1" icon color="decline" v-on:click="clearActivityMask()">
-                      <v-icon>mdi-close-circle</v-icon>
-                    </v-btn>
-                  </v-sheet>
-                </v-col>
-              </v-row>
-            </v-col>
-          </v-row>
-        </v-container>
-        <v-btn v-on:click="modifyActivity('new')" color="add" v-if="!showInputMask">
-          <v-icon>mdi-plus-box-multiple</v-icon> </v-btn>
       </v-list>
     </v-form>
   </div>
@@ -165,33 +128,20 @@ export default {
   data() {
     return {
       activities: [],
-      current_activity: {},
-      showInputMask: false,
-      dialog: false,
-      del_overlay: false,
-      activity: {
-        branchOffice: '',
-        year: '',
-        number: '',
-        places: [],
-        lastChanged: '',
-        lastSync: ''
-      },
       rules: {
         required: value => !!value || 'Required.',
-        counter: value => value.length <= 20 || 'Max 20 characters',
       }
     };
   },
   async created() {
     await fromOfflineDB.syncLocalDBs();
-    await this.getActivities();
+    await this.updateActivities();
   },
   methods: {
     /**
      * Get all activities from IndexedDb
      */
-    async getActivities() {
+    async updateActivities() {
       /* Receive all IDs in store */
       this.activities = await fromOfflineDB.getAllObjects('Activities', 'activities')
     },
@@ -208,6 +158,42 @@ export default {
       this.$router.push({ name: 'PlacesOverview' })
       this.$emit('view', 'Stelle')
     },
+    closeActivityEdit(activity) {
+      // if the activity has not been saved, discard it
+      if (activity.id == undefined) {
+        var index = this.activities.indexOf(activity)
+        if (index != -1) {
+          this.activities.splice(index, 1);
+        }
+      }
+      activity.edit = !activity.edit
+    },
+    /**
+     * Adds a new temporary activity with default data
+     */
+    async addActivity() {
+
+      const newActivity = {
+        activityNumber: '',
+        branchOffice: 'Platzhalter',
+        year: new Date().getFullYear(),
+        number: '0001',
+
+        edit: true,
+      }
+
+      if (this.activities.length != 0) {
+        const activityNumber = Math.max(...this.activities.map(o => o.number));
+        var  newActivityNumber = (activityNumber + 1).toString().padStart(4, '0');
+        //newActivityNumber = newActivityNumber.toString().padStart(4, '0'); 
+        newActivity.number = newActivityNumber;
+      }
+      newActivity.activityNumber = newActivity.branchOffice
+        + " " + newActivity.year
+        + "/" + newActivity.number;
+
+      this.activities.push(newActivity);
+    },
     /**
      * Saves/updates an `activity` in the IndexedDB if the 
      * activity mask is filled out correctly
@@ -215,28 +201,28 @@ export default {
      */
     async saveActivity(proxyActivity) {
 
-      const activity = JSON.parse(JSON.stringify(proxyActivity));
+      const rawActivity = toRaw(proxyActivity);
       //TODO: use form.validate() instead of != null 
-      if (activity.branchOffice != null 
-        && activity.year != null 
-        && activity.number != null) {
+      if (rawActivity.branchOffice != null 
+        && rawActivity.year != null 
+        && rawActivity.number != null) {
 
         const newActivity = {
           id: String(Date.now()),
-          activityNumber: activity.branchOffice 
-                          + " " + activity.year 
-                          + "/" + activity.number,
-          branchOffice: activity.branchOffice,
-          year: activity.year,
-          number: activity.number,
+          activityNumber: rawActivity.branchOffice 
+                          + " " + rawActivity.year 
+                          + "/" + rawActivity.number,
+          branchOffice: rawActivity.branchOffice,
+          year: rawActivity.year,
+          number: rawActivity.number,
           places: [],
           lastChanged: Date.now(),
-          lastSync: activity.lastSync
+          lastSync: ''
         }
         
         // Edit existing data
-        if (Object.prototype.hasOwnProperty.call(activity, "id")) {
-          newActivity.id = activity.id;
+        if (Object.prototype.hasOwnProperty.call(rawActivity, "id")) {
+          newActivity.id = rawActivity.id;
           await fromOfflineDB.updateObject(newActivity, 'Activities', 'activities');
 
         } else {
@@ -245,12 +231,9 @@ export default {
 
           await fromOfflineDB.addObject({id: activityID, object: 'activities'}, 'Changes', 'created');
         }
-
-        this.clearActivityMask();
       }
 
-      await this.getActivities();
-      this.showInputMask = false;
+      await this.updateActivities();
     },
     /**
      * Opens the confirmation dialog for deletion
@@ -279,52 +262,8 @@ export default {
       await fromOfflineDB.deleteCascade(activity.id, 'place', 'Places',
         'places');
       await fromOfflineDB.deleteObject(toRaw(activity), 'Activities', 'activities')
-      await this.getActivities();
+      await this.updateActivities();
     },
-    getNextActivityNumber() {
-      
-    },
-    /**
-     * Decides wether to show the input mask for a new `activity` 
-     * or the edit mask for an existing one
-     * @param {*} activity 
-     */
-    async modifyActivity(activity) {
-      if (activity === 'new') {
-        this.showInputMask = true
-      }
-      else {
-        for (let i of this.activities) {
-          if (activity.id === i.id) {
-            i.edit = true
-          }
-        }
-      }
-    },
-    /**
-     * Resets the activity masks default values to 'null' and hides it
-     */
-    async clearActivityMask() {
-      this.showInputMask = false
-      this.activity.branchOffice = null
-      this.activity.year = null
-      this.activity.number = null
-    },
-    /**
-     * Resets the edit mask for activities to the stored values 
-     * from IndexedDb and hides it
-     * @param {*} activity 
-     */
-    async clearActivityEditMask(activity) {
-      for (let i of this.activities) {
-        if (activity.id === i.id) {
-          activity.branchOffice = i.branchOffice
-          activity.year = i.year
-          activity.number = i.number
-          activity.edit = false
-        }
-      }
-    }
   }
 }
 </script>
