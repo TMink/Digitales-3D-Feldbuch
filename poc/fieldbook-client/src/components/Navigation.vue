@@ -1,8 +1,8 @@
 <template>
   <v-tabs flat bg-color="accent" fixed-tabs align-tabs="center" slider-color="slider">
-    <v-tab max-width="250px" class="text-h6" @click="changePage('ActivitiesOverview')">{{$t('activity')}}</v-tab>
-    <v-tab max-width="250px" class="text-h6" @click="changePage('PlacesOverview')" :disabled="!activityIsSet"> {{ $t('place') }}</v-tab>
-    <v-tab max-width="250px" class="text-h6" @click="changePage('PositionsOverview')" :disabled="!placeIsSet"> {{ $t('position') }}</v-tab>
+    <v-tab id="activity" max-width="250px" class="text-h6" @click="changePage('ActivitiesOverview')">{{$t('activity')}}</v-tab>
+    <v-tab id="place" max-width="250px" class="text-h6" @click="changePage('PlacesOverview')" :disabled="!activityIsSet"> {{ $t('place') }}</v-tab>
+    <v-tab id="position" max-width="250px" class="text-h6" @click="changePage('PositionsOverview')" :disabled="!placeIsSet"> {{ $t('position') }}</v-tab>
   </v-tabs>
 </template>
 
