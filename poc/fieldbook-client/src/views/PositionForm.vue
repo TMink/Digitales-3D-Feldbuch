@@ -76,12 +76,13 @@
                   </template>
                 </v-list>
 
-                <v-btn
-                  color="add"
-                  class="mr-16 mt-3"
-                  @click="images_overlay = true">
-                  <v-icon>mdi-plus-box-multiple</v-icon>
-                </v-btn>
+                <div class="text-center pa-2">
+                    <v-btn
+                        color="add"
+                        v-on:click="images_overlay = true()"> 
+                        <v-icon>mdi-plus-box-multiple</v-icon> 
+                    </v-btn>
+                </div>
 
                 <!-- Image Creation dialog -->
                 <v-dialog v-model="images_overlay" max-width="800" persistent>
@@ -170,11 +171,13 @@
                             </v-list-item>
                         </v-list>
                     </template>
-                    <v-btn 
-                        color="add" 
-                        v-on:click="addText()">
-                       <v-icon>mdi-plus-box-multiple</v-icon>
-                    </v-btn>
+                    <div class="text-center pa-2">
+                        <v-btn
+                            color="add"
+                            v-on:click="addText()"> 
+                            <v-icon>mdi-plus-box-multiple</v-icon> 
+                        </v-btn>
+                    </div>
               </v-window-item>
             </v-window>
           </v-col>
@@ -425,7 +428,7 @@ export default {
             await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions')
             await fromOfflineDB.addObject(newText, "Texts", "texts");
             await fromOfflineDB.addObject({ id: newTextID, object: 'texts' }, 'Changes', 'created');
-            await this.updateTexts(newText.id);
+            await this.updateTexts();
         },
         /**
          * Saves the text changes to IndexedDB

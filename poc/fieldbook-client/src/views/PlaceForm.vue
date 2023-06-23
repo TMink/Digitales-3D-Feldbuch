@@ -64,12 +64,14 @@
                 </template>
               </v-list>
 
-              <v-btn
-                color="add"
-                class="mr-16 mt-3" 
-                v-on:click="addPosition()">
-                <v-icon>mdi-plus-box-multiple</v-icon>
-              </v-btn>
+              <div class="text-center pa-2">
+                <v-btn
+                  color="add"
+                  v-on:click="addPosition()"> 
+                  <v-icon>mdi-plus-box-multiple</v-icon> 
+                </v-btn>
+              </div>
+
             </v-form>
           </v-window-item>
 
@@ -107,12 +109,13 @@
               </template>
             </v-list>
 
-            <v-btn
-              color="add"
-              class="mr-16 mt-3"
-              @click="models_overlay = true">
-              <v-icon>mdi-plus-box-multiple</v-icon>
-            </v-btn>
+            <div class="text-center pa-2">
+              <v-btn
+                color="add"
+                v-on:click="models_overlay = true"> 
+                <v-icon>mdi-plus-box-multiple</v-icon> 
+              </v-btn>
+            </div>
 
             <!-- Model Creation dialog -->
             <v-dialog v-model="models_overlay" max-width="800" persistent>
