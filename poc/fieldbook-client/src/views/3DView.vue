@@ -11,19 +11,30 @@ import { ArcballControls } from
   'three/examples/jsm/controls/ArcballControls.js';
 import { TransformControls } from 
   'three/examples/jsm/controls/TransformControls.js';
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+  import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { GUI } from 'dat.gui';
-
-let needsUpdate = true;
 
 const params = {
   animate: true,
 
   guiMesh: {
     visibility: false,
+    color: "#ffffff",
     clipping: false
-  }
+  },
+
+  guiControls: {
+    visibility: false,
+    state: false,
+  },
+
+  positions: {
+    inScene: [],
+    attach: false,
+  },
+
+  attachedPosition: null,
 };
 
 export default {
@@ -32,7 +43,9 @@ export default {
 
   data() {
 
-    return {};
+    return {
+      meshesInScene: [],
+    };
 
   },
 
@@ -51,9 +64,11 @@ export default {
 
     /* ++++ Reset camera in according to the position of the last place model ++++
      */
-    this.updateCameraPosition(this.meshesInScene[this.meshesInScene.length - 1])
+    if(this.meshesInScene) {
+      this.updateCameraPosition(this.meshesInScene[this.meshesInScene.length - 1].title)
+    }
 
-    this.createGuiElements();
+    this.createGui();
 
     this.animate();
 
@@ -100,10 +115,11 @@ export default {
 
       /* Get 3D-Model from IndexedDB */
       const object = await fromOfflineDB.getObject(modelID, dbName, storeName);
-      const model = object.result.model
-      const color = object.result.color
-      const opacity = object.result.opacity
-      const title = object.result.title
+      const model = object.model
+      const color = object.color
+      console.log(color)
+      const opacity = object.opacity
+      const title = object.title
 
       /* Load object */
       const mesh = await new Promise((resolve) => {
@@ -122,7 +138,8 @@ export default {
       })
 
       this.scene.add(mesh)
-      this.meshesInScene.push(object.result.title)
+      this.meshesInScene.push({ title: title, 
+                                id:    object.id     })
 
     },
 
@@ -179,7 +196,8 @@ export default {
 
       for (var i = 0; i < this.meshesInScene.length; i++) {
 
-        const modelName = this.meshesInScene[i];
+        const modelName = this.meshesInScene[i].title;
+        const modelID = this.meshesInScene[i].id;
 
         const modelFolder = modelsFolder.addFolder(modelName);
 
@@ -187,7 +205,8 @@ export default {
           .onChange(v => this.changeVisibility(modelName));
 
         modelFolder.addColor(params.guiMesh, "color")
-          .onChange(v => this.changeColor(modelName));
+          .onChange(v => this.changeColor(modelName))
+          .onFinishChange(g => this.updateColorInDB(modelName, modelID));
 
       }
 
@@ -197,13 +216,23 @@ export default {
      * 
      * @param {*} modelName 
      */
-    changeColor: function (modelName) {
+    changeColor: async function (modelName) {
 
-      const model = this.scene.getObjectByName(modelName)
-      const color = model.color
-      params.guiMesh.color = color
-      var colorObj = new THREE.Color(params.guiMesh.color);
+      var colorObj = new THREE.Color( params.guiMesh.color );
       this.scene.getObjectByName(modelName).material.color = colorObj;
+
+    },
+
+    updateColorInDB: async function(modelName, modelID) {
+
+      const modelInScene = this.scene.getObjectByName(modelName);
+      const modelInDB = await fromOfflineDB.getObject(modelID, 'Models', 'places');
+
+      modelInDB.color = "#" + modelInScene.material.color.getHexString()
+
+      console.log("New color: " + modelInDB.color)
+
+      await fromOfflineDB.updateObject(modelInDB, 'Models', 'places')
 
     },
 
