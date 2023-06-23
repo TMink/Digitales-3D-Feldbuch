@@ -1,8 +1,10 @@
 <template>
   <div id="wrapper">
     <Navigation />
-    <v-form>
-      <v-list class="overflow-hidden">
+    <v-row class="pt-4">
+    <v-spacer></v-spacer>
+    <v-form class="w-75 pa-2">
+      <v-list>
         <v-list-subheader v-if="activities.length === 0">
           {{ $t('not_created_yet', { object: $tc('activity', 2) }) }}
         </v-list-subheader>
@@ -11,11 +13,11 @@
         <template v-for="(activity, i) in activities" :key="activity">
           <!--Boolean 'activity.edit' decides whether an element is 
             displayed in list form or in edit form-->
-          <v-row no-gutters v-if="!activity.edit" class="px-5">
+          <v-row no-gutters v-if="!activity.edit" class="align-center">
 
             <v-col cols="9">
               <v-list-item class="pa-2 ma-2" v-on:click="setActivity(activity.id)">
-                <v-list-item-title class="ma-4">
+                <v-list-item-title class="ma-4 text-center">
                   {{ activity.activityNumber }}
                 </v-list-item-title>
               </v-list-item>
@@ -41,15 +43,14 @@
           </v-row>
 
           <!--This is where the edit mask will be triggered-->
-          <v-row no-gutters v-if="activity.edit">
+          <v-row no-gutters v-if="activity.edit" class="align-center">
 
             <v-col cols="9">
               <v-row no-gutters class="justify-center">
 
-                <v-col cols="3" class="pt-4 px-2">
+                <v-col cols="4" class="pt-2 px-2">
                   <v-text-field
                     counter
-                    clearable
                     maxlength="20"
                     label="Außenstelle" 
                     :rules="[rules.required]" 
@@ -57,10 +58,9 @@
                   </v-text-field>
                 </v-col>
 
-                <v-col cols="2" class="pt-4 px-2">
+                <v-col min-width="300px" cols="3" class="pt-2 px-2">
                   <v-text-field 
                     counter 
-                    clearable 
                     label="Jahr" 
                     maxlength="4" 
                     v-model="activity.year" 
@@ -68,10 +68,9 @@
                   </v-text-field>
                 </v-col>
 
-                <v-col cols="2" class="pt-4 px-2">
+                <v-col cols="3" class="pt-2 px-2">
                   <v-text-field 
-                    counter 
-                    clearable 
+                    counter
                     maxlength="4" 
                     label="Nummer" 
                     v-model="activity.number" 
@@ -102,13 +101,18 @@
           <v-divider v-if="i !== activities.length - 1"></v-divider>
         </template>
         <ConfirmDialog ref="confirm" />
-
-        <v-btn v-on:click="addActivity()" color="add">
-          <v-icon>mdi-plus-box-multiple</v-icon>
-        </v-btn>
-
+          
       </v-list>
     </v-form>
+    <v-spacer></v-spacer>
+    </v-row>
+
+    <div class="text-center pa-2">
+      <v-btn v-on:click="addActivity()" color="add" class="ma-2">
+        <v-icon>mdi-plus-box-multiple</v-icon>
+      </v-btn>
+    </div>
+
   </div>
 </template>
   
@@ -158,6 +162,11 @@ export default {
       this.$router.push({ name: 'PlacesOverview' })
       this.$emit('view', 'Stelle')
     },
+    /**
+     * Closes the activity edit mask and removes 
+     * an activy if it wasn't saved to IndexedDB
+     * @param {ProxyObject} activity 
+     */
     closeActivityEdit(activity) {
       // if the activity has not been saved, discard it
       if (activity.id == undefined) {
@@ -268,5 +277,9 @@ export default {
 }
 </script>
   
-<style scoped></style>
+<style scoped>
+#test {
+  text-align: center;
+}
+</style>
   
