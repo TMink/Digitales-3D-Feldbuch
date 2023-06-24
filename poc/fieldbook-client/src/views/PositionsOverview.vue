@@ -1,19 +1,16 @@
 <template>
-  <!--TODO: Add Fields for the PositionsOverview-->
-
-
   <div id="wrapper">
       <Navigation />
-      <v-form>
-        <v-list>
-          <v-divider></v-divider>
-
-          <v-list-subheader v-if="positions.length === 0"> 
-            {{ $t('not_created_yet', {object: $tc('position', 2)})}}
-          </v-list-subheader>
-
-          <template v-for="(position, i) in positions" :key="position">
-            <v-list-item v-on:click="moveToPosition(position.id)">
+      <v-row class="pt-4">
+        <v-spacer></v-spacer>
+        <v-form class="w-75 pa-2">
+          <v-list>
+            <v-list-subheader v-if="positions.length === 0"> 
+              {{ $t('not_created_yet', {object: $tc('position', 2)})}}
+            </v-list-subheader>
+            
+            <template v-for="(position, i) in positions" :key="position">
+              <v-list-item v-on:click="moveToPosition(position.id)">
                 <v-row>
         
                   <v-col cols="12" sm="6" md="4">
@@ -21,85 +18,102 @@
                       {{ position.positionNumber }} 
                     </v-list-item-title>
                   </v-col>
-
+                  
                   <v-col cols="12" sm="6" md="4">
                     <v-list-item-title class="ma-4"> 
                       {{ position.description }} 
                     </v-list-item-title>
                   </v-col>
-
+                  
                   <v-col cols="12" sm="6" md="4">
                     <v-list-item-title class="ma-4"> 
                       {{ position.date }} 
                     </v-list-item-title>
                   </v-col>
-
+                  
                 </v-row>
-            </v-list-item>
-            <v-divider v-if="i !== positions.length - 1"></v-divider>
-          </template>
-          <v-btn v-on:click="addPosition()" color="add"> <v-icon>mdi-plus-box-multiple</v-icon> </v-btn>
+              </v-list-item>
+              <v-divider v-if="i !== positions.length - 1"></v-divider>
+            </template>
         </v-list>
       </v-form>
+      <v-spacer></v-spacer>
+    </v-row>
+      <AddButton v-on:click="addPosition()"/>
     </div>
-</template>
+  </template>
 
 <script>
 import Navigation from '../components/Navigation.vue'
+import AddButton from '../components/AddButton.vue'
 import VueCookies from 'vue-cookies'
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
 
 export default {
   name: 'PositionsOverview',
   components: {
-    Navigation
+    Navigation,
+    AddButton
   },
   data() {
     return {
       positions: [],
-      /* DEBUGGING: This exampleData is used a an example of data, 
-                    requested from the Position page */
-      exampleData: {
-        id: "ahsgfuhgaweufgawfu87auzgfu",
-        positionNumber: 1234,
-        date: new Date('1999-04-25').toLocaleDateString("de-DE"),
-        description: "Gordon Ramsey ist der geilste TV-Koch den es auf der Welt gibt. Change my mind!",
-        texts: {
-          firstText: "Hello"
-        },
-        images: {
-          firstImage: "Im an image"
-        },
-        models: {
-          firstModel: "im a model"
-        }
-      }
     };
   },
+  /**
+   * Initialize data from localDB to the reactive Vue.js data
+   */
+  async created() {
+    await fromOfflineDB.syncLocalDBs();
+    await this.updatePositions();
+  },
   methods: {
-    /* Retrieve all positions */
-    async updatePositions(newPosition) {
-      var context = this;
-      /* Recieve all IDs in store */
-      context.positions = await fromOfflineDB.getAllObjects('Positions', 'positions');
+    /**
+     * Update reactive Vue.js position data
+     */
+    async updatePositions() {
+      this.positions = await fromOfflineDB.getAllObjects('Positions', 'positions');
 
     },
-    modifyPosition(exampleDataID) {
-      if (exampleDataID !== 'new') {
-        VueCookies.set('currentPosition', exampleDataID)
+    /**
+     * Adds a new position to the local storage for the current place
+     */
+    async addPosition() {
+      var curPlaceID = VueCookies.get('currentPlace');
+      var curPlace = await fromOfflineDB.getObject(curPlaceID, "Places", "places");
+      var newPositionID = String(Date.now())
+
+      curPlace.positions.push(newPositionID)
+      curPlace.lastChanged = Date.now()
+
+      const newPosition = {
+        id: newPositionID,
+        positionNumber: null,
+        placeID: curPlaceID,
+        texts: [],
+        images: [],
+        lastChanged: Date.now(),
+        lastSync: ''
+      };
+
+      if (this.positions.length == 0) {
+        newPosition.positionNumber = 1;
+      } else {
+        this.updatePositions();
+        const positionNumber = Math.max(...this.positions.map(o => o.positionNumber));
+        const newPositionNumber = positionNumber + 1;
+        newPosition.positionNumber = newPositionNumber;
       }
+
+      await fromOfflineDB.updateObject(curPlace, 'Places', 'places')
+      await fromOfflineDB.addObject(newPosition, "Positions", "positions");
+      await fromOfflineDB.addObject({ id: newPositionID, object: 'positions' }, 'Changes', 'created');
+      await this.updatePositions(newPosition.id);
     },
-    async addPosition(exampleData) {
-
-      const newPosition = exampleData
-
-      /* Add new data to store */
-      await fromOfflineDB.addObject(newPosition, "Positions", "positions")
-
-      /* Update position list */
-      await this.updatePositions(newPosition.id)
-
-    },
+    /**
+     *  Routes to the PositionForm for the chosen positionID
+     * @param {String} positionID 
+     */
     moveToPosition(positionID) {
 
       if (positionID !== 'new') {
@@ -109,12 +123,7 @@ export default {
       this.$router.push({ name: 'PositionCreation', params: { positionID: positionID } })
       this.$emit('view', 'Position')
     },
-  },
-  async created() {
-    await fromOfflineDB.syncLocalDBs();
-    /* Update position list */
-    await this.updatePositions();
-  },
+  }
 }
 </script>
 

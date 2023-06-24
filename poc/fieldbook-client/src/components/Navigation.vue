@@ -1,5 +1,5 @@
 <template>
-  <v-tabs flat bg-color="accent" fixed-tabs align-tabs="center" slider-color="slider">
+  <v-tabs v-model="active_tab" flat bg-color="accent" fixed-tabs align-tabs="center" slider-color="slider">
     <v-tab id="activity" max-width="250px" class="text-h6" @click="changePage('ActivitiesOverview')">{{$t('activity')}}</v-tab>
     <v-tab id="place" max-width="250px" class="text-h6" @click="changePage('PlacesOverview')" :disabled="!activityIsSet"> {{ $t('place') }}</v-tab>
     <v-tab id="position" max-width="250px" class="text-h6" @click="changePage('PositionsOverview')" :disabled="!placeIsSet"> {{ $t('position') }}</v-tab>
@@ -17,6 +17,7 @@
     },
     data: function (){
       return {
+        active_tab: '0',
         placeIsSet: false,
         placeID: '',
         activityIsSet: false,

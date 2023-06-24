@@ -13,8 +13,11 @@ export default defineConfig({
   },
   test: {
     globals: true,
+    deps: {
+      inline: ["vuetify"]
+    }
   },
-  plugins: [vue(), vuetify({ autoImport: true })],
+  plugins: [vue(), vuetify()],
   resolve: {
     preserveSymlinks: true,
     alias: {

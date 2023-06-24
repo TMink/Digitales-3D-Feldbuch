@@ -1,10 +1,10 @@
 <template>
   <div id="wrapper">
     <Navigation />
-    <v-form>
+    <v-row class="pt-4">
+      <v-spacer></v-spacer>
+    <v-form class="w-75 pa-2">
       <v-list>
-        <v-divider></v-divider>
-
         <v-list-subheader v-if="places.length === 0"> 
           {{ $t('not_created_yet', { object: $tc('place', 2) }) }}
         </v-list-subheader>
@@ -35,13 +35,13 @@
           </v-list-item>
           <v-divider v-if="i !== places.length - 1"></v-divider>
         </template>
-        <v-btn
-          color="add"
-          v-on:click="addPlace()"> 
-          <v-icon>mdi-plus-box-multiple</v-icon> 
-        </v-btn>
+
       </v-list>
     </v-form>
+    <v-spacer></v-spacer>
+    </v-row>
+
+    <AddButton v-on:click="addPlace()"/>
   </div>
 </template>
 
@@ -53,6 +53,7 @@
  *  addPlace        - Adds a new place to the list
  */
 import Navigation from '../components/Navigation.vue'
+import AddButton from '../components/AddButton.vue'
 import VueCookies from 'vue-cookies'
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
 
@@ -61,7 +62,8 @@ export default {
   name: 'PlacesOverview',
 
   components: {
-    Navigation
+    Navigation,
+    AddButton
   },
 
   data() {
