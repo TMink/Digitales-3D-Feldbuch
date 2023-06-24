@@ -1,6 +1,6 @@
 <template>
   <div id="wrapper">
-    <Navigation />
+    <Navigation active_tab_prop="1"/>
     <v-row class="pt-4">
       <v-spacer></v-spacer>
     <v-form class="w-75 pa-2">

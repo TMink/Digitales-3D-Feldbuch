@@ -1,8 +1,37 @@
 <template>
-  <v-tabs v-model="active_tab" flat bg-color="accent" fixed-tabs align-tabs="center" slider-color="slider">
-    <v-tab id="activity" max-width="250px" class="text-h6" @click="changePage('ActivitiesOverview')">{{$t('activity')}}</v-tab>
-    <v-tab id="place" max-width="250px" class="text-h6" @click="changePage('PlacesOverview')" :disabled="!activityIsSet"> {{ $t('place') }}</v-tab>
-    <v-tab id="position" max-width="250px" class="text-h6" @click="changePage('PositionsOverview')" :disabled="!placeIsSet"> {{ $t('position') }}</v-tab>
+  <v-tabs 
+    flat 
+    fixed-tabs 
+    bg-color="accent" 
+    align-tabs="center" 
+    slider-color="slider"
+    v-model="active_tab">
+    
+    <v-tab 
+      id="activity" 
+      class="text-h6" 
+      max-width="250px" 
+      @click="changePage('ActivitiesOverview')">
+      {{$t('activity')}}
+    </v-tab>
+    
+    <v-tab 
+      id="place" 
+      class="text-h6" 
+      max-width="250px" 
+      @click="changePage('PlacesOverview')" 
+      :disabled="!activityIsSet"> 
+      {{ $t('place') }}
+    </v-tab>
+    
+    <v-tab 
+      id="position" 
+      class="text-h6" 
+      max-width="250px" 
+      @click="changePage('PositionsOverview')" 
+      :disabled="!placeIsSet"> 
+      {{ $t('position') }}
+    </v-tab>
   </v-tabs>
 </template>
 
@@ -14,6 +43,9 @@
     setup () {
       const { t } = useI18n() // use as global scope
       return { t }
+    },
+    props: {
+      active_tab_prop: String
     },
     data: function (){
       return {
@@ -27,6 +59,7 @@
       }
     },
     created () {
+      this.active_tab = this.active_tab_prop;
       this.placeID = VueCookies.get('currentPlace')
       if (this.placeID !== null) {
         this.placeIsSet = true
@@ -42,7 +75,8 @@
     },
     methods: {
       changePage: function(routeName) {
-      this.$router.push({ name: routeName, params: { activityID: this.activityID, placeID: this.placeID, positionID : this.positionID } }).catch(error => {
+      this.$router.push({ name: routeName })
+      .catch(error => {
         if (
           error.name !== 'NavigationDuplicated' &&
           !error.message.includes('Avoided redundant navigation to current location')
