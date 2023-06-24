@@ -1,21 +1,20 @@
 import { fileURLToPath } from 'node:url'
-import { mergeConfig } from 'vite'
 import { configDefaults, defineConfig } from 'vitest/config'
-import viteConfig from './vite.config'
+import vue from '@vitejs/plugin-vue'
+import vuetify from 'vite-plugin-vuetify'
 
-export default mergeConfig(
-  viteConfig,
-  defineConfig({
-    test: {
-      environment: "jsdom",
-      exclude: [...configDefaults.exclude, "e2e/*"],
-      root: fileURLToPath(new URL("./", import.meta.url)),
-      transformMode: {
-        web: [/\.[jt]sx$/],
-      },
-/*       deps: {
-        inline: ["vuetify"],
-      }, */
+
+export default defineConfig({
+  plugins: [vue(), vuetify()],
+  test: {
+    environment: "jsdom",
+    exclude: [...configDefaults.exclude, "e2e/*"],
+    root: fileURLToPath(new URL("./", import.meta.url)),
+    transformMode: {
+      web: [/\.[jt]sx$/],
+    },
+    deps: {
+      inline: ['vuetify']
     }
-  })
-);
+  }
+});
