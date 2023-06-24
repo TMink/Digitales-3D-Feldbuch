@@ -125,6 +125,7 @@ export default {
       }
 
     },
+
     loadPlaceObjects: async function () {
 
       const placeID = VueCookies.get('currentPlace')
@@ -246,6 +247,42 @@ export default {
         modelFolder.addColor(params.guiMesh, "color")
           .onChange(v => this.changeColor(modelName))
 
+      }
+
+    },
+
+    changeState: function (element, positionTitle) {
+
+      switch (element) {
+        case "model":
+          /* Set all move-values to false */
+          for (var i = 0; i < params.positions.inScene.length; i++) {
+            params.positions.inScene[i].move = false
+          }
+
+          this.transformControls.enabled = false;
+          this.transformControls.detach()
+          break;
+        case 'position':
+
+          params.guiControls.state = false;
+          /* Set all move-values to false */
+          for (var i = 0; i < params.positions.inScene.length; i++) {
+            params.positions.inScene[i].move = false
+          }
+
+          /* Get the object of checked checkbox */
+          const test = params.positions.inScene.filter(
+            obj => { return obj.number === positionTitle }
+          )
+          params.positions.inScene.find
+            (x => x.number === test[0].number).move = true;
+
+          this.arcballControls.enabled = false;
+          this.arcballControls.visible = false;
+          break;
+        default:
+          console.log("Error")
       }
 
     },
