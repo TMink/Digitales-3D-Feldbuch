@@ -14,19 +14,20 @@ import { TransformControls } from
   import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { GUI } from 'dat.gui';
+import { toRaw } from 'vue';
 
 const params = {
   animate: true,
 
   guiMesh: {
-    visibility: false,
+    opacity: true,
     color: "#ffffff",
     clipping: false
   },
 
   guiControls: {
-    visibility: false,
-    state: false,
+    opacity: false,
+    state: true,
   },
 
   positions: {
@@ -42,11 +43,9 @@ export default {
   name: 'Viewer',
 
   data() {
-
     return {
       meshesInScene: [],
     };
-
   },
 
   async mounted() {
@@ -56,22 +55,34 @@ export default {
     await fromOfflineDB.syncLocalDBs();
 
     this.init();
-
     /* ++++ Load all available models of selected place ++++
     *  -> Loaded meshes have an opacity value of 0.0
     */
     await this.loadPlaceObjects();
 
-    /* ++++ Reset camera in according to the position of the last place model ++++
-     */
-    if(this.meshesInScene) {
+    if(this.meshesInScene.length > 0) {
+
+      /* ++++ Reset camera in according to the position of the last place 
+      *       model ++++
+      */
       this.updateCameraPosition(this.meshesInScene[this.meshesInScene.length - 1].title)
+
+      this.createGui();
+
+      this.animate();
+
+    } else {
+      console.log("No Models")
     }
+  },
 
-    this.createGui();
-
-    this.animate();
-
+  unmounted() {
+    if(this.meshesInScene.length > 0) {
+      this.saveCurrentScene();
+    }
+    
+    this.renderer.dispose()
+    this.renderer.forceContextLoss()
   },
 
   methods: {
@@ -86,18 +97,41 @@ export default {
     *  createGuiElements     - Creates all gui Elements in respective order
     *  loadWithColor         - Change the current color/texture of a model in
     *                          the scene to a new color
-    *  changeVisibility      - Changes the opacity of a mesh
+    *  changeOpacity         - Changes the opacity of a mesh
     *  onWindowResize        - Resizes the threeJS element
     *  ------------------------------------------------------------------------
     *  init                  - Initialize the scene
     *  animate               - Animate the scene
     */
 
+    saveCurrentScene: async function() {
+
+      for (var i = 0; i < this.meshesInScene.length; i++) {
+
+        const modelName = this.meshesInScene[i].title;
+        const modelID = this.meshesInScene[i].id;
+
+        const modelInScene = this.scene.getObjectByName(modelName);
+        const modelInDB = await fromOfflineDB.getObject(modelID, 'Models', 'places');
+
+        /* Update Color */
+        modelInDB.color = "#" + modelInScene.material.color.getHexString()
+        
+        /* Update Opacity */
+        modelInDB.opacity = modelInScene.material.opacity
+
+        await fromOfflineDB.updateObject(modelInDB, 'Models', 'places')
+      
+      }
+
+    },
     loadPlaceObjects: async function () {
 
       const placeID = VueCookies.get('currentPlace')
+
       const objects = await fromOfflineDB.getAllObjectsWithID
-        (placeID, 'Place', 'Models', 'places')
+      (placeID, 'Place', 'Models', 'places')
+
       if (objects) {
         for (var i = 0; i < objects.length; i++) {
           await this.loadModel(objects[i].id, 'Models', 'places');
@@ -117,9 +151,11 @@ export default {
       const object = await fromOfflineDB.getObject(modelID, dbName, storeName);
       const model = object.model
       const color = object.color
-      console.log(color)
       const opacity = object.opacity
       const title = object.title
+
+      params.guiMesh.opacity = Boolean(opacity)
+      params.guiMesh.color = object.color
 
       /* Load object */
       const mesh = await new Promise((resolve) => {
@@ -164,6 +200,9 @@ export default {
 
     createGui: function () {
 
+      this.gui.domElement.id = 'gui';
+      gui_container.appendChild(this.gui.domElement);
+
       /* Positions Folder */
       const positionsFolder = this.gui.addFolder('Positions');
       for (var i = 0; i < params.positions.inScene.length; i++) {
@@ -187,7 +226,7 @@ export default {
 
       /* general controls Folder */
       const controlsFolder = this.gui.addFolder('Controls')
-      controlsFolder.add(params.guiControls, 'visibility')
+      controlsFolder.add(params.guiControls, 'opacity')
       controlsFolder.add(params.guiControls, 'state')
         .listen().onChange(() => this.changeState('model'))
 
@@ -201,12 +240,11 @@ export default {
 
         const modelFolder = modelsFolder.addFolder(modelName);
 
-        modelFolder.add(params.guiMesh, "visibility")
-          .onChange(v => this.changeVisibility(modelName));
+        modelFolder.add(params.guiMesh, "opacity")
+          .onChange(v => this.changeOpacity(modelName, modelID));
 
         modelFolder.addColor(params.guiMesh, "color")
           .onChange(v => this.changeColor(modelName))
-          .onFinishChange(g => this.updateColorInDB(modelName, modelID));
 
       }
 
@@ -223,25 +261,12 @@ export default {
 
     },
 
-    updateColorInDB: async function(modelName, modelID) {
-
-      const modelInScene = this.scene.getObjectByName(modelName);
-      const modelInDB = await fromOfflineDB.getObject(modelID, 'Models', 'places');
-
-      modelInDB.color = "#" + modelInScene.material.color.getHexString()
-
-      console.log("New color: " + modelInDB.color)
-
-      await fromOfflineDB.updateObject(modelInDB, 'Models', 'places')
-
-    },
-
     /**
      * @param {String} modelName  - Name of model in scene
      */
-    changeVisibility: function (modelName) {
+    changeOpacity: async function (modelName, modelID) {
 
-      const opacityValue = this.scene.getObjectByName(modelName).material.opacity
+      const opacityValue = this.scene.getObjectByName(modelName).material.opacity;
 
       if (opacityValue == 1.0) {
         this.scene.getObjectByName(modelName).material.opacity = 0.0
@@ -310,8 +335,6 @@ export default {
 
       // GUI
       this.gui = new GUI();
-      this.gui.domElement.id = 'gui';
-      gui_container.appendChild(this.gui.domElement);
 
       window.addEventListener('keydown', e => {
 
@@ -337,7 +360,7 @@ export default {
 
       requestAnimationFrame(this.animate);
 
-      if (params.guiControls.visibility === true) {
+      if (params.guiControls.opacity === true) {
         this.arcballControls.setGizmosVisible(true);
       } else {
         this.arcballControls.setGizmosVisible(false);
