@@ -107,11 +107,7 @@
     <v-spacer></v-spacer>
     </v-row>
 
-    <div class="text-center pa-2">
-      <v-btn v-on:click="addActivity()" color="add" class="ma-2">
-        <v-icon>mdi-plus-box-multiple</v-icon>
-      </v-btn>
-    </div>
+    <AddButton v-on:click="addActivity()"/>
 
   </div>
 </template>
@@ -121,13 +117,15 @@ import Navigation from '../components/Navigation.vue'
 import VueCookies from 'vue-cookies'
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
+import AddButton from '../components/AddButton.vue'
 import { toRaw } from 'vue'
 
 export default {
   name: 'ActivitiesOverview',
   components: {
     Navigation,
-    ConfirmDialog
+    ConfirmDialog,
+    AddButton
   },
   data() {
     return {

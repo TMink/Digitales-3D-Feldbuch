@@ -76,13 +76,7 @@
                   </template>
                 </v-list>
 
-                <div class="text-center pa-2">
-                    <v-btn
-                        color="add"
-                        v-on:click="images_overlay = true()"> 
-                        <v-icon>mdi-plus-box-multiple</v-icon> 
-                    </v-btn>
-                </div>
+                <AddButton v-on:click="images_overlay = true"/>
 
                 <!-- Image Creation dialog -->
                 <v-dialog v-model="images_overlay" max-width="800" persistent>
@@ -171,13 +165,7 @@
                             </v-list-item>
                         </v-list>
                     </template>
-                    <div class="text-center pa-2">
-                        <v-btn
-                            color="add"
-                            v-on:click="addText()"> 
-                            <v-icon>mdi-plus-box-multiple</v-icon> 
-                        </v-btn>
-                    </div>
+                    <AddButton v-on:click="addText()"/>
               </v-window-item>
             </v-window>
           </v-col>
@@ -209,12 +197,14 @@
 import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
 import ConfirmDialog from '../components/ConfirmDialog.vue';
+import AddButton from '../components/AddButton.vue'
 import { toRaw } from 'vue';
 
 export default {
     name: 'PositionCreation',
     components: {
-        ConfirmDialog
+        ConfirmDialog,
+        AddButton
     },
     /**
      * Reactive Vue.js data

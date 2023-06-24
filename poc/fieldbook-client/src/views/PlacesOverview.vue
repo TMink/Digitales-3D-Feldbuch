@@ -41,13 +41,7 @@
     <v-spacer></v-spacer>
     </v-row>
 
-    <div class="text-center pa-2">
-      <v-btn
-        color="add"
-        v-on:click="addPlace()"> 
-        <v-icon>mdi-plus-box-multiple</v-icon> 
-      </v-btn>
-    </div>
+    <AddButton v-on:click="addPlace()"/>
   </div>
 </template>
 
@@ -59,6 +53,7 @@
  *  addPlace        - Adds a new place to the list
  */
 import Navigation from '../components/Navigation.vue'
+import AddButton from '../components/AddButton.vue'
 import VueCookies from 'vue-cookies'
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
 
@@ -67,7 +62,8 @@ export default {
   name: 'PlacesOverview',
 
   components: {
-    Navigation
+    Navigation,
+    AddButton
   },
 
   data() {

@@ -64,13 +64,7 @@
                 </template>
               </v-list>
 
-              <div class="text-center pa-2">
-                <v-btn
-                  color="add"
-                  v-on:click="addPosition()"> 
-                  <v-icon>mdi-plus-box-multiple</v-icon> 
-                </v-btn>
-              </div>
+              <AddButton v-on:click="addPosition()"/>
 
             </v-form>
           </v-window-item>
@@ -109,13 +103,7 @@
               </template>
             </v-list>
 
-            <div class="text-center pa-2">
-              <v-btn
-                color="add"
-                v-on:click="models_overlay = true"> 
-                <v-icon>mdi-plus-box-multiple</v-icon> 
-              </v-btn>
-            </div>
+            <AddButton v-on:click="models_overlay = true"/>
 
             <!-- Model Creation dialog -->
             <v-dialog v-model="models_overlay" max-width="800" persistent>
@@ -187,13 +175,15 @@
 import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import ConfirmDialog from '../components/ConfirmDialog.vue';
+import AddButton from '../components/AddButton.vue'
 import { toRaw } from 'vue';
 
 export default {
 
   name: 'PlaceCreation',
   components: {
-    ConfirmDialog
+    ConfirmDialog,
+    AddButton
   },
   /**
    * Reactive Vue.js data
@@ -335,15 +325,14 @@ export default {
       if (this.positions.length == 0) {
         newPosition.positionNumber = 1;
       } else {
-        this.updatePositions();
         const positionNumber = Math.max(...this.positions.map(o => o.positionNumber));
         const newPositionNumber = positionNumber + 1;
         newPosition.positionNumber = newPositionNumber;
       }
 
       await fromOfflineDB.updateObject(toRaw(this.place), 'Places', 'places')
-      var posID = await fromOfflineDB.addObject(newPosition, "Positions", "positions");
-      await fromOfflineDB.addObject({ id: posID, object: 'positions' }, 'Changes', 'created');
+      await fromOfflineDB.addObject(newPosition, "Positions", "positions");
+      await fromOfflineDB.addObject({ id: newPositionID, object: 'positions' }, 'Changes', 'created');
       await this.updatePositions(newPosition.id);
     },
 
@@ -426,7 +415,7 @@ export default {
     },
     /**
      *  Routes to the PositionForm for the chosen positionID
-     * @param {*} positionID 
+     * @param {String} positionID 
      */
     moveToPosition(positionID) {
       if (positionID !== 'new') {
