@@ -384,7 +384,7 @@ export default {
         title: this.model.title,
         model: await this.modelToArrayBuffer(toRaw(this.model.model)),
         color: "#ffffff",
-        opacity: 0.0,
+        opacity: 1,
         lastChanged: Date.now(),
         lastSync: ''
       };
