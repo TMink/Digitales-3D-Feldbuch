@@ -39,7 +39,6 @@ const params = {
 };
 
 export default {
-
   name: 'Viewer',
 
   data() {
@@ -49,26 +48,26 @@ export default {
   },
 
   async mounted() {
-
     window.addEventListener('resize', this.onWindowResize, false)
 
     await fromOfflineDB.syncLocalDBs();
 
+    /* Initialize standart components of threejs (renderer, scene, etc.) */
     this.init();
-    /* ++++ Load all available models of selected place ++++
-    *  -> Loaded meshes have an opacity value of 0.0
-    */
+
+    /* Load all available models of selected place */
     await this.loadPlaceObjects();
 
     if(this.meshesInScene.length > 0) {
 
-      /* ++++ Reset camera in according to the position of the last place 
-      *       model ++++
-      */
-      this.updateCameraPosition(this.meshesInScene[this.meshesInScene.length - 1].title)
+      /* Reset camera in according to the position of the last place-model */
+      this.updateCameraPosition(this.meshesInScene
+        [this.meshesInScene.length - 1].title)
 
-      this.createGui();
+      /* Create GUI Folders */
+      this.createGUI();
 
+      /* Start Animation-Loop */
       this.animate();
 
     } else {
@@ -80,7 +79,6 @@ export default {
     if(this.meshesInScene.length > 0) {
       this.saveCurrentScene();
     }
-    
     this.renderer.dispose()
     this.renderer.forceContextLoss()
   },
@@ -89,47 +87,34 @@ export default {
 
     /**
     * Function overview:
+    *  -------------------------------------------------------------------------
+    *  loadPlaceObjects      -
     *  loadModel             - Loads a Model from IndexedDB into the scene. 
     *                          This version has the standart texture from the 
     *                          object and the name of the created mesh is the 
     *                          title of the object.
-    *  updateCameraPosition  - Moves the Camera to specified model in scene
-    *  createGuiElements     - Creates all gui Elements in respective order
-    *  loadWithColor         - Change the current color/texture of a model in
+    *  -------------------------------------------------------------------------
+    *  createGUI             - Creates all gui Elements in respective order
+    *  changeState
+    *  changeColor           - Change the current color/texture of a model in
     *                          the scene to a new color
     *  changeOpacity         - Changes the opacity of a mesh
+    *  ------------------------------------------------------------------------- 
+    *  saveCurrentScene      -
+    *  updateCameraPosition  - Moves the Camera to specified model in scene
     *  onWindowResize        - Resizes the threeJS element
     *  ------------------------------------------------------------------------
     *  init                  - Initialize the scene
     *  animate               - Animate the scene
     */
 
-    saveCurrentScene: async function() {
-
-      for (var i = 0; i < this.meshesInScene.length; i++) {
-
-        const modelName = this.meshesInScene[i].title;
-        const modelID = this.meshesInScene[i].id;
-
-        const modelInScene = this.scene.getObjectByName(modelName);
-        const modelInDB = await fromOfflineDB.getObject(modelID, 'Models', 'places');
-
-        /* Update Color */
-        modelInDB.color = "#" + modelInScene.material.color.getHexString()
-        
-        /* Update Opacity */
-        modelInDB.opacity = modelInScene.material.opacity
-
-        await fromOfflineDB.updateObject(modelInDB, 'Models', 'places')
-      
-      }
-
-    },
-
+    /**
+     * -------------------------------------------------------------------------
+     * ---- Loading
+     * -------------------------------------------------------------------------
+     */
     loadPlaceObjects: async function () {
-
       const placeID = VueCookies.get('currentPlace')
-
       const objects = await fromOfflineDB.getAllObjectsWithID
       (placeID, 'Place', 'Models', 'places')
 
@@ -138,16 +123,15 @@ export default {
           await this.loadModel(objects[i].id, 'Models', 'places');
         }
       }
-
     },
 
     /**
-    * @param {*} modelID 
-    * @param {*} dbName 
-    * @param {*} storeName 
-    */
+     * 
+     * @param {*} modelID 
+     * @param {*} dbName 
+     * @param {*} storeName 
+     */
     loadModel: async function (modelID, dbName, storeName) {
-
       /* Get 3D-Model from IndexedDB */
       const object = await fromOfflineDB.getObject(modelID, dbName, storeName);
       const model = object.model
@@ -163,7 +147,6 @@ export default {
         this.loader.parse(model, "", (glb) => {
           glb.scene.traverse((child) => {
             if (child instanceof THREE.Mesh) {
-              // Set mesh name to position title
               child.material.transparent = true;
               child.material.opacity = opacity;
               child.material.color = new THREE.Color(color)
@@ -174,42 +157,50 @@ export default {
         });
       })
 
+      /* Add mesh to scene */
       this.scene.add(mesh)
-      this.meshesInScene.push({ title: title, 
-                                id:    object.id     })
 
+      /* Save variables for  */
+      this.meshesInScene.push({ title: title, id: object.id })
     },
 
     /**
-    * @param {String} modelName  - Name of model in scene
-    */
-    updateCameraPosition: function (modelName) {
-      const model = this.scene.getObjectByName(modelName);
-
-      const modelGeo = model.geometry;
-      modelGeo.computeBoundingBox();
-      const center = new THREE.Vector3();
-      model.geometry.boundingBox.getCenter(center);
-      model.localToWorld(center);
-
-      this.arcballControls.target.set(center.x, center.y, center.z);
-      this.camera.position.set(center.x, center.y - 15, center.z);
-
-      this.arcballControls.update();
-
-    },
-
-    createGui: function () {
-
+     * -------------------------------------------------------------------------
+     * ---- GUI
+     * -------------------------------------------------------------------------
+     */
+    createGUI: function () {
+      /* Add GUI to DOM */
       this.gui.domElement.id = 'gui';
       gui_container.appendChild(this.gui.domElement);
+
+      /* Controls Folder */
+      const controlsFolder = this.gui.addFolder('Controls')
+      controlsFolder.add(params.guiControls, 'opacity')
+      controlsFolder.add(params.guiControls, 'state')
+        .listen().onChange(() => this.changeState('model'))
+
+      /* Models Folder */
+      const modelsFolder = this.gui.addFolder('Models')
+
+      for (var i = 0; i < this.meshesInScene.length; i++) {
+        const modelName = this.meshesInScene[i].title;
+        const modelID = this.meshesInScene[i].id;
+
+        const modelFolder = modelsFolder.addFolder(modelName);
+
+        modelFolder.add(params.guiMesh, "opacity")
+          .onChange(v => this.changeOpacity(modelName, modelID));
+
+        modelFolder.addColor(params.guiMesh, "color")
+          .onChange(v => this.changeColor(modelName))
+      }
 
       /* Positions Folder */
       const positionsFolder = this.gui.addFolder('Positions');
       for (var i = 0; i < params.positions.inScene.length; i++) {
 
         const positionTitle = params.positions.inScene[i].number;
-
         const positionFolder = positionsFolder.addFolder(positionTitle);
 
         const test = params.positions.inScene.filter(
@@ -222,39 +213,18 @@ export default {
             () => this.changeState('position', positionTitle))
         //.listen().onChange(() => this.attachPosition
         //  (positionTitle))
-
       }
-
-      /* general controls Folder */
-      const controlsFolder = this.gui.addFolder('Controls')
-      controlsFolder.add(params.guiControls, 'opacity')
-      controlsFolder.add(params.guiControls, 'state')
-        .listen().onChange(() => this.changeState('model'))
-
-      /* Models Folder */
-      const modelsFolder = this.gui.addFolder('Models')
-
-      for (var i = 0; i < this.meshesInScene.length; i++) {
-
-        const modelName = this.meshesInScene[i].title;
-        const modelID = this.meshesInScene[i].id;
-
-        const modelFolder = modelsFolder.addFolder(modelName);
-
-        modelFolder.add(params.guiMesh, "opacity")
-          .onChange(v => this.changeOpacity(modelName, modelID));
-
-        modelFolder.addColor(params.guiMesh, "color")
-          .onChange(v => this.changeColor(modelName))
-
-      }
-
     },
 
+    /**
+     * 
+     * @param {*} element 
+     * @param {*} positionTitle 
+     */
     changeState: function (element, positionTitle) {
-
       switch (element) {
         case "model":
+
           /* Set all move-values to false */
           for (var i = 0; i < params.positions.inScene.length; i++) {
             params.positions.inScene[i].move = false
@@ -263,6 +233,7 @@ export default {
           this.transformControls.enabled = false;
           this.transformControls.detach()
           break;
+
         case 'position':
 
           params.guiControls.state = false;
@@ -281,10 +252,10 @@ export default {
           this.arcballControls.enabled = false;
           this.arcballControls.visible = false;
           break;
+
         default:
           console.log("Error")
       }
-
     },
 
     /**
@@ -292,17 +263,16 @@ export default {
      * @param {*} modelName 
      */
     changeColor: async function (modelName) {
-
       var colorObj = new THREE.Color( params.guiMesh.color );
       this.scene.getObjectByName(modelName).material.color = colorObj;
-
     },
 
     /**
-     * @param {String} modelName  - Name of model in scene
+     * 
+     * @param {*} modelName 
+     * @param {*} modelID 
      */
     changeOpacity: async function (modelName, modelID) {
-
       const opacityValue = this.scene.getObjectByName(modelName).material.opacity;
 
       if (opacityValue == 1.0) {
@@ -310,21 +280,65 @@ export default {
       } else {
         this.scene.getObjectByName(modelName).material.opacity = 1.0
       }
+    },
 
+    /**
+     * -------------------------------------------------------------------------
+     * ---- 
+     * -------------------------------------------------------------------------
+     */
+    saveCurrentScene: async function () {
+      for (var i = 0; i < this.meshesInScene.length; i++) {
+        const modelName = this.meshesInScene[i].title;
+        const modelID = this.meshesInScene[i].id;
+
+        const modelInScene = this.scene.getObjectByName(modelName);
+        const modelInDB = await fromOfflineDB.getObject(modelID, 
+          'Models', 'places');
+
+        /* Update Color */
+        modelInDB.color = "#" + modelInScene.material.color.getHexString()
+
+        /* Update Opacity */
+        modelInDB.opacity = modelInScene.material.opacity
+
+        await fromOfflineDB.updateObject(modelInDB, 'Models', 'places')
+      }
+    },
+
+    /**
+     * 
+     * @param {*} modelName 
+     */
+    updateCameraPosition: function (modelName) {
+      const model = this.scene.getObjectByName(modelName);
+
+      const modelGeo = model.geometry;
+      modelGeo.computeBoundingBox();
+      const center = new THREE.Vector3();
+      model.geometry.boundingBox.getCenter(center);
+      model.localToWorld(center);
+
+      this.arcballControls.target.set(center.x, center.y, center.z);
+      this.camera.position.set(center.x, center.y - 15, center.z);
+
+      this.arcballControls.update();
     },
 
     onWindowResize: function () {
-
       const canvas = document.getElementById("canvas");
 
       this.renderer.setSize(canvas.clientWidth, canvas.clientHeight);
       this.camera.aspect = canvas.clientWidth / canvas.clientHeight;
       this.camera.updateProjectionMatrix();
-
     },
 
+    /**
+     * -------------------------------------------------------------------------
+     * ---- Init
+     * -------------------------------------------------------------------------
+     */
     init: function () {
-
       // Canvas Object
       const canvas = document.getElementById("canvas");
 
@@ -355,28 +369,22 @@ export default {
       this.scene.add(ambientLight);
 
       // Controls
-      this.arcballControls = new ArcballControls(this.camera, this.renderer.domElement,
-        this.scene);
+      this.arcballControls = new ArcballControls
+        (this.camera, this.renderer.domElement, this.scene);
 
       this.transformControls = new TransformControls
-        (this.camera,
-          this.renderer.domElement);
+        (this.camera, this.renderer.domElement);
 
       this.transformControls.addEventListener('dragging-changed', e => {
-
         this.arcballControls.enabled = !e.value;
-
       });
 
       this.scene.add(this.transformControls);
 
       // GUI
       this.gui = new GUI();
-
       window.addEventListener('keydown', e => {
-
         switch (e.code) {
-
           case 'KeyW':
             this.transformControls.mode = 'translate';
             break;
@@ -386,35 +394,37 @@ export default {
           case 'KeyR':
             this.transformControls.mode = 'scale';
             break;
-
         }
-
       });
-
     },
 
+    /**
+     * -------------------------------------------------------------------------
+     * ---- Animation
+     * -------------------------------------------------------------------------
+     */
     animate: function () {
-
+      /* Render-Loop */
       requestAnimationFrame(this.animate);
 
+      /* Update ArcballControls-Gizmo: visible <-> invisible */
       if (params.guiControls.opacity === true) {
         this.arcballControls.setGizmosVisible(true);
       } else {
         this.arcballControls.setGizmosVisible(false);
       }
 
+      /* Update ArcballControls State: useable <-> unuseable */
       if (params.guiControls.state === true) {
         this.arcballControls.enabled = true;
       } else {
         this.arcballControls.enabled = false;
       }
 
+      /* Render scene and camera */
       this.renderer.render(this.scene, this.camera);
-
     },
-
   }
-
 }
 
 </script>
