@@ -12,7 +12,7 @@ export default createVuetify({
           background: "#3A3A47",
           opp_background: "#22282C",
           accent: "#3A3A47",                  //navigation-bar
-          accent_dark: "#5C4646",             //tob-bar ('digital3d-Fieldbook')
+          accent_dark: "#5C4646",             //top-bar ('digital3d-Fieldbook')
           surface: "#52525E",                 //list-elements
           primary: "#FE9F2E",                 
           secondary: "#B4A27D",
@@ -33,8 +33,8 @@ export default createVuetify({
         colors: {
           background: "#F6F7FA",
           opp_background: "#444444",
-          accent: "#B4A27D",                  //navigation-bar
-          accent_dark: "#5C4646",             //tob-bar ('digital3d-Fieldbook')
+          accent: "#F6F7FA",                  //navigation-bar
+          accent_dark: "#5C4646",             //top-bar ('digital3d-Fieldbook')
           surface: "#F2F2F2",                 //list-elements
           primary: "#DA8E60",                 
           secondary: "#594843",
