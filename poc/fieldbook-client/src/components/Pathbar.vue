@@ -21,7 +21,6 @@ export default {
   async created() {
     await fromOfflineDB.syncLocalDBs();
     await this.updatePathbar();
-    this.$emit('view', 'Digitales Feldbuch')
   },
   methods: {
 

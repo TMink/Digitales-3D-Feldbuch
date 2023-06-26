@@ -64,6 +64,7 @@ export default {
    * Initialize data from localDB to the reactive Vue.js data
    */
   async created() {
+    this.$emit("view", this.$t('overview', { msg: this.$tc('position', 2) }));
     await fromOfflineDB.syncLocalDBs();
     await this.updatePositions();
   },
@@ -121,7 +122,6 @@ export default {
       }
 
       this.$router.push({ name: 'PositionCreation', params: { positionID: positionID } })
-      this.$emit('view', 'Position')
     },
   }
 }

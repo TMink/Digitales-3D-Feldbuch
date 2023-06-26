@@ -136,6 +136,7 @@ export default {
     };
   },
   async created() {
+    this.$emit("view", this.$t('overview', { msg: this.$tc('activity', 2) }));
     await fromOfflineDB.syncLocalDBs();
     await this.updateActivities();
   },
@@ -158,7 +159,6 @@ export default {
       }
       VueCookies.set('currentActivity', activityID)
       this.$router.push({ name: 'PlacesOverview' })
-      this.$emit('view', 'Stelle')
     },
     /**
      * Closes the activity edit mask and removes 

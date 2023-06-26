@@ -74,6 +74,7 @@ export default {
 
   async created() {
 
+    this.$emit("view", this.$t('overview', { msg: this.$tc('place', 2)}) );
     await fromOfflineDB.syncLocalDBs();
     await this.updatePlaces();
 
@@ -133,7 +134,6 @@ export default {
       }
 
       this.$router.push( { name: 'PlaceCreation', params: { placeID: placeID } } )
-      this.$emit( 'view', 'Stelle' )
     },
 
   }

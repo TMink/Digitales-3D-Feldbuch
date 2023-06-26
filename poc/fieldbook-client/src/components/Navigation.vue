@@ -71,7 +71,6 @@
       this.positionID = VueCookies.get('currentPosition')
       if( this.positionID !== null)
         this.positionIsSet = true
-      this.$emit('view','Digitales Feldbuch')
     },
     methods: {
       changePage: function(routeName) {

@@ -247,6 +247,7 @@ export default {
      * Initialize data from localDB to the reactive Vue.js data
      */
     async created() {
+        this.$emit("view", this.$t('edit', { msg: this.$tc('position', 1) }));
         await fromOfflineDB.syncLocalDBs();
         await this.updatePosition();
         await this.updateImages();
@@ -295,7 +296,6 @@ export default {
             rawPosition.lastChanged = Date.now();
 
             await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions')
-            this.$emit("view", "PositionsOverview");
             this.$router.push({ name: "PositionsOverview" });
         },
         /**
@@ -332,7 +332,6 @@ export default {
             await fromOfflineDB.deleteObject(rawPosition, 'Positions', 'positions')
             VueCookies.remove('currentPosition');
 
-            this.$emit("view", "PositionsOverview");
             this.$router.push({ name: "PositionsOverview" });
         },
         /**
@@ -476,7 +475,6 @@ export default {
          */
         goBack: function () {
             const currentPlace = VueCookies.get("currentPlace");
-            this.$emit("view", "Stellenbearbeitung");
             this.$router.push({ name: "PlaceCreation", params: { placeID: this.position.placeID } });
         },
     }
