@@ -11,11 +11,11 @@ import fieldbook_de from './locales/de.mjs';
 axios.defaults.baseURL = "http://127.0.0.1:3000";
 
 const i18n = createI18n({
-    locale: 'en',
+    locale: 'de',
     allowComposition: true,
     messages: {
+        de: fieldbook_de,
         en: fieldbook_en,
-        de: fieldbook_de
     }
 })
 

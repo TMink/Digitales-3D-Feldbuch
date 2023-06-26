@@ -46,7 +46,7 @@
             <v-form>
               <v-list>
                 <v-list-subheader v-if="positions.length === 0">
-                  {{ $t('not_created_yet', { object: $tc('position', 2) }) }}
+                  {{ $t('not_created_yet', { object: $tc('position', 1) }) }}
                 </v-list-subheader>
 
                 <template v-for="(position, i) in positions" :key="position">
@@ -73,7 +73,7 @@
           <v-window-item value="three">
             <v-list>
               <v-list-subheader v-if="models.length === 0">
-                {{ $t('not_created_yet', { object: $tc('model', 2) }) }}
+                {{ $t('not_created_yet', { object: $tc('model', 1) }) }}
               </v-list-subheader>
 
               <template v-for="(model, i) in models" :key="model">
@@ -421,7 +421,6 @@ export default {
       if (positionID !== 'new') {
         VueCookies.set('currentPosition', positionID);
       }
-      this.$emit('view', 'Positionsbearbeitung')
       this.$router.push({ name: 'PositionCreation', params: { positionID: positionID } });
     },
     /**

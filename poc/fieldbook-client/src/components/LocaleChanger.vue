@@ -21,7 +21,7 @@ export default {
     name: 'LocaleChanger',
     data() {
         return {
-            langs: ['en', 'de'],
+            langs: ['de', 'en'],
             current: 0,
         }
     },

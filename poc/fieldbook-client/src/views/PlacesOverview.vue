@@ -6,7 +6,7 @@
     <v-form class="w-75 pa-2">
       <v-list>
         <v-list-subheader v-if="places.length === 0"> 
-          {{ $t('not_created_yet', { object: $tc('place', 2) }) }}
+          {{ $t('not_created_yet', { object: $tc('place', 1) }) }}
         </v-list-subheader>
 
         <template v-for="(place, i) in places" :key="place">

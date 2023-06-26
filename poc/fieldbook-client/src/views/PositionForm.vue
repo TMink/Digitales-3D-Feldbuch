@@ -56,7 +56,7 @@
             <v-window-item value="two">
                 <v-list>
                   <v-list-subheader v-if="images.length === 0">
-                    {{ $t('not_created_yet', { object: $tc('model', 2) }) }}
+                    {{ $t('not_created_yet', { object: $tc('model', 1) }) }}
                   </v-list-subheader>
 
                   <template v-for="(image, i) in images" :key="image">
@@ -125,7 +125,7 @@
               <!-- Tab item 'texts' -->
               <v-window-item value="three">
                 <v-list-subheader v-if="texts.length === 0">
-                        {{ $t('not_created_yet', { object: $t('additional', {msg: $tc('parameter', 2)}) }) }}
+                        {{ $t('not_created_yet', { object: $t('additional', {msg: $tc('parameter', 1)}) }) }}
                     </v-list-subheader>
                     <template v-for="text in texts" :key="text">
                         <v-list>
