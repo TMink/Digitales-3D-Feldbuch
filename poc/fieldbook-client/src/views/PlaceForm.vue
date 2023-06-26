@@ -260,6 +260,8 @@ export default {
       inputPlace.lastChanged = Date.now();
 
       await fromOfflineDB.updateObject(inputPlace, 'Places', 'places');
+      this.$emit("view", "PlacesOverview");
+      this.$router.push({ name: "PlacesOverview" });
     },
     /**
      * Opens the confirmation dialog
