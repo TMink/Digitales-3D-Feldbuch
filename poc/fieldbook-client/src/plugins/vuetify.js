@@ -10,7 +10,7 @@ export default createVuetify({
         dark: true,
         colors: {
           background: "#171C23",
-          surface: "#171C23",                 //list-elements
+          surface: "#27303d",                 //list-elements
           primary: "#EF8F70",                 
           secondary: "#16BCC7",
           error:"#FC5272",                    //cancel-buttons
