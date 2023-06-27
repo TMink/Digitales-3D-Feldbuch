@@ -1,47 +1,49 @@
 <template>
   <div id="wrapper">
-      <Navigation active_tab_prop="2"/>
-      <v-row class="pt-4">
-        <v-spacer></v-spacer>
-        <v-form class="w-75 pa-2">
+    <Navigation active_tab_prop="2" />
+    <v-row class="pt-4">
+      <v-spacer></v-spacer>
+      <v-form class="w-75 pa-2">
+        <v-card>
           <v-list>
-            <v-list-subheader v-if="positions.length === 0"> 
-              {{ $t('not_created_yet', {object: $tc('position', 2)})}}
+            <v-list-subheader v-if="positions.length === 0">
+              {{ $t('not_created_yet', { object: $tc('position', 2) }) }}
             </v-list-subheader>
-            
+
             <template v-for="(position, i) in positions" :key="position">
               <v-list-item v-on:click="moveToPosition(position.id)">
                 <v-row>
-        
+
                   <v-col cols="12" sm="6" md="4">
-                    <v-list-item-title class="ma-4"> 
-                      {{ position.positionNumber }} 
+                    <v-list-item-title class="ma-4">
+                      {{ position.positionNumber }}
                     </v-list-item-title>
                   </v-col>
-                  
+
                   <v-col cols="12" sm="6" md="4">
-                    <v-list-item-title class="ma-4"> 
-                      {{ position.description }} 
+                    <v-list-item-title class="ma-4">
+                      {{ position.description }}
                     </v-list-item-title>
                   </v-col>
-                  
+
                   <v-col cols="12" sm="6" md="4">
-                    <v-list-item-title class="ma-4"> 
-                      {{ position.date }} 
+                    <v-list-item-title class="ma-4">
+                      {{ position.date }}
                     </v-list-item-title>
                   </v-col>
-                  
+
                 </v-row>
               </v-list-item>
               <v-divider v-if="i !== positions.length - 1"></v-divider>
             </template>
-        </v-list>
+          </v-list>
+        </v-card>
       </v-form>
       <v-spacer></v-spacer>
     </v-row>
-      <AddButton v-on:click="addPosition()"/>
-    </div>
-  </template>
+    <AddButton v-on:click="addPosition()" />
+  </div>
+</template>
 
 <script>
 import Navigation from '../components/Navigation.vue'

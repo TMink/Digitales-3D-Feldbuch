@@ -28,15 +28,10 @@
           <!-- Tab item 'general' -->
           <v-window-item value="one">
             <v-card>
-              <v-text-field 
-                v-model="place.title" 
-                :label="$t('title')"
-                :hint="$tc('please_input', {msg: $t('title')}, 1)">
+              <v-text-field v-model="place.title" :label="$t('title')"
+                :hint="$tc('please_input', { msg: $t('title') }, 1)">
               </v-text-field>
-              <v-text-field 
-                v-model="place.date" 
-                :label="$t('dating')" 
-                hint="Format: dd.mm.yyyy">
+              <v-text-field v-model="place.date" :label="$t('dating')" hint="Format: dd.mm.yyyy">
               </v-text-field>
             </v-card>
           </v-window-item>
@@ -44,66 +39,67 @@
           <!-- Tab item 'positions' -->
           <v-window-item value="two">
             <v-form>
-              <v-list>
-                <v-list-subheader v-if="positions.length === 0">
-                  {{ $t('not_created_yet', { object: $tc('position', 1) }) }}
-                </v-list-subheader>
+              <v-card>
+                <v-list>
+                  <v-list-subheader v-if="positions.length === 0">
+                    {{ $t('not_created_yet', { object: $tc('position', 1) }) }}
+                  </v-list-subheader>
 
-                <template v-for="(position, i) in positions" :key="position">
-                  <v-list-item class="positionItem mt-3" v-on:click="moveToPosition(position.id)">
+                  <template v-for="(position, i) in positions" :key="position">
+                    <v-list-item class="positionItem mt-3" v-on:click="moveToPosition(position.id)">
 
-                    <v-list-item-title class="text-h6">
-                      Nr. {{ position.positionNumber }} - {{ position.date }}
-                    </v-list-item-title>
+                      <v-list-item-title class="text-h6">
+                        Nr. {{ position.positionNumber }} - {{ position.date }}
+                      </v-list-item-title>
 
-                    <v-list-item-subtitle class="text-subtitle-1">
-                      {{ position.description }}
-                    </v-list-item-subtitle>
-                  </v-list-item>
-                  <v-divider v-if="i !== positions.length - 1"></v-divider>
-                </template>
-              </v-list>
+                      <v-list-item-subtitle class="text-subtitle-1">
+                        {{ position.description }}
+                      </v-list-item-subtitle>
+                    </v-list-item>
+                    <v-divider v-if="i !== positions.length - 1"></v-divider>
+                  </template>
+                </v-list>
+              </v-card>
 
-              <AddButton v-on:click="addPosition()"/>
+              <AddButton v-on:click="addPosition()" />
 
             </v-form>
           </v-window-item>
 
           <!-- Tab item 'models' -->
           <v-window-item value="three">
-            <v-list>
-              <v-list-subheader v-if="models.length === 0">
-                {{ $t('not_created_yet', { object: $tc('model', 1) }) }}
-              </v-list-subheader>
+            <v-card>
+              <v-list>
+                <v-list-subheader v-if="models.length === 0">
+                  {{ $t('not_created_yet', { object: $tc('model', 1) }) }}
+                </v-list-subheader>
 
-              <template v-for="(model, i) in models" :key="model">
-                <v-container class="d-flex align-center">
-                  
-                <v-container class="pa-0">
-                    <v-list-item class="modelItem mt-3" v-on:click="moveToModel(model.id)">
-                    <v-list-item-title class="text-h6">
-                      Nr. {{ model.modelNumber }}
-                    </v-list-item-title>
+                <template v-for="(model, i) in models" :key="model">
+                  <v-container class="d-flex align-center">
 
-                    <v-list-item-subtitle class="text-subtitle-1">
-                      {{ model.title }}
-                    </v-list-item-subtitle>
-                    
-                    </v-list-item>
-                </v-container>
-                    <v-btn 
-                      class="ml-3 mt-2" 
-                      color="error" 
-                      v-on:click="deleteModel(model)"> 
+                    <v-container class="pa-0">
+                      <v-list-item class="modelItem mt-3" v-on:click="moveToModel(model.id)">
+                        <v-list-item-title class="text-h6">
+                          Nr. {{ model.modelNumber }}
+                        </v-list-item-title>
+
+                        <v-list-item-subtitle class="text-subtitle-1">
+                          {{ model.title }}
+                        </v-list-item-subtitle>
+
+                      </v-list-item>
+                    </v-container>
+                    <v-btn class="ml-3 mt-2" color="error" v-on:click="deleteModel(model)">
                       <v-icon>mdi-delete</v-icon>
                     </v-btn>
-                </v-container>
-                  
-                <v-divider v-if="i !== models.length - 1"></v-divider>
-              </template>
-            </v-list>
+                  </v-container>
 
-            <AddButton v-on:click="models_overlay = true"/>
+                  <v-divider v-if="i !== models.length - 1"></v-divider>
+                </template>
+              </v-list>
+            </v-card>
+
+            <AddButton v-on:click="models_overlay = true" />
 
             <!-- Model Creation dialog -->
             <v-dialog v-model="models_overlay" max-width="800" persistent>
@@ -111,39 +107,24 @@
                 <v-card-title>{{ $t('add', { msg: $t('model') }) }} </v-card-title>
                 <v-card-text>
 
-                  <v-text-field
-                    disabled
-                    v-model="place.id"
-                    :label="$t('place_id')" 
+                  <v-text-field disabled v-model="place.id" :label="$t('place_id')"
                     :hint="$t('please_input', { msg: $t('place_id') })">
                   </v-text-field>
 
-                  <v-text-field
-                    v-model="model.title" 
-                    :label="$t('title')" 
-                    :hint="$t('please_input', { msg: $t('title_of', {msg: $t('model')}) })">
+                  <v-text-field v-model="model.title" :label="$t('title')"
+                    :hint="$t('please_input', { msg: $t('title_of', { msg: $t('model') }) })">
                   </v-text-field>
 
-                  <v-file-input
-                    show-size
-                    accept=".glb"
-                    v-model="model.model"
-                    :label="$t('input', { msg: $t('model') })">
+                  <v-file-input show-size accept=".glb" v-model="model.model" :label="$t('input', { msg: $t('model') })">
                   </v-file-input>
 
                 </v-card-text>
 
                 <v-card-actions class="justify-center">
-                  <v-btn
-                    icon 
-                    color="primary" 
-                    v-on:click="addModel()">
+                  <v-btn icon color="primary" v-on:click="addModel()">
                     <v-icon>mdi-content-save-all</v-icon>
                   </v-btn>
-                  <v-btn 
-                    icon 
-                    color="error" 
-                    @click="models_overlay = false">
+                  <v-btn icon color="error" @click="models_overlay = false">
                     <v-icon>mdi-close-circle</v-icon>
                   </v-btn>
                 </v-card-actions>
@@ -311,7 +292,7 @@ export default {
       this.place.positions.push(newPositionID)
       this.place.lastChanged = Date.now()
 
-      
+
       const newPosition = {
         id: newPositionID,
         positionNumber: null,
@@ -411,7 +392,7 @@ export default {
       VueCookies.remove('currentModel');
 
       await this.updateModels();
-      
+
     },
     /**
      *  Routes to the PositionForm for the chosen positionID

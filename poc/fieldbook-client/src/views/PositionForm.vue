@@ -1,33 +1,23 @@
 <template>
     <v-container fluid>
         <v-row>
-          <v-col cols="2">
-            <v-card rounded="0">
-              <v-tabs v-model="tab" direction="vertical" color="primary" >
-                <v-tab value="one" rounded="0"> {{ $t('general')}} </v-tab>
-                <v-tab value="two" rounded="0"> {{ $tc('picture', 2)}} </v-tab>
-                <v-tab value="three" rounded="0"> {{ $t('additional', {msg: $t('parameter')}) }} </v-tab>
-                <v-btn 
-                    rounded="0" 
-                    v-on:click="savePosition()" 
-                    color="primary"> 
-                    {{ $t('save') }} 
-                </v-btn>
-                <v-btn 
-                    rounded="0" 
-                    color="error" 
-                    v-on:click="confirmDeletion()"> 
-                    {{ $t('delete') }} 
-                </v-btn>
-                <v-btn 
-                    rounded="0" 
-                    v-on:click="goBack" 
-                    color="secondary"> 
-                    {{ $t('cancel')}}
-                </v-btn>
-            <ConfirmDialog ref="confirm" />
-              </v-tabs>
-
+            <v-col cols="2">
+                <v-card rounded="0">
+                    <v-tabs v-model="tab" direction="vertical" color="primary">
+                        <v-tab value="one" rounded="0"> {{ $t('general') }} </v-tab>
+                        <v-tab value="two" rounded="0"> {{ $tc('picture', 2) }} </v-tab>
+                        <v-tab value="three" rounded="0"> {{ $t('additional', { msg: $t('parameter') }) }} </v-tab>
+                        <v-btn rounded="0" v-on:click="savePosition()" color="primary">
+                            {{ $t('save') }}
+                        </v-btn>
+                        <v-btn rounded="0" color="error" v-on:click="confirmDeletion()">
+                            {{ $t('delete') }}
+                        </v-btn>
+                        <v-btn rounded="0" v-on:click="goBack" color="secondary">
+                            {{ $t('cancel') }}
+                        </v-btn>
+                        <ConfirmDialog ref="confirm" />
+                    </v-tabs>
                 </v-card>
             </v-col>
 
@@ -36,147 +26,113 @@
                     <v-window-item value="one">
                         <v-card>
                             <v-form ref="form">
-                                <v-text-field 
-                                    :rules="is_required" 
-                                    v-model="position.date" 
-                                    :label="$t('dating')"
+                                <v-text-field :rules="is_required" v-model="position.date" :label="$t('dating')"
                                     hint="Format: dd.mm.yyyy">
                                 </v-text-field>
-                                <v-text-field 
-                                    :rules="is_required" 
-                                    v-model="position.description" 
-                                    :label="$t('description')"
+                                <v-text-field :rules="is_required" v-model="position.description" :label="$t('description')"
                                     :hint="$tc('please_input', 2, { msg: $t('description') })">
                                 </v-text-field>
                             </v-form>
                         </v-card>
                     </v-window-item>
 
-            <!-- Tab item 'images' -->
-            <v-window-item value="two">
-                <v-list>
-                  <v-list-subheader v-if="images.length === 0">
-                    {{ $t('not_created_yet', { object: $tc('model', 1) }) }}
-                  </v-list-subheader>
+                    <!-- Tab item 'images' -->
+                    <v-window-item value="two">
+                        <v-card>
+                            <v-list>
+                                <v-list-subheader v-if="images.length === 0">
+                                    {{ $t('not_created_yet', { object: $tc('model', 1) }) }}
+                                </v-list-subheader>
 
-                  <template v-for="(image, i) in images" :key="image">
-                    <v-card class="imageItem mt-3 d-flex align-center" >
-                        <v-card-title>Nr. {{ image.imageNumber }}</v-card-title>
-                        <v-card-subtitle>{{ image.title }}</v-card-subtitle>
-                        <v-img height="150" :src=image.image></v-img>
-                        <v-btn 
-                            color="error" 
-                            class="ml-2"
-                            v-on:click="deleteImage(image)">
-                            <v-icon>mdi-delete</v-icon>
-                        </v-btn>
-                    </v-card>
 
-                    <v-divider v-if="i !== image.length - 1"></v-divider>
-                  </template>
-                </v-list>
-
-                <AddButton v-on:click="images_overlay = true"/>
-
-                <!-- Image Creation dialog -->
-                <v-dialog v-model="images_overlay" max-width="800" persistent>
-                  <v-card>
-                    <v-card-title>{{ $t('add', { msg: $t('image') }) }} </v-card-title>
-                    <v-card-text>
-
-                      <v-text-field
-                        disabled
-                        v-model="position.id"
-                        :label="$t('position_id')">
-                      </v-text-field>
-
-                      <v-text-field
-                        v-model="image.title" 
-                        :label="$t('title')" 
-                        :hint="$t('please_input', { msg: $t('title_of', {msg: $t('image')}) })">
-                      </v-text-field>
-
-                      <v-file-input
-                        show-size
-                        v-model="image.image"
-                        prepend-icon="mdi-camera" 
-                        accept="image/png, image/jpeg, image/bmp">
-                      </v-file-input>
-                    </v-card-text>
-
-                    <v-card-actions class="justify-center">
-                      <v-btn
-                        icon 
-                        color="primary" 
-                        v-on:click="addImage()">
-                        <v-icon>mdi-content-save-all</v-icon>
-                      </v-btn>
-                      <v-btn 
-                        icon 
-                        color="error" 
-                        @click="images_overlay = false">
-                        <v-icon>mdi-close-circle</v-icon>
-                      </v-btn>
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
-              </v-window-item>
-
-              <!-- Tab item 'texts' -->
-              <v-window-item value="three">
-                <v-list-subheader v-if="texts.length === 0">
-                        {{ $t('not_created_yet', { object: $t('additional', {msg: $tc('parameter', 1)}) }) }}
-                    </v-list-subheader>
-                    <template v-for="text in texts" :key="text">
-                        <v-list>
-                            <v-list-item>
-                                <v-row class="align-center no-gutters">
-                                    <v-col cols="3">
-                                        <v-combobox
-                                            hide-details="true"
-                                            v-model="text.title"
-                                            :label="$t('title')"
-                                            :items="['Höhe', 
-                                                'Gewicht', 
-                                                'Material', 
-                                                'Datum', 
-                                                'Datierung', 
-                                                'Kommentar']"
-                                            @update:modelValue="saveText(text)"
-                                        ></v-combobox>
-                                    </v-col>
-                                    <v-col cols="7">
-                                        <v-text-field
-                                            hide-details="true"
-                                            v-model="text.text" 
-                                            :label="$t('content')"
-                                            @update:modelValue="saveText(text)">
-                                        </v-text-field>
-                                    </v-col>
-                                    <v-col cols="1">
-                                        <v-btn 
-                                            color="error" 
-                                            class="ma-2"
-                                            v-on:click="deleteText(text)">
+                                <template v-for="(image, i) in images" :key="image">
+                                    <v-card class="imageItem mt-3 d-flex align-center">
+                                        <v-card-title>Nr. {{ image.imageNumber }}</v-card-title>
+                                        <v-card-subtitle>{{ image.title }}</v-card-subtitle>
+                                        <v-img height="150" :src=image.image></v-img>
+                                        <v-btn color="error" class="ml-2" v-on:click="deleteImage(image)">
                                             <v-icon>mdi-delete</v-icon>
                                         </v-btn>
-                                    </v-col>
-                                </v-row>
-                            </v-list-item>
-                        </v-list>
-                    </template>
-                    <AddButton v-on:click="addText()"/>
-              </v-window-item>
-            </v-window>
-          </v-col>
+                                    </v-card>
+
+                                    <v-divider v-if="i !== image.length - 1"></v-divider>
+                                </template>
+                            </v-list>
+                        </v-card>
+
+                        <AddButton v-on:click="images_overlay = true" />
+
+                        <!-- Image Creation dialog -->
+                        <v-dialog v-model="images_overlay" max-width="800" persistent>
+                            <v-card>
+                                <v-card-title>{{ $t('add', { msg: $t('image') }) }} </v-card-title>
+                                <v-card-text>
+
+                                    <v-text-field disabled v-model="position.id" :label="$t('position_id')">
+                                    </v-text-field>
+
+                                    <v-text-field v-model="image.title" :label="$t('title')"
+                                        :hint="$t('please_input', { msg: $t('title_of', { msg: $t('image') }) })">
+                                    </v-text-field>
+
+                                    <v-file-input show-size v-model="image.image" prepend-icon="mdi-camera"
+                                        accept="image/png, image/jpeg, image/bmp">
+                                    </v-file-input>
+                                </v-card-text>
+
+                                <v-card-actions class="justify-center">
+                                    <v-btn icon color="primary" v-on:click="addImage()">
+                                        <v-icon>mdi-content-save-all</v-icon>
+                                    </v-btn>
+                                    <v-btn icon color="error" @click="images_overlay = false">
+                                        <v-icon>mdi-close-circle</v-icon>
+                                    </v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-dialog>
+                    </v-window-item>
+
+                    <!-- Tab item 'texts' -->
+                    <v-window-item value="three">
+                        <v-list-subheader v-if="texts.length === 0">
+                            {{ $t('not_created_yet', { object: $t('additional', { msg: $tc('parameter', 1) }) }) }}
+                        </v-list-subheader>
+                        <template v-for="text in texts" :key="text">
+                            <v-card>
+                                <v-list>
+                                    <v-list-item>
+                                        <v-row class="align-center no-gutters">
+                                            <v-col cols="3">
+                                                <v-combobox hide-details="true" v-model="text.title" :label="$t('title')"
+                                                    :items="['Höhe',
+                                                        'Gewicht',
+                                                        'Material',
+                                                        'Datum',
+                                                        'Datierung',
+                                                        'Kommentar']" @update:modelValue="saveText(text)"></v-combobox>
+                                            </v-col>
+                                            <v-col cols="7">
+                                                <v-text-field hide-details="true" v-model="text.text" :label="$t('content')"
+                                                    @update:modelValue="saveText(text)">
+                                                </v-text-field>
+                                            </v-col>
+                                            <v-col cols="1">
+                                                <v-btn color="error" class="ma-2" v-on:click="deleteText(text)">
+                                                    <v-icon>mdi-delete</v-icon>
+                                                </v-btn>
+                                            </v-col>
+                                        </v-row>
+                                    </v-list-item>
+                                </v-list>
+                            </v-card>
+                        </template>
+                        <AddButton v-on:click="addText()" />
+                    </v-window-item>
+                </v-window>
+            </v-col>
         </v-row>
     </v-container>
-    <v-alert
-        closable
-        type="error" 
-        density="compact" 
-        variant="outlined"
-        v-model="error_dialog">
+    <v-alert closable type="error" density="compact" variant="outlined" v-model="error_dialog">
         {{ error_message }}
     </v-alert>
 </template>
@@ -264,7 +220,7 @@ export default {
             /* Get all data of selected place */
             if (this.$route.params.positionID != 'new') {
                 const data = await fromOfflineDB.getObject(
-                                    currentPosition, 'Positions', 'positions');
+                    currentPosition, 'Positions', 'positions');
                 this.position = data
             }
         },
@@ -273,14 +229,14 @@ export default {
          */
         async updateImages() {
             this.images = await fromOfflineDB.getAllObjectsWithID(
-                            this.position.id, 'Position', 'Images', 'images');
+                this.position.id, 'Position', 'Images', 'images');
         },
         /**
          * Update reactive Vue.js models data
          */
         async updateTexts() {
             this.texts = await fromOfflineDB.getAllObjectsWithID(
-                            this.position.id, 'Position', 'Texts', 'texts');
+                this.position.id, 'Position', 'Texts', 'texts');
         },
         /**
          * Save a Position to local storage for the current place
@@ -327,7 +283,7 @@ export default {
                 place.lastChanged = Date.now();
                 await fromOfflineDB.updateObject(place, 'Places', 'places');
             }
-            
+
             // Delete the position itself
             await fromOfflineDB.deleteObject(rawPosition, 'Positions', 'positions')
             VueCookies.remove('currentPosition');
@@ -376,7 +332,7 @@ export default {
          * @param {ProxyObject} image 
          */
         async deleteImage(image) {
-            
+
             var rawImage = toRaw(image);
             var rawPosition = toRaw(this.position);
             var index = rawPosition.images.indexOf(rawImage.id.toString())
@@ -445,7 +401,7 @@ export default {
                 rawPosition.lastChanged = Date.now();
                 await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions');
             }
-            
+
             // Delete the text itself
             await fromOfflineDB.deleteObject(text, 'Texts', 'texts');
             VueCookies.remove('currentText');
