@@ -11,8 +11,8 @@ export default createVuetify({
         colors: {
           background: "#171C23",
           surface: "#27303d",                 //list-elements
-          primary: "#EF8F70",                 
-          secondary: "#16BCC7",
+          primary: "#FB9678",                 
+          secondary: "#03C9D6",
           error:"#FC5272",                    //cancel-buttons
           warning: "#FECB18",                 //infotext from dialog
           success: "#0FB48C",

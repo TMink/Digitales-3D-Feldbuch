@@ -1,113 +1,86 @@
 <template>
   <div id="wrapper">
-    <Navigation active_tab_prop="0"/>
+    <Navigation active_tab_prop="0" />
     <v-row class="pt-4">
-    <v-spacer></v-spacer>
-    <v-form class="w-75 pa-2">
-      <v-list>
-        <v-list-subheader v-if="activities.length === 0">
-          {{ $t('not_created_yet', { object: $tc('activity', 2) }) }}
-        </v-list-subheader>
+      <v-spacer></v-spacer>
+      <v-form class="w-75 pa-2">
+        <v-card>
+          <v-list>
+            <v-list-subheader v-if="activities.length === 0">
+              {{ $t('not_created_yet', { object: $tc('activity', 2) }) }}
+            </v-list-subheader>
 
-        <!--Lists all locally saved activities-->
-        <template v-for="(activity, i) in activities" :key="activity">
-          <!--Boolean 'activity.edit' decides whether an element is 
+            <!--Lists all locally saved activities-->
+            <template v-for="(activity, i) in activities" :key="activity">
+              <!--Boolean 'activity.edit' decides whether an element is 
             displayed in list form or in edit form-->
-          <v-row no-gutters v-if="!activity.edit" class="align-center">
+              <v-row no-gutters v-if="!activity.edit" class="align-center">
 
-            <v-col cols="9">
-              <v-list-item class="pa-2 ma-2" v-on:click="setActivity(activity.id)">
-                <v-list-item-title class="ma-4 text-center">
-                  {{ activity.activityNumber }}
-                </v-list-item-title>
-              </v-list-item>
-            </v-col>
-
-            <v-col cols="3" class="pa-4">
-              <v-btn 
-                icon 
-                class="ma-1" 
-                color="primary" 
-                v-on:click="activity.edit = !activity.edit">
-                <v-icon>mdi-pencil</v-icon>
-              </v-btn>
-
-              <v-btn 
-                icon 
-                color="error" 
-                class="ma-1" 
-                v-on:click="confirmDeletion(activity)">
-                <v-icon>mdi-delete</v-icon>
-              </v-btn>
-            </v-col>
-          </v-row>
-
-          <!--This is where the edit mask will be triggered-->
-          <v-row no-gutters v-if="activity.edit" class="align-center">
-
-            <v-col cols="9">
-              <v-row no-gutters class="justify-center">
-
-                <v-col cols="4" class="pt-2 px-2">
-                  <v-text-field
-                    counter
-                    maxlength="20"
-                    label="Außenstelle" 
-                    :rules="[rules.required]" 
-                    v-model="activity.branchOffice">
-                  </v-text-field>
+                <v-col cols="9">
+                  <v-list-item class="pa-2 ma-2" v-on:click="setActivity(activity.id)">
+                    <v-list-item-title class="ma-4 text-center">
+                      {{ activity.activityNumber }}
+                    </v-list-item-title>
+                  </v-list-item>
                 </v-col>
 
-                <v-col min-width="300px" cols="3" class="pt-2 px-2">
-                  <v-text-field 
-                    counter 
-                    label="Jahr" 
-                    maxlength="4" 
-                    v-model="activity.year" 
-                    :rules="[rules.required]">
-                  </v-text-field>
-                </v-col>
+                <v-col cols="3" class="pa-4">
+                  <v-btn icon class="ma-1" color="primary" v-on:click="activity.edit = !activity.edit">
+                    <v-icon>mdi-pencil</v-icon>
+                  </v-btn>
 
-                <v-col cols="3" class="pt-2 px-2">
-                  <v-text-field 
-                    counter
-                    maxlength="4" 
-                    label="Nummer" 
-                    v-model="activity.number" 
-                    :rules="[rules.required]">
-                  </v-text-field>
+                  <v-btn icon color="error" class="ma-1" v-on:click="confirmDeletion(activity)">
+                    <v-icon>mdi-delete</v-icon>
+                  </v-btn>
                 </v-col>
               </v-row>
-            </v-col>
 
-            <v-col cols="3" class="pa-4">
-              <v-btn 
-                icon 
-                class="ma-1" 
-                color="primary" 
-                v-on:click="saveActivity(activity)">
-                <v-icon>mdi-content-save-all</v-icon>
-              </v-btn>
-              <v-btn 
-                icon 
-                class="ma-1" 
-                color="error" 
-                v-on:click="closeActivityEdit(activity)">
-                <v-icon>mdi-close-circle</v-icon>
-              </v-btn>
-            </v-col>
+              <!--This is where the edit mask will be triggered-->
+              <v-row no-gutters v-if="activity.edit" class="align-center">
 
-          </v-row>
-          <v-divider v-if="i !== activities.length - 1"></v-divider>
-        </template>
-        <ConfirmDialog ref="confirm" />
-          
-      </v-list>
-    </v-form>
-    <v-spacer></v-spacer>
+                <v-col cols="9">
+                  <v-row no-gutters class="justify-center">
+
+                    <v-col cols="4" class="pt-2 px-2">
+                      <v-text-field counter maxlength="20" label="Außenstelle" :rules="[rules.required]"
+                        v-model="activity.branchOffice">
+                      </v-text-field>
+                    </v-col>
+
+                    <v-col min-width="300px" cols="3" class="pt-2 px-2">
+                      <v-text-field counter label="Jahr" maxlength="4" v-model="activity.year" :rules="[rules.required]">
+                      </v-text-field>
+                    </v-col>
+
+                    <v-col cols="3" class="pt-2 px-2">
+                      <v-text-field counter maxlength="4" label="Nummer" v-model="activity.number"
+                        :rules="[rules.required]">
+                      </v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-col>
+
+                <v-col cols="3" class="pa-4">
+                  <v-btn icon class="ma-1" color="primary" v-on:click="saveActivity(activity)">
+                    <v-icon>mdi-content-save-all</v-icon>
+                  </v-btn>
+                  <v-btn icon class="ma-1" color="error" v-on:click="closeActivityEdit(activity)">
+                    <v-icon>mdi-close-circle</v-icon>
+                  </v-btn>
+                </v-col>
+
+              </v-row>
+              <v-divider v-if="i !== activities.length - 1"></v-divider>
+            </template>
+            <ConfirmDialog ref="confirm" />
+
+          </v-list>
+        </v-card>
+      </v-form>
+      <v-spacer></v-spacer>
     </v-row>
 
-    <AddButton v-on:click="addActivity()"/>
+    <AddButton v-on:click="addActivity()" />
 
   </div>
 </template>
@@ -191,7 +164,7 @@ export default {
 
       if (this.activities.length != 0) {
         const activityNumber = Math.max(...this.activities.map(o => o.number));
-        var  newActivityNumber = (activityNumber + 1).toString().padStart(4, '0');
+        var newActivityNumber = (activityNumber + 1).toString().padStart(4, '0');
         //newActivityNumber = newActivityNumber.toString().padStart(4, '0'); 
         newActivity.number = newActivityNumber;
       }
@@ -210,15 +183,15 @@ export default {
 
       const rawActivity = toRaw(proxyActivity);
       //TODO: use form.validate() instead of != null 
-      if (rawActivity.branchOffice != null 
-        && rawActivity.year != null 
+      if (rawActivity.branchOffice != null
+        && rawActivity.year != null
         && rawActivity.number != null) {
 
         const newActivity = {
           id: String(Date.now()),
-          activityNumber: rawActivity.branchOffice 
-                          + " " + rawActivity.year 
-                          + "/" + rawActivity.number,
+          activityNumber: rawActivity.branchOffice
+            + " " + rawActivity.year
+            + "/" + rawActivity.number,
           branchOffice: rawActivity.branchOffice,
           year: rawActivity.year,
           number: rawActivity.number,
@@ -226,17 +199,17 @@ export default {
           lastChanged: Date.now(),
           lastSync: ''
         }
-        
+
         // Edit existing data
         if (Object.prototype.hasOwnProperty.call(rawActivity, "id")) {
           newActivity.id = rawActivity.id;
           await fromOfflineDB.updateObject(newActivity, 'Activities', 'activities');
 
         } else {
-        // Add new data to store 
+          // Add new data to store 
           var activityID = await fromOfflineDB.addObject(newActivity, 'Activities', 'activities');
 
-          await fromOfflineDB.addObject({id: activityID, object: 'activities'}, 'Changes', 'created');
+          await fromOfflineDB.addObject({ id: activityID, object: 'activities' }, 'Changes', 'created');
         }
       }
 
@@ -250,7 +223,7 @@ export default {
       if (
         await this.$refs.confirm.open(
           "Confirm",
-          "Are you sure you want to delete the activity " 
+          "Are you sure you want to delete the activity "
           + activity.activityNumber + "?"
         )
       ) {

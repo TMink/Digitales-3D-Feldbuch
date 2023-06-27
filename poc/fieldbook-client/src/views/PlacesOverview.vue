@@ -1,47 +1,49 @@
 <template>
   <div id="wrapper">
-    <Navigation active_tab_prop="1"/>
+    <Navigation active_tab_prop="1" />
     <v-row class="pt-4">
       <v-spacer></v-spacer>
-    <v-form class="w-75 pa-2">
-      <v-list>
-        <v-list-subheader v-if="places.length === 0"> 
-          {{ $t('not_created_yet', { object: $tc('place', 1) }) }}
-        </v-list-subheader>
+      <v-form class="w-75 pa-2">
+        <v-card>
+          <v-list>
+            <v-list-subheader v-if="places.length === 0">
+              {{ $t('not_created_yet', { object: $tc('place', 1) }) }}
+            </v-list-subheader>
 
-        <template v-for="(place, i) in places" :key="place">
-          <v-list-item v-on:click="moveToPlace(place.id)">
-              <v-row>
-                
-                <v-col cols="12" sm="6" md="4">
-                  <v-list-item-title class="ma-4"> 
-                    {{ place.placeNumber }} 
-                  </v-list-item-title>
-                </v-col>
+            <template v-for="(place, i) in places" :key="place">
+              <v-list-item v-on:click="moveToPlace(place.id)">
+                <v-row>
 
-                <v-col cols="12" sm="6" md="4">
-                  <v-list-item-title class="ma-4"> 
-                    {{ place.title }} 
-                  </v-list-item-title>
-                </v-col>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-list-item-title class="ma-4">
+                      {{ place.placeNumber }}
+                    </v-list-item-title>
+                  </v-col>
 
-                <v-col cols="12" sm="6" md="4">
-                  <v-list-item-title class="ma-4"> 
-                    {{ place.date }} 
-                  </v-list-item-title>
-                </v-col>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-list-item-title class="ma-4">
+                      {{ place.title }}
+                    </v-list-item-title>
+                  </v-col>
 
-              </v-row>
-          </v-list-item>
-          <v-divider v-if="i !== places.length - 1"></v-divider>
-        </template>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-list-item-title class="ma-4">
+                      {{ place.date }}
+                    </v-list-item-title>
+                  </v-col>
 
-      </v-list>
-    </v-form>
-    <v-spacer></v-spacer>
+                </v-row>
+              </v-list-item>
+              <v-divider v-if="i !== places.length - 1"></v-divider>
+            </template>
+
+          </v-list>
+        </v-card>
+      </v-form>
+      <v-spacer></v-spacer>
     </v-row>
 
-    <AddButton v-on:click="addPlace()"/>
+    <AddButton v-on:click="addPlace()" />
   </div>
 </template>
 
@@ -74,7 +76,7 @@ export default {
 
   async created() {
 
-    this.$emit("view", this.$t('overview', { msg: this.$tc('place', 2)}) );
+    this.$emit("view", this.$t('overview', { msg: this.$tc('place', 2) }));
     await fromOfflineDB.syncLocalDBs();
     await this.updatePlaces();
 
@@ -85,9 +87,9 @@ export default {
     async updatePlaces() {
 
       this.places = await fromOfflineDB.getAllObjectsWithID(
-                            String(VueCookies.get('currentActivity')),
-                            'Activity', 'Places', 'places' ); 
-      this.places.sort((a, b) => (a.placeNumber > b.placeNumber) ? 1: -1)
+        String(VueCookies.get('currentActivity')),
+        'Activity', 'Places', 'places');
+      this.places.sort((a, b) => (a.placeNumber > b.placeNumber) ? 1 : -1)
 
     },
 
@@ -101,43 +103,43 @@ export default {
       activity.lastChanged = Date.now();
 
       const newPlace = {
-        id:           newPlaceID,
-        activityID:   acID,
-        placeNumber:  '',
-        date:         '',
-        title:    '',
-        positions:    [],
-        models:       [],
+        id: newPlaceID,
+        activityID: acID,
+        placeNumber: '',
+        date: '',
+        title: '',
+        positions: [],
+        models: [],
         lastChanged: Date.now(),
         lastSync: ''
       }
-      
-      if(this.places.length == 0) {
+
+      if (this.places.length == 0) {
         newPlace.placeNumber = 1
       } else {
-        const placeNumbers = await fromOfflineDB.getPropertiesWithID( acID, 'place', 'placeNumber', 'Places', 'places' )
-        const newPlaceNumber = Math.max( ...placeNumbers ) + 1;
+        const placeNumbers = await fromOfflineDB.getPropertiesWithID(acID, 'place', 'placeNumber', 'Places', 'places')
+        const newPlaceNumber = Math.max(...placeNumbers) + 1;
         newPlace.placeNumber = newPlaceNumber;
       }
 
       await fromOfflineDB.updateObject(activity, 'Activities', 'activities');
-      var placeID = await fromOfflineDB.addObject( newPlace, 'Places', 'places')
+      var placeID = await fromOfflineDB.addObject(newPlace, 'Places', 'places')
       await fromOfflineDB.addObject({ id: placeID, object: 'places' }, 'Changes', 'created');
-      await this.updatePlaces( newPlace.id )
+      await this.updatePlaces(newPlace.id)
 
     },
 
     moveToPlace(placeID) {
-      
-      if ( placeID !== 'new' ) {
-        VueCookies.set( 'currentPlace', placeID )
+
+      if (placeID !== 'new') {
+        VueCookies.set('currentPlace', placeID)
       }
 
-      this.$router.push( { name: 'PlaceCreation', params: { placeID: placeID } } )
+      this.$router.push({ name: 'PlaceCreation', params: { placeID: placeID } })
     },
 
   }
-  
+
 }
 
 </script>
