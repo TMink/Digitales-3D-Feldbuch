@@ -7,16 +7,16 @@
             <v-tab value="one" rounded="0"> {{ $t('general') }} </v-tab>
             <v-tab value="two" rounded="0"> {{ $tc('position', 2) }} </v-tab>
             <v-tab value="three" rounded="0"> {{ $tc('model', 2) }} </v-tab>
-            <v-btn rounded="0" v-on:click="savePlace()" color="edit">
+            <v-btn rounded="0" v-on:click="savePlace()" color="primary">
               {{ $t('save') }}
             </v-btn>
-            <v-btn rounded="0" color="decline" v-on:click="confirmDeletion()">
+            <v-btn rounded="0" color="error" v-on:click="confirmDeletion()">
               {{ $t('delete') }}
             </v-btn>
 
             <ConfirmDialog ref="confirm" />
 
-            <v-btn rounded="0" v-on:click="cancelPlace" color="cancel">
+            <v-btn rounded="0" v-on:click="cancelPlace" color="secondary">
               {{ $t('cancel') }}
             </v-btn>
           </v-tabs>
@@ -93,7 +93,7 @@
                 </v-container>
                     <v-btn 
                       class="ml-3 mt-2" 
-                      color="decline" 
+                      color="error" 
                       v-on:click="deleteModel(model)"> 
                       <v-icon>mdi-delete</v-icon>
                     </v-btn>
@@ -136,13 +136,13 @@
                 <v-card-actions class="justify-center">
                   <v-btn
                     icon 
-                    color="edit" 
+                    color="primary" 
                     v-on:click="addModel()">
                     <v-icon>mdi-content-save-all</v-icon>
                   </v-btn>
                   <v-btn 
                     icon 
-                    color="decline" 
+                    color="error" 
                     @click="models_overlay = false">
                     <v-icon>mdi-close-circle</v-icon>
                   </v-btn>

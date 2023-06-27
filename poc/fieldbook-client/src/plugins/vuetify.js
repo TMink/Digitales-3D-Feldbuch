@@ -4,7 +4,7 @@ import { createVuetify } from "vuetify";
 //TODO: proper color values
 export default createVuetify({
   theme: {
-    defaultTheme: "fieldbook_dark",
+    defaultTheme: "fieldbook_light",
     themes: {
       fieldbook_dark: {
         dark: true,
@@ -31,23 +31,17 @@ export default createVuetify({
       fieldbook_light: {
         dark: false,
         colors: {
-          background: "#F6F7FA",
+          background: "#F6F6F6",
+          surface: "#FFFFFF",                 //list-elements
+          primary: "#EF8F70",                 
+          secondary: "#16BCC7",
+          error:"#FC5272",                    //cancel-buttons
+          warning: "#FECB18",                 //infotext from dialog
+          success: "#0FB48C",
           opp_background: "#444444",
           accent: "#F6F7FA",                  //navigation-bar
           accent_dark: "#5C4646",             //top-bar ('digital3d-Fieldbook')
-          surface: "#F2F2F2",                 //list-elements
-          primary: "#DA8E60",                 
-          secondary: "#594843",
-          error: "#B00020",
-          info: "#034E96",                    //infotext from dialog
-          success: "#4CAF50",
-          warning: "#DA8E60",
-          confirm: "#1E9E49",                 //confirm action
-          decline: "#CC453B",                 //decline action
-          add: "#7DC8B1",                     //add-buttons
-          edit:"#DA8E60",                     //edit-buttons
-          cancel:"#52525E",                   //cancel-buttons
-          slider:"#FE9F2E"                    //slider for navigation bar
+          slider:"#EF8F70"                    //slider for navigation bar
         },
       },
     },

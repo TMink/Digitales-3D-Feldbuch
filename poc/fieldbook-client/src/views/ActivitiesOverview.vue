@@ -27,14 +27,14 @@
               <v-btn 
                 icon 
                 class="ma-1" 
-                color="edit" 
+                color="primary" 
                 v-on:click="activity.edit = !activity.edit">
                 <v-icon>mdi-pencil</v-icon>
               </v-btn>
 
               <v-btn 
                 icon 
-                color="decline" 
+                color="error" 
                 class="ma-1" 
                 v-on:click="confirmDeletion(activity)">
                 <v-icon>mdi-delete</v-icon>
@@ -84,14 +84,14 @@
               <v-btn 
                 icon 
                 class="ma-1" 
-                color="edit" 
+                color="primary" 
                 v-on:click="saveActivity(activity)">
                 <v-icon>mdi-content-save-all</v-icon>
               </v-btn>
               <v-btn 
                 icon 
                 class="ma-1" 
-                color="decline" 
+                color="error" 
                 v-on:click="closeActivityEdit(activity)">
                 <v-icon>mdi-close-circle</v-icon>
               </v-btn>
