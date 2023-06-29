@@ -396,10 +396,47 @@ export default {
         this.arcballControls.update();
 
       }
+    },
 
+    /**
+     * 
+     * @param {*} event 
+     */
+     updateArcball: async function(event) {
+      if(event.ctrlKey) {
 
+      this.getCamera(this.camera, this.cameraData)
 
+      const placeID = VueCookies.get( 'currentPlace' )
+      const cameraIDsFromDB = await fromOfflineDB.getProperties
+        ( 'id', 'Cameras', 'cameras' )
 
+      if(cameraIDsFromDB.includes(placeID)) {
+
+        const newCamera = await fromOfflineDB.getObject(
+          VueCookies.get('currentPlace'), "Cameras", "cameras")
+
+        this.arcballControls.target.set(
+          newCamera.arcballAnchor[0], newCamera.arcballAnchor[1],
+          newCamera.arcballAnchor[2]);
+
+        this.arcballControls.reset()
+        this.arcballControls.update()
+
+      } else {
+
+        this.arcballControls.target.set(
+          this.arcballAnchor[0], this.arcballAnchor[1],
+          this.arcballAnchor[2] );
+
+        this.arcballControls.reset()
+        this.arcballControls.update()
+
+      }
+
+      this.setCamera(this.camera, this.cameraData)
+
+      }
     },
 
     /**
@@ -549,6 +586,7 @@ export default {
         this.arcballControls.enabled = false;
       }
 
+      document.addEventListener("click", this.updateArcball)
       this.arcballControls.setTbRadius(0.67)
 
       /* Render scene and camera */
