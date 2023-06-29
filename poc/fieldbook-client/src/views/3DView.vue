@@ -490,6 +490,15 @@ export default {
       arcballControls.update();
     },
 
+    makePerspectiveCamera: function () {
+      const fov = 45;
+      const aspect = canvas.clientWidth / canvas.clientHeight;
+      const near = 0.01;
+      const far = 2000;
+      const newCamera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+      return newCamera;
+    },
+
     onWindowResize: function () {
       const canvas = document.getElementById("canvas");
 
@@ -523,11 +532,7 @@ export default {
       this.scene = new THREE.Scene();
 
       // Camera
-      const cameraAspect = canvas.clientWidth / canvas.clientHeight;
-      this.camera = new THREE.PerspectiveCamera(75, cameraAspect, 0.1, 1000);
-      this.camera.position.set(2, 0, 0);
-      this.camera.lookAt(this.scene.position);
-      this.camera.updateProjectionMatrix();
+      this.camera = this.makePerspectiveCamera()
 
       // Light
       const ambientLight = new THREE.AmbientLight(0xffffff);
