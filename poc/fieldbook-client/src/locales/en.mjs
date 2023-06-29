@@ -12,6 +12,7 @@ export default {
   model: "Model | Models",
   file: "File",
   dating: "Dating",
+  date: "Date",
   description: "Description",
   text: "Text",
   general: "General",
@@ -30,6 +31,7 @@ export default {
   cancel: "Cancel",
   yes: "Yes",
   no: "No",
+  pdf_export: "PDF Export",
 
   // Phrases
   add: "Add {msg}",

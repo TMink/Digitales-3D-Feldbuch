@@ -12,10 +12,11 @@ export default {
   model: "Modell | Modelle",
   file: "Datei",
   dating: "Datierung",
+  date: "Datum",
   description: "Beschreibung",
   text: "Text",
   general: "Allgemein",
-  title: "Titel",
+  title: "Ansprache",
   cookies: "Cookies",
   number: "Nummer",
   year: "Jahr",
@@ -30,6 +31,7 @@ export default {
   cancel: "Abbrechen",
   yes: "Ja",
   no: "Nein",
+  pdf_export: "PDF Export",
 
   // Phrases
   add: "{msg} hinzufügen",

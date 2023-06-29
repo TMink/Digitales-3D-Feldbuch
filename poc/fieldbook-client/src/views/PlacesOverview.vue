@@ -12,23 +12,29 @@
 
             <template v-for="(place, i) in places" :key="place">
               <v-list-item v-on:click="moveToPlace(place.id)">
-                <v-row>
+                <v-row class="justify-center">
 
-                  <v-col cols="12" sm="6" md="4">
+                  <v-col cols="1">
                     <v-list-item-title class="ma-4">
                       {{ place.placeNumber }}
                     </v-list-item-title>
                   </v-col>
 
-                  <v-col cols="12" sm="6" md="4">
-                    <v-list-item-title class="ma-4">
+                  <v-col cols="4">
+                    <v-list-item-title class="ma-4" v-if="place.title.length != 0">
                       {{ place.title }}
                     </v-list-item-title>
+                    <v-list-item-title class="ma-4 text-grey-darken-1" v-if="place.title.length == 0">
+                        {{ $t('title') }}
+                      </v-list-item-title>
                   </v-col>
 
-                  <v-col cols="12" sm="6" md="4">
-                    <v-list-item-title class="ma-4">
+                  <v-col cols="2">
+                    <v-list-item-title class="ma-4" v-if="place.date.length != 0">
                       {{ place.date }}
+                    </v-list-item-title>
+                    <v-list-item-title class="ma-4 text-grey-darken-1" v-if="place.date.length == 0">
+                      {{ $t('date') }}
                     </v-list-item-title>
                   </v-col>
 
