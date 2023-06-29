@@ -397,18 +397,9 @@ export default {
 
       }
 
-      // const model = this.scene.getObjectByName(modelName);
 
-      // const modelGeo = model.geometry;
-      // modelGeo.computeBoundingBox();
-      // const center = new THREE.Vector3();
-      // model.geometry.boundingBox.getCenter(center);
-      // model.localToWorld(center);
 
-      // this.arcballControls.target.set(center.x, center.y, center.z);
-      // this.camera.position.set(center.x, center.y - 15, center.z);
 
-      // this.arcballControls.update();
     },
 
     /**
