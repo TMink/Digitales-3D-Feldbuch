@@ -5,8 +5,9 @@
         <v-card rounded="0">
           <v-tabs v-model="tab" direction="vertical" color="primary">
             <v-tab value="one" rounded="0"> {{ $t('general') }} </v-tab>
-            <v-tab value="two" rounded="0"> {{ $tc('position', 2) }} </v-tab>
-            <v-tab value="three" rounded="0"> {{ $tc('model', 2) }} </v-tab>
+            <v-tab value="two" rounded="0"> Zeichnungen<!-- {{ $tc('model', 2) }} --> </v-tab>
+            <v-tab value="three" rounded="0"> {{ $tc('position', 2) }} </v-tab>
+            <v-tab value="four" rounded="0"> {{ $tc('model', 2) }} </v-tab>
             <v-btn rounded="0" v-on:click="savePlace()" color="primary">
               {{ $t('save') }}
             </v-btn>
@@ -27,17 +28,159 @@
         <v-window v-model="tab">
           <!-- Tab item 'general' -->
           <v-window-item value="one">
-            <v-card>
-              <v-text-field v-model="place.title" :label="$t('title')"
-                :hint="$tc('please_input', { msg: $t('title') }, 1)">
-              </v-text-field>
-              <v-text-field v-model="place.date" :label="$t('dating')" hint="Format: dd.mm.yyyy">
-              </v-text-field>
+            <v-card class="pa-4">
+              <v-row class="pt-2 pb-10">
+
+                <!-- Can PROBABLY be removed
+                  <v-col cols="1"> 
+                  <v-text-field v-model="place.code" :label="$t('code')">
+                </v-text-field>  Can maybe be removed
+                </v-col> -->
+                <v-col cols="5">
+                  <v-combobox
+                    v-model="place.title"
+                    :hide-no-data="false"
+                    :items="titles"
+                    hide-selected
+                    hint="Add tags which describe the place"
+                    label="Title"
+                    multiple
+                    persistent-hint
+                    chips
+                    closable-chips
+                  >
+                    <template v-slot:no-data>
+                      <v-list-item>
+                        <v-list-item-title>
+                          No results matching "<strong>{{ search }}</strong>". Press <kbd>enter</kbd> to create a new one
+                        </v-list-item-title>
+                      </v-list-item>
+                    </template>
+                  </v-combobox>
+                </v-col>
+                <v-col cols="4">
+                      <v-combobox counter maxlength="40" v-model="place.dating" :items="datings" :label="$t('dating')">
+                    </v-combobox>
+                    </v-col>
+                <!-- <v-spacer></v-spacer> -->
+                <v-col>
+                  <div class="text-h4 text-center" :label="$t('lastEdited')"> {{  place.date }}</div>
+                  <div class="text-grey text-center"> {{ $t('lastEdited') }}</div>
+                </v-col>
+              </v-row>
+
+             <!-- <v-row>
+                   Can PROBABLY be removed
+                  <v-col cols="2">
+                    <v-text-field v-model="place.datingCode" :label="$t('dating') + 's ' + $t('code')">
+                  </v-text-field>
+                  </v-col> 
+                  <v-col cols="5">
+                    <v-combobox counter maxlength="40" v-model="place.dating" :items="datings" :label="$t('dating')">
+                  </v-combobox>
+                  </v-col>
+              </v-row>-->
+
+              <v-divider></v-divider>
+              
+              <v-row class="pl-4 pb-4 justify-center">
+                <v-col cols="4">
+                  <v-checkbox
+                    persistent-hint
+                    label="Kein Befund" 
+                    v-model="place.noFinding"
+                    hint="Falls die Stelle kein Befund ist (Arbeitsbereich, Störung, natürliche Verfärbung etc.)">
+                  </v-checkbox>
+                </v-col>
+                <v-col cols="4">
+                  <v-checkbox
+                  persistent-hint 
+                  label="Rest Befund" 
+                  v-model="place.restFinding" 
+                  hint="Falls bei einem Bodeneingriff der Befund noch unterhalb der Eingriffstiefe erhalten ist.">
+                </v-checkbox>
+              </v-col>
+              </v-row>
+
+              <v-divider class="pa-2"></v-divider>
+              <div class="text-h6 px-3 pb-3">Gauss-Krüger-Koordinaten<!-- {{ $t('visibility') }} --></div>
+              <v-row class="pb-3">
+                <v-col cols="2">
+                  <v-text-field hide-details density="compact" v-model="place.right" :label="$t('right')">
+                  </v-text-field>
+                </v-col>
+                <v-col>
+                  <v-text-field hide-details density="compact" v-model="place.rightTo" :label="$t('rightTo')">
+                  </v-text-field>
+                </v-col>
+                <v-divider class="mt-n1 mb-n2" vertical></v-divider>
+                <v-col>
+                  <v-text-field hide-details density="compact" v-model="place.up" :label="$t('up')">
+                  </v-text-field>
+                </v-col>
+                <v-col>
+                  <v-text-field hide-details density="compact" v-model="place.upTo" :label="$t('upTo')">
+                  </v-text-field>
+                </v-col>
+                <v-divider class="mt-n1 mb-n2" vertical></v-divider>
+                <v-col>
+                  <v-text-field hide-details density="compact" v-model="place.depthTop" :label="$t('depthTop')">
+                  </v-text-field>
+                </v-col>
+                <v-col>
+                  <v-text-field hide-details density="compact" v-model="place.depthBot" :label="$t('depthBot')">
+                  </v-text-field>
+                </v-col>
+              </v-row>
+              <v-divider class="mt-2 pa-2"></v-divider>
+
+              <v-row no-gutters>
+
+                <v-textarea counter maxlength="254" auto-grow rows="1" v-model="place.plane" :label="$t('plane')">
+                </v-textarea>
+              </v-row>
+              <v-row no-gutters>
+
+                <v-textarea counter maxlength="254" auto-grow rows="1" v-model="place.profile" :label="$t('profile')">
+                </v-textarea>
+              </v-row>
+
+              <v-divider class="mt-2 pa-2"></v-divider>
+              
+              <v-row no-gutters class=" text-begin">
+
+                <v-col cols="5" class="pt-4 pl-4">
+                  
+                  <div class="text-h6 pl-3">{{ $t('visibility') }}</div>
+                  <v-radio-group v-model="place.visibility" inline>
+                    <v-radio :label=" this.$t('veryGood') " value="1"></v-radio>
+                    <v-radio :label="this.$t('good')" value="2"></v-radio>
+                    <v-radio :label="this.$t('moderate')" value="3"></v-radio>
+                    <v-radio :label="this.$t('bad')" value="4"></v-radio>
+                  </v-radio-group>
+                </v-col>
+              </v-row>
+
+              <v-divider class="mt-2 pa-2"></v-divider>
+              <v-text-field  counter maxlength="254" v-model="place.drawing" :label="$t('drawing')">
+                LINK zu Zeichnungen (vlt. Fotos)
+                </v-text-field>
+              <v-text-field counter maxlength="254" v-model="place.description" :label="$t('description')">
+                
+                </v-text-field>
+              <v-text-field counter maxlength="50" v-model="place.editor" :label="$t('editor')">
+                </v-text-field>
+
             </v-card>
           </v-window-item>
 
-          <!-- Tab item 'positions' -->
+
           <v-window-item value="two">
+            TODO
+          </v-window-item>
+
+          <!-- Tab item 'positions' -->
+          <v-window-item value="three">
             <v-form>
               <v-card>
                 <v-list>
@@ -67,7 +210,7 @@
           </v-window-item>
 
           <!-- Tab item 'models' -->
-          <v-window-item value="three">
+          <v-window-item value="four">
             <v-card>
               <v-list>
                 <v-list-subheader v-if="models.length === 0">
@@ -177,8 +320,27 @@ export default {
         id: '',
         activityID: '',
         placeNumber: '',
-        title: '',
+
+        code: '',         //can maybe be removed
+        title: [],
+        datingCode: '',   //can maybe be removed
+        dating: '',
+        noFinding: false,
+        restFinding: false,
+        right: '',
+        rightTo: '',
+        up: '',
+        upTo: '',
+        depthTop: '',
+        depthBot: '',
+        plane: '',
+        profile: '',
+        visibility: '',
+        drawing: '',
+        description: '',
+        editor: '',
         date: '',
+        
         positions: [],
         models: [],
         lastChanged: '',
@@ -192,6 +354,8 @@ export default {
       },
       positions: null,
       models: null,
+      titles: [],
+      datings: [],
       models_overlay: false,
       error_dialog: false,
       error_message: '',
@@ -206,6 +370,10 @@ export default {
    */
   async created() {
     this.$emit("view", this.$t('edit', { msg: this.$tc('place', 1) }));
+
+    this.titles = JSON.parse(import.meta.env.VITE_TITLES);
+    this.datings = JSON.parse(import.meta.env.VITE_DATINGS);
+
     await fromOfflineDB.syncLocalDBs();
     await this.updatePlace();
     await this.updatePositions();
@@ -238,7 +406,8 @@ export default {
      */
     async savePlace() {
       //convert from vue proxy to JSON object
-      const inputPlace = JSON.parse(JSON.stringify(this.place));
+      const inputPlace = toRaw(this.place);
+      inputPlace.date = new Date().toLocaleDateString("de-DE");
       inputPlace.lastChanged = Date.now();
 
       await fromOfflineDB.updateObject(inputPlace, 'Places', 'places');

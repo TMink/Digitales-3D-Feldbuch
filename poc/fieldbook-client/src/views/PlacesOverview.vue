@@ -20,9 +20,9 @@
                     </v-list-item-title>
                   </v-col>
 
-                  <v-col cols="4">
-                    <v-list-item-title class="ma-4" v-if="place.title.length != 0">
-                      {{ place.title }}
+                  <v-col cols="6">
+                    <v-list-item-title class="ma-4 text-wrap" v-if="place.title.length != 0">
+                      {{ place.title.join("; ") }}
                     </v-list-item-title>
                     <v-list-item-title class="ma-4 text-grey-darken-1" v-if="place.title.length == 0">
                         {{ $t('title') }}
@@ -112,8 +112,27 @@ export default {
         id: newPlaceID,
         activityID: acID,
         placeNumber: '',
-        date: '',
-        title: '',
+
+        code: '',       //can maybe be removed
+        title: [],
+        datingCode: '', //can maybe be removed
+        dating: '',
+        noFinding: false,
+        restFinding: false,
+        right: '',
+        rightTo: '',
+        up: '',
+        upTo: '',
+        depthTop: '',
+        depthBot: '',
+        plane: '',
+        profile: '',
+        visibility: '',
+        drawing: '',
+        description: '',
+        editor: '',
+        date: new Date().toLocaleDateString("de-DE"),
+
         positions: [],
         models: [],
         lastChanged: Date.now(),
