@@ -14,7 +14,6 @@ import { TransformControls } from
   import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { GUI } from 'dat.gui';
-import { toRaw } from 'vue';
 
 const params = {
   animate: true,
@@ -67,7 +66,9 @@ export default {
 
       /* Reset camera in according to the position of the last place-model */
       this.updateCameraPosition(this.meshesInScene
-        [this.meshesInScene.length - 1].title)
+      [this.meshesInScene.length - 1].title)
+
+      await this.loadPositionObjects();
 
       /* Create GUI Folders */
       this.createGUI();
@@ -118,6 +119,7 @@ export default {
 
       await fromOfflineDB.updateObject(cameraObject, "Cameras", "cameras")
     }
+    params.positions.inScene = []
     this.renderer.dispose()
     this.renderer.forceContextLoss()
   },
@@ -164,6 +166,21 @@ export default {
       }
     },
 
+    loadPositionObjects: async function () {
+
+      const placeID = VueCookies.get('currentPlace')
+      const positionIDs = await fromOfflineDB.getPropertiesWithID
+        (placeID, "position", "id", 'Positions', 'positions');
+      const firstModel = this.meshesInScene
+        [this.meshesInScene.length - 1].title
+      if (positionIDs) {
+        for (var i = 0; i < positionIDs.length; i++) {
+          await this.createTet(positionIDs[i], firstModel);
+        }
+      }
+
+    },
+
     /**
      * 
      * @param {*} modelID 
@@ -203,6 +220,36 @@ export default {
       this.meshesInScene.push({ title: title, id: object.id })
     },
 
+    createTet: async function (positionID, firstModel) {
+
+      const position = await fromOfflineDB.getObject(positionID, 'Positions',
+        'positions');
+
+      /* Determine the center of the */
+      const model = this.scene.getObjectByName(firstModel);
+      const center = this.getModelCenter(model);
+
+      const tetGeometry = new THREE.TetrahedronGeometry();
+      const tetMaterial = new THREE.MeshBasicMaterial({ color: "white" });
+
+      const tetMesh = new THREE.Mesh(tetGeometry, tetMaterial);
+      tetMesh.name = position.positionNumber;
+      tetMesh.opacity = 1;
+
+      this.scene.add(tetMesh);
+      tetMesh.position.set(center.x, center.y, center.z);
+
+      /* Create param object */
+      params.positions.inScene.push(
+        {
+          number: tetMesh.name,
+          move: false,
+        }
+      )
+      //this.transformControls.attach(tetMesh);
+
+    },
+
     /**
      * -------------------------------------------------------------------------
      * ---- GUI
@@ -239,6 +286,8 @@ export default {
       const positionsFolder = this.gui.addFolder('Positions');
       for (var i = 0; i < params.positions.inScene.length; i++) {
 
+        console.log(params.positions.inScene.length)
+
         const positionTitle = params.positions.inScene[i].number;
         const positionFolder = positionsFolder.addFolder(positionTitle);
 
@@ -248,19 +297,18 @@ export default {
 
         positionFolder.add(params.positions.inScene.find
           (x => x.number === test[0].number), "move")
-          .listen().onChange(
-            () => this.changeState('position', positionTitle))
-        //.listen().onChange(() => this.attachPosition
-        //  (positionTitle))
+          .listen().onChange(() => this.changeState('position', positionTitle))
+          //.listen().onChange(() => this.attachPosition(positionTitle))
       }
     },
 
     /**
      * 
-     * @param {*} element 
-     * @param {*} positionTitle 
+     * @param {*} element
+     * @param {*} positionTitle
      */
     changeState: function (element, positionTitle) {
+      console.log("changeState")
       switch (element) {
         case "model":
 
@@ -295,6 +343,22 @@ export default {
         default:
           console.log("Error")
       }
+    },
+
+    attachPosition: function (positionTitle) {
+
+      /* Set all move-values to false */
+      for (var i = 0; i < params.positions.inScene.length; i++) {
+        params.positions.inScene[i].move = false
+      }
+
+      /* Get the object of checked checkbox */
+      const test = params.positions.inScene.filter(
+        obj => { return obj.number === positionTitle }
+      )
+      params.positions.inScene.find
+        (x => x.number === test[0].number).move = true;
+
     },
 
     /**
@@ -589,6 +653,13 @@ export default {
         this.arcballControls.enabled = true;
       } else {
         this.arcballControls.enabled = false;
+      }
+
+      for (var i = 0; i < params.positions.inScene.length; i++) {
+        if (params.positions.inScene[i].move === true) {
+          this.transformControls.enabled = true;
+          this.transformControls.attach(this.scene.getObjectByName(params.positions.inScene[i].number))
+        }
       }
 
       document.addEventListener("click", this.updateArcball)
