@@ -17,7 +17,7 @@ export default createVuetify({
           warning: "#FECB18",                 //infotext from dialog
           success: "#0FB48C",
           opp_background: "#22282C",
-          accent: "#3A3A47",                  //navigation-bar
+          accent: "#1C2128",                  //navigation-bar
           accent_dark: "#5C4646",             //top-bar ('digital3d-Fieldbook')
           slider:"#FB9678"                    //slider for navigation bar
         },
