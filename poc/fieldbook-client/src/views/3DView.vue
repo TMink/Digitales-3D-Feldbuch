@@ -44,6 +44,11 @@ export default {
   data() {
     return {
       meshesInScene: [],
+      arcballAnchor: [],
+      cameraData: {
+        position: null,
+        rotation: null
+      },
     };
   },
 
@@ -75,9 +80,43 @@ export default {
     }
   },
 
-  unmounted() {
+  async unmounted() {
     if(this.meshesInScene.length > 0) {
       this.saveCurrentScene();
+
+      // get the current Camera position
+      const cameraData = [
+        this.camera.position.x,
+        this.camera.position.y,
+        this.camera.position.z,
+        this.camera.rotation.x,
+        this.camera.rotation.y,
+        this.camera.rotation.z
+      ]
+
+      const placeID = VueCookies.get('currentPlace')
+      const savedCamera = await fromOfflineDB.getProperties("id", "Cameras", "cameras")
+      const anchor = []
+
+      if(!savedCamera.includes(placeID)) {
+        anchor.push(this.arcballAnchor[0])
+        anchor.push(this.arcballAnchor[1])
+        anchor.push(this.arcballAnchor[2])
+      } else {
+        const camera = await fromOfflineDB.getObject(placeID, "Cameras", "cameras")
+        anchor.push(camera.arcballAnchor[0])
+        anchor.push(camera.arcballAnchor[1])
+        anchor.push(camera.arcballAnchor[2])
+      }
+
+      // Camera Object
+      const cameraObject = {
+          id: placeID,
+          cameraPosition: cameraData,
+          arcballAnchor: anchor
+      }
+
+      await fromOfflineDB.updateObject(cameraObject, "Cameras", "cameras")
     }
     this.renderer.dispose()
     this.renderer.forceContextLoss()
@@ -310,19 +349,154 @@ export default {
      * 
      * @param {*} modelName 
      */
-    updateCameraPosition: function (modelName) {
-      const model = this.scene.getObjectByName(modelName);
+    updateCameraPosition: async function (modelName) {
+      const placeID = VueCookies.get( 'currentPlace' )
+      const cameraIDsFromDB = await fromOfflineDB.getProperties
+        ( 'id', 'Cameras', 'cameras' )
 
+      if(cameraIDsFromDB.includes(placeID)) {
+
+        /* Get camera data from IndexedDB */
+        const cameraFromDB = await fromOfflineDB.getObject
+          ( VueCookies.get('currentPlace'), "Cameras", "cameras" );
+        
+        /* Update current camera state with camera data from IndexedDB */
+        const cameraPosition = cameraFromDB.cameraPosition;
+        this.cameraData
+          .position = [cameraPosition[0], cameraPosition[1], cameraPosition[2]];
+        this.cameraData
+          .rotation = [cameraPosition[3], cameraPosition[4], cameraPosition[5]];
+
+        /* Restore saved anchor position for the arcball target */
+        this.restoreArcballAnchor( cameraFromDB.arcballAnchor, 
+                                   this.arcballControls );
+
+        /* Set new camera state */
+        this.setCamera( this.camera, this.cameraData );
+
+      } else {
+
+        /* Get center of place model as Vec3 */
+        const model = this.scene.getObjectByName(modelName);
+        const center = this.getModelCenter(model);
+
+        /* Define an anchor point for the arcball */
+        this.arcballAnchor.push(center.x);
+        this.arcballAnchor.push(center.y);
+        this.arcballAnchor.push(center.z);
+
+        /* Set center as the new arcball target */
+        this.arcballControls.target.set(center.x, center.y, center.z);
+
+        /* Move camera to the object */
+        this.camera.position.set(center.x, center.y - 15, center.z);
+        this.getCamera(this.camera, this.cameraData)
+
+        /* Save changes made to the arcball control settings */
+        this.arcballControls.update();
+
+      }
+    },
+
+    /**
+     * 
+     * @param {*} event 
+     */
+     updateArcball: async function(event) {
+      if(event.ctrlKey) {
+
+      this.getCamera(this.camera, this.cameraData)
+
+      const placeID = VueCookies.get( 'currentPlace' )
+      const cameraIDsFromDB = await fromOfflineDB.getProperties
+        ( 'id', 'Cameras', 'cameras' )
+
+      if(cameraIDsFromDB.includes(placeID)) {
+
+        const newCamera = await fromOfflineDB.getObject(
+          VueCookies.get('currentPlace'), "Cameras", "cameras")
+
+        this.arcballControls.target.set(
+          newCamera.arcballAnchor[0], newCamera.arcballAnchor[1],
+          newCamera.arcballAnchor[2]);
+
+        this.arcballControls.reset()
+        this.arcballControls.update()
+
+      } else {
+
+        this.arcballControls.target.set(
+          this.arcballAnchor[0], this.arcballAnchor[1],
+          this.arcballAnchor[2] );
+
+        this.arcballControls.reset()
+        this.arcballControls.update()
+
+      }
+
+      this.setCamera(this.camera, this.cameraData)
+
+      }
+    },
+
+    /**
+     * 
+     * @param {*} model 
+     */
+     getModelCenter: function(model) {
       const modelGeo = model.geometry;
       modelGeo.computeBoundingBox();
       const center = new THREE.Vector3();
       model.geometry.boundingBox.getCenter(center);
       model.localToWorld(center);
+      return center
+    },
 
-      this.arcballControls.target.set(center.x, center.y, center.z);
-      this.camera.position.set(center.x, center.y - 15, center.z);
+    /**
+     * 
+     * @param {*} camera 
+     * @param {*} cameraData 
+     */
+     getCamera: function(camera, cameraData) {
+      cameraData.position = [ camera.position.x, camera.position.y, 
+                              camera.position.z ];
+      cameraData.rotation = [ camera.rotation.x, camera.rotation.y, 
+                              camera.rotation.z ];
+    },
 
-      this.arcballControls.update();
+    /**
+     * 
+     * @param {*} camera 
+     * @param {*} cameraData 
+     */
+     setCamera: function(camera, cameraData) {
+      camera.position.set( cameraData.position[0], cameraData.position[1],
+                           cameraData.position[2] );
+      camera.rotation.set( cameraData.rotation[0], cameraData.rotation[1],
+                           cameraData.rotation[2] );
+    },
+
+    /**
+     * 
+     * @param {*} arcballAnchor 
+     * @param {*} arcballControls 
+     */
+     restoreArcballAnchor: function(arcballAnchor, arcballControls) {
+      /* Restore saved anchor position for the arcball target */
+      arcballControls.target.set( arcballAnchor[0], arcballAnchor[1],
+                                  arcballAnchor[2] );
+      
+      /* Save changes made to the arcball control settings */
+      arcballControls.update();
+    },
+
+    makePerspectiveCamera: function () {
+      const fov = 45;
+      const aspect = canvas.clientWidth / canvas.clientHeight;
+      const near = 0.01;
+      const far = 2000;
+      const newCamera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+      return newCamera;
     },
 
     onWindowResize: function () {
@@ -358,11 +532,7 @@ export default {
       this.scene = new THREE.Scene();
 
       // Camera
-      const cameraAspect = canvas.clientWidth / canvas.clientHeight;
-      this.camera = new THREE.PerspectiveCamera(75, cameraAspect, 0.1, 1000);
-      this.camera.position.set(2, 0, 0);
-      this.camera.lookAt(this.scene.position);
-      this.camera.updateProjectionMatrix();
+      this.camera = this.makePerspectiveCamera()
 
       // Light
       const ambientLight = new THREE.AmbientLight(0xffffff);
@@ -420,6 +590,9 @@ export default {
       } else {
         this.arcballControls.enabled = false;
       }
+
+      document.addEventListener("click", this.updateArcball)
+      this.arcballControls.setTbRadius(0.67)
 
       /* Render scene and camera */
       this.renderer.render(this.scene, this.camera);

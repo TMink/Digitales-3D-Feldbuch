@@ -7,6 +7,7 @@
     slider-color="slider"
     v-model="active_tab">
     
+    
     <v-tab 
       id="activity" 
       class="text-h6" 
@@ -32,6 +33,7 @@
       :disabled="!placeIsSet"> 
       {{ $t('position') }}
     </v-tab>
+    
   </v-tabs>
 </template>
 
