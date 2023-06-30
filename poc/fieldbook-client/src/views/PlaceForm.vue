@@ -149,7 +149,7 @@
               
               <v-row no-gutters class=" text-begin">
 
-                <v-col cols="5" class="pt-4 pl-4">
+                <v-col cols="6" class="pt-4 pl-4">
                   
                   <div class="text-h6 pl-3">{{ $t('visibility') }}</div>
                   <v-radio-group v-model="place.visibility" inline>

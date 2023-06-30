@@ -6,6 +6,7 @@ import PositionsOverview from "@/views/PositionsOverview.vue";
 import PositionForm from "@/views/PositionForm.vue";
 import Viewer from "@/views/3DView.vue";
 import OnlineSync from "@/views/OnlineSync.vue";
+import PDFExport from "@/views/PDFExport.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -48,6 +49,11 @@ const router = createRouter({
       path: "/onlineSync",
       name: "OnlineSync",
       component: OnlineSync,
+    },
+    {
+      path: "/pdfExport",
+      name: "PDFExport",
+      component: PDFExport,
     },
   ],
 });

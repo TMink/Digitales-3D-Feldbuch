@@ -113,6 +113,7 @@ export default {
         { link: "/", title: this.$t('overview',  {msg: this.$tc('activity', 2)}) },
         { link: "/3dview", title: this.$t('threeD_view') },
         { link: "/onlineSync", title: this.$t('online_sync') },
+        { link: "/pdfExport", title: this.$t('pdf_export') },
       ]
     }
   },
