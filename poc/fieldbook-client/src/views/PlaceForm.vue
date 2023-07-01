@@ -468,6 +468,7 @@ export default {
         placeID: this.place.id,
         texts: [],
         images: [],
+        models: [],
         lastChanged: Date.now(),
         lastSync: ''
       };
