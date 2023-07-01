@@ -547,6 +547,7 @@ export default {
             model: await this.modelToArrayBuffer(toRaw(this.model.model)),
             color: '#ffffff',
             opacity: 1,
+            coordinates: null,
             //lastChanged: Date.now(),
             //lastSync: ''
           }
