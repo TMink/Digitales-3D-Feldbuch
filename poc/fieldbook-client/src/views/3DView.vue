@@ -30,7 +30,6 @@ const params = {
   },
 
   positions: {
-    inScene: [],
     attach: false,
   },
 
@@ -43,6 +42,7 @@ export default {
   data() {
     return {
       meshesInScene: [],
+      positionInScene: [],
       arcballAnchor: [],
       cameraData: {
         position: null,
@@ -119,7 +119,6 @@ export default {
 
       await fromOfflineDB.updateObject(cameraObject, "Cameras", "cameras")
     }
-    params.positions.inScene = []
     this.renderer.dispose()
     this.renderer.forceContextLoss()
   },
@@ -240,13 +239,7 @@ export default {
       tetMesh.position.set(center.x, center.y, center.z);
 
       /* Create param object */
-      params.positions.inScene.push(
-        {
-          number: tetMesh.name,
-          move: false,
-        }
-      )
-      //this.transformControls.attach(tetMesh);
+      this.positionInScene.push({ number: tetMesh.name, move: false, })
 
     },
 
@@ -284,21 +277,18 @@ export default {
 
       /* Positions Folder */
       const positionsFolder = this.gui.addFolder('Positions');
-      for (var i = 0; i < params.positions.inScene.length; i++) {
+      for (var i = 0; i < this.positionInScene.length; i++) {
 
-        console.log(params.positions.inScene.length)
+        const positionTitle2 = this.positionInScene[i].number;
+        const positionFolder2 = positionsFolder.addFolder(positionTitle2);
 
-        const positionTitle = params.positions.inScene[i].number;
-        const positionFolder = positionsFolder.addFolder(positionTitle);
-
-        const test = params.positions.inScene.filter(
-          obj => { return obj.number === positionTitle }
+        const test2 = this.positionInScene.filter(
+          obj => { return obj.number === positionTitle2 }
         )
 
-        positionFolder.add(params.positions.inScene.find
-          (x => x.number === test[0].number), "move")
-          .listen().onChange(() => this.changeState('position', positionTitle))
-          //.listen().onChange(() => this.attachPosition(positionTitle))
+        positionFolder2.add(this.positionInScene.find
+          (x => x.number === test2[0].number), "move")
+          .listen().onChange(() => this.changeState('position', positionTitle2))
       }
     },
 
@@ -313,8 +303,8 @@ export default {
         case "model":
 
           /* Set all move-values to false */
-          for (var i = 0; i < params.positions.inScene.length; i++) {
-            params.positions.inScene[i].move = false
+          for (var i = 0; i < this.positionInScene.length; i++) {
+            this.positionInScene[i].move = false
           }
 
           this.transformControls.enabled = false;
@@ -325,15 +315,15 @@ export default {
 
           params.guiControls.state = false;
           /* Set all move-values to false */
-          for (var i = 0; i < params.positions.inScene.length; i++) {
-            params.positions.inScene[i].move = false
+          for (var i = 0; i < this.positionInScene.length; i++) {
+            this.positionInScene[i].move = false
           }
 
           /* Get the object of checked checkbox */
-          const test = params.positions.inScene.filter(
+          const test = this.positionInScene.filter(
             obj => { return obj.number === positionTitle }
           )
-          params.positions.inScene.find
+          this.positionInScene.find
             (x => x.number === test[0].number).move = true;
 
           this.arcballControls.enabled = false;
@@ -348,15 +338,15 @@ export default {
     attachPosition: function (positionTitle) {
 
       /* Set all move-values to false */
-      for (var i = 0; i < params.positions.inScene.length; i++) {
-        params.positions.inScene[i].move = false
+      for (var i = 0; i < this.positionInScene.length; i++) {
+        this.positionInScene[i].move = false
       }
 
       /* Get the object of checked checkbox */
-      const test = params.positions.inScene.filter(
+      const test = this.positionInScene.filter(
         obj => { return obj.number === positionTitle }
       )
-      params.positions.inScene.find
+      this.positionInScene.find
         (x => x.number === test[0].number).move = true;
 
     },
@@ -391,6 +381,7 @@ export default {
      * -------------------------------------------------------------------------
      */
     saveCurrentScene: async function () {
+      /* Save place models settings */
       for (var i = 0; i < this.meshesInScene.length; i++) {
         const modelName = this.meshesInScene[i].title;
         const modelID = this.meshesInScene[i].id;
@@ -407,6 +398,9 @@ export default {
 
         await fromOfflineDB.updateObject(modelInDB, 'Models', 'places')
       }
+
+      /* Save position model settings */
+
     },
 
     /**
@@ -655,10 +649,10 @@ export default {
         this.arcballControls.enabled = false;
       }
 
-      for (var i = 0; i < params.positions.inScene.length; i++) {
-        if (params.positions.inScene[i].move === true) {
+      for (var i = 0; i < this.positionInScene.length; i++) {
+        if (this.positionInScene[i].move === true) {
           this.transformControls.enabled = true;
-          this.transformControls.attach(this.scene.getObjectByName(params.positions.inScene[i].number))
+          this.transformControls.attach(this.scene.getObjectByName(this.positionInScene[i].number))
         }
       }
 
