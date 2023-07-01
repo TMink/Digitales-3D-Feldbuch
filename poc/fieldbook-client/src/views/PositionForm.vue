@@ -7,6 +7,7 @@
                         <v-tab value="one" rounded="0"> {{ $t('general') }} </v-tab>
                         <v-tab value="two" rounded="0"> {{ $tc('picture', 2) }} </v-tab>
                         <v-tab value="three" rounded="0"> {{ $t('additional', { msg: $t('parameter') }) }} </v-tab>
+                        <v-tab value="four" rounded="0"> {{ $tc('model', 2) }} </v-tab>
                         <v-btn rounded="0" v-on:click="savePosition()" color="primary">
                             {{ $t('save') }}
                         </v-btn>
@@ -128,6 +129,72 @@
                         </template>
                         <AddButton v-on:click="addText()" />
                     </v-window-item>
+
+                    <!-- Tab item 'models' -->
+                    <v-window-item value="four">
+                      <v-card>
+                        <v-list>
+                          <v-list-subheader v-if="models.length === 0">
+                            {{ $t('not_created_yet', { object: $tc('model', 1) }) }}
+                          </v-list-subheader>
+
+                          <template v-for="(model, i) in models" :key="model">
+                            <v-container class="d-flex align-center">
+
+                              <v-container class="pa-0">
+                                <v-list-item class="modelItem mt-3" v-on:click="moveToModel(model.id)">
+                                  <v-list-item-title class="text-h6">
+                                    Nr. {{ model.modelNumber }}
+                                  </v-list-item-title>
+
+                                  <v-list-item-subtitle class="text-subtitle-1">
+                                    {{ model.title }}
+                                  </v-list-item-subtitle>
+
+                                </v-list-item>
+                              </v-container>
+                              <v-btn class="ml-3 mt-2" color="error" v-on:click="deleteModel(model)">
+                                <v-icon>mdi-delete</v-icon>
+                              </v-btn>
+                            </v-container>
+
+                            <v-divider v-if="i !== models.length - 1"></v-divider>
+                          </template>
+                        </v-list>
+                      </v-card>
+                    
+                      <AddButton v-on:click="models_overlay = true" />
+
+                      <!-- Model Creation dialog -->
+                      <v-dialog v-model="models_overlay" max-width="800" persistent>
+                        <v-card>
+                          <v-card-title>{{ $t('add', { msg: $t('model') }) }} </v-card-title>
+                          <v-card-text>
+
+                            <v-text-field disabled v-model="position.id" :label="$t('position_id')"
+                              :hint="$t('please_input', { msg: $t('position_id') })">
+                            </v-text-field>
+
+                            <v-text-field v-model="model.title" :label="$t('title')"
+                              :hint="$t('please_input', { msg: $t('title_of', { msg: $t('model') }) })">
+                            </v-text-field>
+
+                            <v-file-input show-size accept=".glb" v-model="model.model" :label="$t('input', { msg: $t('model') })">
+                            </v-file-input>
+
+                          </v-card-text>
+
+                          <v-card-actions class="justify-center">
+                            <v-btn icon color="primary" v-on:click="addModel()">
+                              <v-icon>mdi-content-save-all</v-icon>
+                            </v-btn>
+                            <v-btn icon color="error" @click="models_overlay = false">
+                              <v-icon>mdi-close-circle</v-icon>
+                            </v-btn>
+                          </v-card-actions>
+                        </v-card>
+                      </v-dialog>
+                    </v-window-item>
                 </v-window>
             </v-col>
         </v-row>
@@ -174,7 +241,8 @@ export default {
                 date: '',
                 description: '',
                 images: [],
-                texts: []
+                texts: [],
+                models: [],
             },
             image: {
                 id: '',
@@ -188,8 +256,17 @@ export default {
                 title: '',
                 text: '',
             },
+            model: {
+              id: '',
+              placeID: '',
+              positionID: '',
+              title: '',
+              model: [],
+            },
             images: [],
             texts: [],
+            models: [],
+            models_overlay: false,
             error_dialog: false,
             error_message: '',
             is_new: true,
@@ -208,6 +285,7 @@ export default {
         await this.updatePosition();
         await this.updateImages();
         await this.updateTexts();
+        await this.updateModels();
     },
     methods: {
         /**
@@ -432,6 +510,69 @@ export default {
         goBack: function () {
             const currentPlace = VueCookies.get("currentPlace");
             this.$router.push({ name: "PlaceCreation", params: { placeID: this.position.placeID } });
+        },
+        /**
+         * 
+         * @param {*} rawData 
+         */
+        async modelToArrayBuffer(rawData) {
+
+          const output = await new Promise((resolve) => {
+
+            let reader = new FileReader();
+            let f = rawData[0];
+            reader.onload = e => {
+            const modelString = e.target.result
+              resolve(modelString)
+            }
+
+            reader.readAsArrayBuffer(f);
+
+          });
+
+          return output;
+
+        },
+        async addModel() {
+
+          const newModelID = String(Date.now())
+          this.position.models.push(newModelID)
+          //this.position.lastChanged = Date.now()
+
+          const newModel = {
+            id: newModelID,
+            placeID: String(VueCookies.get('currentPlace')),
+            positionID: String(VueCookies.get('currentPosition')),
+            title: this.model.title,
+            model: await this.modelToArrayBuffer(toRaw(this.model.model)),
+            color: '#ffffff',
+            opacity: 1,
+            //lastChanged: Date.now(),
+            //lastSync: ''
+          }
+
+          if (this.models.length == 0) {
+            newModel.modelNumber = 1;
+          } else {
+            this.updateModels();
+            const modelNumber = Math.max(...this.models.map(o => o.modelNumber))
+            const newModelNumber = modelNumber + 1;
+            newModel.modelNumber = newModelNumber;
+          }
+
+          this.models_overlay = false;
+          await fromOfflineDB.updateObject(toRaw(this.position), 'Positions', 'positions');
+          await fromOfflineDB.addObject(newModel, 'Models', 'positions');
+          //var modelID = await fromOfflineDB.addObject(newModel, 'Models', 'positions');
+          //await fromOfflineDB.addObject({ id: modelID, object: 'models' }, 'Changes', 'created');
+          await this.updateModels(newModel.id);
+
+        },
+        async deleteModel() {
+
+        },
+        async updateModels() {
+          this.models = await fromOfflineDB.getAllObjectsWithID(this.position.id, 'Position', 'Models', 'positions');
         },
     }
 };
