@@ -29,10 +29,6 @@ const params = {
     state: true,
   },
 
-  positions: {
-    attach: false,
-  },
-
   attachedPosition: null,
 };
 
