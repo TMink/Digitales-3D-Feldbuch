@@ -190,7 +190,7 @@
             <v-card>
               <v-list>
                 <v-list-subheader v-if="images.length === 0">
-                  {{ $t('not_created_yet', { object: $tc('model', 1) }) }}
+                  {{ $t('not_created_yet', { object: $tc('image', 1) }) }}
                 </v-list-subheader>
 
 
