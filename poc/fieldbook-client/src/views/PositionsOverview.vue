@@ -14,21 +14,31 @@
               <v-list-item v-on:click="moveToPosition(position.id)">
                 <v-row>
 
-                  <v-col cols="12" sm="6" md="4">
+                  <v-col cols="2">
                     <v-list-item-title class="ma-4">
                       {{ position.positionNumber }}
                     </v-list-item-title>
                   </v-col>
 
-                  <v-col cols="12" sm="6" md="4">
+                  <v-col cols="7">
                     <v-list-item-title class="ma-4">
-                      {{ position.description }}
+                      {{ position.title }}
+                    </v-list-item-title>
+                    <v-list-item-title 
+                      class="ma-4 text-grey-darken-1" 
+                      v-if="position.title.length == 0">
+                      {{ $t('title') }}
                     </v-list-item-title>
                   </v-col>
 
-                  <v-col cols="12" sm="6" md="4">
+                  <v-col cols="3">
                     <v-list-item-title class="ma-4">
                       {{ position.date }}
+                    </v-list-item-title>
+                    <v-list-item-title 
+                      class="ma-4 text-grey-darken-1" 
+                      v-if="position.date.length == 0">
+                      {{ $t('date') }}
                     </v-list-item-title>
                   </v-col>
 
