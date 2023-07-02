@@ -2,7 +2,7 @@
     <v-container fluid>
         <v-row>
             <v-col cols="2">
-                <v-card rounded="0">
+                <v-card>
                     <v-tabs v-model="tab" direction="vertical" color="primary">
                         <v-tab value="one" rounded="0"> {{ $t('general') }} </v-tab>
                         <v-tab value="two" rounded="0"> {{ $tc('picture', 2) }} </v-tab>
