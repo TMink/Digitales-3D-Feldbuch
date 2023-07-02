@@ -32,7 +32,10 @@
               <v-col cols="12" lg="8">
                 <v-card class="pa-4">
                   <v-combobox v-model="place.title" :hide-no-data="false" :items="titles" hide-selected
-                    hint="Add tags which describe the place" label="Title" multiple persistent-hint chips closable-chips>
+                    hint="Add tags which describe the place" label="Title" multiple persistent-hint chips closable-chips color="primary">
+                    <template #selection="{ item }">
+                      <v-chip color="secondary">{{ item }}</v-chip>
+                    </template>
                     <template v-slot:no-data>
                       <v-list-item>
                         <v-list-item-title>
@@ -41,7 +44,7 @@
                       </v-list-item>
                     </template>
                   </v-combobox>
-                  <v-combobox counter maxlength="40" v-model="place.dating" :items="datings" :label="$t('dating')">
+                  <v-combobox counter color="primary" maxlength="40" v-model="place.dating" :items="datings" :label="$t('dating')">
                   </v-combobox>
                 </v-card>
               </v-col>
@@ -56,12 +59,12 @@
             <v-card>
               <v-row class="pl-4 pb-4 justify-center">
                 <v-col cols="4">
-                  <v-checkbox persistent-hint label="Kein Befund" v-model="place.noFinding"
+                  <v-checkbox color="primary" persistent-hint label="Kein Befund" v-model="place.noFinding"
                     hint="Falls die Stelle kein Befund ist (Arbeitsbereich, Störung, natürliche Verfärbung etc.)">
                   </v-checkbox>
                 </v-col>
                 <v-col cols="4">
-                  <v-checkbox persistent-hint label="Rest Befund" v-model="place.restFinding"
+                  <v-checkbox color="secondary" persistent-hint label="Rest Befund" v-model="place.restFinding"
                     hint="Falls bei einem Bodeneingriff der Befund noch unterhalb der Eingriffstiefe erhalten ist.">
                   </v-checkbox>
                 </v-col>
@@ -109,11 +112,11 @@
             <v-card>
               <v-row class="pa-4">
                 <v-col cols="12" lg="12">
-                  <v-textarea counter maxlength="254" auto-grow rows="1" v-model="place.plane" :label="$t('plane')">
+                  <v-textarea counter maxlength="254" auto-grow rows="1" v-model="place.plane" :label="$t('plane')" color="primary">
                   </v-textarea>
                 </v-col>
                 <v-col cols="12" lg="12">
-                  <v-textarea counter maxlength="254" auto-grow rows="1" v-model="place.profile" :label="$t('profile')">
+                  <v-textarea counter maxlength="254" auto-grow rows="1" v-model="place.profile" :label="$t('profile')" color="primary">
                   </v-textarea>
                 </v-col>
               </v-row>
@@ -127,19 +130,19 @@
                 </div>
               </v-card-text>
               <v-slider class="pa-4" :ticks="tickLabels" :max="3" step="1" show-ticks="always" tick-size="4"
-                track-color="primary" thumb-color="secondary" v-model="place.visibility"></v-slider>
+                track-color="primary" thumb-color="secondary" v-model="place.visibility" color="warning"></v-slider>
             </v-card>
 
             <v-spacer class="pa-3"></v-spacer>
             <v-card>
               <v-row class="pa-4">
                 <v-col cols="12" lg="12">
-                  <v-textarea counter maxlength="254" auto-grow rows="1" v-model="place.description"
+                  <v-textarea color="primary" counter maxlength="254" auto-grow rows="1" v-model="place.description"
                     :label="$t('description')">
                   </v-textarea>
                 </v-col>
                 <v-col cols="12" lg="12">
-                  <v-textarea counter maxlength="254" auto-grow rows="1" v-model="place.editor" :label="$t('editor')">
+                  <v-textarea color="primary" counter maxlength="254" auto-grow rows="1" v-model="place.editor" :label="$t('editor')">
                   </v-textarea>
                 </v-col>
               </v-row>
@@ -335,10 +338,10 @@ export default {
       is_required: [v => !!v || 'Pflichtfeld'],
       dialog: false,
       tickLabels: {
-        0: this.$t('veryGood'),
-        1: this.$t('good'),
-        2: this.$t('moderate'),
-        3: this.$t('bad'),
+        3: this.$t('veryGood'),
+        2: this.$t('good'),
+        1: this.$t('moderate'),
+        0: this.$t('bad'),
       }
     }
 
