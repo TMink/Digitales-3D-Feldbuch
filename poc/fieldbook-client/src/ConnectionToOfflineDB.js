@@ -349,6 +349,40 @@ export default class ConnectionToOfflineDB {
     });
   }
 
+  /**
+   *
+   * @param {String} localDBName
+   * @param {String} storeName
+   * @returns the object that was added last to the IndexedDB
+   */
+  async getLastAddedObject(localDBName, storeName) {
+    const localDB = this.getLocalDBFromName(localDBName);
+
+    return new Promise((resolve, _reject) => {
+      const trans = localDB.transaction(storeName, "readonly");
+      const store = trans.objectStore(storeName);
+
+      trans.oncomplete = (_e) => {
+        resolve(lastAddedObj);
+      };
+
+      var lastAddedObj;
+      store.openCursor().onsuccess = (e) => {
+        let cursor = e.target.result;
+
+        if (cursor) {
+          if (lastAddedObj == undefined) {
+            lastAddedObj = cursor.value;
+          }
+
+          if (lastAddedObj.id < cursor.key) {
+            lastAddedObj = cursor.value;
+          }
+          cursor.continue();
+        }
+      };
+    });
+  }
 
   /**
    * Adds an Object to IndexedDB
