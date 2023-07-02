@@ -29,11 +29,6 @@ const params = {
     state: true,
   },
 
-  positions: {
-    inScene: [],
-    attach: false,
-  },
-
   attachedPosition: null,
 };
 
@@ -43,6 +38,7 @@ export default {
   data() {
     return {
       meshesInScene: [],
+      positionInScene: [],
       arcballAnchor: [],
       cameraData: {
         position: null,
@@ -119,7 +115,6 @@ export default {
 
       await fromOfflineDB.updateObject(cameraObject, "Cameras", "cameras")
     }
-    params.positions.inScene = []
     this.renderer.dispose()
     this.renderer.forceContextLoss()
   },
@@ -157,28 +152,25 @@ export default {
     loadPlaceObjects: async function () {
       const placeID = VueCookies.get('currentPlace')
       const objects = await fromOfflineDB.getAllObjectsWithID
-      (placeID, 'Place', 'Models', 'places')
+        (placeID, 'Place', 'Models', 'places')
 
       if (objects) {
         for (var i = 0; i < objects.length; i++) {
-          await this.loadModel(objects[i].id, 'Models', 'places');
+          await this.loadModel(objects[i].id, 'Place', 'Models', 'places');
         }
       }
     },
 
     loadPositionObjects: async function () {
+      const positionsID = VueCookies.get('currentPosition')
+      const objects = await fromOfflineDB.getAllObjectsWithID
+        (positionsID, 'Position', 'Models', 'positions')
 
-      const placeID = VueCookies.get('currentPlace')
-      const positionIDs = await fromOfflineDB.getPropertiesWithID
-        (placeID, "position", "id", 'Positions', 'positions');
-      const firstModel = this.meshesInScene
-        [this.meshesInScene.length - 1].title
-      if (positionIDs) {
-        for (var i = 0; i < positionIDs.length; i++) {
-          await this.createTet(positionIDs[i], firstModel);
+      if (objects) {
+        for (var i = 0; i < objects.length; i++) {
+          await this.loadModel(objects[i].id, 'Position', 'Models', 'positions');
         }
       }
-
     },
 
     /**
@@ -187,7 +179,7 @@ export default {
      * @param {*} dbName 
      * @param {*} storeName 
      */
-    loadModel: async function (modelID, dbName, storeName) {
+    loadModel: async function (modelID, type, dbName, storeName) {
       /* Get 3D-Model from IndexedDB */
       const object = await fromOfflineDB.getObject(modelID, dbName, storeName);
       const model = object.model
@@ -213,40 +205,22 @@ export default {
         });
       })
 
+      /* Save variables for  */
+      switch(type) {
+        case 'Place':
+          this.meshesInScene.push({ title: title, id: object.id });
+          break;
+        case 'Position':
+          this.positionInScene.push({ title: title, id: object.id, move: false });
+          const coordinates = object.coordinates
+          mesh.position.set(coordinates[0], coordinates[1], coordinates[2])
+          break;
+        default:
+          console.log( "error" );
+      }
+      
       /* Add mesh to scene */
       this.scene.add(mesh)
-
-      /* Save variables for  */
-      this.meshesInScene.push({ title: title, id: object.id })
-    },
-
-    createTet: async function (positionID, firstModel) {
-
-      const position = await fromOfflineDB.getObject(positionID, 'Positions',
-        'positions');
-
-      /* Determine the center of the */
-      const model = this.scene.getObjectByName(firstModel);
-      const center = this.getModelCenter(model);
-
-      const tetGeometry = new THREE.TetrahedronGeometry();
-      const tetMaterial = new THREE.MeshBasicMaterial({ color: "white" });
-
-      const tetMesh = new THREE.Mesh(tetGeometry, tetMaterial);
-      tetMesh.name = position.positionNumber;
-      tetMesh.opacity = 1;
-
-      this.scene.add(tetMesh);
-      tetMesh.position.set(center.x, center.y, center.z);
-
-      /* Create param object */
-      params.positions.inScene.push(
-        {
-          number: tetMesh.name,
-          move: false,
-        }
-      )
-      //this.transformControls.attach(tetMesh);
 
     },
 
@@ -284,21 +258,18 @@ export default {
 
       /* Positions Folder */
       const positionsFolder = this.gui.addFolder('Positions');
-      for (var i = 0; i < params.positions.inScene.length; i++) {
+      for (var i = 0; i < this.positionInScene.length; i++) {
 
-        console.log(params.positions.inScene.length)
-
-        const positionTitle = params.positions.inScene[i].number;
+        const positionTitle = this.positionInScene[i].title;
         const positionFolder = positionsFolder.addFolder(positionTitle);
 
-        const test = params.positions.inScene.filter(
-          obj => { return obj.number === positionTitle }
+        const test = this.positionInScene.filter(
+          obj => { return obj.title === positionTitle }
         )
 
-        positionFolder.add(params.positions.inScene.find
-          (x => x.number === test[0].number), "move")
+        positionFolder.add(this.positionInScene.find
+          (x => x.title === test[0].title), "move")
           .listen().onChange(() => this.changeState('position', positionTitle))
-          //.listen().onChange(() => this.attachPosition(positionTitle))
       }
     },
 
@@ -313,8 +284,8 @@ export default {
         case "model":
 
           /* Set all move-values to false */
-          for (var i = 0; i < params.positions.inScene.length; i++) {
-            params.positions.inScene[i].move = false
+          for (var i = 0; i < this.positionInScene.length; i++) {
+            this.positionInScene[i].move = false
           }
 
           this.transformControls.enabled = false;
@@ -325,16 +296,16 @@ export default {
 
           params.guiControls.state = false;
           /* Set all move-values to false */
-          for (var i = 0; i < params.positions.inScene.length; i++) {
-            params.positions.inScene[i].move = false
+          for (var i = 0; i < this.positionInScene.length; i++) {
+            this.positionInScene[i].move = false
           }
 
           /* Get the object of checked checkbox */
-          const test = params.positions.inScene.filter(
-            obj => { return obj.number === positionTitle }
+          const test = this.positionInScene.filter(
+            obj => { return obj.title === positionTitle }
           )
-          params.positions.inScene.find
-            (x => x.number === test[0].number).move = true;
+          this.positionInScene.find
+            (x => x.title === test[0].title).move = true;
 
           this.arcballControls.enabled = false;
           this.arcballControls.visible = false;
@@ -343,22 +314,6 @@ export default {
         default:
           console.log("Error")
       }
-    },
-
-    attachPosition: function (positionTitle) {
-
-      /* Set all move-values to false */
-      for (var i = 0; i < params.positions.inScene.length; i++) {
-        params.positions.inScene[i].move = false
-      }
-
-      /* Get the object of checked checkbox */
-      const test = params.positions.inScene.filter(
-        obj => { return obj.number === positionTitle }
-      )
-      params.positions.inScene.find
-        (x => x.number === test[0].number).move = true;
-
     },
 
     /**
@@ -391,6 +346,7 @@ export default {
      * -------------------------------------------------------------------------
      */
     saveCurrentScene: async function () {
+      /* Save place models settings */
       for (var i = 0; i < this.meshesInScene.length; i++) {
         const modelName = this.meshesInScene[i].title;
         const modelID = this.meshesInScene[i].id;
@@ -407,6 +363,31 @@ export default {
 
         await fromOfflineDB.updateObject(modelInDB, 'Models', 'places')
       }
+
+      /* Save position model settings */
+      for (var i = 0; i < this.positionInScene.length; i++) {
+        const modelName = this.positionInScene[i].title;
+        const modelID = this.positionInScene[i].id;
+
+        const modelInScene = this.scene.getObjectByName(modelName);
+        const modelInDB = await fromOfflineDB.getObject(modelID, 
+          'Models', 'positions');
+
+        /* Update Color */
+        modelInDB.color = "#" + modelInScene.material.color.getHexString()
+
+        /* Update Opacity */
+        modelInDB.opacity = modelInScene.material.opacity
+
+        /* Update Coordinates */
+        const modelCenter = this.getModelCenter(modelInScene)
+        const newCoordinates = [modelCenter.x, modelCenter.y, modelCenter.z]
+        modelInDB.coordinates = newCoordinates
+
+        await fromOfflineDB.updateObject(modelInDB, 'Models', 'positions')
+
+      }
+
     },
 
     /**
@@ -655,10 +636,10 @@ export default {
         this.arcballControls.enabled = false;
       }
 
-      for (var i = 0; i < params.positions.inScene.length; i++) {
-        if (params.positions.inScene[i].move === true) {
+      for (var i = 0; i < this.positionInScene.length; i++) {
+        if (this.positionInScene[i].move === true) {
           this.transformControls.enabled = true;
-          this.transformControls.attach(this.scene.getObjectByName(params.positions.inScene[i].number))
+          this.transformControls.attach(this.scene.getObjectByName(this.positionInScene[i].title))
         }
       }
 
