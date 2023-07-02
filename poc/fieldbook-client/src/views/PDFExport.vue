@@ -327,8 +327,68 @@ export default {
 
             doc.save(filename + ".pdf");
         },
-        createPositionsPDF() {
+        async createPositionsPDF() {
             console.log("POSITIONS PDF");
+
+            const doc = new jsPDF({
+                orientation: "landscape",
+            });
+            let date = new Date().toLocaleDateString("de-DE");
+            let filename = "positionslist_" + date;
+            doc.text("Positionenliste - Stand: " + date, 20, 10);
+            var allPositions = toRaw(this.positions)
+
+            var activityId = '';
+            var activityNumber = '';
+            var placeId = '';
+            var placeNumber = '';
+
+            for (var position of allPositions) {
+
+                if (placeId != position.placeID) {
+                    activityId = position.activityID
+                    activityNumber = await fromOfflineDB.getObject(activityId, 'Activities', 'activities')
+                    activityNumber = activityNumber.activityNumber;
+                }
+                position.activity = activityNumber;
+            }
+
+            autoTable(doc, {
+                //styles: { fillColor: [58, 58, 71] },
+                styles: {
+                    fontSize: 5,
+                },
+                startY: 20,
+                border: { top: 10 },
+                margin: { top: 10 },
+                columns: [
+                    { header: 'Aktivität', dataKey: 'activity' },
+                    { header: 'Stellennr', dataKey: 'placeNumber' },
+                    { header: 'Posnr', dataKey: 'positionNumber' },
+                    { header: 'Unternr', dataKey: 'subNumber' },
+                    { header: 'Rechts', dataKey: 'right' },
+                    { header: 'Hoch', dataKey: 'up' },
+                    { header: 'Hoehe', dataKey: 'height' },
+                    { header: 'Anzahl', dataKey: 'count' },
+                    { header: 'Gewicht', dataKey: 'weight' },
+                    { header: 'ObjKuerzel', dataKey: 'objAbbr' },
+                    { header: 'Material', dataKey: 'material' },
+                    { header: 'Ansprache', dataKey: 'title' },
+                    { header: 'Kommentar', dataKey: 'description' },
+                    { header: 'Datkode', dataKey: 'datingCode' },
+                    { header: 'Datierung', dataKey: 'dating' },
+                    { header: 'Ansprache von', dataKey: 'addressOf' },
+                    { header: 'Datum', dataKey: 'date' },
+
+                ],
+                body:
+                    allPositions
+            });
+
+            doc.save(filename + ".pdf");
+        },
+        createImageListPDF() {
+            console.log("IMAGES PDF");
         },
         savePDF(doc) {
             doc.save("a4.pdf");
