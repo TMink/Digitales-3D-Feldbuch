@@ -10,6 +10,11 @@
               {{ $t('not_created_yet', { object: $tc('place', 1) }) }}
             </v-list-subheader>
 
+            <v-row class="justify-center">
+            <v-col cols="1" class="text-left"><h4>Nummer</h4></v-col>
+            <v-col cols="6" class="text-left"><h4>Titel</h4></v-col>
+            <v-col cols="2" class="text-left"><h4>Datum</h4></v-col>
+          </v-row>
             <template v-for="(place, i) in places" :key="place">
               <v-list-item v-on:click="moveToPlace(place.id)">
                 <v-row class="justify-center">
