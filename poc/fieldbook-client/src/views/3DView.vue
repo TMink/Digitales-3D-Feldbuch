@@ -117,6 +117,8 @@ export default {
     }
     this.renderer.dispose()
     this.renderer.forceContextLoss()
+    document.removeEventListener("click", this.updateArcball)
+    document.removeEventListener("click", this.onMouseDown)
   },
 
   methods: {
@@ -185,7 +187,13 @@ export default {
       const model = object.model
       const color = object.color
       const opacity = object.opacity
-      const title = object.title
+      let id = null
+
+      if(type === 'Place') {
+        id = object.placeID
+      } else {
+        id = object.positionID
+      }
 
       params.guiMesh.opacity = Boolean(opacity)
       params.guiMesh.color = object.color
@@ -198,7 +206,7 @@ export default {
               child.material.transparent = true;
               child.material.opacity = opacity;
               child.material.color = new THREE.Color(color)
-              child.name = title;
+              child.name = id
             }
           });
           resolve(glb.scene);
@@ -208,16 +216,20 @@ export default {
       /* Save variables for  */
       switch(type) {
         case 'Place':
-          this.meshesInScene.push({ title: title, id: object.id });
+          this.meshesInScene.push({ title: id, id: object.id });
           break;
         case 'Position':
-          this.positionInScene.push({ title: title, id: object.id, move: false });
-          const coordinates = object.coordinates
-          mesh.position.set(coordinates[0], coordinates[1], coordinates[2])
+          this.positionInScene.push({ title: id, id: object.id, move: false });
+          if(object.coordinates != null) {
+            const coordinates = object.coordinates
+            mesh.position.set(coordinates[0], coordinates[1], coordinates[2])
+          }
           break;
         default:
           console.log( "error" );
       }
+
+      this.groupsInScene.push(mesh)
       
       /* Add mesh to scene */
       this.scene.add(mesh)
@@ -537,7 +549,7 @@ export default {
 
     makePerspectiveCamera: function () {
       const fov = 45;
-      const aspect = canvas.clientWidth / canvas.clientHeight;
+      const aspect = this.canvas.clientWidth / this.canvas.clientHeight;
       const near = 0.01;
       const far = 2000;
       const newCamera = new THREE.PerspectiveCamera(fov, aspect, near, far);
@@ -545,10 +557,8 @@ export default {
     },
 
     onWindowResize: function () {
-      const canvas = document.getElementById("canvas");
-
-      this.renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-      this.camera.aspect = canvas.clientWidth / canvas.clientHeight;
+      this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight);
+      this.camera.aspect = this.canvas.clientWidth / this.canvas.clientHeight;
       this.camera.updateProjectionMatrix();
     },
 
@@ -558,20 +568,22 @@ export default {
      * -------------------------------------------------------------------------
      */
     init: function () {
+
+      this.groupsInScene = []
       // Canvas Object
-      const canvas = document.getElementById("canvas");
+      this.canvas = document.getElementById("canvas");
 
       // Loader for .gltf and .glb Data
       this.loader = new GLTFLoader();
 
       // Renderer
       this.renderer = new THREE.WebGLRenderer({ antialias: true });
-      this.renderer.setPixelRatio(canvas.devicePixelRatio);
-      this.renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+      this.renderer.setPixelRatio(this.canvas.devicePixelRatio);
+      this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight);
       this.renderer.setClearColor(0x263238, 1);
       this.renderer.shadowMap.enabled = true;
       this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-      canvas.appendChild(this.renderer.domElement);
+      this.canvas.appendChild(this.renderer.domElement);
 
       // Scene
       this.scene = new THREE.Scene();
@@ -611,6 +623,40 @@ export default {
             break;
         }
       });
+
+      // Raycaster
+      this.raycaster = new THREE.Raycaster();
+      this.pointer = new THREE.Vector2()
+      
+      // Eventlistener
+      document.addEventListener("click", this.updateArcball)
+      document.addEventListener('click', this.onMouseDown)
+
+    },
+
+    onMouseDown: function(event) {
+
+      event.preventDefault()
+      this.pointer.x = ((event.clientX - this.renderer.domElement.offsetLeft ) 
+                          / this.renderer.domElement.width ) * 2 - 1;
+      this.pointer.y = - ((event.clientY - this.renderer.domElement.offsetTop ) 
+                            / this.renderer.domElement.height ) * 2 + 1;
+
+      const deltaX = event.clientX - this.pointerX;
+      const deltaY = event.clientY - this.pointerY;
+
+      console.log("x : " + this.pointer.x + " y : " + this.pointer.y);
+
+      this.raycaster.setFromCamera(this.pointer, this.camera);
+      console.log(this.scene.children)
+      const intersects = this.raycaster.intersectObjects(this.groupsInScene, true)
+      
+
+      if(intersects.length > 0) {
+        //intersects[0].object.material.color.setHex( Math.random() * 0xffffff)
+        console.log(intersects[0].object.name)
+      }
+
     },
 
     /**
@@ -621,6 +667,14 @@ export default {
     animate: function () {
       /* Render-Loop */
       requestAnimationFrame(this.animate);
+
+      this.render();
+
+      /* Render scene and camera */
+      this.renderer.render(this.scene, this.camera);
+    },
+
+    render: function() {
 
       /* Update ArcballControls-Gizmo: visible <-> invisible */
       if (params.guiControls.opacity === true) {
@@ -643,12 +697,9 @@ export default {
         }
       }
 
-      document.addEventListener("click", this.updateArcball)
       this.arcballControls.setTbRadius(0.67)
 
-      /* Render scene and camera */
-      this.renderer.render(this.scene, this.camera);
-    },
+    }
   }
 }
 
