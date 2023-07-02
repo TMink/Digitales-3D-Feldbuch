@@ -578,7 +578,7 @@ export default {
       // hide model creation dialog
       this.model_dialog = false;
 
-      // update indexedDB
+      // update IndexedDB
       await fromOfflineDB.updateObject(toRaw(this.place), 'Places', 'places')
       await fromOfflineDB.addObject(newModel, 'Models', 'places');
       await fromOfflineDB.addObject({ id: newModelID, object: 'models' }, 'Changes', 'created');
