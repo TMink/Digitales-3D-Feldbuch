@@ -5,7 +5,7 @@
       <v-spacer></v-spacer>
       <v-form class="w-75 pa-2">
         <v-card>
-          <v-card-text>
+          <v-card-text v-if="places.length !== 0">
             <div>
               <h3><v-row class="justify-center">
                   <v-col cols="1" class="text-left">

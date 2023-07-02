@@ -5,6 +5,21 @@
       <v-spacer></v-spacer>
       <v-form class="w-75 pa-2">
         <v-card>
+          <v-card-text v-if="positions.length !== 0">
+            <div>
+              <h3><v-row class="justify-center">
+                  <v-col cols="2" class="text-left">
+                    Nr.
+                  </v-col>
+                  <v-col cols="7" class="text-left">
+                    Titel
+                  </v-col>
+                  <v-col cols="3" class="text-left">
+                    Datum
+                  </v-col>
+                </v-row></h3>
+            </div>
+          </v-card-text>
           <v-list>
             <v-list-subheader v-if="positions.length === 0">
               {{ $t('not_created_yet', { object: $tc('position', 2) }) }}
