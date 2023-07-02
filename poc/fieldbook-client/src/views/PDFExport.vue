@@ -51,12 +51,14 @@
                       :hint="$t('please_input', { msg: $t('place_id') })">
                     </v-text-field>
 
-                    <v-checkbox 
+                    <v-checkbox
+                      color="primary" 
                       v-model="exportPlaces" 
                       label="Export all Places">
                     </v-checkbox>
 
                     <v-checkbox 
+                      color="secondary"
                       v-model="exportPositions" 
                       label="Export all Positions">
                     </v-checkbox>
@@ -64,10 +66,10 @@
                   </v-card-text>
 
                   <v-card-actions class="justify-center">
-                    <v-btn icon color="edit" v-on:click="createPDF()">
+                    <v-btn icon color="primary" v-on:click="createPDF()">
                       <v-icon>mdi-content-save-all</v-icon>
                     </v-btn>
-                    <v-btn icon color="decline" @click="export_overlay = false">
+                    <v-btn icon color="error" @click="export_overlay = false">
                       <v-icon>mdi-close-circle</v-icon>
                     </v-btn>
                   </v-card-actions>
