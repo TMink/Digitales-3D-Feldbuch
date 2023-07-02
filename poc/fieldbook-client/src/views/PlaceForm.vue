@@ -37,8 +37,18 @@
                 </v-text-field>  Can maybe be removed
                 </v-col> -->
                 <v-col cols="5">
-                  <v-combobox v-model="place.title" :hide-no-data="false" :items="titles" hide-selected
-                    hint="Add tags which describe the place" label="Title" multiple persistent-hint chips closable-chips>
+                  <v-combobox
+                    v-model="place.title"
+                    :hide-no-data="false"
+                    :items="titles"
+                    hide-selected
+                    hint="Add tags which describe the place"
+                    label="Title"
+                    multiple
+                    persistent-hint
+                    chips
+                    closable-chips
+                  >
                     <template v-slot:no-data>
                       <v-list-item>
                         <v-list-item-title>
@@ -49,17 +59,17 @@
                   </v-combobox>
                 </v-col>
                 <v-col cols="4">
-                  <v-combobox counter maxlength="40" v-model="place.dating" :items="datings" :label="$t('dating')">
-                  </v-combobox>
-                </v-col>
+                      <v-combobox counter maxlength="40" v-model="place.dating" :items="datings" :label="$t('dating')">
+                    </v-combobox>
+                    </v-col>
                 <!-- <v-spacer></v-spacer> -->
                 <v-col>
-                  <div class="text-h4 text-center" :label="$t('lastEdited')"> {{ place.date }}</div>
+                  <div class="text-h4 text-center" :label="$t('lastEdited')"> {{  place.date }}</div>
                   <div class="text-grey text-center"> {{ $t('lastEdited') }}</div>
                 </v-col>
               </v-row>
 
-              <!-- <v-row>
+             <!-- <v-row>
                    Can PROBABLY be removed
                   <v-col cols="2">
                     <v-text-field v-model="place.datingCode" :label="$t('dating') + 's ' + $t('code')">
@@ -72,18 +82,24 @@
               </v-row>-->
 
               <v-divider></v-divider>
-
+              
               <v-row class="pl-4 pb-4 justify-center">
                 <v-col cols="4">
-                  <v-checkbox persistent-hint label="Kein Befund" v-model="place.noFinding"
+                  <v-checkbox
+                    persistent-hint
+                    label="Kein Befund" 
+                    v-model="place.noFinding"
                     hint="Falls die Stelle kein Befund ist (Arbeitsbereich, Störung, natürliche Verfärbung etc.)">
                   </v-checkbox>
                 </v-col>
                 <v-col cols="4">
-                  <v-checkbox persistent-hint label="Rest Befund" v-model="place.restFinding"
-                    hint="Falls bei einem Bodeneingriff der Befund noch unterhalb der Eingriffstiefe erhalten ist.">
-                  </v-checkbox>
-                </v-col>
+                  <v-checkbox
+                  persistent-hint 
+                  label="Rest Befund" 
+                  v-model="place.restFinding" 
+                  hint="Falls bei einem Bodeneingriff der Befund noch unterhalb der Eingriffstiefe erhalten ist.">
+                </v-checkbox>
+              </v-col>
               </v-row>
 
               <v-divider class="pa-2"></v-divider>
@@ -130,14 +146,14 @@
               </v-row>
 
               <v-divider class="mt-2 pa-2"></v-divider>
-
+              
               <v-row no-gutters class=" text-begin">
 
                 <v-col cols="6" class="pt-4 pl-4">
-
+                  
                   <div class="text-h6 pl-3">{{ $t('visibility') }}</div>
                   <v-radio-group v-model="place.visibility" inline>
-                    <v-radio :label="this.$t('veryGood')" value="1"></v-radio>
+                    <v-radio :label=" this.$t('veryGood') " value="1"></v-radio>
                     <v-radio :label="this.$t('good')" value="2"></v-radio>
                     <v-radio :label="this.$t('moderate')" value="3"></v-radio>
                     <v-radio :label="this.$t('bad')" value="4"></v-radio>
@@ -146,73 +162,21 @@
               </v-row>
 
               <v-divider class="mt-2 pa-2"></v-divider>
-              <v-text-field counter maxlength="254" v-model="place.drawing" :label="$t('drawing')">
+              <v-text-field  counter maxlength="254" v-model="place.drawing" :label="$t('drawing')">
                 LINK zu Zeichnungen (vlt. Fotos)
-              </v-text-field>
+                </v-text-field>
               <v-text-field counter maxlength="254" v-model="place.description" :label="$t('description')">
-
-              </v-text-field>
+                
+                </v-text-field>
               <v-text-field counter maxlength="50" v-model="place.editor" :label="$t('editor')">
-              </v-text-field>
+                </v-text-field>
 
             </v-card>
           </v-window-item>
 
 
-          <!-- Tab item 'images' -->
           <v-window-item value="two">
-            <v-card>
-              <v-list>
-                <v-list-subheader v-if="images.length === 0">
-                  {{ $t('not_created_yet', { object: $tc('drawing', 1) }) }}
-                </v-list-subheader>
-
-
-                <template v-for="(image, i) in images" :key="image">
-                  <v-card class="imageItem mt-3 d-flex align-center">
-                    <v-card-title>Nr. {{ image.imageNumber }}</v-card-title>
-                    <v-card-subtitle>{{ image.title }}</v-card-subtitle>
-                    <v-img height="150" :src=image.image></v-img>
-                    <v-btn color="error" class="ml-2" v-on:click="deleteImage(image)">
-                      <v-icon>mdi-delete</v-icon>
-                    </v-btn>
-                  </v-card>
-
-                  <v-divider v-if="i !== image.length - 1"></v-divider>
-                </template>
-              </v-list>
-            </v-card>
-
-            <AddButton v-on:click="images_overlay = true" />
-
-            <!-- Image Creation dialog -->
-            <v-dialog v-model="images_overlay" max-width="800" persistent>
-              <v-card>
-                <v-card-title>{{ $t('add', { msg: $t('image') }) }} </v-card-title>
-                <v-card-text>
-
-                  <v-text-field disabled v-model="place.id" :label="$t('place_id')">
-                  </v-text-field>
-
-                  <v-text-field v-model="image.title" :label="$t('title')"
-                    :hint="$t('please_input', { msg: $t('title_of', { msg: $t('image') }) })">
-                  </v-text-field>
-
-                  <v-file-input show-size v-model="image.image" prepend-icon="mdi-camera"
-                    accept="image/png, image/jpeg, image/bmp">
-                  </v-file-input>
-                </v-card-text>
-
-                <v-card-actions class="justify-center">
-                  <v-btn icon color="primary" v-on:click="addImage()">
-                    <v-icon>mdi-content-save-all</v-icon>
-                  </v-btn>
-                  <v-btn icon color="error" @click="images_overlay = false">
-                    <v-icon>mdi-close-circle</v-icon>
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
+            TODO
           </v-window-item>
 
           <!-- Tab item 'positions' -->
@@ -376,17 +340,11 @@ export default {
         description: '',
         editor: '',
         date: '',
+        
         positions: [],
         models: [],
         lastChanged: '',
-        lastSync: '',
-        images: []
-      },
-      image: {
-        id: '',
-        positionID: '',
-        title: '',
-        image: [],
+        lastSync: ''
       },
       model: {
         id: '',
@@ -404,8 +362,6 @@ export default {
       is_new: true,
       is_required: [v => !!v || 'Pflichtfeld'],
       dialog: false,
-      images: [],
-      images_overlay: false
     }
 
   },
@@ -421,7 +377,6 @@ export default {
     await fromOfflineDB.syncLocalDBs();
     await this.updatePlace();
     await this.updatePositions();
-    await this.updateImages();
     await this.updateModels();
   },
 
@@ -446,71 +401,6 @@ export default {
     async updateModels() {
       this.models = await fromOfflineDB.getAllObjectsWithID(this.place.id, 'Place', 'Models', 'places');
     },
-    async updateImages() {
-      this.images = await fromOfflineDB.getAllObjectsWithID(
-        this.Place.id, 'Place', 'Images', 'images');
-    },
-    /**
-         * Adds a new image-placeholder to the images-array
-         */
-    async addImage() {
-      // Add imageID to the place array of all images
-      var newImageID = String(Date.now());
-      var rawPlace = toRaw(this.place);
-      var rawImage = toRaw(this.image);
-
-      rawPlace.images.push(newImageID);
-      rawPlace.lastChanged = Date.now();
-
-      const newImage = {
-        id: newImageID,
-        imageNumber: null,
-        placeID: rawPlace.id,
-        title: rawImage.title,
-        image: await this.textureToBase64(toRaw(rawImage.image)),
-        lastChanged: Date.now(),
-        lastSync: ''
-      };
-
-      if (this.images.length == 0) {
-        newImage.imageNumber = 1;
-      } else {
-        this.updateImages();
-        const imageNumber = Math.max(...this.images.map(o => o.imageNumber));
-        const newImageNumber = imageNumber + 1;
-        newImage.imageNumber = newImageNumber;
-      }
-
-      this.images_overlay = false;
-      await fromOfflineDB.updateObject(rawPlace, 'Places', 'places')
-      var posID = await fromOfflineDB.addObject(newImage, "Images", "images");
-      await fromOfflineDB.addObject({ id: posID, object: 'images' }, 'Changes', 'created');
-      await this.updateImages(newImage.id);
-    },
-    /**
-     * Removes an image from IndexedDB and the connected place
-     * @param {ProxyObject} image 
-     */
-    async deleteImage(image) {
-
-      var rawImage = toRaw(image);
-      var rawPlace = toRaw(this.place);
-      var index = rawPlace.images.indexOf(rawImage.id.toString())
-
-      // Remove the imageID from connected place
-      if (index != -1) {
-        rawPlace.images.splice(index, 1);
-        rawPlace.lastChanged = Date.now();
-        await fromOfflineDB.updateObject(rawPlace, 'Places', 'places');
-      }
-
-      // Delete the image itself
-      await fromOfflineDB.deleteObject(image, 'Images', 'images');
-      VueCookies.remove('currentImage');
-
-      await this.updateImages();
-    },
-
     /**
      * Save a place to local storage for the current activity
      */
