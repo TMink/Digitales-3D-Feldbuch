@@ -29,7 +29,7 @@
           <!-- TAB ITEM 'GENERAL' -->
           <v-window-item value="one">
             <v-card class="pa-4">
-              <v-row class="pt-2 pb-6">
+              <v-row class="pt-2">
                 <v-col cols="12" lg="8">
 
                   <v-combobox v-model="place.title" :hide-no-data="false" :items="titles" hide-selected
@@ -56,6 +56,7 @@
                     <div class="text-h4 text-center" :label="$t('lastEdited')"> {{ place.date }}</div>
                     <div class="text-grey text-center"> {{ $t('lastEdited') }}</div>
                   </v-card>
+                  <v-spacer class="pa-1"></v-spacer>
                   <v-row class="pl-4 pb-4 justify-center">
                     <v-col cols="4">
                       <v-tooltip
@@ -151,7 +152,6 @@
               </v-row>
             </v-card>
           </v-window-item>
-
 
           <v-window-item value="two">
             TODO
