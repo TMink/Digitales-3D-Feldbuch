@@ -56,23 +56,28 @@
                     <div class="text-h4 text-center" :label="$t('lastEdited')"> {{ place.date }}</div>
                     <div class="text-grey text-center"> {{ $t('lastEdited') }}</div>
                   </v-card>
-                </v-col>
-              </v-row>
-            </v-card>
-
-            <v-spacer class="pa-3"></v-spacer>
-
-            <v-card>
-              <v-row class="pl-4 pb-4 justify-center">
-                <v-col cols="4">
-                  <v-checkbox color="primary" persistent-hint label="Kein Befund" v-model="place.noFinding"
-                    hint="Falls die Stelle kein Befund ist (Arbeitsbereich, Störung, natürliche Verfärbung etc.)">
-                  </v-checkbox>
-                </v-col>
-                <v-col cols="4">
-                  <v-checkbox color="secondary" persistent-hint label="Rest Befund" v-model="place.restFinding"
-                    hint="Falls bei einem Bodeneingriff der Befund noch unterhalb der Eingriffstiefe erhalten ist.">
-                  </v-checkbox>
+                  <v-row class="pl-4 pb-4 justify-center">
+                    <v-col cols="4">
+                      <v-tooltip
+                        text="Falls die Stelle kein Befund ist (Arbeitsbereich, Störung, natürliche Verfärbung etc.)">
+                        <template v-slot:activator="{ props }">
+                          <v-checkbox v-bind="props" color="primary" persistent-hint label="Kein Befund"
+                            v-model="place.noFinding">
+                          </v-checkbox>
+                        </template>
+                      </v-tooltip>
+                    </v-col>
+                    <v-col cols="4">
+                      <v-tooltip
+                        text="Falls bei einem Bodeneingriff der Befund noch unterhalb der Eingriffstiefe erhalten ist.">
+                        <template v-slot:activator="{ props }">
+                          <v-checkbox v-bind="props" color="secondary" persistent-hint label="Rest Befund"
+                            v-model="place.restFinding">
+                          </v-checkbox>
+                        </template>
+                      </v-tooltip>
+                    </v-col>
+                  </v-row>
                 </v-col>
               </v-row>
             </v-card>
