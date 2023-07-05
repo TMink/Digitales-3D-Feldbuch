@@ -59,7 +59,8 @@
                   <v-row class="pl-4 pb-4 justify-center">
                     <v-col cols="4">
                       <v-tooltip
-                        text="Falls die Stelle kein Befund ist (Arbeitsbereich, Störung, natürliche Verfärbung etc.)" location="bottom">
+                        text="Falls die Stelle kein Befund ist (Arbeitsbereich, Störung, natürliche Verfärbung etc.)"
+                        location="bottom">
                         <template v-slot:activator="{ props }">
                           <v-checkbox v-bind="props" color="primary" persistent-hint label="Kein Befund"
                             v-model="place.noFinding">
@@ -69,7 +70,8 @@
                     </v-col>
                     <v-col cols="4">
                       <v-tooltip
-                        text="Falls bei einem Bodeneingriff der Befund noch unterhalb der Eingriffstiefe erhalten ist." location="bottom">
+                        text="Falls bei einem Bodeneingriff der Befund noch unterhalb der Eingriffstiefe erhalten ist."
+                        location="bottom">
                         <template v-slot:activator="{ props }">
                           <v-checkbox v-bind="props" color="secondary" persistent-hint label="Rest Befund"
                             v-model="place.restFinding">
@@ -92,35 +94,36 @@
 
               <v-row class="pb-4" justify="center">
                 <v-col cols="12" lg="1">
-                  <v-text-field hide-details density="compact" v-model="place.right" :label="$t('right')">
+                  <v-text-field color="primary" hide-details density="compact" v-model="place.right" :label="$t('right')">
                   </v-text-field>
                 </v-col>
                 <v-col cols="12" lg="2">
-                  <v-text-field hide-details density="compact" v-model="place.rightTo" :label="$t('rightTo')">
+                  <v-text-field color="primary" hide-details density="compact" v-model="place.rightTo" :label="$t('rightTo')">
                   </v-text-field>
                 </v-col>
                 <v-divider class="mt-n1 mb-n2" vertical></v-divider>
                 <v-col cols="12" lg="1">
-                  <v-text-field hide-details density="compact" v-model="place.up" :label="$t('up')">
+                  <v-text-field color="primary" hide-details density="compact" v-model="place.up" :label="$t('up')">
                   </v-text-field>
                 </v-col>
                 <v-col cols="12" lg="2">
-                  <v-text-field hide-details density="compact" v-model="place.upTo" :label="$t('upTo')">
+                  <v-text-field color="primary" hide-details density="compact" v-model="place.upTo" :label="$t('upTo')">
                   </v-text-field>
                 </v-col>
                 <v-divider class="mt-n1 mb-n2" vertical></v-divider>
                 <v-col cols="12" lg="2">
-                  <v-text-field hide-details density="compact" v-model="place.depthTop" :label="$t('depthTop')">
+                  <v-text-field color="primary" hide-details density="compact" v-model="place.depthTop" :label="$t('depthTop')">
                   </v-text-field>
                 </v-col>
                 <v-col cols="12" lg="2">
-                  <v-text-field hide-details density="compact" v-model="place.depthBot" :label="$t('depthBot')">
+                  <v-text-field color="primary" hide-details density="compact" v-model="place.depthBot" :label="$t('depthBot')">
                   </v-text-field>
                 </v-col>
               </v-row>
             </v-card>
 
             <v-spacer class="pa-3"></v-spacer>
+
             <v-card>
               <v-card-text>
                 <div>
@@ -132,15 +135,16 @@
             </v-card>
 
             <v-spacer class="pa-3"></v-spacer>
+
             <v-card>
               <v-row class="pa-4">
-                <v-col cols="12" lg="12">
-                  <v-textarea color="primary" counter maxlength="254" auto-grow rows="1" v-model="place.description"
+                <v-col cols="12" lg="6">
+                  <v-textarea color="primary" counter no-resize rows="5" v-model="place.description"
                     :label="$t('description')">
                   </v-textarea>
                 </v-col>
-                <v-col cols="12" lg="12">
-                  <v-textarea color="primary" counter maxlength="254" auto-grow rows="1" v-model="place.editor"
+                <v-col cols="12" lg="6">
+                  <v-textarea color="primary" counter maxlength="254" no-resize rows="5" v-model="place.editor"
                     :label="$t('editor')">
                   </v-textarea>
                 </v-col>
