@@ -26,13 +26,15 @@
 
       <v-col>
         <v-window v-model="tab">
-          <!-- Tab item 'general' -->
+          <!-- TAB ITEM 'GENERAL' -->
           <v-window-item value="one">
-            <v-row class="pt-2 pb-6">
-              <v-col cols="12" lg="8">
-                <v-card class="pa-4">
+            <v-card class="pa-4">
+              <v-row class="pt-2 pb-6">
+                <v-col cols="12" lg="8">
+
                   <v-combobox v-model="place.title" :hide-no-data="false" :items="titles" hide-selected
-                    hint="Add tags which describe the place" label="Title" multiple persistent-hint chips closable-chips color="primary">
+                    hint="Add tags which describe the place" label="Title" multiple persistent-hint chips closable-chips
+                    color="primary">
                     <template #selection="{ item }">
                       <v-chip color="secondary">{{ item }}</v-chip>
                     </template>
@@ -44,17 +46,21 @@
                       </v-list-item>
                     </template>
                   </v-combobox>
-                  <v-combobox counter color="primary" maxlength="40" v-model="place.dating" :items="datings" :label="$t('dating')">
+                  <v-combobox counter color="primary" maxlength="40" v-model="place.dating" :items="datings"
+                    :label="$t('dating')">
                   </v-combobox>
-                </v-card>
-              </v-col>
-              <v-col cols="12" lg="4">
-                <v-card class="pa-4" color="accent">
-                  <div class="text-h4 text-center" :label="$t('lastEdited')"> {{ place.date }}</div>
-                  <div class="text-grey text-center"> {{ $t('lastEdited') }}</div>
-                </v-card>
-              </v-col>
-            </v-row>
+
+                </v-col>
+                <v-col cols="12" lg="4">
+                  <v-card class="pa-4" color="accent">
+                    <div class="text-h4 text-center" :label="$t('lastEdited')"> {{ place.date }}</div>
+                    <div class="text-grey text-center"> {{ $t('lastEdited') }}</div>
+                  </v-card>
+                </v-col>
+              </v-row>
+            </v-card>
+
+            <v-spacer class="pa-3"></v-spacer>
 
             <v-card>
               <v-row class="pl-4 pb-4 justify-center">
@@ -78,46 +84,33 @@
                   <h2 class="title text-h6 font-weight-medium pb-3">Gauss-Krüger-Koordinaten</h2>
                 </div>
               </v-card-text>
-              <v-row class="pb-3">
-                <v-col cols="2">
+
+              <v-row class="pb-4" justify="center">
+                <v-col cols="12" lg="1">
                   <v-text-field hide-details density="compact" v-model="place.right" :label="$t('right')">
                   </v-text-field>
                 </v-col>
-                <v-col>
+                <v-col cols="12" lg="2">
                   <v-text-field hide-details density="compact" v-model="place.rightTo" :label="$t('rightTo')">
                   </v-text-field>
                 </v-col>
                 <v-divider class="mt-n1 mb-n2" vertical></v-divider>
-                <v-col>
+                <v-col cols="12" lg="1">
                   <v-text-field hide-details density="compact" v-model="place.up" :label="$t('up')">
                   </v-text-field>
                 </v-col>
-                <v-col>
+                <v-col cols="12" lg="2">
                   <v-text-field hide-details density="compact" v-model="place.upTo" :label="$t('upTo')">
                   </v-text-field>
                 </v-col>
                 <v-divider class="mt-n1 mb-n2" vertical></v-divider>
-                <v-col>
+                <v-col cols="12" lg="2">
                   <v-text-field hide-details density="compact" v-model="place.depthTop" :label="$t('depthTop')">
                   </v-text-field>
                 </v-col>
-                <v-col>
+                <v-col cols="12" lg="2">
                   <v-text-field hide-details density="compact" v-model="place.depthBot" :label="$t('depthBot')">
                   </v-text-field>
-                </v-col>
-              </v-row>
-            </v-card>
-
-            <v-spacer class="pa-3"></v-spacer>
-            <v-card>
-              <v-row class="pa-4">
-                <v-col cols="12" lg="12">
-                  <v-textarea counter maxlength="254" auto-grow rows="1" v-model="place.plane" :label="$t('plane')" color="primary">
-                  </v-textarea>
-                </v-col>
-                <v-col cols="12" lg="12">
-                  <v-textarea counter maxlength="254" auto-grow rows="1" v-model="place.profile" :label="$t('profile')" color="primary">
-                  </v-textarea>
                 </v-col>
               </v-row>
             </v-card>
@@ -142,7 +135,8 @@
                   </v-textarea>
                 </v-col>
                 <v-col cols="12" lg="12">
-                  <v-textarea color="primary" counter maxlength="254" auto-grow rows="1" v-model="place.editor" :label="$t('editor')">
+                  <v-textarea color="primary" counter maxlength="254" auto-grow rows="1" v-model="place.editor"
+                    :label="$t('editor')">
                   </v-textarea>
                 </v-col>
               </v-row>
