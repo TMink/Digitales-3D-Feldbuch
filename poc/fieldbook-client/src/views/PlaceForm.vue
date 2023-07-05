@@ -59,7 +59,7 @@
                   <v-row class="pl-4 pb-4 justify-center">
                     <v-col cols="4">
                       <v-tooltip
-                        text="Falls die Stelle kein Befund ist (Arbeitsbereich, Störung, natürliche Verfärbung etc.)">
+                        text="Falls die Stelle kein Befund ist (Arbeitsbereich, Störung, natürliche Verfärbung etc.)" location="bottom">
                         <template v-slot:activator="{ props }">
                           <v-checkbox v-bind="props" color="primary" persistent-hint label="Kein Befund"
                             v-model="place.noFinding">
@@ -69,7 +69,7 @@
                     </v-col>
                     <v-col cols="4">
                       <v-tooltip
-                        text="Falls bei einem Bodeneingriff der Befund noch unterhalb der Eingriffstiefe erhalten ist.">
+                        text="Falls bei einem Bodeneingriff der Befund noch unterhalb der Eingriffstiefe erhalten ist." location="bottom">
                         <template v-slot:activator="{ props }">
                           <v-checkbox v-bind="props" color="secondary" persistent-hint label="Rest Befund"
                             v-model="place.restFinding">
