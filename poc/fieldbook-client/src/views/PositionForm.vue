@@ -15,11 +15,11 @@
               rounded="0"> 
               {{ $tc('picture', 2) }} 
             </v-tab>
-            <v-tab 
+            <!-- <v-tab 
               value="three" 
               rounded="0"> 
               {{ $t('additional', { msg: $t('parameter') }) }} 
-            </v-tab>
+            </v-tab> -->
             <v-tab 
               value="four" 
               rounded="0"> 
@@ -263,7 +263,7 @@
           </v-window-item>
 
     <!-- TAB ITEM 'TEXTS' -->
-          <v-window-item value="three">
+          <!-- <v-window-item value="three">
             <v-list-subheader v-if="texts.length === 0">
               {{ $t('not_created_yet', 
                 { object: $t('additional', 
@@ -314,7 +314,7 @@
               </v-card>
             </template>
             <AddButton v-on:click="addText()" />
-          </v-window-item>
+          </v-window-item> -->
 
     <!-- Tab item 'models' -->
           <v-window-item value="four">
@@ -575,6 +575,7 @@ export default {
       var newSubNumber = this.calcSubNumber(rawPosition, test);
       console.log(test)
       console.log(newSubNumber)
+      rawPosition.subNumber = newSubNumber;
 
       await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions')
       this.$router.push({ name: "PositionsOverview" });
@@ -769,7 +770,11 @@ export default {
     /**
      * Calculates the SubNumber of a position
      */
-    async calcSubNumber(curPos, prevPos) {
+    calcSubNumber(curPos, prevPos) {
+      if (prevPos == undefined) {
+        return 1;
+      }
+
       var subNumber = prevPos.subNumber;
 
       if (/* curPos.activity == prevPos.activity && */
@@ -783,18 +788,17 @@ export default {
         curPos.date == prevPos.date &&
         !curPos.seperate) {
         console.log("ALL ZE SAME");
-        return subNumber;
+        return parseInt(subNumber);
       }
 
-      return subNumber + 1;
+      return parseInt(subNumber) + 1;
     },
     
     /**
      * Cancels the PositionForm and returns to the PlaceForm of current place
      */
     goBack: function () {
-      const currentPlace = VueCookies.get("currentPlace");
-      this.$router.push({ name: "PlaceCreation", params: { placeID: this.position.placeID } });
+      this.$router.push({ name: "PositionsOverview"});
     },
     /**
      * 
