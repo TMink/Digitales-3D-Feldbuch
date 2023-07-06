@@ -24,7 +24,7 @@
         </v-card>
       </v-col>
 
-      <v-col>
+      <v-col cols="10">
         <v-window v-model="tab">
           <!-- Tab item 'general' -->
           <v-window-item value="one">
@@ -72,7 +72,7 @@
             <v-card>
               <v-card-text>
                 <div>
-                  <h2 class="title text-h6 font-weight-medium pb-3">Gauss-Krüger-Koordinaten</h2>
+                  <h2 class="text-h6 font-weight-medium pb-3">Gauss-Krüger-Koordinaten</h2>
                 </div>
               </v-card-text>
               <v-row class="pb-3">
@@ -176,7 +176,9 @@
                 </v-list>
               </v-card>
 
-              <AddButton v-on:click="addPosition()" />
+              <AddPosition 
+                  :positions_prop="positions" 
+                  @closeDiag="updatePositions()" />
 
             </v-form>
           </v-window-item>
@@ -271,7 +273,8 @@
 import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import ConfirmDialog from '../components/ConfirmDialog.vue';
-import AddButton from '../components/AddButton.vue'
+import AddButton from '../components/AddButton.vue';
+import AddPosition from '../components/AddPosition.vue';
 import { toRaw } from 'vue';
 
 export default {
@@ -279,7 +282,8 @@ export default {
   name: 'PlaceCreation',
   components: {
     ConfirmDialog,
-    AddButton
+    AddButton,
+    AddPosition
   },
   /**
    * Reactive Vue.js data
@@ -426,43 +430,6 @@ export default {
       VueCookies.remove('currentPlace');
 
       this.$router.push({ name: "PlacesOverview" });
-    },
-
-    /**
-     * Adds a new position to the local storage for the current place
-     */
-    async addPosition() {
-
-      // Add positionID to the place array of all positions
-      var newPositionID = String(Date.now())
-
-      this.place.positions.push(newPositionID)
-      this.place.lastChanged = Date.now()
-
-
-      const newPosition = {
-        id: newPositionID,
-        positionNumber: null,
-        placeID: this.place.id,
-        texts: [],
-        images: [],
-        models: [],
-        lastChanged: Date.now(),
-        lastSync: ''
-      };
-
-      if (this.positions.length == 0) {
-        newPosition.positionNumber = 1;
-      } else {
-        const positionNumber = Math.max(...this.positions.map(o => o.positionNumber));
-        const newPositionNumber = positionNumber + 1;
-        newPosition.positionNumber = newPositionNumber;
-      }
-
-      await fromOfflineDB.updateObject(toRaw(this.place), 'Places', 'places')
-      await fromOfflineDB.addObject(newPosition, "Positions", "positions");
-      await fromOfflineDB.addObject({ id: newPositionID, object: 'positions' }, 'Changes', 'created');
-      await this.updatePositions(newPosition.id);
     },
 
     /**
