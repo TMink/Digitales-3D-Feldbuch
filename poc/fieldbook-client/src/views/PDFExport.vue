@@ -3,7 +3,7 @@
     <v-row class="pt-4">
       <v-spacer></v-spacer>
       <v-form class="w-75 pa-2">
-        <v-card color="background" v-if="!activity_open">
+        <v-window color="background" v-if="!activity_open">
 
           <h2 class="text-center">AKTIVITÄTEN</h2>
           <v-list>
@@ -28,14 +28,7 @@
                   </v-list-item>
                 </v-col>
 
-                <v-btn 
-                  class="ma-1" 
-                  color="primary" 
-                  v-on:click="export_overlay = true">
-                  Export to PDF
-                </v-btn>
               </v-row>
-
               <v-divider v-if="i !== activities.length - 1"/>
 
               <!-- EXPORT DIALOG -->
@@ -44,27 +37,49 @@
                   <v-card-title>Export to PDF </v-card-title>
                   <v-card-text>
 
-                    <v-text-field 
-                      disabled 
-                      v-model="activity.id" 
-                      :label="$t('place_id')"
-                      :hint="$t('please_input', { msg: $t('place_id') })">
-                    </v-text-field>
+                    <v-row class="align-center" hide-details>
 
-                    <v-checkbox 
-                      v-model="exportPlaces" 
-                      label="Export all Places">
-                    </v-checkbox>
+                      <v-switch color="success" v-model="exportActivities" label="Activities"></v-switch>
+                    </v-row>
+                    <v-row v-if="exportActivities">
+                      <v-col>
+                        This will export {{ allActivitiesCount }} Activities
+                      </v-col>
+                    </v-row>
 
-                    <v-checkbox 
-                      v-model="exportPositions" 
-                      label="Export all Positions">
-                    </v-checkbox>
+                    <v-divider/>
+
+                    <v-row class="align-center" hide-details>
+                      <v-switch color="success" v-model="exportPlaces" label="Places"></v-switch>
+                    </v-row>
+                    <v-row v-if="exportPlaces">
+                      This will export {{ allPlacesCount }} Places
+                      <v-checkbox label="Export Drawings"></v-checkbox>
+                      <v-checkbox label="Export Models"></v-checkbox>
+                    </v-row>
+
+                    <v-divider/>
+
+                    <v-row class="align-center" hide-details>
+                      <v-switch color="success" v-model="exportPositions" label="Positions"></v-switch>
+                    </v-row>
+                    <v-row v-if="exportPositions">
+                      This will export {{ allPositionsCount }} Positions
+
+                      <v-checkbox label="Export Images"></v-checkbox>
+                      <v-checkbox label="Export Models"></v-checkbox>
+                      <!-- <v-checkbox label="Export additional Params"></v-checkbox> -->
+                    
+                    </v-row>
 
                   </v-card-text>
 
                   <v-card-actions class="justify-center">
-                    <v-btn icon color="edit" v-on:click="createPDF()">
+                    <v-btn 
+                      icon 
+                      color="edit" 
+                      v-on:click="createPDF()" 
+                      :disabled="!exportActivities && !exportPlaces && !exportPositions">
                       <v-icon>mdi-content-save-all</v-icon>
                     </v-btn>
                     <v-btn icon color="decline" @click="export_overlay = false">
@@ -77,10 +92,10 @@
             </template>
             <ConfirmDialog ref="confirm" />
           </v-list>
-        </v-card>
+        </v-window>
 
         <!-- PLACES LIST -->
-        <v-card color="background" v-if="activity_open && !place_open">
+        <v-window color="background" v-if="activity_open && !place_open">
           <v-btn 
             icon 
             color="decline" 
@@ -125,10 +140,10 @@
             </template>
             <ConfirmDialog ref="confirm" />
           </v-list>
-        </v-card>
+        </v-window>
 
     <!-- PLACES LIST -->
-        <v-card color="background" v-if="place_open">
+        <v-window color="background" v-if="place_open">
 
           <v-btn icon color="decline" @click="place_open = false">
             <v-icon>mdi-arrow-left</v-icon>
@@ -151,20 +166,22 @@
                   </v-list-item>
                 </v-col>
 
-                <v-btn 
-                  class="ma-1" 
-                  color="primary" 
-                  v-on:click="export_overlay = true">
-                  Export to PDF
-                </v-btn>
               </v-row>
               <v-divider v-if="i !== positions.length - 1"/>
 
             </template>
             <ConfirmDialog ref="confirm" />
           </v-list>
+        </v-window>
 
-        </v-card>
+        <v-row no-gutters class="pa-1 justify-center">
+          <v-btn 
+            class="ma-1" 
+            color="primary" 
+            v-on:click="export_overlay = true">
+            Export to PDF
+          </v-btn>
+        </v-row>
 
       </v-form>
       <v-spacer></v-spacer>
@@ -193,16 +210,25 @@ export default {
       activity_open: false,
       place_open: false,
       export_overlay: false,
+      exportActivities: false,
       exportPlaces: false,
       exportPositions: false,
       rules: {
         required: value => !!value || 'Required.',
-      }
+      },
+      allActivitiesCount: '',
+      allPlacesCount: '',
+      allPositionsCount: '',
     };
   },
   async created() {
     this.$emit("view", this.$t('pdf_export'));
     await fromOfflineDB.syncLocalDBs();
+
+    this.allActivitiesCount = await fromOfflineDB.getStoreCount('Activities', 'activities');
+    this.allPlacesCount = await fromOfflineDB.getStoreCount('Places', 'places');
+    this.allPositionsCount = await fromOfflineDB.getStoreCount('Positions', 'positions');
+
     await this.updateActivities();
     await this.updatePlaces();
     await this.updatePositions();
@@ -244,6 +270,10 @@ export default {
         this.exportActivity(activity);
       }
     },
+    /**
+     * Sets the active activity and filters places accordingly
+     * @param {String} activity_id 
+     */
     async setActivity(activity_id) {
       this.places = await fromOfflineDB.getAllObjectsWithID(
         activity_id, 'Activity', 'Places', 'places');
@@ -251,6 +281,10 @@ export default {
       this.activity_open = true;
       console.log(this.places);
     },
+    /**
+     *  Sets the active activity and filters positions accordingly
+     * @param {*} place_id 
+     */
     async setPlace(place_id) {
       this.positions = await fromOfflineDB.getAllObjectsWithID(
         place_id, 'Place', 'Positions', 'positions');
@@ -262,7 +296,9 @@ export default {
      */
     createPDF() {
 
-      this.createActivitiesPDF();
+      if (this.exportActivities) {
+        this.createActivitiesPDF();
+      }
 
       if (this.exportPlaces) {
         this.createPlacesPDF();
@@ -379,14 +415,21 @@ export default {
       var placeId = '';
       var placeNumber = '';
 
-
       for (var position of allPositions) {
 
         if (placeId != position.placeID) {
-          activityId = position.activityID
-          activityNumber = await fromOfflineDB.getObject(activityId, 'Activities', 'activities')
-          activityNumber = activityNumber.activityNumber;
+          placeId = position.placeID;
+          var tempPlace = await fromOfflineDB.getObject(placeId, 'Places', 'places');
+          placeNumber = tempPlace.placeNumber;
+
+          if (activityId != tempPlace.activityID) {
+            activityId = tempPlace.activityID;
+            console.log(activityId)
+            var tempActivity = await fromOfflineDB.getObject(activityId, 'Activities', 'activities');
+            activityNumber = tempActivity.activityNumber;
+          }
         }
+        position.place = placeNumber;
         position.activity = activityNumber;
       }
 
@@ -408,14 +451,13 @@ export default {
           { header: 'Hoehe', dataKey: 'height' },
           { header: 'Anzahl', dataKey: 'count' },
           { header: 'Gewicht', dataKey: 'weight' },
-          { header: 'ObjKuerzel', dataKey: 'objAbbr' },
           { header: 'Material', dataKey: 'material' },
           { header: 'Ansprache', dataKey: 'title' },
           { header: 'Kommentar', dataKey: 'description' },
-          { header: 'Datkode', dataKey: 'datingCode' },
           { header: 'Datierung', dataKey: 'dating' },
           { header: 'Ansprache von', dataKey: 'addressOf' },
           { header: 'Datum', dataKey: 'date' },
+          { header: 'Getrennt', dataKey: 'isSeperate' },
         ],
         body:
           allPositions
@@ -423,15 +465,18 @@ export default {
 
       doc.save(filename + ".pdf");
     },
+    /**
+     * Creates and saves a pdf file of all images
+     */
     createImageListPDF() {
       console.log("IMAGES PDF");
-    },
-    savePDF(doc) {
-      doc.save("a4.pdf");
     },
   }
 }
 </script>
   
-<style scoped></style>
-  
+<style>
+.v-switch__thumb {
+  color: red;
+}
+</style>
