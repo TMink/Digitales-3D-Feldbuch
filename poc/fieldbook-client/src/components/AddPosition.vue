@@ -25,7 +25,8 @@ export default {
         date: '',
         description: '',
         images: [],
-        texts: []
+        texts: [],
+        models: []
       },
       datings: [],
       dialog: false,
@@ -72,6 +73,7 @@ export default {
 
         texts: [],
         images: [],
+        models: [],
         lastChanged: Date.now(),
         lastSync: ''
       };
