@@ -92,7 +92,6 @@
                   <h2 class="title text-h6 font-weight-medium pb-3">Gauss-Krüger-Koordinaten</h2>
                 </div>
               </v-card-text>
-
               <v-row class="pb-4" justify="center">
                 <v-col cols="12" lg="1">
                   <v-text-field color="primary" hide-details density="compact" v-model="place.right" :label="$t('right')">
@@ -140,7 +139,7 @@
             <v-card>
               <v-row class="pa-4">
                 <v-col cols="12" lg="6">
-                  <v-textarea color="primary" counter no-resize rows="5" v-model="place.description"
+                  <v-textarea color="primary" counter maxlength="254" no-resize rows="5" v-model="place.description"
                     :label="$t('description')">
                   </v-textarea>
                 </v-col>
