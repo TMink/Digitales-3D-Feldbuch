@@ -77,12 +77,12 @@
                   <v-card-actions class="justify-center">
                     <v-btn 
                       icon 
-                      color="edit" 
+                      color="primary" 
                       v-on:click="createPDF()" 
                       :disabled="!exportActivities && !exportPlaces && !exportPositions">
                       <v-icon>mdi-content-save-all</v-icon>
                     </v-btn>
-                    <v-btn icon color="decline" @click="export_overlay = false">
+                    <v-btn icon color="error" @click="export_overlay = false">
                       <v-icon>mdi-close-circle</v-icon>
                     </v-btn>
                   </v-card-actions>

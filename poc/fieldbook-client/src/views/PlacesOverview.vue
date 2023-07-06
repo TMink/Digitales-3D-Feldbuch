@@ -5,6 +5,21 @@
       <v-spacer></v-spacer>
       <v-form class="w-75 pa-2">
         <v-card>
+          <v-card-text v-if="places.length !== 0">
+            <div>
+              <h3><v-row class="justify-center">
+                  <v-col cols="1" class="text-left">
+                    Nr.
+                  </v-col>
+                  <v-col cols="6" class="text-left">
+                    Titel
+                  </v-col>
+                  <v-col cols="2" class="text-left">
+                    Datum
+                  </v-col>
+                </v-row></h3>
+            </div>
+          </v-card-text>
           <v-list>
             <v-list-subheader v-if="places.length === 0">
               {{ $t('not_created_yet', { object: $tc('place', 1) }) }}
@@ -25,8 +40,8 @@
                       {{ place.title.join("; ") }}
                     </v-list-item-title>
                     <v-list-item-title class="ma-4 text-grey-darken-1" v-if="place.title.length == 0">
-                        {{ $t('title') }}
-                      </v-list-item-title>
+                      {{ $t('title') }}
+                    </v-list-item-title>
                   </v-col>
 
                   <v-col cols="2">

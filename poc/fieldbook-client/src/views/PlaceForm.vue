@@ -26,13 +26,18 @@
 
       <v-col cols="10">
         <v-window v-model="tab">
-          <!-- Tab item 'general' -->
+          <!-- TAB ITEM 'GENERAL' -->
           <v-window-item value="one">
-            <v-row class="pt-2 pb-6">
-              <v-col cols="12" lg="8">
-                <v-card class="pa-4">
+            <v-card class="pa-4">
+              <v-row class="pt-2">
+                <v-col cols="12" lg="8">
+
                   <v-combobox v-model="place.title" :hide-no-data="false" :items="titles" hide-selected
-                    hint="Add tags which describe the place" label="Title" multiple persistent-hint chips closable-chips>
+                    hint="Add tags which describe the place" label="Title" multiple persistent-hint chips closable-chips
+                    color="primary">
+                    <template #selection="{ item }">
+                      <v-chip color="secondary">{{ item }}</v-chip>
+                    </template>
                     <template v-slot:no-data>
                       <v-list-item>
                         <v-list-item-title>
@@ -41,29 +46,41 @@
                       </v-list-item>
                     </template>
                   </v-combobox>
-                  <v-combobox counter maxlength="40" v-model="place.dating" :items="datings" :label="$t('dating')">
+                  <v-combobox counter color="primary" maxlength="40" v-model="place.dating" :items="datings"
+                    :label="$t('dating')">
                   </v-combobox>
-                </v-card>
-              </v-col>
-              <v-col cols="12" lg="4">
-                <v-card class="pa-4" color="accent">
-                  <div class="text-h4 text-center" :label="$t('lastEdited')"> {{ place.date }}</div>
-                  <div class="text-grey text-center"> {{ $t('lastEdited') }}</div>
-                </v-card>
-              </v-col>
-            </v-row>
 
-            <v-card>
-              <v-row class="pl-4 pb-4 justify-center">
-                <v-col cols="4">
-                  <v-checkbox persistent-hint label="Kein Befund" v-model="place.noFinding"
-                    hint="Falls die Stelle kein Befund ist (Arbeitsbereich, Störung, natürliche Verfärbung etc.)">
-                  </v-checkbox>
                 </v-col>
-                <v-col cols="4">
-                  <v-checkbox persistent-hint label="Rest Befund" v-model="place.restFinding"
-                    hint="Falls bei einem Bodeneingriff der Befund noch unterhalb der Eingriffstiefe erhalten ist.">
-                  </v-checkbox>
+                <v-col cols="12" lg="4">
+                  <v-card class="pa-4" color="accent">
+                    <div class="text-h4 text-center" :label="$t('lastEdited')"> {{ place.date }}</div>
+                    <div class="text-grey text-center"> {{ $t('lastEdited') }}</div>
+                  </v-card>
+                  <v-spacer class="pa-1"></v-spacer>
+                  <v-row class="pl-4 pb-4 justify-center">
+                    <v-col cols="4">
+                      <v-tooltip
+                        text="Falls die Stelle kein Befund ist (Arbeitsbereich, Störung, natürliche Verfärbung etc.)"
+                        location="bottom">
+                        <template v-slot:activator="{ props }">
+                          <v-checkbox v-bind="props" color="primary" persistent-hint label="Kein Befund"
+                            v-model="place.noFinding">
+                          </v-checkbox>
+                        </template>
+                      </v-tooltip>
+                    </v-col>
+                    <v-col cols="4">
+                      <v-tooltip
+                        text="Falls bei einem Bodeneingriff der Befund noch unterhalb der Eingriffstiefe erhalten ist."
+                        location="bottom">
+                        <template v-slot:activator="{ props }">
+                          <v-checkbox v-bind="props" color="secondary" persistent-hint label="Rest Befund"
+                            v-model="place.restFinding">
+                          </v-checkbox>
+                        </template>
+                      </v-tooltip>
+                    </v-col>
+                  </v-row>
                 </v-col>
               </v-row>
             </v-card>
@@ -75,51 +92,38 @@
                   <h2 class="text-h6 font-weight-medium pb-3">Gauss-Krüger-Koordinaten</h2>
                 </div>
               </v-card-text>
-              <v-row class="pb-3">
-                <v-col cols="2">
-                  <v-text-field hide-details density="compact" v-model="place.right" :label="$t('right')">
+              <v-row class="pb-4" justify="center">
+                <v-col cols="12" lg="1">
+                  <v-text-field color="primary" hide-details density="compact" v-model="place.right" :label="$t('right')">
                   </v-text-field>
                 </v-col>
-                <v-col>
-                  <v-text-field hide-details density="compact" v-model="place.rightTo" :label="$t('rightTo')">
-                  </v-text-field>
-                </v-col>
-                <v-divider class="mt-n1 mb-n2" vertical></v-divider>
-                <v-col>
-                  <v-text-field hide-details density="compact" v-model="place.up" :label="$t('up')">
-                  </v-text-field>
-                </v-col>
-                <v-col>
-                  <v-text-field hide-details density="compact" v-model="place.upTo" :label="$t('upTo')">
+                <v-col cols="12" lg="2">
+                  <v-text-field color="primary" hide-details density="compact" v-model="place.rightTo" :label="$t('rightTo')">
                   </v-text-field>
                 </v-col>
                 <v-divider class="mt-n1 mb-n2" vertical></v-divider>
-                <v-col>
-                  <v-text-field hide-details density="compact" v-model="place.depthTop" :label="$t('depthTop')">
+                <v-col cols="12" lg="1">
+                  <v-text-field color="primary" hide-details density="compact" v-model="place.up" :label="$t('up')">
                   </v-text-field>
                 </v-col>
-                <v-col>
-                  <v-text-field hide-details density="compact" v-model="place.depthBot" :label="$t('depthBot')">
+                <v-col cols="12" lg="2">
+                  <v-text-field color="primary" hide-details density="compact" v-model="place.upTo" :label="$t('upTo')">
+                  </v-text-field>
+                </v-col>
+                <v-divider class="mt-n1 mb-n2" vertical></v-divider>
+                <v-col cols="12" lg="2">
+                  <v-text-field color="primary" hide-details density="compact" v-model="place.depthTop" :label="$t('depthTop')">
+                  </v-text-field>
+                </v-col>
+                <v-col cols="12" lg="2">
+                  <v-text-field color="primary" hide-details density="compact" v-model="place.depthBot" :label="$t('depthBot')">
                   </v-text-field>
                 </v-col>
               </v-row>
             </v-card>
 
             <v-spacer class="pa-3"></v-spacer>
-            <v-card>
-              <v-row class="pa-4">
-                <v-col cols="12" lg="12">
-                  <v-textarea counter maxlength="254" auto-grow rows="1" v-model="place.plane" :label="$t('plane')">
-                  </v-textarea>
-                </v-col>
-                <v-col cols="12" lg="12">
-                  <v-textarea counter maxlength="254" auto-grow rows="1" v-model="place.profile" :label="$t('profile')">
-                  </v-textarea>
-                </v-col>
-              </v-row>
-            </v-card>
 
-            <v-spacer class="pa-3"></v-spacer>
             <v-card>
               <v-card-text>
                 <div>
@@ -127,25 +131,26 @@
                 </div>
               </v-card-text>
               <v-slider class="pa-4" :ticks="tickLabels" :max="3" step="1" show-ticks="always" tick-size="4"
-                track-color="primary" thumb-color="secondary" v-model="place.visibility"></v-slider>
+                track-color="primary" thumb-color="secondary" v-model="place.visibility" color="warning"></v-slider>
             </v-card>
 
             <v-spacer class="pa-3"></v-spacer>
+
             <v-card>
               <v-row class="pa-4">
-                <v-col cols="12" lg="12">
-                  <v-textarea counter maxlength="254" auto-grow rows="1" v-model="place.description"
+                <v-col cols="12" lg="6">
+                  <v-textarea color="primary" counter maxlength="254" no-resize rows="5" v-model="place.description"
                     :label="$t('description')">
                   </v-textarea>
                 </v-col>
-                <v-col cols="12" lg="12">
-                  <v-textarea counter maxlength="254" auto-grow rows="1" v-model="place.editor" :label="$t('editor')">
+                <v-col cols="12" lg="6">
+                  <v-textarea color="primary" counter maxlength="254" no-resize rows="5" v-model="place.editor"
+                    :label="$t('editor')">
                   </v-textarea>
                 </v-col>
               </v-row>
             </v-card>
           </v-window-item>
-
 
           <v-window-item value="two">
             TODO
@@ -339,10 +344,10 @@ export default {
       is_required: [v => !!v || 'Pflichtfeld'],
       dialog: false,
       tickLabels: {
-        0: this.$t('veryGood'),
-        1: this.$t('good'),
-        2: this.$t('moderate'),
-        3: this.$t('bad'),
+        3: this.$t('veryGood'),
+        2: this.$t('good'),
+        1: this.$t('moderate'),
+        0: this.$t('bad'),
       }
     }
 
