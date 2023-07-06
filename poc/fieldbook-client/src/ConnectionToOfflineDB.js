@@ -78,6 +78,26 @@ export default class ConnectionToOfflineDB {
   }
 
   /**
+   * Counts all entries in a IndexedDB store and returns the value
+   * @param {String} localDBName
+   * @param {String} storeName
+   * @returns the counted value of all entries
+   */
+  async getStoreCount(localDBName, storeName) {
+    const localDB = this.getLocalDBFromName(localDBName);
+
+    return new Promise((resolve, _reject) => {
+      const trans = localDB.transaction([storeName], "readonly");
+      const store = trans.objectStore(storeName);
+      const countRequest = store.count();
+
+      countRequest.onsuccess = () => {
+        resolve(countRequest.result);
+      };
+    });
+  }
+
+  /**
    * @param {String} id
    *    Key for identifying the value which will be deleted
    * @param {String} localDBname
@@ -398,7 +418,6 @@ export default class ConnectionToOfflineDB {
       store.openCursor().onsuccess = (e) => {
         let cursor = e.target.result;
         if (cursor.value.id != inputID) {
-          
           lastAddedObj = cursor.value;
           cursor.continue();
         }
