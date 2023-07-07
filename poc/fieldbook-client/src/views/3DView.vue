@@ -460,7 +460,12 @@ export default {
           console.log( "error" );
       }
 
-      this.groupsInScene.push(mesh)
+      this.meshesInMain.push(mesh)
+
+      const aabb = new THREE.Box3()
+      aabb.setFromObject(mesh)
+      const cccenter = new THREE.Vector3()
+      const newCenter = aabb.getCenter(cccenter)
       
       /* Add mesh to main scene */
       this.sceneMain.add(mesh)
