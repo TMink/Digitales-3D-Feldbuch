@@ -98,7 +98,8 @@
                   </v-text-field>
                 </v-col>
                 <v-col cols="12" lg="2">
-                  <v-text-field color="primary" hide-details density="compact" v-model="place.rightTo" :label="$t('rightTo')">
+                  <v-text-field color="primary" hide-details density="compact" v-model="place.rightTo"
+                    :label="$t('rightTo')">
                   </v-text-field>
                 </v-col>
                 <v-divider class="mt-n1 mb-n2" vertical></v-divider>
@@ -112,11 +113,13 @@
                 </v-col>
                 <v-divider class="mt-n1 mb-n2" vertical></v-divider>
                 <v-col cols="12" lg="2">
-                  <v-text-field color="primary" hide-details density="compact" v-model="place.depthTop" :label="$t('depthTop')">
+                  <v-text-field color="primary" hide-details density="compact" v-model="place.depthTop"
+                    :label="$t('depthTop')">
                   </v-text-field>
                 </v-col>
                 <v-col cols="12" lg="2">
-                  <v-text-field color="primary" hide-details density="compact" v-model="place.depthBot" :label="$t('depthBot')">
+                  <v-text-field color="primary" hide-details density="compact" v-model="place.depthBot"
+                    :label="$t('depthBot')">
                   </v-text-field>
                 </v-col>
               </v-row>
@@ -124,27 +127,40 @@
 
             <v-spacer class="pa-3"></v-spacer>
 
-            <v-card>
-              <v-card-text>
-                <div>
-                  <h2 class="text-h6 font-weight-medium pb-3">{{ $t('visibility') }}</h2>
-                </div>
-              </v-card-text>
-              <v-slider class="pa-4" :ticks="tickLabels" :max="3" step="1" show-ticks="always" tick-size="4"
-                track-color="primary" thumb-color="secondary" v-model="place.visibility" color="warning"></v-slider>
-            </v-card>
+            <v-row>
+              <v-col cols="12" lg="6">
+                <v-card height="100%">
+                  <v-card-text>
+                    <div>
+                      <h2 class="text-h6 font-weight-medium pb-3">{{ $t('visibility') }}</h2>
+                    </div>
+                  </v-card-text>
+                  <v-slider class="pa-4" :ticks="tickLabels" :max="3" step="1" show-ticks="always" tick-size="4"
+                    track-color="primary" thumb-color="secondary" v-model="place.visibility" color="warning"></v-slider>
+                </v-card>
+              </v-col>
+              <v-col cols="12" lg="6">
+                <v-card>
+                  <v-col cols="12" lg="12">
+                  <v-textarea color="primary" counter maxlength="254" no-resize rows="4" v-model="place.description"
+                    :label="$t('description')">
+                  </v-textarea>
+                </v-col>
+                </v-card>
+              </v-col>
+            </v-row>
 
             <v-spacer class="pa-3"></v-spacer>
 
             <v-card>
               <v-row class="pa-4">
                 <v-col cols="12" lg="6">
-                  <v-textarea color="primary" counter maxlength="254" no-resize rows="5" v-model="place.description"
-                    :label="$t('description')">
+                  <v-textarea color="primary" counter no-resize rows="2" v-model="place.planum"
+                    :label="$t('planum')">
                   </v-textarea>
                 </v-col>
                 <v-col cols="12" lg="6">
-                  <v-textarea color="primary" counter maxlength="254" no-resize rows="5" v-model="place.editor"
+                  <v-textarea color="primary" counter no-resize rows="2" v-model="place.editor"
                     :label="$t('editor')">
                   </v-textarea>
                 </v-col>
@@ -181,9 +197,7 @@
                 </v-list>
               </v-card>
 
-              <AddPosition 
-                  :positions_prop="positions" 
-                  @closeDiag="updatePositions()" />
+              <AddPosition :positions_prop="positions" @closeDiag="updatePositions()" />
 
             </v-form>
           </v-window-item>
@@ -321,6 +335,7 @@ export default {
         visibility: '',
         drawing: '',
         description: '',
+        planum: '',
         editor: '',
         date: '',
 
