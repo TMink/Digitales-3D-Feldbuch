@@ -881,28 +881,53 @@ export default {
 
     },
 
-    onMouseDown: function(event) {
+    onMouseDown: async function(event) {
 
       event.preventDefault()
-      this.pointer.x = ((event.clientX - this.renderer.domElement.offsetLeft ) 
-                          / this.renderer.domElement.width ) * 2 - 1;
-      this.pointer.y = - ((event.clientY - this.renderer.domElement.offsetTop ) 
-                            / this.renderer.domElement.height ) * 2 + 1;
 
-      const deltaX = event.clientX - this.pointerX;
-      const deltaY = event.clientY - this.pointerY;
+      const rect = this.rendererMain.domElement.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
 
-      console.log("x : " + this.pointer.x + " y : " + this.pointer.y);
+      this.pointer.x = ( x / this.canvasMain.clientWidth ) *  2 - 1;
+      this.pointer.y = ( y / this.canvasMain.clientHeight) * - 2 + 1
 
-      this.raycaster.setFromCamera(this.pointer, this.camera);
-      console.log(this.scene.children)
-      const intersects = this.raycaster.intersectObjects(this.groupsInScene, true)
-      
+      this.raycaster.setFromCamera(this.pointer, this.cameraMain);
+      const intersects = this.raycaster.intersectObjects(this.meshesInMain, true)
 
-      if(intersects.length > 0) {
-        //intersects[0].object.material.color.setHex( Math.random() * 0xffffff)
-        console.log(intersects[0].object.name)
+      if(intersects.length > 0 && event.altKey) {
+        const objectName = intersects[0].object.name
+        /* Check if clicked model is a position model */
+        for(let i=0; i < this.positionModelsInScene.length; i++) {
+
+          if(this.positionModelsInScene[i].modelID === objectName) {
+            this.cardShow = true
+            this.drawer = true
+            this.loadMeshInSub(intersects[0].object.name)
+
+            /* Fill the drawer with position info */
+            const positionID = this.positionModelsInScene[i].positionID
+            const model = await fromOfflineDB.getObject(positionID, 'Positions',
+                                                        'positions')
+            
+            this.positionInfo.positionNumber = model.positionNumber
+            this.positionInfo.subNumber = model.subNumber
+            this.positionInfo.date = model.date
+            this.positionInfo.title = model.title
+            this.positionInfo.material = model.material
+            this.positionInfo.right = model.right
+            this.positionInfo.up = model.up
+            this.positionInfo.height = model.height
+            this.positionInfo.count = model.count
+            this.positionInfo.weight = model.weight
+            this.positionInfo.description = model.description
+            this.positionInfo.dating = model.dating
+            this.positionInfo.adressOf = model.adressOf
+
+          }
+        }
       }
+    },
 
     },
 
