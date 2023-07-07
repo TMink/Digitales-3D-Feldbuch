@@ -929,6 +929,14 @@ export default {
       }
     },
 
+    gizmoChange: function(p) {
+      if(p) {
+        this.abControlsMain.setGizmosVisible(false);
+        this.gismoCB = false
+      } else {
+        this.abControlsMain.setGizmosVisible(true);
+        this.gismoCB = true
+      }
     },
 
     /**
