@@ -207,6 +207,9 @@ import { ArcballControls } from
   'three/examples/jsm/controls/ArcballControls.js';
 import { TransformControls } from 
   'three/examples/jsm/controls/TransformControls.js';
+import { OrbitControls } from 
+  'three/examples/jsm/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { GUI } from 'dat.gui';
 
@@ -266,6 +269,7 @@ export default {
 
     /* Initialize standart components of threejs (renderer, scene, etc.) */
     this.init();
+    this.subInit();
 
     /* Load all available models of selected place */
     await this.loadPlaceObjects();
@@ -781,6 +785,40 @@ export default {
       // Eventlistener
       document.addEventListener("click", this.updateArcball)
       document.addEventListener('click', this.onMouseDown)
+    subInit: function() {
+      /* mesh in sub scene */
+      this.meshInSub = null
+      
+      /* Canvas obj */
+      this.canvasSub = document.getElementById("subCanvas");
+
+      /* Renderer */
+      this.rendererSub = new THREE.WebGLRenderer({ canvas: subCanvas });
+      this.rendererSub.setPixelRatio(this.canvasSub.devicePixelRatio);
+      this.rendererSub.setSize(this.canvasSub.clientWidth, 
+                               this.canvasSub.clientHeight);
+      this.rendererSub.setClearColor("black", 1);
+      this.rendererSub.shadowMap.enabled = true;
+      this.rendererSub.shadowMap.type = THREE.PCFSoftShadowMap;
+
+      /* Scene */
+      this.sceneSub = new THREE.Scene()
+
+      /* Camera */
+      const aspect = this.canvasSub.clientWidth / this.canvasSub.clientHeight;
+      this.cameraSub = new THREE.PerspectiveCamera( 45, aspect, 1, 1000 );
+
+      /* Light */
+      const ambientLight = new THREE.AmbientLight(0xffffff);
+      this.sceneSub.add(ambientLight);
+
+      /* Controls */
+      this.controlsSub = new OrbitControls(this.cameraSub, this.rendererSub.domElement)
+
+      /* Event listener */
+      this.canvasSub.addEventListener('mousemove', () => {
+        console.log("Mouse moved")
+      })
 
     },
 
