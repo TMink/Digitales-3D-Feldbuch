@@ -108,6 +108,9 @@ export default {
       }
     };
   },
+  /**
+   * Retrieve data from IndexedDB
+   */
   async created() {
     this.$emit("view", this.$t('overview', { msg: this.$tc('activity', 2) }));
     await fromOfflineDB.syncLocalDBs();
@@ -121,6 +124,7 @@ export default {
       /* Receive all IDs in store */
       this.activities = await fromOfflineDB.getAllObjects('Activities', 'activities')
     },
+    
     /**
      * Sets the currently selected activity into the cookies
      * @param {String} activityID 
@@ -133,6 +137,7 @@ export default {
       VueCookies.set('currentActivity', activityID)
       this.$router.push({ name: 'PlacesOverview' })
     },
+
     /**
      * Closes the activity edit mask and removes 
      * an activy if it wasn't saved to IndexedDB
@@ -148,6 +153,7 @@ export default {
       }
       activity.edit = !activity.edit
     },
+
     /**
      * Adds a new temporary activity with default data
      */
@@ -174,6 +180,7 @@ export default {
 
       this.activities.push(newActivity);
     },
+
     /**
      * Saves/updates an `activity` in the IndexedDB if the 
      * activity mask is filled out correctly
@@ -187,6 +194,7 @@ export default {
         && rawActivity.year != null
         && rawActivity.number != null) {
 
+          // new Activity data
         const newActivity = {
           id: String(Date.now()),
           activityNumber: rawActivity.branchOffice
@@ -215,6 +223,7 @@ export default {
 
       await this.updateActivities();
     },
+
     /**
      * Opens the confirmation dialog for deletion
      * @param {*} activity 
@@ -230,6 +239,7 @@ export default {
         this.deleteActivity(activity);
       }
     },
+
     /**
      * Removes an activity from IndexedDB and Cookies
      * @param {*} activity 

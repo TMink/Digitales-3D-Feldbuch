@@ -376,18 +376,21 @@ export default {
       const data = await fromOfflineDB.getObject(currentPlace, 'Places', 'places');
       this.place = data;
     },
+
     /**
      * Update reactive Vue.js positions data
      */
     async updatePositions() {
       this.positions = await fromOfflineDB.getAllObjectsWithID(this.place.id, 'Place', 'Positions', 'positions');
     },
+
     /**
      * Update reactive Vue.js models data
      */
     async updateModels() {
       this.models = await fromOfflineDB.getAllObjectsWithID(this.place.id, 'Place', 'Models', 'places');
     },
+
     /**
      * Save a place to local storage for the current activity
      */
@@ -400,6 +403,7 @@ export default {
       await fromOfflineDB.updateObject(inputPlace, 'Places', 'places');
       this.$router.push({ name: "PlacesOverview" });
     },
+
     /**
      * Opens the confirmation dialog
      */
@@ -413,6 +417,7 @@ export default {
         this.deletePlace();
       }
     },
+
     /**
      * Removes a place from the IndexedDB and the Cookies
      */
@@ -457,7 +462,6 @@ export default {
       });
 
       return output;
-
     },
 
     /**
@@ -497,6 +501,11 @@ export default {
       await fromOfflineDB.addObject({ id: modelID, object: 'models' }, 'Changes', 'created');
       await this.updateModels(newModel.id);
     },
+
+    /**
+     * Deletes a model from IndexedDB and the connected place
+     * @param {Object} model 
+     */
     async deleteModel(model) {
 
       // Remove the modelID from connected place
@@ -512,8 +521,8 @@ export default {
       VueCookies.remove('currentModel');
 
       await this.updateModels();
-
     },
+
     /**
      *  Routes to the PositionForm for the chosen positionID
      * @param {String} positionID 
@@ -524,6 +533,7 @@ export default {
       }
       this.$router.push({ name: 'PositionCreation', params: { positionID: positionID } });
     },
+
     /**
      * Cancels the PositionForm and returns to the PositionOverview
      */

@@ -252,13 +252,17 @@ export default class ConnectionToOfflineDB {
   }
 
   /**
-   * @param {String} placeID
-   *    ID of the currently selected place
+   * @param {String} id
+   *    ID of the currently selected object
+   * @param {String} selection
+   *    Selection of which object the id is from
    * @param {String} localDBName
    *    Database name
+   * @param {String} storeName
+   *    IndexedDB store name
    * @returns
-   *    an array containing Positions-Data with same id (activityID, placeID),
-   *    as Promise.
+   *    an array containing objects with same id 
+   *    (activityID, placeID, positionsID) as Promise.
    */
   async getAllObjectsWithID(id, selection, localDBName, storeName) {
     const localDB = this.getLocalDBFromName(localDBName);
