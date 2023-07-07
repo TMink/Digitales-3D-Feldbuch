@@ -11,34 +11,14 @@ import { ArcballControls } from
   'three/examples/jsm/controls/ArcballControls.js';
 import { TransformControls } from 
   'three/examples/jsm/controls/TransformControls.js';
-  import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { GUI } from 'dat.gui';
-
-const params = {
-  animate: true,
-
-  guiMesh: {
-    opacity: true,
-    color: "#ffffff",
-    clipping: false
-  },
-
-  guiControls: {
-    opacity: false,
-    state: true,
-  },
-
-  attachedPosition: null,
-};
 
 export default {
   name: 'Viewer',
 
   data() {
     return {
-      meshesInScene: [],
-      positionInScene: [],
       arcballAnchor: [],
       cameraData: {
         position: null,
@@ -66,12 +46,8 @@ export default {
 
       await this.loadPositionObjects();
 
-      /* Create GUI Folders */
-      this.createGUI();
-
       /* Start Animation-Loop */
       this.animate();
-
     } else {
       console.log("No Models")
     }
@@ -195,8 +171,6 @@ export default {
         id = object.positionID
       }
 
-      params.guiMesh.opacity = Boolean(opacity)
-      params.guiMesh.color = object.color
 
       /* Load object */
       const mesh = await new Promise((resolve) => {
@@ -236,53 +210,11 @@ export default {
 
     },
 
-    /**
-     * -------------------------------------------------------------------------
-     * ---- GUI
-     * -------------------------------------------------------------------------
-     */
-    createGUI: function () {
-      /* Add GUI to DOM */
-      this.gui.domElement.id = 'gui';
-      gui_container.appendChild(this.gui.domElement);
 
-      /* Controls Folder */
-      const controlsFolder = this.gui.addFolder('Controls')
-      controlsFolder.add(params.guiControls, 'opacity')
-      controlsFolder.add(params.guiControls, 'state')
-        .listen().onChange(() => this.changeState('model'))
 
-      /* Models Folder */
-      const modelsFolder = this.gui.addFolder('Models')
 
-      for (var i = 0; i < this.meshesInScene.length; i++) {
-        const modelName = this.meshesInScene[i].title;
-        const modelID = this.meshesInScene[i].id;
 
-        const modelFolder = modelsFolder.addFolder(modelName);
 
-        modelFolder.add(params.guiMesh, "opacity")
-          .onChange(v => this.changeOpacity(modelName, modelID));
-
-        modelFolder.addColor(params.guiMesh, "color")
-          .onChange(v => this.changeColor(modelName))
-      }
-
-      /* Positions Folder */
-      const positionsFolder = this.gui.addFolder('Positions');
-      for (var i = 0; i < this.positionInScene.length; i++) {
-
-        const positionTitle = this.positionInScene[i].title;
-        const positionFolder = positionsFolder.addFolder(positionTitle);
-
-        const test = this.positionInScene.filter(
-          obj => { return obj.title === positionTitle }
-        )
-
-        positionFolder.add(this.positionInScene.find
-          (x => x.title === test[0].title), "move")
-          .listen().onChange(() => this.changeState('position', positionTitle))
-      }
     },
 
     /**
@@ -291,36 +223,24 @@ export default {
      * @param {*} positionTitle
      */
     changeState: function (element, positionTitle) {
-      console.log("changeState")
       switch (element) {
         case "model":
 
           /* Set all move-values to false */
-          for (var i = 0; i < this.positionInScene.length; i++) {
-            this.positionInScene[i].move = false
           }
 
-          this.transformControls.enabled = false;
-          this.transformControls.detach()
           break;
 
         case 'position':
 
-          params.guiControls.state = false;
           /* Set all move-values to false */
-          for (var i = 0; i < this.positionInScene.length; i++) {
-            this.positionInScene[i].move = false
           }
 
           /* Get the object of checked checkbox */
-          const test = this.positionInScene.filter(
             obj => { return obj.title === positionTitle }
           )
-          this.positionInScene.find
             (x => x.title === test[0].title).move = true;
 
-          this.arcballControls.enabled = false;
-          this.arcballControls.visible = false;
           break;
 
         default:
@@ -333,8 +253,6 @@ export default {
      * @param {*} modelName 
      */
     changeColor: async function (modelName) {
-      var colorObj = new THREE.Color( params.guiMesh.color );
-      this.scene.getObjectByName(modelName).material.color = colorObj;
     },
 
     /**
