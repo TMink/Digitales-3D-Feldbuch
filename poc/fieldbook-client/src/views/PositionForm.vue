@@ -185,84 +185,12 @@
             </v-card>
           </v-window-item>
 
-    <!-- TAB ITEM 'IMAGES' -->
+          <!-- TAB ITEM 'IMAGES' -->
           <v-window-item value="two">
-            <v-card>
-              <v-list>
-                <v-list-subheader v-if="images.length === 0">
-                  {{ $t('not_created_yet', { object: $tc('image', 1) }) }}
-                </v-list-subheader>
-
-
-                <template v-for="(image, i) in images" :key="image">
-                  <v-card class="imageItem mt-3 d-flex align-center">
-                    <v-card-title>Nr. {{ image.imageNumber }}</v-card-title>
-                    <v-card-subtitle>{{ image.title }}</v-card-subtitle>
-                    <v-img height="150" :src=image.image></v-img>
-                    <v-btn 
-                      color="error" 
-                      class="ml-2" 
-                      v-on:click="deleteImage(image)">
-                      <v-icon>mdi-delete</v-icon>
-                    </v-btn>
-                  </v-card>
-
-                  <v-divider v-if="i !== image.length - 1"></v-divider>
-                </template>
-              </v-list>
-            </v-card>
-
-            <AddButton v-on:click="image_dialog = true" />
-
-    <!-- IMAGE CREATION DIALOG -->
-            <v-dialog v-model="image_dialog" max-width="800" persistent>
-              <v-card>
-                <v-card-title>
-                  {{ $t('add', { msg: $t('image') }) }} 
-                </v-card-title>
-                <v-card-text>
-
-                  <v-text-field 
-                    disabled 
-                    v-model="position.id" 
-                    :label="$t('position_id')">
-                  </v-text-field>
-
-                  <v-text-field 
-                    v-model="image.title" 
-                    :label="$t('title')"
-                    :hint="$t('please_input', 
-                      { msg: $t('title_of', 
-                      { msg: $t('image') }) })">
-                  </v-text-field>
-
-                  <v-file-input 
-                    show-size 
-                    v-model="image.image" 
-                    prepend-icon="mdi-camera"
-                    accept="image/png, image/jpeg, image/bmp">
-                  </v-file-input>
-                </v-card-text>
-
-                <v-card-actions class="justify-center">
-                  <v-btn 
-                    icon 
-                    color="primary" 
-                    v-on:click="addImage()">
-                    <v-icon>mdi-content-save-all</v-icon>
-                  </v-btn>
-                  <v-btn 
-                    icon 
-                    color="error" 
-                    @click="image_dialog = false">
-                    <v-icon>mdi-close-circle</v-icon>
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
+              <ImageForm :object_id="position.id" object_type="Positions"/>
           </v-window-item>
 
-    <!-- TAB ITEM 'TEXTS' -->
+          <!-- TAB ITEM 'TEXTS' -->
           <!-- <v-window-item value="three">
             <v-list-subheader v-if="texts.length === 0">
               {{ $t('not_created_yet', 
@@ -316,7 +244,7 @@
             <AddButton v-on:click="addText()" />
           </v-window-item> -->
 
-    <!-- Tab item 'models' -->
+          <!-- Tab item 'MODELS' -->
           <v-window-item value="four">
             <v-card>
               <v-list>
@@ -439,16 +367,18 @@
  *  goBack          - Goes back to PlaceForm
  */
 import VueCookies from 'vue-cookies';
-import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
+import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import ConfirmDialog from '../components/ConfirmDialog.vue';
-import AddButton from '../components/AddButton.vue'
+import AddButton from '../components/AddButton.vue';
+import ImageForm from '../components/ImageForm.vue';
 import { toRaw } from 'vue';
 
 export default {
   name: 'PositionCreation',
   components: {
     ConfirmDialog,
-    AddButton
+    AddButton,
+    ImageForm
   },
   /**
    * Reactive Vue.js data
@@ -526,7 +456,7 @@ export default {
     await this.updatePosition();
     await this.updateImages();
     await this.updateTexts();
-        await this.updateModels();
+    await this.updateModels();
   },
   methods: {
     /**
@@ -573,8 +503,6 @@ export default {
 
       var test = await fromOfflineDB.getObjectBefore(rawPosition.id, 'Positions', 'positions');
       var newSubNumber = this.calcSubNumber(rawPosition, test);
-      console.log(test)
-      console.log(newSubNumber)
       rawPosition.subNumber = newSubNumber;
 
       await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions')
@@ -615,73 +543,6 @@ export default {
       VueCookies.remove('currentPosition');
 
       this.$router.push({ name: "PositionsOverview" });
-    },
-    /**
-     * Adds a new image-placeholder to the images-array
-     */
-    async addImage() {
-      // Add imageID to the position array of all images
-      var newImageID = String(Date.now());
-      var rawPosition = toRaw(this.position);
-      var rawImage = toRaw(this.image);
-
-      // update lasatChanged date of position
-      rawPosition.images.push(newImageID);
-      rawPosition.lastChanged = Date.now();
-
-      // new image data
-      const newImage = {
-        id: newImageID,
-        imageNumber: null,
-        positionID: rawPosition.id,
-        title: rawImage.title,
-        image: await this.textureToBase64(toRaw(rawImage.image)),
-        lastChanged: Date.now(),
-        lastSync: ''
-      };
-
-      // set new imageNumber
-      if (this.images.length == 0) {
-        newImage.imageNumber = 1;
-      } else {
-        this.updateImages();
-        const imageNumber = Math.max(...this.images.map(o => o.imageNumber));
-        const newImageNumber = imageNumber + 1;
-        newImage.imageNumber = newImageNumber;
-      }
-
-      // hide image creation dialog
-      this.image_dialog = false;
-
-      // update IndexedDB
-      await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions')
-      await fromOfflineDB.addObject(newImage, "Images", "images");
-      await fromOfflineDB.addObject({ id: newImageID, object: 'images' }, 'Changes', 'created');
-      await this.updateImages();
-    },
-
-    /**
-     * Removes an image from IndexedDB and the connected position
-     * @param {ProxyObject} image 
-     */
-    async deleteImage(image) {
-
-      var rawImage = toRaw(image);
-      var rawPosition = toRaw(this.position);
-      var index = rawPosition.images.indexOf(rawImage.id.toString())
-
-      // Remove the imageID from connected position
-      if (index != -1) {
-        rawPosition.images.splice(index, 1);
-        rawPosition.lastChanged = Date.now();
-        await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions');
-      }
-
-      // Delete the image itself
-      await fromOfflineDB.deleteObject(image, 'Images', 'images');
-      VueCookies.remove('currentImage');
-
-      await this.updateImages();
     },
 
     /**
@@ -787,7 +648,6 @@ export default {
         curPos.addressOf == prevPos.addressOf &&
         curPos.date == prevPos.date &&
         !curPos.seperate) {
-        console.log("ALL ZE SAME");
         return parseInt(subNumber);
       }
 
@@ -823,7 +683,6 @@ export default {
 
     },
     async addModel() {
-
       const newModelID = String(Date.now());
       this.position.models.push(newModelID);
       this.position.lastChanged = Date.now();

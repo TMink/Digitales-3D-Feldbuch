@@ -127,7 +127,7 @@
             <v-card>
               <v-card-text>
                 <div>
-                  <h2 class="title text-h6 font-weight-medium pb-3">{{ $t('visibility') }}</h2>
+                  <h2 class="text-h6 font-weight-medium pb-3">{{ $t('visibility') }}</h2>
                 </div>
               </v-card-text>
               <v-slider class="pa-4" :ticks="tickLabels" :max="3" step="1" show-ticks="always" tick-size="4"
@@ -153,7 +153,7 @@
           </v-window-item>
 
           <v-window-item value="two">
-            TODO
+            <ImageForm :object_id="place.id" object_type="Places"/>
           </v-window-item>
 
           <!-- Tab item 'positions' -->
@@ -280,6 +280,7 @@ import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import ConfirmDialog from '../components/ConfirmDialog.vue';
 import AddButton from '../components/AddButton.vue';
 import AddPosition from '../components/AddPosition.vue';
+import ImageForm from '../components/ImageForm.vue';
 import { toRaw } from 'vue';
 
 export default {
@@ -288,7 +289,8 @@ export default {
   components: {
     ConfirmDialog,
     AddButton,
-    AddPosition
+    AddPosition,
+    ImageForm
   },
   /**
    * Reactive Vue.js data
