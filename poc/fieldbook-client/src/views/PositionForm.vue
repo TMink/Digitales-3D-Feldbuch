@@ -1,46 +1,29 @@
 <template>
   <v-container fluid>
     <v-row>
-    <!-- SIDE TABS -->
+      <!-- SIDE TABS -->
       <v-col cols="2">
         <v-card>
           <v-tabs v-model="tab" direction="vertical" color="primary">
-            <v-tab 
-              value="one" 
-              rounded="0"> 
-              {{ $t('general') }} 
+            <v-tab value="one" rounded="0">
+              {{ $t('general') }}
             </v-tab>
-            <v-tab 
-              value="two" 
-              rounded="0"> 
-              {{ $tc('picture', 2) }} 
+            <v-tab value="two" rounded="0">
+              {{ $tc('picture', 2) }}
             </v-tab>
-            <!-- <v-tab 
-              value="three" 
-              rounded="0"> 
-              {{ $t('additional', { msg: $t('parameter') }) }} 
+            <!-- <v-tab value="three" rounded="0">
+              {{ $t('additional', { msg: $t('parameter') }) }}
             </v-tab> -->
-            <v-tab 
-              value="four" 
-              rounded="0"> 
-              {{ $tc('model', 2) }} 
+            <v-tab value="four" rounded="0">
+              {{ $tc('model', 2) }}
             </v-tab>
-            <v-btn 
-              rounded="0" 
-              color="primary"
-              v-on:click="savePosition()">
+            <v-btn rounded="0" color="primary" v-on:click="savePosition()">
               {{ $t('save') }}
             </v-btn>
-            <v-btn 
-              rounded="0" 
-              color="error" 
-              v-on:click="confirmDeletion()">
+            <v-btn rounded="0" color="error" v-on:click="confirmDeletion()">
               {{ $t('delete') }}
             </v-btn>
-            <v-btn 
-              rounded="0" 
-              color="secondary"
-              v-on:click="goBack">
+            <v-btn rounded="0" color="secondary" v-on:click="goBack">
               {{ $t('cancel') }}
             </v-btn>
             <ConfirmDialog ref="confirm" />
@@ -50,142 +33,122 @@
 
       <v-col>
         <v-window v-model="tab">
-
-    <!-- TAB ITEM 'GENERAL' -->
+          <!-- TAB ITEM 'GENERAL' -->
           <v-window-item value="one">
             <v-card class="pa-4">
-              <v-form ref="form">
-
-                <v-row class="pt-2">
-                  <v-col cols="4">
-                    <v-text-field 
-                      label="Posnr *" 
-                      :rules="is_required" 
-                      v-model="position.positionNumber"
-                      :hint="$tc('please_input', 2, { msg: 'Posnr' })">
-                    </v-text-field>
-                  </v-col>
-                  <v-col cols="4">
-                    <v-text-field 
-                      label="Unternr *" 
-                      :rules="is_required" 
-                      v-model="position.subNumber"
-                      :hint="$tc('please_input', 2, { msg: 'Unternr' })">
-                    </v-text-field>
-                  </v-col>
-                  <v-col>
+              <v-row class="pt-2 pb-6">
+                <v-col cols="12" lg="2">
+                  <v-text-field color="primary" label="Posnr *" :rules="is_required" v-model="position.positionNumber"
+                    :hint="$tc('please_input', 2, { msg: 'Posnr' })">
+                  </v-text-field>
+                </v-col>
+                <v-col cols="12" lg="2">
+                  <v-text-field color="primary" label="Unternr *" :rules="is_required" v-model="position.subNumber"
+                    :hint="$tc('please_input', 2, { msg: 'Unternr' })">
+                  </v-text-field>
+                </v-col>
+                <v-col cols="12" lg="2">
+                  <v-combobox color="primary" :items="titles" label="Ansprache" :rules="is_required"
+                    v-model="position.title" :hint="$tc('please_input', 2, { msg: 'Ansprache' })">
+                  </v-combobox>
+                </v-col>
+                <v-col cols="12" lg="2">
+                  <v-combobox color="primary" label="Material" :items="materials" :rules="is_required"
+                    v-model="position.material" :hint="$tc('please_input', 2, { msg: 'Material' })">
+                  </v-combobox>
+                </v-col>
+                <v-col cols="12" lg="4">
+                  <v-card class="pa-4" color="accent">
                     <div class="text-h4 text-center" :label="$t('lastEdited')">
                       {{ position.date }}
                     </div>
                     <div class="text-grey text-center">
                       {{ $t('lastEdited') }}
                     </div>
+                  </v-card>
+                </v-col>
+              </v-row>
+            </v-card>
+
+            <v-spacer class="pa-3"></v-spacer>
+
+            <v-card>
+              <v-card-text>
+                <div>
+                  <h2 class="title text-h6 font-weight-medium pb-3">Gauss-Krüger-Koordinaten</h2>
+                </div>
+              </v-card-text>
+              <v-row class="pb-4" justify="center">
+                <v-col cols="12" lg="3">
+                  <v-text-field color="primary" hide-details label="Rechtswert *" :rules="is_required"
+                    v-model="position.right" :hint="$tc('please_input', 2, { msg: 'Rechtswert' })">
+                  </v-text-field>
+                </v-col>
+                <v-divider class="mt-1 mb-n2" vertical></v-divider>
+                <v-col cols="12" lg="3">
+                  <v-text-field color="primary" hide-details label="Hochwert *" :rules="is_required" v-model="position.up"
+                    :hint="$tc('please_input', 2, { msg: 'Hochwert' })">
+                  </v-text-field>
+                </v-col>
+                <v-divider class="mt-1 mb-n2" vertical></v-divider>
+                <v-col cols="12" lg="3">
+                  <v-text-field color="primary" hide-details label="Höhe *" :rules="is_required" v-model="position.height"
+                    :hint="$tc('please_input', 2, { msg: 'Höhe' })">
+                  </v-text-field>
+                </v-col>
+              </v-row>
+            </v-card>
+
+            <v-spacer class="pa-3"></v-spacer>
+
+            <v-card class="pa-4">
+              <v-row class="pt-2">
+                <v-col cols="12" lg="6">
+                  <v-text-field color="primary" label="Anzahl" v-model="position.count"
+                    :hint="$tc('please_input', 2, { msg: 'Anzahl' })">
+                  </v-text-field>
+                </v-col>
+                <v-col cols="12" lg="6">
+                  <v-text-field color="primary" label="Gewicht" v-model="position.weight"
+                    :hint="$tc('please_input', 2, { msg: 'Gewicht' })">
+                  </v-text-field>
+                </v-col>
+              </v-row>
+            </v-card>
+
+            <v-spacer class="pa-3"></v-spacer>
+
+            <v-row>
+              <v-col cols="12" lg="12">
+                <v-card>
+                  <v-col cols="12" lg="12">
+                    <v-textarea color="primary" counter rows="4" auto-grow maxlength="254" :label="$t('description')"
+                      v-model="position.description">
+                    </v-textarea>
                   </v-col>
-                </v-row>
+                </v-card>
+              </v-col>
+            </v-row>
 
-                <v-row>
-                  <v-col>
-                    <v-combobox 
-                      :items="titles" 
-                      label="Ansprache" 
-                      :rules="is_required" 
-                      v-model="position.title"
-                      :hint="$tc('please_input', 2, { msg: 'Ansprache' })">
-                    </v-combobox>
-                  </v-col>
-                  <v-divider class="mt-2 mb-3" vertical></v-divider>
-                  <v-col>
-                    <v-combobox 
-                      label="Material" 
-                      :items="materials" 
-                      :rules="is_required" 
-                      v-model="position.material"
-                      :hint="$tc('please_input', 2, { msg: 'Material' })">
-                    </v-combobox>
-                  </v-col>
-                  
-                </v-row>
+            <v-spacer class="pa-3"></v-spacer>
 
-                <v-divider class="pa-2"></v-divider>
-
-                <div class="text-h6 px-3 pb-3">Gauss-Krüger-Koordinaten</div>
-                <v-row class="pb-3">
-                  <v-col>
-                    <v-text-field 
-                      hide-details 
-                      label="Rechtswert *" 
-                      :rules="is_required" 
-                      v-model="position.right"
-                      :hint="$tc('please_input', 2, { msg: 'Rechtswert' })">
-                    </v-text-field>
-                  </v-col>
-                  <v-divider class="mt-1 mb-n2" vertical></v-divider>
-                  <v-col>
-                    <v-text-field 
-                      hide-details 
-                      label="Hochwert *" 
-                      :rules="is_required" 
-                      v-model="position.up"
-                      :hint="$tc('please_input', 2, { msg: 'Hochwert' })">
-                    </v-text-field>
-                  </v-col>
-                  <v-divider class="mt-1 mb-n2" vertical></v-divider>
-                  <v-col>
-                    <v-text-field 
-                      hide-details 
-                      label="Höhe *" 
-                      :rules="is_required" 
-                      v-model="position.height"
-                      :hint="$tc('please_input', 2, { msg: 'Höhe' })">
-                    </v-text-field>
-                  </v-col>
-                </v-row>
-
-                <v-divider class="mt-2 pa-2"></v-divider>
-
-                <v-text-field 
-                  label="Anzahl" 
-                  v-model="position.count" 
-                  :hint="$tc('please_input', 2, { msg: 'Anzahl' })">
-                </v-text-field>
-                <v-text-field 
-                  label="Gewicht" 
-                  v-model="position.weight"
-                  :hint="$tc('please_input', 2, { msg: 'Gewicht' })">
-                </v-text-field>
-
-
-                <v-divider class="mt-2 pa-2"></v-divider>
-
-                <v-row no-gutters>
-                  <v-textarea 
-                    counter 
-                    rows="1" 
-                    auto-grow 
-                    maxlength="254" 
-                    :label="$t('description')"
-                    v-model="position.description">
-                  </v-textarea>
-                </v-row>
-
-                <v-combobox 
-                  counter 
-                  maxlength="40" 
-                  :items="datings" 
-                  :label="$t('dating')" 
-                  v-model="position.dating">
-                </v-combobox>
-                <v-text-field 
-                  label="AnspracheVon" 
-                  v-model="position.addressOf"
-                  :hint="$tc('please_input', 2, { msg: 'AnsrpacheVon' })">
-                </v-text-field>
-
-              </v-form>
+            <v-card class="pa-4">
+              <v-row class="pt-2">
+                <v-col cols="12" lg="6">
+                  <v-combobox color="primary" counter maxlength="40" :items="datings" :label="$t('dating')"
+                    v-model="position.dating">
+                  </v-combobox>
+                </v-col>
+                <v-col cols="12" lg="6">
+                  <v-text-field color="primary" label="AnspracheVon" v-model="position.addressOf"
+                    :hint="$tc('please_input', 2, { msg: 'AnsrpacheVon' })">
+                  </v-text-field>
+                </v-col>
+              </v-row>
             </v-card>
           </v-window-item>
 
-    <!-- TAB ITEM 'IMAGES' -->
+          <!-- TAB ITEM 'IMAGES' -->
           <v-window-item value="two">
             <v-card>
               <v-list>
@@ -193,16 +156,12 @@
                   {{ $t('not_created_yet', { object: $tc('image', 1) }) }}
                 </v-list-subheader>
 
-
                 <template v-for="(image, i) in images" :key="image">
                   <v-card class="imageItem mt-3 d-flex align-center">
                     <v-card-title>Nr. {{ image.imageNumber }}</v-card-title>
                     <v-card-subtitle>{{ image.title }}</v-card-subtitle>
                     <v-img height="150" :src=image.image></v-img>
-                    <v-btn 
-                      color="error" 
-                      class="ml-2" 
-                      v-on:click="deleteImage(image)">
+                    <v-btn color="error" class="ml-2" v-on:click="deleteImage(image)">
                       <v-icon>mdi-delete</v-icon>
                     </v-btn>
                   </v-card>
@@ -214,47 +173,34 @@
 
             <AddButton v-on:click="image_dialog = true" />
 
-    <!-- IMAGE CREATION DIALOG -->
+            <!-- IMAGE CREATION DIALOG -->
             <v-dialog v-model="image_dialog" max-width="800" persistent>
               <v-card>
                 <v-card-title>
-                  {{ $t('add', { msg: $t('image') }) }} 
+                  {{ $t('add', { msg: $t('image') }) }}
                 </v-card-title>
                 <v-card-text>
 
-                  <v-text-field 
-                    disabled 
-                    v-model="position.id" 
-                    :label="$t('position_id')">
+                  <v-text-field disabled v-model="position.id" :label="$t('position_id')">
                   </v-text-field>
 
-                  <v-text-field 
-                    v-model="image.title" 
-                    :label="$t('title')"
-                    :hint="$t('please_input', 
-                      { msg: $t('title_of', 
-                      { msg: $t('image') }) })">
+                  <v-text-field v-model="image.title" :label="$t('title')" :hint="$t('please_input',
+                    {
+                      msg: $t('title_of',
+                        { msg: $t('image') })
+                    })">
                   </v-text-field>
 
-                  <v-file-input 
-                    show-size 
-                    v-model="image.image" 
-                    prepend-icon="mdi-camera"
+                  <v-file-input show-size v-model="image.image" prepend-icon="mdi-camera"
                     accept="image/png, image/jpeg, image/bmp">
                   </v-file-input>
                 </v-card-text>
 
                 <v-card-actions class="justify-center">
-                  <v-btn 
-                    icon 
-                    color="primary" 
-                    v-on:click="addImage()">
+                  <v-btn icon color="primary" v-on:click="addImage()">
                     <v-icon>mdi-content-save-all</v-icon>
                   </v-btn>
-                  <v-btn 
-                    icon 
-                    color="error" 
-                    @click="image_dialog = false">
+                  <v-btn icon color="error" @click="image_dialog = false">
                     <v-icon>mdi-close-circle</v-icon>
                   </v-btn>
                 </v-card-actions>
@@ -262,13 +208,14 @@
             </v-dialog>
           </v-window-item>
 
-    <!-- TAB ITEM 'TEXTS' -->
+          <!-- TAB ITEM 'TEXTS' -->
           <!-- <v-window-item value="three">
             <v-list-subheader v-if="texts.length === 0">
-              {{ $t('not_created_yet', 
-                { object: $t('additional', 
-                  { msg: $tc('parameter', 1) }) 
-                }) 
+              {{ $t('not_created_yet',
+                {
+                  object: $t('additional',
+                    { msg: $tc('parameter', 1) })
+                })
               }}
             </v-list-subheader>
             <template v-for="text in texts" :key="text">
@@ -277,34 +224,23 @@
                   <v-list-item>
                     <v-row class="align-center no-gutters">
                       <v-col cols="3">
-                        <v-combobox 
-                          hide-details="true" 
-                          v-model="text.title" 
-                          :label="$t('title')" 
-                          :items="['Höhe',
-                            'Gewicht',
-                            'Material',
-                            'Datum',
-                            'Datierung',
-                            'Kommentar']" 
-                          @update:modelValue="saveText(text)">
+                        <v-combobox hide-details="true" v-model="text.title" :label="$t('title')" :items="['Höhe',
+                          'Gewicht',
+                          'Material',
+                          'Datum',
+                          'Datierung',
+                          'Kommentar']" @update:modelValue="saveText(text)">
                         </v-combobox>
                       </v-col>
 
                       <v-col cols="7">
-                        <v-text-field 
-                          hide-details="true" 
-                          v-model="text.text" 
-                          :label="$t('content')"
+                        <v-text-field hide-details="true" v-model="text.text" :label="$t('content')"
                           @update:modelValue="saveText(text)">
                         </v-text-field>
                       </v-col>
 
                       <v-col cols="1">
-                        <v-btn 
-                          color="error" 
-                          class="ma-2" 
-                          v-on:click="deleteText(text)">
+                        <v-btn color="error" class="ma-2" v-on:click="deleteText(text)">
                           <v-icon>mdi-delete</v-icon>
                         </v-btn>
                       </v-col>
@@ -316,7 +252,7 @@
             <AddButton v-on:click="addText()" />
           </v-window-item> -->
 
-    <!-- Tab item 'models' -->
+          <!-- Tab item 'models' -->
           <v-window-item value="four">
             <v-card>
               <v-list>
@@ -328,9 +264,7 @@
                   <v-container class="d-flex align-center">
 
                     <v-container class="pa-0">
-                      <v-list-item 
-                        class="modelItem mt-3" 
-                        v-on:click="moveToModel(model.id)">
+                      <v-list-item class="modelItem mt-3" v-on:click="moveToModel(model.id)">
 
                         <v-list-item-title class="text-h6">
                           Nr. {{ model.modelNumber }}
@@ -344,62 +278,43 @@
 
                     </v-container>
 
-                    <v-btn 
-                      color="error" 
-                      class="ml-3 mt-2" 
-                      v-on:click="deleteModel(model)">
+                    <v-btn color="error" class="ml-3 mt-2" v-on:click="deleteModel(model)">
                       <v-icon>mdi-delete</v-icon>
                     </v-btn>
                   </v-container>
 
-                    <v-divider v-if="i !== models.length - 1"></v-divider>
+                  <v-divider v-if="i !== models.length - 1"></v-divider>
                 </template>
               </v-list>
             </v-card>
-                    
+
             <AddButton v-on:click="models_overlay = true" />
 
-    <!-- Model Creation dialog -->
+            <!-- Model Creation dialog -->
             <v-dialog v-model="models_overlay" max-width="800" persistent>
               <v-card>
                 <v-card-title>
-                  {{ $t('add', { msg: $t('model') }) }} 
+                  {{ $t('add', { msg: $t('model') }) }}
                 </v-card-title>
 
                 <v-card-text>
-                  <v-text-field 
-                    disabled 
-                    v-model="position.id" 
-                    :label="$t('position_id')"
+                  <v-text-field disabled v-model="position.id" :label="$t('position_id')"
                     :hint="$t('please_input', { msg: $t('position_id') })">
                   </v-text-field>
 
-                  <v-text-field 
-                    v-model="model.title" 
-                    :label="$t('title')"
-                    :hint="$t('please_input', 
-                          { msg: $t('title_of', { msg: $t('model') }) })">
+                  <v-text-field v-model="model.title" :label="$t('title')" :hint="$t('please_input',
+                    { msg: $t('title_of', { msg: $t('model') }) })">
                   </v-text-field>
 
-                  <v-file-input 
-                    show-size 
-                    accept=".glb" 
-                    v-model="model.model" 
-                    :label="$t('input', { msg: $t('model') })">
+                  <v-file-input show-size accept=".glb" v-model="model.model" :label="$t('input', { msg: $t('model') })">
                   </v-file-input>
                 </v-card-text>
 
                 <v-card-actions class="justify-center">
-                  <v-btn 
-                    icon 
-                    color="primary" 
-                    v-on:click="addModel()">
+                  <v-btn icon color="primary" v-on:click="addModel()">
                     <v-icon>mdi-content-save-all</v-icon>
                   </v-btn>
-                  <v-btn 
-                    icon 
-                    color="error" 
-                    @click="models_overlay = false">
+                  <v-btn icon color="error" @click="models_overlay = false">
                     <v-icon>mdi-close-circle</v-icon>
                   </v-btn>
                 </v-card-actions>
@@ -410,12 +325,7 @@
       </v-col>
     </v-row>
   </v-container>
-  <v-alert 
-    closable 
-    type="error" 
-    density="compact" 
-    variant="outlined" 
-    v-model="error_dialog">
+  <v-alert closable type="error" density="compact" variant="outlined" v-model="error_dialog">
     {{ error_message }}
   </v-alert>
 </template>
@@ -526,7 +436,7 @@ export default {
     await this.updatePosition();
     await this.updateImages();
     await this.updateTexts();
-        await this.updateModels();
+    await this.updateModels();
   },
   methods: {
     /**
@@ -793,12 +703,12 @@ export default {
 
       return parseInt(subNumber) + 1;
     },
-    
+
     /**
      * Cancels the PositionForm and returns to the PlaceForm of current place
      */
     goBack: function () {
-      this.$router.push({ name: "PositionsOverview"});
+      this.$router.push({ name: "PositionsOverview" });
     },
     /**
      * 
@@ -811,7 +721,7 @@ export default {
         let reader = new FileReader();
         let f = rawData[0];
         reader.onload = e => {
-        const modelString = e.target.result
+          const modelString = e.target.result
           resolve(modelString)
         }
 
