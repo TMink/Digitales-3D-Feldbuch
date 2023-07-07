@@ -446,11 +446,39 @@ export default {
 
     },
 
+    loadMeshInSub: async function(modelname) {
+      const object = await fromOfflineDB.getObject(modelname, 'Models', 'positions');
+      const model = object.model
+      const color = object.color
+      const opacity = object.opacity
+      const id = object.id
 
+      /* Load object */
+      const mesh = await new Promise((resolve) => {
+        this.loaderMain.parse(model, "", (glb) => {
+          glb.scene.traverse((child) => {
+            if (child instanceof THREE.Mesh) {
+              child.material.transparent = true;
+              child.material.opacity = opacity;
+              child.material.color = new THREE.Color(color)
+              child.name = id
+            }
+          });
+          resolve(glb.scene);
+        });
+      })
 
+      this.meshInSub = mesh
 
+      this.selectedModelName = "Model name: " + object.title
 
+      const bbox = new THREE.Box3().setFromObject(this.meshInSub)
+      const height = bbox.max.y - bbox.min.y
 
+      this.cameraSub.position.z = height + 60
+        
+      /* Add mesh to sub scene */
+      this.sceneSub.add(this.meshInSub)
     },
 
     /**
