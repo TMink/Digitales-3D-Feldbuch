@@ -707,8 +707,10 @@ export default {
 
 <style scoped>
 #canvas {
+  height: 85%;
   width: 100%;
-  height: 100vh;
+  position: absolute;
+  top: 105px;
 }
 
 #gui_container {
