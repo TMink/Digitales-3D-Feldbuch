@@ -656,6 +656,18 @@ export default {
       }
     },
 
+    getGroupCenter: function(model) {
+      var groupObject = model
+      while(!(groupObject instanceof THREE.Group)) {
+        groupObject = groupObject.parent
+      }
+      const aabb = new THREE.Box3()
+      aabb.setFromObject(groupObject)
+      const center = new THREE.Vector3()
+      aabb.getCenter(center)
+      return center
+    },
+
     /**
      * 
      * @param {*} event 
