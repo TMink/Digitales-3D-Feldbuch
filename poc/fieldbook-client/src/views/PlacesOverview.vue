@@ -25,39 +25,40 @@
               {{ $t('not_created_yet', { object: $tc('place', 1) }) }}
             </v-list-subheader>
 
-            <template v-for="(place, i) in places" :key="place">
-              <v-list-item v-on:click="moveToPlace(place.id)">
-                <v-row class="justify-center">
+            <v-virtual-scroll :items="places" :max-height="windowHeight - 360">
+              <template v-slot="{ item }" :key="item">
+                <v-list-item v-on:click="moveToPlace(item.id)">
+                  <v-row class="justify-center">
 
-                  <v-col cols="1">
-                    <v-list-item-title class="ma-4">
-                      {{ place.placeNumber }}
-                    </v-list-item-title>
-                  </v-col>
+                    <v-col cols="1">
+                      <v-list-item-title class="ma-4">
+                        {{ item.placeNumber }}
+                      </v-list-item-title>
+                    </v-col>
 
-                  <v-col cols="6">
-                    <v-list-item-title class="ma-4 text-wrap" v-if="place.title.length != 0">
-                      {{ place.title.join("; ") }}
-                    </v-list-item-title>
-                    <v-list-item-title class="ma-4 text-grey-darken-1" v-if="place.title.length == 0">
-                      {{ $t('title') }}
-                    </v-list-item-title>
-                  </v-col>
+                    <v-col cols="6">
+                      <v-list-item-title class="ma-4 text-wrap" v-if="item.title.length != 0">
+                        {{ item.title.join("; ") }}
+                      </v-list-item-title>
+                      <v-list-item-title class="ma-4 text-grey-darken-1" v-if="item.title.length == 0">
+                        {{ $t('title') }}
+                      </v-list-item-title>
+                    </v-col>
 
-                  <v-col cols="2">
-                    <v-list-item-title class="ma-4" v-if="place.date.length != 0">
-                      {{ place.date }}
-                    </v-list-item-title>
-                    <v-list-item-title class="ma-4 text-grey-darken-1" v-if="place.date.length == 0">
-                      {{ $t('date') }}
-                    </v-list-item-title>
-                  </v-col>
+                    <v-col cols="2">
+                      <v-list-item-title class="ma-4" v-if="item.date.length != 0">
+                        {{ item.date }}
+                      </v-list-item-title>
+                      <v-list-item-title class="ma-4 text-grey-darken-1" v-if="item.date.length == 0">
+                        {{ $t('date') }}
+                      </v-list-item-title>
+                    </v-col>
 
-                </v-row>
-              </v-list-item>
-              <v-divider v-if="i !== places.length - 1"></v-divider>
-            </template>
-
+                  </v-row>
+                </v-list-item>
+                <v-divider v-if="i !== places.length - 1"></v-divider>
+              </template>
+            </v-virtual-scroll>
           </v-list>
         </v-card>
       </v-form>
@@ -79,6 +80,7 @@ import Navigation from '../components/Navigation.vue'
 import AddButton from '../components/AddButton.vue'
 import VueCookies from 'vue-cookies'
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
+import { useWindowSize } from 'vue-window-size';
 
 export default {
 
@@ -88,12 +90,20 @@ export default {
     Navigation,
     AddButton
   },
-
+  setup() {
+    const { width, height } = useWindowSize();
+    return {
+      windowWidth: width,
+      windowHeight: height,
+    };
+  },
   data() {
     return {
       places: [],
+      h: window.innerHeight
     };
   },
+  
 
   async created() {
 
@@ -194,4 +204,5 @@ export default {
   border-bottom: 2px solid black;
   background-color: rgb(221, 221, 221);
 }
+
 </style>
