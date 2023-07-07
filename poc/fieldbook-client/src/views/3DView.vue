@@ -1,7 +1,203 @@
-<template>
-  <div id="canvas">
-    <div id="gui_container"></div>
-  </div>
+<template>    
+  <v-layout>
+    
+    <!-- GUI -->
+    <v-navigation-drawer expand-on-hover rail width="300">
+
+      <v-list>
+        <v-list-item
+          prepend-icon="mdi-settings"
+          title="Settings">
+        </v-list-item>
+      </v-list>
+
+      <v-divider></v-divider>
+
+      <v-list density="compact" width="300">
+        <!-- Arcball Settings -->
+        <v-list-group value="Arcball">
+
+          <template v-slot:activator="{props}">
+            <v-list-item
+              v-bind="props"
+              prepend-icon="mdi-folder"
+              title="Arcball Settings">
+            </v-list-item>
+          </template>
+
+          <v-list-item style="left: -26px" value="Gizmo">
+            
+            <template v-slot:prepend="{ isActive }">
+              <v-list-item-action start>
+                <v-checkbox-btn 
+                  v-model="gismoState"
+                  v-on:click="gizmoChange(gismoState)">
+                </v-checkbox-btn>
+              </v-list-item-action>
+            </template>
+
+            <v-list-item-title>
+              Gizmo
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              Visible/Non-Visible
+            </v-list-item-subtitle>
+
+          </v-list-item>
+        </v-list-group>    
+        <v-list-group value="Positions">
+
+          <template v-slot:activator="{props}">
+            <v-list-item v-bind="props" prepend-icon="mdi-folder"
+                         title="Positions">
+            </v-list-item>
+          </template>
+
+          <v-list>
+            <v-list-item v-for="(position) in positions" :key="i">
+              <v-list-group>
+                <v-list-group-value>
+                  {{ i }}
+                </v-list-group-value>
+
+                  <template v-slot:activator="{ props }">
+                    <v-list-item style="left:22px" v-bind="props" 
+                                 prepend-icon="mdi-radar">
+                      <v-list-title right>
+                        {{ position }}
+                      </v-list-title>
+                    </v-list-item>
+                  </template>
+
+                <v-list-item>
+
+                  <template v-slot:prepend="{ isActive }">
+                    <v-list-item-action start>
+                      <v-checkbox-btn
+                        v-model="gismoState"
+                        v-on:click="gizmoChange(gismoState)">
+                      </v-checkbox-btn>
+                    </v-list-item-action>
+                  </template>
+
+                  <v-list-item-title>
+                    Gizmo
+                  </v-list-item-title>
+                  <v-list-item-subtitle>
+                    Visible/Non-Visible
+                  </v-list-item-subtitle>
+
+                </v-list-item>
+              </v-list-group>
+            </v-list-item>
+          </v-list>
+        </v-list-group>
+      </v-list>
+        
+      </v-navigation-drawer>
+
+      <!-- Main Scene-->
+      <canvas id="mainCanvas" myattr="myattr">
+        <div id="gui_container"></div>
+      </canvas>
+
+      <!-- Position information-->
+      <v-container fluid>
+        <v-navigation-drawer v-model="drawer" location="bottom" 
+                             temporary width="389">
+          <v-navigation-drawer permanent location="right" width="350">
+
+            <v-list-item align="center">
+              {{ selectedModelName }}
+            </v-list-item>
+
+            <v-divider></v-divider>
+
+            <v-list-item >
+              <!-- Sub Scene -->
+              <canvas 
+                v-show="cardShow" 
+                id="subCanvas" 
+                width="300" 
+                height="300" 
+                style="position: absolute; top: 23px; right: 25px; 
+                       border: 1px solid rgb(255, 255, 255)">
+              </canvas>
+            </v-list-item>
+            
+          </v-navigation-drawer>
+          <v-card width="23%" height="100%" variant="outlined" class="pa-4">
+            <v-row>
+
+              <v-col cols="12" lg="6">
+                <v-list-item variant="tonal">
+                  <v-list-item-title class="text-h6">
+                    {{ positionInfo.positionNumber }}
+                  </v-list-item-title>
+                </v-list-item>
+                <v-list-item style="top: -10px; left: -10px">
+                  <v-list-item-subtitle>
+                    Positionsnummber
+                  </v-list-item-subtitle>
+                </v-list-item>
+              </v-col>
+
+              <v-col cols="12" lg="6">
+                <v-list-item variant="tonal">
+                  <v-list-item-title class="text-h6">
+                    {{ positionInfo.subNumber }}
+                  </v-list-item-title>
+                </v-list-item>
+                <v-list-item style="top: -10px; left: -10px">
+                  <v-list-item-subtitle>
+                    Unternummer
+                  </v-list-item-subtitle>
+                </v-list-item>
+              </v-col>
+
+              <v-col cols="12" lg="6">
+                <v-list-item variant="tonal">
+                  <v-list-item-title class="text-h6">
+                    {{ positionInfo.title }}
+                  </v-list-item-title>
+                </v-list-item>
+                <v-list-item style="top: -10px; left: -10px">
+                  <v-list-item-subtitle>
+                    Ansprache
+                  </v-list-item-subtitle>
+                </v-list-item>
+              </v-col>
+
+              <v-col cols="12" lg="6">
+                <v-list-item variant="tonal">
+                  <v-list-item-title style="color:white" class="text-h6">
+                    {{ positionInfo.material }}
+                  </v-list-item-title>
+                </v-list-item>
+                <v-list-item style="top: -10px; left: -10px">
+                  <v-list-item-subtitle>
+                    Material
+                  </v-list-item-subtitle>
+                </v-list-item>
+              </v-col>
+
+              <v-col cols="12" lg="12">
+                <v-card class="pa-4" color="accent">
+                  <div class="text-h4 text-center" :label="$t('lastEdited')"> 
+                    {{ positionInfo.date }}
+                  </div>
+                  <div class="text-grey text-center"> 
+                    {{ $t('lastEdited') }}
+                  </div>
+                </v-card>
+              </v-col>
+              
+            </v-row>
+          </v-card>
+        </v-navigation-drawer>
+      </v-container>
+    <v-main style="height: 250px"></v-main>
+  </v-layout>
 </template>
 
 <script>
@@ -19,12 +215,48 @@ export default {
 
   data() {
     return {
+      positionInfo: {
+        positionNumber: null,
+        subNumber: null,
+        date: null,
+        title: null,
+        material: null,
+        right: null,
+        up: null,
+        height: null,
+        count: null,
+        weight: null,
+        description: null,
+        dating: null,
+        adressOf: null
+      },
+
+      positions: ['Position1', 'Position2', 'Position3', 'Position4'],
+
+      drawer: false,
+      cardShow: true,
+      /* Meshes in Scene */
+      placeModelsInScene: [], // {placeID, modelID}
+      positionModelsInScene: [], // {positionID, modelID}
+
+      positionsInScene: [],
+
+      selectedModelName: "",
+      selectedPositionID: "",
+
       arcballAnchor: [],
       cameraData: {
         position: null,
         rotation: null
       },
+
+      gismoState: false
     };
+  },
+
+  created: async function() {
+    
+
   },
 
   async mounted() {
@@ -593,27 +825,9 @@ export default {
     },
 
     render: function() {
-
-      /* Update ArcballControls-Gizmo: visible <-> invisible */
-      if (params.guiControls.opacity === true) {
-        this.arcballControls.setGizmosVisible(true);
-      } else {
-        this.arcballControls.setGizmosVisible(false);
       }
 
-      /* Update ArcballControls State: useable <-> unuseable */
-      if (params.guiControls.state === true) {
-        this.arcballControls.enabled = true;
-      } else {
-        this.arcballControls.enabled = false;
-      }
 
-      for (var i = 0; i < this.positionInScene.length; i++) {
-        if (this.positionInScene[i].move === true) {
-          this.transformControls.enabled = true;
-          this.transformControls.attach(this.scene.getObjectByName(this.positionInScene[i].title))
-        }
-      }
 
       this.arcballControls.setTbRadius(0.67)
 
@@ -624,14 +838,8 @@ export default {
 </script>
 
 <style scoped>
-#canvas {
-  height: 85%;
+#mainCanvas {
   width: 100%;
-  position: absolute;
-  top: 105px;
-}
-
-#gui_container {
-  position: absolute;
+  height: 100vh;
 }
 </style>
