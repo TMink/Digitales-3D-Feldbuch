@@ -9,7 +9,7 @@
         <v-card-text v-if="places.length !== 0">
           <div>
             <h3><v-row class="justify-center">
-                <v-col cols="1" class="text-center">
+                <v-col cols="1" class="text-left pl-6">
                   Nr.
                 </v-col>
                 <v-col cols="6" class="text-left pl-6">
