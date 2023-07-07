@@ -268,18 +268,18 @@ export default {
     await fromOfflineDB.syncLocalDBs();
 
     /* Initialize standart components of threejs (renderer, scene, etc.) */
-    this.init();
+    this.mainInit();
     this.subInit();
 
-    /* Load all available models of selected place */
+    /* Load all models of selected place */
     await this.loadPlaceObjects();
 
-    if(this.meshesInScene.length > 0) {
-
+    if(this.placeModelsInScene.length > 0) {
       /* Reset camera in according to the position of the last place-model */
-      this.updateCameraPosition(this.meshesInScene
-      [this.meshesInScene.length - 1].title)
+      this.updateCameraPosition(this.placeModelsInScene
+      [this.placeModelsInScene.length - 1].modelID)
 
+      /* Load all position models */
       await this.loadPositionObjects();
 
       /* Start Animation-Loop */
@@ -370,19 +370,19 @@ export default {
 
       if (objects) {
         for (var i = 0; i < objects.length; i++) {
-          await this.loadModel(objects[i].id, 'Place', 'Models', 'places');
+          await this.loadMeshInMain(objects[i].id, 'Place', 'Models', 'places');
         }
       }
     },
 
     loadPositionObjects: async function () {
-      const positionsID = VueCookies.get('currentPosition')
+      const placeID = VueCookies.get('currentPlace')
       const objects = await fromOfflineDB.getAllObjectsWithID
-        (positionsID, 'Position', 'Models', 'positions')
+        (placeID, 'Place', 'Models', 'positions')
 
       if (objects) {
         for (var i = 0; i < objects.length; i++) {
-          await this.loadModel(objects[i].id, 'Position', 'Models', 'positions');
+          await this.loadMeshInMain(objects[i].id, 'Position', 'Models', 'positions');
         }
       }
     },
@@ -393,24 +393,17 @@ export default {
      * @param {*} dbName 
      * @param {*} storeName 
      */
-    loadModel: async function (modelID, type, dbName, storeName) {
+    loadMeshInMain: async function (modelID, type, dbName, storeName) {
       /* Get 3D-Model from IndexedDB */
       const object = await fromOfflineDB.getObject(modelID, dbName, storeName);
       const model = object.model
       const color = object.color
       const opacity = object.opacity
-      let id = null
-
-      if(type === 'Place') {
-        id = object.placeID
-      } else {
-        id = object.positionID
-      }
-
+      const id = object.id
 
       /* Load object */
       const mesh = await new Promise((resolve) => {
-        this.loader.parse(model, "", (glb) => {
+        this.loaderMain.parse(model, "", (glb) => {
           glb.scene.traverse((child) => {
             if (child instanceof THREE.Mesh) {
               child.material.transparent = true;
@@ -426,10 +419,11 @@ export default {
       /* Save variables for  */
       switch(type) {
         case 'Place':
-          this.meshesInScene.push({ title: id, id: object.id });
+          this.placeModelsInScene.push({ placeID: object.placeID, modelID: object.id });
           break;
         case 'Position':
-          this.positionInScene.push({ title: id, id: object.id, move: false });
+          this.positionModelsInScene.push({ positionID: object.positionID, modelID: object.id, move: false });
+          this.positionsInScene.push(object.title)
           if(object.coordinates != null) {
             const coordinates = object.coordinates
             mesh.position.set(coordinates[0], coordinates[1], coordinates[2])
@@ -441,8 +435,8 @@ export default {
 
       this.groupsInScene.push(mesh)
       
-      /* Add mesh to scene */
-      this.scene.add(mesh)
+      /* Add mesh to main scene */
+      this.sceneMain.add(mesh)
 
     },
 
@@ -480,6 +474,12 @@ export default {
       /* Add mesh to sub scene */
       this.sceneSub.add(this.meshInSub)
     },
+
+    /**
+     * -------------------------------------------------------------------------
+     * ---- GUI
+     * -------------------------------------------------------------------------
+     */
 
     /**
      * 
@@ -536,6 +536,7 @@ export default {
      * @param {*} modelName 
      */
     changeColor: async function (modelName) {
+      // TODO:
     },
 
     /**
@@ -544,12 +545,12 @@ export default {
      * @param {*} modelID 
      */
     changeOpacity: async function (modelName, modelID) {
-      const opacityValue = this.scene.getObjectByName(modelName).material.opacity;
+      const opacityValue = this.sceneMain.getObjectByName(modelName).material.opacity;
 
       if (opacityValue == 1.0) {
-        this.scene.getObjectByName(modelName).material.opacity = 0.0
+        this.sceneMain.getObjectByName(modelName).material.opacity = 0.0
       } else {
-        this.scene.getObjectByName(modelName).material.opacity = 1.0
+        this.sceneMain.getObjectByName(modelName).material.opacity = 1.0
       }
     },
 
@@ -627,16 +628,16 @@ export default {
 
         /* Restore saved anchor position for the arcball target */
         this.restoreArcballAnchor( cameraFromDB.arcballAnchor, 
-                                   this.arcballControls );
+                                   this.abControlsMain );
 
         /* Set new camera state */
-        this.setCamera( this.camera, this.cameraData );
+        this.setCamera( this.cameraMain, this.cameraData );
 
       } else {
 
         /* Get center of place model as Vec3 */
-        const model = this.scene.getObjectByName(modelName);
-        const center = this.getModelCenter(model);
+        const model = this.sceneMain.getObjectByName(modelName);
+        const center = this.getGroupCenter(model)
 
         /* Define an anchor point for the arcball */
         this.arcballAnchor.push(center.x);
@@ -644,14 +645,14 @@ export default {
         this.arcballAnchor.push(center.z);
 
         /* Set center as the new arcball target */
-        this.arcballControls.target.set(center.x, center.y, center.z);
+        this.abControlsMain.target.set(center.x, center.y, center.z);
 
         /* Move camera to the object */
-        this.camera.position.set(center.x, center.y - 15, center.z);
-        this.getCamera(this.camera, this.cameraData)
+        this.cameraMain.position.set(center.x, center.y - 15, center.z);
+        this.getCamera(this.cameraMain, this.cameraData)
 
         /* Save changes made to the arcball control settings */
-        this.arcballControls.update();
+        this.abControlsMain.update();
 
       }
     },
@@ -675,7 +676,7 @@ export default {
      updateArcball: async function(event) {
       if(event.ctrlKey) {
 
-      this.getCamera(this.camera, this.cameraData)
+      this.getCamera(this.cameraMain, this.cameraData)
 
       const placeID = VueCookies.get( 'currentPlace' )
       const cameraIDsFromDB = await fromOfflineDB.getProperties
@@ -686,25 +687,25 @@ export default {
         const newCamera = await fromOfflineDB.getObject(
           VueCookies.get('currentPlace'), "Cameras", "cameras")
 
-        this.arcballControls.target.set(
+        this.abControlsMain.target.set(
           newCamera.arcballAnchor[0], newCamera.arcballAnchor[1],
           newCamera.arcballAnchor[2]);
 
-        this.arcballControls.reset()
-        this.arcballControls.update()
+        this.abControlsMain.reset()
+        this.abControlsMain.update()
 
       } else {
 
-        this.arcballControls.target.set(
+        this.abControlsMain.target.set(
           this.arcballAnchor[0], this.arcballAnchor[1],
           this.arcballAnchor[2] );
 
-        this.arcballControls.reset()
-        this.arcballControls.update()
+        this.abControlsMain.reset()
+        this.abControlsMain.update()
 
       }
 
-      this.setCamera(this.camera, this.cameraData)
+      this.setCamera(this.cameraMain, this.cameraData)
 
       }
     },
@@ -762,7 +763,7 @@ export default {
 
     makePerspectiveCamera: function () {
       const fov = 45;
-      const aspect = this.canvas.clientWidth / this.canvas.clientHeight;
+      const aspect = this.canvasMain.clientWidth / this.canvasMain.clientHeight;
       const near = 0.01;
       const far = 2000;
       const newCamera = new THREE.PerspectiveCamera(fov, aspect, near, far);
@@ -770,9 +771,9 @@ export default {
     },
 
     onWindowResize: function () {
-      this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight);
-      this.camera.aspect = this.canvas.clientWidth / this.canvas.clientHeight;
-      this.camera.updateProjectionMatrix();
+      this.rendererMain.setSize(this.canvasMain.clientWidth, this.canvasMain.clientHeight);
+      this.cameraMain.aspect = this.canvasMain.clientWidth / this.canvasMain.clientHeight;
+      this.cameraMain.updateProjectionMatrix();
     },
 
     /**
@@ -780,59 +781,59 @@ export default {
      * ---- Init
      * -------------------------------------------------------------------------
      */
-    init: function () {
+    mainInit: function () {
 
-      this.groupsInScene = []
+      /* All loaded meshes in main scene */
+      this.meshesInMain = []
+      
       // Canvas Object
-      this.canvas = document.getElementById("canvas");
+      this.canvasMain = document.getElementById("mainCanvas");
 
       // Loader for .gltf and .glb Data
-      this.loader = new GLTFLoader();
+      this.loaderMain = new GLTFLoader();
 
-      // Renderer
-      this.renderer = new THREE.WebGLRenderer({ antialias: true });
-      this.renderer.setPixelRatio(this.canvas.devicePixelRatio);
-      this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight);
-      this.renderer.setClearColor(0x263238, 1);
-      this.renderer.shadowMap.enabled = true;
-      this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-      this.canvas.appendChild(this.renderer.domElement);
+      /* Renderer */
+      this.rendererMain = new THREE.WebGLRenderer({ canvas: mainCanvas, antialias: true });
+      this.rendererMain.setSize(this.canvasMain.clientWidth, this.canvasMain.clientHeight);
+      this.rendererMain.setClearColor(0x263238, 1);
+      this.rendererMain.shadowMap.enabled = true;
+      this.rendererMain.shadowMap.type = THREE.PCFSoftShadowMap;
 
       // Scene
-      this.scene = new THREE.Scene();
+      this.sceneMain = new THREE.Scene();
 
       // Camera
-      this.camera = this.makePerspectiveCamera()
+      this.cameraMain = this.makePerspectiveCamera()
 
       // Light
       const ambientLight = new THREE.AmbientLight(0xffffff);
-      this.scene.add(ambientLight);
+      this.sceneMain.add(ambientLight);
 
       // Controls
-      this.arcballControls = new ArcballControls
-        (this.camera, this.renderer.domElement, this.scene);
+      this.abControlsMain = new ArcballControls
+        (this.cameraMain, this.rendererMain.domElement, this.sceneMain);
 
-      this.transformControls = new TransformControls
-        (this.camera, this.renderer.domElement);
+      this.tControlsMain = new TransformControls
+        (this.cameraMain, this.rendererMain.domElement);
 
-      this.transformControls.addEventListener('dragging-changed', e => {
-        this.arcballControls.enabled = !e.value;
+      this.tControlsMain.addEventListener('dragging-changed', e => {
+        this.abControlsMain.enabled = !e.value;
       });
 
-      this.scene.add(this.transformControls);
+      this.sceneMain.add(this.tControlsMain);
 
       // GUI
       this.gui = new GUI();
       window.addEventListener('keydown', e => {
         switch (e.code) {
           case 'KeyW':
-            this.transformControls.mode = 'translate';
+            this.tControlsMain.mode = 'translate';
             break;
           case 'KeyE':
-            this.transformControls.mode = 'rotate';
+            this.tControlsMain.mode = 'rotate';
             break;
           case 'KeyR':
-            this.transformControls.mode = 'scale';
+            this.tControlsMain.mode = 'scale';
             break;
         }
       });
@@ -842,8 +843,12 @@ export default {
       this.pointer = new THREE.Vector2()
       
       // Eventlistener
-      document.addEventListener("click", this.updateArcball)
-      document.addEventListener('click', this.onMouseDown)
+      this.canvasMain.addEventListener("click", this.updateArcball)
+      this.canvasMain.addEventListener('click', this.onMouseDown)
+      
+
+    },
+
     subInit: function() {
       /* mesh in sub scene */
       this.meshInSub = null
@@ -955,16 +960,38 @@ export default {
       }
 
       /* Render scene and camera */
-      this.renderer.render(this.scene, this.camera);
+      this.rendererMain.render(this.sceneMain, this.cameraMain);
+      this.rendererSub.render(this.sceneSub, this.cameraSub);
     },
 
     render: function() {
+      for (var i = 0; i < this.positionModelsInScene.length; i++) {
+        if (this.positionModelsInScene[i].move === true) {
+          this.tControlsMain.enabled = true;
+          this.tControlsMain.attach(this.sceneMain.getObjectByName
+                                      (this.positionModelsInScene[i].modelID))
+        }
       }
 
+      /* Delete Model from sceneSub */
+      if(!this.drawer && this.sceneSub.children.length > 1) {
+        /* Dispose Scenes */
+        const childrenToBeRemoved = []
+        const nameTo = this.meshInSub.name
+        this.sceneSub.traverse(function(child) {
+          if(child.name == nameTo) {
+            childrenToBeRemoved.push(child)
+          }
+        })
 
+        childrenToBeRemoved.forEach( (child) => {
+          this.sceneSub.remove(child)
+        })
 
-      this.arcballControls.setTbRadius(0.67)
+        this.controlsSub.reset()
+      }
 
+      this.abControlsMain.setTbRadius(0.67)
     }
   }
 }
