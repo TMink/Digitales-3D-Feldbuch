@@ -950,6 +950,10 @@ export default {
 
       this.render();
 
+      if(this.meshInSub) {
+        this.meshInSub.rotation.y += 0.01
+      }
+
       /* Render scene and camera */
       this.renderer.render(this.scene, this.camera);
     },
