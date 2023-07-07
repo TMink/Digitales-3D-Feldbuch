@@ -512,6 +512,25 @@ export default {
       }
     },
 
+    changeState2: function(element, meshName) {
+
+      switch(element) {
+        case 'model':
+          this.tControlsMain.enabled = false;
+          this.tControlsMain.detach()
+          break;
+        case 'position':
+          const model = this.sceneMain.getObjectByName(meshName);
+          console.log(meshName)
+          var groupObject = model
+          while(!(groupObject instanceof THREE.Group)) {
+            groupObject = groupObject.parent
+          }
+          break;
+      }
+
+    },
+
     /**
      * 
      * @param {*} modelName 
