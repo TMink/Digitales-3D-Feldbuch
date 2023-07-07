@@ -603,14 +603,14 @@ export default {
      */
     saveCurrentScene: async function () {
       /* Save place models settings */
-      for (var i = 0; i < this.meshesInScene.length; i++) {
-        const modelName = this.meshesInScene[i].title;
-        const modelID = this.meshesInScene[i].id;
+      for (var i = 0; i < this.placeModelsInScene.length; i++) {
+        const modelName = this.placeModelsInScene[i].modelID;
+        const modelID = this.placeModelsInScene[i].modelID;
 
-        const modelInScene = this.scene.getObjectByName(modelName);
+        const modelInScene = this.sceneMain.getObjectByName(modelName);
         const modelInDB = await fromOfflineDB.getObject(modelID, 
           'Models', 'places');
-
+          
         /* Update Color */
         modelInDB.color = "#" + modelInScene.material.color.getHexString()
 
@@ -621,11 +621,19 @@ export default {
       }
 
       /* Save position model settings */
-      for (var i = 0; i < this.positionInScene.length; i++) {
-        const modelName = this.positionInScene[i].title;
-        const modelID = this.positionInScene[i].id;
+      for (var i = 0; i < this.positionModelsInScene.length; i++) {
+        const modelName = this.positionModelsInScene[i].modelID;
+        const modelID = this.positionModelsInScene[i].modelID;
 
-        const modelInScene = this.scene.getObjectByName(modelName);
+        const modelInScene = this.sceneMain.getObjectByName(modelName);
+        
+        var groupObject = modelInScene
+        while(!(groupObject instanceof THREE.Group)) {
+          groupObject = groupObject.parent
+        }
+        const worldPosition = new THREE.Vector3()
+        groupObject.getWorldPosition(worldPosition)
+
         const modelInDB = await fromOfflineDB.getObject(modelID, 
           'Models', 'positions');
 
@@ -636,12 +644,15 @@ export default {
         modelInDB.opacity = modelInScene.material.opacity
 
         /* Update Coordinates */
-        const modelCenter = this.getModelCenter(modelInScene)
-        const newCoordinates = [modelCenter.x, modelCenter.y, modelCenter.z]
+        const newCoordinates = [worldPosition.x, worldPosition.y, worldPosition.z]
         modelInDB.coordinates = newCoordinates
 
         await fromOfflineDB.updateObject(modelInDB, 'Models', 'positions')
+      }
 
+      /* Save GUI */
+      const newGUI = {
+        gizmoState: this.gismoState,
       }
 
     },
