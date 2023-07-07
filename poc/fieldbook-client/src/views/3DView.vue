@@ -523,20 +523,30 @@ export default {
         case "model":
 
           /* Set all move-values to false */
+          for (var i = 0; i < this.positionModelsInScene.length; i++) {
+            this.positionModelsInScene[i].move = false
           }
 
+          this.tControlsMain.enabled = false;
+          this.tControlsMain.detach()
           break;
 
         case 'position':
 
           /* Set all move-values to false */
+          for (var i = 0; i < this.positionModelsInScene.length; i++) {
+            this.positionModelsInScene[i].move = false
           }
 
           /* Get the object of checked checkbox */
+          const test = this.positionModelsInScene.filter(
             obj => { return obj.title === positionTitle }
           )
+          this.positionModelsInScene.find
             (x => x.title === test[0].title).move = true;
 
+          this.abControlsMain.enabled = false;
+          this.abControlsMain.visible = false;
           break;
 
         default:
