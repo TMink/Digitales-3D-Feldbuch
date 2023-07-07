@@ -122,7 +122,7 @@
               <v-col cols="12" lg="12">
                 <v-card>
                   <v-col cols="12" lg="12">
-                    <v-textarea color="primary" counter rows="4" auto-grow maxlength="254" :label="$t('description')"
+                    <v-textarea color="primary" counter rows="4" no-resize maxlength="254" :label="$t('description')"
                       v-model="position.description">
                     </v-textarea>
                   </v-col>
