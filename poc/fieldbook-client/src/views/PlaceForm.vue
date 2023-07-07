@@ -46,7 +46,7 @@
                       </v-list-item>
                     </template>
                   </v-combobox>
-                  <v-combobox counter color="primary" maxlength="40" v-model="place.dating" :items="datings"
+                  <v-combobox counter class="pt-4" color="primary" maxlength="40" v-model="place.dating" :items="datings"
                     :label="$t('dating')">
                   </v-combobox>
 
@@ -58,7 +58,7 @@
                   </v-card>
                   <v-spacer class="pa-1"></v-spacer>
                   <v-row class="pl-4 pb-4 justify-center">
-                    <v-col cols="4">
+                    <v-col cols="6">
                       <v-tooltip
                         text="Falls die Stelle kein Befund ist (Arbeitsbereich, Störung, natürliche Verfärbung etc.)"
                         location="bottom">
@@ -69,7 +69,7 @@
                         </template>
                       </v-tooltip>
                     </v-col>
-                    <v-col cols="4">
+                    <v-col cols="6">
                       <v-tooltip
                         text="Falls bei einem Bodeneingriff der Befund noch unterhalb der Eingriffstiefe erhalten ist."
                         location="bottom">
@@ -89,39 +89,27 @@
             <v-card>
               <v-card-text>
                 <div>
-                  <h2 class="text-h6 font-weight-medium pb-3">Gauss-Krüger-Koordinaten</h2>
+                  <h2 class="text-h6 font-weight-medium pb-2">Gauss-Krüger-Koordinaten</h2>
                 </div>
               </v-card-text>
-              <v-row class="pb-4" justify="center">
-                <v-col cols="12" lg="1">
-                  <v-text-field color="primary" hide-details density="compact" v-model="place.right" :label="$t('right')">
-                  </v-text-field>
-                </v-col>
-                <v-col cols="12" lg="2">
-                  <v-text-field color="primary" hide-details density="compact" v-model="place.rightTo"
-                    :label="$t('rightTo')">
-                  </v-text-field>
-                </v-col>
-                <v-divider class="mt-n1 mb-n2" vertical></v-divider>
-                <v-col cols="12" lg="1">
-                  <v-text-field color="primary" hide-details density="compact" v-model="place.up" :label="$t('up')">
-                  </v-text-field>
-                </v-col>
-                <v-col cols="12" lg="2">
-                  <v-text-field color="primary" hide-details density="compact" v-model="place.upTo" :label="$t('upTo')">
-                  </v-text-field>
-                </v-col>
-                <v-divider class="mt-n1 mb-n2" vertical></v-divider>
-                <v-col cols="12" lg="2">
-                  <v-text-field color="primary" hide-details density="compact" v-model="place.depthTop"
-                    :label="$t('depthTop')">
-                  </v-text-field>
-                </v-col>
-                <v-col cols="12" lg="2">
-                  <v-text-field color="primary" hide-details density="compact" v-model="place.depthBot"
-                    :label="$t('depthBot')">
-                  </v-text-field>
-                </v-col>
+              <v-row no-gutters justify="center">
+                <v-text-field class="px-4 pb-4" color="primary" hide-details density="compact" v-model="place.right" :label="$t('right')">
+                </v-text-field>
+                <v-text-field class="pr-4 pb-4" color="primary" hide-details density="compact" v-model="place.rightTo"
+                  :label="$t('rightTo')">
+                </v-text-field>
+              <v-divider class="mt-n1 mb-n2" vertical></v-divider>
+                <v-text-field class="px-4 pb-4" color="primary" hide-details density="compact" v-model="place.up" :label="$t('up')">
+                </v-text-field>
+                <v-text-field class="pr-4 pb-4" color="primary" hide-details density="compact" v-model="place.upTo" :label="$t('upTo')">
+                </v-text-field>
+              <v-divider class="mt-n1 mb-n2" vertical></v-divider>
+                <v-text-field class="px-4 pb-4" color="primary" hide-details density="compact" v-model="place.depthTop"
+                  :label="$t('depthTop')">
+                </v-text-field>
+                <v-text-field class="pr-4 pb-4" color="primary" hide-details density="compact" v-model="place.depthBot"
+                  :label="$t('depthBot')">
+                </v-text-field>
               </v-row>
             </v-card>
 
@@ -132,7 +120,7 @@
                 <v-card height="100%">
                   <v-card-text>
                     <div>
-                      <h2 class="text-h6 font-weight-medium pb-3">{{ $t('visibility') }}</h2>
+                      <h2 class="text-h6 font-weight-medium pb-2">{{ $t('visibility') }}</h2>
                     </div>
                   </v-card-text>
                   <v-slider class="pa-4" :ticks="tickLabels" :max="3" step="1" show-ticks="always" tick-size="4"
@@ -142,7 +130,7 @@
               <v-col cols="12" lg="6">
                 <v-card>
                   <v-col cols="12" lg="12">
-                  <v-textarea color="primary" counter maxlength="254" no-resize rows="4" v-model="place.description"
+                  <v-textarea color="primary" class="pl-2 pr-2 pt-2" counter maxlength="254" no-resize rows="4" v-model="place.description"
                     :label="$t('description')">
                   </v-textarea>
                 </v-col>
@@ -155,8 +143,8 @@
             <v-card>
               <v-row class="pa-4">
                 <v-col cols="12" lg="6">
-                  <v-textarea color="primary" counter no-resize rows="2" v-model="place.planum"
-                    :label="$t('planum')">
+                  <v-textarea color="primary" counter no-resize rows="2" v-model="place.plane"
+                    :label="$t('plane')">
                   </v-textarea>
                 </v-col>
                 <v-col cols="12" lg="6">
