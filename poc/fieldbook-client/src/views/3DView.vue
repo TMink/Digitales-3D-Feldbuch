@@ -290,17 +290,17 @@ export default {
   },
 
   async unmounted() {
-    if(this.meshesInScene.length > 0) {
-      this.saveCurrentScene();
+    if(this.placeModelsInScene.length > 0) {
+      await this.saveCurrentScene();
 
-      // get the current Camera position
+      /* Save Camera */
       const cameraData = [
-        this.camera.position.x,
-        this.camera.position.y,
-        this.camera.position.z,
-        this.camera.rotation.x,
-        this.camera.rotation.y,
-        this.camera.rotation.z
+        this.cameraMain.position.x,
+        this.cameraMain.position.y,
+        this.cameraMain.position.z,
+        this.cameraMain.rotation.x,
+        this.cameraMain.rotation.y,
+        this.cameraMain.rotation.z
       ]
 
       const placeID = VueCookies.get('currentPlace')
@@ -318,7 +318,6 @@ export default {
         anchor.push(camera.arcballAnchor[2])
       }
 
-      // Camera Object
       const cameraObject = {
           id: placeID,
           cameraPosition: cameraData,
@@ -327,13 +326,41 @@ export default {
 
       await fromOfflineDB.updateObject(cameraObject, "Cameras", "cameras")
     }
-    this.renderer.dispose()
-    this.renderer.forceContextLoss()
-    document.removeEventListener("click", this.updateArcball)
-    document.removeEventListener("click", this.onMouseDown)
+
+    this.disposeOfAll()
   },
 
   methods: {
+
+    disposeOfAll: function() {
+      /* Dispose Scenes */
+      for (let i = 0; i < this.meshesInMain.length; i++) {
+        const childrenToBeRemoved = []
+        const nameTo = this.meshesInMain[i].name
+        this.sceneMain.traverse(function(child) {
+          if(child.name == nameTo) {
+            childrenToBeRemoved.push(child)
+          }
+        })
+        
+        childrenToBeRemoved.forEach( (child) => {
+          this.sceneMain.remove(child)
+        })
+      }
+
+      /* Dispose renderer */
+      this.rendererMain.dispose()
+      this.rendererMain.forceContextLoss()
+      this.rendererMain.renderLists.dispose();
+
+      this.rendererSub.dispose()
+      this.rendererSub.forceContextLoss()
+      this.rendererSub.renderLists.dispose();
+
+      /* Remove EventListener */
+      this.canvasMain.removeEventListener("click", this.updateArcball)
+      this.canvasMain.removeEventListener("click", this.onMouseDown)
+    },
 
     /**
     * Function overview:
