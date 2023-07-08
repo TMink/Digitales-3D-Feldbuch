@@ -93,17 +93,20 @@
                 </div>
               </v-card-text>
               <v-row no-gutters justify="center">
-                <v-text-field class="px-4 pb-4" color="primary" hide-details density="compact" v-model="place.right" :label="$t('right')">
+                <v-text-field class="px-4 pb-4" color="primary" hide-details density="compact" v-model="place.right"
+                  :label="$t('right')">
                 </v-text-field>
                 <v-text-field class="pr-4 pb-4" color="primary" hide-details density="compact" v-model="place.rightTo"
                   :label="$t('rightTo')">
                 </v-text-field>
-              <v-divider class="mt-n1 mb-n2" vertical></v-divider>
-                <v-text-field class="px-4 pb-4" color="primary" hide-details density="compact" v-model="place.up" :label="$t('up')">
+                <v-divider class="mt-n1 mb-n2" vertical></v-divider>
+                <v-text-field class="px-4 pb-4" color="primary" hide-details density="compact" v-model="place.up"
+                  :label="$t('up')">
                 </v-text-field>
-                <v-text-field class="pr-4 pb-4" color="primary" hide-details density="compact" v-model="place.upTo" :label="$t('upTo')">
+                <v-text-field class="pr-4 pb-4" color="primary" hide-details density="compact" v-model="place.upTo"
+                  :label="$t('upTo')">
                 </v-text-field>
-              <v-divider class="mt-n1 mb-n2" vertical></v-divider>
+                <v-divider class="mt-n1 mb-n2" vertical></v-divider>
                 <v-text-field class="px-4 pb-4" color="primary" hide-details density="compact" v-model="place.depthTop"
                   :label="$t('depthTop')">
                 </v-text-field>
@@ -130,10 +133,10 @@
               <v-col cols="12" lg="6">
                 <v-card>
                   <v-col cols="12" lg="12">
-                  <v-textarea color="primary" class="pl-2 pr-2 pt-2" counter maxlength="254" no-resize rows="4" v-model="place.description"
-                    :label="$t('description')">
-                  </v-textarea>
-                </v-col>
+                    <v-textarea color="primary" class="pl-2 pr-2 pt-2" counter maxlength="254" no-resize rows="4"
+                      v-model="place.description" :label="$t('description')">
+                    </v-textarea>
+                  </v-col>
                 </v-card>
               </v-col>
             </v-row>
@@ -144,19 +147,17 @@
               <v-col cols="12" lg="6">
                 <v-card height="100%">
                   <v-col cols="12" lg="12">
-                  <v-textarea color="primary" counter no-resize rows="2" v-model="place.plane"
-                    :label="$t('plane')">
-                  </v-textarea>
+                    <v-textarea color="primary" counter no-resize rows="2" v-model="place.plane" :label="$t('plane')">
+                    </v-textarea>
                   </v-col>
                 </v-card>
               </v-col>
               <v-col cols="12" lg="6">
                 <v-card>
                   <v-col cols="12" lg="12">
-                    <v-textarea color="primary" counter no-resize rows="2" v-model="place.editor"
-                    :label="$t('editor')">
-                  </v-textarea>
-                </v-col>
+                    <v-textarea color="primary" counter no-resize rows="2" v-model="place.editor" :label="$t('editor')">
+                    </v-textarea>
+                  </v-col>
                 </v-card>
               </v-col>
             </v-row>
@@ -164,7 +165,7 @@
           </v-window-item>
 
           <v-window-item value="two">
-            <ImageForm :object_id="place.id" object_type="Places"/>
+            <ImageForm :object_id="place.id" object_type="Places" />
           </v-window-item>
 
           <!-- Tab item 'positions' -->
