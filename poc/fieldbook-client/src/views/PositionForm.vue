@@ -161,12 +161,10 @@
           </v-window-item>
 
           <!-- TAB ITEM 'IMAGES' -->
-          <!-- TAB ITEM 'IMAGES' -->
           <v-window-item value="two">
             <ImageForm :object_id="position.id" object_type="Positions" />
           </v-window-item>
 
-          <!-- TAB ITEM 'TEXTS' -->
           <!-- TAB ITEM 'TEXTS' -->
           <!-- <v-window-item value="three">
             <v-list-subheader v-if="texts.length === 0">
@@ -432,11 +430,11 @@ export default {
      * Save a Position to local storage for the current place
      */
     async savePosition() {
-      if (!this.$refs.form.validate()) {
+      /* if (!this.$refs.form.validate()) {
         this.error_message = "Bitte alle Pflichtfelder vor dem Speichern ausfüllen";
         this.error_dialog = true;
         return;
-      }
+      } */
 
       //convert from vue proxy to JSON object
       const rawPosition = toRaw(this.position);
