@@ -102,7 +102,6 @@
       </canvas>
 
       <!-- Position information-->
-      <v-container fluid>
         <v-navigation-drawer v-model="drawer" location="bottom" 
                              temporary width="389">
           <v-navigation-drawer permanent location="right" width="350">
@@ -126,7 +125,9 @@
             </v-list-item>
             
           </v-navigation-drawer>
-          <v-card width="23%" height="100%" variant="outlined" class="pa-4">
+          <v-row>
+          <v-col cols="9" lg="3">
+          <v-card height="100%" variant="outlined" class="pa-4">
             <v-row>
 
               <v-col cols="12" lg="6">
@@ -194,8 +195,128 @@
               
             </v-row>
           </v-card>
-        </v-navigation-drawer>
-      </v-container>
+          
+        </v-col>
+        <v-col cols="9" lg="3">
+          <v-card height="100%" variant="outlined" class="pa-4">
+            <v-row>
+
+              <v-col cols="12" lg="4">
+                <v-list-item variant="tonal">
+                  <v-list-item-title class="text-h6">
+                    {{ positionInfo.right }}
+                  </v-list-item-title>
+                </v-list-item>
+                <v-list-item style="top: -10px; left: -10px">
+                  <v-list-item-subtitle>
+                    Rechtswert
+                  </v-list-item-subtitle>
+                </v-list-item>
+              </v-col>
+
+              <v-col cols="12" lg="4">
+                <v-list-item variant="tonal">
+                  <v-list-item-title style="color:white" class="text-h6">
+                    {{ positionInfo.up }}
+                  </v-list-item-title>
+                </v-list-item>
+                <v-list-item style="top: -10px; left: -10px">
+                  <v-list-item-subtitle>
+                    Hochwert
+                  </v-list-item-subtitle>
+                </v-list-item>
+              </v-col>
+
+              <v-col cols="12" lg="4">
+                <v-list-item variant="tonal">
+                  <v-list-item-title style="color:white" class="text-h6">
+                    {{ positionInfo.height }}
+                  </v-list-item-title>
+                </v-list-item>
+                <v-list-item style="top: -10px; left: -10px">
+                  <v-list-item-subtitle>
+                    Höhe
+                  </v-list-item-subtitle>
+                </v-list-item>
+              </v-col>
+              
+            </v-row>
+          </v-card>
+        </v-col>
+        <v-col cols="10" lg="3">
+          <v-card height="100%" variant="outlined" class="pa-4">
+            <v-row>
+
+              <v-col cols="12" lg="6">
+                <v-list-item variant="tonal">
+                  <v-list-item-title class="text-h6">
+                    {{ positionInfo.count }}
+                  </v-list-item-title>
+                </v-list-item>
+                <v-list-item style="top: -10px; left: -10px">
+                  <v-list-item-subtitle>
+                    Anzahl
+                  </v-list-item-subtitle>
+                </v-list-item>
+              </v-col>
+
+              <v-col cols="12" lg="6">
+                <v-list-item variant="tonal">
+                  <v-list-item-title class="text-h6">
+                    {{ positionInfo.weight }}
+                  </v-list-item-title>
+                </v-list-item>
+                <v-list-item style="top: -10px; left: -10px">
+                  <v-list-item-subtitle>
+                    Gewicht
+                  </v-list-item-subtitle>
+                </v-list-item>
+              </v-col>
+
+              <v-col cols="12" lg="6">
+                <v-list-item variant="tonal">
+                  <v-list-item-title class="text-h6">
+                    {{ positionInfo.dating }}
+                  </v-list-item-title>
+                </v-list-item>
+                <v-list-item style="top: -10px; left: -10px">
+                  <v-list-item-subtitle>
+                    Datierung
+                  </v-list-item-subtitle>
+                </v-list-item>
+              </v-col>
+
+              <v-col cols="12" lg="6">
+                <v-list-item variant="tonal">
+                  <v-list-item-title style="color:white" class="text-h6">
+                    {{ positionInfo.adressOf }}
+                  </v-list-item-title>
+                </v-list-item>
+                <v-list-item style="top: -10px; left: -10px">
+                  <v-list-item-subtitle>
+                    AnspracheVon
+                  </v-list-item-subtitle>
+                </v-list-item>
+              </v-col>
+
+              <v-col cols="12" lg="16">
+                <v-list-item variant="tonal">
+                  <v-list-item-title style="color:white" class="text-h6">
+                    {{ positionInfo.description }}
+                  </v-list-item-title>
+                </v-list-item>
+                <v-list-item style="top: -10px; left: -10px">
+                  <v-list-item-subtitle>
+                    Beschreibung
+                  </v-list-item-subtitle>
+                </v-list-item>
+              </v-col>
+              
+            </v-row>
+          </v-card>
+        </v-col>
+        </v-row>
+      </v-navigation-drawer>
     <v-main style="height: 250px"></v-main>
   </v-layout>
 </template>
