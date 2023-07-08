@@ -41,28 +41,20 @@
                     </v-col>
 
                     <v-col cols="6">
-                      <v-list-item-title 
-                        class="ma-4 text-wrap" 
-                        v-if="item.title.length != 0">
+                      <v-list-item-title class="ma-4 text-wrap" v-if="item.title.length != 0">
                         {{ item.title.join("; ") }}
                       </v-list-item-title>
 
-                      <v-list-item-title 
-                        class="ma-4 text-grey-darken-1" 
-                        v-if="item.title.length == 0">
+                      <v-list-item-title class="ma-4 text-grey-darken-1" v-if="item.title.length == 0">
                         {{ $t('title') }}
                       </v-list-item-title>
                     </v-col>
 
                     <v-col cols="2">
-                      <v-list-item-title 
-                        class="ma-4" 
-                        v-if="item.date.length != 0">
+                      <v-list-item-title class="ma-4" v-if="item.date.length != 0">
                         {{ item.date }}
                       </v-list-item-title>
-                      <v-list-item-title 
-                        class="ma-4 text-grey-darken-1" 
-                        v-if="item.date.length == 0">
+                      <v-list-item-title class="ma-4 text-grey-darken-1" v-if="item.date.length == 0">
                         {{ $t('date') }}
                       </v-list-item-title>
                     </v-col>
@@ -135,10 +127,10 @@ export default {
       var curActivityID = String(VueCookies.get('currentActivity'));
 
       this.places = await fromOfflineDB.getAllObjectsWithID(
-                      curActivityID, 'Activity', 'Places', 'places');
+        curActivityID, 'Activity', 'Places', 'places');
       this.places.sort((a, b) => (a.placeNumber > b.placeNumber) ? 1 : -1)
     },
-    
+
     /**
      * Adds a new place to IndexedDB for the current activity
      */
@@ -227,5 +219,4 @@ export default {
   border-bottom: 2px solid black;
   background-color: rgb(221, 221, 221);
 }
-
 </style>

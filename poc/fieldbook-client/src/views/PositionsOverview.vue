@@ -7,20 +7,20 @@
 
         <!-- LIST TITLE -->
         <v-card-text v-if="positions.length !== 0">
-              <div>
-                <h3><v-row class="justify-center">
-                    <v-col cols="2" class="text-left pl-6">
-                      Nr.
-                    </v-col>
-                    <v-col cols="7" class="text-left pl-6">
-                      Titel
-                    </v-col>
-                    <v-col cols="3" class="text-left pl-6">
-                      Datum
-                    </v-col>
-                  </v-row></h3>
-              </div>
-            </v-card-text>
+          <div>
+            <h3><v-row class="justify-center">
+                <v-col cols="1" class="text-left pl-6">
+                  Nr.
+                </v-col>
+                <v-col cols="6" class="text-left pl-6">
+                  Titel
+                </v-col>
+                <v-col cols="2" class="text-left pl-6">
+                  Datum
+                </v-col>
+              </v-row></h3>
+          </div>
+        </v-card-text>
 
         <!-- POSITIONS LIST -->
         <v-card>
@@ -31,32 +31,28 @@
 
             <template v-for="(position, i) in positions" :key="position">
               <v-list-item v-on:click="moveToPosition(position.id)">
-                <v-row>
+                <v-row class="justify-center">
 
-                  <v-col cols="2">
+                  <v-col cols="1">
                     <v-list-item-title class="ma-4">
                       {{ position.positionNumber }}
                     </v-list-item-title>
                   </v-col>
 
-                  <v-col cols="7">
-                    <v-list-item-title class="ma-4">
+                  <v-col cols="6">
+                    <v-list-item-title class="ma-4 text-wrap">
                       {{ position.title }}
                     </v-list-item-title>
-                    <v-list-item-title 
-                      class="ma-4 text-grey-darken-1" 
-                      v-if="position.title.length == 0">
+                    <v-list-item-title class="ma-4 text-grey-darken-1" v-if="position.title.length == 0">
                       {{ $t('title') }}
                     </v-list-item-title>
                   </v-col>
 
-                  <v-col cols="3">
+                  <v-col cols="2">
                     <v-list-item-title class="ma-4">
                       {{ position.date }}
                     </v-list-item-title>
-                    <v-list-item-title 
-                      class="ma-4 text-grey-darken-1" 
-                      v-if="position.date.length == 0">
+                    <v-list-item-title class="ma-4 text-grey-darken-1" v-if="position.date.length == 0">
                       {{ $t('date') }}
                     </v-list-item-title>
                   </v-col>
@@ -71,9 +67,7 @@
       <v-spacer></v-spacer>
     </v-row>
 
-    <AddPosition 
-      :positions_prop="positions" 
-      @closeDiag="updatePositions()"/>
+    <AddPosition :positions_prop="positions" @closeDiag="updatePositions()" />
   </div>
 </template>
 
