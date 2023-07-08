@@ -101,8 +101,10 @@ export default {
      * Update reactive Vue.js position data
      */
     async updatePositions() {
-      this.positions = await fromOfflineDB.getAllObjects('Positions', 'positions');
+      var curPlaceID = String(VueCookies.get('currentPlace'));
 
+      this.positions = await fromOfflineDB.getAllObjectsWithID(
+        curPlaceID, 'Place', 'Positions', 'positions');
     },
     /**
      *  Routes to the PositionForm for the chosen positionID
