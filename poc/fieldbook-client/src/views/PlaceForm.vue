@@ -185,7 +185,9 @@
                 </v-list>
               </v-card>
 
-              <AddPosition :positions_prop="positions" @closeDiag="updatePositions()" />
+              <AddPosition :positions_prop="positions" 
+                    @updatePlace="updatePlace()" 
+                    @updatePositions="updatePositions()" />
 
             </v-form>
           </v-window-item>
@@ -388,7 +390,6 @@ export default {
     async updatePositions() {
       this.positions = await fromOfflineDB.getAllObjectsWithID(this.place.id, 'Place', 'Positions', 'positions');
     },
-
     /**
      * Update reactive Vue.js models data
      */

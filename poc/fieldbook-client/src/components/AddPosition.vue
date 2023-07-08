@@ -39,15 +39,15 @@ export default {
   methods: {
     closeDiag() {
       this.dialog = false;
-      this.$emit('closeDiag', false);
+      this.$emit('updatePositions');
+      this.$emit('updatePlace');
     },
     /**
      * Adds a new position to the local storage for the current place
      */
     async addPosition() {
       var curPlaceID = VueCookies.get('currentPlace');
-      var curPlace = 
-          await fromOfflineDB.getObject(curPlaceID, "Places", "places");
+      var curPlace = await fromOfflineDB.getObject(curPlaceID, "Places", "places");
       var newPositionID = String(Date.now());
 
       curPlace.positions.push(newPositionID);
