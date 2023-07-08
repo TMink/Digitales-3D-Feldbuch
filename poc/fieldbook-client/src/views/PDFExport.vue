@@ -3,9 +3,27 @@
     <v-row class="pt-4">
       <v-spacer></v-spacer>
       <v-form class="w-75 pa-2">
+        
         <v-window color="background" v-if="!activity_open">
+          <v-btn icon color="decline" disabled>
+            <v-icon>mdi-arrow-left</v-icon>
+          </v-btn>
 
-          <h2 class="text-center">AKTIVITÄTEN</h2>
+          <h2 class="text-center pb-4">AKTIVITÄTEN</h2>
+
+          <v-divider/>
+
+          <v-card-text v-if="places.length !== 0">
+            <h3>
+              <v-row>
+                <v-col cols="12" class="pl-6 text-center">
+                  Aktivitäts Nr.
+                </v-col>
+              </v-row>
+            </h3>
+          </v-card-text>
+
+          <!-- LIST TITLE -->
           <v-list>
             <v-list-subheader v-if="activities.length === 0">
               {{ $t('not_created_yet', { object: $tc('activity', 2) }) }}
@@ -13,96 +31,57 @@
 
             <!-- ACTIVITIES LIST-->
             <template v-for="(activity, i) in activities" :key="activity">
-              <v-row no-gutters v-if="!activity.edit" class="align-center">
+              <v-row no-gutters v-if="!activity.edit" class="text-center">
 
-                <v-col cols="9">
-                  <v-list-item 
-                    class="pa-2 ma-2 text-center" 
+                <v-col cols="12">
+                  <v-list-item class="pa-2 ma-2" 
                     v-on:click="setActivity(activity.id)">
 
-                    <v-list-item-title class="ma-4 text-center">
+                    <v-list-item-title class="ma-4">
                       {{ activity.activityNumber }}
                     </v-list-item-title>
 
-                    {{ activity.places.length }} Stellen
+                    <p style="color:grey" >
+                      {{ activity.places.length }} Stellen 
+                    </p>
                   </v-list-item>
                 </v-col>
 
               </v-row>
               <v-divider v-if="i !== activities.length - 1"/>
-
-              <!-- EXPORT DIALOG -->
-              <v-dialog v-model="export_overlay" max-width="800" persistent>
-                <v-card>
-                  <v-card-title>Export to PDF </v-card-title>
-                  <v-card-text>
-
-                    <v-row class="align-center" hide-details>
-
-                      <v-switch color="success" v-model="exportActivities" label="Activities"></v-switch>
-                    </v-row>
-                    <v-row v-if="exportActivities">
-                      <v-col>
-                        This will export {{ allActivitiesCount }} Activities
-                      </v-col>
-                    </v-row>
-
-                    <v-divider/>
-
-                    <v-row class="align-center" hide-details>
-                      <v-switch color="success" v-model="exportPlaces" label="Places"></v-switch>
-                    </v-row>
-                    <v-row v-if="exportPlaces">
-                      This will export {{ allPlacesCount }} Places
-                      <v-checkbox label="Export Drawings"></v-checkbox>
-                      <v-checkbox label="Export Models"></v-checkbox>
-                    </v-row>
-
-                    <v-divider/>
-
-                    <v-row class="align-center" hide-details>
-                      <v-switch color="success" v-model="exportPositions" label="Positions"></v-switch>
-                    </v-row>
-                    <v-row v-if="exportPositions">
-                      This will export {{ allPositionsCount }} Positions
-
-                      <v-checkbox label="Export Images"></v-checkbox>
-                      <v-checkbox label="Export Models"></v-checkbox>
-                      <!-- <v-checkbox label="Export additional Params"></v-checkbox> -->
-                    
-                    </v-row>
-
-                  </v-card-text>
-
-                  <v-card-actions class="justify-center">
-                    <v-btn 
-                      icon 
-                      color="primary" 
-                      v-on:click="createPDF()" 
-                      :disabled="!exportActivities && !exportPlaces && !exportPositions">
-                      <v-icon>mdi-content-save-all</v-icon>
-                    </v-btn>
-                    <v-btn icon color="error" @click="export_overlay = false">
-                      <v-icon>mdi-close-circle</v-icon>
-                    </v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
-
             </template>
-            <ConfirmDialog ref="confirm" />
           </v-list>
         </v-window>
 
         <!-- PLACES LIST -->
         <v-window color="background" v-if="activity_open && !place_open">
-          <v-btn 
-            icon 
-            color="decline" 
-            @click="activity_open = false">
+          <v-btn icon @click="activity_open = false; 
+              exportPlaces = true; exportActivities = true">
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
-          <h2 class="text-center">STELLEN</h2>
+
+          <h2 class="text-center pb-4">STELLEN</h2>
+
+          <v-divider/>
+
+          <v-card-text v-if="places.length !== 0">
+            <h3>
+              <v-row class="justify-center">
+                <v-col cols="1" class="pl-6">
+                  Nr.
+                </v-col>
+                <v-col cols="5" class="pl-6">
+                  Ansprache
+                </v-col>
+                <v-col cols="2" class="pl-4">
+                  Datierung
+                </v-col>
+                <v-col cols="2" class="pl-4">
+                  Datum
+                </v-col>
+              </v-row>
+            </h3>
+          </v-card-text>
 
           <v-list>
             <v-list-subheader v-if="places.length === 0">
@@ -112,43 +91,94 @@
             <!--Lists all locally saved places-->
             <template v-for="(place, i) in places" :key="place">
               <v-row no-gutters v-if="!place.edit" class="align-center">
-                <v-col cols="9">
-                  <v-list-item 
-                    class="pa-2 ma-2 text-center" 
+                <v-col cols="12">
+                  <v-list-item class="pa-2 ma-2" 
                     v-on:click="setPlace(place.id)">
 
-                    <v-list-item-title class="ma-4 text-center">
-                      {{ place.placeNumber }} 
-                      {{ place.title.join("; ") }} 
-                      {{ place.date }}
-                    </v-list-item-title>
+                    <v-row no-gutters class="justify-center">
 
-                    {{ place.positions.length }} Positionen
+                      <v-col cols="1">
+                        <v-list-item-title class="ma-4">
+                          {{ place.placeNumber }}
+                        </v-list-item-title>
+                      </v-col>
+
+                      <v-col cols="5">
+                        <v-list-item-title class="ma-4" 
+                          v-if="place.title.length > 0">
+                          {{ place.title.join("; ") }} 
+                        </v-list-item-title>
+
+                        <v-list-item-title class="ma-4" style="color:grey" 
+                          v-if="place.title.length == 0">
+                          Ansprache 
+                        </v-list-item-title>
+                      </v-col>
+
+                      <v-col cols="2">
+                        <v-list-item-title class="ma-4" 
+                          v-if="place.dating.length > 0">
+                          {{ place.dating }} 
+                        </v-list-item-title>
+
+                        <v-list-item-title class="ma-4" style="color:grey" 
+                          v-if="place.dating.length == 0">
+                          Datierung 
+                        </v-list-item-title>
+                      </v-col>
+
+                      <v-col cols="2">
+                        <v-list-item-title class="ma-4">
+                          {{ place.date }}
+                        </v-list-item-title>
+                      </v-col>
+                    </v-row>
+
+                    <p class="text-center" style="color:grey"> 
+                      {{ place.positions.length }} Positionen 
+                    </p>
                   </v-list-item>
                 </v-col>
-
-                <v-btn 
-                  class="ma-1" 
-                  color="primary" 
-                  v-on:click="export_overlay = true">
-                  Export to PDF
-                </v-btn>
               </v-row>
 
               <v-divider v-if="i !== places.length - 1"/>
-
             </template>
-            <ConfirmDialog ref="confirm" />
           </v-list>
         </v-window>
 
     <!-- PLACES LIST -->
         <v-window color="background" v-if="place_open">
 
-          <v-btn icon color="decline" @click="place_open = false">
+          <v-btn icon color="decline" @click="place_open = false; exportPlaces = true">
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
-          <h2 class="text-center">POSITIONEN</h2>
+
+          <h2 class="text-center pb-4">POSITIONEN</h2>
+
+          <v-divider/>
+
+          <v-card-text v-if="places.length !== 0">
+            <h3>
+              <v-row>
+                <v-col cols="1" class="pl-6">
+                  Nr.
+                </v-col>
+                <v-col cols="1" class="pl-6">
+                  SubNr.
+                </v-col>
+                <v-col cols="5" class="pl-6">
+                  Ansprache
+                </v-col>
+                <v-col cols="3" class="pl-6">
+                  Datierung
+                </v-col>
+                <v-col cols="2" class="pl-6">
+                  Datum
+                </v-col>
+              </v-row>
+            </h3>
+          </v-card-text>
+
           <v-list>
             <v-list-subheader v-if="positions.length === 0">
               {{ $t('not_created_yet', { object: $tc('position', 2) }) }}
@@ -157,32 +187,141 @@
             <template v-for="(position, i) in positions" :key="position">
               <v-row no-gutters v-if="!position.edit" class="align-center">
 
-                <v-col cols="9">
-                  <v-list-item class="pa-2 ma-2 text-center">
-                    <v-list-item-title class="ma-4 text-center">
-                      {{ position.positionNumber }}
-                    </v-list-item-title>
-                    <!-- {{ position.positions.length }} Stellen -->
+                <v-col cols="12">
+                  <v-list-item class="pa-2 ma-2">
+                    <v-row>
+
+                      <v-col cols="1">
+                        <v-list-item-title class="pa-4">
+                          {{ position.positionNumber }}
+                        </v-list-item-title>
+                      </v-col>
+
+                      <v-col cols="1">
+                        <v-list-item-title class="pa-4">
+                          {{ position.subNumber }}
+                        </v-list-item-title>
+                      </v-col>
+
+                      <v-col cols="5">
+                        <v-list-item-title class="pa-4">
+                          {{ position.title }}
+                        </v-list-item-title>
+                      </v-col>
+
+                      <v-col cols="3">
+                        <v-list-item-title class="pa-4">
+                          {{ position.dating }}
+                        </v-list-item-title>
+                      </v-col>
+
+                      <v-col cols="2">
+                        <v-list-item-title class="pa-4">
+                          {{ position.date }}
+                        </v-list-item-title>
+                      </v-col>
+                    </v-row>
                   </v-list-item>
                 </v-col>
-
               </v-row>
               <v-divider v-if="i !== positions.length - 1"/>
-
             </template>
-            <ConfirmDialog ref="confirm" />
           </v-list>
         </v-window>
 
+
+        <!-- EXPORT DIALOG -->
+        <v-dialog v-model="export_overlay" max-width="800" persistent>
+          <v-card>
+            <v-card-title>Export to PDF </v-card-title>
+            <v-card-text>
+            <v-row class="text-center">
+
+              <v-col cols="4" class="align-center" hide-details>
+                <v-switch hide-details color="success" label="Activities"
+                  :disabled="activity_open" v-model="exportActivities">
+                </v-switch>
+
+                <v-col> 
+                  <p v-if="exportActivities">
+                    This will export {{ allActivitiesCount }} Activities
+                  </p>
+                  <p style="color:grey" v-if="!exportActivities">
+                    This will export 0 Activities
+                  </p>
+                </v-col>
+              </v-col>
+            
+              <v-divider vertical/>
+
+              <v-col cols="4" class="align-center" >
+                <v-switch hide-details color="success" label="Places"
+                  :disabled="place_open && activity_open" v-model="exportPlaces">
+                </v-switch>
+                <v-col>
+                  <p v-if="exportPlaces">
+                    This will export {{ allPlacesCount }} Places
+                  </p>
+                  <p style="color:grey" v-if="!exportPlaces">
+                    This will export 0 Places
+                  </p>
+                  <v-checkbox hide-details class="pt-4" label="Export Drawings" 
+                    :disabled="!exportPlaces">
+                  </v-checkbox>
+
+                  <v-checkbox hide-details label="Export Models" 
+                    :disabled="!exportPlaces">
+                  </v-checkbox>
+                </v-col>
+              </v-col>
+            
+              <v-divider vertical/>
+
+              <v-col cols="4" class="align-center">
+                <v-row no-gutters class="justify-center align-center">
+                  <v-switch hide-details color="success" label="Positions"
+                    v-model="exportPositions">
+                  </v-switch>
+                </v-row>
+              
+                <v-col>
+                  <p v-if="exportPositions">
+                    This will export {{ allPositionsCount }} Positions
+                  </p>
+                  <p style="color:grey" v-if="!exportPositions">
+                    This will export 0 Positions
+                  </p>
+                  <v-checkbox hide-details class="pt-4" label="Export Images" 
+                    :disabled="!exportPositions">
+                  </v-checkbox>
+                  <v-checkbox hide-details label="Export Models" 
+                    :disabled="!exportPositions">
+                  </v-checkbox>
+                </v-col>
+              </v-col>
+            </v-row>
+
+            </v-card-text>
+
+            <v-card-actions class="justify-center">
+              <v-btn icon color="primary" v-on:click="createPDF()" 
+                :disabled="!exportActivities && !exportPlaces && !exportPositions">
+                <v-icon>mdi-content-save-all</v-icon>
+              </v-btn>
+              <v-btn icon color="error" @click="export_overlay = false">
+                <v-icon>mdi-close-circle</v-icon>
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
         <v-row no-gutters class="pa-1 justify-center">
-          <v-btn 
-            class="ma-1" 
-            color="primary" 
-            v-on:click="export_overlay = true">
+          <v-btn class="ma-1" color="primary" v-on:click="export_overlay = true">
             Export to PDF
           </v-btn>
         </v-row>
 
+        <ConfirmDialog ref="confirm" />
       </v-form>
       <v-spacer></v-spacer>
     </v-row>
@@ -210,9 +349,9 @@ export default {
       activity_open: false,
       place_open: false,
       export_overlay: false,
-      exportActivities: false,
-      exportPlaces: false,
-      exportPositions: false,
+      exportActivities: true,
+      exportPlaces: true,
+      exportPositions: true,
       rules: {
         required: value => !!value || 'Required.',
       },
@@ -279,7 +418,10 @@ export default {
         activity_id, 'Activity', 'Places', 'places');
       /* this.places.sort((a, b) => (a.placeNumber > b.placeNumber) ? 1 : -1) */
       this.activity_open = true;
-      console.log(this.places);
+
+      this.exportActivities = false;
+      this.exportPlaces = true;
+      this.exportPositions = true;
     },
     /**
      *  Sets the active activity and filters positions accordingly
@@ -290,6 +432,10 @@ export default {
         place_id, 'Place', 'Positions', 'positions');
       /* this.places.sort((a, b) => (a.placeNumber > b.placeNumber) ? 1 : -1) */
       this.place_open = true;
+
+      this.exportActivities = false;
+      this.exportPlaces = false;
+      this.exportPositions = true;
     },
     /**
      * Starts the PDF export process
