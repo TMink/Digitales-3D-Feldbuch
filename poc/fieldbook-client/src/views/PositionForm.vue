@@ -101,20 +101,26 @@
 
             <v-spacer class="pa-3"></v-spacer>
 
-            <v-card class="pa-4">
-              <v-row class="pt-2">
-                <v-col cols="12" lg="6">
-                  <v-text-field color="primary" label="Anzahl" v-model="position.count"
-                    :hint="$tc('please_input', 2, { msg: 'Anzahl' })">
-                  </v-text-field>
-                </v-col>
-                <v-col cols="12" lg="6">
-                  <v-text-field color="primary" label="Gewicht" v-model="position.weight"
-                    :hint="$tc('please_input', 2, { msg: 'Gewicht' })">
-                  </v-text-field>
-                </v-col>
-              </v-row>
-            </v-card>
+            <v-row>
+              <v-col cols="12" lg="6">
+                <v-card height="100%">
+                  <v-col cols="12" lg="12">
+                    <v-text-field color="primary" label="Anzahl" v-model="position.count"
+                      :hint="$tc('please_input', 2, { msg: 'Anzahl' })">
+                    </v-text-field>
+                  </v-col>
+                </v-card>
+              </v-col>
+              <v-col cols="12" lg="6">
+                <v-card>
+                  <v-col cols="12" lg="12">
+                    <v-text-field color="primary" label="Gewicht" v-model="position.weight"
+                      :hint="$tc('please_input', 2, { msg: 'Gewicht' })">
+                    </v-text-field>
+                  </v-col>
+                </v-card>
+              </v-col>
+            </v-row>
 
             <v-spacer class="pa-3"></v-spacer>
 
@@ -132,26 +138,32 @@
 
             <v-spacer class="pa-3"></v-spacer>
 
-            <v-card class="pa-4">
-              <v-row class="pt-2">
-                <v-col cols="12" lg="6">
-                  <v-combobox color="primary" counter maxlength="40" :items="datings" :label="$t('dating')"
-                    v-model="position.dating">
-                  </v-combobox>
-                </v-col>
-                <v-col cols="12" lg="6">
-                  <v-text-field color="primary" label="AnspracheVon" v-model="position.addressOf"
-                    :hint="$tc('please_input', 2, { msg: 'AnsrpacheVon' })">
-                  </v-text-field>
-                </v-col>
-              </v-row>
-            </v-card>
+            <v-row>
+              <v-col cols="12" lg="6">
+                <v-card height="100%">
+                  <v-col cols="12" lg="12">
+                    <v-combobox color="primary" counter maxlength="40" :items="datings" :label="$t('dating')"
+                      v-model="position.dating">
+                    </v-combobox>
+                  </v-col>
+                </v-card>
+              </v-col>
+              <v-col cols="12" lg="6">
+                <v-card>
+                  <v-col cols="12" lg="12">
+                    <v-text-field color="primary" label="AnspracheVon" v-model="position.addressOf"
+                      :hint="$tc('please_input', 2, { msg: 'AnsrpacheVon' })">
+                    </v-text-field>
+                  </v-col>
+                </v-card>
+              </v-col>
+            </v-row>
           </v-window-item>
 
           <!-- TAB ITEM 'IMAGES' -->
           <!-- TAB ITEM 'IMAGES' -->
           <v-window-item value="two">
-              <ImageForm :object_id="position.id" object_type="Positions"/>
+            <ImageForm :object_id="position.id" object_type="Positions" />
           </v-window-item>
 
           <!-- TAB ITEM 'TEXTS' -->

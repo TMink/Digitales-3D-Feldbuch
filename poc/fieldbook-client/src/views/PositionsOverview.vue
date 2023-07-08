@@ -43,6 +43,7 @@
                     <v-list-item-title class="ma-4 text-wrap">
                       {{ position.title }}
                     </v-list-item-title>
+                    
                     <v-list-item-title class="ma-4 text-grey-darken-1" v-if="position.title.length == 0">
                       {{ $t('title') }}
                     </v-list-item-title>
