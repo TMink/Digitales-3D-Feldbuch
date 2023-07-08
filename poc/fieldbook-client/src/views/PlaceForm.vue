@@ -140,20 +140,27 @@
 
             <v-spacer class="pa-3"></v-spacer>
 
-            <v-card>
-              <v-row class="pa-4">
-                <v-col cols="12" lg="6">
+            <v-row>
+              <v-col cols="12" lg="6">
+                <v-card height="100%">
+                  <v-col cols="12" lg="12">
                   <v-textarea color="primary" counter no-resize rows="2" v-model="place.plane"
                     :label="$t('plane')">
                   </v-textarea>
-                </v-col>
-                <v-col cols="12" lg="6">
-                  <v-textarea color="primary" counter no-resize rows="2" v-model="place.editor"
+                  </v-col>
+                </v-card>
+              </v-col>
+              <v-col cols="12" lg="6">
+                <v-card>
+                  <v-col cols="12" lg="12">
+                    <v-textarea color="primary" counter no-resize rows="2" v-model="place.editor"
                     :label="$t('editor')">
                   </v-textarea>
                 </v-col>
-              </v-row>
-            </v-card>
+                </v-card>
+              </v-col>
+            </v-row>
+
           </v-window-item>
 
           <v-window-item value="two">
