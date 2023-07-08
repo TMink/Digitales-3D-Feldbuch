@@ -29,39 +29,41 @@
               {{ $t('not_created_yet', { object: $tc('position', 2) }) }}
             </v-list-subheader>
 
-            <template v-for="(position, i) in positions" :key="position">
-              <v-list-item v-on:click="moveToPosition(position.id)">
-                <v-row class="justify-center">
+            <v-virtual-scroll :items="positions" :max-height="windowHeight - 360">
+              <template v-slot="{ item }" :key="item">
+                <v-list-item v-on:click="moveToPosition(position.id)">
+                  <v-row class="justify-center">
 
-                  <v-col cols="1">
-                    <v-list-item-title class="ma-4">
-                      {{ position.positionNumber }}
-                    </v-list-item-title>
-                  </v-col>
+                    <v-col cols="1">
+                      <v-list-item-title class="ma-4">
+                        {{ item.positionNumber }}
+                      </v-list-item-title>
+                    </v-col>
 
-                  <v-col cols="6">
-                    <v-list-item-title class="ma-4 text-wrap">
-                      {{ position.title }}
-                    </v-list-item-title>
-                    
-                    <v-list-item-title class="ma-4 text-grey-darken-1" v-if="position.title.length == 0">
-                      {{ $t('title') }}
-                    </v-list-item-title>
-                  </v-col>
+                    <v-col cols="6">
+                      <v-list-item-title class="ma-4 text-wrap">
+                        {{ item.title }}
+                      </v-list-item-title>
 
-                  <v-col cols="2">
-                    <v-list-item-title class="ma-4">
-                      {{ position.date }}
-                    </v-list-item-title>
-                    <v-list-item-title class="ma-4 text-grey-darken-1" v-if="position.date.length == 0">
-                      {{ $t('date') }}
-                    </v-list-item-title>
-                  </v-col>
+                      <v-list-item-title class="ma-4 text-grey-darken-1" v-if="item.title.length == 0">
+                        {{ $t('title') }}
+                      </v-list-item-title>
+                    </v-col>
 
-                </v-row>
-              </v-list-item>
-              <v-divider v-if="i !== positions.length - 1"></v-divider>
-            </template>
+                    <v-col cols="2">
+                      <v-list-item-title class="ma-4">
+                        {{ item.date }}
+                      </v-list-item-title>
+                      <v-list-item-title class="ma-4 text-grey-darken-1" v-if="item.date.length == 0">
+                        {{ $t('date') }}
+                      </v-list-item-title>
+                    </v-col>
+
+                  </v-row>
+                </v-list-item>
+                <v-divider v-if="i !== item.length - 1"></v-divider>
+              </template>
+            </v-virtual-scroll>
           </v-list>
         </v-card>
       </v-form>
@@ -77,12 +79,20 @@ import Navigation from '../components/Navigation.vue';
 import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import AddPosition from '../components/AddPosition.vue';
+import { useWindowSize } from 'vue-window-size';
 
 export default {
   name: 'PositionsOverview',
   components: {
     Navigation,
     AddPosition
+  },
+  setup() {
+    const { width, height } = useWindowSize();
+    return {
+      windowWidth: width,
+      windowHeight: height,
+    };
   },
   data() {
     return {
