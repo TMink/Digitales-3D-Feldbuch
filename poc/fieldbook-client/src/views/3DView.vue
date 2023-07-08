@@ -2,95 +2,154 @@
   <v-layout>
     
     <!-- GUI -->
-    <v-navigation-drawer expand-on-hover rail width="300">
+    <v-navigation-drawer expand-on-hover rail rail-width="83" width="300">
+        <v-list>
+          <v-list-item>
 
-      <v-list>
-        <v-list-item
-          prepend-icon="mdi-settings"
-          title="Settings">
-        </v-list-item>
-      </v-list>
-
-      <v-divider></v-divider>
-
-      <v-list density="compact" width="300">
-        <!-- Arcball Settings -->
-        <v-list-group value="Arcball">
-
-          <template v-slot:activator="{props}">
+            <!-- Settings -->
             <v-list-item
-              v-bind="props"
-              prepend-icon="mdi-folder"
-              title="Arcball Settings">
+            prepend-icon="mdi-settings"
+            title="Settings">
             </v-list-item>
-          </template>
 
-          <v-list-item style="left: -26px" value="Gizmo">
-            
-            <template v-slot:prepend="{ isActive }">
-              <v-list-item-action start>
-                <v-checkbox-btn 
-                  v-model="gismoState"
-                  v-on:click="gizmoChange(gismoState)">
-                </v-checkbox-btn>
-              </v-list-item-action>
-            </template>
+            <v-divider></v-divider>
 
-            <v-list-item-title>
-              Gizmo
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              Visible/Non-Visible
-            </v-list-item-subtitle>
+            <!-- Controls -->
+            <v-list-group>
+              <template v-slot:activator="{ props }">
+                <v-list-item 
+                v-bind="props" 
+                prepend-icon="mdi-folder"
+                title="Controls">
+                </v-list-item>
+              </template>
 
-          </v-list-item>
-        </v-list-group>    
-        <v-list-group value="Positions">
+              <!-- Gizmo visible/non-visible -->
+              <v-list-group value="Gizmo">
+                <template v-slot:activator="{ props }">
+                  <v-checkbox-btn
+                  style="left: 63px"
+                  v-model="gizmoState"
+                  v-on:click="gizmoChange(gizmoState)"
+                  label="Gizmo">
+                  </v-checkbox-btn>
+                </template>
+              </v-list-group>
+            </v-list-group>
 
-          <template v-slot:activator="{props}">
-            <v-list-item v-bind="props" prepend-icon="mdi-folder"
-                         title="Positions">
-            </v-list-item>
-          </template>
+            <!-- Places -->
+            <v-list-group>
+              <template v-slot:activator="{ props }">
+                <v-list-item 
+                v-bind="props" 
+                prepend-icon="mdi-folder"
+                title="Stellen">
+                </v-list-item>
+              </template>
 
-          <v-list>
-            <v-list-item v-for="(position) in positions" :key="i">
-              <v-list-group>
-                <v-list-group-value>
-                  {{ i }}
-                </v-list-group-value>
+              <!-- Attach Controls -->
+              <v-list-group value="Gizmo">
+                <template v-slot:activator>
+                  <v-checkbox-btn
+                  style="left: 63px"
+                  v-model="gizmoState"
+                  v-on:click="gizmoChange(gizmoState)"
+                  label="Attach controls">
+                  </v-checkbox-btn>
+                </template>
+              </v-list-group>
+
+              <!-- All positions in scene -->
+              <v-list-item
+              v-for="(place, i) in placeModelsInScene" :key="i">
+                <v-list-group>
 
                   <template v-slot:activator="{ props }">
-                    <v-list-item style="left:22px" v-bind="props" 
-                                 prepend-icon="mdi-radar">
-                      <v-list-title right>
-                        {{ position }}
-                      </v-list-title>
+                    <v-list-item
+                    v-bind="props"
+                    prepend-icon="mdi-radar"
+                    title="Hey">
                     </v-list-item>
                   </template>
 
-                <v-list-item>
-
-                  <template v-slot:prepend="{ isActive }">
-                    <v-list-item-action start>
+                  <!-- Gizmo visible/non-visible -->
+                  <v-list-group value="Gizmo">
+                    <template v-slot:activator>
                       <v-checkbox-btn
-                        v-model="gismoState"
-                        v-on:click="gizmoChange(gismoState)">
+                      style="left: 63px"
+                      v-model="gizmoState"
+                      v-on:click="gizmoChange(gizmoState)"
+                      label="Color picker">
                       </v-checkbox-btn>
-                    </v-list-item-action>
+                    </template>
+                  </v-list-group>
+
+                </v-list-group>
+              </v-list-item>
+            </v-list-group>
+
+            <!-- Positions -->
+            <v-list-group>
+              <template v-slot:activator="{ props }">
+                <v-list-item 
+                v-bind="props" 
+                prepend-icon="mdi-folder"
+                title="Positionen">
+                </v-list-item>
+              </template>
+
+              <!-- All positions in scene -->
+              <v-list-item
+              v-for="(position, i) in positionModelsInScene" :key="i">
+                <v-list-group>
+
+                  <template v-slot:activator="{ props }">
+                    <v-list-item
+                    v-bind="props"
+                    prepend-icon="mdi-radar"
+                    title="Hey">
+                    </v-list-item>
                   </template>
 
-                  <v-list-item-title>
-                    Gizmo
-                  </v-list-item-title>
-                  <v-list-item-subtitle>
-                    Visible/Non-Visible
-                  </v-list-item-subtitle>
+                  <!-- Gizmo visible/non-visible -->
+                  <v-list-group value="Gizmo">
+                    <template v-slot:activator>
+                      <v-checkbox-btn
+                      style="left: 63px"
+                      v-model="gizmoState"
+                      v-on:click="gizmoChange(gizmoState)"
+                      label="Attach controls">
+                      </v-checkbox-btn>
+                    </template>
+                  </v-list-group>
 
-                </v-list-item>
-              </v-list-group>
-            </v-list-item>
-          </v-list>
+                  <!-- Gizmo visible/non-visible -->
+                  <v-list-group value="Gizmo">
+                    <template v-slot:activator>
+                      <v-checkbox-btn
+                      style="left: 63px"
+                      v-model="gizmoState"
+                      v-on:click="gizmoChange(gizmoState)"
+                      label="Color picker">
+                      </v-checkbox-btn>
+                    </template>
+                  </v-list-group>
+
+                </v-list-group>
+              </v-list-item>
+            </v-list-group>
+
+          </v-list-item>
+        </v-list>
+      
+
+
+
+      <v-list density="compact" width="300">
+        <!-- Controls -->
+        <v-list-group value="Arcball">
+          
+          
         </v-list-group>
       </v-list>
         
@@ -374,7 +433,7 @@ export default {
         rotation: null
       },
 
-      gismoState: false
+      gizmoState: false
     };
   },
 
