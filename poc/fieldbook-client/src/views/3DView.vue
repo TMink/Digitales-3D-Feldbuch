@@ -113,211 +113,198 @@
   </canvas>
 
   <!-- Position information-->
-  <v-navigation-drawer v-model="drawer" location="bottom" temporary width="389">
-    <v-navigation-drawer permanent location="right" width="350">
+  <v-navigation-drawer v-model="drawer" location="bottom" temporary width="385">
+    <v-row class="pt-4 pl-4">
+      <!-- 1st BOX -->
+      <v-col cols="3">
+        <v-card variant="outlined" class="pa-2">
+          <v-list density="compact">
 
-      <v-list-item align="center">
-        {{ selectedModelName }}
-      </v-list-item>
+            <v-list-item variant="tonal">
+              <v-list-item-title class="text-h6">
+                {{ positionInfo.positionNumber }}
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-subtitle>
+                Positionsnummber
+              </v-list-item-subtitle>
+            </v-list-item>
 
-      <v-divider></v-divider>
+            <v-list-item variant="tonal">
+              <v-list-item-title class="text-h6">
+                {{ positionInfo.subNumber }}
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-subtitle>
+                Unternummer
+              </v-list-item-subtitle>
+            </v-list-item>
 
-      <v-list-item>
-        <canvas v-show="cardShow" id="subCanvas" width="300" height="300" style="position: absolute; top: 23px; right: 25px; 
-                      border: 1px solid rgb(255, 255, 255)">
-        </canvas>
-      </v-list-item>
+            <v-list-item variant="tonal">
+              <v-list-item-title class="text-h6">
+                {{ positionInfo.title }}
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-subtitle>
+                Ansprache
+              </v-list-item-subtitle>
+            </v-list-item>
 
-    </v-navigation-drawer>
-    <v-row>
-      <v-col cols="9" lg="3">
-        <v-card height="100%" variant="outlined" class="pa-4">
-          <v-row>
-
-            <v-col cols="12" lg="6">
-              <v-list-item variant="tonal">
-                <v-list-item-title class="text-h6">
-                  {{ positionInfo.positionNumber }}
-                </v-list-item-title>
-              </v-list-item>
-              <v-list-item style="top: -10px; left: -10px">
-                <v-list-item-subtitle>
-                  Positionsnummber
-                </v-list-item-subtitle>
-              </v-list-item>
-            </v-col>
-
-            <v-col cols="12" lg="6">
-              <v-list-item variant="tonal">
-                <v-list-item-title class="text-h6">
-                  {{ positionInfo.subNumber }}
-                </v-list-item-title>
-              </v-list-item>
-              <v-list-item style="top: -10px; left: -10px">
-                <v-list-item-subtitle>
-                  Unternummer
-                </v-list-item-subtitle>
-              </v-list-item>
-            </v-col>
-
-            <v-col cols="12" lg="6">
-              <v-list-item variant="tonal">
-                <v-list-item-title class="text-h6">
-                  {{ positionInfo.title }}
-                </v-list-item-title>
-              </v-list-item>
-              <v-list-item style="top: -10px; left: -10px">
-                <v-list-item-subtitle>
-                  Ansprache
-                </v-list-item-subtitle>
-              </v-list-item>
-            </v-col>
-
-            <v-col cols="12" lg="6">
-              <v-list-item variant="tonal">
-                <v-list-item-title style="color:white" class="text-h6">
-                  {{ positionInfo.material }}
-                </v-list-item-title>
-              </v-list-item>
-              <v-list-item style="top: -10px; left: -10px">
-                <v-list-item-subtitle>
-                  Material
-                </v-list-item-subtitle>
-              </v-list-item>
-            </v-col>
-
-            <v-col cols="12" lg="12">
-              <v-card class="pa-4" color="accent">
-                <div class="text-h4 text-center" :label="$t('lastEdited')">
-                  {{ positionInfo.date }}
-                </div>
-                <div class="text-grey text-center">
-                  {{ $t('lastEdited') }}
-                </div>
-              </v-card>
-            </v-col>
-
-          </v-row>
+            <v-list-item variant="tonal">
+              <v-list-item-title style="color:white" class="text-h6">
+                {{ positionInfo.material }}
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-subtitle>
+                Material
+              </v-list-item-subtitle>
+            </v-list-item>
+          </v-list>
         </v-card>
-
       </v-col>
-      <v-col cols="9" lg="3">
-        <v-card height="100%" variant="outlined" class="pa-4">
-          <v-row>
 
-            <v-col cols="12" lg="4">
-              <v-list-item variant="tonal">
-                <v-list-item-title class="text-h6">
-                  {{ positionInfo.right }}
-                </v-list-item-title>
-              </v-list-item>
-              <v-list-item style="top: -10px; left: -10px">
-                <v-list-item-subtitle>
-                  Rechtswert
-                </v-list-item-subtitle>
-              </v-list-item>
-            </v-col>
+      <!-- 2nd BOX -->
+      <v-col cols="3">
+        <v-card variant="outlined" class="pa-2">
+          <v-list density="compact">
+            <v-row>
 
-            <v-col cols="12" lg="4">
+              <v-col cols="6">
+                <v-list-item variant="tonal">
+                  <v-list-item-title class="text-h6">
+                    {{ positionInfo.right }}
+                  </v-list-item-title>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-subtitle>
+                    Rechtswert
+                  </v-list-item-subtitle>
+                </v-list-item>
+              </v-col>
+
+            <v-col cols="6">
               <v-list-item variant="tonal">
                 <v-list-item-title style="color:white" class="text-h6">
                   {{ positionInfo.up }}
                 </v-list-item-title>
               </v-list-item>
-              <v-list-item style="top: -10px; left: -10px">
+              <v-list-item>
                 <v-list-item-subtitle>
                   Hochwert
                 </v-list-item-subtitle>
               </v-list-item>
             </v-col>
-
-            <v-col cols="12" lg="4">
-              <v-list-item variant="tonal">
-                <v-list-item-title style="color:white" class="text-h6">
-                  {{ positionInfo.height }}
-                </v-list-item-title>
-              </v-list-item>
-              <v-list-item style="top: -10px; left: -10px">
-                <v-list-item-subtitle>
-                  Höhe
-                </v-list-item-subtitle>
-              </v-list-item>
-            </v-col>
-
           </v-row>
+
+            <v-list-item variant="tonal">
+              <v-list-item-title style="color:white" class="text-h6">
+                {{ positionInfo.height }}
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-subtitle>
+                Höhe
+              </v-list-item-subtitle>
+            </v-list-item>
+
+            <v-card class="pa-4" color="accent">
+              <div class="text-h4 text-center" :label="$t('lastEdited')">
+                {{ positionInfo.date }}
+              </div>
+              <div class="text-grey text-center">
+                {{ $t('lastEdited') }}
+              </div>
+            </v-card>
+          </v-list>
         </v-card>
       </v-col>
-      <v-col cols="10" lg="3">
-        <v-card height="100%" variant="outlined" class="pa-4">
-          <v-row>
 
-            <v-col cols="12" lg="6">
-              <v-list-item variant="tonal">
-                <v-list-item-title class="text-h6">
-                  {{ positionInfo.count }}
-                </v-list-item-title>
-              </v-list-item>
-              <v-list-item style="top: -10px; left: -10px">
-                <v-list-item-subtitle>
-                  Anzahl
-                </v-list-item-subtitle>
-              </v-list-item>
-            </v-col>
+      <!-- 3rd BOX -->
+      <v-col cols="3">
+        <v-card variant="outlined" class="pa-2">
+          <v-list density="compact">
+            <v-row>
 
-            <v-col cols="12" lg="6">
+              <v-col cols="6">
+                <v-list-item variant="tonal">
+                  <v-list-item-title class="text-h6">
+                    {{ positionInfo.count }}
+                  </v-list-item-title>
+                  </v-list-item>
+                  <v-list-item>
+                  <v-list-item-subtitle>
+                    Anzahl
+                  </v-list-item-subtitle>
+                </v-list-item>
+              </v-col>
+
+            <v-col cols="6">
               <v-list-item variant="tonal">
                 <v-list-item-title class="text-h6">
                   {{ positionInfo.weight }}
                 </v-list-item-title>
               </v-list-item>
-              <v-list-item style="top: -10px; left: -10px">
+              <v-list-item>
                 <v-list-item-subtitle>
                   Gewicht
                 </v-list-item-subtitle>
               </v-list-item>
             </v-col>
-
-            <v-col cols="12" lg="6">
-              <v-list-item variant="tonal">
-                <v-list-item-title class="text-h6">
-                  {{ positionInfo.dating }}
-                </v-list-item-title>
-              </v-list-item>
-              <v-list-item style="top: -10px; left: -10px">
-                <v-list-item-subtitle>
-                  Datierung
-                </v-list-item-subtitle>
-              </v-list-item>
-            </v-col>
-
-            <v-col cols="12" lg="6">
-              <v-list-item variant="tonal">
-                <v-list-item-title style="color:white" class="text-h6">
-                  {{ positionInfo.adressOf }}
-                </v-list-item-title>
-              </v-list-item>
-              <v-list-item style="top: -10px; left: -10px">
-                <v-list-item-subtitle>
-                  AnspracheVon
-                </v-list-item-subtitle>
-              </v-list-item>
-            </v-col>
-
-            <v-col cols="12" lg="16">
-              <v-list-item variant="tonal">
-                <v-list-item-title style="color:white" class="text-h6">
-                  {{ positionInfo.description }}
-                </v-list-item-title>
-              </v-list-item>
-              <v-list-item style="top: -10px; left: -10px">
-                <v-list-item-subtitle>
-                  Beschreibung
-                </v-list-item-subtitle>
-              </v-list-item>
-            </v-col>
-
           </v-row>
+
+            <v-list-item variant="tonal">
+              <v-list-item-title class="text-h6">
+                {{ positionInfo.dating }}
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-subtitle>
+                Datierung
+              </v-list-item-subtitle>
+            </v-list-item>
+
+            <v-list-item variant="tonal">
+              <v-list-item-title style="color:white" class="text-h6">
+                {{ positionInfo.adressOf }}
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-subtitle>
+                AnspracheVon
+              </v-list-item-subtitle>
+            </v-list-item>
+
+            <v-list-item variant="tonal">
+              <v-list-item-title style="color:white" class="text-h6">
+                {{ positionInfo.description }}
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-subtitle>
+                Beschreibung
+              </v-list-item-subtitle>
+            </v-list-item>
+          </v-list>
         </v-card>
+      </v-col>
+
+      <!--  -->
+      <v-divider vertical></v-divider>
+      <v-col class="pa-0" cols="3">
+        <v-list-item class="justify-center pt-4">
+          {{ selectedModelName }}
+        </v-list-item>
+
+        <v-divider></v-divider>
+          <div style="text-align:center" class="pt-4">
+            <canvas v-show="cardShow" id="subCanvas" width="300" height="300"
+            style="display: inline; border: 1px solid rgb(255, 255, 255)">
+        </canvas>
+      </div>
       </v-col>
     </v-row>
   </v-navigation-drawer>
@@ -961,7 +948,7 @@ export default {
       this.cameraMain.updateProjectionMatrix();
     },
     /**
-     * Closes the left side drawer and hides all opened list items
+     * Closes the left side drawer and hides all opened list
      */
     collapseDrawer() {
       var navDrawerWidth = document.getElementById('navDrawer').offsetWidth;
