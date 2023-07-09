@@ -15,7 +15,7 @@
       <v-list-group>
         <template v-slot:activator="{ props }">
           <v-list-item 
-            v-bind="props" prepend-icon="mdi-folder" title="Controls">
+            v-bind="props" color="primary" bg-color="secondary" prepend-icon="mdi-folder" title="Controls">
           </v-list-item>
         </template>
 
@@ -26,7 +26,8 @@
           v-bind="props"
           v-model="gizmoState" 
           v-show="showDrawerContent"
-          v-on:click="gizmoChange(gizmoState)">
+          v-on:click="gizmoChange(gizmoState)"
+          >
         </v-checkbox-btn>
      </v-list-group>
 
@@ -38,7 +39,8 @@
           <v-list-item 
             v-bind="props" 
             title="Stellen"
-            prepend-icon="mdi-folder">
+            prepend-icon="mdi-folder"
+            color="primary">
           </v-list-item>
         </template>
 
@@ -49,7 +51,7 @@
           <!-- All places in scene -->
           <v-list-group v-for="(place, i) in placeModelsInScene" :key="i">
             <template v-slot:activator="{ props }">
-              <v-list-item v-bind="props" prepend-icon="mdi-radar">
+              <v-list-item v-bind="props" prepend-icon="mdi-radar" color="primary">
                 <v-list-item-title>{{ place.modelTitle }}</v-list-item-title>
               </v-list-item>
             </template>
@@ -70,7 +72,8 @@
           <v-list-item 
           v-bind="props" 
           title="Positionen"
-          prepend-icon="mdi-folder">
+          prepend-icon="mdi-folder"
+          color="primary">
         </v-list-item>
       </template>
       
@@ -80,7 +83,8 @@
               <v-list-item 
                 :title="position.modelTitle"
                 v-bind="props"
-                prepend-icon="mdi-radar">
+                prepend-icon="mdi-radar"
+                color="primary">
               </v-list-item>
             </template>
 
