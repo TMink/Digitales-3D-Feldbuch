@@ -78,8 +78,8 @@
           <v-list-group v-for="(position, i) in positionModelsInScene" :key="i">
             <template v-slot:activator="{ props }" >
               <v-list-item 
-                title="Hey"
-                v-bind="props" 
+                :title="position.modelTitle"
+                v-bind="props"
                 prepend-icon="mdi-radar">
               </v-list-item>
             </template>
@@ -103,7 +103,6 @@
 
   <!-- Main Scene-->
   <canvas id="mainCanvas" myattr="myattr">
-    <div id="gui_container"></div>
   </canvas>
 
   <!-- Position information-->
@@ -371,7 +370,7 @@ export default {
 
     const canvas = document.getElementById('mainCanvas');
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight - 170;
+    canvas.height = window.innerHeight - 168;
 
     /* Sync IndexedDB */
     await fromOfflineDB.syncLocalDBs();
@@ -782,6 +781,9 @@ export default {
     },
 
     detachtransformControls: function() {
+      const placeID = this.placeModelsInScene[0].placeID
+      const button = document.getElementsByTagName("placeID")
+      console.log(this.testI)
       this.tControlsMain.detach();
     },
 
