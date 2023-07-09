@@ -31,7 +31,7 @@
 
             <v-virtual-scroll :items="positions" :max-height="windowHeight - 360">
               <template v-slot="{ item }" :key="item">
-                <v-list-item v-on:click="moveToPosition(position.id)">
+                <v-list-item v-on:click="moveToPosition(item.id)">
                   <v-row class="justify-center">
 
                     <v-col cols="1">
@@ -70,7 +70,7 @@
       <v-spacer></v-spacer>
     </v-row>
 
-    <AddPosition :positions_prop="positions" @closeDiag="updatePositions()" />
+    <AddPosition :positions_prop="positions" @updatePositions="updatePositions()" />
   </div>
 </template>
 
