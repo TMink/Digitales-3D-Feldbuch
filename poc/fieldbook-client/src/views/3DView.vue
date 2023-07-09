@@ -78,8 +78,8 @@
         </template>
 
         <!-- All positions in scene -->
-          <v-list-group>
-            <template v-slot:activator="{ props }">
+          <v-list-group v-for="(position, i) in positionModelsInScene" :key="i">
+            <template v-slot:activator="{ props }" >
               <v-list-item 
                 title="Hey"
                 v-bind="props" 
@@ -89,14 +89,12 @@
 
             <div v-if="showDrawerContent">
               <!-- Gizmo visible/non-visible -->
-              <template v-for="(position, i) in positionModelsInScene" :key="i">
-                <v-checkbox-btn 
-                  class="pl-16 ml-6"
-                  v-model="gizmoState" 
-                  label="Attach controls"
-                  v-on:click="attachTransformControls(i)">
-                </v-checkbox-btn>
-              </template>
+              <v-checkbox-btn 
+                class="pl-16 ml-6"
+                v-model="gizmoState" 
+                label="Attach controls"
+                v-on:click="attachTransformControls(i)">
+              </v-checkbox-btn>
 
               <!-- Gizmo visible/non-visible -->
               <v-list-group value="Gizmo">
