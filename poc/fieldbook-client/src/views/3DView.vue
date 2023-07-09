@@ -693,7 +693,7 @@ export default {
             if ( child instanceof THREE.Mesh ) {
               child.material.transparent = true;
               child.material.opacity = opacity;
-              child.material.color = new THREE.Color( color );
+              //child.material.color = new THREE.Color( color );
               child.name = id;
             }
           });
