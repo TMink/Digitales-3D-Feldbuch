@@ -1,5 +1,6 @@
 <template>
   <!-- GUI -->
+
   <v-navigation-drawer id="navDrawer" permanent expand-on-hover 
       rail width="300" @transitionend="collapseDrawer">
     <v-list>
@@ -29,6 +30,8 @@
         </v-checkbox-btn>
      </v-list-group>
 
+     
+     <v-radio-group>
       <!-- Places -->
       <v-list-group>
         <template v-slot:activator="{ props }">
@@ -40,10 +43,14 @@
         </template>
 
         <div v-if="showDrawerContent">
+          <!-- Detach Controls -->
+          <v-radio v-model="testI" class="pl-16" label="Detach Controls" :value="i" v-on:click="detachtransformControls()"></v-radio>
+          
           <!-- All places in scene -->
           <v-list-group v-for="(place, i) in placeModelsInScene" :key="i">
             <template v-slot:activator="{ props }">
-              <v-list-item v-bind="props" prepend-icon="mdi-radar" title="Hey">
+              <v-list-item v-bind="props" prepend-icon="mdi-radar">
+                <v-list-item-title>{{ place.modelTitle }}</v-list-item-title>
               </v-list-item>
             </template>
 
@@ -74,7 +81,8 @@
             <div v-if="showDrawerContent">
             </div>
           </v-list-group>
-      </v-list-group>
+        </v-list-group>
+      </v-radio-group>
     </v-list>
   </v-navigation-drawer>
 
@@ -322,6 +330,8 @@ export default {
       cardShow: true,
 
       /* Meshes in Scene */
+      placeModelsInScene: [], // {placeID, modelID, modelName}
+      positionModelsInScene: [], // {positionID, modelID, modelName}
 
       selectedModelName: "",
       selectedPositionID: "",
@@ -332,12 +342,16 @@ export default {
         rotation: null
       },
 
+      gizmoState: false,
+      ttShow: true,
+      colors: [],
     };
   },
 
 
 
   async mounted() {
+
     window.addEventListener('resize', this.onWindowResize, false)
 
     const canvas = document.getElementById('mainCanvas');
@@ -603,10 +617,12 @@ export default {
       const color = object.color;
       const opacity = object.opacity;
       const id = object.id;
+      const title = object.title
 
       /* Load object */
       const mesh = await new Promise( ( resolve ) => {
         this.glbLoader.parse( model, '', ( glb ) => {
+        this.glbLoader.parse( object.model, '', ( glb ) => {
           glb.scene.traverse( ( child ) => {
             if ( child instanceof THREE.Mesh ) {
               child.material.transparent = true;
