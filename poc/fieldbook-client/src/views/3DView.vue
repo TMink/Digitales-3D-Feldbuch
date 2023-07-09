@@ -40,7 +40,7 @@
             <!-- All places in scene -->
             <v-list-group v-for="(place, i) in placeModelsInScene" :key="i">
               <template v-slot:activator="{ props }">
-                <v-list-item v-bind="props" prepend-icon="mdi-radar" color="primary">
+                <v-list-item v-bind="props" prepend-icon="mdi-radar" color="success">
                   <v-list-item-title>{{ place.modelTitle }}</v-list-item-title>
                 </v-list-item>
               </template>
@@ -62,7 +62,7 @@
           <!-- All positions in scene -->
           <v-list-group v-for="(position, i) in positionModelsInScene" :key="i">
             <template v-slot:activator="{ props }">
-              <v-list-item :title="position.modelTitle" v-bind="props" prepend-icon="mdi-radar" color="primary">
+              <v-list-item :title="position.modelTitle" v-bind="props" prepend-icon="mdi-radar" color="success">
               </v-list-item>
             </template>
 
