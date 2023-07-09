@@ -13,7 +13,7 @@
       <!-- Controls -->
       <v-list-group>
         <template v-slot:activator="{ props }">
-          <v-list-item v-bind="props" color="primary" bg-color="secondary" prepend-icon="mdi-folder" title="Controls">
+          <v-list-item v-bind="props" color="primary" bg-color="secondary" prepend-icon="mdi-camera-control" title="Controls">
           </v-list-item>
         </template>
 
@@ -28,7 +28,7 @@
         <!-- Places -->
         <v-list-group>
           <template v-slot:activator="{ props }">
-            <v-list-item v-bind="props" title="Stellen" prepend-icon="mdi-folder" color="primary">
+            <v-list-item v-bind="props" title="Stellen" prepend-icon="mdi-radar" color="primary">
             </v-list-item>
           </template>
 
@@ -40,7 +40,7 @@
             <!-- All places in scene -->
             <v-list-group v-for="(place, i) in placeModelsInScene" :key="i">
               <template v-slot:activator="{ props }">
-                <v-list-item v-bind="props" prepend-icon="mdi-radar" color="success">
+                <v-list-item v-bind="props" prepend-icon="mdi-cube-outline" color="success">
                   <v-list-item-title>{{ place.modelTitle }}</v-list-item-title>
                 </v-list-item>
               </template>
@@ -55,14 +55,14 @@
         <!-- Positions -->
         <v-list-group>
           <template v-slot:activator="{ props }">
-            <v-list-item v-bind="props" title="Positionen" prepend-icon="mdi-folder" color="primary">
+            <v-list-item v-bind="props" title="Positionen" prepend-icon="mdi-map-marker-radius-outline" color="primary">
             </v-list-item>
           </template>
 
           <!-- All positions in scene -->
           <v-list-group v-for="(position, i) in positionModelsInScene" :key="i">
             <template v-slot:activator="{ props }">
-              <v-list-item :title="position.modelTitle" v-bind="props" prepend-icon="mdi-radar" color="success">
+              <v-list-item :title="position.modelTitle" v-bind="props" prepend-icon="mdi-cube-outline" color="success">
               </v-list-item>
             </template>
 
