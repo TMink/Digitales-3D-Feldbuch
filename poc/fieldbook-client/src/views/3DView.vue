@@ -416,6 +416,7 @@ export default {
 
       positions: ['Position1', 'Position2', 'Position3', 'Position4'],
 
+      showDrawerContent: false,
       drawer: false,
       cardShow: true,
       /* Meshes in Scene */
@@ -444,6 +445,10 @@ export default {
 
   async mounted() {
     window.addEventListener('resize', this.onWindowResize, false)
+
+    const canvas = document.getElementById('mainCanvas');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight - 170;
 
     await fromOfflineDB.syncLocalDBs();
 
