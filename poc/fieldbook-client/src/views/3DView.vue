@@ -997,6 +997,8 @@ export default {
       this.abControlsMain = new ArcballControls( this.cameraMain,
         this.rendererMain.domElement, this.sceneMain );
 
+      this.abControlsMain.setGizmosVisible( false );
+
       this.tControlsMain = new TransformControls( this.cameraMain,
         this.rendererMain.domElement );
 
