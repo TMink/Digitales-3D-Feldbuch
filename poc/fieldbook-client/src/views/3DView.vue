@@ -91,7 +91,7 @@
     <v-row class="pt-4 pl-4">
       <!-- 1st BOX -->
       <v-col cols="3">
-        <v-card variant="outlined" class="pa-2">
+        <v-card variant="tonal" class="pa-2">
           <v-list density="compact">
 
             <v-list-item variant="tonal">
@@ -143,7 +143,7 @@
 
       <!-- 2nd BOX -->
       <v-col cols="3">
-        <v-card variant="outlined" class="pa-2">
+        <v-card variant="tonal" class="pa-2">
           <v-list density="compact">
             <v-row>
 
@@ -199,7 +199,7 @@
 
       <!-- 3rd BOX -->
       <v-col cols="3">
-        <v-card variant="outlined" class="pa-2">
+        <v-card variant="tonal" class="pa-2">
           <v-list density="compact">
             <v-row>
 
