@@ -54,6 +54,12 @@
               </v-list-item>
             </template>
 
+            <!-- Color Picker -->
+            <v-color-picker
+            hide-inputs
+            v-model="colors[i]"
+            :v-on:change="changeColor(colors[i], place.modelID)">
+            </v-color-picker>
           </v-list-group>
         </div>
       </v-list-group>
@@ -62,12 +68,12 @@
       <v-list-group>
         <template v-slot:activator="{ props }">
           <v-list-item 
-            v-bind="props" 
-            title="Positionen"
-            prepend-icon="mdi-folder">
-          </v-list-item>
-        </template>
-
+          v-bind="props" 
+          title="Positionen"
+          prepend-icon="mdi-folder">
+        </v-list-item>
+      </template>
+      
         <!-- All positions in scene -->
           <v-list-group v-for="(position, i) in positionModelsInScene" :key="i">
             <template v-slot:activator="{ props }" >
@@ -79,6 +85,15 @@
             </template>
 
             <div v-if="showDrawerContent">
+              <!-- Atach Controls -->
+              <v-radio class="pl-16 ml-6" label="Attach Controls" :value="placeModelsInScene.length + 1 + i" v-on:click="attachTransformControls(i)"></v-radio>
+
+              <!-- Color Picker -->
+              <v-color-picker
+              hide-inputs
+              v-model="colors[placeModelsInScene.length + i]"
+              :v-on:change="changeColor(colors[placeModelsInScene.length + i], position.modelID)">
+              </v-color-picker>
             </div>
           </v-list-group>
         </v-list-group>
@@ -621,14 +636,13 @@ export default {
 
       /* Load object */
       const mesh = await new Promise( ( resolve ) => {
-        this.glbLoader.parse( model, '', ( glb ) => {
         this.glbLoader.parse( object.model, '', ( glb ) => {
           glb.scene.traverse( ( child ) => {
             if ( child instanceof THREE.Mesh ) {
               child.material.transparent = true;
-              child.material.opacity = opacity;
-              child.material.color = new THREE.Color( color );
-              child.name = id;
+              child.material.opacity = object.opacity;
+              child.material.color = new THREE.Color( object.color );
+              child.name = object.id;
             }
           });
           resolve( glb.scene );
@@ -639,18 +653,20 @@ export default {
       switch( type ) {
         case 'Place':
           this.placeModelsInScene.push( { placeID: object.placeID, 
-            modelID: object.id } );
+            modelID: object.id, modelTitle: object.title} );
+          
+          this.colors.push(object.color)
           break;
 
         case 'Position':
           this.positionModelsInScene.push( { positionID: object.positionID, 
-            modelID: object.id, move: false } );
-          this.positionsInScene.push( object.title );
+            modelID: object.id, modelTitle: object.title } );
           if ( object.coordinates != null ) {
             const coordinates = object.coordinates;
             mesh.position.set( coordinates[ 0 ], coordinates[ 1 ], 
               coordinates[ 2 ] );
           }
+          this.colors.push(object.color)
           break;
 
         default:
@@ -713,8 +729,11 @@ export default {
      * 
      * @param {*} modelName 
      */
-    changeColor: async function( modelName ) {
-      // TODO:
+    changeColor: async function(color, id) {
+      console.log(color + " " + id)
+      if(color != null && id != null) {
+        this.sceneMain.getObjectByName(id).material.color = new THREE.Color(color)
+      }
     },
 
     /**
