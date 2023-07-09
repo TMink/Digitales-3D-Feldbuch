@@ -1,383 +1,335 @@
-<template>    
-  <v-layout>
-    
-    <!-- GUI -->
-    <v-navigation-drawer expand-on-hover rail rail-width="83" width="300">
-        <v-list>
-          <v-list-item>
+<template>
+  <!-- GUI -->
+  <v-navigation-drawer id="navDrawer" permanent expand-on-hover 
+      rail width="300" @transitionend="collapseDrawer">
+    <v-list>
 
-            <!-- Settings -->
-            <v-list-item
-            prepend-icon="mdi-settings"
-            title="Settings">
-            </v-list-item>
+      <!-- Settings -->
+      <v-list-item prepend-icon="mdi-settings" title="Settings">
+      </v-list-item>
 
-            <v-divider></v-divider>
+      <v-divider></v-divider>
 
-            <!-- Controls -->
-            <v-list-group>
-              <template v-slot:activator="{ props }">
-                <v-list-item 
+      <!-- Controls -->
+      <v-list-group>
+        <template v-slot:activator="{ props }">
+          <v-list-item 
+            v-bind="props" prepend-icon="mdi-folder" title="Controls">
+          </v-list-item>
+        </template>
+
+        <!-- Gizmo visible/non-visible -->
+        <v-checkbox-btn
+          label="Gizmo"
+          class="pl-16"
+          v-bind="props"
+          v-model="gizmoState" 
+          v-show="showDrawerContent"
+          v-on:click="gizmoChange(gizmoState)">
+        </v-checkbox-btn>
+     </v-list-group>
+
+      <!-- Places -->
+      <v-list-group>
+        <template v-slot:activator="{ props }">
+          <v-list-item 
+            v-bind="props" 
+            title="Stellen"
+            prepend-icon="mdi-folder">
+          </v-list-item>
+        </template>
+
+        <div v-if="showDrawerContent">
+          <!-- Attach Controls -->
+          <v-checkbox-btn
+            class="pl-16"
+            v-model="gizmoState" 
+            label="Attach controls"
+            v-on:click="gizmoChange(gizmoState)">
+          </v-checkbox-btn>
+
+          <!-- All places in scene -->
+          <v-list-group>
+            <template v-slot:activator="{ props }">
+              <v-list-item v-bind="props" prepend-icon="mdi-radar" title="Hey">
+              </v-list-item>
+            </template>
+
+            <!-- Gizmo visible/non-visible -->
+            <template v-for="(place, i) in placeModelsInScene" :key="i">
+              <v-checkbox-btn
+                class="pl-16 ml-6"
+                label="Color picker"
+                v-model="gizmoState" 
+                v-on:click="gizmoChange(gizmoState)">
+              </v-checkbox-btn>
+            </template>
+          </v-list-group>
+        </div>
+      </v-list-group>
+
+      <!-- Positions -->
+      <v-list-group>
+        <template v-slot:activator="{ props }">
+          <v-list-item 
+            v-bind="props" 
+            title="Positionen"
+            prepend-icon="mdi-folder">
+          </v-list-item>
+        </template>
+
+        <!-- All positions in scene -->
+          <v-list-group>
+            <template v-slot:activator="{ props }">
+              <v-list-item 
+                title="Hey"
                 v-bind="props" 
-                prepend-icon="mdi-folder"
-                title="Controls">
-                </v-list-item>
+                prepend-icon="mdi-radar">
+              </v-list-item>
+            </template>
+
+            <div v-if="showDrawerContent">
+              <!-- Gizmo visible/non-visible -->
+              <template v-for="(position, i) in positionModelsInScene" :key="i">
+                <v-checkbox-btn 
+                  class="pl-16 ml-6"
+                  v-model="gizmoState" 
+                  label="Attach controls"
+                  v-on:click="gizmoChange(gizmoState)">
+                </v-checkbox-btn>
               </template>
 
               <!-- Gizmo visible/non-visible -->
               <v-list-group value="Gizmo">
-                <template v-slot:activator="{ props }">
-                  <v-checkbox-btn
-                  style="left: 63px"
-                  v-model="gizmoState"
-                  v-on:click="gizmoChange(gizmoState)"
-                  label="Gizmo">
-                  </v-checkbox-btn>
-                </template>
-              </v-list-group>
-            </v-list-group>
-
-            <!-- Places -->
-            <v-list-group>
-              <template v-slot:activator="{ props }">
-                <v-list-item 
-                v-bind="props" 
-                prepend-icon="mdi-folder"
-                title="Stellen">
-                </v-list-item>
-              </template>
-
-              <!-- Attach Controls -->
-              <v-list-group value="Gizmo">
                 <template v-slot:activator>
-                  <v-checkbox-btn
-                  style="left: 63px"
-                  v-model="gizmoState"
-                  v-on:click="gizmoChange(gizmoState)"
-                  label="Attach controls">
-                  </v-checkbox-btn>
+                  <v-checkbox 
+                    class="pl-16 ml-6"
+                    v-model="gizmoState" 
+                    label="Color picker"
+                    v-on:click="gizmoChange(gizmoState)">
+                  </v-checkbox>
                 </template>
               </v-list-group>
+            </div>
+          </v-list-group>
+      </v-list-group>
+    </v-list>
+  </v-navigation-drawer>
 
-              <!-- All positions in scene -->
-              <v-list-item
-              v-for="(place, i) in placeModelsInScene" :key="i">
-                <v-list-group>
+  <!-- Main Scene-->
+  <canvas id="mainCanvas" myattr="myattr">
+    <div id="gui_container"></div>
+  </canvas>
 
-                  <template v-slot:activator="{ props }">
-                    <v-list-item
-                    v-bind="props"
-                    prepend-icon="mdi-radar"
-                    title="Hey">
-                    </v-list-item>
-                  </template>
+  <!-- Position information-->
+  <v-navigation-drawer v-model="drawer" location="bottom" temporary width="389">
+    <v-navigation-drawer permanent location="right" width="350">
 
-                  <!-- Gizmo visible/non-visible -->
-                  <v-list-group value="Gizmo">
-                    <template v-slot:activator>
-                      <v-checkbox-btn
-                      style="left: 63px"
-                      v-model="gizmoState"
-                      v-on:click="gizmoChange(gizmoState)"
-                      label="Color picker">
-                      </v-checkbox-btn>
-                    </template>
-                  </v-list-group>
+      <v-list-item align="center">
+        {{ selectedModelName }}
+      </v-list-item>
 
-                </v-list-group>
-              </v-list-item>
-            </v-list-group>
+      <v-divider></v-divider>
 
-            <!-- Positions -->
-            <v-list-group>
-              <template v-slot:activator="{ props }">
-                <v-list-item 
-                v-bind="props" 
-                prepend-icon="mdi-folder"
-                title="Positionen">
-                </v-list-item>
-              </template>
+      <v-list-item>
+        <canvas v-show="cardShow" id="subCanvas" width="300" height="300" style="position: absolute; top: 23px; right: 25px; 
+                      border: 1px solid rgb(255, 255, 255)">
+        </canvas>
+      </v-list-item>
 
-              <!-- All positions in scene -->
-              <v-list-item
-              v-for="(position, i) in positionModelsInScene" :key="i">
-                <v-list-group>
-
-                  <template v-slot:activator="{ props }">
-                    <v-list-item
-                    v-bind="props"
-                    prepend-icon="mdi-radar"
-                    title="Hey">
-                    </v-list-item>
-                  </template>
-
-                  <!-- Gizmo visible/non-visible -->
-                  <v-list-group value="Gizmo">
-                    <template v-slot:activator>
-                      <v-checkbox-btn
-                      style="left: 63px"
-                      v-model="gizmoState"
-                      v-on:click="gizmoChange(gizmoState)"
-                      label="Attach controls">
-                      </v-checkbox-btn>
-                    </template>
-                  </v-list-group>
-
-                  <!-- Gizmo visible/non-visible -->
-                  <v-list-group value="Gizmo">
-                    <template v-slot:activator>
-                      <v-checkbox-btn
-                      style="left: 63px"
-                      v-model="gizmoState"
-                      v-on:click="gizmoChange(gizmoState)"
-                      label="Color picker">
-                      </v-checkbox-btn>
-                    </template>
-                  </v-list-group>
-
-                </v-list-group>
-              </v-list-item>
-            </v-list-group>
-
-          </v-list-item>
-        </v-list>
-      
-
-
-
-      <v-list density="compact" width="300">
-        <!-- Controls -->
-        <v-list-group value="Arcball">
-          
-          
-        </v-list-group>
-      </v-list>
-        
-      </v-navigation-drawer>
-
-      <!-- Main Scene-->
-      <canvas id="mainCanvas" myattr="myattr">
-        <div id="gui_container"></div>
-      </canvas>
-
-      <!-- Position information-->
-        <v-navigation-drawer v-model="drawer" location="bottom" 
-                             temporary width="389">
-          <v-navigation-drawer permanent location="right" width="350">
-
-            <v-list-item align="center">
-              {{ selectedModelName }}
-            </v-list-item>
-
-            <v-divider></v-divider>
-
-            <v-list-item >
-              <!-- Sub Scene -->
-              <canvas 
-                v-show="cardShow" 
-                id="subCanvas" 
-                width="300" 
-                height="300" 
-                style="position: absolute; top: 23px; right: 25px; 
-                       border: 1px solid rgb(255, 255, 255)">
-              </canvas>
-            </v-list-item>
-            
-          </v-navigation-drawer>
+    </v-navigation-drawer>
+    <v-row>
+      <v-col cols="9" lg="3">
+        <v-card height="100%" variant="outlined" class="pa-4">
           <v-row>
-          <v-col cols="9" lg="3">
-          <v-card height="100%" variant="outlined" class="pa-4">
-            <v-row>
 
-              <v-col cols="12" lg="6">
-                <v-list-item variant="tonal">
-                  <v-list-item-title class="text-h6">
-                    {{ positionInfo.positionNumber }}
-                  </v-list-item-title>
-                </v-list-item>
-                <v-list-item style="top: -10px; left: -10px">
-                  <v-list-item-subtitle>
-                    Positionsnummber
-                  </v-list-item-subtitle>
-                </v-list-item>
-              </v-col>
+            <v-col cols="12" lg="6">
+              <v-list-item variant="tonal">
+                <v-list-item-title class="text-h6">
+                  {{ positionInfo.positionNumber }}
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item style="top: -10px; left: -10px">
+                <v-list-item-subtitle>
+                  Positionsnummber
+                </v-list-item-subtitle>
+              </v-list-item>
+            </v-col>
 
-              <v-col cols="12" lg="6">
-                <v-list-item variant="tonal">
-                  <v-list-item-title class="text-h6">
-                    {{ positionInfo.subNumber }}
-                  </v-list-item-title>
-                </v-list-item>
-                <v-list-item style="top: -10px; left: -10px">
-                  <v-list-item-subtitle>
-                    Unternummer
-                  </v-list-item-subtitle>
-                </v-list-item>
-              </v-col>
+            <v-col cols="12" lg="6">
+              <v-list-item variant="tonal">
+                <v-list-item-title class="text-h6">
+                  {{ positionInfo.subNumber }}
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item style="top: -10px; left: -10px">
+                <v-list-item-subtitle>
+                  Unternummer
+                </v-list-item-subtitle>
+              </v-list-item>
+            </v-col>
 
-              <v-col cols="12" lg="6">
-                <v-list-item variant="tonal">
-                  <v-list-item-title class="text-h6">
-                    {{ positionInfo.title }}
-                  </v-list-item-title>
-                </v-list-item>
-                <v-list-item style="top: -10px; left: -10px">
-                  <v-list-item-subtitle>
-                    Ansprache
-                  </v-list-item-subtitle>
-                </v-list-item>
-              </v-col>
+            <v-col cols="12" lg="6">
+              <v-list-item variant="tonal">
+                <v-list-item-title class="text-h6">
+                  {{ positionInfo.title }}
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item style="top: -10px; left: -10px">
+                <v-list-item-subtitle>
+                  Ansprache
+                </v-list-item-subtitle>
+              </v-list-item>
+            </v-col>
 
-              <v-col cols="12" lg="6">
-                <v-list-item variant="tonal">
-                  <v-list-item-title style="color:white" class="text-h6">
-                    {{ positionInfo.material }}
-                  </v-list-item-title>
-                </v-list-item>
-                <v-list-item style="top: -10px; left: -10px">
-                  <v-list-item-subtitle>
-                    Material
-                  </v-list-item-subtitle>
-                </v-list-item>
-              </v-col>
+            <v-col cols="12" lg="6">
+              <v-list-item variant="tonal">
+                <v-list-item-title style="color:white" class="text-h6">
+                  {{ positionInfo.material }}
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item style="top: -10px; left: -10px">
+                <v-list-item-subtitle>
+                  Material
+                </v-list-item-subtitle>
+              </v-list-item>
+            </v-col>
 
-              <v-col cols="12" lg="12">
-                <v-card class="pa-4" color="accent">
-                  <div class="text-h4 text-center" :label="$t('lastEdited')"> 
-                    {{ positionInfo.date }}
-                  </div>
-                  <div class="text-grey text-center"> 
-                    {{ $t('lastEdited') }}
-                  </div>
-                </v-card>
-              </v-col>
-              
-            </v-row>
-          </v-card>
-          
-        </v-col>
-        <v-col cols="9" lg="3">
-          <v-card height="100%" variant="outlined" class="pa-4">
-            <v-row>
+            <v-col cols="12" lg="12">
+              <v-card class="pa-4" color="accent">
+                <div class="text-h4 text-center" :label="$t('lastEdited')">
+                  {{ positionInfo.date }}
+                </div>
+                <div class="text-grey text-center">
+                  {{ $t('lastEdited') }}
+                </div>
+              </v-card>
+            </v-col>
 
-              <v-col cols="12" lg="4">
-                <v-list-item variant="tonal">
-                  <v-list-item-title class="text-h6">
-                    {{ positionInfo.right }}
-                  </v-list-item-title>
-                </v-list-item>
-                <v-list-item style="top: -10px; left: -10px">
-                  <v-list-item-subtitle>
-                    Rechtswert
-                  </v-list-item-subtitle>
-                </v-list-item>
-              </v-col>
+          </v-row>
+        </v-card>
 
-              <v-col cols="12" lg="4">
-                <v-list-item variant="tonal">
-                  <v-list-item-title style="color:white" class="text-h6">
-                    {{ positionInfo.up }}
-                  </v-list-item-title>
-                </v-list-item>
-                <v-list-item style="top: -10px; left: -10px">
-                  <v-list-item-subtitle>
-                    Hochwert
-                  </v-list-item-subtitle>
-                </v-list-item>
-              </v-col>
+      </v-col>
+      <v-col cols="9" lg="3">
+        <v-card height="100%" variant="outlined" class="pa-4">
+          <v-row>
 
-              <v-col cols="12" lg="4">
-                <v-list-item variant="tonal">
-                  <v-list-item-title style="color:white" class="text-h6">
-                    {{ positionInfo.height }}
-                  </v-list-item-title>
-                </v-list-item>
-                <v-list-item style="top: -10px; left: -10px">
-                  <v-list-item-subtitle>
-                    Höhe
-                  </v-list-item-subtitle>
-                </v-list-item>
-              </v-col>
-              
-            </v-row>
-          </v-card>
-        </v-col>
-        <v-col cols="10" lg="3">
-          <v-card height="100%" variant="outlined" class="pa-4">
-            <v-row>
+            <v-col cols="12" lg="4">
+              <v-list-item variant="tonal">
+                <v-list-item-title class="text-h6">
+                  {{ positionInfo.right }}
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item style="top: -10px; left: -10px">
+                <v-list-item-subtitle>
+                  Rechtswert
+                </v-list-item-subtitle>
+              </v-list-item>
+            </v-col>
 
-              <v-col cols="12" lg="6">
-                <v-list-item variant="tonal">
-                  <v-list-item-title class="text-h6">
-                    {{ positionInfo.count }}
-                  </v-list-item-title>
-                </v-list-item>
-                <v-list-item style="top: -10px; left: -10px">
-                  <v-list-item-subtitle>
-                    Anzahl
-                  </v-list-item-subtitle>
-                </v-list-item>
-              </v-col>
+            <v-col cols="12" lg="4">
+              <v-list-item variant="tonal">
+                <v-list-item-title style="color:white" class="text-h6">
+                  {{ positionInfo.up }}
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item style="top: -10px; left: -10px">
+                <v-list-item-subtitle>
+                  Hochwert
+                </v-list-item-subtitle>
+              </v-list-item>
+            </v-col>
 
-              <v-col cols="12" lg="6">
-                <v-list-item variant="tonal">
-                  <v-list-item-title class="text-h6">
-                    {{ positionInfo.weight }}
-                  </v-list-item-title>
-                </v-list-item>
-                <v-list-item style="top: -10px; left: -10px">
-                  <v-list-item-subtitle>
-                    Gewicht
-                  </v-list-item-subtitle>
-                </v-list-item>
-              </v-col>
+            <v-col cols="12" lg="4">
+              <v-list-item variant="tonal">
+                <v-list-item-title style="color:white" class="text-h6">
+                  {{ positionInfo.height }}
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item style="top: -10px; left: -10px">
+                <v-list-item-subtitle>
+                  Höhe
+                </v-list-item-subtitle>
+              </v-list-item>
+            </v-col>
 
-              <v-col cols="12" lg="6">
-                <v-list-item variant="tonal">
-                  <v-list-item-title class="text-h6">
-                    {{ positionInfo.dating }}
-                  </v-list-item-title>
-                </v-list-item>
-                <v-list-item style="top: -10px; left: -10px">
-                  <v-list-item-subtitle>
-                    Datierung
-                  </v-list-item-subtitle>
-                </v-list-item>
-              </v-col>
+          </v-row>
+        </v-card>
+      </v-col>
+      <v-col cols="10" lg="3">
+        <v-card height="100%" variant="outlined" class="pa-4">
+          <v-row>
 
-              <v-col cols="12" lg="6">
-                <v-list-item variant="tonal">
-                  <v-list-item-title style="color:white" class="text-h6">
-                    {{ positionInfo.adressOf }}
-                  </v-list-item-title>
-                </v-list-item>
-                <v-list-item style="top: -10px; left: -10px">
-                  <v-list-item-subtitle>
-                    AnspracheVon
-                  </v-list-item-subtitle>
-                </v-list-item>
-              </v-col>
+            <v-col cols="12" lg="6">
+              <v-list-item variant="tonal">
+                <v-list-item-title class="text-h6">
+                  {{ positionInfo.count }}
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item style="top: -10px; left: -10px">
+                <v-list-item-subtitle>
+                  Anzahl
+                </v-list-item-subtitle>
+              </v-list-item>
+            </v-col>
 
-              <v-col cols="12" lg="16">
-                <v-list-item variant="tonal">
-                  <v-list-item-title style="color:white" class="text-h6">
-                    {{ positionInfo.description }}
-                  </v-list-item-title>
-                </v-list-item>
-                <v-list-item style="top: -10px; left: -10px">
-                  <v-list-item-subtitle>
-                    Beschreibung
-                  </v-list-item-subtitle>
-                </v-list-item>
-              </v-col>
-              
-            </v-row>
-          </v-card>
-        </v-col>
-        </v-row>
-      </v-navigation-drawer>
-    <v-main style="height: 250px"></v-main>
-  </v-layout>
+            <v-col cols="12" lg="6">
+              <v-list-item variant="tonal">
+                <v-list-item-title class="text-h6">
+                  {{ positionInfo.weight }}
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item style="top: -10px; left: -10px">
+                <v-list-item-subtitle>
+                  Gewicht
+                </v-list-item-subtitle>
+              </v-list-item>
+            </v-col>
+
+            <v-col cols="12" lg="6">
+              <v-list-item variant="tonal">
+                <v-list-item-title class="text-h6">
+                  {{ positionInfo.dating }}
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item style="top: -10px; left: -10px">
+                <v-list-item-subtitle>
+                  Datierung
+                </v-list-item-subtitle>
+              </v-list-item>
+            </v-col>
+
+            <v-col cols="12" lg="6">
+              <v-list-item variant="tonal">
+                <v-list-item-title style="color:white" class="text-h6">
+                  {{ positionInfo.adressOf }}
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item style="top: -10px; left: -10px">
+                <v-list-item-subtitle>
+                  AnspracheVon
+                </v-list-item-subtitle>
+              </v-list-item>
+            </v-col>
+
+            <v-col cols="12" lg="16">
+              <v-list-item variant="tonal">
+                <v-list-item-title style="color:white" class="text-h6">
+                  {{ positionInfo.description }}
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item style="top: -10px; left: -10px">
+                <v-list-item-subtitle>
+                  Beschreibung
+                </v-list-item-subtitle>
+              </v-list-item>
+            </v-col>
+
+          </v-row>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-navigation-drawer>
 </template>
 
 <script>
@@ -517,6 +469,15 @@ export default {
 
   methods: {
 
+    collapseDrawer() {
+      var navDrawerWidth = document.getElementById('navDrawer').offsetWidth;
+
+      if(navDrawerWidth > 100) {
+        this.showDrawerContent = true;
+      } else {
+        this.showDrawerContent = false;
+      }
+    },
     disposeOfAll: function() {
       /* Dispose Scenes */
       for (let i = 0; i < this.meshesInMain.length; i++) {
@@ -1237,8 +1198,4 @@ export default {
 </script>
 
 <style scoped>
-#mainCanvas {
-  width: 100%;
-  height: 100vh;
-}
 </style>
