@@ -48,21 +48,19 @@
           </v-checkbox-btn>
 
           <!-- All places in scene -->
-          <v-list-group>
+          <v-list-group v-for="(place, i) in placeModelsInScene" :key="i">
             <template v-slot:activator="{ props }">
               <v-list-item v-bind="props" prepend-icon="mdi-radar" title="Hey">
               </v-list-item>
             </template>
 
             <!-- Gizmo visible/non-visible -->
-            <template v-for="(place, i) in placeModelsInScene" :key="i">
-              <v-checkbox-btn
-                class="pl-16 ml-6"
-                label="Color picker"
-                v-model="gizmoState" 
-                v-on:click="gizmoChange(gizmoState)">
-              </v-checkbox-btn>
-            </template>
+            <v-checkbox-btn
+              class="pl-16 ml-6"
+              label="Color picker"
+              v-model="gizmoState" 
+              v-on:click="gizmoChange(gizmoState)">
+            </v-checkbox-btn>
           </v-list-group>
         </div>
       </v-list-group>
@@ -97,16 +95,12 @@
               </v-checkbox-btn>
 
               <!-- Gizmo visible/non-visible -->
-              <v-list-group value="Gizmo">
-                <template v-slot:activator>
-                  <v-checkbox 
-                    class="pl-16 ml-6"
-                    v-model="gizmoState" 
-                    label="Color picker"
-                    v-on:click="gizmoChange(gizmoState)">
-                  </v-checkbox>
-                </template>
-              </v-list-group>
+              <v-checkbox 
+                class="pl-16 ml-6"
+                v-model="gizmoState" 
+                label="Color picker"
+                v-on:click="gizmoChange(gizmoState)">
+              </v-checkbox>
             </div>
           </v-list-group>
       </v-list-group>
