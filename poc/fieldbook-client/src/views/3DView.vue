@@ -514,14 +514,26 @@ export default {
           groupObject = groupObject.parent;
         }
 
+        /* Get local Rotion */
+        const euler = groupObject.rotation
+        const rotation = [euler._x, euler._y, euler._z, euler._order]
+        
+        /* Get world scale */
+        const worldScale = new THREE.Vector3()
+        groupObject.getWorldScale(worldScale)
+        const scale = [worldScale.x, worldScale.y, worldScale.z]
+
+        /* Get world position */
         const worldPosition = new THREE.Vector3();
         groupObject.getWorldPosition(worldPosition);
         const newCoordinates = [worldPosition.x, worldPosition.y,
-        worldPosition.z];
+          worldPosition.z];
 
         modelInDB.color = "#" + modelInScene.material.color.getHexString();
         modelInDB.opacity = modelInScene.material.opacity;
         modelInDB.coordinates = newCoordinates;
+        modelInDB.scale = scale;
+        modelInDB.rotation = rotation;
 
         await fromOfflineDB.updateObject(modelInDB, 'Models', 'positions');
 
@@ -649,6 +661,15 @@ export default {
             const coordinates = object.coordinates;
             mesh.position.set(coordinates[0], coordinates[1],
               coordinates[2]);
+          }
+          if (object.scale != null) {
+            mesh.scale.set(object.scale[0], object.scale[1], 
+              object.scale[2])
+          }
+          console.log("Test")
+          if (object.rotation != null) {
+            const euler = new THREE.Euler(object.rotation[0], object.rotation[1], object.rotation[2], object.rotation[3])
+            mesh.setRotationFromEuler(euler)
           }
           this.colors.push(object.color)
           break;
