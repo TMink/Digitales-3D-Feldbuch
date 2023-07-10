@@ -41,27 +41,36 @@
                     </v-col>
 
                     <v-col cols="6">
-                      <v-list-item-title class="ma-4 text-wrap">
+                      <v-list-item-title
+                        class="ma-4 text-wrap" 
+                        v-if="item.title.length != 0">
                         {{ item.title }}
                       </v-list-item-title>
 
-                      <v-list-item-title class="ma-4 text-grey-darken-1" v-if="item.title.length == 0">
+                      <v-list-item-title 
+                        class="ma-4 text-grey-darken-1" 
+                        v-if="item.title.length == 0">
                         {{ $t('title') }}
                       </v-list-item-title>
                     </v-col>
 
                     <v-col cols="2">
-                      <v-list-item-title class="ma-4">
+                      <v-list-item-title 
+                        class="ma-4" 
+                        v-if="item.date.length != 0">
                         {{ item.date }}
                       </v-list-item-title>
-                      <v-list-item-title class="ma-4 text-grey-darken-1" v-if="item.date.length == 0">
+                      
+                      <v-list-item-title 
+                        class="ma-4 text-grey-darken-1" 
+                        v-if="item.date.length == 0">
                         {{ $t('date') }}
                       </v-list-item-title>
                     </v-col>
 
                   </v-row>
                 </v-list-item>
-                <v-divider v-if="i !== item.length - 1"></v-divider>
+                <v-divider></v-divider>
               </template>
             </v-virtual-scroll>
           </v-list>
@@ -137,7 +146,6 @@ export default {
 #wrapper {
   height: 100%;
 }
-
 .positionItem {
   border-top: 2px solid black;
   border-bottom: 2px solid black;
