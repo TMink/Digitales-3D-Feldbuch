@@ -26,14 +26,13 @@ const upload = multer({ storage: storage });
  * @param {String} imageURL The image URL to gcs
  * @returns image Json-Object with all required fields
  */
-function getModelJson(doc, modelFilename, textureFilename) {
+function getModelJson(doc, modelFilename) {
   return {
     _id: doc.id,
     modelNumber: doc.modelNumber,
     placeID: doc.placeID,
     title: doc.title,
     model: modelFilename,
-    texture: textureFilename,
   };
 }
 
@@ -55,21 +54,16 @@ router.get("/:image_id", async function (req, res, next) {
 });
 
 /* POST new model data */
-router.post("/:model_id", 
-  upload.fields([{name: 'model'}, {name: 'texture'}]), 
-    async function (req, res, next) {
-      var newModel = getModelJson(
-                      req.body, 
-                      req.files['model'][0].filename, 
-                      req.files['texture'][0].filename);
+router.post("/:model_id", upload.single("model"), async function (req, res, next) {
+  var newModel = getModelJson(req.body, req.file.filename);
 
-      try {
-        const result = await Model.create(newModel);
+  try {
+    const result = await Model.create(newModel);
 
-        res.status(200).send("Saved Model: " + result);
-      } catch (error) {
-        res.status(500).send("Couldn't save Model: " + error.message);
-      }
+    res.status(200).send("Saved Model: " + result);
+  } catch (error) {
+    res.status(500).send("Couldn't save Model: " + error.message);
+  }
 });
 
 /**
@@ -79,9 +73,8 @@ router.delete("/:model_id", async function (req, res, next) {
   try {
     // delete model from DB
     const result = await Model.findByIdAndDelete(req.params.model_id);
-    // delete model and texture files
+    // delete model file
     fs.unlinkSync(FILE_PATH + result.model);
-    fs.unlinkSync(FILE_PATH + result.texture);
 
     res.status(200).send("Deleted Model: " + result);
   } catch (error) {

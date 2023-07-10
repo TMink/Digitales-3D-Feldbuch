@@ -9,13 +9,13 @@
         <v-card-text v-if="places.length !== 0">
           <div>
             <h3><v-row class="justify-center">
-                <v-col cols="1" class="text-left pl-6">
+                <v-col cols="1" class="text-left">
                   Nr.
                 </v-col>
-                <v-col cols="6" class="text-left pl-6">
+                <v-col cols="6" class="text-left">
                   Titel
                 </v-col>
-                <v-col cols="2" class="text-left pl-6">
+                <v-col cols="2" class="text-left">
                   Datum
                 </v-col>
               </v-row></h3>
@@ -32,36 +32,44 @@
             <v-virtual-scroll :items="places" :max-height="windowHeight - 380">
               <template v-slot="{ item }" :key="item">
                 <v-list-item v-on:click="moveToPlace(item.id)">
-                  <v-row class="justify-center">
+                  <v-row class="justify-center align-center my-2">
 
                     <v-col cols="1">
-                      <v-list-item-title class="ma-4">
+                      <v-list-item-title>
                         {{ item.placeNumber }}
                       </v-list-item-title>
                     </v-col>
 
                     <v-col cols="6">
-                      <v-list-item-title class="ma-4 text-wrap" v-if="item.title.length != 0">
+                      <v-list-item-title 
+                        class="text-wrap" 
+                        v-if="item.title.length != 0">
                         {{ item.title.join("; ") }}
                       </v-list-item-title>
 
-                      <v-list-item-title class="ma-4 text-grey-darken-1" v-if="item.title.length == 0">
+                      <v-list-item-title 
+                        class="text-grey-darken-1" 
+                        v-if="item.title.length == 0">
                         {{ $t('title') }}
                       </v-list-item-title>
                     </v-col>
 
                     <v-col cols="2">
-                      <v-list-item-title class="ma-4" v-if="item.date.length != 0">
+                      <v-list-item-title  
+                        v-if="item.date.length != 0">
                         {{ item.date }}
                       </v-list-item-title>
-                      <v-list-item-title class="ma-4 text-grey-darken-1" v-if="item.date.length == 0">
+
+                      <v-list-item-title 
+                        class="text-grey-darken-1" 
+                        v-if="item.date.length == 0">
                         {{ $t('date') }}
                       </v-list-item-title>
                     </v-col>
 
                   </v-row>
                 </v-list-item>
-                <v-divider v-if="i !== places.length - 1"></v-divider>
+                <v-divider></v-divider>
               </template>
             </v-virtual-scroll>
           </v-list>
@@ -107,7 +115,6 @@ export default {
   data() {
     return {
       places: [],
-      h: window.innerHeight
     };
   },
   /**
@@ -213,7 +220,6 @@ export default {
 #wrapper {
   height: 100%;
 }
-
 .positionItem {
   border-top: 2px solid black;
   border-bottom: 2px solid black;
