@@ -636,6 +636,8 @@ export default {
         color: '#ffffff',
         opacity: 1,
         coordinates: null,
+        scale: null,
+        rotation: null,
         lastChanged: Date.now(),
         lastSync: ''
       }
