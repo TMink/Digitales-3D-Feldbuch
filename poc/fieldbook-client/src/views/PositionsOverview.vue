@@ -29,7 +29,7 @@
               {{ $t('not_created_yet', { object: $tc('position', 2) }) }}
             </v-list-subheader>
 
-            <v-virtual-scroll :items="positions" :max-height="windowHeight - 360">
+            <v-virtual-scroll :items="positions" :max-height="windowHeight - 380">
               <template v-slot="{ item }" :key="item">
                 <v-list-item v-on:click="moveToPosition(item.id)">
                   <v-row class="justify-center">
