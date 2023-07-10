@@ -394,8 +394,8 @@ export default {
       await this.updateCameraInDB();
       await this.updateGuiInDB();
     }
-
     this.clearScene()
+
   },
 
 
@@ -565,6 +565,9 @@ export default {
       this.rendererSub.dispose();
       this.rendererSub.forceContextLoss();
       this.rendererSub.renderLists.dispose();
+
+      /* Detach controls */
+      this.tControlsMain.detach()
 
       /* Remove EventListener */
       this.canvasMain.removeEventListener('click', this.updateArcball);
@@ -955,6 +958,7 @@ export default {
 
       this.cameraMain.updateProjectionMatrix();
     },
+
     /**
      * Closes the left side drawer and hides all opened list
      */
@@ -1016,7 +1020,13 @@ export default {
 
       this.sceneMain.add(this.tControlsMain);
 
-      // GUI
+      // Raycaster
+      this.raycaster = new THREE.Raycaster();
+      this.pointer = new THREE.Vector2();
+
+      // Eventlistener
+      this.canvasMain.addEventListener('click', this.updateArcball);
+      this.canvasMain.addEventListener('click', this.onMouseDown);
       window.addEventListener('keydown', e => {
         switch (e.code) {
           case 'KeyW':
@@ -1031,13 +1041,6 @@ export default {
         }
       });
 
-      // Raycaster
-      this.raycaster = new THREE.Raycaster();
-      this.pointer = new THREE.Vector2();
-
-      // Eventlistener
-      this.canvasMain.addEventListener('click', this.updateArcball);
-      this.canvasMain.addEventListener('click', this.onMouseDown);
     },
 
     subInit: function () {
