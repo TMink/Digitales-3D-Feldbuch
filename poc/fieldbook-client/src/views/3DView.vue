@@ -1,25 +1,44 @@
 <template>
   <!-- GUI -->
 
-  <v-navigation-drawer id="navDrawer" permanent expand-on-hover rail width="300" @transitionend="collapseDrawer">
+  <v-navigation-drawer id="navDrawer" 
+    permanent 
+    expand-on-hover 
+    rail 
+    width="300" 
+    @transitionend="collapseDrawer">
     <v-list>
 
       <!-- Settings -->
-      <v-list-item prepend-icon="mdi-settings" title="Settings">
+      <v-list-item 
+        prepend-icon="mdi-settings" 
+        title="Settings">
       </v-list-item>
 
       <v-divider></v-divider>
 
       <!-- Controls -->
       <v-list-group>
-        <template v-slot:activator="{ props }">
-          <v-list-item v-bind="props" color="primary" bg-color="secondary" prepend-icon="mdi-camera-control" title="Controls">
+        <template 
+          v-slot:activator="{ props }">
+          <v-list-item 
+            v-bind="props"
+            color="primary"
+            bg-color="secondary"
+            prepend-icon="mdi-camera-control"
+            title="Controls">
           </v-list-item>
         </template>
 
         <!-- Gizmo visible/non-visible -->
-        <v-checkbox-btn label="Gizmo" class="pl-16" v-bind="props" v-model="gizmoState" v-show="showDrawerContent"
-          v-on:click="gizmoChange(gizmoState)" color="secondary">
+        <v-checkbox-btn
+          label="Gizmo"
+          class="pl-16"
+          v-bind="props"
+          v-model="gizmoState"
+          v-show="showDrawerContent"
+          v-on:click="gizmoChange(gizmoState)"
+          color="secondary">
         </v-checkbox-btn>
       </v-list-group>
 
@@ -27,26 +46,47 @@
       <v-radio-group>
         <!-- Places -->
         <v-list-group>
-          <template v-slot:activator="{ props }">
-            <v-list-item v-bind="props" title="Stellen" prepend-icon="mdi-radar" color="primary">
+          <template
+            v-slot:activator="{ props }">
+            <v-list-item
+              v-bind="props"
+              title="Stellen"
+              prepend-icon="mdi-radar"
+              color="primary">
             </v-list-item>
           </template>
 
           <div v-if="showDrawerContent">
             <!-- Detach Controls -->
-            <v-radio v-model="testI" class="pl-16" label="Detach Controls" :value="i"
-              v-on:click="detachtransformControls()" color="secondary"></v-radio>
+            <v-radio
+              v-model="testI"
+              class="pl-16"
+              label="Detach Controls"
+              :value="i"
+              v-on:click="detachtransformControls()"
+              color="secondary">
+            </v-radio>
 
             <!-- All places in scene -->
-            <v-list-group v-for="(place, i) in placeModelsInScene" :key="i">
-              <template v-slot:activator="{ props }">
-                <v-list-item v-bind="props" prepend-icon="mdi-cube-outline" color="success">
-                  <v-list-item-title>{{ place.modelTitle }}</v-list-item-title>
+            <v-list-group 
+              v-for="(place, i) in placeModelsInScene"
+              :key="i">
+              <template
+                v-slot:activator="{ props }">
+                <v-list-item
+                  v-bind="props"
+                  prepend-icon="mdi-cube-outline"
+                  color="success">
+                  <v-list-item-title>
+                    {{ place.modelTitle }}
+                  </v-list-item-title>
                 </v-list-item>
               </template>
 
               <!-- Color Picker -->
-              <v-color-picker hide-inputs v-model="colors[i]" :v-on:change="changeColor(colors[i], place.modelID)">
+              <v-color-picker 
+                hide-inputs v-model="colors[i]"
+                :v-on:change="changeColor(colors[i], place.modelID)">
               </v-color-picker>
             </v-list-group>
           </div>
@@ -54,15 +94,27 @@
 
         <!-- Positions -->
         <v-list-group>
-          <template v-slot:activator="{ props }">
-            <v-list-item v-bind="props" title="Positionen" prepend-icon="mdi-map-marker-radius-outline" color="primary">
+          <template
+            v-slot:activator="{ props }">
+            <v-list-item
+              v-bind="props"
+              title="Positionen"
+              prepend-icon="mdi-map-marker-radius-outline"
+              color="primary">
             </v-list-item>
           </template>
 
           <!-- All positions in scene -->
-          <v-list-group v-for="(position, i) in positionModelsInScene" :key="i">
-            <template v-slot:activator="{ props }">
-              <v-list-item :title="position.modelTitle" v-bind="props" prepend-icon="mdi-cube-outline" color="success">
+          <v-list-group
+            v-for="(position, i) in positionModelsInScene"
+            :key="i">
+            <template
+              v-slot:activator="{ props }">
+              <v-list-item
+                :title="position.modelTitle"
+                v-bind="props"
+                prepend-icon="mdi-cube-outline"
+                color="success">
               </v-list-item>
             </template>
 
@@ -83,7 +135,7 @@
   </v-navigation-drawer>
 
   <!-- Main Scene-->
-  <canvas id="mainCanvas" myattr="myattr">
+  <canvas id="mainCanvas">
   </canvas>
 
   <!-- Position information-->
@@ -282,12 +334,16 @@
       </v-col>
     </v-row>
   </v-navigation-drawer>
+
+  
 </template>
 
 
 <script>
 import * as THREE from 'three';
 import VueCookies from 'vue-cookies';
+import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
+
 import { ArcballControls } from
   'three/examples/jsm/controls/ArcballControls.js';
 import { TransformControls } from
@@ -295,7 +351,14 @@ import { TransformControls } from
 import { OrbitControls } from
   'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
+import { EffectComposer } from 
+  'three/examples/jsm/postprocessing/EffectComposer';
+import { RenderPass } from 
+  'three/examples/jsm/postprocessing/RenderPass';
+import { OutlinePass } from 
+  'three/examples/jsm/postprocessing/OutlinePass';
+
+
 
 export default {
   name: 'Viewer',
@@ -395,7 +458,6 @@ export default {
       await this.updateGuiInDB();
     }
     this.clearScene()
-
   },
 
 
@@ -660,21 +722,28 @@ export default {
             positionID: object.positionID,
             modelID: object.id, modelTitle: object.title
           });
+
+          /* Override coordinates (IndexedDB) */
           if (object.coordinates != null) {
             const coordinates = object.coordinates;
             mesh.position.set(coordinates[0], coordinates[1],
               coordinates[2]);
           }
+
+          /* Override scale (IndexedDB*/
           if (object.scale != null) {
             mesh.scale.set(object.scale[0], object.scale[1], 
-              object.scale[2])
+              object.scale[2]);
           }
-          console.log("Test")
+
+          /* Override rotation (IndexedDB) */
           if (object.rotation != null) {
-            const euler = new THREE.Euler(object.rotation[0], object.rotation[1], object.rotation[2], object.rotation[3])
-            mesh.setRotationFromEuler(euler)
+            const euler = new THREE.Euler(object.rotation[0], 
+              object.rotation[1], object.rotation[2], object.rotation[3]);
+            mesh.setRotationFromEuler(euler);
           }
-          this.colors.push(object.color)
+
+          this.colors.push(object.color);
           break;
 
         default:
@@ -953,8 +1022,13 @@ export default {
       this.rendererMain.setSize(this.canvasMain.clientWidth,
         this.canvasMain.clientHeight);
 
+      this.composer.setSize(this.canvasMain.clientWidth,
+        this.canvasMain.clientHeight);
+
       this.cameraMain.aspect = this.canvasMain.clientWidth /
         this.canvasMain.clientHeight;
+
+      this.cameraMain.updateProjectionMatrix();
 
       this.cameraMain.updateProjectionMatrix();
     },
@@ -1024,6 +1098,18 @@ export default {
       this.raycaster = new THREE.Raycaster();
       this.pointer = new THREE.Vector2();
 
+      // Post processing
+      this.composer = new EffectComposer( this.rendererMain );
+
+      this.renderPass = new RenderPass( this.sceneMain, this.cameraMain );
+      this.composer.addPass( this.renderPass );
+
+      this.outlinePass = new OutlinePass( new THREE.Vector2(
+        this.canvasMain.innerWidth, this.canvasMain.clientHeight ),
+        this.sceneMain, this.cameraMain );
+      this.outlinePass.pulsePeriod = 2;
+      this.composer.addPass( this.outlinePass );
+
       // Eventlistener
       this.canvasMain.addEventListener('click', this.updateArcball);
       this.canvasMain.addEventListener('click', this.onMouseDown);
@@ -1077,6 +1163,11 @@ export default {
       })
     },
 
+    addSelectedObject: function( object ) {
+      this.selectedObjects = [];
+      this.selectedObjects.push( object );
+    },
+
     onMouseDown: async function (event) {
       event.preventDefault();
 
@@ -1120,6 +1211,12 @@ export default {
             this.positionInfo.adressOf = model.adressOf;
           }
         }
+
+        /* Composer Outline */
+        const selectedObject = intersects[ 0 ].object;
+        this.addSelectedObject( selectedObject );
+        this.outlinePass.selectedObjects = this.selectedObjects
+
       }
     },
 
@@ -1153,6 +1250,9 @@ export default {
       /* Render scene and camera */
       this.rendererMain.render(this.sceneMain, this.cameraMain);
       this.rendererSub.render(this.sceneSub, this.cameraSub);
+
+      /* Render composer */
+      this.composer.render()
     },
 
     render: function () {
@@ -1180,6 +1280,7 @@ export default {
         });
 
         this.controlsSub.reset();
+        this.outlinePass.selectedObjects = []
       }
 
       this.abControlsMain.setTbRadius(0.67);
