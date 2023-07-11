@@ -356,7 +356,9 @@ import { EffectComposer } from
 import { RenderPass } from 
   'three/examples/jsm/postprocessing/RenderPass';
 import { OutlinePass } from 
-  'three/examples/jsm/postprocessing/OutlinePass';
+'three/examples/jsm/postprocessing/OutlinePass';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
+import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader'
 
 
 
@@ -1028,6 +1030,9 @@ export default {
       this.cameraMain.aspect = this.canvasMain.clientWidth /
         this.canvasMain.clientHeight;
 
+      this.effectFXAA.uniforms[ 'resolution' ].value.set(
+        1 / this.canvasMain.clientWidth, 1 / this.canvasMain.clientHeight);
+
       this.cameraMain.updateProjectionMatrix();
 
       this.cameraMain.updateProjectionMatrix();
@@ -1108,7 +1113,17 @@ export default {
         this.canvasMain.innerWidth, this.canvasMain.clientHeight ),
         this.sceneMain, this.cameraMain );
       this.outlinePass.pulsePeriod = 2;
+      this.outlinePass.edgeStrength = 4;
+      this.outlinePass.edgeThickness = 2;
+      this.outlinePass.edgeGlow = 0.5;
+      this.outlinePass.hiddenEdgeColor.set('#FFFFFF')
       this.composer.addPass( this.outlinePass );
+
+      // Shader
+      this.effectFXAA = new ShaderPass( FXAAShader );
+      this.effectFXAA.uniforms[ 'resolution' ].value.set(
+        1 / this.canvasMain.clientWidth, 1 / this.canvasMain.clientHeight);
+      this.composer.addPass( this.effectFXAA );
 
       // Eventlistener
       this.canvasMain.addEventListener('click', this.updateArcball);
