@@ -1202,6 +1202,25 @@ export default {
         /* Check if clicked model is a position model */
         for (let i = 0; i < this.positionModelsInScene.length; i++) {
           if (this.positionModelsInScene[i].modelID === objectName) {
+
+            const modelID = this.positionModelsInScene[i].modelID
+
+            const myModel = this.sceneMain.getObjectByName(modelID)
+
+            console.log(myModel)
+            
+            var groupObject = myModel;
+            while (!(groupObject instanceof THREE.Group)) {
+              groupObject = groupObject.parent;
+            }
+
+            console.log(groupObject)
+
+            /* Composer Outline */
+            const selectedObject = groupObject;
+            this.addSelectedObject(selectedObject);
+            this.outlinePass.selectedObjects = this.selectedObjects
+
             this.cardShow = true;
             this.drawer = true;
             this.loadMeshInSub(intersects[0].object.name);
@@ -1227,10 +1246,7 @@ export default {
           }
         }
 
-        /* Composer Outline */
-        const selectedObject = intersects[ 0 ].object;
-        this.addSelectedObject( selectedObject );
-        this.outlinePass.selectedObjects = this.selectedObjects
+        
 
       }
     },
