@@ -45,13 +45,15 @@
           </v-text-field>
 
           <v-text-field 
-          v-model="image.title" 
-          :label="$t('title')" 
-          :hint="$t('please_input', 
-          {msg: $t('title_of', { msg: $t('image') })})">
+            v-model="image.title" 
+            :label="$t('title')" 
+            :hint="$t('please_input', 
+            {msg: $t('title_of', { msg: $t('image') })})">
           </v-text-field>
 
           <v-file-input 
+            counter
+            multiple
             show-size 
             v-model="image.image" 
             prepend-icon="mdi-camera"
@@ -60,7 +62,7 @@
         </v-card-text>
 
         <v-card-actions class="justify-center">
-          <v-btn icon color="primary" v-on:click="addImage()">
+          <v-btn icon color="primary" v-on:click="addMultipleImages()">
             <v-icon>mdi-content-save-all</v-icon>
           </v-btn>
           <v-btn icon color="error" @click="image_dialog = false">
@@ -135,9 +137,21 @@ export default {
     },
 
     /**
+     * Automatically adds all selected imageFiles to IndexedDB 
+     * for the current Place/Position 
+     */
+    async addMultipleImages() {
+      var rawImage = toRaw(this.image);
+
+      for (var i=0; i<rawImage.image.length; i++) {
+       await this.addImage(rawImage.image[i]);
+      }
+    },
+
+    /**
      * Adds a new image-placeholder to the images-array
      */
-    async addImage() {
+    async addImage(imageFile) {
       // Add imageID to the object array of all images
       var newImageID = String(Date.now());
       var rawObject = toRaw(this.object);
@@ -152,7 +166,7 @@ export default {
         id: newImageID,
         imageNumber: null,
         title: rawImage.title,
-        image: await this.textureToBase64(toRaw(rawImage.image)),
+        image: await this.textureToBase64([imageFile]),
         lastChanged: Date.now(),
         lastSync: ''
       };
