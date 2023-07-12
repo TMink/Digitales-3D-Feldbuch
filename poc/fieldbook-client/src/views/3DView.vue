@@ -1075,6 +1075,7 @@ export default {
       this.rendererMain.setClearColor(0x263238, 1);
       this.rendererMain.shadowMap.enabled = true;
       this.rendererMain.shadowMap.type = THREE.PCFSoftShadowMap;
+      this.rendererMain.outputEncoding = THREE.SRGBColorSpace;
 
       // Scene
       this.sceneMain = new THREE.Scene();
