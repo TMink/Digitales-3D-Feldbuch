@@ -89,60 +89,61 @@
             </v-list-subheader>
 
             <!--Lists all locally saved places-->
-            <template v-for="(place, i) in places" :key="place">
-              <v-row no-gutters v-if="!place.edit" class="align-center">
-                <v-col cols="12">
-                  <v-list-item class="pa-2 ma-2" 
-                    v-on:click="setPlace(place.id)">
+            <v-virtual-scroll :items="places" :max-height="windowHeight - 360">
+              <template v-slot="{ item }" :key="item">
+<!--                 <v-row no-gutters v-if="!item.edit" class="align-center">
+                  <v-col cols="12"> -->
+                    <v-list-item class="pa-2 ma-2" 
+                      v-on:click="setPlace(item.id)">
+                      <v-row no-gutters class="justify-center">
 
-                    <v-row no-gutters class="justify-center">
+                        <v-col cols="1">
+                          <v-list-item-title >
+                            {{ item.placeNumber }}
+                          </v-list-item-title>
+                        </v-col>
 
-                      <v-col cols="1">
-                        <v-list-item-title class="ma-4">
-                          {{ place.placeNumber }}
-                        </v-list-item-title>
-                      </v-col>
+                        <v-col cols="5">
+                          <v-list-item-title 
+                            v-if="item.title.length > 0">
+                            {{ item.title.join("; ") }} 
+                          </v-list-item-title>
 
-                      <v-col cols="5">
-                        <v-list-item-title class="ma-4" 
-                          v-if="place.title.length > 0">
-                          {{ place.title.join("; ") }} 
-                        </v-list-item-title>
+                          <v-list-item-title style="color:grey" 
+                            v-if="item.title.length == 0">
+                            Ansprache 
+                          </v-list-item-title>
+                        </v-col>
 
-                        <v-list-item-title class="ma-4" style="color:grey" 
-                          v-if="place.title.length == 0">
-                          Ansprache 
-                        </v-list-item-title>
-                      </v-col>
+                        <v-col cols="2">
+                          <v-list-item-title 
+                            v-if="item.dating.length > 0">
+                            {{ place.dating }} 
+                          </v-list-item-title>
 
-                      <v-col cols="2">
-                        <v-list-item-title class="ma-4" 
-                          v-if="place.dating.length > 0">
-                          {{ place.dating }} 
-                        </v-list-item-title>
+                          <v-list-item-title style="color:grey" 
+                            v-if="item.dating.length == 0">
+                            Datierung 
+                          </v-list-item-title>
+                        </v-col>
 
-                        <v-list-item-title class="ma-4" style="color:grey" 
-                          v-if="place.dating.length == 0">
-                          Datierung 
-                        </v-list-item-title>
-                      </v-col>
+                        <v-col cols="2">
+                          <v-list-item-title>
+                            {{ item.date }}
+                          </v-list-item-title>
+                        </v-col>
+                      </v-row>
 
-                      <v-col cols="2">
-                        <v-list-item-title class="ma-4">
-                          {{ place.date }}
-                        </v-list-item-title>
-                      </v-col>
-                    </v-row>
+                      <p class="text-center" style="color:grey"> 
+                        {{ item.positions.length }} Positionen 
+                      </p>
+                    </v-list-item>
+<!--                   </v-col>
+                </v-row> -->
 
-                    <p class="text-center" style="color:grey"> 
-                      {{ place.positions.length }} Positionen 
-                    </p>
-                  </v-list-item>
-                </v-col>
-              </v-row>
-
-              <v-divider v-if="i !== places.length - 1"/>
-            </template>
+                <v-divider v-if="i !== places.length - 1"/>
+              </template>
+            </v-virtual-scroll>
           </v-list>
         </v-window>
 
@@ -237,9 +238,15 @@
             <v-card-text>
             <v-row class="text-center">
 
+
+              <!-- ACTIVITIES -->
               <v-col cols="4" class="align-center" hide-details>
-                <v-switch hide-details color="success" label="Activities"
-                  :disabled="activity_open" v-model="exportActivities">
+                <v-switch 
+                  hide-details 
+                  color="success" 
+                  label="Activities"
+                  :disabled="activity_open" 
+                  v-model="exportActivities">
                 </v-switch>
 
                 <v-col> 
@@ -254,9 +261,14 @@
             
               <v-divider vertical/>
 
+              <!-- PLACES -->
               <v-col cols="4" class="align-center" >
-                <v-switch hide-details color="success" label="Places"
-                  :disabled="place_open && activity_open" v-model="exportPlaces">
+                <v-switch 
+                  hide-details 
+                  color="success" 
+                  label="Places"
+                  v-model="exportPlaces"
+                  :disabled="place_open && activity_open">
                 </v-switch>
                 <v-col>
                   <p v-if="exportPlaces">
@@ -265,11 +277,16 @@
                   <p style="color:grey" v-if="!exportPlaces">
                     This will export 0 Places
                   </p>
-                  <v-checkbox hide-details class="pt-4" label="Export Drawings" 
+                  <v-checkbox 
+                    hide-details 
+                    class="pt-4" 
+                    label="Export Drawings" 
                     :disabled="!exportPlaces">
                   </v-checkbox>
 
-                  <v-checkbox hide-details label="Export Models" 
+                  <v-checkbox 
+                    hide-details 
+                    label="Export Models" 
                     :disabled="!exportPlaces">
                   </v-checkbox>
                 </v-col>
@@ -277,6 +294,7 @@
             
               <v-divider vertical/>
 
+              <!-- POSITIONS -->
               <v-col cols="4" class="align-center">
                 <v-row no-gutters class="justify-center align-center">
                   <v-switch hide-details color="success" label="Positions"
@@ -291,20 +309,46 @@
                   <p style="color:grey" v-if="!exportPositions">
                     This will export 0 Positions
                   </p>
-                  <v-checkbox hide-details class="pt-4" label="Export Images" 
+                  <v-checkbox 
+                    hide-details 
+                    class="pt-4" 
+                    label="Export Images" 
                     :disabled="!exportPositions">
                   </v-checkbox>
-                  <v-checkbox hide-details label="Export Models" 
+                  <v-checkbox 
+                    hide-details 
+                    label="Export Models" 
                     :disabled="!exportPositions">
                   </v-checkbox>
                 </v-col>
               </v-col>
             </v-row>
 
+            <v-divider class="mt-3"/>
+
+            <v-row no-gutters class="justify-center align-center">
+              <v-col cols="3" >
+
+                <v-combobox 
+                  class="pa-4" 
+                  label="Dateiformat"
+                  v-model="fileFormat"
+                  :items="['.pdf', '.csv']">
+                </v-combobox>
+              </v-col>
+              <v-col cols="4">
+
+                <v-radio-group v-model="separator" class="ma-2" label="Separator" v-if="fileFormat == '.csv'">
+                  <v-radio label="Comma separated" value=","></v-radio>
+                  <v-radio label="Semicolon separated" value=";"></v-radio>
+                </v-radio-group>
+              </v-col>
+            </v-row>
+
             </v-card-text>
 
             <v-card-actions class="justify-center">
-              <v-btn icon color="primary" v-on:click="createPDF()" 
+              <v-btn icon color="primary" v-on:click="startExport()" 
                 :disabled="!exportActivities && !exportPlaces && !exportPositions">
                 <v-icon>mdi-content-save-all</v-icon>
               </v-btn>
@@ -334,12 +378,21 @@ import ConfirmDialog from '../components/ConfirmDialog.vue'
 import { toRaw } from 'vue'
 import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable'
+import { useWindowSize } from 'vue-window-size';
+import { saveAs } from 'file-saver';
 
 
 export default {
   name: 'PDFExport',
   components: {
     ConfirmDialog,
+  },
+  setup() {
+    const { width, height } = useWindowSize();
+    return {
+      windowWidth: width,
+      windowHeight: height,
+    };
   },
   data() {
     return {
@@ -348,6 +401,8 @@ export default {
       positions: [],
       activity_open: false,
       place_open: false,
+      separator: ';',
+      fileFormat: '.pdf',
       export_overlay: false,
       exportActivities: true,
       exportPlaces: true,
@@ -438,10 +493,58 @@ export default {
       this.exportPositions = true;
     },
     /**
+     * Starts the export process and checks 
+     * which data format has to be exported
+     */
+    startExport() {
+      if (this.fileFormat == '.pdf') {
+        this.createPDF();
+      } else if (this.fileFormat == '.csv') {
+        this.createCSV();
+      }
+    },
+    /**
+     * Starts the CSV export process
+     */
+    createCSV() {
+      // TODO: create one function das dynamically exports 
+      // activities/places/positions depending on input parameters
+      if (this.exportActivities) {
+        this.createActivitiesCSV();
+      }
+
+      if (this.exportPlaces) {
+        this.createPlacesCSV();
+      }
+
+      if (this.exportPositions) {
+        this.createPositionsCSV();
+      }
+    },
+    /**
+     * Creates and saves a .csv file of all activities
+     */
+    createActivitiesCSV() {
+
+      //TODO: remove unwanted fields (e.g. lastChanges, lastSync, id)
+      const items = toRaw(this.activities);
+      const replacer = (key, value) => value === null ? '' : value;
+      console.log(replacer)
+      const header = Object.keys(items[0]);
+      const csv = [
+        header.join(this.separator), // header row first
+        ...items.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(this.separator))
+      ].join('\r\n')
+      
+      var blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      saveAs(blob, "activitylist.csv");
+    },
+    /**
      * Starts the PDF export process
      */
     createPDF() {
-
+      // TODO: create one function das dynamically exports 
+      // activities/places/positions depending on input parameters
       if (this.exportActivities) {
         this.createActivitiesPDF();
       }
@@ -570,7 +673,6 @@ export default {
 
           if (activityId != tempPlace.activityID) {
             activityId = tempPlace.activityID;
-            console.log(activityId)
             var tempActivity = await fromOfflineDB.getObject(activityId, 'Activities', 'activities');
             activityNumber = tempActivity.activityNumber;
           }
