@@ -359,6 +359,8 @@ import { OutlinePass } from
 'three/examples/jsm/postprocessing/OutlinePass';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
 import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader'
+import { GammaCorrectionShader } from
+  'three/examples/jsm/shaders/GammaCorrectionShader';
 
 
 
@@ -1124,6 +1126,9 @@ export default {
       this.effectFXAA.uniforms[ 'resolution' ].value.set(
         1 / this.canvasMain.clientWidth, 1 / this.canvasMain.clientHeight);
       this.composer.addPass( this.effectFXAA );
+
+      this.gammaCorrectionShader = new ShaderPass( GammaCorrectionShader );
+      this.composer.addPass( this.gammaCorrectionShader )
 
       // Eventlistener
       this.canvasMain.addEventListener('click', this.updateArcball);
