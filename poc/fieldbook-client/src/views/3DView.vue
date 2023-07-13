@@ -1,4 +1,123 @@
 <template>
+  <div style="position: relative">
+
+    <!-- Main Scene-->
+    <canvas id="mainCanvas" style="position: absolute"></canvas>
+
+    <div style="float: left;" >
+      <v-card >
+        <v-navigation-drawer color="background" 
+          style="left: 49px; top:104px"
+          v-model="settingsDrawer[0]"
+          temporary
+        >
+          <v-list-item height="50" 
+            prepend-avatar="https://randomuser.me/api/portraits/men/78.jpg"
+            title="Drawer One"
+          ></v-list-item>
+
+          <v-divider></v-divider>
+
+          <v-list-item height="50"
+            prepend-icon="mdi-view-dashboard" title="Home" value="home"
+          ></v-list-item>
+          <v-list-item height="50"
+            prepend-icon="mdi-forum" title="About" value="about"
+          > </v-list-item>
+        </v-navigation-drawer>
+
+        <v-navigation-drawer color="background"
+          style="left: 49px; top:104px"
+          v-model="settingsDrawer[1]"
+          temporary
+        >
+          <v-list-item height="50"
+            prepend-avatar="https://randomuser.me/api/portraits/men/78.jpg"
+            title="Drawer Two"
+          ></v-list-item>
+
+          <v-divider></v-divider>
+
+          <v-list-item height="50"
+            prepend-icon="mdi-view-dashboard" title="Home" value="home"
+          ></v-list-item>
+          <v-list-item height="50"
+            prepend-icon="mdi-forum" title="About" value="about"
+          > </v-list-item>
+        </v-navigation-drawer>
+
+        <v-navigation-drawer color="background"
+          style="left: 49px; top:104px"
+          v-model="settingsDrawer[2]"
+          temporary
+        >
+          <v-list-item height="50"
+            prepend-avatar="https://randomuser.me/api/portraits/men/78.jpg"
+            title="Drawer Three"
+          ></v-list-item>
+  
+          <v-divider></v-divider>
+  
+          <v-list-item height="50"
+            prepend-icon="mdi-view-dashboard" title="Home" value="home"
+          ></v-list-item>
+          <v-list-item height="50"
+            prepend-icon="mdi-forum" title="About" value="about"
+          > </v-list-item>
+        </v-navigation-drawer>
+
+        <v-navigation-drawer color="background"
+          style="left: 49px; top:104px"
+          v-model="settingsDrawer[3]"
+          temporary
+        >
+          <v-list-item height="50"
+            prepend-avatar="https://randomuser.me/api/portraits/men/78.jpg"
+            title="Drawer Four"
+          ></v-list-item>
+  
+          <v-divider></v-divider>
+  
+          <v-list-item height="50"
+            prepend-icon="mdi-view-dashboard" title="Home" value="home"
+          ></v-list-item>
+          <v-list-item height="50"
+            prepend-icon="mdi-forum" title="About" value="about"
+          > </v-list-item>
+        </v-navigation-drawer>
+      </v-card>
+
+      <v-card rounded="0" width="50" height="86.6vh">
+        <v-card rounded="0" align="center" width="50" height="50">
+          <v-card-text>S</v-card-text>
+        </v-card>
+        <v-btn v-model="btnNames[0]" rounded="0" icon="mdi-folder" width="50" height="50" :color="drawerBtnColor[0]"
+          @click.stop="settingsDrawer[0] = !settingsDrawer[0]; updateBtnColor(btnNames[0]);
+                       settingsDrawer[1] = false;
+                       settingsDrawer[2] = false;
+                       settingsDrawer[3] = false;"
+        ></v-btn>
+        <v-btn v-model="btnNames[1]" rounded="0" icon="mdi-folder" width="50" height="50" :color="drawerBtnColor[1]"
+          @click.stop="settingsDrawer[0] = false;
+                       settingsDrawer[1] = !settingsDrawer[1]; updateBtnColor(btnNames[1]);
+                       settingsDrawer[2] = false;
+                       settingsDrawer[3] = false;"
+        ></v-btn>
+        <v-btn v-model="btnNames[2]" rounded="0" icon="mdi-folder" width="50" height="50" :color="drawerBtnColor[2]"
+          @click.stop="settingsDrawer[0] = false;
+                       settingsDrawer[1] = false;
+                       settingsDrawer[2] = !settingsDrawer[2]; updateBtnColor(btnNames[2]);
+                       settingsDrawer[3] = false;"
+        ></v-btn>
+        <v-btn v-model="btnNames[3]" rounded="0" icon="mdi-folder" width="50" height="50" :color="drawerBtnColor[3]"
+          @click.stop="settingsDrawer[0] = false;
+                       settingsDrawer[1] = false;
+                       settingsDrawer[2] = false;
+                       settingsDrawer[3] = !settingsDrawer[3]; updateBtnColor(btnNames[3]);"
+        ></v-btn>
+      </v-card>
+    </div>
+
 
   <!-- Position information-->
   <v-navigation-drawer v-model="drawer"
@@ -328,8 +447,12 @@ export default {
         adressOf: null
       },
 
-      showDrawerContent: false,
       drawer: false,
+
+      settingsDrawer: [false, false, false, false],
+      drawerBtnColor: ["transparent", "transparent", "transparent", "transparent"],
+      btnNames: ["btn1", "btn2", "btn3", "btn4"],
+
       cardShow: true,
 
       /* Meshes in Scene */
@@ -355,6 +478,7 @@ export default {
     this.glbLoader = new GLTFLoader();
 
     this.setupCanvases();
+    document.addEventListener("click", this.func, false);
 
     this.mainInit();
     this.subInit();
@@ -382,6 +506,70 @@ export default {
   },
 
   methods: {                                                          // methods
+
+    func: function(e) {
+      const compareStrings = Boolean(Number(e.target.id.localeCompare("mainCanvas")));
+      if (!compareStrings) {
+        this.settingsDrawer[0] = false;
+        this.settingsDrawer[1] = false;
+        this.settingsDrawer[2] = false;
+        this.settingsDrawer[3] = false;
+  
+        this.drawerBtnColor[0] = "transparent";
+        this.drawerBtnColor[1] = "transparent";
+        this.drawerBtnColor[2] = "transparent";
+        this.drawerBtnColor[3] = "transparent";
+      }
+    },
+
+    updateBtnColor: function(e) {
+      if(e) {
+        switch(e) {
+          case "btn1":
+            if (this.drawerBtnColor[0] == "background") {
+              this.drawerBtnColor[0] = "transparent"
+            } else {
+              this.drawerBtnColor[0] = "background"
+            }
+            this.drawerBtnColor[1] = "transparent"
+            this.drawerBtnColor[2] = "transparent"
+            this.drawerBtnColor[3] = "transparent"
+            break;
+          case "btn2":
+            this.drawerBtnColor[0] = "transparent"
+            if (this.drawerBtnColor[1] == "background") {
+              this.drawerBtnColor[1] = "transparent"
+            } else {
+              this.drawerBtnColor[1] = "background"
+            }
+            this.drawerBtnColor[2] = "transparent"
+            this.drawerBtnColor[3] = "transparent"
+            break;
+          case "btn3":
+            this.drawerBtnColor[0] = "transparent"
+            this.drawerBtnColor[1] = "transparent"
+            if (this.drawerBtnColor[2] == "background") {
+              this.drawerBtnColor[2] = "transparent"
+            } else {
+              this.drawerBtnColor[2] = "background"
+            }
+            this.drawerBtnColor[3] = "transparent"
+            break;
+          case "btn4":
+            this.drawerBtnColor[0] = "transparent"
+            this.drawerBtnColor[1] = "transparent"
+            this.drawerBtnColor[2] = "transparent"
+            if (this.drawerBtnColor[3] == "background") {
+              this.drawerBtnColor[3] = "transparent"
+            } else {
+              this.drawerBtnColor[3] = "background"
+            }
+            break;
+          default:
+            console.log("error")
+        }
+      }
+    },
 
     /**
      * -------------------------------------------------------------------------
