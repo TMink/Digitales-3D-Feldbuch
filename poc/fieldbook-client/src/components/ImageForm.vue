@@ -1,86 +1,100 @@
 <template>
+  <v-card>
+
+    <!-- IMAGES LIST -->
+    <v-list>
+      <v-list-subheader v-if="images.length === 0">
+        {{ $t('not_created_yet', { object: $tc('image', 1) }) }}
+      </v-list-subheader>
+
+      <template v-for="(image, i) in images" :key="image">
+
+        <!-- LIST ITEM -->
+        <v-row no-gutters class="align-center">
+          <v-col cols="1">
+            <v-card-title> Nr. {{ image.imageNumber }} </v-card-title>
+          </v-col>
+          <v-col cols="2">    
+            <v-card-subtitle> {{ image.title }} </v-card-subtitle>
+          </v-col>
+          <v-spacer></v-spacer>
+          <v-col cols="3">
+            <v-img 
+              style="cursor: pointer;" 
+              class="my-2" 
+              height="150" 
+              :src=image.image
+              v-on:click="openImage(image)">
+            </v-img>
+          </v-col>
+          <v-spacer></v-spacer>
+          <v-col cols="2" class="text-center">
+            <v-btn 
+              color="error" 
+              class="mx-4 text-center" 
+              v-on:click="deleteImage(image)">
+              <v-icon>mdi-delete</v-icon>
+            </v-btn>
+          </v-col>
+        </v-row>
+
+        <v-divider v-if="i !== image.length - 1"></v-divider>
+      </template>
+    </v-list>
+  </v-card>
+
+  <AddButton v-on:click="image_dialog = true" />
+
+  <!-- IMAGE CREATION DIALOG -->
+  <v-dialog v-model="image_dialog" max-width="800" persistent>
     <v-card>
+      <v-card-title>
+        {{ $t('add', { msg: $t('image') }) }}
+      </v-card-title>
+      <v-card-text>
 
-      <!-- IMAGES LIST -->
-      <v-list>
-        <v-list-subheader v-if="images.length === 0">
-          {{ $t('not_created_yet', { object: $tc('image', 1) }) }}
-        </v-list-subheader>
+        <v-text-field 
+          disabled 
+          v-model="object.id" 
+          label="ID">
+        </v-text-field>
 
+        <v-text-field 
+          v-model="image.title" 
+          :label="$t('title')" 
+          :hint="$t('please_input', 
+          {msg: $t('title_of', { msg: $t('image') })})">
+        </v-text-field>
 
-        <template v-for="(image, i) in images" :key="image">
+        <v-file-input 
+          counter
+          multiple
+          show-size 
+          v-model="image.image" 
+          prepend-icon="mdi-camera"
+          accept="image/png, image/jpeg, image/bmp">
+        </v-file-input>
+      </v-card-text>
 
-          <!-- LIST ITEM -->
-          <v-row no-gutters class="align-center">
-            <v-col cols="1">
-              <v-card-title> Nr. {{ image.imageNumber }} </v-card-title>
-            </v-col>
-            <v-col cols="2">    
-              <v-card-subtitle> {{ image.title }} </v-card-subtitle>
-            </v-col>
-            <v-col cols="6">
-              <v-img class="my-2" height="150" :src=image.image></v-img>
-            </v-col>
-            <v-spacer></v-spacer>
-            <v-col cols="2" class="text-center">
-              <v-btn 
-                color="error" 
-                class="mx-4 text-center" 
-                v-on:click="deleteImage(image)">
-                <v-icon>mdi-delete</v-icon>
-              </v-btn>
-            </v-col>
-          </v-row>
-
-          <v-divider v-if="i !== image.length - 1"></v-divider>
-        </template>
-      </v-list>
+      <v-card-actions class="justify-center">
+        <v-btn icon color="primary" v-on:click="addMultipleImages()">
+          <v-icon>mdi-content-save-all</v-icon>
+        </v-btn>
+        <v-btn icon color="error" @click="image_dialog = false">
+          <v-icon>mdi-close-circle</v-icon>
+        </v-btn>
+      </v-card-actions>
     </v-card>
+  </v-dialog>
 
-    <AddButton v-on:click="image_dialog = true" />
-
-    <!-- IMAGE CREATION DIALOG -->
-    <v-dialog v-model="image_dialog" max-width="800" persistent>
-      <v-card>
-        <v-card-title>
-          {{ $t('add', { msg: $t('image') }) }}
-        </v-card-title>
-        <v-card-text>
-
-          <v-text-field 
-            disabled 
-            v-model="object.id" 
-            label="ID">
-          </v-text-field>
-
-          <v-text-field 
-            v-model="image.title" 
-            :label="$t('title')" 
-            :hint="$t('please_input', 
-            {msg: $t('title_of', { msg: $t('image') })})">
-          </v-text-field>
-
-          <v-file-input 
-            counter
-            multiple
-            show-size 
-            v-model="image.image" 
-            prepend-icon="mdi-camera"
-            accept="image/png, image/jpeg, image/bmp">
-          </v-file-input>
-        </v-card-text>
-
-        <v-card-actions class="justify-center">
-          <v-btn icon color="primary" v-on:click="addMultipleImages()">
-            <v-icon>mdi-content-save-all</v-icon>
-          </v-btn>
-          <v-btn icon color="error" @click="image_dialog = false">
-            <v-icon>mdi-close-circle</v-icon>
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  
+  <!-- IMAGE CAROUSEL DIALOG -->
+  <v-dialog v-model="img_carousel_dialog" max-width="75%">
+    <v-card>
+        <div id="imgContainer" class="pa-4">
+          <img id="realImg" style="cursor: zoom-in" :src="openedImage" alt="">
+        </div>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
@@ -115,7 +129,10 @@ export default {
         image: [],
       },
       images: [],
+      openedImage: '',
+      hovering: false,
       image_dialog: false,
+      img_carousel_dialog: false,
       is_required: [v => !!v || 'Pflichtfeld'],
     }
   },
@@ -241,7 +258,8 @@ export default {
       if (index != -1) {
         rawObject.images.splice(index, 1);
         rawObject.lastChanged = Date.now();
-        await fromOfflineDB.updateObject(rawObject, this.object_type, this.object_type.toLowerCase());
+        await fromOfflineDB.updateObject(
+              rawObject, this.object_type, this.object_type.toLowerCase());
       }
 
       // Delete the image itself
@@ -249,6 +267,48 @@ export default {
       VueCookies.remove('currentImage');
 
       await this.updateImages();
+    },
+    /**
+     * Opens an image in a dedicated dialog
+     * @param {ImageObject} image 
+     */
+    async openImage(image) {
+
+      this.img_carousel_dialog = true;
+      this.openedImage = image.image;
+
+      const imgContainer = await this.waitForElm('imgContainer');
+      const img = await this.waitForElm('realImg');
+      
+
+      // zoom in/out on click and change the mouse cursor
+      imgContainer.addEventListener("click", (e) => {
+        if (img.style.cursor == "zoom-in") {
+          img.style.cursor = "zoom-out";
+        } else {
+          img.style.cursor = "zoom-in";
+        }
+
+        if(img.style.transform == "scale(2)") {
+          img.style.transform = "scale(1)";
+        } else {
+          img.style.transform = "scale(2)";
+        }
+      });
+
+      // change img position according to mouse
+      imgContainer.addEventListener("mousemove", (e) => {
+        const x = e.x - 150; //TODO: find perfect offsets
+        const y = e.y - 100; // maybe with e.target.offset*LEFT/TOP*
+        img.style.transformOrigin = `${x}px ${y}px`;
+      });
+
+      // zoom out when mouse leaves img bounds
+      /* imgContainer.addEventListener("mouseleave", (e) => {
+        img.style.cursor = "zoom-in";
+        img.style.transformOrigin = 'center';
+        img.style.transform = "scale(1)";
+      }); */
     },
 
     /**
@@ -258,7 +318,54 @@ export default {
       this.dialog = false;
       this.$emit('closeDiag', false);
     },
+    /**
+     * 
+     * Waits until the HTML element exists
+     * @param {String} selector 
+     */
+    waitForElm(selector) {
+      return new Promise(resolve => {
+        // if it already exists, return it
+        if (document.getElementById(selector)) {
+          return resolve(document.getElementById(selector));
+        }
+
+        // otherwise create a MutationObserver and wait for it
+        const observer = new MutationObserver(mutations => {
+          if (document.getElementById(selector)) {
+            resolve(document.getElementById(selector));
+            observer.disconnect();
+          }
+        });
+
+        observer.observe(document.body, {
+          childList: true,
+          subtree: true
+        });
+      });
+    }
     
   }
 }
 </script>
+
+<style>
+
+
+#imgContainer {
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  box-shadow: 3px 3px 4px rgba(0,0,0,0.3);
+  /* height: 500px;
+  width: 500px; */
+  overflow: hidden;
+}
+
+img {
+  transform-origin: center;
+  object-fit: cover;
+  height: 100%;
+  width: 100%;
+}
+</style>
