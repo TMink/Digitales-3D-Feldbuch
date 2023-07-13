@@ -349,8 +349,7 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
 
 #imgContainer {
   align-items: center;
