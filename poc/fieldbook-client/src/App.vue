@@ -63,17 +63,14 @@
       </v-card>
     </v-navigation-drawer>
 
-
     <!-- Main Content -->
     <v-main>
       <Pathbar color="accent" :key="path_reload" />
       <router-view @view="onViewChange"></router-view>
     </v-main>
 
-
     <!-- App Footer -->
     <AppFooter />
-
 
     <VToast ref="vtoast" />
   </v-app>
@@ -113,7 +110,7 @@ export default {
         { link: "/", title: this.$t('overview',  {msg: this.$tc('activity', 2)}) },
         { link: "/3dview", title: this.$t('threeD_view') },
         { link: "/onlineSync", title: this.$t('online_sync') },
-        { link: "/pdfExport", title: this.$t('pdf_export') },
+        { link: "/dataExport", title: this.$t('data_export') },
       ]
     }
   },

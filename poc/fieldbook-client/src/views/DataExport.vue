@@ -361,7 +361,7 @@
 
         <v-row no-gutters class="pa-1 justify-center">
           <v-btn class="ma-1" color="primary" v-on:click="export_overlay = true">
-            Export to PDF
+            Export
           </v-btn>
         </v-row>
 
@@ -383,7 +383,7 @@ import { saveAs } from 'file-saver';
 
 
 export default {
-  name: 'PDFExport',
+  name: 'DataExport',
   components: {
     ConfirmDialog,
   },
@@ -440,14 +440,51 @@ export default {
      */
     async updatePlaces() {
       /* Receive all IDs in store */
-      this.places = await fromOfflineDB.getAllObjects('Places', 'places')
+      this.places = await fromOfflineDB.getAllObjects('Places', 'places');
+      var activityId = '';
+      var activityNumber = '';
+
+      for (var place of this.places) {
+
+        if (activityId != place.acivityID) {
+          activityId = place.activityID
+          activityNumber = await fromOfflineDB.getObject(activityId, 'Activities', 'activities')
+          activityNumber = activityNumber.activityNumber;
+        }
+        place.activity = activityNumber;
+      }
+
     },
     /**
      * Get all places from IndexedDb
      */
     async updatePositions() {
       /* Receive all IDs in store */
-      this.positions = await fromOfflineDB.getAllObjects('Positions', 'positions')
+      this.positions = await fromOfflineDB.getAllObjects('Positions', 'positions');
+
+      var activityId = '';
+      var activityNumber = '';
+      var placeId = '';
+      var placeNumber = '';
+
+      for (var position of this.positions) {
+        // get and set the placeNumber of the current Position
+        if (placeId != position.placeID) {
+          placeId = position.placeID;
+          var tempPlace = await fromOfflineDB.getObject(placeId, 'Places', 'places');
+          placeNumber = tempPlace.placeNumber;
+
+          // get and set the activityNumber of the current Position
+          if (activityId != tempPlace.activityID) {
+            activityId = tempPlace.activityID;
+            var tempActivity = await fromOfflineDB.getObject(activityId, 'Activities', 'activities');
+            activityNumber = tempActivity.activityNumber;
+          }
+        }
+        position.place = placeNumber;
+        position.activity = activityNumber;
+      }
+      console.log(this.positions)
     },
     /**
     * Opens the confirmation dialog for export
@@ -498,51 +535,67 @@ export default {
      */
     startExport() {
       if (this.fileFormat == '.pdf') {
-        this.createPDF();
+        this.startPDFExport();
       } else if (this.fileFormat == '.csv') {
-        this.createCSV();
+        this.startCSVExport();
       }
     },
     /**
      * Starts the CSV export process
      */
-    createCSV() {
+    startCSVExport() {
       // TODO: create one function das dynamically exports 
       // activities/places/positions depending on input parameters
       if (this.exportActivities) {
-        this.createActivitiesCSV();
+        this.createCSV(this.activities, "activitylist");
       }
 
       if (this.exportPlaces) {
-        this.createPlacesCSV();
+        this.createCSV(this.places, "placeslist");
       }
 
       if (this.exportPositions) {
-        this.createPositionsCSV();
+        this.createCSV(this.positions, "positionslist");
       }
     },
     /**
-     * Creates and saves a .csv file of all activities
+     * Creates and saves a .csv file
+     * @param {[ProxyObject]} data 
+     * @param {String} filename 
      */
-    createActivitiesCSV() {
-
-      //TODO: remove unwanted fields (e.g. lastChanges, lastSync, id)
-      const items = toRaw(this.activities);
+    createCSV(data, filename) {
+      const items = toRaw(data);
       const replacer = (key, value) => value === null ? '' : value;
-      console.log(replacer)
       const header = Object.keys(items[0]);
-      const csv = [
-        header.join(this.separator), // header row first
-        ...items.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(this.separator))
+
+      // remove unwanted fields
+      let index = header.indexOf("lastSync");
+      header.splice(index, 1);
+      index = header.indexOf("lastChanged");
+      header.splice(index, 1);
+      index = header.indexOf("id");
+      header.splice(index, 1);
+
+      // TODO: reformat the export output of fields 
+      //    - boolean fields should show `x` or `` instead of `true` and `false`
+      //    - arrays should be shortened to a `(not sure yet)` separated string of the IDs
+
+      // build ',' or ';' separated string
+      const csv = [header.join(this.separator), ...items.map(row => 
+        header.map(fieldName => JSON.stringify(row[fieldName], replacer))
+          .join(this.separator))
       ].join('\r\n')
-      
+
+      // create ',' or ';' separated blob
       var blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-      saveAs(blob, "activitylist.csv");
+      // save .csv file
+      saveAs(blob, filename + ".csv");
     },
+    
     /**
      * Starts the PDF export process
      */
-    createPDF() {
+    startPDFExport() {
       // TODO: create one function das dynamically exports 
       // activities/places/positions depending on input parameters
       if (this.exportActivities) {
@@ -567,9 +620,8 @@ export default {
       let filename = "activitylist_" + date;
       doc.text("Aktivitätenliste - Stand: " + date, 20, 10);
 
+      // create the activities table
       autoTable(doc, {
-        //styles: { fillColor: [58, 58, 71] },
-
         startY: 20,
         border: { top: 10 },
         margin: { top: 10 },
@@ -583,6 +635,7 @@ export default {
           toRaw(this.activities)
       });
 
+      // save the .pdf file
       doc.save(filename + ".pdf");
     },
     /**
@@ -595,20 +648,9 @@ export default {
       let date = new Date().toLocaleDateString("de-DE");
       let filename = "placeslist_" + date;
       doc.text("Stellenliste - Stand: " + date, 20, 10);
-      var allPlaces = toRaw(this.places)
+      var allPlaces = toRaw(this.places);
 
-      var activityId = '';
-      var activityNumber = '';
-
-      for (var place of allPlaces) {
-
-        if (activityId != place.acivityID) {
-          activityId = place.activityID
-          activityNumber = await fromOfflineDB.getObject(activityId, 'Activities', 'activities')
-          activityNumber = activityNumber.activityNumber;
-        }
-        place.activity = activityNumber;
-      }
+      // create the places table
       autoTable(doc, {
         //styles: { fillColor: [58, 58, 71] },
         styles: {
@@ -643,14 +685,13 @@ export default {
           allPlaces
       });
 
+      // save the .pdf file
       doc.save(filename + ".pdf");
     },
     /**
      * Creates and saves a pdf file of all positions
      */
     async createPositionsPDF() {
-      console.log("POSITIONS PDF");
-
       const doc = new jsPDF({
         orientation: "landscape",
       });
@@ -659,30 +700,8 @@ export default {
       doc.text("Positionenliste - Stand: " + date, 20, 10);
       var allPositions = toRaw(this.positions)
 
-      var activityId = '';
-      var activityNumber = '';
-      var placeId = '';
-      var placeNumber = '';
-
-      for (var position of allPositions) {
-
-        if (placeId != position.placeID) {
-          placeId = position.placeID;
-          var tempPlace = await fromOfflineDB.getObject(placeId, 'Places', 'places');
-          placeNumber = tempPlace.placeNumber;
-
-          if (activityId != tempPlace.activityID) {
-            activityId = tempPlace.activityID;
-            var tempActivity = await fromOfflineDB.getObject(activityId, 'Activities', 'activities');
-            activityNumber = tempActivity.activityNumber;
-          }
-        }
-        position.place = placeNumber;
-        position.activity = activityNumber;
-      }
-
+      // create the positions table
       autoTable(doc, {
-        //styles: { fillColor: [58, 58, 71] },
         styles: {
           fontSize: 5,
         },
@@ -711,6 +730,7 @@ export default {
           allPositions
       });
 
+      // save the .pdf file
       doc.save(filename + ".pdf");
     },
     /**

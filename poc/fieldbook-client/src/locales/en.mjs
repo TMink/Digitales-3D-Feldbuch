@@ -49,6 +49,7 @@ export default {
   yes: "Yes",
   no: "No",
   pdf_export: "PDF Export",
+  data_export: "Data Export",
 
   // Phrases
   add: "Add {msg}",
