@@ -575,6 +575,10 @@ export default {
         return 1;
       }
 
+      if (prevPos.positionNumber < curPos.positionNumber) {
+        return 1;
+      }
+      
       var subNumber = prevPos.subNumber;
 
       if (/* curPos.activity == prevPos.activity && */

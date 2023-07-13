@@ -1,11 +1,13 @@
 <template>
     <Navigation />
-    <v-btn 
-        class="ma-5" 
+    <v-row class="justify-center">
+      <v-btn 
+        class="ma-5 mt-8 mb-4" 
         color="primary" 
         v-on:click="syncSelectedChanges(selectedChanges)">
-    Synchronize selectedChanges
-    </v-btn>
+        Synchronize all Changes
+      </v-btn>
+    </v-row>
     <v-row class="d-flex justify-center h-75">
         <v-card class="sync-card">
             <v-card-title>
