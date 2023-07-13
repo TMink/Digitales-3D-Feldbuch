@@ -11,17 +11,26 @@
         <template v-for="(image, i) in images" :key="image">
 
           <!-- LIST ITEM -->
-          <v-card class="imageItem mt-3 d-flex align-center">
-            <v-card-title> Nr. {{ image.imageNumber }} </v-card-title>
-            <v-card-subtitle> {{ image.title }} </v-card-subtitle>
-            <v-img height="150" :src=image.image></v-img>
-            <v-btn 
-              color="error" 
-              class="ml-2" 
-              v-on:click="deleteImage(image)">
-              <v-icon>mdi-delete</v-icon>
-            </v-btn>
-          </v-card>
+          <v-row no-gutters class="align-center">
+            <v-col cols="1">
+              <v-card-title> Nr. {{ image.imageNumber }} </v-card-title>
+            </v-col>
+            <v-col cols="2">    
+              <v-card-subtitle> {{ image.title }} </v-card-subtitle>
+            </v-col>
+            <v-col cols="6">
+              <v-img class="my-2" height="150" :src=image.image></v-img>
+            </v-col>
+            <v-spacer></v-spacer>
+            <v-col cols="2" class="text-center">
+              <v-btn 
+                color="error" 
+                class="mx-4 text-center" 
+                v-on:click="deleteImage(image)">
+                <v-icon>mdi-delete</v-icon>
+              </v-btn>
+            </v-col>
+          </v-row>
 
           <v-divider v-if="i !== image.length - 1"></v-divider>
         </template>
