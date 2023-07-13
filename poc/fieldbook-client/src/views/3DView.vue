@@ -118,6 +118,32 @@
       </v-card>
     </div>
 
+    <div style="float: right;">
+      <v-card 
+      color="grey" 
+      align="left" 
+      height="70" 
+      width="350"
+      style="top: 10px; right: 10px">
+        <v-card-text>
+          <img src="../assets/keys/ALT_1.png" width="90" height="37" style="vertical-align: -10px"> 
+          <font size="+2" color="black"> = Objektauswahl</font>
+        </v-card-text>
+      </v-card>
+
+      <v-card 
+      color="grey" 
+      align="left" 
+      height="70" 
+      width="350"
+      style="top: 15px; right: 10px">
+        <v-card-text>
+          <img src="../assets/keys/CTRL_1.png" width="90" height="37" style="vertical-align: -10px"> 
+          <font size="+2" color="black"> = Modelle bewegen</font>
+        </v-card-text>
+      </v-card>
+    </div>
+  </div>
 
   <!-- Position information-->
   <v-navigation-drawer v-model="drawer"
