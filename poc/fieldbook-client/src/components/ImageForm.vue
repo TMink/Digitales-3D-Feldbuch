@@ -88,12 +88,10 @@
   </v-dialog>
 
   <!-- IMAGE CAROUSEL DIALOG -->
-  <v-dialog v-model="img_carousel_dialog" max-width="75%">
-    <v-card>
-        <div id="imgContainer" class="pa-4">
-          <img id="realImg" style="cursor: zoom-in" :src="openedImage" alt="">
-        </div>
-    </v-card>
+  <v-dialog v-model="img_carousel_dialog" max-width="800px">
+    <div id="imgContainer">
+      <img id="realImg" style="cursor: zoom-in" :src="openedImage" alt="">
+    </div>
   </v-dialog>
 </template>
 
@@ -298,17 +296,17 @@ export default {
 
       // change img position according to mouse
       imgContainer.addEventListener("mousemove", (e) => {
-        const x = e.x - 150; //TODO: find perfect offsets
-        const y = e.y - 100; // maybe with e.target.offset*LEFT/TOP*
+        const x = e.x - 550; //TODO: find perfect offsets
+        const y = e.y  //+ (img.height/2)// maybe with e.target.offset*LEFT/TOP*
         img.style.transformOrigin = `${x}px ${y}px`;
       });
 
       // zoom out when mouse leaves img bounds
-      /* imgContainer.addEventListener("mouseleave", (e) => {
+      imgContainer.addEventListener("mouseleave", (e) => {
         img.style.cursor = "zoom-in";
         img.style.transformOrigin = 'center';
         img.style.transform = "scale(1)";
-      }); */
+      });
     },
 
     /**
@@ -356,8 +354,6 @@ export default {
   justify-content: center;
   margin: auto;
   box-shadow: 3px 3px 4px rgba(0,0,0,0.3);
-  /* height: 500px;
-  width: 500px; */
   overflow: hidden;
 }
 
