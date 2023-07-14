@@ -141,7 +141,7 @@
 <!--                   </v-col>
                 </v-row> -->
 
-                <v-divider v-if="i !== places.length - 1"/>
+                <v-divider/>
               </template>
             </v-virtual-scroll>
           </v-list>
@@ -251,7 +251,7 @@
 
                 <v-col> 
                   <p v-if="exportActivities">
-                    This will export {{ allActivitiesCount }} Activities
+                    This will export {{ this.activities.length }} Activities
                   </p>
                   <p style="color:grey" v-if="!exportActivities">
                     This will export 0 Activities
@@ -272,7 +272,7 @@
                 </v-switch>
                 <v-col>
                   <p v-if="exportPlaces">
-                    This will export {{ allPlacesCount }} Places
+                    This will export {{ this.places.length }} Places
                   </p>
                   <p style="color:grey" v-if="!exportPlaces">
                     This will export 0 Places
@@ -304,7 +304,7 @@
               
                 <v-col>
                   <p v-if="exportPositions">
-                    This will export {{ allPositionsCount }} Positions
+                    This will export {{ this.positions.length }} Positions
                   </p>
                   <p style="color:grey" v-if="!exportPositions">
                     This will export 0 Positions
@@ -399,6 +399,8 @@ export default {
       activities: [],
       places: [],
       positions: [],
+      selected_activity: '',
+      selected_place: '',
       activity_open: false,
       place_open: false,
       separator: ';',
@@ -484,7 +486,6 @@ export default {
         position.place = placeNumber;
         position.activity = activityNumber;
       }
-      console.log(this.positions)
     },
     /**
     * Opens the confirmation dialog for export
@@ -502,14 +503,24 @@ export default {
       }
     },
     /**
-     * Sets the active activity and filters places accordingly
+     * Sets the active activity and filters places + positions accordingly
      * @param {String} activity_id 
      */
     async setActivity(activity_id) {
       this.places = await fromOfflineDB.getAllObjectsWithID(
         activity_id, 'Activity', 'Places', 'places');
-      /* this.places.sort((a, b) => (a.placeNumber > b.placeNumber) ? 1 : -1) */
+
+      // set positions to only include positions from the current activity
+      var tempPositions = [];
+      for (var i=0; i< this.places.length; i++) {
+        var tempPos = await fromOfflineDB.getAllObjectsWithID(
+            this.places[i].id, 'Place', 'Positions', 'positions');
+        tempPositions = tempPositions.concat(tempPos);   
+      }
+      this.positions = tempPositions;
+      
       this.activity_open = true;
+      this.selected_activity = activity_id;
 
       this.exportActivities = false;
       this.exportPlaces = true;
@@ -522,8 +533,8 @@ export default {
     async setPlace(place_id) {
       this.positions = await fromOfflineDB.getAllObjectsWithID(
         place_id, 'Place', 'Positions', 'positions');
-      /* this.places.sort((a, b) => (a.placeNumber > b.placeNumber) ? 1 : -1) */
       this.place_open = true;
+      this.selected_place = place_id;
 
       this.exportActivities = false;
       this.exportPlaces = false;
@@ -543,9 +554,10 @@ export default {
     /**
      * Starts the CSV export process
      */
-    startCSVExport() {
+    async startCSVExport() {
       // TODO: create one function das dynamically exports 
       // activities/places/positions depending on input parameters
+
       if (this.exportActivities) {
         this.createCSV(this.activities, "activitylist");
       }
