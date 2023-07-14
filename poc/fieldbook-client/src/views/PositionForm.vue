@@ -11,9 +11,6 @@
             <v-tab value="two" rounded="0">
               {{ $tc('picture', 2) }}
             </v-tab>
-            <!-- <v-tab value="three" rounded="0">
-              {{ $t('additional', { msg: $t('parameter') }) }}
-            </v-tab> -->
             <v-tab value="four" rounded="0">
               {{ $tc('model', 2) }}
             </v-tab>
@@ -35,29 +32,53 @@
         <v-window v-model="tab">
           <!-- TAB ITEM 'GENERAL' -->
           <v-window-item value="one">
+            <!-- CARD 1 GENERAL -->
             <v-card class="pa-4">
               <v-row class="pt-2 pb-6">
-                <v-col cols="12" lg="2">
-                  <v-text-field color="primary" label="Posnr *" :rules="is_required" v-model="position.positionNumber"
+
+                <v-col lg="2">
+                  <v-text-field 
+                    color="primary" 
+                    label="Posnr *" 
+                    :rules="is_required" 
+                    v-model="position.positionNumber"
                     :hint="$tc('please_input', 2, { msg: 'Posnr' })">
                   </v-text-field>
                 </v-col>
-                <v-col cols="12" lg="2">
-                  <v-text-field color="primary" label="Unternr *" :rules="is_required" v-model="position.subNumber"
+
+                <v-col lg="2">
+                  <v-text-field 
+                    color="primary" 
+                    label="Unternr *" 
+                    :rules="is_required" 
+                    v-model="position.subNumber"
                     :hint="$tc('please_input', 2, { msg: 'Unternr' })">
                   </v-text-field>
                 </v-col>
-                <v-col cols="12" lg="2">
-                  <v-combobox color="primary" :items="titles" label="Ansprache" :rules="is_required"
-                    v-model="position.title" :hint="$tc('please_input', 2, { msg: 'Ansprache' })">
+
+                <v-col lg="2">
+                  <v-combobox 
+                    color="primary" 
+                    :items="titles" 
+                    label="Ansprache" 
+                    :rules="is_required"
+                    v-model="position.title" 
+                    :hint="$tc('please_input', 2, { msg: 'Ansprache' })">
                   </v-combobox>
                 </v-col>
-                <v-col cols="12" lg="2">
-                  <v-combobox color="primary" label="Material" :items="materials" :rules="is_required"
-                    v-model="position.material" :hint="$tc('please_input', 2, { msg: 'Material' })">
+
+                <v-col lg="2">
+                  <v-combobox 
+                    color="primary" 
+                    label="Material" 
+                    :items="materials" 
+                    :rules="is_required"
+                    v-model="position.material" 
+                    :hint="$tc('please_input', 2, { msg: 'Material' })">
                   </v-combobox>
                 </v-col>
-                <v-col cols="12" lg="4">
+
+                <v-col lg="4">
                   <v-card class="pa-4" color="accent">
                     <div class="text-h4 text-center" :label="$t('lastEdited')">
                       {{ position.date }}
@@ -72,6 +93,7 @@
 
             <v-spacer class="pa-3"></v-spacer>
 
+            <!-- CARD 2 GAUSS-KRÜGER -->
             <v-card>
               <v-card-text>
                 <div>
@@ -80,19 +102,34 @@
               </v-card-text>
               <v-row class="pb-4" justify="center">
                 <v-col cols="12" lg="3">
-                  <v-text-field color="primary" hide-details label="Rechtswert *" :rules="is_required"
-                    v-model="position.right" :hint="$tc('please_input', 2, { msg: 'Rechtswert' })">
+                  <v-text-field 
+                    color="primary" 
+                    hide-details 
+                    label="Rechtswert *" 
+                    :rules="is_required"
+                    v-model="position.right" 
+                    :hint="$tc('please_input', 2, { msg: 'Rechtswert' })">
                   </v-text-field>
                 </v-col>
                 <v-divider class="mt-1 mb-n2" vertical></v-divider>
                 <v-col cols="12" lg="3">
-                  <v-text-field color="primary" hide-details label="Hochwert *" :rules="is_required" v-model="position.up"
+                  <v-text-field 
+                    hide-details 
+                    color="primary" 
+                    label="Hochwert *" 
+                    :rules="is_required" 
+                    v-model="position.up"
                     :hint="$tc('please_input', 2, { msg: 'Hochwert' })">
                   </v-text-field>
                 </v-col>
                 <v-divider class="mt-1 mb-n2" vertical></v-divider>
                 <v-col cols="12" lg="3">
-                  <v-text-field color="primary" hide-details label="Höhe *" :rules="is_required" v-model="position.height"
+                  <v-text-field 
+                    hide-details 
+                    label="Höhe *" 
+                    color="primary" 
+                    :rules="is_required" 
+                    v-model="position.height"
                     :hint="$tc('please_input', 2, { msg: 'Höhe' })">
                   </v-text-field>
                 </v-col>
@@ -101,20 +138,30 @@
 
             <v-spacer class="pa-3"></v-spacer>
 
+
             <v-row>
               <v-col cols="12" lg="6">
+                <!-- CARD 3 COUNT -->
                 <v-card height="100%">
                   <v-col cols="12" lg="12">
-                    <v-text-field color="primary" label="Anzahl" v-model="position.count"
+                    <v-text-field 
+                      color="primary" 
+                      label="Anzahl" 
+                      v-model="position.count"
                       :hint="$tc('please_input', 2, { msg: 'Anzahl' })">
                     </v-text-field>
                   </v-col>
                 </v-card>
               </v-col>
+
               <v-col cols="12" lg="6">
+                <!-- CARD 4 WEIGHT -->
                 <v-card>
                   <v-col cols="12" lg="12">
-                    <v-text-field color="primary" label="Gewicht" v-model="position.weight"
+                    <v-text-field 
+                      color="primary" 
+                      label="Gewicht" 
+                      v-model="position.weight"
                       :hint="$tc('please_input', 2, { msg: 'Gewicht' })">
                     </v-text-field>
                   </v-col>
@@ -124,37 +171,45 @@
 
             <v-spacer class="pa-3"></v-spacer>
 
-            <v-row>
-              <v-col cols="12" lg="12">
-                <v-card>
-                  <v-col cols="12" lg="12">
-                    <v-textarea color="primary" counter rows="4" no-resize maxlength="254" :label="$t('description')"
-                      v-model="position.description">
-                    </v-textarea>
-                  </v-col>
-                </v-card>
-              </v-col>
-            </v-row>
+            <!-- CARD 5 DESCRIPTIOPN -->
+            <v-card class="pa-3">
+              <v-textarea 
+                counter 
+                rows="4" 
+                no-resize 
+                color="primary" 
+                maxlength="254" 
+                :label="$t('description')"
+                v-model="position.description">
+              </v-textarea>
+            </v-card>
 
             <v-spacer class="pa-3"></v-spacer>
 
             <v-row>
-              <v-col cols="12" lg="6">
-                <v-card height="100%">
-                  <v-col cols="12" lg="12">
-                    <v-combobox color="primary" counter maxlength="40" :items="datings" :label="$t('dating')"
+              <!-- CARD 6 DATING -->
+              <v-col lg="6">
+                <v-card class="pa-3">
+                    <v-combobox 
+                      counter 
+                      maxlength="40" 
+                      color="primary" 
+                      :items="datings" 
+                      :label="$t('dating')"
                       v-model="position.dating">
                     </v-combobox>
-                  </v-col>
                 </v-card>
               </v-col>
-              <v-col cols="12" lg="6">
-                <v-card>
-                  <v-col cols="12" lg="12">
-                    <v-text-field color="primary" label="AnspracheVon" v-model="position.addressOf"
-                      :hint="$tc('please_input', 2, { msg: 'AnsrpacheVon' })">
-                    </v-text-field>
-                  </v-col>
+
+              <!-- CARD 7 EDITOR -->
+              <v-col lg="6">
+                <v-card class="pa-3">
+                  <v-text-field 
+                    color="primary" 
+                    label="Ansprache Von" 
+                    v-model="position.addressOf"
+                    :hint="$tc('please_input', 2, { msg: 'Ansprache Von' })">
+                  </v-text-field>
                 </v-card>
               </v-col>
             </v-row>
@@ -165,124 +220,20 @@
             <ImageForm :object_id="position.id" object_type="Positions" />
           </v-window-item>
 
-          <!-- TAB ITEM 'TEXTS' -->
-          <!-- <v-window-item value="three">
-            <v-list-subheader v-if="texts.length === 0">
-              {{ $t('not_created_yet',
-                {
-                  object: $t('additional',
-                    { msg: $tc('parameter', 1) })
-                })
-              }}
-            </v-list-subheader>
-            <template v-for="text in texts" :key="text">
-              <v-card>
-                <v-list>
-                  <v-list-item>
-                    <v-row class="align-center no-gutters">
-                      <v-col cols="3">
-                        <v-combobox hide-details="true" v-model="text.title" :label="$t('title')" :items="['Höhe',
-                          'Gewicht',
-                          'Material',
-                          'Datum',
-                          'Datierung',
-                          'Kommentar']" @update:modelValue="saveText(text)">
-                        </v-combobox>
-                      </v-col>
-
-                      <v-col cols="7">
-                        <v-text-field hide-details="true" v-model="text.text" :label="$t('content')"
-                          @update:modelValue="saveText(text)">
-                        </v-text-field>
-                      </v-col>
-
-                      <v-col cols="1">
-                        <v-btn color="error" class="ma-2" v-on:click="deleteText(text)">
-                          <v-icon>mdi-delete</v-icon>
-                        </v-btn>
-                      </v-col>
-                    </v-row>
-                  </v-list-item>
-                </v-list>
-              </v-card>
-            </template>
-            <AddButton v-on:click="addText()" />
-          </v-window-item> -->
-
           <!-- Tab item 'MODELS' -->
           <v-window-item value="four">
-            <v-card>
-              <v-list>
-                <v-list-subheader v-if="models.length === 0">
-                  {{ $t('not_created_yet', { object: $tc('model', 1) }) }}
-                </v-list-subheader>
-
-                <template v-for="(model, i) in models" :key="model">
-                  <v-container class="d-flex align-center">
-
-                    <v-container class="pa-0">
-                      <v-list-item class="modelItem mt-3" v-on:click="moveToModel(model.id)">
-
-                        <v-list-item-title class="text-h6">
-                          Nr. {{ model.modelNumber }}
-                        </v-list-item-title>
-
-                        <v-list-item-subtitle class="text-subtitle-1">
-                          {{ model.title }}
-                        </v-list-item-subtitle>
-
-                      </v-list-item>
-
-                    </v-container>
-
-                    <v-btn color="error" class="ml-3 mt-2" v-on:click="deleteModel(model)">
-                      <v-icon>mdi-delete</v-icon>
-                    </v-btn>
-                  </v-container>
-
-                  <v-divider v-if="i !== models.length - 1"></v-divider>
-                </template>
-              </v-list>
-            </v-card>
-
-            <AddButton v-on:click="models_overlay = true" />
-
-            <!-- Model Creation dialog -->
-            <v-dialog v-model="models_overlay" max-width="800" persistent>
-              <v-card>
-                <v-card-title>
-                  {{ $t('add', { msg: $t('model') }) }}
-                </v-card-title>
-
-                <v-card-text>
-                  <v-text-field disabled v-model="position.id" :label="$t('position_id')"
-                    :hint="$t('please_input', { msg: $t('position_id') })">
-                  </v-text-field>
-
-                  <v-text-field v-model="model.title" :label="$t('title')" :hint="$t('please_input',
-                    { msg: $t('title_of', { msg: $t('model') }) })">
-                  </v-text-field>
-
-                  <v-file-input show-size accept=".glb" v-model="model.model" :label="$t('input', { msg: $t('model') })">
-                  </v-file-input>
-                </v-card-text>
-
-                <v-card-actions class="justify-center">
-                  <v-btn icon color="primary" v-on:click="addModel()">
-                    <v-icon>mdi-content-save-all</v-icon>
-                  </v-btn>
-                  <v-btn icon color="error" @click="models_overlay = false">
-                    <v-icon>mdi-close-circle</v-icon>
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
+            <ModelForm :object_id="position.id" object_type="Positions" />
           </v-window-item>
         </v-window>
       </v-col>
     </v-row>
   </v-container>
-  <v-alert closable type="error" density="compact" variant="outlined" v-model="error_dialog">
+  <v-alert 
+    closable 
+    type="error" 
+    density="compact" 
+    variant="outlined" 
+    v-model="error_dialog">
     {{ error_message }}
   </v-alert>
 </template>
@@ -301,23 +252,22 @@
  *  addText         - Adds a new text to the list
  *  saveText        - Saves changes to a text of the position
  *  deleteText      - Deletes a text from the position
- *  textureToBase64 - Changes texture data to base64
  *  calcSubNumber   - Calculates the subnumber depending on prev position
  *  goBack          - Goes back to PlaceForm
  */
 import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import ConfirmDialog from '../components/ConfirmDialog.vue';
-import AddButton from '../components/AddButton.vue';
 import ImageForm from '../components/ImageForm.vue';
+import ModelForm from '../components/ModelForm.vue';
 import { toRaw } from 'vue';
 
 export default {
   name: 'PositionCreation',
   components: {
     ConfirmDialog,
-    AddButton,
-    ImageForm
+    ImageForm,
+    ModelForm
   },
   /**
    * Reactive Vue.js data
@@ -348,33 +298,12 @@ export default {
         lastChanged: Date.now(),
         lastSync: '',
       },
-      image: {
-        id: '',
-        positionID: '',
-        title: '',
-        image: [],
-      },
-      text: {
-        id: '',
-        positionID: '',
-        title: '',
-        text: '',
-      },
-      model: {
-        id: '',
-        placeID: '',
-        positionID: '',
-        title: '',
-        model: [],
-      },
       images: [],
       texts: [],
       materials: [],
       titles: [],
       datings: [],
-      image_dialog: false,
       models: [],
-      models_overlay: false,
       error_dialog: false,
       error_message: '',
       is_new: true,
@@ -394,7 +323,6 @@ export default {
     await fromOfflineDB.syncLocalDBs();
     await this.updatePosition();
     await this.updateImages();
-    await this.updateTexts();
     await this.updateModels();
   },
   methods: {
@@ -420,11 +348,11 @@ export default {
         this.position.id, 'Position', 'Images', 'images');
     },
     /**
-     * Update reactive Vue.js models data
+     * Update reactive Vue.js model data
      */
-    async updateTexts() {
-      this.texts = await fromOfflineDB.getAllObjectsWithID(
-        this.position.id, 'Position', 'Texts', 'texts');
+    async updateModels() {
+      this.models = await fromOfflineDB.getAllObjectsWithID(
+        this.position.id, 'Position', 'Models', 'positions');
     },
     /**
      * Save a Position to local storage for the current place
@@ -438,9 +366,11 @@ export default {
 
       //convert from vue proxy to JSON object
       const rawPosition = toRaw(this.position);
+      console.log(rawPosition)
       rawPosition.positionNumber = Number(rawPosition.positionNumber);
       rawPosition.lastChanged = Date.now();
-
+      
+      console.log(rawPosition)
       var test = await fromOfflineDB.getObjectBefore(rawPosition.id, 'Positions', 'positions');
       var newSubNumber = this.calcSubNumber(rawPosition, test);
       rawPosition.subNumber = newSubNumber;
@@ -549,26 +479,6 @@ export default {
     },
 
     /**
-     * Change texture data to base64
-     * @param {*} rawData 
-     */
-    async textureToBase64(rawData) {
-
-      const output = await new Promise((resolve) => {
-
-        let reader = new FileReader();
-        let f = rawData[0];
-        reader.onload = e => {
-          const b64 = e.target.result
-          resolve(b64)
-        }
-        reader.readAsDataURL(f);
-
-      });
-      return output;
-    },
-
-    /**
      * Calculates the SubNumber of a position
      */
     calcSubNumber(curPos, prevPos) {
@@ -604,75 +514,7 @@ export default {
     goBack: function () {
       this.$router.push({ name: "PositionsOverview" });
     },
-    /**
-     * 
-     * @param {*} rawData 
-     */
-    async modelToArrayBuffer(rawData) {
-
-      const output = await new Promise((resolve) => {
-
-        let reader = new FileReader();
-        let f = rawData[0];
-        reader.onload = e => {
-          const modelString = e.target.result
-          resolve(modelString)
-        }
-
-        reader.readAsArrayBuffer(f);
-
-      });
-
-      return output;
-
-    },
-    async addModel() {
-      const newModelID = String(Date.now());
-      this.position.models.push(newModelID);
-      this.position.lastChanged = Date.now();
-
-      // new model data
-      const newModel = {
-        id: newModelID,
-        placeID: String(VueCookies.get('currentPlace')),
-        positionID: String(VueCookies.get('currentPosition')),
-        title: this.model.title,
-        model: await this.modelToArrayBuffer(toRaw(this.model.model)),
-        color: '#ffffff',
-        opacity: 1,
-        coordinates: null,
-        scale: null,
-        rotation: null,
-        lastChanged: Date.now(),
-        lastSync: ''
-      }
-
-      // set new modelNumber
-      if (this.models.length == 0) {
-        newModel.modelNumber = 1;
-      } else {
-        this.updateModels();
-        const modelNumber = Math.max(...this.models.map(o => o.modelNumber))
-        const newModelNumber = modelNumber + 1;
-        newModel.modelNumber = newModelNumber;
-      }
-
-      // hide model creation dialog
-      this.models_overlay = false;
-
-      // update IndexedDB
-      await fromOfflineDB.updateObject(toRaw(this.position), 'Positions', 'positions');
-      await fromOfflineDB.addObject(newModel, 'Models', 'positions');
-      await fromOfflineDB.addObject({ id: newModelID, object: 'models' }, 'Changes', 'created');
-      await this.updateModels(newModel.id);
-
-    },
-    async deleteModel() {
-
-    },
-    async updateModels() {
-      this.models = await fromOfflineDB.getAllObjectsWithID(this.position.id, 'Position', 'Models', 'positions');
-    },
+  
   }
 };
 </script>
