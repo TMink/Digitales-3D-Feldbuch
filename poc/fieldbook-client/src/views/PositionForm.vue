@@ -438,6 +438,7 @@ export default {
 
       //convert from vue proxy to JSON object
       const rawPosition = toRaw(this.position);
+      rawPosition.positionNumber = Number(rawPosition.positionNumber);
       rawPosition.lastChanged = Date.now();
 
       var test = await fromOfflineDB.getObjectBefore(rawPosition.id, 'Positions', 'positions');
