@@ -1,47 +1,47 @@
 <template>
-  <v-card>
-
     <!-- IMAGES LIST -->
-    <v-list>
-      <v-list-subheader v-if="images.length === 0">
-        {{ $t('not_created_yet', { object: $tc('image', 1) }) }}
-      </v-list-subheader>
+  <v-list-subheader v-if="images.length === 0">
+    {{ $t('not_created_yet', { object: $tc('image', 1) }) }}
+  </v-list-subheader>
 
-      <template v-for="(image, i) in images" :key="image">
-
-        <!-- LIST ITEM -->
-        <v-row no-gutters class="align-center">
-          <v-col cols="1">
-            <v-card-title> Nr. {{ image.imageNumber }} </v-card-title>
-          </v-col>
-          <v-col cols="2">    
-            <v-card-subtitle> {{ image.title }} </v-card-subtitle>
-          </v-col>
-          <v-spacer></v-spacer>
-          <v-col cols="3">
-            <v-img 
+  <!-- LIST ITEM -->
+  <!-- TODO: fix virtual scroller -->
+  <!-- <v-virtual-scroll  :max-height="windowHeight - 300">
+    <template v-slot:default="{ item }" > -->
+      <v-row no-gutters class="align-center">
+        <v-col xl="3" md="4" sm="6" v-for="item in images" :key="item">
+          <v-card class="pa-2 ma-2">
+            <v-card-title> Nr. {{ item.imageNumber }} </v-card-title>
+            <v-card-subtitle> {{ item.title }} </v-card-subtitle>
+            
+              <v-img 
               style="cursor: pointer;" 
               class="my-2" 
               height="150" 
-              :src=image.image
-              v-on:click="openImage(image)">
+              :src=item.image
+              v-on:click="openImage(item)">
             </v-img>
-          </v-col>
-          <v-spacer></v-spacer>
-          <v-col cols="2" class="text-center">
-            <v-btn 
-              color="error" 
-              class="mx-4 text-center" 
-              v-on:click="deleteImage(image)">
-              <v-icon>mdi-delete</v-icon>
-            </v-btn>
-          </v-col>
-        </v-row>
-
-        <v-divider v-if="i !== image.length - 1"></v-divider>
-      </template>
-    </v-list>
-  </v-card>
+            
+            <v-row no-gutters>
+              <v-spacer/>
+              <v-btn 
+                color="primary"
+                class="mr-2"
+                v-on:click="editImage(item)">
+                <v-icon>mdi-pencil</v-icon>
+              </v-btn>
+              
+              <v-btn 
+                color="error" 
+                v-on:click="deleteImage(item)">
+                <v-icon>mdi-delete</v-icon>
+              </v-btn>
+            </v-row>
+          </v-card>
+        </v-col>
+      </v-row>
+<!--     </template>
+  </v-virtual-scroll> -->
 
   <AddButton v-on:click="image_dialog = true" />
 
@@ -99,6 +99,7 @@
 import AddButton from '../components/AddButton.vue';
 import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
+import { useWindowSize } from 'vue-window-size';
 import { toRaw } from 'vue';
 
 export default {
@@ -133,6 +134,13 @@ export default {
       img_carousel_dialog: false,
       is_required: [v => !!v || 'Pflichtfeld'],
     }
+  },
+  setup() {
+    const { width, height } = useWindowSize();
+    return {
+      windowWidth: width,
+      windowHeight: height,
+    };
   },
   /**
    * Initialize data from IndexedDB to the reactive Vue.js data
@@ -170,6 +178,8 @@ export default {
       for (var i=0; i<rawImage.image.length; i++) {
        await this.addImage(rawImage.image[i]);
       }
+
+      await this.updateImages();
     },
 
     /**
@@ -219,7 +229,6 @@ export default {
       await fromOfflineDB.updateObject(rawObject, this.object_type, this.object_type.toLowerCase())
       await fromOfflineDB.addObject(newImage, "Images", "images");
       await fromOfflineDB.addObject({ id: newImageID, object: 'images' }, 'Changes', 'created');
-      await this.updateImages();
     },
 
     /**
@@ -271,14 +280,12 @@ export default {
      * @param {ImageObject} image 
      */
     async openImage(image) {
-
       this.img_carousel_dialog = true;
       this.openedImage = image.image;
 
       const imgContainer = await this.waitForElm('imgContainer');
       const img = await this.waitForElm('realImg');
       
-
       // zoom in/out on click and change the mouse cursor
       imgContainer.addEventListener("click", (e) => {
         if (img.style.cursor == "zoom-in") {
@@ -302,11 +309,11 @@ export default {
       });
 
       // zoom out when mouse leaves img bounds
-      imgContainer.addEventListener("mouseleave", (e) => {
+      /* imgContainer.addEventListener("mouseleave", (e) => {
         img.style.cursor = "zoom-in";
         img.style.transformOrigin = 'center';
         img.style.transform = "scale(1)";
-      });
+      }); */
     },
 
     /**
