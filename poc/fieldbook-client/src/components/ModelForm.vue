@@ -145,6 +145,7 @@ export default {
      * Adds a new model to the models-array
      */
     async addModel() {
+      var ctx = this;
       // add modelID to the object array of all models
       const newModelID = String(Date.now());
       this.object.models.push(newModelID);
@@ -187,6 +188,8 @@ export default {
       await fromOfflineDB.addObject(
         {id: newModelID, object: 'models' }, 'Changes', 'created');
       await this.updateModels(newModel.id);
+
+      ctx.$emit('addModel', newModel.id);
     },
     /**
      * Deletes a model from IndexedDB and the connected place

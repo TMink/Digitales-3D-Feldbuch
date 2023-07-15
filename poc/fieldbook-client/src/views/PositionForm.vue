@@ -234,12 +234,18 @@
 
           <!-- TAB ITEM 'IMAGES' -->
           <v-window-item value="two">
-            <ImageForm :object_id="position.id" object_type="Positions" />
+            <ImageForm 
+              object_type="Positions" 
+              :object_id="position.id" 
+              @addImage="addImage($event)"/>
           </v-window-item>
 
           <!-- Tab item 'MODELS' -->
           <v-window-item value="four">
-            <ModelForm :object_id="position.id" object_type="Positions" />
+            <ModelForm 
+              object_type="Positions" 
+              :object_id="position.id" 
+              @addModel="addModel($event)"/>
           </v-window-item>
         </v-window>
       </v-col>
@@ -408,6 +414,30 @@ export default {
       VueCookies.remove('currentPosition');
 
       this.$router.push({ name: "PositionsOverview" });
+    },
+
+    /**
+     * Adds a new `image_id` to the `images`-array of this position
+     * @param {String} image_id 
+     */
+    addImage(image_id) {
+      if (this.position.images == undefined) {
+        this.position.images = [image_id];
+      } else {
+        this.position.images.push(image_id);
+      }
+    },
+
+    /**
+     * Adds a new `model_id` to the `models`-array of this position
+     * @param {String} model_id 
+     */
+    addModel(model_id) {
+      if (this.position.models == undefined) {
+        this.position.models = [model_id];
+      } else {
+        this.position.models.push(model_id);
+      }
     },
 
     /**

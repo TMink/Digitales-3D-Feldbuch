@@ -186,7 +186,8 @@ export default {
      * Adds a new image-placeholder to the images-array
      */
     async addImage(imageFile) {
-      // Add imageID to the object array of all images
+      var ctx = this;
+      // add imageID to the object array of all images
       var newImageID = String(Date.now());
       var rawObject = toRaw(this.object);
       var rawImage = toRaw(this.image);
@@ -226,9 +227,11 @@ export default {
       this.image_dialog = false;
 
       // update IndexedDB
-      await fromOfflineDB.updateObject(rawObject, this.object_type, this.object_type.toLowerCase())
+      await fromOfflineDB.updateObject(rawObject, this.object_type, this.object_type.toLowerCase());
       await fromOfflineDB.addObject(newImage, "Images", "images");
       await fromOfflineDB.addObject({ id: newImageID, object: 'images' }, 'Changes', 'created');
+      
+      ctx.$emit('addImage', newImageID);
     },
 
     /**
@@ -315,14 +318,6 @@ export default {
         img.style.transform = "scale(1)";
       }); */
     },
-
-    /**
-     * Closes the image creation dialog
-     */
-    closeDiag() {
-      this.dialog = false;
-      this.$emit('closeDiag', false);
-    },
     /**
      * 
      * Waits until the HTML element exists
@@ -349,7 +344,6 @@ export default {
         });
       });
     }
-    
   }
 }
 </script>
