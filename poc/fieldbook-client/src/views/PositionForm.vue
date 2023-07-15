@@ -40,8 +40,10 @@
                   <v-text-field 
                     color="primary" 
                     label="Posnr *" 
+                    maxlength="6"
                     :rules="is_required" 
                     v-model="position.positionNumber"
+                    @keypress="filterAllNonNumeric(event)"
                     :hint="$tc('please_input', 2, { msg: 'Posnr' })">
                   </v-text-field>
                 </v-col>
@@ -49,7 +51,8 @@
                 <v-col lg="2">
                   <v-text-field 
                     color="primary" 
-                    label="Unternr *" 
+                    label="Unternr *"
+                    maxlength="5" 
                     :rules="is_required" 
                     v-model="position.subNumber"
                     :hint="$tc('please_input', 2, { msg: 'Unternr' })">
@@ -58,6 +61,7 @@
 
                 <v-col lg="2">
                   <v-combobox 
+                    maxlength="40"
                     color="primary" 
                     :items="titles" 
                     label="Ansprache" 
@@ -69,6 +73,7 @@
 
                 <v-col lg="2">
                   <v-combobox 
+                    maxlength="40"
                     color="primary" 
                     label="Material" 
                     :items="materials" 
@@ -96,40 +101,51 @@
             <!-- CARD 2 GAUSS-KRÜGER -->
             <v-card>
               <v-card-text>
-                <div>
-                  <h2 class="text-h6 font-weight-medium pb-3">Gauss-Krüger-Koordinaten</h2>
-                </div>
+                  <h2 class="text-h6 font-weight-medium pb-3">
+                    Gauss-Krüger-Koordinaten
+                  </h2>
               </v-card-text>
               <v-row class="pb-4" justify="center">
-                <v-col cols="12" lg="3">
+                
+                <v-col lg="3">
                   <v-text-field 
+                    maxlength="7"
                     color="primary" 
                     hide-details 
                     label="Rechtswert *" 
                     :rules="is_required"
                     v-model="position.right" 
+                    @keypress="filterNonNumeric(event)"
                     :hint="$tc('please_input', 2, { msg: 'Rechtswert' })">
                   </v-text-field>
                 </v-col>
+
                 <v-divider class="mt-1 mb-n2" vertical></v-divider>
-                <v-col cols="12" lg="3">
-                  <v-text-field 
+
+                <v-col lg="3">
+                  <v-text-field
+                    maxlength="7" 
                     hide-details 
                     color="primary" 
                     label="Hochwert *" 
                     :rules="is_required" 
                     v-model="position.up"
+                    @keypress="filterNonNumeric(event)"
                     :hint="$tc('please_input', 2, { msg: 'Hochwert' })">
                   </v-text-field>
                 </v-col>
+
                 <v-divider class="mt-1 mb-n2" vertical></v-divider>
-                <v-col cols="12" lg="3">
+
+                <v-col lg="3">
                   <v-text-field 
+                    maxlength="7"
                     hide-details 
                     label="Höhe *" 
                     color="primary" 
                     :rules="is_required" 
                     v-model="position.height"
+                    @keypress="filterNonNumeric(event)"
                     :hint="$tc('please_input', 2, { msg: 'Höhe' })">
                   </v-text-field>
                 </v-col>
@@ -138,33 +154,33 @@
 
             <v-spacer class="pa-3"></v-spacer>
 
-
             <v-row>
-              <v-col cols="12" lg="6">
-                <!-- CARD 3 COUNT -->
+              <!-- CARD 3 COUNT -->
+              <v-col lg="6">
                 <v-card height="100%">
-                  <v-col cols="12" lg="12">
-                    <v-text-field 
-                      color="primary" 
-                      label="Anzahl" 
-                      v-model="position.count"
-                      :hint="$tc('please_input', 2, { msg: 'Anzahl' })">
-                    </v-text-field>
-                  </v-col>
+                  <v-text-field 
+                    maxlength="9"
+                    color="primary" 
+                    label="Anzahl" 
+                    class="ma-1 px-2 pt-2"
+                    v-model="position.count"
+                    @keypress="filterAllNonNumeric(event)"
+                    :hint="$tc('please_input', 2, { msg: 'Anzahl' })">
+                  </v-text-field>
                 </v-card>
               </v-col>
 
-              <v-col cols="12" lg="6">
-                <!-- CARD 4 WEIGHT -->
+              <!-- CARD 4 WEIGHT -->
+              <v-col lg="6">
                 <v-card>
-                  <v-col cols="12" lg="12">
-                    <v-text-field 
-                      color="primary" 
-                      label="Gewicht" 
-                      v-model="position.weight"
-                      :hint="$tc('please_input', 2, { msg: 'Gewicht' })">
-                    </v-text-field>
-                  </v-col>
+                  <v-text-field 
+                    color="primary" 
+                    label="Gewicht"
+                    class="ma-1 px-2 pt-2" 
+                    v-model="position.weight"
+                    @keypress="filterNonNumeric(event)"
+                    :hint="$tc('please_input', 2, { msg: 'Gewicht' })">
+                  </v-text-field>
                 </v-card>
               </v-col>
             </v-row>
@@ -192,10 +208,10 @@
                 <v-card class="pa-3">
                     <v-combobox 
                       counter 
-                      maxlength="40" 
+                      maxlength="50" 
                       color="primary" 
                       :items="datings" 
-                      :label="$t('dating')"
+                      :label="$t('dating') + ' *'"
                       v-model="position.dating">
                     </v-combobox>
                 </v-card>
@@ -205,10 +221,11 @@
               <v-col lg="6">
                 <v-card class="pa-3">
                   <v-text-field 
+                    maxlength="50"
                     color="primary" 
-                    label="Ansprache Von" 
+                    label="Ansprache von" 
                     v-model="position.addressOf"
-                    :hint="$tc('please_input', 2, { msg: 'Ansprache Von' })">
+                    :hint="$tc('please_input', 2, { msg: 'Ansprache von' })">
                   </v-text-field>
                 </v-card>
               </v-col>
@@ -298,15 +315,11 @@ export default {
         lastChanged: Date.now(),
         lastSync: '',
       },
-      images: [],
-      texts: [],
       materials: [],
       titles: [],
       datings: [],
-      models: [],
       error_dialog: false,
       error_message: '',
-      is_new: true,
       is_required: [v => !!v || 'Pflichtfeld'],
       tab: null,
     }
@@ -322,8 +335,6 @@ export default {
 
     await fromOfflineDB.syncLocalDBs();
     await this.updatePosition();
-    await this.updateImages();
-    await this.updateModels();
   },
   methods: {
     /**
@@ -341,20 +352,6 @@ export default {
       }
     },
     /**
-     * Update reactive Vue.js positions data
-     */
-    async updateImages() {
-      this.images = await fromOfflineDB.getAllObjectsWithID(
-        this.position.id, 'Position', 'Images', 'images');
-    },
-    /**
-     * Update reactive Vue.js model data
-     */
-    async updateModels() {
-      this.models = await fromOfflineDB.getAllObjectsWithID(
-        this.position.id, 'Position', 'Models', 'positions');
-    },
-    /**
      * Save a Position to local storage for the current place
      */
     async savePosition() {
@@ -366,11 +363,9 @@ export default {
 
       //convert from vue proxy to JSON object
       const rawPosition = toRaw(this.position);
-      console.log(rawPosition)
       rawPosition.positionNumber = Number(rawPosition.positionNumber);
       rawPosition.lastChanged = Date.now();
       
-      console.log(rawPosition)
       var test = await fromOfflineDB.getObjectBefore(rawPosition.id, 'Positions', 'positions');
       var newSubNumber = this.calcSubNumber(rawPosition, test);
       rawPosition.subNumber = newSubNumber;
@@ -416,69 +411,6 @@ export default {
     },
 
     /**
-     * Adds a new text-placeholder to the position and IndexedDB
-     */
-    async addText() {
-      // Add textID to the position array of all texts
-      var newTextID = String(Date.now());
-      var rawPosition = toRaw(this.position);
-
-      // update lastChanged date of position
-      rawPosition.texts.push(newTextID)
-      rawPosition.lastChanged = Date.now()
-
-      // new text data
-      const newText = {
-        id: newTextID,
-        positionID: rawPosition.id,
-        title: '',
-        text: '',
-        lastChanged: Date.now(),
-        lastSync: ''
-      };
-
-      // update IndexedDB
-      await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions')
-      await fromOfflineDB.addObject(newText, "Texts", "texts");
-      await fromOfflineDB.addObject({ id: newTextID, object: 'texts' }, 'Changes', 'created');
-      await this.updateTexts();
-    },
-
-    /**
-     * Saves the text changes to IndexedDB
-     * @param {ProxyObject} text 
-     */
-    async saveText(text) {
-      //convert from vue proxy to JSON object
-      const rawText = toRaw(text);
-      rawText.lastChanged = Date.now();
-
-      await fromOfflineDB.updateObject(rawText, 'Texts', 'texts')
-    },
-
-    /**
-     * Removes a text entry from IndexedDB and the connected position
-     * @param {ProxyObject} text 
-     */
-    async deleteText(text) {
-      var rawPosition = toRaw(this.position);
-      var rawText = toRaw(text);
-      var index = rawPosition.texts.indexOf(rawText.id.toString());
-
-      // Remove the textID from connected position
-      if (index != -1) {
-        rawPosition.texts.splice(index, 1);
-        rawPosition.lastChanged = Date.now();
-        await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions');
-      }
-
-      // Delete the text itself
-      await fromOfflineDB.deleteObject(text, 'Texts', 'texts');
-      VueCookies.remove('currentText');
-      await this.updateTexts();
-    },
-
-    /**
      * Calculates the SubNumber of a position
      */
     calcSubNumber(curPos, prevPos) {
@@ -513,6 +445,37 @@ export default {
      */
     goBack: function () {
       this.$router.push({ name: "PositionsOverview" });
+    },
+
+    /**
+     * Prevents the input of non numeric values 
+     * @param {*} evt 
+     */
+    filterAllNonNumeric(evt) {
+      evt = (evt) ? evt : window.event;
+      let expect = evt.target.value.toString() + evt.key.toString();
+
+      if (!/^[0-9]*$/.test(expect)) {
+        evt.preventDefault();
+      } else {
+        return true;
+      }
+    },
+
+    /**
+     * Prevents the input of non numeric values 
+     * (allows one single `,` or `.` for float values)
+     * @param {*} evt 
+     */
+    filterNonNumeric(evt) {
+      evt = (evt) ? evt : window.event;
+      let expect = evt.target.value.toString() + evt.key.toString();
+
+      if (!/^[-+]?[0-9]*[,.]?[0-9]*$/.test(expect)) {
+        evt.preventDefault();
+      } else {
+        return true;
+      }
     },
   
   }
