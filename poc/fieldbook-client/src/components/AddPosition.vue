@@ -18,28 +18,10 @@ export default {
   emits: ['updatePositions', 'updatePlace'],
   data() {
     return {
-      position: {
-        activity: '',
-        id: '',
-        placeID: '',
-        positionNumber: '',
-        date: '',
-        description: '',
-        images: [],
-        texts: [],
-        models: []
-      },
-      datings: [],
-      dialog: false,
-      is_required: [v => !!v || 'Pflichtfeld'],
     }
-  },
-  created() {
-    this.datings = JSON.parse(import.meta.env.VITE_DATINGS);
   },
   methods: {
     closeDiag() {
-      this.dialog = false;
       this.$emit('updatePositions');
       this.$emit('updatePlace');
     },
@@ -87,11 +69,7 @@ export default {
             await fromOfflineDB.getLastAddedObject('Positions', 'positions');
 
         newPosition.subNumber = await this.calcSubNumber(newPosition, lastPos);
-        if (this.position.positionNumber != '') {
-          newPosition.positionNumber = this.position.positionNumber;
-        } else {
-          newPosition.positionNumber = lastPos.positionNumber + 1;
-        }
+        newPosition.positionNumber = lastPos.positionNumber + 1;
 
         //TODO: autoincrement posNumber and implement the divide Checkbox
       }
