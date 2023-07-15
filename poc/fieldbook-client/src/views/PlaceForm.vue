@@ -393,6 +393,7 @@ export default {
         lastChanged: '',
         lastSync: ''
       },
+      positions: null,
       titles: [],
       datings: [],
       is_required: [v => !!v || 'Pflichtfeld'],
@@ -417,6 +418,7 @@ export default {
 
     await fromOfflineDB.syncLocalDBs();
     await this.updatePlace();
+    await this.updatePositions();
   },
 
   methods: {
@@ -427,6 +429,13 @@ export default {
       const currentPlace = VueCookies.get('currentPlace');
       const data = await fromOfflineDB.getObject(currentPlace, 'Places', 'places');
       this.place = data;
+    },
+
+    /**
+     * Update reactive Vue.js positions data
+     */
+    async updatePositions() {
+      this.positions = await fromOfflineDB.getAllObjectsWithID(this.place.id, 'Place', 'Positions', 'positions');
     },
 
     /**
