@@ -289,7 +289,10 @@
           </v-window-item>
 
           <v-window-item value="two">
-            <ImageForm :object_id="place.id" object_type="Places" />
+            <ImageForm 
+              :object_id="place.id" 
+              object_type="Places"
+              @addImage="addImage($event)"/>
           </v-window-item>
 
           <!-- Tab item 'positions' -->
@@ -317,16 +320,20 @@
                 </v-list>
               </v-card>
 
-              <AddPosition :positions_prop="positions" 
-                    @updatePlace="updatePlace()" 
-                    @updatePositions="updatePositions()" />
+              <AddPosition 
+                :positions_prop="positions" 
+                @updatePlace="updatePlace()" 
+                @updatePositions="updatePositions()" />
 
             </v-form>
           </v-window-item>
 
           <!-- Tab item 'models' -->
           <v-window-item value="four">
-            <ModelForm :object_id="place.id" object_type="Places" />
+            <ModelForm 
+              :object_id="place.id" 
+              object_type="Places"
+              @addModel="addModel($event)"/>
           </v-window-item>
         </v-window>
       </v-col>
@@ -395,6 +402,7 @@ export default {
         date: '',
 
         positions: [],
+        images: [],
         models: [],
         lastChanged: '',
         lastSync: ''
@@ -403,7 +411,6 @@ export default {
       titles: [],
       datings: [],
       is_required: [v => !!v || 'Pflichtfeld'],
-      dialog: false,
       tickLabels: {
         3: this.$t('veryGood'),
         2: this.$t('good'),
@@ -507,6 +514,30 @@ export default {
     },
 
     /**
+     * Adds a new `image_id` to the `images`-array of this place
+     * @param {String} image_id 
+     */
+    addImage(image_id) {
+      if (this.place.images == undefined) {
+        this.place.images = [image_id];
+      } else {
+        this.place.images.push(image_id);
+      }
+    },
+
+    /**
+     * Adds a new `model_id` to the `models`-array of this place
+     * @param {String} model_id 
+     */
+    addModel(model_id) {
+      if (this.place.models == undefined) {
+        this.place.models = [model_id];
+      } else {
+        this.place.models.push(model_id);
+      }
+    },
+
+    /**
      *  Routes to the PositionForm for the chosen positionID
      * @param {String} positionID 
      */
@@ -526,6 +557,7 @@ export default {
 
     /**
      * Prevents the input of non numeric values 
+     * (allows one single `,` or `.` for float values)
      * @param {*} evt 
      */
     filterNonNumeric(evt) {
@@ -537,7 +569,7 @@ export default {
       } else {
         return true;
       }
-    }
+    },
   }
 };
 
