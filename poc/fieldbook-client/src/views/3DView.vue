@@ -5,35 +5,31 @@
     <canvas id="mainCanvas" style="position: absolute"></canvas>
 
     <div style="float: left;" >
-      <v-card >
-        <v-navigation-drawer color="background" 
-          style="left: 49px; top:104px"
+      <v-card>
+        <!-- Controls -->
+        <v-navigation-drawer color="background"
+          style="left: 49px; top:104px; width: 351px;"
           v-model="settingsDrawer[0]"
           temporary
         >
           <v-list-item height="50" 
-            prepend-avatar="https://randomuser.me/api/portraits/men/78.jpg"
-            title="Drawer One"
+            prepend-icon="mdi-camera-control"
+            title="Controls"
           ></v-list-item>
 
           <v-divider></v-divider>
 
-          <v-list-item height="50"
-            prepend-icon="mdi-view-dashboard" title="Home" value="home"
-          ></v-list-item>
-          <v-list-item height="50"
-            prepend-icon="mdi-forum" title="About" value="about"
-          > </v-list-item>
         </v-navigation-drawer>
 
+        <!-- Place -->
         <v-navigation-drawer color="background"
-          style="left: 49px; top:104px"
+          style="left: 49px; top:104px; width: 351px;"
           v-model="settingsDrawer[1]"
           temporary
         >
           <v-list-item height="50"
-            prepend-avatar="https://randomuser.me/api/portraits/men/78.jpg"
-            title="Drawer Two"
+            prepend-icon="mdi-radar"
+            title="Place"
           ></v-list-item>
 
           <v-divider></v-divider>
@@ -46,44 +42,65 @@
           > </v-list-item>
         </v-navigation-drawer>
 
+        <!-- Positions -->
         <v-navigation-drawer color="background"
-          style="left: 49px; top:104px"
+          style="left: 49px; top:104px; width: 600px;"
           v-model="settingsDrawer[2]"
           temporary
         >
           <v-list-item height="50"
-            prepend-avatar="https://randomuser.me/api/portraits/men/78.jpg"
-            title="Drawer Three"
+            prepend-icon="mdi-map-marker-radius-outline"
+            title="Positions"
           ></v-list-item>
   
           <v-divider></v-divider>
-  
-          <v-list-item height="50"
-            prepend-icon="mdi-view-dashboard" title="Home" value="home"
-          ></v-list-item>
-          <v-list-item height="50"
-            prepend-icon="mdi-forum" title="About" value="about"
-          > </v-list-item>
-        </v-navigation-drawer>
 
-        <v-navigation-drawer color="background"
-          style="left: 49px; top:104px"
-          v-model="settingsDrawer[3]"
-          temporary
-        >
-          <v-list-item height="50"
-            prepend-avatar="https://randomuser.me/api/portraits/men/78.jpg"
-            title="Drawer Four"
-          ></v-list-item>
-  
+          <v-card color="transparent" elevation="0" width="100%" height="250">
+            <v-form>
+              <v-card-subtitle class="pa-2 pl-4">Position Info</v-card-subtitle>
+              <v-row no-gutters>
+
+                <v-col cols="3" class="pl-2">
+                  <v-combobox id="yeah" v-model="positionInfo2.number" :items="positionInfo2.allNumbers" item-title="positionNumber" label="Number" :disabled="isEditing">
+        
+                  </v-combobox>
+                </v-col>
+
+                <v-col cols="3" class="pl-2">
+                  <v-combobox v-model="positionInfo2.subNumber" :items="positionInfo2.allSubNumbers" item-title="positionSubnumber" label="Subnumber" :disabled="isEditing">
+        
+                  </v-combobox>
+                </v-col>
+
+                <v-col cols="6" class="pl-2 pr-2">
+                  <v-combobox v-model="positionInfo2.title" :items="positionInfo2.allTitles" item-title="positionTitle" label="Title" :disabled="isEditing">
+        
+                  </v-combobox>
+                </v-col>
+
+              </v-row>
+
+              <v-card-subtitle class="pa-2 pl-4">Model Info</v-card-subtitle>
+              <v-row no-gutters>
+
+                <v-col cols="3" class="pl-2 ">
+                  <v-combobox v-model="modelInfo2.number" :items="modelInfo2.allNumbers" item-title="modelNumber" label="Number" :disabled="isEditing">
+
+                  </v-combobox>
+                </v-col>
+
+                <v-col cols="6" class="pl-2 ">
+                  <v-combobox v-model="modelInfo2.title" :items="modelInfo2.allTitles" item-title="modelTitel" label="Titel" :disabled="isEditing">
+
+                  </v-combobox>
+                </v-col>
+
+                </v-row>
+            </v-form>
+          </v-card>
+
           <v-divider></v-divider>
-  
-          <v-list-item height="50"
-            prepend-icon="mdi-view-dashboard" title="Home" value="home"
-          ></v-list-item>
-          <v-list-item height="50"
-            prepend-icon="mdi-forum" title="About" value="about"
-          > </v-list-item>
+
         </v-navigation-drawer>
       </v-card>
 
@@ -91,29 +108,26 @@
         <v-card rounded="0" align="center" width="50" height="50">
           <v-card-text>S</v-card-text>
         </v-card>
-        <v-btn v-model="btnNames[0]" rounded="0" icon="mdi-folder" width="50" height="50" :color="drawerBtnColor[0]"
+        <!-- Controls -->
+        <v-btn v-model="btnNames[0]" rounded="0" icon="mdi-camera-control" width="50" height="50" :color="drawerBtnColor[0]"
           @click.stop="settingsDrawer[0] = !settingsDrawer[0]; updateBtnColor(btnNames[0]);
                        settingsDrawer[1] = false;
                        settingsDrawer[2] = false;
                        settingsDrawer[3] = false;"
         ></v-btn>
-        <v-btn v-model="btnNames[1]" rounded="0" icon="mdi-folder" width="50" height="50" :color="drawerBtnColor[1]"
+        <!-- Place -->
+        <v-btn v-model="btnNames[1]" rounded="0" icon="mdi-radar" width="50" height="50" :color="drawerBtnColor[1]"
           @click.stop="settingsDrawer[0] = false;
                        settingsDrawer[1] = !settingsDrawer[1]; updateBtnColor(btnNames[1]);
                        settingsDrawer[2] = false;
                        settingsDrawer[3] = false;"
         ></v-btn>
-        <v-btn v-model="btnNames[2]" rounded="0" icon="mdi-folder" width="50" height="50" :color="drawerBtnColor[2]"
+        <!-- Positions -->
+        <v-btn v-model="btnNames[2]" rounded="0" icon="mdi-map-marker-radius-outline" width="50" height="50" :color="drawerBtnColor[2]"
           @click.stop="settingsDrawer[0] = false;
                        settingsDrawer[1] = false;
                        settingsDrawer[2] = !settingsDrawer[2]; updateBtnColor(btnNames[2]);
                        settingsDrawer[3] = false;"
-        ></v-btn>
-        <v-btn v-model="btnNames[3]" rounded="0" icon="mdi-folder" width="50" height="50" :color="drawerBtnColor[3]"
-          @click.stop="settingsDrawer[0] = false;
-                       settingsDrawer[1] = false;
-                       settingsDrawer[2] = false;
-                       settingsDrawer[3] = !settingsDrawer[3]; updateBtnColor(btnNames[3]);"
         ></v-btn>
       </v-card>
     </div>
@@ -441,7 +455,6 @@ const params = {
     bgColor: 0x263238,
     lightColor: 0xffffff
   }
-
 }
 
 export default {
@@ -480,10 +493,32 @@ export default {
       btnNames: ["btn1", "btn2", "btn3", "btn4"],
 
       cardShow: true,
+      autoCompleteModel: null,
+      tollesModel: null,
+
+      /* Sidebar: Positions */
+      positionInfo2: {
+        number: null,
+        subNumber: null,
+        title: null,
+        allNumbers: [],
+        allSubNumbers: [],
+        allTitles: [],
+        infoBlock: []
+      },
+      modelInfo2: {
+        number: null,
+        title: null,
+        allNumbers: [],
+        allTitles: []
+      },
 
       /* Meshes in Scene */
       placeModelsInScene: [], // {placeID, modelID, modelName}
       positionModelsInScene: [], // {positionID, modelID, modelName}
+
+      positionModelsInSceneNames: [],
+      isEditing: null,
 
       modelInSubName: "",
 
@@ -496,6 +531,83 @@ export default {
       gizmoState: false,
       colors: [],
     };
+  },
+
+  watch: {
+    'positionInfo2.number': {
+      handler: function() {
+        console.log('Current vaule:' + this.positionInfo2.number );
+        if ( this.positionInfo2.number != null ) {
+          this.positionInfo2.allSubNumbers = [];
+          this.positionInfo2.allTitles = [];
+          for ( let i=0; i < this.positionInfo2.infoBlock.length; i++ ) {
+            if ( this.positionInfo2.infoBlock[i].number == this.positionInfo2.number ) {
+              
+              if ( !this.positionInfo2.allSubNumbers.includes(this.positionInfo2.infoBlock[i].subNumber)) {
+                this.positionInfo2.allSubNumbers.push(this.positionInfo2.infoBlock[i].subNumber)
+              }
+              if ( !this.positionInfo2.allTitles.includes(this.positionInfo2.infoBlock[i].title) ) {
+                this.positionInfo2.allTitles.push(this.positionInfo2.infoBlock[i].title)
+              }
+
+            }
+          }
+        } else {
+          this.undoDependencyCheck();
+        }
+      },
+      deep: true
+    },
+
+    'positionInfo2.subnumber': {
+      handler: function() {
+        console.log('Current vaule:' + this.positionInfo2.subNumber);
+        if (this.positionInfo2.subNumber != null) {
+          this.positionInfo2.allNumbers = [];
+          this.positionInfo2.allTitles = [];
+          for ( let i=0; i < this.positionInfo2.infoBlock.length; i++ ) {
+            if ( this.positionInfo2.infoBlock[i].subNumber == this.positionInfo2.subNumber ) {
+              
+              if ( !this.positionInfo2.allNumbers.includes(this.positionInfo2.infoBlock[i].number) ) {
+                this.positionInfo2.allNumbers.push(this.positionInfo2.infoBlock[i].number)
+              }
+              if ( !this.positionInfo2.allTitles.includes(this.positionInfo2.infoBlock[i].title) ) {
+                this.positionInfo2.allTitles.push(this.positionInfo2.infoBlock[i].title)
+              }
+
+            }
+          }
+        } else {
+          this.undoDependencyCheck();
+        }
+      },
+      deep: true
+    },
+
+    'positionInfo2.title': {
+      handler: function() {
+        console.log('Current vaule:' + this.positionInfo2.title);
+        if ( this.positionInfo2.title != null ) {
+          this.positionInfo2.allNumbers = [];
+          this.positionInfo2.allSubNumbers = [];
+          for ( let i=0; i < this.positionInfo2.infoBlock.length; i++ ) {
+            if ( this.positionInfo2.infoBlock[i].title == this.positionInfo2.title ) {
+              
+              if ( !this.positionInfo2.allNumbers.includes(this.positionInfo2.infoBlock[i].number) ) {
+                this.positionInfo2.allNumbers.push(this.positionInfo2.infoBlock[i].number)
+              }
+              if ( !this.positionInfo2.allSubNumbers.includes(this.positionInfo2.infoBlock[i].subNumber) ) {
+                this.positionInfo2.allSubNumbers.push(this.positionInfo2.infoBlock[i].subNumber)
+              }
+
+            }
+          }
+        } else {
+          this.undoDependencyCheck();
+        }
+      },
+      deep: true
+    }
   },
 
   async mounted() {                                                   // mounted
@@ -517,6 +629,8 @@ export default {
 
       await this.loadPositionModels();
 
+      this.getPositionInfo()
+
       this.animate();
     } else {
       console.log( "No Models found" )
@@ -532,6 +646,59 @@ export default {
   },
 
   methods: {                                                          // methods
+
+    undoDependencyCheck: function() {
+      for ( let i=0; i < this.positionInfo2.infoBlock.length; i++ ) {
+            this.undoItemFilter(this.positionInfo2.allNumbers, 
+              this.positionInfo2.infoBlock[i].number);
+
+            this.undoItemFilter(this.positionInfo2.allSubNumbers, 
+              this.positionInfo2.infoBlock[i].subNumber);
+
+            this.undoItemFilter(this.positionInfo2.allTitles, 
+              this.positionInfo2.infoBlock[i].title);
+          }
+          this.positionInfo2.allNumbers.sort()
+          this.positionInfo2.allSubNumbers.sort()
+          this.positionInfo2.allTitles.sort()
+    },
+
+    undoItemFilter: function(allItems, infoBlockItem) {
+      if ( !allItems.includes(infoBlockItem) ) {
+        allItems.push(infoBlockItem)
+      }
+    },
+
+    getPositionInfo: async function() {
+
+      for ( let i=0; i < this.positionModelsInScene.length; i++) {
+        const positionID = this.positionModelsInScene[i].positionID
+        const positionInDB = await fromOfflineDB.getObject(positionID, 'Positions', 'positions')
+
+        if ( !this.positionInfo2.allNumbers.includes(positionInDB.positionNumber) ) {
+          this.positionInfo2.allNumbers.push(positionInDB.positionNumber)
+        }
+        if ( !this.positionInfo2.allSubNumbers.includes(positionInDB.subNumber) ) {
+          this.positionInfo2.allSubNumbers.push(positionInDB.subNumber)
+        }
+        if ( !this.positionInfo2.allTitles.includes(positionInDB.title) ) {
+          this.positionInfo2.allTitles.push(positionInDB.title)
+        }
+
+        const newPosition = { 
+          number: positionInDB.positionNumber,
+          subNumber: positionInDB.subNumber,
+          title: positionInDB.title
+        }
+
+        this.positionInfo2.infoBlock.push(newPosition)
+      }
+
+    },
+
+    callMe: function(e) {
+      console.log(e)
+    },
 
     func: function(e) {
       const compareStrings = Boolean(Number(e.target.id.localeCompare("mainCanvas")));
@@ -874,6 +1041,8 @@ export default {
             modelID: object.id,
             modelTitle: object.title
           } );
+
+          this.positionModelsInSceneNames.push(object.title)
 
           /* Override coordinates (IndexedDB) */
           if ( object.coordinates != null ) {
