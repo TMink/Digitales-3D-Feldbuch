@@ -292,6 +292,7 @@ export default {
     ImageForm,
     ModelForm
   },
+  emits: ['view'],
   /**
    * Reactive Vue.js data
    */

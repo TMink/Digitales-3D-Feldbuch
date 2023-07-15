@@ -100,6 +100,7 @@ export default {
     ConfirmDialog,
     AddButton
   },
+  emits: ['view'],
   data() {
     return {
       activities: [],

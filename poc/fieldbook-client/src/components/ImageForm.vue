@@ -114,6 +114,7 @@ export default {
     object_id: String,
     object_type: String,
   },
+  emits: ['addImage'],
   /**
    * Reactive Vue.js data
    */

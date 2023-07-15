@@ -95,6 +95,7 @@ export default {
     Navigation,
     AddPosition
   },
+  emits: ['view'],
   setup() {
     const { width, height } = useWindowSize();
     return {

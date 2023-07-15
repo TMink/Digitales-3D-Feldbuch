@@ -102,6 +102,7 @@ export default {
     Navigation,
     AddButton
   },
+  emits: ['view'],
   setup() {
     const { width, height } = useWindowSize();
     return {

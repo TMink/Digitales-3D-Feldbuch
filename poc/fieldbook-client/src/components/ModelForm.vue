@@ -95,6 +95,7 @@ export default {
     object_id: String,
     object_type: String,
   },
+  emits: ['addModel'],
   /**
    * Reactive Vue.js data
    */

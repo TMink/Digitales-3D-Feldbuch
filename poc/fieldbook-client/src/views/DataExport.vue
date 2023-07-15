@@ -387,6 +387,7 @@ export default {
   components: {
     ConfirmDialog,
   },
+  emits: ['view'],
   setup() {
     const { width, height } = useWindowSize();
     return {

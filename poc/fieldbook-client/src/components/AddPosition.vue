@@ -15,6 +15,7 @@ export default {
   props: {
     positions_prop: Array,
   },
+  emits: ['updatePositions', 'updatePlace'],
   data() {
     return {
       position: {
