@@ -32,20 +32,20 @@
             <!-- CARD 1 GENERAL-->
             <v-card class="pa-4">
               <v-row class="pt-2">
-                <v-col cols="12" lg="8">
+                <v-col lg="8">
 
                   <v-combobox 
                     chips 
                     multiple 
-                    label="Title" 
-                    closable-chips
                     hide-selected
+                    closable-chips
                     color="primary"
                     :items="titles" 
-                    persistent-hint 
+                    persistent-hint
+                    label="Ansprache" 
                     :hide-no-data="false" 
-                    v-model="place.title" 
-                    hint="Add tags which describe the place">
+                    v-model="place.title/* place.title */" 
+                    hint="Add max. 5 tags which describe the place">
 
                     <template #selection="{ item }">
                       <v-chip color="secondary">{{ item }}</v-chip>
@@ -65,7 +65,7 @@
                   <v-combobox 
                     counter 
                     class="pt-4" 
-                    maxlength="40" 
+                    maxlength="45" 
                     color="primary" 
                     :items="datings"
                     :label="$t('dating')"
@@ -73,7 +73,7 @@
                   </v-combobox>
                 </v-col>
 
-                <v-col cols="12" lg="4">
+                <v-col lg="4">
                   <v-card class="pa-4" color="accent">
                     <div 
                       class="text-h4 text-center" 
@@ -130,87 +130,94 @@
             <!-- CARD 2 GAUSS-KRÜGER -->
             <v-card>
               <v-card-text>
-                <div>
-                  <h2 class="text-h6 font-weight-medium pb-2">
-                    Gauss-Krüger-Koordinaten
-                  </h2>
-                </div>
+                <h2 class="text-h6 font-weight-medium pb-2">
+                  Gauss-Krüger-Koordinaten
+                </h2>
               </v-card-text>
               <v-row no-gutters justify="center">
                 <v-text-field 
                   hide-details 
-                  class="px-4 pb-4" 
+                  maxlength="6"
                   color="primary" 
-                  density="compact" 
+                  class="px-4 pb-4" 
+                  density="compact"
                   v-model="place.right"
-                  :label="$t('right')">
+                  :label="$t('right')"
+                  @keypress="filterNonNumeric(event)">
                 </v-text-field>
 
                 <v-text-field 
-                  hide-details 
-                  class="pr-4 pb-4" 
+                  hide-details
+                  maxlength="6"
                   color="primary" 
+                  class="pr-4 pb-4" 
                   density="compact" 
+                  :label="$t('rightTo')"
                   v-model="place.rightTo"
-                  :label="$t('rightTo')">
+                  @keypress="filterNonNumeric(event)">
                 </v-text-field>
 
                 <v-divider class="mt-n1 mb-n2" vertical/>
 
                 <v-text-field 
-                  hide-details 
-                  class="px-4 pb-4" 
+                  hide-details
+                  maxlength="7"
                   color="primary" 
+                  class="px-4 pb-4" 
                   density="compact" 
+                  :label="$t('up')"
                   v-model="place.up"
-                  :label="$t('up')">
+                  @keypress="filterNonNumeric(event)">
                 </v-text-field>
 
                 <v-text-field 
-                  hide-details 
-                  class="pr-4 pb-4" 
+                  hide-details
+                  maxlength="7"
                   color="primary" 
+                  class="pr-4 pb-4" 
                   density="compact" 
+                  :label="$t('upTo')"
                   v-model="place.upTo"
-                  :label="$t('upTo')">
+                  @keypress="filterNonNumeric(event)">
                 </v-text-field>
 
                 <v-divider class="mt-n1 mb-n2" vertical/>
 
                 <v-text-field 
-                  hide-details 
-                  class="px-4 pb-4" 
+                  hide-details
+                  maxlength="7"
                   color="primary" 
+                  class="px-4 pb-4" 
                   density="compact" 
+                  :label="$t('depthTop')"
                   v-model="place.depthTop"
-                  :label="$t('depthTop')">
+                  @keypress="filterNonNumeric(event)">
                 </v-text-field>
 
                 <v-text-field 
-                  class="pr-4 pb-4" 
-                  color="primary" 
                   hide-details 
+                  maxlength="7"
+                  color="primary" 
+                  class="pr-4 pb-4" 
                   density="compact" 
+                  :label="$t('depthBot')"
                   v-model="place.depthBot"
-                  :label="$t('depthBot')">
+                  @keypress="filterNonNumeric(event)">
                 </v-text-field>
               </v-row>
             </v-card>
 
             <v-spacer class="pa-3"></v-spacer>
 
-            
             <v-row>
-              <v-col cols="12" lg="6">
+              <v-col lg="6">
                 <!-- CARD 3 VISIBILITY -->
                 <v-card height="100%">
                   <v-card-text>
-                    <div>
-                      <h2 
-                        class="text-h6 font-weight-medium pb-2">
-                        {{ $t('visibility') }}
-                      </h2>
-                    </div>
+                    <h2 
+                      class="text-h6 font-weight-medium pb-2">
+                      {{ $t('visibility') }}
+                    </h2>
                   </v-card-text>
                   <v-slider 
                     :max="3" 
@@ -228,19 +235,18 @@
               </v-col>
 
               <!-- CARD 4 DESCRIPTION -->
-              <v-col cols="12" lg="6">
+              <v-col lg="6">
                 <v-card>
-                  <v-col cols="12" lg="12">
-                    <v-textarea 
-                      counter 
-                      color="primary" 
-                      maxlength="254" 
-                      no-resize rows="4"
-                      class="pl-2 pr-2 pt-2" 
-                      v-model="place.description" 
-                      :label="$t('description')">
-                    </v-textarea>
-                  </v-col>
+                  <v-textarea 
+                    counter 
+                    rows="4"
+                    no-resize 
+                    color="primary" 
+                    maxlength="254" 
+                    class="ma-1 px-2 pt-2" 
+                    v-model="place.description" 
+                    :label="$t('description')">
+                  </v-textarea>
                 </v-card>
               </v-col>
             </v-row>
@@ -248,34 +254,34 @@
             <v-spacer class="pa-3"></v-spacer>
 
             <v-row>
-              <v-col cols="12" lg="6">
+              <v-col lg="6">
                 <!-- CARD 5 PLANE -->
                 <v-card height="100%">
-                  <v-col cols="12" lg="12">
-                    <v-textarea 
-                      rows="2" 
-                      counter 
-                      no-resize 
-                      color="primary" 
-                      v-model="place.plane" 
-                      :label="$t('plane')">
-                    </v-textarea>
-                  </v-col>
+                  <v-textarea 
+                    rows="2" 
+                    counter 
+                    maxlength="254"
+                    no-resize 
+                    color="primary" 
+                    class="ma-1 px-2 pt-2"
+                    v-model="place.plane" 
+                    :label="$t('plane')">
+                  </v-textarea>
                 </v-card>
               </v-col>
-              <v-col cols="12" lg="6">
+              <v-col lg="6">
                 <!-- CARD 3 EDITOR -->
                 <v-card>
-                  <v-col cols="12" lg="12">
-                    <v-textarea 
-                      counter 
-                      rows="2" 
-                      no-resize 
-                      color="primary" 
-                      :label="$t('editor')"
-                      v-model="place.editor">
-                    </v-textarea>
-                  </v-col>
+                  <v-textarea 
+                    counter 
+                    rows="2" 
+                    no-resize 
+                    maxlength="50"
+                    color="primary"
+                    :label="$t('editor')"
+                    class="ma-1 px-2 pt-2" 
+                    v-model="place.editor">
+                  </v-textarea>
                 </v-card>
               </v-col>
             </v-row>
@@ -420,6 +426,17 @@ export default {
     await this.updatePlace();
     await this.updatePositions();
   },
+  watch: {
+    /**
+     * Ensure that only 5 items are selected
+     * @param {*} val 
+     */
+    'place.title'(val) {
+      if (val.length > 5) {
+        this.$nextTick(() => this.place.title.pop())
+      }
+    },
+  },
 
   methods: {
     /**
@@ -505,6 +522,21 @@ export default {
      */
     cancelPlace() {
       this.$router.push({ name: "PlacesOverview" });
+    },
+
+    /**
+     * Prevents the input of non numeric values 
+     * @param {*} evt 
+     */
+    filterNonNumeric(evt) {
+      evt = (evt) ? evt : window.event;
+      let expect = evt.target.value.toString() + evt.key.toString();
+
+      if (!/^[-+]?[0-9]*[,.]?[0-9]*$/.test(expect)) {
+        evt.preventDefault();
+      } else {
+        return true;
+      }
     }
   }
 };
