@@ -460,6 +460,7 @@ const params = {
 export default {
   name: 'Viewer',                                                        // name
 
+  emits: ['view'],
   data() {                                                               // data
     return {
       /* Canvas */
@@ -611,6 +612,7 @@ export default {
   },
 
   async mounted() {                                                   // mounted
+    this.$emit("view", this.$t('threeD_view'));
     await fromOfflineDB.syncLocalDBs();
     
     this.glbLoader = new GLTFLoader();
