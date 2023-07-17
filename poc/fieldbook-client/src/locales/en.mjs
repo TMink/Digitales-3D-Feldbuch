@@ -50,6 +50,7 @@ export default {
   no: "No",
   pdf_export: "PDF Export",
   data_export: "Data Export",
+  data_backup: "Data Backup",
 
   // Phrases
   add: "Add {msg}",

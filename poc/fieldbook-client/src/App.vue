@@ -111,6 +111,7 @@ export default {
         { link: "/3dview", title: this.$t('threeD_view') },
         { link: "/onlineSync", title: this.$t('online_sync') },
         { link: "/dataExport", title: this.$t('data_export') },
+        { link: "/dataBackup", title: this.$t('data_backup') },
       ]
     }
   },
