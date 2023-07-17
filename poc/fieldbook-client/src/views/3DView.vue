@@ -477,7 +477,7 @@
 /**
  * Methods overview:
  *  -------------------------------------------------------------------------
- *  # Setup vuetify/html components
+ *  # Setup vuetify/html components:
  *  -> setupCanvases                - 
  *  -> onWindowResize               - 
  *  -> collapseDrawer               - 
@@ -513,11 +513,23 @@
  *  -> setCamera                    - 
  *  -> makePerspektiveCamera        - 
  *  -------------------------------------------------------------------------
- *  # Utility
+ *  # Utility:
  *  -> getModelCenter               - 
  *  -> addSelectedObject            - 
  *  -> getGroup                     - 
  *  -> gizmoChange                  - 
+ *  ------------------------------------------------------------------------- 
+ *  # Filter Model:
+ *  -> fieldSearch                  - 
+ *  -> layering                     - 
+ *  -> fillAll                      - 
+ *  -> resetFilter                  - 
+ *  -> getPositionInfo              - 
+ *  -> getPositionModelInfo         - 
+ *  -> choseModels                  - 
+ *  -> resetModelInfo2Input         - 
+ *  -> resetModelInfo2              - 
+ *  -> resetPositionInfo2           - 
  *  ------------------------------------------------------------------------- 
  *  # Inits:
  *  -> initMain                     - 
@@ -526,6 +538,10 @@
  *  # Animate:
  *  -> animate                      - 
  *  -> render                       - 
+ *  -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *  # DEBUGGING:
+ *  -> setCharAt                    - 
+ *  -> stringReplacer               - 
  */
 import * as THREE from 'three';
 import VueCookies from 'vue-cookies';
@@ -569,7 +585,6 @@ const params = {
 export default {
   name: 'ModelViewer',                                                   // name
 
-  emits: ['view'],
   data() {                                                               // data
     return {
       /* Canvas */
@@ -614,13 +629,17 @@ export default {
         allNumbers: [],
         allSubNumbers: [],
         allTitles: [],
+        chosenPositionModels: [],
         infoBlock: []
       },
       modelInfo2: {
         number: null,
         title: null,
         allNumbers: [],
-        allTitles: []
+        allTitles: [],
+        chosenfinalModel: [],
+        chosenfinalModelGroup: null,
+        infoBlock: []
       },
 
       /* Meshes in Scene */
@@ -640,88 +659,241 @@ export default {
 
       gizmoState: false,
       colors: [],
+
+      /* Testing GUI */
+      disablePositionModifikation: true,
+
+      colorPicker: {
+        color: null,
+        modelGroup: null
+      },
+      colorSafeToken: false,
+
+      opacitySlider: 0,
+      opacitySafeToken: false,
     };
   },
 
   watch: {
     'positionInfo2.number': {
       handler: function() {
-        console.log('Current vaule:' + this.positionInfo2.number );
-        if ( this.positionInfo2.number != null ) {
-          this.positionInfo2.allSubNumbers = [];
-          this.positionInfo2.allTitles = [];
-          for ( let i=0; i < this.positionInfo2.infoBlock.length; i++ ) {
-            if ( this.positionInfo2.infoBlock[i].number == this.positionInfo2.number ) {
-              
-              if ( !this.positionInfo2.allSubNumbers.includes(this.positionInfo2.infoBlock[i].subNumber)) {
-                this.positionInfo2.allSubNumbers.push(this.positionInfo2.infoBlock[i].subNumber)
-              }
-              if ( !this.positionInfo2.allTitles.includes(this.positionInfo2.infoBlock[i].title) ) {
-                this.positionInfo2.allTitles.push(this.positionInfo2.infoBlock[i].title)
-              }
 
-            }
-          }
-        } else {
-          this.undoDependencyCheck();
+        if (this.opacitySafeToken) {
+          this.opacitySafeToken = false;
+          this.modelInfo2.chosenfinalModelGroup = null;
+          this.disablePositionModifikation = true;
+          this.updateModelOpacityAndColor(this.modelInfo2.chosenfinalModel[0],
+            'positions');
+          this.modelInfo2.chosenfinalModelGroup = null;
+          this.colorPicker.color = null;
+          this.opacitySlider = 0;
         }
-      },
-      deep: true
+
+        this.resetPositionInfo2();
+        this.resetModelInfo2Input();
+        this.resetModelInfo2();
+
+        this.fieldSearch( 3, this.positionInfo2.chosenPositionModels,
+                            [ this.positionInfo2.number, 
+                              this.positionInfo2.subNumber, 
+                              this.positionInfo2.title ],
+                            [ this.positionInfo2.allNumbers, 
+                              this.positionInfo2.allSubNumbers, 
+                              this.positionInfo2.allTitles ],
+                            this.positionInfo2.infoBlock );
+
+        this.getPositionModelInfo();
+      }
     },
 
-    'positionInfo2.subnumber': {
+    'positionInfo2.subNumber': {
       handler: function() {
-        console.log('Current vaule:' + this.positionInfo2.subNumber);
-        if (this.positionInfo2.subNumber != null) {
-          this.positionInfo2.allNumbers = [];
-          this.positionInfo2.allTitles = [];
-          for ( let i=0; i < this.positionInfo2.infoBlock.length; i++ ) {
-            if ( this.positionInfo2.infoBlock[i].subNumber == this.positionInfo2.subNumber ) {
-              
-              if ( !this.positionInfo2.allNumbers.includes(this.positionInfo2.infoBlock[i].number) ) {
-                this.positionInfo2.allNumbers.push(this.positionInfo2.infoBlock[i].number)
-              }
-              if ( !this.positionInfo2.allTitles.includes(this.positionInfo2.infoBlock[i].title) ) {
-                this.positionInfo2.allTitles.push(this.positionInfo2.infoBlock[i].title)
-              }
 
-            }
-          }
-        } else {
-          this.undoDependencyCheck();
+        if (this.opacitySafeToken) {
+          this.opacitySafeToken = false;
+          this.modelInfo2.chosenfinalModelGroup = null;
+          this.disablePositionModifikation = true;
+          this.updateModelOpacityAndColor(this.modelInfo2.chosenfinalModel[0],
+            'positions');
+          this.modelInfo2.chosenfinalModelGroup = null;
+          this.colorPicker.color = null;
+          this.opacitySlider = 0;
         }
-      },
-      deep: true
+
+        this.resetPositionInfo2();
+        this.resetModelInfo2Input();
+        this.resetModelInfo2();
+
+        this.fieldSearch( 3, this.positionInfo2.chosenPositionModels,
+                            [ this.positionInfo2.number, 
+                              this.positionInfo2.subNumber, 
+                              this.positionInfo2.title ],
+                            [ this.positionInfo2.allNumbers, 
+                              this.positionInfo2.allSubNumbers, 
+                              this.positionInfo2.allTitles ],
+                            this.positionInfo2.infoBlock );
+
+        this.getPositionModelInfo();
+      }
     },
 
     'positionInfo2.title': {
       handler: function() {
-        console.log('Current vaule:' + this.positionInfo2.title);
-        if ( this.positionInfo2.title != null ) {
-          this.positionInfo2.allNumbers = [];
-          this.positionInfo2.allSubNumbers = [];
-          for ( let i=0; i < this.positionInfo2.infoBlock.length; i++ ) {
-            if ( this.positionInfo2.infoBlock[i].title == this.positionInfo2.title ) {
-              
-              if ( !this.positionInfo2.allNumbers.includes(this.positionInfo2.infoBlock[i].number) ) {
-                this.positionInfo2.allNumbers.push(this.positionInfo2.infoBlock[i].number)
-              }
-              if ( !this.positionInfo2.allSubNumbers.includes(this.positionInfo2.infoBlock[i].subNumber) ) {
-                this.positionInfo2.allSubNumbers.push(this.positionInfo2.infoBlock[i].subNumber)
-              }
 
-            }
-          }
-        } else {
-          this.undoDependencyCheck();
+        if (this.opacitySafeToken) {
+          this.modelInfo2.chosenfinalModelGroup = null;
+          this.opacitySafeToken = false;
+          this.disablePositionModifikation = true;
+          this.updateModelOpacityAndColor(this.modelInfo2.chosenfinalModel[0],
+            'positions');
+          this.modelInfo2.chosenfinalModelGroup = null;
+          this.colorPicker.color = null;
+          this.opacitySlider = 0;
         }
-      },
-      deep: true
+
+        this.resetPositionInfo2();
+        this.resetModelInfo2Input();
+        this.resetModelInfo2();
+
+        this.fieldSearch(3, this.positionInfo2.chosenPositionModels,
+                            [ this.positionInfo2.number,
+                              this.positionInfo2.subNumber,
+                              this.positionInfo2.title ],
+                            [ this.positionInfo2.allNumbers,
+                              this.positionInfo2.allSubNumbers,
+                              this.positionInfo2.allTitles ],
+                            this.positionInfo2.infoBlock);
+
+        this.getPositionModelInfo();
+
+      }
+    },
+
+    'modelInfo2.number': {
+      handler: function() {
+
+        if (this.opacitySafeToken) {
+          this.opacitySafeToken = false;
+          this.modelInfo2.chosenfinalModelGroup = null;
+          this.disablePositionModifikation = true;
+          this.updateModelOpacityAndColor(this.modelInfo2.chosenfinalModel[0],
+            'positions');
+          this.modelInfo2.chosenfinalModelGroup = null;
+          this.colorPicker.color = null;
+          this.opacitySlider = 0;
+        }
+
+        this.resetModelInfo2();
+
+        this.fieldSearch( 2, this.modelInfo2.chosenfinalModel,
+                            [ this.modelInfo2.number, 
+                              this.modelInfo2.title ],
+                            [ this.modelInfo2.allNumbers, 
+                              this.modelInfo2.allTitles ],
+                            this.modelInfo2.infoBlock );
+      }
+    },
+
+    'modelInfo2.title': {
+      handler: function() {
+
+        if (this.opacitySafeToken) {
+          console.log("Test")
+          this.opacitySafeToken = false;
+          this.disablePositionModifikation = true;
+          this.updateModelOpacityAndColor(this.modelInfo2.chosenfinalModel[0],
+            'positions');
+          this.modelInfo2.chosenfinalModelGroup = null;
+          this.colorPicker.color = null;
+          this.opacitySlider = 0;
+        }
+
+        this.resetModelInfo2();
+
+        this.fieldSearch(2, this.modelInfo2.chosenfinalModel,
+          [this.modelInfo2.number,
+          this.modelInfo2.title],
+          [this.modelInfo2.allNumbers,
+          this.modelInfo2.allTitles],
+          this.modelInfo2.infoBlock);
+
+      }
+    },
+    'positionInfo2.chosenPositionModels': {
+      handler: function() {
+        if ( this.positionInfo2.chosenPositionModels.length > 0 ) {
+          console.log("Case 1")
+          this.isEditing = true;
+        } else {
+          console.log("Case 3")
+          this.isEditing = false;
+        }
+      }
+    },
+
+    'modelInfo2.chosenfinalModel': {
+      handler: async function() {
+        if ( this.modelInfo2.chosenfinalModel.length > 0 ) {
+          this.opacitySafeToken = true;
+          this.disablePositionModifikation = false;
+
+          if (this.colorPicker == null || 
+              this.colorPicker.modelGroup == null ) {
+            const result = this.modelInfo2.infoBlock.find( arr => 
+              this.modelInfo2.chosenfinalModel );
+            const modelInScene = this.sceneMain.getObjectByName( 
+              this.modelInfo2.chosenfinalModel[0] );
+            this.modelInfo2.chosenfinalModelGroup = this.getGroup( 
+              modelInScene );
+            
+            /* Update ColorPicker */
+            this.colorPicker.color = result[3];
+            this.colorPicker.modelGroup = this.modelInfo2.chosenfinalModelGroup;
+            
+            /* Update opacity value */
+            this.opacitySlider = result[4];
+          } else {
+            const modelFromScene = this.sceneMain.getObjectByName(
+              this.modelInfo2.chosenfinalModel[0] );
+            this.opacitySlider = modelFromScene.material.opacity;
+
+            const modelInScene = this.sceneMain.getObjectByName( 
+              this.modelInfo2.chosenfinalModel[0] );
+            this.modelInfo2.chosenfinalModelGroup = this.getGroup( 
+              modelInScene );
+
+            this.colorPicker.color = "#" + 
+              modelFromScene.material.color.getHexString();
+            this.colorPicker.modelGroup = this.modelInfo2.chosenfinalModelGroup;
+          }
+
+        }
+      }
+    },
+
+    'opacitySlider': {
+      handler: function() {
+        if( this.modelInfo2.chosenfinalModelGroup != null ) {
+          this.modelInfo2.chosenfinalModelGroup.traverse( (child) => {
+            if ( child instanceof THREE.Mesh) {
+              child.material.opacity = this.opacitySlider;
+            }
+          })
+        }
+      }
+    },
+
+    'colorPicker.color': {
+      handler: function() {
+        if ( this.modelInfo2.chosenfinalModelGroup == null ) {
+          this.colorPicker.color = null
+        }
+      }
     }
+
   },
 
   async mounted() {                                                   // mounted
-    this.$emit("view", this.$t('threeD_view'));
     await fromOfflineDB.syncLocalDBs();
     
     this.glbLoader = new GLTFLoader();
@@ -740,7 +912,7 @@ export default {
 
       await this.loadPositionModels();
 
-      this.getPositionInfo()
+      this.getPositionInfo();
 
       this.animate();
     } else {
@@ -758,61 +930,9 @@ export default {
 
   methods: {                                                          // methods
 
-    undoDependencyCheck: function() {
-      for ( let i=0; i < this.positionInfo2.infoBlock.length; i++ ) {
-            this.undoItemFilter(this.positionInfo2.allNumbers, 
-              this.positionInfo2.infoBlock[i].number);
-
-            this.undoItemFilter(this.positionInfo2.allSubNumbers, 
-              this.positionInfo2.infoBlock[i].subNumber);
-
-            this.undoItemFilter(this.positionInfo2.allTitles, 
-              this.positionInfo2.infoBlock[i].title);
-          }
-          this.positionInfo2.allNumbers.sort()
-          this.positionInfo2.allSubNumbers.sort()
-          this.positionInfo2.allTitles.sort()
-    },
-
-    undoItemFilter: function(allItems, infoBlockItem) {
-      if ( !allItems.includes(infoBlockItem) ) {
-        allItems.push(infoBlockItem)
-      }
-    },
-
-    getPositionInfo: async function() {
-
-      for ( let i=0; i < this.positionModelsInScene.length; i++) {
-        const positionID = this.positionModelsInScene[i].positionID
-        const positionInDB = await fromOfflineDB.getObject(positionID, 'Positions', 'positions')
-
-        if ( !this.positionInfo2.allNumbers.includes(positionInDB.positionNumber) ) {
-          this.positionInfo2.allNumbers.push(positionInDB.positionNumber)
-        }
-        if ( !this.positionInfo2.allSubNumbers.includes(positionInDB.subNumber) ) {
-          this.positionInfo2.allSubNumbers.push(positionInDB.subNumber)
-        }
-        if ( !this.positionInfo2.allTitles.includes(positionInDB.title) ) {
-          this.positionInfo2.allTitles.push(positionInDB.title)
-        }
-
-        const newPosition = { 
-          number: positionInDB.positionNumber,
-          subNumber: positionInDB.subNumber,
-          title: positionInDB.title
-        }
-
-        this.positionInfo2.infoBlock.push(newPosition)
-      }
-
-    },
-
-    callMe: function(e) {
-      console.log(e)
-    },
-
     func: function(e) {
-      const compareStrings = Boolean(Number(e.target.id.localeCompare("mainCanvas")));
+      const compareStrings = Boolean(Number(
+        e.target.id.localeCompare("mainCanvas")));
       if (!compareStrings) {
         this.settingsDrawer[0] = false;
         this.settingsDrawer[1] = false;
@@ -968,14 +1088,7 @@ export default {
       /* Update place models */
       for ( var i = 0; i < this.placeModelsInScene.length; i++ ) {
         const modelID = this.placeModelsInScene[ i ].modelID;
-        const modelInScene = this.sceneMain.getObjectByName( modelID );
-        const modelInDB = await fromOfflineDB.getObject( modelID, 'Models',
-          'places' );
-
-        modelInDB.color = "#" + modelInScene.material.color.getHexString();
-        modelInDB.opacity = modelInScene.material.opacity;
-
-        await fromOfflineDB.updateObject( modelInDB, 'Models', 'places' );
+        this.updateModelOpacityAnColor(modelID, 'places');
       }
 
       /* Update position models */
@@ -1010,6 +1123,17 @@ export default {
 
         await fromOfflineDB.updateObject( modelInDB, 'Models', 'positions' );
       }
+    },
+
+    updateModelOpacityAndColor: async function(modelID, storeName) {
+      const modelInScene = this.sceneMain.getObjectByName( modelID );
+      const modelInDB = await fromOfflineDB.getObject( modelID, 'Models',
+      storeName );
+
+      modelInDB.color = "#" + modelInScene.material.color.getHexString();
+      modelInDB.opacity = modelInScene.material.opacity;
+
+      await fromOfflineDB.updateObject( modelInDB, 'Models', storeName );
     },
 
     /**
@@ -1203,8 +1327,6 @@ export default {
         this.glbLoader.parse( model, '', ( glb ) => {
           glb.scene.traverse( ( child ) => {
             if ( child instanceof THREE.Mesh ) {
-              child.material.transparent = true;
-              child.material.opacity = opacity;
               child.name = id;
             }
           } );
@@ -1234,10 +1356,14 @@ export default {
      * 
      * @param {*} modelName 
      */
-    changeColor: async function( color, modelID ) {
-      if ( color != null && modelID != null ) {
-        this.sceneMain.getObjectByName( modelID ).material.color = 
-          new THREE.Color( color );
+    changeColor: async function( color, modelGroup ) {
+      if ( color != null && modelGroup != null ) {
+
+        modelGroup.traverse( (child) => {
+          if ( child instanceof THREE.Mesh) {
+            child.material.color = new THREE.Color( color );
+          }
+        })
       }
     },
 
@@ -1543,6 +1669,259 @@ export default {
 
     /**
      * -------------------------------------------------------------------------
+     * # Filter Model
+     * -------------------------------------------------------------------------
+     */
+
+    /**
+     * 
+     * @param {*} typeSize
+     * @param {*} chosenModels
+     * @param {*} inputs
+     * @param {*} menues
+     * @param {*} infos
+     */
+    fieldSearch: async function( typeSize, chosenModels, inputs, menues, infos ) {
+      const areNull = [];
+      const notNull = [];
+      var layers = [];
+
+      /* Determin which field is 'null' and which is not */
+      for ( let a = 0; a < typeSize; a++ ) {
+        if ( inputs[ a ] == null ) {
+          areNull.push( a );
+        } else {
+          notNull.push( a );
+        }
+      }
+
+      this.stringReplacer( typeSize, areNull );
+
+      /* No empty fields */
+      if ( notNull.length == typeSize ) {
+        this.choseModels( typeSize, chosenModels, inputs, infos )
+      }
+
+      /* Only empty fields */
+      else if ( areNull.length == typeSize ) {
+        this.resetFilter( infos, menues );
+      }
+
+      /* Only one given field */
+      else if ( notNull.length == 1 ) {
+        for ( let b = 0; b < infos.length; b++ ) {
+          this.fillAll( menues[ notNull[ 0 ] ], infos[ b ][ notNull[ 0 ] ] );
+          layers.push( [infos[ b ][ notNull[ 0 ] ], inputs[ notNull[ 0 ] ]] );
+          for( let c = 0; c < areNull.length; c++ ) {
+            this.layering( layers, menues[ areNull[ c ] ], 
+            infos[ b ][ areNull[ c ] ]);
+          }
+          layers = [];
+        }
+      }
+
+      /* Unkown number of given and empty fields */
+      else if ( notNull.length > 1 ) {
+        for ( let d = 0; d < infos.length; d++ ) {
+          for ( let e = 0; e < notNull.length; e++ ) {
+            for ( let f = 0; f < notNull.length; f++ ) {
+              if ( f != e ) {
+                layers.push( [ infos[ d ][ notNull[ f ] ], 
+                  inputs[ notNull[ f ] ] ] );
+              }
+            }
+            this.layering( layers, menues[ notNull[ e ] ], 
+              infos[ d ][ notNull[ e ] ]);
+            layers = [];
+          }
+          for ( let g = 0; g < areNull.length; g++ ) {
+            for ( let h = 0; h < notNull.length; h++ ) {
+              layers.push( [ infos[ d ][ notNull[ h ] ], 
+                             inputs[ notNull[ h ] ] ] );
+            }
+            this.layering( layers, menues[ areNull[ g ] ], 
+                           infos[ d ][ areNull[ g ] ] );
+            layers = [];
+          }
+        }
+      }
+    },
+
+    /**
+     * 
+     * @param {*} layer
+     * @param {*} all
+     * @param {*} infoBlockItem
+     */
+    layering: function( layer, all, infoBlockItem ) {
+      const layercount = layer.length;
+      let check = true;
+
+      for ( let i=0; i < layercount; i++ ) {
+        if( !( layer[i][0] == layer[i][1] ) ) {
+          check = false;
+          break;
+        }
+      }
+
+      if ( check ) {
+        this.fillAll( all, infoBlockItem );
+      }
+    },
+
+    /**
+     * 
+     * @param {*} list
+     * @param {*} blockItem
+     */
+    fillAll: function( list, blockItem ) {
+      if (!list.includes(blockItem)) {
+        list.push(blockItem);
+      }
+    },
+
+    /**
+     * 
+     * @param {*} infos
+     * @param {*} menues
+     */
+    resetFilter: function( infos, menues ) {
+      for ( let a = 0; a < infos.length; a++ ) {
+        for ( let b = 0; b < menues.length; b++ ) {
+          this.fillAll(menues[ b ], infos[ a ][ b ]);
+        }
+      }
+
+      for ( let c = 0; c < menues.length; c++ ) {
+        menues[c].sort();
+      }
+    },
+
+    /**
+     * 
+     */
+    getPositionInfo: async function() {
+      const positionIDs = [];
+
+      for ( let i=0; i < this.positionModelsInScene.length; i++) {
+        const positionID = this.positionModelsInScene[i].positionID
+        const positionInDB = await fromOfflineDB.getObject(positionID, 'Positions', 'positions')
+
+        if ( !positionIDs.includes(positionID) ) {
+
+          if (!this.positionInfo2.allNumbers.includes(positionInDB.positionNumber)) {
+            this.positionInfo2.allNumbers.push(positionInDB.positionNumber)
+          }
+          if (!this.positionInfo2.allSubNumbers.includes(positionInDB.subNumber)) {
+            this.positionInfo2.allSubNumbers.push(positionInDB.subNumber)
+          }
+          if (!this.positionInfo2.allTitles.includes(positionInDB.title)) {
+            this.positionInfo2.allTitles.push(positionInDB.title)
+          }
+
+          const newPosition = [
+            positionInDB.positionNumber, 
+            positionInDB.subNumber, 
+            positionInDB.title,
+            positionInDB.models
+          ]
+
+          this.positionInfo2.infoBlock.push(newPosition)
+
+          positionIDs.push(positionID)
+        }
+        
+      }
+    },
+
+    /**
+     * 
+     */
+    getPositionModelInfo: async function() {
+      for ( let i=0; i < this.positionInfo2.chosenPositionModels.length; i++) {
+        const modelID = this.positionInfo2.chosenPositionModels[ i ];
+        const modelInDB = await fromOfflineDB.getObject(modelID, 'Models', 'positions')
+
+        if ( !this.modelInfo2.allNumbers.includes(modelInDB.modelNumber) ) {
+          this.modelInfo2.allNumbers.push(modelInDB.modelNumber)
+        }
+
+        if ( !this.modelInfo2.allTitles.includes(modelInDB.title) ) {
+          this.modelInfo2.allTitles.push(modelInDB.title)
+        }
+
+        /* For the filter algorithm to work properly */
+        const modelIDArray = [modelInDB.id]
+        const newModel = [
+          modelInDB.modelNumber,
+          modelInDB.title,
+          modelIDArray,
+          modelInDB.color,
+          modelInDB.opacity
+        ]
+
+        this.modelInfo2.infoBlock.push(newModel)
+      }
+    },
+
+    /**
+     * 
+     * @param {*} typeSize
+     * @param {*} chosenModels
+     * @param {*} inputs
+     * @param {*} infos
+     */
+    choseModels: function( typeSize, chosenModels, inputs, infos ) {
+      let isChosen = true;
+
+      for ( let a = 0; a < infos.length; a++ ) {
+        isChosen = true;
+
+        for ( let b = 0; b < typeSize; b++ ) {
+          if( !( infos[a][b] == inputs[b] ) ) {
+            isChosen = false;
+            break;
+          }
+        }
+
+        if( isChosen ) {
+          infos[a][typeSize].forEach( ( elem ) => {
+            chosenModels.push( elem );
+          } );
+        }
+      }
+    },
+
+    /**
+     * 
+     */
+    resetModelInfo2Input: function() {
+      this.modelInfo2.number = null;
+      this.modelInfo2.title = null;
+      this.modelInfo2.infoBlock = [];
+    },
+
+    /**
+     * 
+     */
+    resetModelInfo2: function() {
+      this.modelInfo2.allNumbers = [];
+      this.modelInfo2.allTitles = [];
+      this.modelInfo2.chosenfinalModel = [];
+    },
+
+    /**
+     * 
+     */
+    resetPositionInfo2: function() {
+      this.positionInfo2.allNumbers = [];
+      this.positionInfo2.allSubNumbers = [];
+      this.positionInfo2.allTitles = [];
+      this.positionInfo2.chosenPositionModels = [];
+    },
+
+    /**
+     * -------------------------------------------------------------------------
      * # Init
      * -------------------------------------------------------------------------
      */
@@ -1700,7 +2079,7 @@ export default {
     /**
      * 
      */
-    render: function() {
+    render: async function() {
       /* Dispose Model from sceneSub */
       if ( !this.drawer && this.sceneSub.children.length > 1 ) {
         this.removeModelsInScene( this.sceneSub, this.modelInSub )
@@ -1716,7 +2095,55 @@ export default {
 
       /* Reset arcball gizmo radius */
       this.abControlsMain.setTbRadius( 0.67 );
-    }
+    },
+
+    /**
+     * -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+     * # DEBUGGING
+     * -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+     */
+
+    /**
+     * 
+     * @param {*} str
+     * @param {*} index
+     * @param {*} chr
+     */
+    setCharAt: function( str, index, chr ) {
+      if ( index > str.length - 1 ) return str;
+      return str.substring( 0, index ) + chr + str.substring( index + 1 );
+    },
+
+    /**
+     * 
+     * @param {*} typeSize
+     * @param {*} areNull
+     */
+    stringReplacer: function( typeSize, areNull ) {
+      let str = '';
+
+      for ( let a = 0; a < typeSize; a++ ) { 
+        
+        if ( areNull.includes(a) ) {
+          str += '_'
+        } else {
+          str += 'x';
+        }
+
+        if ( a+1 < typeSize ) {
+          str += ' , ';
+        }
+      }
+
+      if ( str.toLowerCase().indexOf("x") === 0) {
+        if ( str.toLowerCase().indexOf("_") === -1 ) {
+          console.log( "( " + str + " ) - done!")
+        } else {
+          console.log( "( " + str + " )" );
+        }
+      }
+    },
+
   }
 }
 </script>
