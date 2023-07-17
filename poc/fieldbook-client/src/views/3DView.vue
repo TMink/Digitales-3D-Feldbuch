@@ -4,17 +4,15 @@
     <!-- Main Scene-->
     <canvas id="mainCanvas" style="position: absolute"></canvas>
 
-    <div style="float: left;" >
+    <!-- Left sidebar: GUI -->
+    <div style="float: left;">
       <v-card>
         <!-- Controls -->
-        <v-navigation-drawer color="background"
-          style="left: 49px; top:104px; width: 351px;"
-          v-model="settingsDrawer[0]"
-          temporary
+        <v-navigation-drawer v-model="settingsDrawer[0]" color="background"
+          style="left: 49px; top:104px; width: 351px;" temporary
         >
-          <v-list-item height="50" 
-            prepend-icon="mdi-camera-control"
-            title="Controls"
+          <v-list-item height="50" prepend-icon="mdi-camera-control"
+                       title="Controls"
           ></v-list-item>
 
           <v-divider></v-divider>
@@ -22,147 +20,261 @@
         </v-navigation-drawer>
 
         <!-- Place -->
-        <v-navigation-drawer color="background"
-          style="left: 49px; top:104px; width: 351px;"
-          v-model="settingsDrawer[1]"
-          temporary
+        <v-navigation-drawer v-model="settingsDrawer[1]" color="background"
+          style="left: 49px; top:104px; width: 351px;" temporary
         >
-          <v-list-item height="50"
-            prepend-icon="mdi-radar"
-            title="Place"
-          ></v-list-item>
+          <v-list-item height="50" prepend-icon="mdi-radar" title="Place">
+          </v-list-item>
 
           <v-divider></v-divider>
 
-          <v-list-item height="50"
-            prepend-icon="mdi-view-dashboard" title="Home" value="home"
+          <v-list-item height="50" prepend-icon="mdi-view-dashboard" 
+                       title="Home" value="home"
           ></v-list-item>
-          <v-list-item height="50"
-            prepend-icon="mdi-forum" title="About" value="about"
-          > </v-list-item>
+          <v-list-item height="50" prepend-icon="mdi-forum" title="About" 
+                       value="about"
+          ></v-list-item>
         </v-navigation-drawer>
 
         <!-- Positions -->
-        <v-navigation-drawer color="background"
-          style="left: 49px; top:104px; width: 600px;"
-          v-model="settingsDrawer[2]"
-          temporary
+        <v-navigation-drawer v-model="settingsDrawer[2]" color="background"
+          style="left: 49px; top:104px; width: 690px;" temporary
         >
           <v-list-item height="50"
             prepend-icon="mdi-map-marker-radius-outline"
-            title="Positions"
+            title="Positions Filter"
           ></v-list-item>
   
           <v-divider></v-divider>
 
-          <v-card color="transparent" elevation="0" width="100%" height="250">
-            <v-form>
-              <v-card-subtitle class="pa-2 pl-4">Position Info</v-card-subtitle>
-              <v-row no-gutters>
+          <v-form>
 
-                <v-col cols="3" class="pl-2">
-                  <v-combobox id="yeah" v-model="positionInfo2.number" :items="positionInfo2.allNumbers" item-title="positionNumber" label="Number" :disabled="isEditing">
-        
-                  </v-combobox>
-                </v-col>
+            <!-- Filter -->
+            <v-row>
+              <v-col>
+                <v-card color="transparent" elevation="0" width="100%" 
+                        class="pa-2">
 
-                <v-col cols="3" class="pl-2">
-                  <v-combobox v-model="positionInfo2.subNumber" :items="positionInfo2.allSubNumbers" item-title="positionSubnumber" label="Subnumber" :disabled="isEditing">
-        
-                  </v-combobox>
-                </v-col>
+                  <!-- Position -->
+                  <v-row no-gutters class="pl-3">
+                    Position
+                  </v-row>
 
-                <v-col cols="6" class="pl-2 pr-2">
-                  <v-combobox v-model="positionInfo2.title" :items="positionInfo2.allTitles" item-title="positionTitle" label="Title" :disabled="isEditing">
-        
-                  </v-combobox>
-                </v-col>
+                  <v-row no-gutters>
 
-              </v-row>
+                    <v-col cols="3" class="pl-2">
+                      <v-combobox v-model="positionInfo2.number"
+                        label="Nummer"
+                        item-title="positionNumber"
+                        bgColor="opp_background"
+                        :items="positionInfo2.allNumbers"
+                      ></v-combobox>
+                    </v-col>
 
-              <v-card-subtitle class="pa-2 pl-4">Model Info</v-card-subtitle>
-              <v-row no-gutters>
+                    <v-col cols="3" class="pl-2">
+                      <v-combobox v-model="positionInfo2.subNumber"
+                        label="Unternummer"
+                        bgColor="opp_background"
+                        item-title="positionSubnumber"
+                        :items="positionInfo2.allSubNumbers"
+                      ></v-combobox>
+                    </v-col>
 
-                <v-col cols="3" class="pl-2 ">
-                  <v-combobox v-model="modelInfo2.number" :items="modelInfo2.allNumbers" item-title="modelNumber" label="Number" :disabled="isEditing">
+                    <v-col cols="6" class="pl-2 pr-2">
+                      <v-combobox v-model="positionInfo2.title"
+                        label="Titel"
+                        item-title="positionTitle"
+                        bgColor="opp_background"
+                        :items="positionInfo2.allTitles"
+                      ></v-combobox>
+                    </v-col>
 
-                  </v-combobox>
-                </v-col>
+                  </v-row>
 
-                <v-col cols="6" class="pl-2 ">
-                  <v-combobox v-model="modelInfo2.title" :items="modelInfo2.allTitles" item-title="modelTitel" label="Titel" :disabled="isEditing">
+                  <!-- Model -->
+                  <v-row no-gutters class="pl-3">
+                    Model
+                  </v-row>
 
-                  </v-combobox>
-                </v-col>
+                  <v-row no-gutters>
 
-                </v-row>
-            </v-form>
-          </v-card>
+                    <v-col cols="3" class="pl-2 ">
+                      <v-combobox v-model="modelInfo2.number"
+                        label="Nummer"
+                        item-title="modelNumber"
+                        bgColor="opp_background"
+                        :items="modelInfo2.allNumbers"
+                        :disabled="!isEditing"
+                      ></v-combobox>
+                    </v-col>
 
-          <v-divider></v-divider>
+                    <v-col cols="6" class="pl-2 ">
+                      <v-combobox v-model="modelInfo2.title"
+                        label="Titel"
+                        item-title="modelTitel"
+                        bgColor="opp_background"
+                        :items="modelInfo2.allTitles"
+                        :disabled="!isEditing"
+                      ></v-combobox>
+                    </v-col>
 
+                  </v-row>
+                </v-card>
+              </v-col>
+            </v-row>
+
+            <v-divider thickness="5"></v-divider>
+
+            <!-- Model Interaktion -->
+            <v-row>
+              <v-col>
+                <v-card 
+                  width="100%" color="transparent" class="pa-2" elevation="0">
+                  <v-row class="pb-2">
+                    <v-col>
+                      
+                      <!-- Checkboxes -->
+                      <v-card color="secondary">
+                        <v-row no-gutters align="center" justify="center" 
+                               class="pa-1"
+                        >Allgemein
+                        </v-row>
+                            
+                        <v-card color="opp_background" class="pa-2">
+                          <v-row no-gutters>
+                            <!-- Attach position-->
+                            <v-col cols="2" class="px-7">
+                              <v-radio :disabled="disablePositionModifikation">
+                              </v-radio>
+                            </v-col>
+      
+                            <v-divider vertical="false"></v-divider>
+      
+                            <!-- Checkbox description-->
+                            <v-col cols="10" class="py-2 px-4">
+                              Modell Bewegen
+                            </v-col>
+                          </v-row>
+                                
+                          <v-divider></v-divider>
+                            
+                          <v-row no-gutters>
+                            <!-- Opacity-->
+                            <v-col cols="2" class=" px-4">
+                              <v-slider v-model="opacitySlider" :max="1"
+                                        :disabled="disablePositionModifikation">
+                              </v-slider>
+                            </v-col>
+      
+                            <v-divider vertical=false></v-divider>
+      
+                            <!-- Checkbox description-->
+                            <v-col cols="10" class="py-2 px-4">
+                              Deckkraft
+                            </v-col>
+                          </v-row>
+                        </v-card>
+                      </v-card>
+  
+                    </v-col>
+                  </v-row>
+                  <v-divider></v-divider>
+                  <v-spacer></v-spacer>
+                  <v-row>
+                    <v-col>
+  
+                      <!-- Color Picker -->
+                      <v-card color="secondary">
+                        <v-row no-gutters align="center" justify="center" 
+                               class="pa-1"
+                        >Farbwähler
+                        </v-row>
+          
+                      <v-card color="opp_background" class="pa-2">
+                          <v-color-picker v-model="colorPicker.color"
+                            hide-canvas
+                            hide-sliders
+                            hide-inputs
+                            show-swatches
+                            swatches-max-height="235px"
+                            width="100%"
+                            :disabled="disablePositionModifikation"
+                            :v-on:update="changeColor(colorPicker.color, 
+                                                      colorPicker.modelGroup)"
+                          ></v-color-picker>
+                        </v-card>
+                      </v-card>
+  
+                    </v-col>
+                  </v-row>
+                </v-card>
+              </v-col>
+            </v-row>
+
+          </v-form>
         </v-navigation-drawer>
       </v-card>
 
+      <!-- Navigation buttons -->
       <v-card rounded="0" width="50" height="86.6vh">
         <v-card rounded="0" align="center" width="50" height="50">
           <v-card-text>S</v-card-text>
         </v-card>
         <!-- Controls -->
-        <v-btn v-model="btnNames[0]" rounded="0" icon="mdi-camera-control" width="50" height="50" :color="drawerBtnColor[0]"
-          @click.stop="settingsDrawer[0] = !settingsDrawer[0]; updateBtnColor(btnNames[0]);
-                       settingsDrawer[1] = false;
-                       settingsDrawer[2] = false;
-                       settingsDrawer[3] = false;"
+        <v-btn v-model="btnNames[0]" rounded="0" icon="mdi-camera-control" 
+               width="50" height="50" :color="drawerBtnColor[0]"
+               @click.stop="settingsDrawer[0] = !settingsDrawer[0]; 
+                            settingsDrawer[1] = false;
+                            settingsDrawer[2] = false;
+                            settingsDrawer[3] = false;
+                            updateBtnColor(btnNames[0]);"
         ></v-btn>
         <!-- Place -->
-        <v-btn v-model="btnNames[1]" rounded="0" icon="mdi-radar" width="50" height="50" :color="drawerBtnColor[1]"
-          @click.stop="settingsDrawer[0] = false;
-                       settingsDrawer[1] = !settingsDrawer[1]; updateBtnColor(btnNames[1]);
-                       settingsDrawer[2] = false;
-                       settingsDrawer[3] = false;"
+        <v-btn v-model="btnNames[1]" rounded="0" icon="mdi-radar" width="50" 
+               height="50" :color="drawerBtnColor[1]"
+               @click.stop="settingsDrawer[0] = false;
+                            settingsDrawer[1] = !settingsDrawer[1];
+                            settingsDrawer[2] = false;
+                            settingsDrawer[3] = false;
+                            updateBtnColor(btnNames[1]);"
         ></v-btn>
         <!-- Positions -->
-        <v-btn v-model="btnNames[2]" rounded="0" icon="mdi-map-marker-radius-outline" width="50" height="50" :color="drawerBtnColor[2]"
-          @click.stop="settingsDrawer[0] = false;
-                       settingsDrawer[1] = false;
-                       settingsDrawer[2] = !settingsDrawer[2]; updateBtnColor(btnNames[2]);
-                       settingsDrawer[3] = false;"
+        <v-btn v-model="btnNames[2]" rounded="0" width="50" height="50"
+               icon="mdi-map-marker-radius-outline"  
+               :color="drawerBtnColor[2]"
+               @click.stop="settingsDrawer[0] = false;
+                            settingsDrawer[1] = false;
+                            settingsDrawer[2] = !settingsDrawer[2]; 
+                            settingsDrawer[3] = false;
+                            updateBtnColor(btnNames[2]);"
         ></v-btn>
       </v-card>
     </div>
 
+    <!-- Legend -->
     <div style="float: right;">
-      <v-card 
-      color="grey" 
-      align="left" 
-      height="70" 
-      width="350"
-      style="top: 10px; right: 10px">
+      <v-card color="grey" align="left" height="70" width="350"
+              style="top: 10px; right: 10px">
         <v-card-text>
-          <img src="../assets/keys/ALT_1.png" width="90" height="37" style="vertical-align: -10px"> 
+          <img src="../assets/keys/ALT_1.png" width="90" height="37" 
+               style="vertical-align: -10px"> 
           <font size="+2" color="black"> = Objektauswahl</font>
         </v-card-text>
       </v-card>
 
-      <v-card 
-      color="grey" 
-      align="left" 
-      height="70" 
-      width="350"
-      style="top: 15px; right: 10px">
+      <v-card color="grey" align="left" height="70" width="350"
+              style="top: 15px; right: 10px">
         <v-card-text>
-          <img src="../assets/keys/CTRL_1.png" width="90" height="37" style="vertical-align: -10px"> 
+          <img src="../assets/keys/CTRL_1.png" width="90" height="37" 
+               style="vertical-align: -10px"> 
           <font size="+2" color="black"> = Modelle bewegen</font>
         </v-card-text>
       </v-card>
     </div>
   </div>
 
-  <!-- Position information-->
-  <v-navigation-drawer v-model="drawer"
-    location="bottom"
-    temporary width="385">
+  <!-- Bottom drawer: Position information-->
+  <v-navigation-drawer v-model="drawer" location="bottom" temporary width="385">
     <v-row class="pt-4 pl-4">
       <!-- 1st BOX -->
       <v-col cols="3">
@@ -350,17 +462,14 @@
 
         <v-divider></v-divider>
         <div style="text-align:center" class="pt-4">
-          <canvas v-show="cardShow" id="subCanvas"
-            width="300"
-            height="300"
-            style="display: inline; border: 1px solid rgb(255, 255, 255)">
+          <canvas v-show="cardShow" id="subCanvas" width="300" height="300"
+                  style="display: inline;
+                         border: 1px solid rgb(255, 255, 255)">
           </canvas>
         </div>
       </v-col>
     </v-row>
   </v-navigation-drawer>
-
-  
 </template>
 
 
@@ -458,7 +567,7 @@ const params = {
 }
 
 export default {
-  name: 'ModelViewer',                                                        // name
+  name: 'ModelViewer',                                                   // name
 
   emits: ['view'],
   data() {                                                               // data
