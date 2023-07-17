@@ -4,7 +4,7 @@ import PlacesOverview from "@/views/PlacesOverview.vue";
 import PlaceForm from "@/views/PlaceForm.vue";
 import PositionsOverview from "@/views/PositionsOverview.vue";
 import PositionForm from "@/views/PositionForm.vue";
-import Viewer from "@/views/3DView.vue";
+import ModelViewer from "@/views/3DView.vue";
 import OnlineSync from "@/views/OnlineSync.vue";
 import DataExport from "@/views/DataExport.vue";
 import DataBackup from "@/components/DataBackup.vue";
@@ -44,7 +44,7 @@ const router = createRouter({
     {
       path: "/3DView",
       name: "3D-Ansicht",
-      component: Viewer,
+      component: ModelViewer,
     },
     {
       path: "/onlineSync",

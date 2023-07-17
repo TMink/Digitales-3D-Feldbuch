@@ -458,7 +458,7 @@ const params = {
 }
 
 export default {
-  name: 'Viewer',                                                        // name
+  name: 'ModelViewer',                                                        // name
 
   emits: ['view'],
   data() {                                                               // data
