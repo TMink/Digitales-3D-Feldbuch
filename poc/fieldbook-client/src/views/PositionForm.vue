@@ -316,7 +316,6 @@ export default {
         date: '',
         isSeperate: false,
 
-        texts: [],
         images: [],
         models: [],
         lastChanged: Date.now(),

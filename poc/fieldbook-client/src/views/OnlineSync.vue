@@ -229,8 +229,6 @@ export default {
                 await fromOfflineDB.getAllUpdatedObjects('Models', 'positions'));
             this.updatedImages =
                 await fromOfflineDB.getAllUpdatedObjects('Images', 'images');
-            this.updatedTexts =
-                await fromOfflineDB.getAllUpdatedObjects('Texts', 'texts');
 
             this.deletedObjects =
                 await fromOfflineDB.getAllUpdatedObjects('Changes', 'deleted')

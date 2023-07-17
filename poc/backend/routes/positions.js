@@ -18,7 +18,6 @@ function getPositionJson(doc) {
     date: doc.date,
     description: doc.description,
     images: doc.images,
-    texts: doc.texts,
   };
 }
 

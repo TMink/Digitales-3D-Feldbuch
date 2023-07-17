@@ -622,12 +622,6 @@ const offlineDBImages = {
   storeNames: ["images"],
 };
 
-const offlineDBTexts = {
-  name: "Texts",
-  version: 1,
-  storeNames: ["texts"],
-};
-
 const offlineDBChanges = {
   name: "Changes",
   version: 1,
@@ -647,6 +641,5 @@ const fromOfflineDB = new ConnectionToOfflineDB([
   offlineDBPositions,
   offlineDBChanges,
   offlineDBImages,
-  offlineDBTexts,
   offlineDBCameras
 ]);
