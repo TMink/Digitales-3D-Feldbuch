@@ -7,7 +7,7 @@ import PositionForm from "@/views/PositionForm.vue";
 import Viewer from "@/views/3DView.vue";
 import OnlineSync from "@/views/OnlineSync.vue";
 import DataExport from "@/views/DataExport.vue";
-import DataBackup from "@/views/DataBackup.vue";
+import DataBackup from "@/components/DataBackup.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -57,7 +57,7 @@ const router = createRouter({
       component: DataExport,
     },
     {
-      path: "/DataBackup",
+      path: "/dataBackup",
       name: "DataBackup",
       component: DataBackup,
     }

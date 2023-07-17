@@ -6,15 +6,17 @@
       <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
     </head>
 
-
     <!-- App Bar -->
     <v-app-bar color="accent_dark">
-      <v-btn icon v-on:click="goback"> <v-icon>mdi-arrow-left</v-icon> </v-btn>
+      <v-btn icon v-on:click="goback">
+        <v-icon>mdi-arrow-left</v-icon>
+      </v-btn>
       <v-toolbar-title> {{ toolbar_title }} </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn icon @click.stop="navdrawer = !navdrawer"> <v-icon>mdi-menu</v-icon></v-btn>
+      <v-btn icon @click.stop="navdrawer = !navdrawer"> 
+        <v-icon>mdi-menu</v-icon>
+      </v-btn>
     </v-app-bar>
-
 
     <!-- Navigation Drawer -->
     <v-navigation-drawer color="surface" v-model="navdrawer" location="right">
@@ -28,7 +30,10 @@
 
         <v-divider></v-divider>
 
-        <v-list-item v-for="item in navbar_items" :key="item.title" link :to="item.link">
+        <v-list-item 
+          v-for="item in navbar_items" 
+          :key="item.title" 
+          link :to="item.link">
           <v-list-item-title>
             {{ item.title }}
           </v-list-item-title>
@@ -42,6 +47,8 @@
         </v-row>
 
         <v-spacer></v-spacer>
+
+        <DataBackup/>
 
         <v-card variant="outlined" class="ma-3 mb-15">
           <v-card-title>
@@ -83,6 +90,7 @@ import VToast from './components/VToast.vue';
 import VueCookies from 'vue-cookies';
 import { useTheme } from 'vuetify/lib/framework.mjs';
 import LocaleChanger from './components/LocaleChanger.vue'
+import DataBackup from './components/DataBackup.vue'
 
 export default {
   name: 'App',
@@ -90,6 +98,7 @@ export default {
     AppFooter,
     Pathbar,
     LocaleChanger,
+    DataBackup,
     VToast
   },
   setup() {
@@ -110,8 +119,6 @@ export default {
         { link: "/", title: this.$t('overview',  {msg: this.$tc('activity', 2)}) },
         { link: "/3dview", title: this.$t('threeD_view') },
         { link: "/onlineSync", title: this.$t('online_sync') },
-        { link: "/dataExport", title: this.$t('data_export') },
-        { link: "/dataBackup", title: this.$t('data_backup') },
       ]
     }
   },

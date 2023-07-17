@@ -1,108 +1,110 @@
 <template>
-  <v-card class="pa-2">
-    <v-row no-gutters class="text-center">
-      <v-col>
-        <v-btn 
-          color="primary" 
-          label="Backup all"
-          v-on:click="backupDialog = true">
-          Backup all
-        </v-btn>
-      </v-col>
-      <v-col>
-        <v-btn 
-          color="primary" 
-          label="Import all"
-          v-on:click="importDialog = true">
-          Import all
-        </v-btn>
-      </v-col>
-    </v-row>
+  <v-card variant="outlined" class="ma-3 mb-15">
+    <v-card-title>
+      {{ $t('data_backup') }}
+    </v-card-title>
+    <v-divider></v-divider>
+    <v-list-item link to="/dataExport">
+        <v-list-item-title> 
+          {{ $t('data_export') }}
+        </v-list-item-title>
+      </v-list-item>
+    <v-divider></v-divider>
+    <v-list-item link v-on:click="backupDialog = true">
+      <v-list-item-title> 
+        Backup
+      </v-list-item-title>
+    </v-list-item>
+    <v-list-item link v-on:click="importDialog = true">
+      <v-list-item-title> 
+        Import
+      </v-list-item-title>
+    </v-list-item>
+  </v-card>
 
-    <!-- BACKUP DIALOG -->
-    <v-dialog v-model="backupDialog">
-        <v-card class="pa-2 ma-2">
-          <v-card-title> Backup Data </v-card-title>
-          <v-row>
-            <v-col>
-              <v-card-subtitle>This will backup:</v-card-subtitle>
-              <v-card-text 
-                class="ml-8">
-                {{ activities.length }} Activities
-              </v-card-text>
-              <v-card-text 
-                class="ml-8">
-                {{ places.length }} Places
-              </v-card-text>   
-              <v-card-text 
-                class="ml-8">
-                {{ positions.length }} Positions
-              </v-card-text>   
-            </v-col>
-            <v-col>
-              <v-card-text>
-                {{ images.length }} Images
-              </v-card-text>   
-              <v-card-text>
-                {{ placeModels.length + positionModels.length }} Models
-              </v-card-text>   
-              <v-card-text>
-                {{ cameras.length }} Cameras
-              </v-card-text>   
-              <v-card-text>
-                {{ createdChanges.length + deletedChanges.length }} Changes
-              </v-card-text>   
-            </v-col>
-            <v-spacer></v-spacer>
-          </v-row>
-          
-          <v-row no-gutters>
-            <v-spacer/>
-            <v-btn 
-              color="primary"
-              class="mr-2"
-              v-on:click="backupData()">
-              <v-icon>mdi-pencil</v-icon>
-            </v-btn>
-        
-            <v-btn 
-              color="error" 
-              v-on:click="backupDialog = false">
-              <v-icon>mdi-close</v-icon>
-            </v-btn>
-          </v-row>
-        </v-card>
-    </v-dialog>
-
-    <!-- IMPORT DIALOG -->
-    <v-dialog v-model="importDialog">
+  <!-- BACKUP DIALOG -->
+  <v-dialog v-model="backupDialog">
       <v-card class="pa-2 ma-2">
-        <v-card-title> Import Data </v-card-title>
-      
-          <v-file-input
-            show-size 
-            v-model="importedData" 
-            accept=".backup">
-          </v-file-input>
-      
+        <v-card-title> Backup Data </v-card-title>
+        <v-row>
+          <v-col cols="6">
+            <v-card-subtitle>This will backup:</v-card-subtitle>
+            <v-card-text 
+              class="ml-8">
+              {{ activities.length }} Activities
+            </v-card-text>
+            <v-card-text 
+              class="ml-8">
+              {{ places.length }} Places
+            </v-card-text>   
+            <v-card-text 
+              class="ml-8">
+              {{ positions.length }} Positions
+            </v-card-text>   
+          </v-col>
+          <v-col cols="6">
+            <v-card-text>
+              {{ images.length }} Images
+            </v-card-text>   
+            <v-card-text>
+              {{ placeModels.length + positionModels.length }} Models
+            </v-card-text>   
+            <v-card-text>
+              {{ cameras.length }} Cameras
+            </v-card-text>   
+            <v-card-text>
+              {{ createdChanges.length + deletedChanges.length }} Changes
+            </v-card-text>   
+          </v-col>
+          <v-spacer></v-spacer>
+        </v-row>
+        
         <v-row no-gutters>
           <v-spacer/>
           <v-btn 
             color="primary"
             class="mr-2"
-            v-on:click="importData(importedData)">
-            <v-icon>mdi-pencil</v-icon>
+            v-on:click="backupData()">
+            <v-icon>mdi-content-save-all</v-icon>
           </v-btn>
-        
+      
           <v-btn 
             color="error" 
-            v-on:click="importDialog = false">
+            v-on:click="backupDialog = false">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-row>
       </v-card>
   </v-dialog>
-  </v-card>
+
+  <!-- IMPORT DIALOG -->
+  <v-dialog v-model="importDialog">
+    <v-card class="pa-2 ma-2">
+      <v-card-title> Import Data </v-card-title>
+    
+        <v-file-input
+          show-size 
+          v-model="importedData" 
+          accept=".backup">
+        </v-file-input>
+    
+      <v-row no-gutters>
+        <v-spacer/>
+        <v-btn 
+          color="primary"
+          class="mr-2"
+          v-on:click="importData(importedData)">
+          <v-icon>mdi-content-save-all</v-icon>
+        </v-btn>
+      
+        <v-btn 
+          color="error" 
+          v-on:click="importDialog = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </v-row>
+    </v-card>
+  </v-dialog>
 </template>
   
 <script>
