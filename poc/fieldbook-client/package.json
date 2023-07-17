@@ -11,6 +11,7 @@
   "dependencies": {
     "axios": "^1.4.0",
     "dat.gui": "^0.7.9",
+    "fake-indexeddb": "^4.0.2",
     "file-saver": "^2.0.5",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.5.29",
@@ -23,6 +24,7 @@
     "vue-cookies": "^1.8.3",
     "vue-i18n": "^9.2.2",
     "vue-router": "^4.2.0",
+    "vue-router-mock": "^0.2.0",
     "vue-window-size": "^2.0.0",
     "vuetify": "^3.3.2"
   },

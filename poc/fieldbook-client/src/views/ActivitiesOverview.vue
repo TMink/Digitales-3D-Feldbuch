@@ -36,23 +36,23 @@
               </v-row>
 
               <!--This is where the edit mask will be triggered-->
-              <v-row no-gutters v-if="activity.edit" class="align-center">
+              <v-row id="editActivity" no-gutters v-if="activity.edit" class="align-center">
 
                 <v-col cols="9">
                   <v-row no-gutters class="justify-center">
 
-                    <v-col cols="4" class="pt-2 px-2">
+                    <v-col id="activityBranchOffice" cols="4" class="pt-2 px-2">
                       <v-text-field color="primary" counter maxlength="20" label="Außenstelle" :rules="[rules.required]"
                         v-model="activity.branchOffice">
                       </v-text-field>
                     </v-col>
 
-                    <v-col min-width="300px" cols="3" class="pt-2 px-2">
+                    <v-col id="activityYear" min-width="300px" cols="3" class="pt-2 px-2">
                       <v-text-field color="primary" counter label="Jahr" maxlength="4" v-model="activity.year" :rules="[rules.required]">
                       </v-text-field>
                     </v-col>
 
-                    <v-col cols="3" class="pt-2 px-2">
+                    <v-col id="activityNumber" cols="3" class="pt-2 px-2">
                       <v-text-field color="primary" counter maxlength="4" label="Nummer" v-model="activity.number"
                         :rules="[rules.required]">
                       </v-text-field>

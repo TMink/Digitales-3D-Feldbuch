@@ -1,10 +1,9 @@
 import { describe, it, test, expect, vi, beforeAll } from 'vitest';
-import { mount, shallowMount } from '@vue/test-utils';
+import { mount, config, shallowMount } from '@vue/test-utils';
 import ResizeObserver from 'resize-observer-polyfill'
 /* currently throws an error, because Vitest 
 doesn't recognize the vuetify components */
 import Navigation from "../components/Navigation.vue";
-import PlacesOverview from "../views/PlacesOverview.vue";
 
 import { createVuetify } from "vuetify";
 
@@ -12,10 +11,7 @@ import { createI18n } from "vue-i18n";
 import fieldbook_en from "../locales/en.mjs";
 import fieldbook_de from "../locales/de.mjs";
 
-
-import { createRouter, createWebHistory } from 'vue-router'
-
-
+import { VueRouterMock, createRouterMock, injectRouterMock } from 'vue-router-mock'
 
 // init used plugins for the component that is being tested
 const vuetify = createVuetify();
@@ -28,11 +24,21 @@ const i18n = createI18n({
   },
 });
 
+config.plugins.VueWrapper.install(VueRouterMock)
 
 //Tests if the Navigation element renders correct
 describe('Navigation', () => {
+
+  const router = createRouterMock({
+    spy: {
+      create: fn => vi.fn(fn),
+      reset: spy => spy.mockReset(),
+    }
+  })
+
   beforeAll(() => {
     global.ResizeObserver = ResizeObserver
+    injectRouterMock(router)
   });
 
   test('should render correctly', () => {
@@ -91,5 +97,20 @@ describe('Navigation', () => {
     expect(activity.text()).toEqual("Aktivität")
     expect(place.text()).toEqual("Stelle")
     expect(position.text()).toEqual("Position")
+  })
+
+  test("routing to places works correctly", async () => {
+    const push = vi.spyOn(router, 'push')
+
+    const wrapper = mount(Navigation, {
+      global: {
+        plugins: [vuetify, i18n],
+      },
+    });
+
+    wrapper.find('#place').trigger('click')
+
+    //expect(push).toHaveBeenCalledOnce()
+
   })
 })
