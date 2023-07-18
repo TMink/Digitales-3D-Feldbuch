@@ -1203,8 +1203,7 @@ export default {
 
       if ( objects ) {
         for ( var i = 0; i < objects.length; i++ ) {
-          await this.loadModelInMain( objects[ i ].id, 'Place', 'Models',
-            'places' );
+          await this.loadModelInMain( objects[ i ], 'Place' );
         }
       }
     },
@@ -1219,8 +1218,7 @@ export default {
 
       if ( objects ) {
         for ( var i = 0; i < objects.length; i++ ) {
-          await this.loadModelInMain( objects[ i ].id, 'Position', 'Models',
-            'positions' );
+          await this.loadModelInMain( objects[ i ], 'Position' );
         }
       }
     },
@@ -1231,15 +1229,8 @@ export default {
      * @param {*} dbName 
      * @param {*} storeName 
      */
-    loadModelInMain: async function( modelID, type, dbName, storeName ) {
+    loadModelInMain: async function( object, type ) {
       /* Get 3D-Model from IndexedDB */
-      const object = await fromOfflineDB.getObject( modelID, dbName,
-        storeName );
-      const model = object.model;
-      const color = object.color;
-      const opacity = object.opacity;
-      const id = object.id;
-      const title = object.title;
 
       /* Load object */
       const meshGroup = await new Promise( ( resolve ) => {
