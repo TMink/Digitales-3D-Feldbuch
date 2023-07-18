@@ -190,7 +190,7 @@
                         >Farbwähler
                         </v-row>
           
-                      <v-card color="opp_background" class="pa-2">
+                      <v-card id="goodCard" color="opp_background" class="pa-2">
                           <v-color-picker v-model="colorPicker.color"
                             hide-canvas
                             hide-sliders
@@ -882,14 +882,6 @@ export default {
         }
       }
     },
-
-    'colorPicker.color': {
-      handler: function() {
-        if ( this.modelInfo2.chosenfinalModelGroup == null ) {
-          this.colorPicker.color = null
-        }
-      }
-    }
 
   },
 
@@ -2049,7 +2041,11 @@ export default {
       /* Event listener */
       this.canvasSub.addEventListener( 'mousemove', () => {
         console.log( "Mouse moved" );
-      })
+      } )
+
+      
+
+
     },
 
     /**
@@ -2091,6 +2087,12 @@ export default {
       /* Rotate model in sceneSub */
       if ( this.modelInSub[ 0 ] ) {
         this.modelInSub[ 0 ].rotation.y += 0.01;
+      }
+
+      if ( this.disablePositionModifikation ) {
+        const elem = document.getElementById("goodCard").style.pointerEvents = 'none';
+      } else {
+        const elem = document.getElementById("goodCard").style.pointerEvents = 'all';
       }
 
       /* Reset arcball gizmo radius */
