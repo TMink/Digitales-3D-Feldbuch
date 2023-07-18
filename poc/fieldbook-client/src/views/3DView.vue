@@ -837,8 +837,11 @@ export default {
           this.opacitySafeToken = true;
           this.disablePositionModifikation = false;
 
+          /* Update color picker and opacity slider if no model has been 
+             modified yet */
           if (this.colorPicker == null || 
               this.colorPicker.modelGroup == null ) {
+
             const result = this.modelInfo2.infoBlock.find( arr => 
               this.modelInfo2.chosenfinalModel );
             const modelInScene = this.sceneMain.getObjectByName( 
@@ -846,25 +849,29 @@ export default {
             this.modelInfo2.chosenfinalModelGroup = this.getGroup( 
               modelInScene );
             
-            /* Update ColorPicker */
+            /* color picker */
             this.colorPicker.color = result[3];
             this.colorPicker.modelGroup = this.modelInfo2.chosenfinalModelGroup;
             
-            /* Update opacity value */
+            /* opacity slider */
             this.opacitySlider = result[4];
-          } else {
-            const modelFromScene = this.sceneMain.getObjectByName(
-              this.modelInfo2.chosenfinalModel[0] );
-            this.opacitySlider = modelFromScene.material.opacity;
+          }
 
+          /* Update color picker and opacity slider if a model has been 
+             modified */
+          else {     
             const modelInScene = this.sceneMain.getObjectByName( 
               this.modelInfo2.chosenfinalModel[0] );
             this.modelInfo2.chosenfinalModelGroup = this.getGroup( 
               modelInScene );
-
+            
+            /* color picker */
             this.colorPicker.color = "#" + 
-              modelFromScene.material.color.getHexString();
+            modelInScene.material.color.getHexString();
             this.colorPicker.modelGroup = this.modelInfo2.chosenfinalModelGroup;
+            
+            /* opacity slider */
+            this.opacitySlider = modelInScene.material.opacity;
           }
 
         }
@@ -1058,7 +1065,6 @@ export default {
         anchor.push( this.arcballAnchor[ 1 ] );
         anchor.push( this.arcballAnchor[ 2 ] );
       } else {
-        
         anchor.push( cameraInDB.arcballAnchor[ 0 ] );
         anchor.push( cameraInDB.arcballAnchor[ 1 ] );
         anchor.push( cameraInDB.arcballAnchor[ 2 ] );
