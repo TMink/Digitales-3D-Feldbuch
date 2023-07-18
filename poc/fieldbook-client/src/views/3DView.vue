@@ -807,7 +807,6 @@ export default {
       handler: function() {
 
         if (this.opacitySafeToken) {
-          console.log("Test")
           this.opacitySafeToken = false;
           this.disablePositionModifikation = true;
           this.updateModelOpacityAndColor(this.modelInfo2.chosenfinalModel[0],
@@ -831,10 +830,8 @@ export default {
     'positionInfo2.chosenPositionModels': {
       handler: function() {
         if ( this.positionInfo2.chosenPositionModels.length > 0 ) {
-          console.log("Case 1")
           this.isEditing = true;
         } else {
-          console.log("Case 3")
           this.isEditing = false;
         }
       }
@@ -1468,15 +1465,6 @@ export default {
         this.attacheBtn = false;
         this.tControlsMain.detach();
       }
-    },
-
-    /**
-     * 
-     */
-    detachTransformControls: function() {
-
-      console.log(this.tControlsMain.detach())
-      this.tControlsMain.detach();
     },
 
     /**
