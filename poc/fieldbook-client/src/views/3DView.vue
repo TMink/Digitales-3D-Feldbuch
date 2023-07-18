@@ -143,24 +143,30 @@
                         <v-card color="opp_background" class="pa-2">
                           <v-row no-gutters>
                             <!-- Attach position-->
-                            <v-col cols="2" class="px-7">
-                              <v-radio :disabled="disablePositionModifikation">
-                              </v-radio>
+                          
+                            <v-col cols="2" class="px-7 pt-5">
+                              <v-checkbox :v-model="attacheBtn"
+                                :disabled="disablePositionModifikation"
+                                :true-value="attacheBtn"
+                                :false-value="!attacheBtn"
+                                @Click="attachTransformControls(attacheBtn)">
+                              </v-checkbox>
                             </v-col>
-      
+
                             <v-divider vertical=false></v-divider>
-      
+
                             <!-- Checkbox description-->
-                            <v-col cols="10" class="py-2 px-4">
+                            <v-col cols="10" class="px-4 py-9">
                               Modell Bewegen
                             </v-col>
+    
                           </v-row>
-                                
+                          
                           <v-divider></v-divider>
                             
                           <v-row no-gutters>
                             <!-- Opacity-->
-                            <v-col cols="2" class=" px-4">
+                            <v-col cols="2" class="px-4 pt-4">
                               <v-slider v-model="opacitySlider" :max="1"
                                         :disabled="disablePositionModifikation">
                               </v-slider>
@@ -169,7 +175,7 @@
                             <v-divider vertical=false></v-divider>
       
                             <!-- Checkbox description-->
-                            <v-col cols="10" class="py-2 px-4">
+                            <v-col cols="10" class="py-5 px-4">
                               Deckkraft
                             </v-col>
                           </v-row>
@@ -587,6 +593,9 @@ export default {
 
   data() {                                                               // data
     return {
+
+      attacheBtn: false,
+
       /* Canvas */
       canvasMain: null,
       canvasSub: null,
@@ -874,6 +883,9 @@ export default {
             this.opacitySlider = modelInScene.material.opacity;
           }
 
+        } else {
+          this.attacheBtn = false;
+          this.tControlsMain.detach();
         }
       }
     },
@@ -928,6 +940,8 @@ export default {
   },
 
   methods: {                                                          // methods
+
+
 
     func: function(e) {
       const compareStrings = Boolean(Number(
@@ -1443,19 +1457,25 @@ export default {
       * 
       * @param {*} i 
       */
-    attachTransformControls: function( i ) {
-      const modelName = this.positionModelsInScene[ i ];
-      const model = this.sceneMain.getObjectByName( modelName.modelID );
-      var groupObject = this.getGroup( model );
-
-      this.tControlsMain.detach();
-      this.tControlsMain.attach(groupObject);
+    attachTransformControls: function() {
+      if ( !this.attacheBtn ) {
+        this.attacheBtn = true;
+        if ( this.modelInfo2.chosenfinalModelGroup ) {
+          this.tControlsMain.detach();
+          this.tControlsMain.attach(this.modelInfo2.chosenfinalModelGroup);
+        }
+      } else {
+        this.attacheBtn = false;
+        this.tControlsMain.detach();
+      }
     },
 
     /**
      * 
      */
     detachTransformControls: function() {
+
+      console.log(this.tControlsMain.detach())
       this.tControlsMain.detach();
     },
 
