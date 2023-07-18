@@ -148,7 +148,7 @@
                               </v-radio>
                             </v-col>
       
-                            <v-divider vertical="false"></v-divider>
+                            <v-divider vertical=false></v-divider>
       
                             <!-- Checkbox description-->
                             <v-col cols="10" class="py-2 px-4">
@@ -1080,7 +1080,7 @@ export default {
       /* Update place models */
       for ( var i = 0; i < this.placeModelsInScene.length; i++ ) {
         const modelID = this.placeModelsInScene[ i ].modelID;
-        this.updateModelOpacityAnColor(modelID, 'places');
+        this.updateModelOpacityAndColor(modelID, 'places');
       }
 
       /* Update position models */
@@ -2043,9 +2043,6 @@ export default {
         console.log( "Mouse moved" );
       } )
 
-      
-
-
     },
 
     /**
@@ -2092,7 +2089,7 @@ export default {
       if ( this.disablePositionModifikation ) {
         const elem = document.getElementById("goodCard").style.pointerEvents = 'none';
       } else {
-        const elem = document.getElementById("goodCard").style.pointerEvents = 'all';
+        const elem = document.getElementById("goodCard").style.pointerEvents = 'auto';
       }
 
       /* Reset arcball gizmo radius */
