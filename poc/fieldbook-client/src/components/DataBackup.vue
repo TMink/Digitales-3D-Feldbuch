@@ -10,7 +10,7 @@
         </v-list-item-title>
       </v-list-item>
     <v-divider></v-divider>
-    <v-list-item link v-on:click="backupDialog = true">
+    <v-list-item link v-on:click="backupDialog = true; updateDBData()">
       <v-list-item-title> 
         Backup
       </v-list-item-title>
@@ -83,9 +83,10 @@
       <v-card-title> Import Data </v-card-title>
     
         <v-file-input
+          id="file"
           show-size 
           v-model="importedData" 
-          accept=".backup">
+          accept=".zip">
         </v-file-input>
     
       <v-row no-gutters>
@@ -111,10 +112,10 @@
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
 import { toRaw } from 'vue';
 import { saveAs } from 'file-saver';
+import * as JSZip from 'jszip';
 
 export default {
   name: 'DataBackup',
-  emits: ['view'],
   data() {
     return {
       backupDialog: false,
@@ -131,37 +132,44 @@ export default {
       deletedChanges: [],
     };
   },
-  async created() {
-    this.$emit("view", this.$t('data_backup'));
-    await fromOfflineDB.syncLocalDBs();
-
-    this.activities = await fromOfflineDB.getAllObjects('Activities', 'activities');
-    this.places = await fromOfflineDB.getAllObjects('Places', 'places');
-    this.positions = await fromOfflineDB.getAllObjects('Positions', 'positions');
-    this.images = await fromOfflineDB.getAllObjects('Images', 'images');
-    this.placeModels = await fromOfflineDB.getAllObjects('Models', 'places');
-    this.positionModels = await fromOfflineDB.getAllObjects('Models', 'positions');
-    this.cameras = await fromOfflineDB.getAllObjects('Cameras', 'cameras');
-    this.createdChanges = await fromOfflineDB.getAllObjects('Changes', 'created');
-    this.deletedChanges = await fromOfflineDB.getAllObjects('Changes', 'deleted');
-  },
   methods: {
+    async updateDBData() {
+      await fromOfflineDB.syncLocalDBs();
+
+      this.activities = await fromOfflineDB.getAllObjects('Activities', 'activities');
+      this.places = await fromOfflineDB.getAllObjects('Places', 'places');
+      this.positions = await fromOfflineDB.getAllObjects('Positions', 'positions');
+      this.images = await fromOfflineDB.getAllObjects('Images', 'images');
+      this.placeModels = await fromOfflineDB.getAllObjects('Models', 'places');
+      this.positionModels = await fromOfflineDB.getAllObjects('Models', 'positions');
+      this.cameras = await fromOfflineDB.getAllObjects('Cameras', 'cameras');
+      this.createdChanges = await fromOfflineDB.getAllObjects('Changes', 'created');
+      this.deletedChanges = await fromOfflineDB.getAllObjects('Changes', 'deleted');
+    },
     /**
      * Consolidates all data of the IndexedDB to 
      * one `.backup`-file and downloads it.
      */
     async backupData() {
+      await this.updateDBData();
       var filename = "fieldbook_" + new Date().toLocaleDateString('DE-de');
       var rawPlaceModels = toRaw(this.placeModels);
       var rawPositionModels = toRaw(this.positionModels);
-      var enc = new TextDecoder("utf-8");
     
+      var zip = new JSZip();
+      var modelFiles = [];
+
       // decode model-files from ArrayBuffer to String
       rawPlaceModels.forEach(model => {
-        model.model = enc.decode(model.model);
+        var blob = new Blob([model.model], { type: "text/plain;charset=utf-8" });
+        modelFiles.push(blob);
+
+        zip.file("place." + model.id + ".glb", blob);
       });
       rawPositionModels.forEach(model => {
-        model.model = enc.decode(model.model);
+        var blob = new Blob([model.model], { type: "text/plain;charset=utf-8" });
+        modelFiles.push(blob);
+        zip.file("position." + model.id + ".glb", blob);
       });
 
       // combine all IndexedDB stores to one JSON-object
@@ -176,12 +184,17 @@ export default {
         createdChanges: toRaw(this.createdChanges),
         deletedChanges: toRaw(this.deletedChanges),
       }
+      
       var backupDataString = JSON.stringify(backupData);
-
-      // create blob
+      // create blob of the IndexedDB data
       var blob = new Blob([backupDataString], { type: "text/plain;charset=utf-8" });
-      // save .txt file
-      saveAs(blob, filename + ".backup");
+      // add the data .txt to the zip
+      zip.file(filename + ".txt", blob);
+
+      zip.generateAsync({ type: "blob" }).then(function (content) {
+        // see FileSaver.js
+        saveAs(content, "example.zip");
+      });
     },
 
     /**
@@ -192,28 +205,65 @@ export default {
     async importData(file) {
       const context = this;
       var rawFile = toRaw(file);
-      let reader = new FileReader();
-
-      reader.readAsText(rawFile[0]);
-      
+      var modelFiles = [];
+      var dbData = {};
       // add all the data back to their corresponding IndexedDB stores
-      reader.onload = async function () {
-        var jsonRes = JSON.parse(reader.result);
+      
+      var zipData = await JSZip.loadAsync(rawFile[0]);
+      var fileKeys = Object.keys(zipData.files);
+      
+      // retrieve data from the backup.zip and write it to dbData + modelFiles
+      for (var i=0; i<fileKeys.length; i++) {
+        var fileEnd = fileKeys[i].split(".");
+        
+        if (fileEnd[fileEnd.length - 1] == "txt") {
+          await zipData.files[fileKeys[i]].async('string').then(function (fileData) {
+            dbData = JSON.parse(fileData);
+          })
+        } else if (fileEnd[fileEnd.length - 1] == "glb") {
+          await zipData.files[fileKeys[i]].async('arraybuffer').then(function (fileData) {
+            
+            var modelObject = {};
+            modelObject.type = fileEnd[0];
+            modelObject.id = fileEnd[1];
+            modelObject.data = fileData;
 
-        await context.addData(jsonRes.activities, 'Activities', 'activities');
-        await context.addData(jsonRes.places, 'Places', 'places');
-        await context.addData(jsonRes.positions, 'Positions', 'positions');
-        await context.addData(jsonRes.images, 'Images', 'images');
-        await context.addData(jsonRes.placeModels, 'Models', 'places');
-        await context.addData(jsonRes.positionModels, 'Models', 'positions');
-        await context.addData(jsonRes.cameras, 'Cameras', 'cameras');
-        await context.addData(jsonRes.createdChanges, 'Changes', 'created');
-        await context.addData(jsonRes.deletedChanges, 'Changes', 'deleted');
-      };
+            modelFiles.push(modelObject);
+          })
+        }
+      }
 
-      reader.onerror = function () {
-        console.log(reader.error);
-      };
+      // combine the model ArrayBuffers to the correct model of the dbData
+      // (depending on placeModel and positionModel)
+      modelFiles.forEach(model => {
+        if (model.type == "place") {
+
+          for (var i = 0; i < dbData.placeModels.length; i++) {
+            if (model.id == dbData.placeModels[i].id) {
+              dbData.placeModels[i].model = model.data;
+            }
+          }
+
+        } else if (model.type == "position") {
+
+          for (var j = 0; j < dbData.positionModels.length; j++) {
+            if (model.id == dbData.positionModels[j].id) {
+              dbData.positionModels[j].model = model.data;
+            }
+          }
+        }
+      });
+
+      // add the data back to IndexedDB
+      await context.addData(dbData.activities, 'Activities', 'activities');
+      await context.addData(dbData.places, 'Places', 'places');
+      await context.addData(dbData.positions, 'Positions', 'positions');
+      await context.addData(dbData.images, 'Images', 'images');
+      await context.addData(dbData.placeModels, 'Models', 'places');
+      await context.addData(dbData.positionModels, 'Models', 'positions');
+      await context.addData(dbData.cameras, 'Cameras', 'cameras');
+      await context.addData(dbData.createdChanges, 'Changes', 'created');
+      await context.addData(dbData.deletedChanges, 'Changes', 'deleted');
 
       // close the import dialog
       this.importDialog = false;
@@ -230,10 +280,6 @@ export default {
       if (data.length > 0) {
         for (var i = 0; i < data.length; i++) {
           // encode the model file, if the data is for a model
-          if (dbName == 'Models') {
-            var enc = new TextEncoder();
-            data[i].model = enc.encode(data[i].model).buffer;
-          }
           await fromOfflineDB.addObject(data[i], dbName, storeName);
         }
       }
