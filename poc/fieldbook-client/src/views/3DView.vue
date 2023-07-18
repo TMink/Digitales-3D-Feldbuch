@@ -12,7 +12,7 @@
           style="left: 49px; top:104px; width: 351px;" temporary
         >
           <v-list-item height="50" prepend-icon="mdi-camera-control"
-                       title="Controls"
+                       title="Tools"
           ></v-list-item>
 
           <v-divider></v-divider>
