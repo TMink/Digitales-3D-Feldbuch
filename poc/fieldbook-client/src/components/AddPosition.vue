@@ -54,7 +54,6 @@ export default {
         date: new Date().toLocaleDateString("de-DE"),
         isSeperate: false,
 
-        texts: [],
         images: [],
         models: [],
         lastChanged: Date.now(),
@@ -68,8 +67,9 @@ export default {
         var lastPos = 
             await fromOfflineDB.getLastAddedObject('Positions', 'positions');
 
-        newPosition.subNumber = await this.calcSubNumber(newPosition, lastPos);
         newPosition.positionNumber = lastPos.positionNumber + 1;
+        newPosition.subNumber = await this.calcSubNumber(newPosition, lastPos);
+
 
         //TODO: autoincrement posNumber and implement the divide Checkbox
       }
@@ -85,6 +85,14 @@ export default {
      */
     async calcSubNumber(curPos, prevPos) {
       var subNumber = prevPos.subNumber;
+
+      if (prevPos == undefined) {
+        return 1;
+      }
+
+      if (prevPos.positionNumber < curPos.positionNumber) {
+        return 1;
+      }
 
       //TODO: include activity in subNumber calculation
       // --> maybe edit the fromOfflineDB function
