@@ -2,7 +2,10 @@
   <div style="position: relative">
 
     <!-- Main Scene-->
-    <canvas id="mainCanvas" style="position: absolute"></canvas>
+    <div id="canvasWrap" style="position:relative">
+
+      <canvas id="mainCanvas" style="position: absolute" tabindex='1'></canvas>
+    </div>
 
     <!-- Left sidebar: GUI -->
     <div style="float: left;">
@@ -674,6 +677,7 @@ import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
 import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader'
 import { GammaCorrectionShader } from
   'three/examples/jsm/shaders/GammaCorrectionShader';
+import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 const params = {
   sceneMain: {
@@ -1139,6 +1143,7 @@ export default {
     this.glbLoader = new GLTFLoader();
 
     this.setupCanvases();
+    this.setupEventListeners();
     document.addEventListener("click", this.func, false);
 
     this.mainInit();
@@ -1277,6 +1282,10 @@ export default {
         1 / this.canvasMain.clientWidth, 1 / this.canvasMain.clientHeight );
     },
 
+    setupEventListeners: function() {
+      
+    },
+
     /**
      * -------------------------------------------------------------------------
      * # Update IndexedDB
@@ -1407,6 +1416,11 @@ export default {
       this.canvasMain.removeEventListener( 'click', this.updateArcball );
       this.canvasMain.removeEventListener( 'click', this.onMouseDown );
       window.removeEventListener( 'resize', this.onWindowResize, false );
+      this.canvasMain.removeEventListener( 'keydown', this.keyDown );
+      this.canvasMain.removeEventListener( 'keyup', this.keyUp );
+
+      this.rendererMain.domElement.removeEventListener( 'pointerdown', this.onClick, false );
+      this.canvasMain.removeEventListener( 'mousemove', this.onDocumentMouseMove, false);
     },
 
     /**
@@ -1670,6 +1684,92 @@ export default {
             this.positionInfo.description = positionData.description;
             this.positionInfo.dating = positionData.dating;
             this.positionInfo.adressOf = positionData.adressOf;
+          }
+        }
+      }
+    },
+
+    onDocumentMouseMove: function () {
+      event.preventDefault();
+
+      const rect = this.rendererMain.domElement.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+
+      this.pointer2.x = ( x / this.canvasMain.clientWidth ) * 2 - 1;
+      this.pointer2.y = ( y / this.canvasMain.clientHeight ) * - 2 + 1;
+
+      if ( this.drawingLine ) {
+        this.raycaster2.setFromCamera( this.pointer2, this.cameraMain );
+        const intersects = this.raycaster2.intersectObjects( this.modelsInMain,
+        true );
+
+        if ( intersects.length > 0 ) {
+          const positions = this.line.geometry.attributes.position;
+
+          const v0 = new THREE.Vector3(
+            positions.array[0],
+            positions.array[1],
+            positions.array[2]
+          )
+          const v1 = new THREE.Vector3(
+            intersects[0].point.x,
+            intersects[0].point.y,
+            intersects[0].point.z
+          )
+          this.line.geometry.attributes.position.needsUpdate = true
+          const distance = v0.distanceTo(v1)
+          this.measurementLabels[this.lineID].element.innerText = distance.toFixed(2) + 'm'
+          this.measurementLabels[this.lineID].position.lerpVectors(v0, v1, 0.5)
+        }
+      }
+    },
+
+    /**
+     * 
+     */
+    onClick: function() {
+      console.log(this.modelsInMain)
+      if ( this.ctrlDown ) {
+        this.raycaster2.setFromCamera( this.pointer2, this.cameraMain );
+        const intersects = this.raycaster2.intersectObjects( this.modelsInMain,
+        true );
+        if ( intersects.length > 0 ) {
+          
+          if ( !this.drawingLine ) {
+            const points = [];
+            points.push( intersects[0].point )
+            points.push( intersects[0].point.clone() )
+            const geometry = new THREE.BufferGeometry().setFromPoints(
+              points
+            )
+            
+            this.line = new THREE.Line(
+              geometry,
+              new THREE.LineBasicMaterial({
+                color: 0x0000ff,
+              })
+            )
+            
+            this.line.frustumCulled = false;
+            this.sceneMain.add(this.line);
+
+            const measurementLabel = new CSS2DObject( );
+            
+            console.log(intersects[0])
+
+            measurementLabel.position.copy( intersects[0].point );
+            this.measurementLabels[ this.lineID ] = measurementLabel;
+            this.sceneMain.add( this.measurementLabels[ this.lineID ] );
+            this.drawingLine = true;
+          } else {
+            const positions = this.line.geometry.attributes.position
+            positions.array[3] = intersects[0].point.x
+            positions.array[4] = intersects[0].point.y
+            positions.array[5] = intersects[0].point.z
+            this.line.geometry.attributes.position.needsUpdate = true;
+            this.lineID++;
+            this.drawingLine = false;
           }
         }
       }
@@ -2213,6 +2313,15 @@ export default {
       this.rendererMain.shadowMap.type = THREE.PCFSoftShadowMap;
       this.rendererMain.outputEncoding = THREE.SRGBColorSpace;
 
+      /* label Renderer */
+      this.labelRenderer = new CSS2DRenderer()
+      this.labelRenderer.setSize( window.innerWidth, window.innerHeight );
+      this.labelRenderer.domElement.style.position = 'absolute'
+      this.labelRenderer.domElement.style.top = '35px'
+      this.labelRenderer.domElement.style.color = "white"
+      this.labelRenderer.domElement.style.pointerEvents = 'none'
+      document.body.appendChild( this.labelRenderer.domElement)
+
       // Scene
       this.sceneMain = new THREE.Scene();
 
@@ -2239,6 +2348,9 @@ export default {
       // Raycaster
       this.raycaster = new THREE.Raycaster();
       this.pointer = new THREE.Vector2();
+      
+      this.raycaster2 = new THREE.Raycaster();
+      this.pointer2 = new THREE.Vector2();
 
       // Post processing
       this.composer = new EffectComposer( this.rendererMain );
@@ -2281,6 +2393,46 @@ export default {
             break;
         }
       });
+
+      const keysPressed = {};
+      this.intersectsMeasurement = null,
+
+      this.ctrlDown = false,
+      this.lineID = 0,
+      this.line = null,
+      this.drawingLine = false,
+      this.measurementLabels = {},
+
+      
+      this.linesArray = []
+
+      this.canvasMain.addEventListener( 'keydown', this.keyDown );
+      this.canvasMain.addEventListener( 'keyup', this.keyUp );
+
+      this.rendererMain.domElement.addEventListener( 'pointerdown', this.onClick, false );
+      this.canvasMain.addEventListener( 'mousemove', this.onDocumentMouseMove, false);
+
+    },
+
+    keyDown: function(event) {
+      if (event.key === 'x') {
+          this.ctrlDown = true;
+          this.abControlsMain.enabled = false
+          document.body.style.cursor = 'crosshair';
+      }
+    },
+
+    keyUp: function(event) {
+      if (event.key === 'x') {
+        this.ctrlDown = false;
+        this.abControlsMain.enabled = true
+        document.body.style.cursor = 'pointer'
+        if ( this.drawingLine ) {
+          this.sceneMain.remove( this.line );
+          this.sceneMain.remove( this.measurementLabels[ this.lineID ] );
+          this.drawingLine = false;
+        }
+      }
     },
 
     /**
@@ -2337,6 +2489,7 @@ export default {
       /* Render sceneMain and sceneSub */
       this.rendererMain.render( this.sceneMain, this.cameraMain );
       this.rendererSub.render( this.sceneSub, this.cameraSub );
+      this.labelRenderer.render( this.sceneMain, this.cameraMain )
 
       /* Render composer */
       this.composer.render()
