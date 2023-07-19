@@ -12,7 +12,7 @@
           style="left: 49px; top:104px; width: 351px;" temporary
         >
           <v-list-item height="50" prepend-icon="mdi-camera-control"
-                       title="Controls"
+                       title="Tools"
           ></v-list-item>
 
           <v-divider></v-divider>
@@ -21,27 +21,132 @@
 
         <!-- Place -->
         <v-navigation-drawer v-model="settingsDrawer[1]" color="background"
-          style="left: 49px; top:104px; width: 351px;" temporary
+          style="left: 49px; top:104px; width: 470px;" temporary
         >
-          <v-list-item height="50" prepend-icon="mdi-radar" title="Place">
-          </v-list-item>
-
+          <v-list-item height="50" prepend-icon="mdi-map-marker-radius-outline"
+            title="Stellen"
+          ></v-list-item>
+  
           <v-divider></v-divider>
 
-          <v-list-item height="50" prepend-icon="mdi-view-dashboard" 
-                       title="Home" value="home"
-          ></v-list-item>
-          <v-list-item height="50" prepend-icon="mdi-forum" title="About" 
-                       value="about"
-          ></v-list-item>
+          <v-form>
+
+            <!-- Filter -->
+            <v-row>
+              <v-col>
+                <v-card color="transparent" elevation="0" width="100%" 
+                        class="pa-2">
+
+                  <!-- Model -->
+                  <v-row no-gutters class="pl-3">
+                    Model
+                  </v-row>
+
+                  <v-row no-gutters>
+
+                    <v-col cols="3" class="pl-2 ">
+                      <v-combobox v-model="placeModelInfo.number"
+                        label="Nr"
+                        item-title="modelNumber"
+                        bgColor="opp_background"
+                        :items="placeModelInfo.allNumbers"
+                      ></v-combobox>
+                    </v-col>
+
+                    <v-col cols="6" class="pl-2 ">
+                      <v-combobox v-model="placeModelInfo.title"
+                        label="Titel"
+                        item-title="modelTitel"
+                        bgColor="opp_background"
+                        :items="placeModelInfo.allTitles"
+                      ></v-combobox>
+                    </v-col>
+
+                  </v-row>
+                </v-card>
+              </v-col>
+            </v-row>
+
+            <v-divider thickness="5"></v-divider>
+
+            <!-- Model Interaktion -->
+            <v-row>
+              <v-col>
+                <v-card width="100%" color="transparent" class="pa-2" 
+                  elevation="0">
+                  <v-row class="pb-2">
+                    <v-col>
+                      
+                      <!-- Checkboxes -->
+                      <v-card color="secondary">
+                        <v-row no-gutters align="center" justify="center"
+                               class="pa-1"
+                        >Allgemein
+                        </v-row>
+                            
+                        <v-card color="opp_background" class="pa-2">
+                            
+                          <v-row no-gutters>
+                            <!-- Opacity-->
+                            <v-col cols="2" class="px-2 pt-4">
+                              <v-slider v-model="opacitySliderPlace" :max="1"
+                                        :disabled="disablePlaceModifikation">
+                              </v-slider>
+                            </v-col>
+      
+                            <v-divider vertical=false></v-divider>
+      
+                            <!-- Checkbox description-->
+                            <v-col cols="10" class="py-5 px-4">
+                              Deckkraft
+                            </v-col>
+                          </v-row>
+                        </v-card>
+                      </v-card>
+  
+                    </v-col>
+                  </v-row>
+                  <v-divider></v-divider>
+                  <v-spacer></v-spacer>
+                  <v-row>
+                    <v-col>
+  
+                      <!-- Color Picker -->
+                      <v-card color="secondary">
+                        <v-row no-gutters align="center" justify="center" 
+                               class="pa-1"
+                        >Farbwähler
+                        </v-row>
+          
+                      <v-card id="cpPlace" color="opp_background" class="pa-2">
+                          <v-color-picker v-model="colorPickerPlace.color"
+                            hide-canvas
+                            hide-sliders
+                            hide-inputs
+                            show-swatches
+                            swatches-max-height="235px"
+                            width="100%"
+                            :disabled="disablePlaceModifikation"
+                            :v-on:update="changeColor(colorPickerPlace.color, 
+                                                      colorPickerPlace.modelGroup)"
+                          ></v-color-picker>
+                        </v-card>
+                      </v-card>
+  
+                    </v-col>
+                  </v-row>
+                </v-card>
+              </v-col>
+            </v-row>
+
+          </v-form>
         </v-navigation-drawer>
 
         <!-- Positions -->
         <v-navigation-drawer v-model="settingsDrawer[2]" color="background"
-          style="left: 49px; top:104px; width: 690px;" temporary
+          style="left: 49px; top:104px; width: 470px;" temporary
         >
-          <v-list-item height="50"
-            prepend-icon="mdi-map-marker-radius-outline"
+          <v-list-item height="50" prepend-icon="mdi-map-marker-radius-outline"
             title="Positions Filter"
           ></v-list-item>
   
@@ -64,7 +169,7 @@
 
                     <v-col cols="3" class="pl-2">
                       <v-combobox v-model="positionInfo2.number"
-                        label="Nummer"
+                        label="Nr"
                         item-title="positionNumber"
                         bgColor="opp_background"
                         :items="positionInfo2.allNumbers"
@@ -73,7 +178,7 @@
 
                     <v-col cols="3" class="pl-2">
                       <v-combobox v-model="positionInfo2.subNumber"
-                        label="Unternummer"
+                        label="U.Nr"
                         bgColor="opp_background"
                         item-title="positionSubnumber"
                         :items="positionInfo2.allSubNumbers"
@@ -100,11 +205,11 @@
 
                     <v-col cols="3" class="pl-2 ">
                       <v-combobox v-model="modelInfo2.number"
-                        label="Nummer"
+                        label="Nr"
                         item-title="modelNumber"
                         bgColor="opp_background"
                         :items="modelInfo2.allNumbers"
-                        :disabled="!isEditing"
+                        :disabled="!isEditingPosition"
                       ></v-combobox>
                     </v-col>
 
@@ -114,7 +219,7 @@
                         item-title="modelTitel"
                         bgColor="opp_background"
                         :items="modelInfo2.allTitles"
-                        :disabled="!isEditing"
+                        :disabled="!isEditingPosition"
                       ></v-combobox>
                     </v-col>
 
@@ -128,14 +233,14 @@
             <!-- Model Interaktion -->
             <v-row>
               <v-col>
-                <v-card 
-                  width="100%" color="transparent" class="pa-2" elevation="0">
+                <v-card width="100%" color="transparent" class="pa-2" 
+                  elevation="0">
                   <v-row class="pb-2">
                     <v-col>
                       
                       <!-- Checkboxes -->
                       <v-card color="secondary">
-                        <v-row no-gutters align="center" justify="center" 
+                        <v-row no-gutters align="center" justify="center"
                                class="pa-1"
                         >Allgemein
                         </v-row>
@@ -144,7 +249,7 @@
                           <v-row no-gutters>
                             <!-- Attach position-->
                           
-                            <v-col cols="2" class="px-7 pt-5">
+                            <v-col cols="2" class="px-3 pt-5">
                               <v-checkbox :v-model="attacheBtn"
                                 :disabled="disablePositionModifikation"
                                 :true-value="attacheBtn"
@@ -166,8 +271,8 @@
                             
                           <v-row no-gutters>
                             <!-- Opacity-->
-                            <v-col cols="2" class="px-4 pt-4">
-                              <v-slider v-model="opacitySlider" :max="1"
+                            <v-col cols="2" class="px-2 pt-4">
+                              <v-slider v-model="opacitySliderPosition" :max="1"
                                         :disabled="disablePositionModifikation">
                               </v-slider>
                             </v-col>
@@ -196,8 +301,8 @@
                         >Farbwähler
                         </v-row>
           
-                      <v-card id="goodCard" color="opp_background" class="pa-2">
-                          <v-color-picker v-model="colorPicker.color"
+                      <v-card id="cpPosition" color="opp_background" class="pa-2">
+                          <v-color-picker v-model="colorPickerPosition.color"
                             hide-canvas
                             hide-sliders
                             hide-inputs
@@ -205,8 +310,8 @@
                             swatches-max-height="235px"
                             width="100%"
                             :disabled="disablePositionModifikation"
-                            :v-on:update="changeColor(colorPicker.color, 
-                                                      colorPicker.modelGroup)"
+                            :v-on:update="changeColor(colorPickerPosition.color, 
+                                                      colorPickerPosition.modelGroup)"
                           ></v-color-picker>
                         </v-card>
                       </v-card>
@@ -627,8 +732,6 @@ export default {
       btnNames: ["btn1", "btn2", "btn3", "btn4"],
 
       cardShow: true,
-      autoCompleteModel: null,
-      tollesModel: null,
 
       /* Sidebar: Positions */
       positionInfo2: {
@@ -651,12 +754,44 @@ export default {
         infoBlock: []
       },
 
+      disablePositionModifikation: true,
+
+      colorPickerPosition: {
+        color: null,
+        modelGroup: null
+      },
+
+      opacitySliderPosition: 0,
+      opacityTokenPosition: false,
+
+      /* Sidebar: Places */
+      placeModelInfo: {
+        number: null,
+        title: null,
+        allNumbers: [],
+        allTitles: [],
+        chosenfinalModel: [],
+        chosenfinalModelGroup: null,
+        infoBlock: []
+      },
+
+      disablePlaceModifikation: true,
+
+      colorPickerPlace: {
+        color: null,
+        modelGroup: null
+      },
+
+      opacitySliderPlace: 0,
+      opacityTokenPositionPlace: false,
+
       /* Meshes in Scene */
       placeModelsInScene: [], // {placeID, modelID, modelName}
       positionModelsInScene: [], // {positionID, modelID, modelName}
 
       positionModelsInSceneNames: [],
-      isEditing: null,
+      isEditingPosition: null,
+      isEditingPlace: null,
 
       modelInSubName: "",
 
@@ -667,19 +802,6 @@ export default {
       },
 
       gizmoState: false,
-      colors: [],
-
-      /* Testing GUI */
-      disablePositionModifikation: true,
-
-      colorPicker: {
-        color: null,
-        modelGroup: null
-      },
-      colorSafeToken: false,
-
-      opacitySlider: 0,
-      opacitySafeToken: false,
     };
   },
 
@@ -687,15 +809,15 @@ export default {
     'positionInfo2.number': {
       handler: function() {
 
-        if (this.opacitySafeToken) {
-          this.opacitySafeToken = false;
+        if (this.opacityTokenPosition) {
+          this.opacityTokenPosition = false;
           this.modelInfo2.chosenfinalModelGroup = null;
           this.disablePositionModifikation = true;
           this.updateModelOpacityAndColor(this.modelInfo2.chosenfinalModel[0],
             'positions');
           this.modelInfo2.chosenfinalModelGroup = null;
-          this.colorPicker.color = null;
-          this.opacitySlider = 0;
+          this.colorPickerPosition.color = null;
+          this.opacitySliderPosition = 0;
         }
 
         this.resetPositionInfo2();
@@ -718,15 +840,15 @@ export default {
     'positionInfo2.subNumber': {
       handler: function() {
 
-        if (this.opacitySafeToken) {
-          this.opacitySafeToken = false;
+        if (this.opacityTokenPosition) {
+          this.opacityTokenPosition = false;
           this.modelInfo2.chosenfinalModelGroup = null;
           this.disablePositionModifikation = true;
           this.updateModelOpacityAndColor(this.modelInfo2.chosenfinalModel[0],
             'positions');
           this.modelInfo2.chosenfinalModelGroup = null;
-          this.colorPicker.color = null;
-          this.opacitySlider = 0;
+          this.colorPickerPosition.color = null;
+          this.opacitySliderPosition = 0;
         }
 
         this.resetPositionInfo2();
@@ -749,15 +871,15 @@ export default {
     'positionInfo2.title': {
       handler: function() {
 
-        if (this.opacitySafeToken) {
+        if (this.opacityTokenPosition) {
+          this.opacityTokenPosition = false;
           this.modelInfo2.chosenfinalModelGroup = null;
-          this.opacitySafeToken = false;
           this.disablePositionModifikation = true;
           this.updateModelOpacityAndColor(this.modelInfo2.chosenfinalModel[0],
             'positions');
           this.modelInfo2.chosenfinalModelGroup = null;
-          this.colorPicker.color = null;
-          this.opacitySlider = 0;
+          this.colorPickerPosition.color = null;
+          this.opacitySliderPosition = 0;
         }
 
         this.resetPositionInfo2();
@@ -781,15 +903,15 @@ export default {
     'modelInfo2.number': {
       handler: function() {
 
-        if (this.opacitySafeToken) {
-          this.opacitySafeToken = false;
+        if (this.opacityTokenPosition) {
+          this.opacityTokenPosition = false;
           this.modelInfo2.chosenfinalModelGroup = null;
           this.disablePositionModifikation = true;
           this.updateModelOpacityAndColor(this.modelInfo2.chosenfinalModel[0],
             'positions');
           this.modelInfo2.chosenfinalModelGroup = null;
-          this.colorPicker.color = null;
-          this.opacitySlider = 0;
+          this.colorPickerPosition.color = null;
+          this.opacitySliderPosition = 0;
         }
 
         this.resetModelInfo2();
@@ -806,14 +928,14 @@ export default {
     'modelInfo2.title': {
       handler: function() {
 
-        if (this.opacitySafeToken) {
-          this.opacitySafeToken = false;
+        if (this.opacityTokenPosition) {
+          this.opacityTokenPosition = false;
           this.disablePositionModifikation = true;
           this.updateModelOpacityAndColor(this.modelInfo2.chosenfinalModel[0],
             'positions');
           this.modelInfo2.chosenfinalModelGroup = null;
-          this.colorPicker.color = null;
-          this.opacitySlider = 0;
+          this.colorPickerPosition.color = null;
+          this.opacitySliderPosition = 0;
         }
 
         this.resetModelInfo2();
@@ -830,9 +952,9 @@ export default {
     'positionInfo2.chosenPositionModels': {
       handler: function() {
         if ( this.positionInfo2.chosenPositionModels.length > 0 ) {
-          this.isEditing = true;
+          this.isEditingPosition = true;
         } else {
-          this.isEditing = false;
+          this.isEditingPosition = false;
         }
       }
     },
@@ -840,13 +962,13 @@ export default {
     'modelInfo2.chosenfinalModel': {
       handler: async function() {
         if ( this.modelInfo2.chosenfinalModel.length > 0 ) {
-          this.opacitySafeToken = true;
+          this.opacityTokenPosition = true;
           this.disablePositionModifikation = false;
 
           /* Update color picker and opacity slider if no model has been 
              modified yet */
-          if (this.colorPicker == null || 
-              this.colorPicker.modelGroup == null ) {
+          if (this.colorPickerPosition == null || 
+              this.colorPickerPosition.modelGroup == null ) {
 
             const result = this.modelInfo2.infoBlock.find( arr => 
               this.modelInfo2.chosenfinalModel );
@@ -856,11 +978,12 @@ export default {
               modelInScene );
             
             /* color picker */
-            this.colorPicker.color = result[3];
-            this.colorPicker.modelGroup = this.modelInfo2.chosenfinalModelGroup;
+            this.colorPickerPosition.color = result[3];
+            this.colorPickerPosition.modelGroup = 
+              this.modelInfo2.chosenfinalModelGroup;
             
             /* opacity slider */
-            this.opacitySlider = result[4];
+            this.opacitySliderPosition = result[4];
           }
 
           /* Update color picker and opacity slider if a model has been 
@@ -872,12 +995,12 @@ export default {
               modelInScene );
             
             /* color picker */
-            this.colorPicker.color = "#" + 
+            this.colorPickerPosition.color = "#" + 
             modelInScene.material.color.getHexString();
-            this.colorPicker.modelGroup = this.modelInfo2.chosenfinalModelGroup;
+            this.colorPickerPosition.modelGroup = this.modelInfo2.chosenfinalModelGroup;
             
             /* opacity slider */
-            this.opacitySlider = modelInScene.material.opacity;
+            this.opacitySliderPosition = modelInScene.material.opacity;
           }
 
         } else {
@@ -887,12 +1010,121 @@ export default {
       }
     },
 
-    'opacitySlider': {
+    'placeModelInfo.number': {
+      handler: function() {
+
+        if (this.opacityTokenPlace) {
+          this.opacityTokenPlace = false;
+          this.disablePlaceModifikation = true;
+          this.updateModelOpacityAndColor(this.placeModelInfo.chosenfinalModel[0],
+            'places');
+          this.placeModelInfo.chosenfinalModelGroup = null;
+          this.colorPickerPlace.color = null;
+          this.opacitySliderPlace = 0;
+        }
+
+        this.resetPlaceModelInfo();
+
+        this.fieldSearch( 2, this.placeModelInfo.chosenfinalModel,
+                            [ this.placeModelInfo.number, 
+                              this.placeModelInfo.title ],
+                            [ this.placeModelInfo.allNumbers, 
+                              this.placeModelInfo.allTitles ],
+                            this.placeModelInfo.infoBlock );
+      }
+    },
+
+    'placeModelInfo.title': {
+      handler: function() {
+
+        if (this.opacityTokenPlace) {
+          this.opacityTokenPlace = false;
+          this.disablePlaceModifikation = true;
+          this.updateModelOpacityAndColor(this.placeModelInfo.chosenfinalModel[0],
+            'places');
+          this.placeModelInfo.chosenfinalModelGroup = null;
+          this.colorPickerPlace.color = null;
+          this.opacitySliderPlace = 0;
+        }
+
+        this.resetPlaceModelInfo();
+  
+        this.fieldSearch( 2, this.placeModelInfo.chosenfinalModel,
+                            [ this.placeModelInfo.number, 
+                              this.placeModelInfo.title ],
+                            [ this.placeModelInfo.allNumbers, 
+                              this.placeModelInfo.allTitles ],
+                            this.placeModelInfo.infoBlock );
+      }
+    },
+
+    'placeModelInfo.chosenfinalModel': {
+      handler: function() {
+        console.log(this.placeModelInfo.chosenfinalModel)
+        if ( this.placeModelInfo.chosenfinalModel.length > 0 ) {
+          this.opacityTokenPlace = true;
+          this.disablePlaceModifikation = false;
+
+          /* Update color picker and opacity slider if no model has been 
+             modified yet */
+          if (this.colorPickerPlace == null || 
+              this.colorPickerPlace.modelGroup == null ) {
+
+            const result = this.placeModelInfo.infoBlock.find( arr => 
+              this.placeModelInfo.chosenfinalModel );
+            const modelInScene = this.sceneMain.getObjectByName( 
+              this.placeModelInfo.chosenfinalModel[0] );
+            this.placeModelInfo.chosenfinalModelGroup = this.getGroup( 
+              modelInScene );
+            
+            /* color picker */
+            this.colorPickerPlace.color = result[3];
+            this.colorPickerPlace.modelGroup = 
+              this.placeModelInfo.chosenfinalModelGroup;
+            
+            /* opacity slider */
+            this.opacitySliderPlace = result[4];
+          }
+
+          /* Update color picker and opacity slider if a model has been 
+             modified */
+          else {
+            const modelInScene = this.sceneMain.getObjectByName( 
+              this.placeModelInfo.chosenfinalModel[0] );
+            this.placeModelInfo.chosenfinalModelGroup = this.getGroup( 
+              modelInScene );
+            
+            /* color picker */
+            this.colorPickerPlace.color = "#" + 
+            modelInScene.material.color.getHexString();
+            this.colorPickerPlace.modelGroup = this.placeModelInfo.chosenfinalModelGroup;
+            
+            /* opacity slider */
+            this.opacitySliderPlace = modelInScene.material.opacity;
+          }
+
+        }
+      }
+    },
+
+    'opacitySliderPosition': {
       handler: function() {
         if( this.modelInfo2.chosenfinalModelGroup != null ) {
-          this.modelInfo2.chosenfinalModelGroup.traverse( (child) => {
-            if ( child instanceof THREE.Mesh) {
-              child.material.opacity = this.opacitySlider;
+          this.modelInfo2.chosenfinalModelGroup.traverse( ( child ) => {
+            if ( child instanceof THREE.Mesh ) {
+              child.material.opacity = this.opacitySliderPosition;
+            }
+          })
+        }
+      }
+    },
+
+    'opacitySliderPlace': {
+      handler: function() {
+        if( this.placeModelInfo.chosenfinalModelGroup != null ) {
+          this.placeModelInfo.chosenfinalModelGroup.traverse( ( child ) => {
+            if ( child instanceof THREE.Mesh ) {
+              child.material.opacity = this.opacitySliderPlace;
             }
           })
         }
@@ -921,6 +1153,7 @@ export default {
       await this.loadPositionModels();
 
       this.getPositionInfo();
+      this.getPlaceModelInfo();
 
       this.animate();
     } else {
@@ -1267,7 +1500,6 @@ export default {
             modelTitle: object.title
           } );
 
-          this.colors.push( object.color );
           break;
 
         case 'Position':
@@ -1299,7 +1531,6 @@ export default {
               meshGroup.setRotationFromEuler( eulerRotation );
           }
 
-          this.colors.push( object.color );
           break;
 
         default:
@@ -1797,6 +2028,37 @@ export default {
     /**
      * 
      */
+     getPlaceModelInfo: async function() {
+      for ( let i=0; i < this.placeModelsInScene.length; i++) {
+        const modelID = this.placeModelsInScene[ i ].modelID;
+        const modelInDB = await fromOfflineDB.getObject(modelID, 'Models', 
+          'places');
+
+        if ( !this.placeModelInfo.allNumbers.includes(modelInDB.modelNumber) ) {
+          this.placeModelInfo.allNumbers.push(modelInDB.modelNumber);
+        }
+
+        if ( !this.placeModelInfo.allTitles.includes(modelInDB.title) ) {
+          this.placeModelInfo.allTitles.push(modelInDB.title);
+        }
+
+        /* For the filter algorithm to work properly */
+        const modelIDArray = [modelInDB.id]
+        const newModel = [
+          modelInDB.modelNumber,
+          modelInDB.title,
+          modelIDArray,
+          modelInDB.color,
+          modelInDB.opacity
+        ]
+
+        this.placeModelInfo.infoBlock.push(newModel)
+      }
+    },
+
+    /**
+     * 
+     */
     getPositionInfo: async function() {
       const positionIDs = [];
 
@@ -1817,8 +2079,8 @@ export default {
           }
 
           const newPosition = [
-            positionInDB.positionNumber, 
-            positionInDB.subNumber, 
+            positionInDB.positionNumber,
+            positionInDB.subNumber,
             positionInDB.title,
             positionInDB.models
           ]
@@ -1907,6 +2169,15 @@ export default {
       this.modelInfo2.chosenfinalModel = [];
     },
 
+    /**
+     * 
+     */
+    resetPlaceModelInfo: function() {
+      this.placeModelInfo.allNumbers = [];
+      this.placeModelInfo.allTitles = [];
+      this.placeModelInfo.chosenfinalModel = [];
+    },
+    
     /**
      * 
      */
@@ -2092,9 +2363,15 @@ export default {
       }
 
       if ( this.disablePositionModifikation ) {
-        const elem = document.getElementById("goodCard").style.pointerEvents = 'none';
+        const elem = document.getElementById("cpPosition").style.pointerEvents = 'none';
       } else {
-        const elem = document.getElementById("goodCard").style.pointerEvents = 'auto';
+        const elem = document.getElementById("cpPosition").style.pointerEvents = 'auto';
+      }
+
+      if ( this.disablePlaceModifikation ) {
+        const elem = document.getElementById("cpPlace").style.pointerEvents = 'none';
+      } else {
+        const elem = document.getElementById("cpPlace").style.pointerEvents = 'auto';
       }
 
       /* Reset arcball gizmo radius */
