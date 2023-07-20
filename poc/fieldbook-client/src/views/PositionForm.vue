@@ -461,7 +461,7 @@ export default {
         curPos.up == prevPos.up &&
         curPos.height == prevPos.height &&
         curPos.dating == prevPos.dating &&
-        curPos.addressOf == prevPos.addressOf &&
+        curPos.title == prevPos.title &&
         curPos.date == prevPos.date &&
         !curPos.seperate) {
         return parseInt(subNumber);
