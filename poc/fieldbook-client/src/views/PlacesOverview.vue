@@ -105,7 +105,6 @@ import AddButton from '../components/AddButton.vue';
 import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { useWindowSize } from 'vue-window-size';
-import { toRaw } from 'vue';
 
 export default {
   name: 'PlacesOverview',
@@ -149,18 +148,26 @@ export default {
     await this.updatePlaces();
   },
   computed: {
+    /**
+     * Returns an array of filtered places based on the search query.
+     *
+     * @returns {Array} The filtered array of places that match the search query.
+     * If the search query is empty or invalid, it returns all places.
+     */
     filteredPlaces() {
-      // Filter the places based on the search query
-      const query = this.searchQuery.trim().toLowerCase();
-      if (query === '') {
+      // split searchQuery to query array and escape special characters
+      const queries = this.searchQuery.trim().toLowerCase().split(/\s+/).map(this.escapeRegExp);
+      
+      // if no queries are present, return all places
+      if (queries.length === 0 || (queries.length === 1 && queries[0] === '')) {
         return this.places;
       } else {
+        // filter places by all query filters
+        // (places have to fulfill every query filter)
         return this.places.filter(item => {
-          return (
-            item.placeNumber.toString().includes(query) ||
-            item.title.join('; ').toLowerCase().includes(query) ||
-            item.date.toLowerCase().includes(query)
-          );
+          return queries.every(query => {
+            return this.doesItemMatchQuery(item, query);
+          });
         });
       }
     },
@@ -244,12 +251,41 @@ export default {
      * @param {String} placeID 
      */
     moveToPlace(placeID) {
-      console.log(placeID)
       if (placeID !== 'new') {
         VueCookies.set('currentPlace', placeID)
       }
 
       this.$router.push({ name: 'PlaceCreation', params: { placeID: placeID } })
+    },
+
+    /**
+     * Escapes special characters in a given string to treat 
+     * them as literal characters.
+     *
+     * @param {string} string - The input string to be escaped.
+     * @returns {string} The escaped string with special characters replaced 
+     *  by their escape sequences.
+     */
+    escapeRegExp(string) {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    },
+
+    /**
+     * Checks if an item matches a given query by performing 
+     * a case-insensitive search.
+     *
+     * @param {Object} item - The item to be matched against the query.
+     * @param {string} query - The search query to be used for matching.
+     * @returns {boolean} True if the item matches the query; otherwise, false.
+     *
+     */
+    doesItemMatchQuery(item, query) {
+      const re = new RegExp(query, 'i');
+      return (
+        item.placeNumber.toString().match(re) ||
+        item.title.join('; ').match(re) ||
+        item.date.match(re)
+      );
     },
 
   }
