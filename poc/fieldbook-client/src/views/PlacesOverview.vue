@@ -24,55 +24,65 @@
 
         <!-- PLACES LIST -->
         <v-card>
-          <v-list>
             <v-list-subheader v-if="places.length === 0">
               {{ $t('not_created_yet', { object: $tc('place', 1) }) }}
             </v-list-subheader>
 
-            <v-virtual-scroll :items="places" :max-height="windowHeight - 380">
-              <template v-slot="{ item }" :key="item">
-                <v-list-item v-on:click="moveToPlace(item.id)">
-                  <v-row class="justify-center align-center my-2">
+            <v-card-title>
+              <v-text-field
+                v-model="searchQuery"
+                append-icon="mdi-magnify"
+                label="Search"
+                single-line
+                hide-details
+              ></v-text-field>
+            </v-card-title>
+            <v-data-table-virtual
+                :items="filteredPlaces"
+                class="elevation-1"
+                :height="windowHeight - 450"
+              >
+              <template v-slot:item="{ item }">
+                <v-list-item v-on:click="moveToPlace(item.raw.id)">
+                    <v-row class="justify-center align-center my-2">
+                      <v-col cols="1">
+                        <v-list-item-title>
+                          {{ item.raw.placeNumber }}
+                        </v-list-item-title>
+                      </v-col>
 
-                    <v-col cols="1">
-                      <v-list-item-title>
-                        {{ item.placeNumber }}
-                      </v-list-item-title>
-                    </v-col>
+                      <v-col cols="6">
+                        <v-list-item-title 
+                          class="text-wrap" 
+                          v-if="item.raw.title.length != 0">
+                          {{ item.raw.title.join("; ") }}
+                        </v-list-item-title>
 
-                    <v-col cols="6">
-                      <v-list-item-title 
-                        class="text-wrap" 
-                        v-if="item.title.length != 0">
-                        {{ item.title.join("; ") }}
-                      </v-list-item-title>
+                        <v-list-item-title 
+                          class="text-grey-darken-1" 
+                          v-if="item.raw.title.length == 0">
+                          {{ $t('title') }}
+                        </v-list-item-title>
+                      </v-col>
 
-                      <v-list-item-title 
-                        class="text-grey-darken-1" 
-                        v-if="item.title.length == 0">
-                        {{ $t('title') }}
-                      </v-list-item-title>
-                    </v-col>
+                      <v-col cols="2">
+                        <v-list-item-title  
+                          v-if="item.raw.date.length != 0">
+                          {{ item.raw.date }}
+                        </v-list-item-title>
 
-                    <v-col cols="2">
-                      <v-list-item-title  
-                        v-if="item.date.length != 0">
-                        {{ item.date }}
-                      </v-list-item-title>
+                        <v-list-item-title 
+                          class="text-grey-darken-1" 
+                          v-if="item.raw.date.length == 0">
+                          {{ $t('date') }}
+                        </v-list-item-title>
+                      </v-col>
 
-                      <v-list-item-title 
-                        class="text-grey-darken-1" 
-                        v-if="item.date.length == 0">
-                        {{ $t('date') }}
-                      </v-list-item-title>
-                    </v-col>
-
-                  </v-row>
-                </v-list-item>
-                <v-divider></v-divider>
-              </template>
-            </v-virtual-scroll>
-          </v-list>
+                    </v-row>
+                    <v-divider></v-divider>
+                  </v-list-item>
+                </template>
+            </v-data-table-virtual>
         </v-card>
 
       </v-form>
@@ -90,11 +100,12 @@
  *  addPlace        - Adds a new place to the list
  *  moveToPlace     - Loads the view of the selected place
  */
-import Navigation from '../components/Navigation.vue'
-import AddButton from '../components/AddButton.vue'
-import VueCookies from 'vue-cookies'
-import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
+import Navigation from '../components/Navigation.vue';
+import AddButton from '../components/AddButton.vue';
+import VueCookies from 'vue-cookies';
+import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { useWindowSize } from 'vue-window-size';
+import { toRaw } from 'vue';
 
 export default {
   name: 'PlacesOverview',
@@ -116,6 +127,17 @@ export default {
   data() {
     return {
       places: [],
+      searchQuery: '',
+      headers: [
+        {
+          title: 'placeNumber',
+          align: 'start',
+          sortable: true,
+          key: 'placeNumber',
+        },
+        { title: 'title', align: 'start', key: 'title' },
+        { title: 'date', align: 'end', key: 'date' },
+      ],
     };
   },
   /**
@@ -125,6 +147,23 @@ export default {
     this.$emit("view", this.$t('overview', { msg: this.$tc('place', 2) }));
     await fromOfflineDB.syncLocalDBs();
     await this.updatePlaces();
+  },
+  computed: {
+    filteredPlaces() {
+      // Filter the places based on the search query
+      const query = this.searchQuery.trim().toLowerCase();
+      if (query === '') {
+        return this.places;
+      } else {
+        return this.places.filter(item => {
+          return (
+            item.placeNumber.toString().includes(query) ||
+            item.title.join('; ').toLowerCase().includes(query) ||
+            item.date.toLowerCase().includes(query)
+          );
+        });
+      }
+    },
   },
 
   methods: {
@@ -205,6 +244,7 @@ export default {
      * @param {String} placeID 
      */
     moveToPlace(placeID) {
+      console.log(placeID)
       if (placeID !== 'new') {
         VueCookies.set('currentPlace', placeID)
       }
