@@ -43,21 +43,52 @@
 <!--     </template>
   </v-virtual-scroll> -->
 
-  <AddButton v-on:click="image_dialog = true" />
+  <AddButton v-on:click="create_dialog = true" />
 
   <!-- IMAGE CREATION DIALOG -->
-  <v-dialog v-model="image_dialog" max-width="800" persistent>
+  <v-dialog v-model="create_dialog" max-width="800" persistent>
     <v-card>
       <v-card-title>
         {{ $t('add', { msg: $t('image') }) }}
       </v-card-title>
       <v-card-text>
 
-        <v-text-field 
-          disabled 
-          v-model="object.id" 
-          label="ID">
-        </v-text-field>
+        <v-row v-if='object.placeNumber > 0'>
+              <v-card-title>
+                Place
+              </v-card-title>
+            
+              <v-text-field 
+                disabled 
+                label="Nr."
+                v-model="object.placeNumber">
+              </v-text-field>
+            </v-row>
+
+            <v-row no-gutters v-if="object.positionNumber > 0">
+              <v-col cols="2">
+                <v-card-title>
+                  Position
+                </v-card-title>
+              </v-col>
+
+              <v-col cols="5">
+                <v-text-field 
+                  disabled 
+                  label="Nr."
+                  class="pr-2"
+                  v-model="object.positionNumber">
+                </v-text-field>
+              </v-col>
+
+              <v-col cols="5">
+                <v-text-field 
+                  disabled 
+                  v-model="object.subNumber" 
+                  label="Sub-Nr.">
+                </v-text-field>
+              </v-col>
+            </v-row>
 
         <v-text-field 
           v-model="image.title" 
@@ -80,12 +111,103 @@
         <v-btn icon color="primary" v-on:click="addMultipleImages()">
           <v-icon>mdi-content-save-all</v-icon>
         </v-btn>
-        <v-btn icon color="error" @click="image_dialog = false">
+        <v-btn icon color="error" @click="create_dialog = false">
           <v-icon>mdi-close-circle</v-icon>
         </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
+
+  <!-- IMAGE EDITING DIALOG -->
+    <v-dialog v-model="edit_dialog" max-width="800" persistent>
+      <v-card>
+        <v-card-title>
+          {{ $t('edit', { msg: $t('image') }) }}
+        </v-card-title>
+        <v-card-text>
+
+          <v-row v-if='object.placeNumber > 0'>
+            <v-card-title>
+              Place
+            </v-card-title>
+
+            <v-text-field 
+              disabled 
+              label="Nr."
+              v-model="object.placeNumber">
+            </v-text-field>
+          </v-row>
+
+          <v-row no-gutters v-if="object.positionNumber > 0">
+            <v-col cols="2">
+              <v-card-title>
+                Position
+              </v-card-title>
+            </v-col>
+
+            <v-col cols="5">
+              <v-text-field 
+                disabled 
+                label="Nr."
+                class="pr-2"
+                v-model="object.positionNumber">
+              </v-text-field>
+            </v-col>
+
+            <v-col cols="5">
+              <v-text-field 
+                disabled 
+                v-model="object.subNumber" 
+                label="Sub-Nr.">
+              </v-text-field>
+            </v-col>
+          </v-row>
+
+          <v-row no-gutters v-if="object.positionNumber > 0">
+            <v-col cols="2">
+
+              <v-card-title>
+                Image
+              </v-card-title>
+            </v-col>
+            <v-col cols="3">
+              <v-text-field 
+                disabled
+                class="pr-2"
+                :label="$t('number')"
+                v-model="image.imageNumber">
+              </v-text-field>
+            </v-col>
+            <v-col cols="7">
+              <v-text-field 
+                v-model="image.title" 
+                :label="$tc('title', 1)" 
+                :hint="$t('please_input',
+                  { msg: $t('title_of', { msg: $t('image') }) })">
+              </v-text-field>
+            </v-col>
+          </v-row>
+          
+          <v-file-input 
+            counter
+            multiple
+            show-size 
+            v-model="image.image" 
+            prepend-icon="mdi-camera"
+            accept="image/png, image/jpeg, image/bmp">
+          </v-file-input>
+        </v-card-text>
+
+        <v-card-actions class="justify-center">
+          <v-btn icon color="primary" v-on:click="saveImage(image)">
+            <v-icon>mdi-content-save-all</v-icon>
+          </v-btn>
+          <v-btn icon color="error" @click="edit_dialog = false">
+            <v-icon>mdi-close-circle</v-icon>
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
   <!-- IMAGE CAROUSEL DIALOG -->
   <v-dialog v-model="img_carousel_dialog" max-width="800px">
@@ -131,7 +253,8 @@ export default {
       images: [],
       openedImage: '',
       hovering: false,
-      image_dialog: false,
+      create_dialog: false,
+      edit_dialog: false,
       img_carousel_dialog: false,
       is_required: [v => !!v || 'Pflichtfeld'],
     }
@@ -150,6 +273,7 @@ export default {
     await fromOfflineDB.syncLocalDBs();
     await this.updateObject();
     await this.updateImages();
+    console.log( this.object)
   },
   methods: {
     /**
@@ -170,14 +294,26 @@ export default {
     },
 
     /**
+     * Saves an edited image to 
+     */
+    async saveImage() {
+      const rawImage = toRaw(this.image);
+      this.edit_dialog = false;
+
+      rawImage.image =  await this.textureToBase64(rawImage.image),
+      await fromOfflineDB.updateObject(rawImage, 'Images', 'images');
+      await this.updateImages();
+    },
+
+    /**
      * Automatically adds all selected imageFiles to IndexedDB 
      * for the current Place/Position 
      */
     async addMultipleImages() {
-      var rawImage = toRaw(this.image);
+      var rawImageArray = toRaw(this.image);
 
-      for (var i=0; i<rawImage.image.length; i++) {
-       await this.addImage(rawImage.image[i]);
+      for (var i=0; i<rawImageArray.image.length; i++) {
+       await this.addImage(rawImageArray.image[i]);
       }
 
       await this.updateImages();
@@ -225,7 +361,7 @@ export default {
       }
 
       // hide image creation dialog
-      this.image_dialog = false;
+      this.create_dialog = false;
 
       // update IndexedDB
       await fromOfflineDB.updateObject(rawObject, this.object_type, this.object_type.toLowerCase());
@@ -233,6 +369,15 @@ export default {
       await fromOfflineDB.addObject({ id: newImageID, object: 'images' }, 'Changes', 'created');
       
       ctx.$emit('addImage', newImageID);
+    },
+
+    editImage(item) {
+
+      this.image = item;
+
+      this.image.image = [];
+
+      this.edit_dialog = true
     },
 
     /**
@@ -255,6 +400,18 @@ export default {
       return output;
     },
 
+    dataURLtoFile(dataurl, filename) {
+      var arr = dataurl.split(','),
+        mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[arr.length - 1]),
+        n = bstr.length,
+        u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new File([u8arr], filename, { type: mime });
+    },
+
     /**
      * Removes an image from IndexedDB and the connected object
      * @param {ProxyObject} image 
@@ -263,7 +420,7 @@ export default {
 
       var rawImage = toRaw(image);
       var rawObject = toRaw(this.object);
-      var index = rawObject.images.indexOf(rawImage.id.toString())
+      var index = rawObject.images.indexOf(rawImage.id.toString());
 
       // Remove the imageID from connected object
       if (index != -1) {
@@ -314,6 +471,7 @@ export default {
 
       // zoom out when mouse leaves img bounds
       /* imgContainer.addEventListener("mouseleave", (e) => {
+        img.style.transform = ' translate(-50%, -50%) scale(1)'
         img.style.cursor = "zoom-in";
         img.style.transformOrigin = 'center';
         img.style.transform = "scale(1)";

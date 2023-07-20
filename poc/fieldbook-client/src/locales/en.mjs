@@ -32,7 +32,7 @@ export default {
   description: "Description",
   text: "Text",
   general: "General",
-  title: "Title",
+  title: "Title | Title",
   cookies: "Cookies",
   number: "Number",
   year: "Year",
