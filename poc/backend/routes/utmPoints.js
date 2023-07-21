@@ -23,7 +23,7 @@ function getUtmPointJson(doc) {
   };
 }
 
-/* GET utmPoints by id-array in params seperated by ,*/
+/* GET utmPoints by id-array in params separated by ,*/
 router.get("/:utmPoint_ids", function (req, res, next) {
   var utmPoint_ids = req.params.utmPoint_ids.split(",");
 

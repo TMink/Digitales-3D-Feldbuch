@@ -25,7 +25,7 @@ function getColorJson(doc) {
 }
 
 
-/* GET colors by id-array in params seperated by ,*/
+/* GET colors by id-array in params separated by ,*/
 router.get("/:color_ids", async function (req, res, next) {
   var color_ids = req.params.color_ids.split(",");
 

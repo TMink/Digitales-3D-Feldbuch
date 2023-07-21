@@ -29,7 +29,7 @@ function getSectionJson(doc) {
 
 
 /**
- * GET sections by id-array in params seperated by ,
+ * GET sections by id-array in params separated by ,
  */
 router.get("/list/:section_ids", async function (req, res, next) {
   var section_ids = req.params.section_ids.split(",");

@@ -34,7 +34,7 @@ function getArtifactJson(doc) {
 
 
 /**
- * GET artifacts by id-array in params seperated by ,
+ * GET artifacts by id-array in params separated by ,
  */
 router.get("/list/:artifact_ids", async function (req, res, next) {
 

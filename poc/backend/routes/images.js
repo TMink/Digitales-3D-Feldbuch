@@ -37,11 +37,11 @@ function getImageJson(doc, filename, mimetype) {
 }
 
 /**
- * GET images by id-array in params seperated by ,
+ * GET images by id-array in params separated by ,
  */
 router.get("/list/:image_ids", async function (req, res, next) {});
 
-/* GET dates by id-array in params seperated by ,*/
+/* GET dates by id-array in params separated by ,*/
 router.get("/:image_id", async function (req, res, next) {
   try {
     var image = await Image.findById(req.params.image_id).exec();

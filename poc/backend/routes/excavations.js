@@ -43,7 +43,7 @@ router.get("/", async function (req, res, next) {
 
 
 /**
- * GET excavations by id-array in params seperated by ,
+ * GET excavations by id-array in params separated by ,
  */
 router.get("/list/:excavation_ids", async function (req, res, next) {
   var excavation_ids = req.params.excavation_ids.split(",");
