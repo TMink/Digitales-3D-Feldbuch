@@ -26,7 +26,7 @@ function getContactJson(doc) {
 
 
 /**
- * GET contacts by id-array in params seperated by ,
+ * GET contacts by id-array in params separated by ,
  */
 router.get("/list/:contact_ids", async function (req, res, next) {
   var contact_ids = req.params.contact_ids.split(",");

@@ -21,7 +21,7 @@ function getDateJson(doc) {
   };
 }
 
-/* GET dates by id-array in params seperated by ,*/
+/* GET dates by id-array in params separated by ,*/
 router.get("/:date_ids", async function (req, res, next) {
   var date_ids = req.params.date_ids.split(",");
 

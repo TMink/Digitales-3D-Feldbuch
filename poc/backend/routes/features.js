@@ -123,7 +123,7 @@ async function getFeatureJson(doc) {
 
 
 /**
- * GET all features by id-array in params seperated by `,`
+ * GET all features by id-array in params separated by `,`
  */
 router.get("/list/:feature_ids", async function (req, res, next) {
 
