@@ -4,6 +4,7 @@
       <v-spacer></v-spacer>
       <v-form class="w-75 pa-2">
         
+        <!-- LIST ACTIVITIES -->
         <v-window color="background" v-if="!activity_open">
           <v-btn icon color="decline" disabled>
             <v-icon>mdi-arrow-left</v-icon>
@@ -11,233 +12,72 @@
 
           <h2 class="text-center pb-4">AKTIVITÄTEN</h2>
 
-          <v-divider/>
-
-          <v-card-text v-if="places.length !== 0">
-            <h3>
-              <v-row>
-                <v-col cols="12" class="pl-6 text-center">
-                  Aktivitäts Nr.
-                </v-col>
-              </v-row>
-            </h3>
-          </v-card-text>
-
-          <!-- LIST TITLE -->
-          <v-list>
-            <v-list-subheader v-if="activities.length === 0">
-              {{ $t('not_created_yet', { object: $tc('activity', 2) }) }}
-            </v-list-subheader>
-
-            <!-- ACTIVITIES LIST-->
-            <template v-for="(activity, i) in activities" :key="activity">
-              <v-row no-gutters v-if="!activity.edit" class="text-center">
-
-                <v-col cols="12">
-                  <v-list-item class="pa-2 ma-2" 
-                    v-on:click="setActivity(activity.id)">
-
-                    <v-list-item-title class="ma-4">
-                      {{ activity.activityNumber }}
-                    </v-list-item-title>
-
-                    <p style="color:grey" >
-                      {{ activity.places.length }} Stellen 
-                    </p>
-                  </v-list-item>
-                </v-col>
-
-              </v-row>
-              <v-divider v-if="i !== activities.length - 1"/>
-            </template>
-          </v-list>
+          <!--Lists all locally saved positions-->
+          <div :style="getTableHeight">
+            <v-data-table-virtual
+              fixed-header
+              :items="activities"
+              @click:row="setActivity"
+              :headers="activityHeaders"
+              :height="windowHeight - 450">
+            </v-data-table-virtual>
+          </div>
         </v-window>
 
         <!-- PLACES LIST -->
-        <v-window color="background" v-if="activity_open && !place_open">
-          <v-btn icon @click="activity_open = false; 
-              exportPlaces = true; exportActivities = true">
+        <v-window 
+          color="background" 
+          v-if="activity_open && !place_open">
+          <v-btn 
+            icon 
+            @click="activity_open = false; 
+            exportPlaces = true; 
+            exportActivities = true">
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
 
           <h2 class="text-center pb-4">STELLEN</h2>
 
-          <v-divider/>
-
-          <v-card-text v-if="places.length !== 0">
-            <h3>
-              <v-row class="justify-center">
-                <v-col cols="1" class="pl-6">
-                  Nr.
-                </v-col>
-                <v-col cols="5" class="pl-6">
-                  Ansprache
-                </v-col>
-                <v-col cols="2" class="pl-4">
-                  Datierung
-                </v-col>
-                <v-col cols="2" class="pl-4">
-                  Datum
-                </v-col>
-              </v-row>
-            </h3>
-          </v-card-text>
-
-          <v-list>
-            <v-list-subheader v-if="places.length === 0">
-              {{ $t('not_created_yet', { object: $tc('place', 2) }) }}
-            </v-list-subheader>
-
-            <!--Lists all locally saved places-->
-            <v-virtual-scroll :items="places" :max-height="windowHeight - 360">
-              <template v-slot="{ item }" :key="item">
-<!--                 <v-row no-gutters v-if="!item.edit" class="align-center">
-                  <v-col cols="12"> -->
-                    <v-list-item class="pa-2 ma-2" 
-                      v-on:click="setPlace(item.id)">
-                      <v-row no-gutters class="justify-center">
-
-                        <v-col cols="1">
-                          <v-list-item-title >
-                            {{ item.placeNumber }}
-                          </v-list-item-title>
-                        </v-col>
-
-                        <v-col cols="5">
-                          <v-list-item-title 
-                            v-if="item.title.length > 0">
-                            {{ item.title.join("; ") }} 
-                          </v-list-item-title>
-
-                          <v-list-item-title style="color:grey" 
-                            v-if="item.title.length == 0">
-                            Ansprache 
-                          </v-list-item-title>
-                        </v-col>
-
-                        <v-col cols="2">
-                          <v-list-item-title 
-                            v-if="item.dating.length > 0">
-                            {{ place.dating }} 
-                          </v-list-item-title>
-
-                          <v-list-item-title style="color:grey" 
-                            v-if="item.dating.length == 0">
-                            Datierung 
-                          </v-list-item-title>
-                        </v-col>
-
-                        <v-col cols="2">
-                          <v-list-item-title>
-                            {{ item.date }}
-                          </v-list-item-title>
-                        </v-col>
-                      </v-row>
-
-                      <p class="text-center" style="color:grey"> 
-                        {{ item.positions.length }} Positionen 
-                      </p>
-                    </v-list-item>
-<!--                   </v-col>
-                </v-row> -->
-
-                <v-divider/>
-              </template>
-            </v-virtual-scroll>
-          </v-list>
+          <!--Lists all locally saved places-->
+          <div :style="getTableHeight">
+            <v-data-table-virtual
+              fixed-header
+              :items="places"
+              class="custom-table"
+              @click:row="setPlace"
+              :headers="placeHeaders">
+            </v-data-table-virtual>
+          </div>
         </v-window>
-
-    <!-- PLACES LIST -->
+        
+        <!-- PLACES LIST -->
         <v-window color="background" v-if="place_open">
-
-          <v-btn icon color="decline" @click="place_open = false; exportPlaces = true">
+          <v-btn 
+            icon 
+            color="decline" 
+            @click="place_open = false; exportPlaces = true">
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
-
+          
           <h2 class="text-center pb-4">POSITIONEN</h2>
-
-          <v-divider/>
-
-          <v-card-text v-if="places.length !== 0">
-            <h3>
-              <v-row>
-                <v-col cols="1" class="pl-6">
-                  Nr.
-                </v-col>
-                <v-col cols="1" class="pl-6">
-                  SubNr.
-                </v-col>
-                <v-col cols="5" class="pl-6">
-                  Ansprache
-                </v-col>
-                <v-col cols="3" class="pl-6">
-                  Datierung
-                </v-col>
-                <v-col cols="2" class="pl-6">
-                  Datum
-                </v-col>
-              </v-row>
-            </h3>
-          </v-card-text>
-
-          <v-list>
-            <v-list-subheader v-if="positions.length === 0">
-              {{ $t('not_created_yet', { object: $tc('position', 2) }) }}
-            </v-list-subheader>
-            <!--Lists all locally saved positions-->
-            <template v-for="(position, i) in positions" :key="position">
-              <v-row no-gutters v-if="!position.edit" class="align-center">
-
-                <v-col cols="12">
-                  <v-list-item class="pa-2 ma-2">
-                    <v-row>
-
-                      <v-col cols="1">
-                        <v-list-item-title class="pa-4">
-                          {{ position.positionNumber }}
-                        </v-list-item-title>
-                      </v-col>
-
-                      <v-col cols="1">
-                        <v-list-item-title class="pa-4">
-                          {{ position.subNumber }}
-                        </v-list-item-title>
-                      </v-col>
-
-                      <v-col cols="5">
-                        <v-list-item-title class="pa-4">
-                          {{ position.title }}
-                        </v-list-item-title>
-                      </v-col>
-
-                      <v-col cols="3">
-                        <v-list-item-title class="pa-4">
-                          {{ position.dating }}
-                        </v-list-item-title>
-                      </v-col>
-
-                      <v-col cols="2">
-                        <v-list-item-title class="pa-4">
-                          {{ position.date }}
-                        </v-list-item-title>
-                      </v-col>
-                    </v-row>
-                  </v-list-item>
-                </v-col>
-              </v-row>
-              <v-divider v-if="i !== positions.length - 1"/>
-            </template>
-          </v-list>
+          
+          <!--Lists all locally saved positions-->
+          <div :style="getTableHeight">
+            <v-data-table-virtual
+              fixed-header
+              :items="positions"
+              :headers="positionHeaders">
+            </v-data-table-virtual>
+          </div>
         </v-window>
-
-
+        
+        
         <!-- EXPORT DIALOG -->
         <v-dialog v-model="export_overlay" max-width="800" persistent>
           <v-card>
             <v-card-title>Export to PDF </v-card-title>
             <v-card-text>
-            <v-row class="text-center">
-
+              <v-row class="text-center">
 
               <!-- ACTIVITIES -->
               <v-col cols="4" class="align-center" hide-details>
@@ -381,7 +221,6 @@ import autoTable from 'jspdf-autotable'
 import { useWindowSize } from 'vue-window-size';
 import { saveAs } from 'file-saver';
 
-
 export default {
   name: 'DataExport',
   components: {
@@ -416,6 +255,35 @@ export default {
       allActivitiesCount: '',
       allPlacesCount: '',
       allPositionsCount: '',
+      activityHeaders: [
+        [
+          { title: 'Außenstelle', align: 'start', key: 'branchOffice' },
+          { title: 'Jahr', align: 'start', key: 'year' },
+          { title: 'Nr.', align: 'start', key: 'number' },
+          { title: 'Places', align: 'start', key: 'places.length' },
+        ],
+      ],
+      placeHeaders: [
+        [
+          { title: 'Nr.', align: 'start', key: 'placeNumber'},
+          { title: 'Ansprache', align: 'start', key: 'title' },
+          { title: 'Datum', align: 'start', key: 'date' },
+          { title: 'Images', align: 'start', key: 'images.length' },
+          { title: 'Models', align: 'start', key: 'models.length' },
+          { title: 'Positions', align: 'start', key: 'positions.length' },
+        ],
+      ],
+      positionHeaders: [
+        [
+          { title: 'Nr.', align: 'start', key: 'positionNumber' },
+          { title: 'SubNr.', align: 'start', key: 'subNumber' },
+          { title: 'Ansprache', align: 'start', key: 'title' },
+          { title: 'Datierung', align: 'start', key: 'dating' },
+          { title: 'Datum', align: 'start', key: 'date' },
+          { title: 'Images', align: 'start', key: 'images.length' },
+          { title: 'Models', align: 'start', key: 'models.length' },
+        ],
+      ],
     };
   },
   async created() {
@@ -430,7 +298,23 @@ export default {
     await this.updatePlaces();
     await this.updatePositions();
   },
+
+  computed: {
+    getTableHeight() {
+      // Calculate the required table height based on the number of items
+      const numberOfRows = this.activities.length;
+      const headerHeight = 56;
+      const rowHeight = 48;
+
+      const totalTableHeight = headerHeight + numberOfRows * rowHeight + 10;
+      return { height: totalTableHeight + 'px' };
+    },
+  },
   methods: {
+    applyRowColors(item, index) {
+      // This method dynamically sets the CSS class for each row
+      return index % 2 === 0 ? 'even-row' : 'odd-row';
+    },
     /**
      * Get all activities from IndexedDb
      */
@@ -507,7 +391,14 @@ export default {
      * Sets the active activity and filters places + positions accordingly
      * @param {String} activity_id 
      */
-    async setActivity(activity_id) {
+    async setActivity(e, { item }) {
+      var activity_id = item.raw.id;
+
+      // don't move to places list if there are none
+      if (item.raw.places.length == 0) {
+        return;
+      }
+
       this.places = await fromOfflineDB.getAllObjectsWithID(
         activity_id, 'Activity', 'Places', 'places');
 
@@ -531,7 +422,14 @@ export default {
      *  Sets the active activity and filters positions accordingly
      * @param {*} place_id 
      */
-    async setPlace(place_id) {
+    async setPlace(e, { item }) {
+
+      // don't move to positions list if there are none
+      if (item.raw.positions.length == 0) {
+        return;
+      }
+
+      var place_id = item.raw.id;
       this.positions = await fromOfflineDB.getAllObjectsWithID(
         place_id, 'Place', 'Positions', 'positions');
       this.place_open = true;
@@ -756,7 +654,7 @@ export default {
 }
 </script>
   
-<style>
+<style scoped>
 .v-switch__thumb {
   color: red;
 }
