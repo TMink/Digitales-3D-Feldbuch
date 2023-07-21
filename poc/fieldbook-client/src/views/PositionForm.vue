@@ -34,7 +34,7 @@
           <v-window-item value="one">
             <!-- CARD 1 GENERAL -->
             <v-card class="pa-4">
-              <v-row class="pt-2 pb-6">
+              <v-row class="pt-2">
 
                 <v-col lg="2">
                   <v-text-field 
@@ -48,6 +48,7 @@
                   </v-text-field>
                 </v-col>
 
+                
                 <v-col lg="2">
                   <v-text-field 
                     color="primary" 
@@ -59,30 +60,21 @@
                   </v-text-field>
                 </v-col>
 
-                <v-col lg="2">
-                  <v-combobox 
-                    maxlength="40"
-                    color="primary" 
-                    :items="titles" 
-                    label="Ansprache" 
-                    :rules="is_required"
-                    v-model="position.title" 
-                    :hint="$tc('please_input', 2, { msg: 'Ansprache' })">
-                  </v-combobox>
+                <v-col lg="4">
+                  <v-checkbox
+                    class="pl-4"
+                    hide-details
+                    v-model="isSeperate"
+                    label="isSeparate" >
+                  </v-checkbox>
+                  <!-- maybe as tooltip -->
+                  <!-- <div class="text-caption">
+                    Check, if the position should be saved with a separate
+                    sub-number, even though the information is similar to the 
+                    previous position.
+                  </div> -->
                 </v-col>
-
-                <v-col lg="2">
-                  <v-combobox 
-                    maxlength="40"
-                    color="primary" 
-                    label="Material" 
-                    :items="materials" 
-                    :rules="is_required"
-                    v-model="position.material" 
-                    :hint="$tc('please_input', 2, { msg: 'Material' })">
-                  </v-combobox>
-                </v-col>
-
+              
                 <v-col lg="4">
                   <v-card class="pa-4" color="accent">
                     <div class="text-h4 text-center" :label="$t('lastEdited')">
@@ -94,6 +86,30 @@
                   </v-card>
                 </v-col>
               </v-row>
+
+              <v-row>
+                <v-col lg="6">
+                  <v-combobox 
+                    maxlength="40"
+                    color="primary" 
+                    :items="titles" 
+                    label="Ansprache" 
+                    :rules="is_required"
+                    v-model="position.title">
+                  </v-combobox>
+                </v-col>
+
+                <v-col lg="6">
+                  <v-combobox 
+                    counter 
+                    maxlength="50" 
+                    color="primary" 
+                    :items="datings" 
+                    :label="$t('dating') + ' *'"
+                    v-model="position.dating">
+                  </v-combobox>
+                </v-col> 
+              </v-row>
             </v-card>
 
             <v-spacer class="pa-3"></v-spacer>
@@ -101,12 +117,11 @@
             <!-- CARD 2 GAUSS-KRÜGER -->
             <v-card>
               <v-card-text>
-                  <h2 class="text-h6 font-weight-medium pb-3">
-                    Gauss-Krüger-Koordinaten
-                  </h2>
+                <h2 class="text-h6 font-weight-medium pb-3">
+                  Gauss-Krüger-Koordinaten
+                </h2>
               </v-card-text>
-              <v-row class="pb-4" justify="center">
-                
+              <v-row class="pa-4 pt-0" justify="center">
                 <v-col lg="3">
                   <v-text-field 
                     maxlength="7"
@@ -156,7 +171,7 @@
 
             <v-row>
               <!-- CARD 3 COUNT -->
-              <v-col lg="6">
+              <v-col lg="3">
                 <v-card height="100%">
                   <v-text-field 
                     maxlength="9"
@@ -171,7 +186,7 @@
               </v-col>
 
               <!-- CARD 4 WEIGHT -->
-              <v-col lg="6">
+              <v-col lg="3">
                 <v-card>
                   <v-text-field 
                     color="primary" 
@@ -183,40 +198,42 @@
                   </v-text-field>
                 </v-card>
               </v-col>
-            </v-row>
 
-            <v-spacer class="pa-3"></v-spacer>
-
-            <!-- CARD 5 DESCRIPTIOPN -->
-            <v-card class="pa-3">
-              <v-textarea 
-                counter 
-                rows="4" 
-                no-resize 
-                color="primary" 
-                maxlength="254" 
-                :label="$t('description')"
-                v-model="position.description">
-              </v-textarea>
-            </v-card>
+              <!-- CARD 5 MATERIAL -->
+              <v-col lg="6">
+                <v-card>
+                  <v-combobox 
+                    maxlength="40"
+                    color="primary" 
+                    label="Material" 
+                    :items="materials"
+                    :rules="is_required"
+                    class="ma-1 px-2 pt-2"  
+                    v-model="position.material" 
+                    :hint="$tc('please_input', 2, { msg: 'Material' })">
+                  </v-combobox>
+                </v-card>
+              </v-col>
+            </v-row>           
 
             <v-spacer class="pa-3"></v-spacer>
 
             <v-row>
-              <!-- CARD 6 DATING -->
+              <!-- CARD 6 DESCRIPTION -->
               <v-col lg="6">
                 <v-card class="pa-3">
-                    <v-combobox 
-                      counter 
-                      maxlength="50" 
-                      color="primary" 
-                      :items="datings" 
-                      :label="$t('dating') + ' *'"
-                      v-model="position.dating">
-                    </v-combobox>
+                  <v-textarea 
+                    counter 
+                    rows="4" 
+                    no-resize 
+                    color="primary" 
+                    maxlength="254" 
+                    :label="$t('description')"
+                    v-model="position.description">
+                  </v-textarea>
                 </v-card>
               </v-col>
-
+              
               <!-- CARD 7 EDITOR -->
               <v-col lg="6">
                 <v-card class="pa-3">
@@ -314,7 +331,7 @@ export default {
         dating: '',
         addressOf: '',
         date: '',
-        isSeperate: false,
+        isSeparate: false,
 
         images: [],
         models: [],
@@ -463,7 +480,7 @@ export default {
         curPos.dating == prevPos.dating &&
         curPos.title == prevPos.title &&
         curPos.date == prevPos.date &&
-        !curPos.seperate) {
+        !curPos.isSeparate) {
         return parseInt(subNumber);
       }
 
