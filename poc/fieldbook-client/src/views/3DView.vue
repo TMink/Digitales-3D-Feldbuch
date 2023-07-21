@@ -7,7 +7,7 @@
     <!-- Left sidebar: GUI -->
     <div style="float: left;">
       <v-card>
-        <!-- Controls -->
+        <!-- Tools -->
         <v-navigation-drawer v-model="leftDrawer.showDrawers[0]" 
                              color="background"
                              style="left: 49px; top:104px; width: 351px;"
@@ -18,6 +18,95 @@
           ></v-list-item>
 
           <v-divider></v-divider>
+
+          <v-form>
+            <!-- Filter -->
+            <v-row>
+              <v-col>
+                <v-card color="transparent" elevation="0" width="100%" 
+                        class="pa-2">
+
+                  <!-- Line -->
+                  <v-row no-gutters class="pr-3">
+                    Linie
+                  </v-row>
+
+                  <v-row no-gutters>
+
+                    <v-col class="pa-2">
+                      <v-combobox v-model="measureTool.title"
+                        label="Name"
+                        bgColor="opp_background"
+                        :items="measureTool.allTitles"
+                        :@update="updateTitle()"
+                      ></v-combobox>
+                    </v-col>
+
+                  </v-row>
+                </v-card>
+              </v-col>
+            </v-row>
+
+            <v-divider></v-divider>
+
+            <!-- Model Interaktion -->
+            <v-row>
+              <v-col>
+                <v-card width="100%" color="transparent" class="pa-2" 
+                  elevation="0">
+
+                  <!-- Checkboxes -->
+                  <v-row class="pb-2">
+                    <v-col>
+                      
+                      <v-card color="secondary">
+                        <v-row no-gutters align="center" justify="center"
+                               class="pa-1"
+                        >Allgemein
+                        </v-row>
+                            
+                        <v-card color="opp_background" class="">
+                            
+                          <v-row no-gutters class="ps-4">
+                            <!-- Checkbox description-->
+                            <v-col cols="9" class="pa-2 pt-4">
+                              <v-text-field
+                                v-model="measureTool.textField"
+                                :placeholder="measureTool.title"
+                              >
+                              </v-text-field>
+                            </v-col>
+
+                            <v-col cols="2" class="pt-4">
+                              <v-btn icon class="ma-1" color="primary"
+                                     v-on:click="saveLineTitle()">
+                                <v-icon>mdi-pencil</v-icon>
+                              </v-btn>
+                            </v-col>
+
+                          </v-row>
+                          <v-row no-gutters class="ps-4 pb-3">
+
+                            <v-col cols="12" >
+                              <v-btn width="300" color="error"
+                                     v-on:click="deleteLine()">
+                                <v-icon>mdi-delete</v-icon>
+                              </v-btn>
+                            </v-col>
+
+                          </v-row>
+                        </v-card>
+
+                      </v-card>
+  
+                    </v-col>
+                  </v-row>
+                  
+                </v-card>
+              </v-col>
+            </v-row>
+
+          </v-form>
 
         </v-navigation-drawer>
 
@@ -706,7 +795,7 @@ const params = {
 }
 
 export default {
-  name: 'ModelViewer',                                                   
+  name: 'ModelViewer',
 
   data() {
     return {
@@ -794,10 +883,22 @@ export default {
       },
 
       /**
+       * Tools
+       */
+       measureTool: {
+        title: null,
+        allTitles: [],
+        infoBlock: [],
+        textField: null,
+        texttoken: false,
+      },
+
+      /**
        * Meshes in scene
        */
-      placeModelsInScene: [], // {placeID, modelID, modelName}
-      positionModelsInScene: [], // {positionID, modelID, modelName}
+      placeModelsInScene: [], // { placeID, modelID, modelName }
+      positionModelsInScene: [], // { positionID, modelID, modelName }
+      linesInSceneMain: [], // { lineName, lableName, [ firstBallName, secondBallName ] }
       positionModelsInSceneNames: [],
       
       /**
@@ -1145,6 +1246,20 @@ export default {
       }
     },
 
+    'measureTool.allTitles.length': {
+      handler: function() {
+      }
+    },
+
+    'measureTool.title': {
+      handler: function(value) {
+        if (this.measureTool.textField != value && 
+            this.measureTool.textField != null) {
+          this.measureTool.textField = null
+        }
+      }
+    },
+
   },
 
   async mounted() {
@@ -1188,6 +1303,75 @@ export default {
   },
 
   methods: {
+
+    updateTitle: function() {
+      if ( this.measureTool.texttoken ) {
+        this.measureTool.title = this.measureTool.textField
+        this.measureTool.texttoken = false;
+      }
+
+    },
+
+    saveLineTitle: function() {
+
+      this.measureTool.allTitles = [];
+
+      this.measureTool.infoBlock.forEach( element => {
+        if ( element.name === this.measureTool.title && this.measureTool.textField != null) {
+          element.name = this.measureTool.textField
+          this.measureTool.title = element.name
+        }
+        this.measureTool.allTitles.push( element.name );
+      })
+
+      this.measureTool.texttoken = true;
+
+    },
+
+    deleteLine: function() {
+
+      this.measureTool.allTitles = [];
+
+      this.measureTool.infoBlock.forEach( element => {
+        if ( element.name === this.measureTool.title ) {
+          const index = this.measureTool.infoBlock.indexOf(element)
+
+          /* Delte line from sceneMain */
+
+          const line = this.sceneMain.getObjectByName(this.measureTool.infoBlock[index].line)
+          const lable = this.sceneMain.getObjectByName(this.measureTool.infoBlock[index].lable)
+          const firstBall = this.sceneMain.getObjectByName(this.measureTool.infoBlock[index].balls[0])
+          const secondBall = this.sceneMain.getObjectByName(this.measureTool.infoBlock[index].balls[1])
+          
+          line.remove( lable )
+          line.geometry.dispose();
+          line.material.dispose();
+          this.sceneMain.remove( line );
+
+          firstBall.geometry.dispose();
+          firstBall.material.dispose();
+          this.sceneMain.remove( firstBall );
+
+          secondBall.geometry.dispose();
+          secondBall.material.dispose();
+          this.sceneMain.remove( secondBall );
+
+          /* Delete menue item */
+          this.measureTool.infoBlock.splice(index, 1)
+          this.measureTool.textField = null
+        }
+      })
+
+      this.measureTool.title = null;
+
+      this.measureTool.infoBlock.forEach( element => {
+        this.measureTool.allTitles.push( element.name );
+      })
+
+
+      console.log(this.measureTool.infoBlock)
+
+    },
 
     func: function(e) {
       const compareStrings = Boolean(Number(
@@ -1293,6 +1477,9 @@ export default {
         1 / this.canvasMain.clientWidth, 1 / this.canvasMain.clientHeight );
     },
 
+    /**
+     * 
+     */
     setupEventListeners: function() {
       
     },
@@ -1413,7 +1600,7 @@ export default {
       this.removeModelsInScene( this.sceneSub, this.modelInSub );
 
       /* Remove lines */
-      this.removeLinesInScene( this.sceneMain, this.linesInSceneMain );
+      this.removeLinesInScene( this.sceneMain, this.measureTool.infoBlock );
 
       /* Dispose renderer */
       this.rendererMain.dispose();
@@ -1714,6 +1901,10 @@ export default {
       }
     },
 
+    /**
+     * 
+     * @param {*} event 
+     */
     onDocumentMouseMove: function ( event ) {
       event.preventDefault();
 
@@ -1748,8 +1939,8 @@ export default {
           v1.x += 0.0
           v1.y -= 0.3
 
-          this.linesInSceneMain[this.lineID].element.innerText = distance.toFixed(2) + 'm'
-          this.linesInSceneMain[this.lineID].position.lerpVectors(v0, v1, 0.5)
+          this.measurementLable.element.innerText = distance.toFixed(2) + 'm'
+          this.measurementLable.position.lerpVectors(v0, v1, 0.5)
         }
       }
     },
@@ -1763,7 +1954,6 @@ export default {
         const intersects = this.raycaster2.intersectObjects( this.modelsInMain,
           true );
         if ( intersects.length > 0 ) {
-          
           if ( !this.drawingLine ) {
             const points = [];
             points.push( intersects[0].point );
@@ -1772,21 +1962,25 @@ export default {
               points,
             )
             
+            /* Create line */
             this.line = new THREE.Line(
               geometry,
               new THREE.LineBasicMaterial({
                 color: 0x0000ff,
               }),
             )
-            
+            this.line.name = "Line " + this.lineID;
             this.line.frustumCulled = false;
+
+            /* Create lable */
+            this.measurementLable = new CSS2DObject();
+            this.measurementLable.name = "Label " + this.lineID
+            this.measurementLable.position.copy( intersects[0].point );
+            
+            /* Add line and lable to sceneMain */
+            this.line.add(this.measurementLable)
             this.sceneMain.add(this.line);
 
-            const measurementLabel = new CSS2DObject( );
-
-            measurementLabel.position.copy( intersects[0].point );
-            this.linesInSceneMain[ this.lineID ] = measurementLabel;
-            this.sceneMain.add( this.linesInSceneMain[ this.lineID ] );
             this.drawingLine = true;
           } else {
             const positions = this.line.geometry.attributes.position;
@@ -1794,11 +1988,49 @@ export default {
             positions.array[4] = intersects[0].point.y;
             positions.array[5] = intersects[0].point.z;
             this.line.geometry.attributes.position.needsUpdate = true;
+            
+            const v0 = [positions.array[0], positions.array[1],
+            positions.array[2]];
+
+            const v1 = [positions.array[3], positions.array[4],
+            positions.array[5]];
+            
+            this.createRedBall(v0, "firstBall " + this.lineID)
+            this.createRedBall(v1, "secondBall " + this.lineID)
+
+            const nameOfLine = "New Line " + this.lineID
+            const nameOfBalls = ["firstBall " + this.lineID, "secondBall " + this.lineID]
+
+            const newLine = {
+              name: nameOfLine,
+              line: this.line.name,
+              lable: this.measurementLable.name,
+              balls: nameOfBalls,
+            }
+            this.measureTool.infoBlock.push( newLine );
+          
+            this.measureTool.allTitles.push( nameOfLine );
             this.lineID++;
+            this.line = null;
+            this.measurementLable = null;
             this.drawingLine = false;
           }
         }
       }
+    },
+
+    /**
+     * 
+     * @param {*} cords 
+     * @param {*} name 
+     */
+    createRedBall: function( cords, name) {
+      const geometry = new THREE.SphereGeometry( 0.03, 6, 4 );
+      const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+      const sphere = new THREE.Mesh( geometry, material );
+      sphere.name = name;
+      this.sceneMain.add( sphere );
+      sphere.position.set( cords[0], cords[1], cords[2] );
     },
 
     /**
@@ -2448,15 +2680,14 @@ export default {
         }
       });
 
-      this.intersectsMeasurement = null,
+      this.intersectsMeasurement = null
 
-      this.ctrlDown = false,
-      this.lineID = 0,
-      this.line = null,
-      this.drawingLine = false,
-      this.linesInSceneMain = {},
+      this.ctrlDown = false
+      this.lineID = 0
+      this.line = null
+      this.measurementLable = null
+      this.drawingLine = false
 
-      
       this.linesArray = []
 
       this.canvasMain.addEventListener( 'keydown', this.keyDown );
@@ -2467,6 +2698,9 @@ export default {
 
     },
 
+    /**
+     * 
+     */
     keyDown: function(event) {
       if (event.key === 'x') {
           this.ctrlDown = true;
@@ -2475,14 +2709,18 @@ export default {
       }
     },
 
+    /**
+     * 
+     * @param {*} event 
+     */
     keyUp: function(event) {
       if (event.key === 'x') {
         this.ctrlDown = false;
         this.abControlsMain.enabled = true
         document.body.style.cursor = 'pointer'
         if ( this.drawingLine ) {
+          this.line.remove(this.measurementLable)
           this.sceneMain.remove( this.line );
-          this.sceneMain.remove( this.linesInSceneMain[ this.lineID ] );
           this.drawingLine = false;
         }
       }
