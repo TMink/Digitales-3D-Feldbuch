@@ -20,80 +20,61 @@
           <v-divider></v-divider>
 
           <v-form>
-            <!-- Filter -->
-            <v-row>
-              <v-col>
-                <v-card color="transparent" elevation="0" width="100%" 
-                        class="pa-2">
-
-                  <!-- Line -->
-                  <v-row no-gutters class="pr-3">
-                    Linie
-                  </v-row>
-
-                  <v-row no-gutters>
-
-                    <v-col class="pa-2">
-                      <v-combobox v-model="measureTool.title"
-                        label="Name"
-                        bgColor="opp_background"
-                        :items="measureTool.allTitles"
-                        :@update="updateTitle()"
-                      ></v-combobox>
-                    </v-col>
-
-                  </v-row>
-                </v-card>
-              </v-col>
-            </v-row>
-
-            <v-divider></v-divider>
-
-            <!-- Model Interaktion -->
+            <!-- Measurement Tool -->
             <v-row>
               <v-col>
                 <v-card width="100%" color="transparent" class="pa-2" 
                   elevation="0">
 
                   <!-- Checkboxes -->
-                  <v-row class="pb-2">
+                  <v-row>
                     <v-col>
                       
                       <v-card color="secondary">
                         <v-row no-gutters align="center" justify="center"
                                class="pa-1"
-                        >Allgemein
+                        > Abstand messen
                         </v-row>
                             
-                        <v-card color="opp_background" class="">
+                        <v-card color="opp_background">
+                          <v-row no-gutters class="pt-4 px-3">
+                            <v-col>
+                              <v-select v-model="measureTool.title"
+                                label="Linie"
+                                color="opp_background"
+                                :items="measureTool.allTitles"
+                                :@update="updateTitle()"
+                              ></v-select>
+                            </v-col>
+                          </v-row>
+
+                          <v-divider></v-divider>
                             
-                          <v-row no-gutters class="ps-4">
+                          <v-row no-gutters class="pt-4 px-3">
                             <!-- Checkbox description-->
-                            <v-col cols="9" class="pa-2 pt-4">
+                            <v-col cols="10">
                               <v-text-field
                                 v-model="measureTool.textField"
-                                :placeholder="measureTool.title"
+                                placeholder="Neuer Bezeichner"
                               >
                               </v-text-field>
                             </v-col>
 
-                            <v-col cols="2" class="pt-4">
+                            <v-col cols="2">
                               <v-btn icon class="ma-1" color="primary"
                                      v-on:click="saveLineTitle()">
-                                <v-icon>mdi-pencil</v-icon>
+                                <v-icon>mdi-content-save-all</v-icon>
                               </v-btn>
                             </v-col>
-
                           </v-row>
-                          <v-row no-gutters class="ps-4 pb-3">
 
-                            <v-col cols="12" >
+                          <v-row no-gutters class="ps-4 pb-3">
+                            <v-col cols="12">
                               <v-btn width="300" color="error"
                                      v-on:click="deleteLine()">
                                 <v-icon>mdi-delete</v-icon>
                               </v-btn>
                             </v-col>
-
                           </v-row>
                         </v-card>
 
@@ -888,7 +869,7 @@ export default {
        measureTool: {
         title: null,
         allTitles: [],
-        infoBlock: [],
+        infoBlock: [], // { lineName, lableName, [ firstBallName, secondBallName ] }
         textField: null,
         texttoken: false,
       },
@@ -898,7 +879,6 @@ export default {
        */
       placeModelsInScene: [], // { placeID, modelID, modelName }
       positionModelsInScene: [], // { positionID, modelID, modelName }
-      linesInSceneMain: [], // { lineName, lableName, [ firstBallName, secondBallName ] }
       positionModelsInSceneNames: [],
       
       /**
@@ -1246,11 +1226,6 @@ export default {
       }
     },
 
-    'measureTool.allTitles.length': {
-      handler: function() {
-      }
-    },
-
     'measureTool.title': {
       handler: function(value) {
         if (this.measureTool.textField != value && 
@@ -1284,6 +1259,7 @@ export default {
         this.placeModelsInScene.length - 1 ].modelID )
 
       await this.loadPositionModels();
+      await this.loadLines();
 
       this.getPositionInfo();
       this.getPlaceModelInfo();
@@ -1298,6 +1274,9 @@ export default {
     if ( this.placeModelsInScene.length > 0 ) {
       await this.updateModelsInDB();
       await this.updateCameraInDB();
+    }
+    if ( this.measureTool.infoBlock.length > 0 ) {
+      await this.updateLinesInDB();
     }
     this.clearCanvases()
   },
@@ -1317,12 +1296,18 @@ export default {
       this.measureTool.allTitles = [];
 
       this.measureTool.infoBlock.forEach( element => {
-        if ( element.name === this.measureTool.title && this.measureTool.textField != null) {
-          element.name = this.measureTool.textField
-          this.measureTool.title = element.name
+        if ( ( element.name === this.measureTool.title ||
+             element.renamedTo === this.measureTool.title ) &&
+             !element.deleted && this.measureTool.textField != null) {
+          element.renamedTo = this.measureTool.textField
+          this.measureTool.title = element.renamedTo
+          this.measureTool.allTitles.push( element.renamedTo );
+        } else if ( !element.deleted ) {
+          this.measureTool.allTitles.push( element.name );
         }
-        this.measureTool.allTitles.push( element.name );
       })
+
+      console.log(this.measureTool.infoBlock)
 
       this.measureTool.texttoken = true;
 
@@ -1333,7 +1318,7 @@ export default {
       this.measureTool.allTitles = [];
 
       this.measureTool.infoBlock.forEach( element => {
-        if ( element.name === this.measureTool.title ) {
+        if ( element.name === this.measureTool.title || element.renamedTo === this.measureTool.title ) {
           const index = this.measureTool.infoBlock.indexOf(element)
 
           /* Delte line from sceneMain */
@@ -1357,7 +1342,7 @@ export default {
           this.sceneMain.remove( secondBall );
 
           /* Delete menue item */
-          this.measureTool.infoBlock.splice(index, 1)
+          this.measureTool.infoBlock[index].deleted = true
           this.measureTool.textField = null
         }
       })
@@ -1365,7 +1350,11 @@ export default {
       this.measureTool.title = null;
 
       this.measureTool.infoBlock.forEach( element => {
-        this.measureTool.allTitles.push( element.name );
+        if ( element.renamedTo != null && !element.deleted ) {
+          this.measureTool.allTitles.push( element.renamedTo );
+        } else if ( element.renamedTo == null && !element.deleted ) {
+          this.measureTool.allTitles.push( element.name );
+        }
       })
 
 
@@ -1585,6 +1574,100 @@ export default {
       await fromOfflineDB.updateObject( modelInDB, 'Models', storeName );
     },
 
+    updateLinesInDB: async function() {
+      const placeInDB = await fromOfflineDB.getObject( 
+        VueCookies.get('currentPlace'), 'Places', 'places' )
+      const linesInDB = await fromOfflineDB.getAllObjects(
+        'Lines', 'lines'
+      )
+
+      for ( const [i, elem] of this.measureTool.infoBlock.entries() ) {
+        /* Line */
+        if ( elem.deleted && placeInDB.lines.includes( elem.name ) ) {
+          console.log("Delete - existing in DB")
+          const entryToBeDeleted = { id: elem.id }
+          const idx = placeInDB.lines.indexOf( elem.name );
+          placeInDB.lines.splice(idx, 1);
+          await fromOfflineDB.deleteObject( entryToBeDeleted, 'Lines', 'lines' );
+        } else if ( elem.deleted && !placeInDB.lines.includes( elem.name )) {
+          console.log("THINK before you draw lines!")
+        } else if ( !elem.deleted ) {
+        const line = this.sceneMain.getObjectByName(elem.line)
+          const lineAttr = {
+            name: line.name,
+            geoPosition: [
+              line.geometry.attributes.position.array[0],
+              line.geometry.attributes.position.array[1],
+              line.geometry.attributes.position.array[2],
+              line.geometry.attributes.position.array[3],
+              line.geometry.attributes.position.array[4],
+              line.geometry.attributes.position.array[5]],
+          }
+
+          /* Lable */
+          const lable = this.sceneMain.getObjectByName(elem.lable)
+          const lableAttr = {
+            name: lable.name,
+            position: [
+              lable.position.x,
+              lable.position.y,
+              lable.position.z],
+          }
+
+          /* Balls */
+          const balls = [
+            this.sceneMain.getObjectByName(elem.balls[0]),
+            this.sceneMain.getObjectByName(elem.balls[1]),
+          ]
+
+          const ballsAttr = []
+          balls.forEach(elem => {
+            ballsAttr.push(elem.name)
+          })
+
+          /* Create new entry */
+          const newLineEntry = {
+            id: elem.id,
+            name: elem.name,
+            line: lineAttr,
+            lable: lableAttr,
+            balls: ballsAttr,
+            renamedTo: null,
+            deleted: false,
+          }
+
+          if ( elem.renamedTo != null && !placeInDB.lines.includes( elem.name ) ) {
+            console.log("Save renamed - not existing in DB")
+            newLineEntry.name = elem.renamedTo;
+            placeInDB.lines.push( elem.renamedTo );
+            await fromOfflineDB.addObject( newLineEntry, 'Lines', 'lines' );
+          } 
+          
+          else if ( elem.renamedTo != null && placeInDB.lines.includes( elem.name ) ) {
+            console.log("Save renamed - existing in DB")
+            newLineEntry.name = elem.renamedTo;
+            const idx = placeInDB.lines.indexOf( elem.name );
+            placeInDB.lines.splice(idx, 1);
+            placeInDB.lines.push( elem.renamedTo );
+            await fromOfflineDB.updateObject( newLineEntry, 'Lines', 'lines' );
+          } 
+          
+          else if ( elem.renamedTo == null && !placeInDB.lines.includes( elem.name ) ) {
+            console.log("Save not renamed - not existing in DB")
+            placeInDB.lines.push( elem.name );
+            await fromOfflineDB.addObject( newLineEntry, 'Lines', 'lines' );
+          } 
+          
+          else if ( elem.renamedTo == null && placeInDB.lines.includes( elem.name ) ) { 
+            console.log("Save not renamed - existing in DB")
+            await fromOfflineDB.updateObject( newLineEntry, 'Lines', 'lines' );
+          }
+        }
+      }
+
+      await fromOfflineDB.updateObject( placeInDB, 'Places', 'places' );
+    },
+
     /**
      * -------------------------------------------------------------------------
      * # CleanUp
@@ -1651,11 +1734,28 @@ export default {
      * @param {*} scene 
      * @param {*} models 
      */
-    removeLinesInScene: function( scene, lines ) {
+    removeLinesInScene: function( scene, infoBlock ) {
       /* Dispose lines in sceneMain */
-      for ( const key in lines ) {
-        scene.remove( lines[key] )
-      }
+      infoBlock.forEach( elem => {
+        if (!elem.deleted) {
+          const lineInScene = this.sceneMain.getObjectByName( elem.line )
+          const lableInScene = this.sceneMain.getObjectByName( elem.lable )
+          const ballsInScene = [];
+          elem.balls.forEach( ball => {
+            ballsInScene.push( this.sceneMain.getObjectByName( ball ) );
+          } )
+  
+          lineInScene.remove(lableInScene)
+          lineInScene.material.dispose()
+          lineInScene.geometry.dispose()
+          this.sceneMain.remove(lineInScene)
+          ballsInScene.forEach( ball => {
+            ball.material.dispose();
+            ball.geometry.dispose();
+            this.sceneMain.remove( ball );
+          } )
+        }
+      } )
     },
 
     /**
@@ -1802,6 +1902,85 @@ export default {
       /* Add model to sub scene */
       this.sceneSub.add( meshGroup );
       this.modelInSub.push( meshGroup );
+    },
+
+    loadLines: async function() {
+      const linesInDB = await fromOfflineDB.getAllObjects( 'Lines', 'lines' );
+
+      if ( linesInDB.length > 0 ) {
+        linesInDB.forEach( elem => {
+          this.createLine( elem.line.name, elem.line.geoPosition );
+          this.createLable( elem.lable.name, elem.lable.position );
+          this.createBalls( elem.balls, elem.line.geoPosition )
+
+          this.line.add( this.measurementLable );
+          this.sceneMain.add( this.line );
+
+          const newLine = {
+              id: elem.id,
+              name: elem.name,
+              line: this.line.name,
+              lable: this.measurementLable.name,
+              balls: elem.balls,
+              renamedTo: null,
+              deleted: false,
+          }
+          this.measureTool.infoBlock.push( newLine );
+          
+          this.measureTool.allTitles.push( elem.name );
+          this.lineID++;
+          this.line = null;
+          this.measurementLable = null;
+
+        } )
+      }
+    },
+
+    createLine: function(name, position) {
+
+      const points = [];
+      points.push( new THREE.Vector3(position[0], position[1], position[2]),
+                   new THREE.Vector3(position[3], position[4], position[5]) );
+
+      const geometry = new THREE.BufferGeometry().setFromPoints(
+        points
+      )
+
+      /* Create line */
+      this.line = new THREE.Line(
+        geometry,
+        new THREE.LineBasicMaterial({
+          color: 0x0000ff,
+        }),
+      )
+
+      this.line.name = name;
+      this.line.frustumCulled = false;
+    },
+
+    createLable: function( name, position ) {
+
+      this.measurementLable = new CSS2DObject();
+      this.measurementLable.name = name;
+      const vec3 = new THREE.Vector3( position[0], position[1], position[2] );
+      this.measurementLable.position.copy( vec3 );
+    },
+
+    createBalls: function( names, position ) {
+      const pos = [ 
+        [ position[0], position[1], position[2] ],
+        [ position[3], position[4], position[5] ]
+      ]
+      
+      names.forEach( (elem, i) => {
+        const geometry = new THREE.SphereGeometry( 0.03, 6, 4 );
+        const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+        const sphere = new THREE.Mesh( geometry, material );
+        sphere.name = names[i];
+        this.sceneMain.add( sphere );
+        sphere.position.set( pos[i][0], pos[i][1], pos[i][2] );
+      } )
+
     },
 
     /**
@@ -1969,12 +2148,12 @@ export default {
                 color: 0x0000ff,
               }),
             )
-            this.line.name = "Line " + this.lineID;
+            this.line.name = "Line - " + this.lineID;
             this.line.frustumCulled = false;
 
             /* Create lable */
             this.measurementLable = new CSS2DObject();
-            this.measurementLable.name = "Label " + this.lineID
+            this.measurementLable.name = "Label - " + this.lineID
             this.measurementLable.position.copy( intersects[0].point );
             
             /* Add line and lable to sceneMain */
@@ -1995,22 +2174,26 @@ export default {
             const v1 = [positions.array[3], positions.array[4],
             positions.array[5]];
             
-            this.createRedBall(v0, "firstBall " + this.lineID)
-            this.createRedBall(v1, "secondBall " + this.lineID)
+            this.createRedBall(v0, "firstBall - " + this.lineID)
+            this.createRedBall(v1, "secondBall - " + this.lineID)
 
-            const nameOfLine = "New Line " + this.lineID
-            const nameOfBalls = ["firstBall " + this.lineID, "secondBall " + this.lineID]
+            const nameOfLine = "New Line - " + this.lineID;
+            const nameOfBalls = [ "firstBall - " + this.lineID, 
+                                  "secondBall - " + this.lineID ];
 
             const newLine = {
+              id: this.lineID,
               name: nameOfLine,
               line: this.line.name,
               lable: this.measurementLable.name,
               balls: nameOfBalls,
+              renamedTo: null,
+              deleted: false,
             }
             this.measureTool.infoBlock.push( newLine );
           
             this.measureTool.allTitles.push( nameOfLine );
-            this.lineID++;
+            this.lineID = String(Date.now());
             this.line = null;
             this.measurementLable = null;
             this.drawingLine = false;
@@ -2683,7 +2866,7 @@ export default {
       this.intersectsMeasurement = null
 
       this.ctrlDown = false
-      this.lineID = 0
+      this.lineID = String(Date.now());
       this.line = null
       this.measurementLable = null
       this.drawingLine = false
