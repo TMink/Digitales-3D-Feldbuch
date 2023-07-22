@@ -9,7 +9,7 @@
       <template v-for="(model, i) in models" :key="model">
         <v-row no-gutters class="align-center">
           <v-col>
-            <v-list-item class="modelItem mt-3" v-on:click="moveToModel(model.id)">
+            <v-list-item class="modelItem mt-3">
               
               <v-list-item-title class="text-h6">
                 Nr. {{ model.modelNumber }}
@@ -23,6 +23,9 @@
             <v-spacer/>
           </v-col>
 
+          <v-btn color="primary" class="ma-4" v-on:click="editModel(model)">
+              <v-icon>mdi-pencil</v-icon>
+            </v-btn>
           <v-btn color="error" class="ma-4" v-on:click="deleteModel(model)">
             <v-icon>mdi-delete</v-icon>
           </v-btn>
@@ -33,22 +36,55 @@
     </v-list>
   </v-card>
 
-  <AddButton v-on:click="models_overlay = true" />
+  <AddButton v-on:click="create_dialog = true" />
 
   <!-- MODEL CREATION DIALOG -->
-  <v-dialog v-model="models_overlay" max-width="800" persistent>
+  <v-dialog v-model="create_dialog" max-width="800" persistent>
     <v-card>
       <v-card-title>
         {{ $t('add', { msg: $t('model') }) }}
       </v-card-title>
 
-      <v-card-text>
-        <v-text-field 
-          disabled 
-          v-model="object.id" 
-          :label="$t('position_id')"
-          :hint="$t('please_input', { msg: $t('position_id') })">
-        </v-text-field>
+        <v-row v-if='object.placeNumber > 0'>
+          <v-col cols="2">
+            <v-card-title>
+              Place
+            </v-card-title>
+          </v-col>
+
+          <v-col cols="10">
+            <v-text-field 
+              disabled 
+              label="Nr."
+              v-model="object.placeNumber">
+            </v-text-field>
+          </v-col>
+        </v-row>
+
+        <v-row no-gutters v-if="object.positionNumber > 0">
+          <v-col cols="2">
+            <v-card-title>
+              Position
+            </v-card-title>
+          </v-col>
+
+          <v-col cols="5">
+            <v-text-field 
+              disabled 
+              label="Nr."
+              class="pr-2"
+              v-model="object.positionNumber">
+            </v-text-field>
+          </v-col>
+
+          <v-col cols="5">
+            <v-text-field 
+              disabled 
+              v-model="object.subNumber" 
+              label="Sub-Nr.">
+            </v-text-field>
+          </v-col>
+        </v-row>
 
         <v-text-field 
           v-model="model.title" 
@@ -63,18 +99,107 @@
           v-model="model.model" 
           :label="$t('input', { msg: $t('model') })">
         </v-file-input>
-      </v-card-text>
 
       <v-card-actions class="justify-center">
         <v-btn icon color="primary" v-on:click="addModel()">
           <v-icon>mdi-content-save-all</v-icon>
         </v-btn>
-        <v-btn icon color="error" @click="models_overlay = false">
+        <v-btn icon color="error" @click="create_dialog = false">
           <v-icon>mdi-close-circle</v-icon>
         </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
+
+  <!-- MODEL EDITING DIALOG -->
+    <v-dialog v-model="edit_dialog" max-width="800" persistent>
+      <v-card class="pa-2">
+        <v-card-title>
+          {{ $t('edit', { msg: $t('model') }) }}
+        </v-card-title>
+
+          <v-row v-if='object.placeNumber > 0'>
+            <v-col cols="2">
+              <v-card-title>
+                Place
+              </v-card-title>
+            </v-col>
+
+            <v-col cols="10">
+              <v-text-field 
+                disabled 
+                label="Nr."
+                v-model="object.placeNumber">
+              </v-text-field>
+            </v-col>
+          </v-row>
+
+          <v-row v-if="object.positionNumber > 0">
+            <v-col cols="2">
+              <v-card-title>
+                Position
+              </v-card-title>
+            </v-col>
+
+            <v-col cols="5">
+              <v-text-field 
+                disabled 
+                label="Nr."
+                class="pr-2"
+                v-model="object.positionNumber">
+              </v-text-field>
+            </v-col>
+
+            <v-col cols="5">
+              <v-text-field 
+                disabled 
+                v-model="object.subNumber" 
+                label="Sub-Nr.">
+              </v-text-field>
+            </v-col>
+          </v-row>
+
+          <v-row no-gutters>
+            <v-col cols="2">
+              <v-card-title>
+                Model
+              </v-card-title>
+            </v-col>
+            <v-col cols="3">
+              <v-text-field 
+                disabled
+                class="pr-2"
+                :label="$t('number')"
+                v-model="model.modelNumber">
+              </v-text-field>
+            </v-col>
+            <v-col cols="7">
+              <v-text-field 
+                v-model="model.title" 
+                :label="$t('title')" 
+                :hint="$t('please_input',
+                  { msg: $t('title_of', { msg: $t('model') }) })">
+              </v-text-field>
+            </v-col>
+          </v-row>
+
+          <v-file-input
+            show-size 
+            accept=".glb" 
+            v-model="temp_editing_model" 
+            :label="$t('input', { msg: $t('model') })">
+          </v-file-input>
+
+        <v-card-actions class="justify-center">
+          <v-btn icon color="primary" v-on:click="saveModel()">
+            <v-icon>mdi-content-save-all</v-icon>
+          </v-btn>
+          <v-btn icon color="error" @click="edit_dialog = false; updateModels()">
+            <v-icon>mdi-close-circle</v-icon>
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 </template>
 
 <script>
@@ -88,6 +213,7 @@ export default {
   components: {
     AddButton
   },
+  
   /**
    * Props from PlaceForm/PositionForm
    */
@@ -109,9 +235,11 @@ export default {
         title: '',
         model: [],
       },
+      temp_editing_model: [],
+      backup_model: '',
       models: [],
-      models_overlay: false,
-      model_dialog: false,
+      create_dialog: false,
+      edit_dialog: false,
       is_required: [v => !!v || 'Pflichtfeld'],
     }
   },
@@ -140,6 +268,24 @@ export default {
       this.models = await fromOfflineDB.getAllObjectsWithID(
         this.object_id, objectType, 'Models', this.object_type.toLowerCase());
         
+    },
+
+    /**
+     * Saves an edited model to IndexedDB
+     */
+    async saveModel() {
+      var rawModel = toRaw(this.model);
+      if (this.temp_editing_model.length == 0) {
+        rawModel.model = this.backup_model;
+      } else {
+        rawModel.model = await this.modelToArrayBuffer(this.temp_editing_model);
+      }
+
+      await fromOfflineDB.updateObject(rawModel, 'Models', this.object_type.toLowerCase());
+      await this.updateModels();
+
+      this.clearModelProxy();
+      this.edit_dialog = false;
     },
 
     /**
@@ -179,7 +325,7 @@ export default {
       }
 
       // hide model creation dialog
-      this.models_overlay = false;
+      this.create_dialog = false;
 
       // update IndexedDB
       await fromOfflineDB.updateObject(
@@ -191,6 +337,18 @@ export default {
       await this.updateModels(newModel.id);
 
       ctx.$emit('addModel', newModel.id);
+    },
+
+    /**
+     * Fill model VueProxy variables with model data that is to be edited 
+     * and open edit dialog.
+     * @param {*} item 
+     */
+    editModel(item) {
+      this.backup_model = item.model;
+      this.model = toRaw(item)
+
+      this.edit_dialog = true;
     },
     /**
      * Deletes a model from IndexedDB and the connected place
@@ -212,6 +370,18 @@ export default {
         model, 'Models', this.object_type.toLowerCase());
       VueCookies.remove('currentModel');
       await this.updateModels();
+    },
+
+    /**
+     * Clears relevant model VueProxy data for future model creation/editing
+     */
+    clearModelProxy() {
+      this.model.id = '';
+      this.model.positionID = '';
+      this.model.placeID = '';
+      this.model.title = '';
+      this.model.model = [];
+      this.temp_editing_model = [];
     },
 
     /**
