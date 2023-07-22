@@ -405,6 +405,7 @@ export default {
         positions: [],
         images: [],
         models: [],
+        lines: [],
         lastChanged: '',
         lastSync: ''
       },
