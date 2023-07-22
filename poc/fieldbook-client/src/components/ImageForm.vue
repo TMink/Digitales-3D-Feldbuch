@@ -54,41 +54,41 @@
       <v-card-text>
 
         <v-row v-if='object.placeNumber > 0'>
-              <v-card-title>
-                Place
-              </v-card-title>
-            
-              <v-text-field 
-                disabled 
-                label="Nr."
-                v-model="object.placeNumber">
-              </v-text-field>
-            </v-row>
+          <v-card-title>
+            Place
+          </v-card-title>
+        
+          <v-text-field 
+            disabled 
+            label="Nr."
+            v-model="object.placeNumber">
+          </v-text-field>
+        </v-row>
 
-            <v-row no-gutters v-if="object.positionNumber > 0">
-              <v-col cols="2">
-                <v-card-title>
-                  Position
-                </v-card-title>
-              </v-col>
+        <v-row no-gutters v-if="object.positionNumber > 0">
+          <v-col cols="2">
+            <v-card-title>
+              Position
+            </v-card-title>
+          </v-col>
 
-              <v-col cols="5">
-                <v-text-field 
-                  disabled 
-                  label="Nr."
-                  class="pr-2"
-                  v-model="object.positionNumber">
-                </v-text-field>
-              </v-col>
+          <v-col cols="5">
+            <v-text-field 
+              disabled 
+              label="Nr."
+              class="pr-2"
+              v-model="object.positionNumber">
+            </v-text-field>
+          </v-col>
 
-              <v-col cols="5">
-                <v-text-field 
-                  disabled 
-                  v-model="object.subNumber" 
-                  label="Sub-Nr.">
-                </v-text-field>
-              </v-col>
-            </v-row>
+          <v-col cols="5">
+            <v-text-field 
+              disabled 
+              v-model="object.subNumber" 
+              label="Sub-Nr.">
+            </v-text-field>
+          </v-col>
+        </v-row>
 
         <v-text-field 
           v-model="image.title" 
@@ -192,8 +192,7 @@
             </v-col>
           </v-row>
           
-          <v-row no-gutters>
-
+          <v-row>
             <v-file-input 
               counter
               show-size 

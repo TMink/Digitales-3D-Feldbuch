@@ -45,13 +45,46 @@
         {{ $t('add', { msg: $t('model') }) }}
       </v-card-title>
 
-      <v-card-text>
-        <v-text-field 
-          disabled 
-          v-model="object.id" 
-          :label="$t('position_id')"
-          :hint="$t('please_input', { msg: $t('position_id') })">
-        </v-text-field>
+        <v-row v-if='object.placeNumber > 0'>
+          <v-col cols="2">
+            <v-card-title>
+              Place
+            </v-card-title>
+          </v-col>
+
+          <v-col cols="10">
+            <v-text-field 
+              disabled 
+              label="Nr."
+              v-model="object.placeNumber">
+            </v-text-field>
+          </v-col>
+        </v-row>
+
+        <v-row no-gutters v-if="object.positionNumber > 0">
+          <v-col cols="2">
+            <v-card-title>
+              Position
+            </v-card-title>
+          </v-col>
+
+          <v-col cols="5">
+            <v-text-field 
+              disabled 
+              label="Nr."
+              class="pr-2"
+              v-model="object.positionNumber">
+            </v-text-field>
+          </v-col>
+
+          <v-col cols="5">
+            <v-text-field 
+              disabled 
+              v-model="object.subNumber" 
+              label="Sub-Nr.">
+            </v-text-field>
+          </v-col>
+        </v-row>
 
         <v-text-field 
           v-model="model.title" 
@@ -66,7 +99,6 @@
           v-model="model.model" 
           :label="$t('input', { msg: $t('model') })">
         </v-file-input>
-      </v-card-text>
 
       <v-card-actions class="justify-center">
         <v-btn icon color="primary" v-on:click="addModel()">
@@ -81,32 +113,82 @@
 
   <!-- MODEL EDITING DIALOG -->
     <v-dialog v-model="edit_dialog" max-width="800" persistent>
-      <v-card>
+      <v-card class="pa-2">
         <v-card-title>
           {{ $t('edit', { msg: $t('model') }) }}
         </v-card-title>
 
-        <v-card-text>
-          <v-text-field 
-            disabled 
-            v-model="object.id" 
-            :label="$t('position_id')">
-          </v-text-field>
+          <v-row v-if='object.placeNumber > 0'>
+            <v-col cols="2">
+              <v-card-title>
+                Place
+              </v-card-title>
+            </v-col>
 
-          <v-text-field 
-            v-model="model.title" 
-            :label="$t('title')" 
-            :hint="$t('please_input',
-              { msg: $t('title_of', { msg: $t('model') }) })">
-          </v-text-field>
+            <v-col cols="10">
+              <v-text-field 
+                disabled 
+                label="Nr."
+                v-model="object.placeNumber">
+              </v-text-field>
+            </v-col>
+          </v-row>
 
-          <v-file-input 
+          <v-row v-if="object.positionNumber > 0">
+            <v-col cols="2">
+              <v-card-title>
+                Position
+              </v-card-title>
+            </v-col>
+
+            <v-col cols="5">
+              <v-text-field 
+                disabled 
+                label="Nr."
+                class="pr-2"
+                v-model="object.positionNumber">
+              </v-text-field>
+            </v-col>
+
+            <v-col cols="5">
+              <v-text-field 
+                disabled 
+                v-model="object.subNumber" 
+                label="Sub-Nr.">
+              </v-text-field>
+            </v-col>
+          </v-row>
+
+          <v-row no-gutters>
+            <v-col cols="2">
+              <v-card-title>
+                Model
+              </v-card-title>
+            </v-col>
+            <v-col cols="3">
+              <v-text-field 
+                disabled
+                class="pr-2"
+                :label="$t('number')"
+                v-model="model.modelNumber">
+              </v-text-field>
+            </v-col>
+            <v-col cols="7">
+              <v-text-field 
+                v-model="model.title" 
+                :label="$t('title')" 
+                :hint="$t('please_input',
+                  { msg: $t('title_of', { msg: $t('model') }) })">
+              </v-text-field>
+            </v-col>
+          </v-row>
+
+          <v-file-input
             show-size 
             accept=".glb" 
             v-model="temp_editing_model" 
             :label="$t('input', { msg: $t('model') })">
           </v-file-input>
-        </v-card-text>
 
         <v-card-actions class="justify-center">
           <v-btn icon color="primary" v-on:click="saveModel()">
