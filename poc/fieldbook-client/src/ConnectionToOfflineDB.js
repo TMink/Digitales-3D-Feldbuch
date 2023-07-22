@@ -501,7 +501,7 @@ export default class ConnectionToOfflineDB {
 
       // Make sure that no 'changes' get marked for synchronization
       // and don't mark objects, that never got uploaded before deletion
-      if (localDBName != "Changes") {
+      if (localDBName != "Changes" && localDBName != 'Lines') {
         if (object.lastSync.length > 0) {
           this.addObject({ id: object.id, object: localDBName }, "Changes", "deleted");
         }
@@ -634,6 +634,12 @@ const offlineDBCameras = {
   storeNames: ["cameras"],
 };
 
+const offlineDBLines = {
+  name: "Lines",
+  version: 1,
+  storeNames: ["lines"],
+}
+
 const fromOfflineDB = new ConnectionToOfflineDB([
   offlineDBModels,
   offlineDBActivities,
@@ -641,5 +647,6 @@ const fromOfflineDB = new ConnectionToOfflineDB([
   offlineDBPositions,
   offlineDBChanges,
   offlineDBImages,
-  offlineDBCameras
+  offlineDBCameras,
+  offlineDBLines,
 ]);
