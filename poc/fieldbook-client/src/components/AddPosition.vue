@@ -105,7 +105,7 @@ export default {
         curPos.dating == prevPos.dating &&
         curPos.addressOf == prevPos.addressOf &&
         curPos.date == prevPos.date &&
-        !curPos.seperate) {
+        !curPos.separate) {
         return subNumber;
       }
 

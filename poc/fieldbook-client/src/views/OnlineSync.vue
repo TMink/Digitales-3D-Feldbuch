@@ -295,7 +295,7 @@ export default {
          * Also removes the updated object from the proxyList 
          * of all updatedChanges that haven't been uploaded yet
          * 
-         * TODO: split both subfunctionalities in seperate functions
+         * TODO: split both subfunctionalities in separate functions
          * @param {*} proxyChange 
          * @param {String} subdomain 
          */
