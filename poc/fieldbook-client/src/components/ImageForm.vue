@@ -120,25 +120,29 @@
 
   <!-- IMAGE EDITING DIALOG -->
     <v-dialog v-model="edit_dialog" max-width="800" persistent>
-      <v-card>
+      <v-card class="pa-2">
         <v-card-title>
           {{ $t('edit', { msg: $t('image') }) }}
         </v-card-title>
-        <v-card-text>
 
           <v-row v-if='object.placeNumber > 0'>
-            <v-card-title>
-              Place
-            </v-card-title>
+            <v-col cols="2">
+              <v-card-title>
+                Place
+              </v-card-title>
+            </v-col>
 
-            <v-text-field 
-              disabled 
-              label="Nr."
-              v-model="object.placeNumber">
-            </v-text-field>
+            <v-col cols="10">
+
+              <v-text-field 
+                disabled 
+                label="Nr."
+                v-model="object.placeNumber">
+              </v-text-field>
+            </v-col>
           </v-row>
 
-          <v-row no-gutters v-if="object.positionNumber > 0">
+          <v-row v-if="object.positionNumber > 0">
             <v-col cols="2">
               <v-card-title>
                 Position
@@ -163,13 +167,13 @@
             </v-col>
           </v-row>
 
-          <v-row no-gutters v-if="object.positionNumber > 0">
+          <v-row no-gutters>
             <v-col cols="2">
-
               <v-card-title>
                 Image
               </v-card-title>
             </v-col>
+
             <v-col cols="3">
               <v-text-field 
                 disabled
@@ -188,21 +192,22 @@
             </v-col>
           </v-row>
           
-          <v-file-input 
-            counter
-            multiple
-            show-size 
-            v-model="image.image" 
-            prepend-icon="mdi-camera"
-            accept="image/png, image/jpeg, image/bmp">
-          </v-file-input>
-        </v-card-text>
+          <v-row no-gutters>
+
+            <v-file-input 
+              counter
+              show-size 
+              v-model="temp_editing_img" 
+              prepend-icon="mdi-camera"
+              accept="image/png, image/jpeg, image/bmp">
+            </v-file-input>
+          </v-row>
 
         <v-card-actions class="justify-center">
-          <v-btn icon color="primary" v-on:click="saveImage(image)">
+          <v-btn icon color="primary" v-on:click="saveImage()">
             <v-icon>mdi-content-save-all</v-icon>
           </v-btn>
-          <v-btn icon color="error" @click="edit_dialog = false">
+          <v-btn icon color="error" @click="edit_dialog = false; updateImages()">
             <v-icon>mdi-close-circle</v-icon>
           </v-btn>
         </v-card-actions>
@@ -251,7 +256,9 @@ export default {
         image: [],
       },
       images: [],
+      temp_editing_img: [],
       openedImage: '',
+      backup_image: '',
       hovering: false,
       create_dialog: false,
       edit_dialog: false,
@@ -273,7 +280,6 @@ export default {
     await fromOfflineDB.syncLocalDBs();
     await this.updateObject();
     await this.updateImages();
-    console.log( this.object)
   },
   methods: {
     /**
@@ -294,15 +300,20 @@ export default {
     },
 
     /**
-     * Saves an edited image to 
+     * Saves an edited image to IndexedDB
      */
     async saveImage() {
-      const rawImage = toRaw(this.image);
-      this.edit_dialog = false;
-
-      rawImage.image =  await this.textureToBase64(rawImage.image),
+      var rawImage = toRaw(this.image);
+      if (this.temp_editing_img.length == 0) {
+        rawImage.image = this.backup_image;
+      } else {
+        rawImage.image = await this.textureToBase64(this.temp_editing_img);
+      }
       await fromOfflineDB.updateObject(rawImage, 'Images', 'images');
       await this.updateImages();
+
+      this.clearImgProxy();
+      this.edit_dialog = false;
     },
 
     /**
@@ -323,18 +334,37 @@ export default {
      * Adds a new image-placeholder to the images-array
      */
     async addImage(imageFile) {
-      var ctx = this;
+      // get all data for the new image
+      var newImage = await this.fillNewImgData(imageFile);
+
       // add imageID to the object array of all images
-      var newImageID = String(Date.now());
       var rawObject = toRaw(this.object);
-      var rawImage = toRaw(this.image);
 
       // update lastChanged date of object
-      rawObject.images.push(newImageID);
+      rawObject.images.push(newImage.id);
       rawObject.lastChanged = Date.now();
 
+      // hide image creation dialog
+      this.create_dialog = false;
+
+      this.clearImgProxy();
+      console.log(newImage)
+      // update IndexedDB
+      await fromOfflineDB.updateObject(rawObject, this.object_type, this.object_type.toLowerCase());
+      await fromOfflineDB.addObject(newImage, "Images", "images");
+      await fromOfflineDB.addObject({ id: newImage.id, object: 'images' }, 'Changes', 'created');
+      
+    },
+
+    /**
+     * Collects all relevant data for the new Image
+     * @param {*} imageFile 
+     */
+    async fillNewImgData(imageFile) {
+      var newImageID = String(Date.now());
+      var rawImage = toRaw(this.image);
       // new image data
-      const newImage = {
+      var filledImg = {
         id: newImageID,
         imageNumber: null,
         title: rawImage.title,
@@ -345,39 +375,34 @@ export default {
 
       // set the image parentID
       if (this.object_type == "Positions") {
-        newImage.positionID = this.object_id;
+        filledImg.positionID = this.object_id;
       } else {
-        newImage.placeID = this.object_id;
+        filledImg.placeID = this.object_id;
       }
 
       // set new imageNumber
       if (this.images.length == 0) {
-        newImage.imageNumber = 1;
+        filledImg.imageNumber = 1;
       } else {
         this.updateImages();
         const imageNumber = Math.max(...this.images.map(o => o.imageNumber));
         const newImageNumber = imageNumber + 1;
-        newImage.imageNumber = newImageNumber;
+        filledImg.imageNumber = newImageNumber;
       }
 
-      // hide image creation dialog
-      this.create_dialog = false;
-
-      // update IndexedDB
-      await fromOfflineDB.updateObject(rawObject, this.object_type, this.object_type.toLowerCase());
-      await fromOfflineDB.addObject(newImage, "Images", "images");
-      await fromOfflineDB.addObject({ id: newImageID, object: 'images' }, 'Changes', 'created');
-      
-      ctx.$emit('addImage', newImageID);
+      return filledImg;
     },
 
+    /**
+     * Fill image VueProxy variables with image data that is to be edited and
+     * open die edit dialog.
+     * @param {*} item 
+     */
     editImage(item) {
+      this.backup_image = item.image;
+      this.image = toRaw(item)
 
-      this.image = item;
-
-      this.image.image = [];
-
-      this.edit_dialog = true
+      this.edit_dialog = true;
     },
 
     /**
@@ -385,7 +410,6 @@ export default {
      * @param {*} rawData 
      */
     async textureToBase64(rawData) {
-
       const output = await new Promise((resolve) => {
 
         let reader = new FileReader();
@@ -476,6 +500,17 @@ export default {
         img.style.transformOrigin = 'center';
         img.style.transform = "scale(1)";
       }); */
+    },
+    /**
+     * Clears relevant image VueProxy data for future image creation/editing
+     */
+    clearImgProxy() {
+      this.image.id = '';
+      this.image.positionID = '';
+      this.image.placeID = '';
+      this.image.title = '';
+      this.image.image = [];
+      this.temp_editing_img = [];
     },
     /**
      * 
