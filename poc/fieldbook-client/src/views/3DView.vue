@@ -1275,9 +1275,6 @@ export default {
       await this.updateModelsInDB();
       await this.updateCameraInDB();
     }
-    if ( this.measureTool.infoBlock.length > 0 ) {
-      await this.updateLinesInDB();
-    }
     this.clearCanvases()
   },
 
@@ -1291,58 +1288,50 @@ export default {
 
     },
 
-    saveLineTitle: function() {
+    saveLineTitle: async function() {
 
-      this.measureTool.allTitles = [];
+      const linesInDB = await fromOfflineDB.getAllObjects(
+        'Lines', 'lines' );
 
-      console.log(this.measureTool.infoBlock.some( e => e.renamedTo === this.measureTool.textField ))
+      let idToBeRenamed = null;
 
       this.measureTool.infoBlock.forEach( element => {
-        if ( element.renamedTo != null && !element.deleted) {
-          
-          if ( element.renamedTo == this.measureTool.title ) {
-            console.log("SAME NAME WARNING")
-          } else {
-            console.log("Push 1")
-            this.measureTool.allTitles.push( element.renamedTo );
-          }
-        } else if ( element.renamedTo == null && !element.deleted ) {
-          if ( element.name == this.measureTool.title ) {
-            console.log("Renamed")
-            element.renamedTo = this.measureTool.textField
-            this.measureTool.title = element.renamedTo
-            this.measureTool.allTitles.push( element.renamedTo );
-          } else {
-            console.log("Push 2")
-            this.measureTool.allTitles.push( element.name );
-          }
+        if ( element.name === this.measureTool.title ) {
+          element.name = this.measureTool.textField;
+          idToBeRenamed = element.id;
         }
-      })
+      } )
 
+      /* Rename line in IndexedDb */
+      const lineInDB = linesInDB.find( e => e.id === idToBeRenamed );
+      lineInDB.name = this.measureTool.textField;
+      await fromOfflineDB.updateObject( lineInDB, 'Lines', 'lines' );
 
-
-      console.log(this.measureTool.infoBlock)
-
+      this.updateLineMenue();
       this.measureTool.texttoken = true;
-
     },
 
-    deleteLine: function() {
+    deleteLine: async function() {
 
-      this.measureTool.allTitles = [];
+      const placeInDB = await fromOfflineDB.getObject( 
+        VueCookies.get('currentPlace'), 'Places', 'places' );
+      const linesInDB = await fromOfflineDB.getAllObjects(
+        'Lines', 'lines' );
+
+      let idToBeDeleted = null
 
       this.measureTool.infoBlock.forEach( element => {
-        if ( element.name === this.measureTool.title || element.renamedTo === this.measureTool.title ) {
+        if ( element.name === this.measureTool.title ) {
+          idToBeDeleted = element.id;
           const index = this.measureTool.infoBlock.indexOf(element)
 
           /* Delte line from sceneMain */
-
           const line = this.sceneMain.getObjectByName(this.measureTool.infoBlock[index].line)
           const lable = this.sceneMain.getObjectByName(this.measureTool.infoBlock[index].lable)
           const firstBall = this.sceneMain.getObjectByName(this.measureTool.infoBlock[index].balls[0])
           const secondBall = this.sceneMain.getObjectByName(this.measureTool.infoBlock[index].balls[1])
           
-          line.remove( lable )
+          line.remove( lable );
           line.geometry.dispose();
           line.material.dispose();
           this.sceneMain.remove( line );
@@ -1356,24 +1345,27 @@ export default {
           this.sceneMain.remove( secondBall );
 
           /* Delete menue item */
-          this.measureTool.infoBlock[index].deleted = true
           this.measureTool.textField = null
+          this.measureTool.infoBlock.splice(index, 1)
         }
       })
+
+      /* Delete from IndexedDb */
+      const lineInDB = linesInDB.find( e => e.id === idToBeDeleted );
+      const index = placeInDB.lines.indexOf(lineInDB.name);
+      placeInDB.lines.splice( index, 1 );
+      await fromOfflineDB.deleteObject( lineInDB, 'Lines', 'lines' );
+      await fromOfflineDB.updateObject( placeInDB, 'Places', 'places' )
 
       this.measureTool.title = null;
+      this.updateLineMenue();
+    },
 
+    updateLineMenue: function() {
+      this.measureTool.allTitles = [];
       this.measureTool.infoBlock.forEach( element => {
-        if ( element.renamedTo != null && !element.deleted ) {
-          this.measureTool.allTitles.push( element.renamedTo );
-        } else if ( element.renamedTo == null && !element.deleted ) {
-          this.measureTool.allTitles.push( element.name );
-        }
+        this.measureTool.allTitles.push( element.name );
       })
-
-
-      console.log(this.measureTool.infoBlock)
-
     },
 
     func: function(e) {
@@ -1588,45 +1580,6 @@ export default {
       await fromOfflineDB.updateObject( modelInDB, 'Models', storeName );
     },
 
-    updateLinesInDB: async function() {
-      const placeInDB = await fromOfflineDB.getObject( 
-        VueCookies.get('currentPlace'), 'Places', 'places' )
-      const linesInDB = await fromOfflineDB.getAllObjects(
-        'Lines', 'lines'
-      )
-
-      for ( const [i, elem] of this.measureTool.infoBlock.entries() ) {
-        /* Line */
-        if ( elem.deleted && placeInDB.lines.includes( elem.name ) ) {
-          console.log("Delete - existing in DB")
-          const entryToBeDeleted = { id: elem.id }
-          const idx = placeInDB.lines.indexOf( elem.name );
-          placeInDB.lines.splice(idx, 1);
-          await fromOfflineDB.deleteObject( entryToBeDeleted, 'Lines', 'lines' );
-        } else if ( elem.deleted && !placeInDB.lines.includes( elem.name )) {
-          console.log("THINK before you draw lines!")
-        } else if ( !elem.deleted ) {
-          const lineInDB = linesInDB.find( e => e.id === elem.id)
-          
-          if ( elem.renamedTo != null && placeInDB.lines.includes( elem.name ) ) {
-            console.log("Save renamed - existing in DB")
-            lineInDB.name = elem.renamedTo;
-            const idx = placeInDB.lines.indexOf( elem.name );
-            placeInDB.lines.splice(idx, 1);
-            placeInDB.lines.push( elem.renamedTo );
-            await fromOfflineDB.updateObject( lineInDB, 'Lines', 'lines' );
-          }
-          
-          else if ( elem.renamedTo == null && placeInDB.lines.includes( elem.name ) ) { 
-            console.log("Save not renamed - existing in DB")
-            await fromOfflineDB.updateObject( lineInDB, 'Lines', 'lines' );
-          }
-        }
-      }
-
-      await fromOfflineDB.updateObject( placeInDB, 'Places', 'places' );
-    },
-
     /**
      * -------------------------------------------------------------------------
      * # CleanUp
@@ -1696,24 +1649,28 @@ export default {
     removeLinesInScene: function( scene, infoBlock ) {
       /* Dispose lines in sceneMain */
       infoBlock.forEach( elem => {
-        if (!elem.deleted) {
-          const lineInScene = this.sceneMain.getObjectByName( elem.line )
-          const lableInScene = this.sceneMain.getObjectByName( elem.lable )
-          const ballsInScene = [];
-          elem.balls.forEach( ball => {
-            ballsInScene.push( this.sceneMain.getObjectByName( ball ) );
-          } )
+        const lineInScene = this.sceneMain.getObjectByName( elem.line )
+        const lableInScene = this.sceneMain.getObjectByName( elem.lable )
+        const ballsInScene = [];
+        elem.balls.forEach( ball => {
+          ballsInScene.push( this.sceneMain.getObjectByName( ball ) );
+        } )
   
-          lineInScene.remove(lableInScene)
-          lineInScene.material.dispose()
-          lineInScene.geometry.dispose()
-          this.sceneMain.remove(lineInScene)
-          ballsInScene.forEach( ball => {
-            ball.material.dispose();
-            ball.geometry.dispose();
-            this.sceneMain.remove( ball );
-          } )
-        }
+        /* Remove line */
+        lineInScene.remove(lableInScene)
+        lineInScene.material.dispose()
+        lineInScene.geometry.dispose()
+        this.sceneMain.remove(lineInScene)
+
+        /* Remove Lable */
+        lableInScene.remove()
+
+        /* Remove Balls */
+        ballsInScene.forEach( ball => {
+          ball.material.dispose();
+          ball.geometry.dispose();
+          this.sceneMain.remove( ball );
+        } )
       } )
     },
 
@@ -1881,8 +1838,6 @@ export default {
               line: this.line.name,
               lable: this.measurementLable.name,
               balls: elem.balls,
-              renamedTo: null,
-              deleted: false,
           }
           this.measureTool.infoBlock.push( newLine );
           
@@ -2149,8 +2104,6 @@ export default {
               line: this.line.name,
               lable: this.measurementLable.name,
               balls: nameOfBalls,
-              renamedTo: null,
-              deleted: false,
             }
 
             const lineAttr = {
@@ -2180,15 +2133,13 @@ export default {
               line: lineAttr,
               lable: lableAttr,
               balls: nameOfBalls,
-              renamedTo: null,
-              deleted: false,
             }
 
             this.measureTool.infoBlock.push( newLine );
             this.measureTool.allTitles.push( nameOfLine );
 
-            await fromOfflineDB.addObject( newLineEntry, 'Lines', 'lines' )
-            placeInDB.lines.push(nameOfLine)
+            await fromOfflineDB.addObject( newLineEntry, 'Lines', 'lines' );
+            placeInDB.lines.push(nameOfLine);
             await fromOfflineDB.updateObject( placeInDB, 'Places', 'places' );
 
             this.lineID = String(Date.now());
@@ -2882,7 +2833,7 @@ export default {
     /**
      * 
      */
-    keyDown: function(event) {
+    keyDown: function( event ) {
       if (event.key === 'x') {
           this.ctrlDown = true;
           this.abControlsMain.enabled = false
