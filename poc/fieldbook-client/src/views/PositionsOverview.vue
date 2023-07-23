@@ -44,7 +44,8 @@
           <v-data-table-virtual
             :items="filteredPositions"
             class="elevation-1"
-            :height="windowHeight - 450">
+            :height="getTableHeight"
+            max-height>
 
             <template v-slot:item="{ item }">
               <v-list-item v-on:click="moveToPosition(item.raw.id)">
@@ -171,6 +172,18 @@ export default {
           });
         });
       }
+    },
+    getTableHeight() {
+      // Calculate the required table height based on the number of items
+      const numberOfRows = this.positions.length;
+      const rowHeight = 73;
+      const totalTableHeight = numberOfRows * rowHeight;
+
+      if (totalTableHeight > (this.windowHeight - 450)) {
+        return this.windowHeight - 450;
+      }
+
+      return totalTableHeight + "px";
     },
   },
   methods: {

@@ -38,10 +38,9 @@
               ></v-text-field>
             </v-card-title>
             <v-data-table-virtual
-                :items="filteredPlaces"
-                class="elevation-1"
-                :height="windowHeight - 450"
-              >
+              :items="filteredPlaces"
+              class="elevation-1"
+              :height="getTableHeight">
               <template v-slot:item="{ item }">
                 <v-list-item v-on:click="moveToPlace(item.raw.id)">
                     <v-row class="justify-center align-center my-2">
@@ -170,6 +169,18 @@ export default {
           });
         });
       }
+    },
+    getTableHeight() {
+      // Calculate the required table height based on the number of items
+      const numberOfRows = this.places.length;
+      const rowHeight = 73;
+      const totalTableHeight = numberOfRows * rowHeight;
+
+      if (totalTableHeight > (this.windowHeight - 450)) {
+        return this.windowHeight - 450;
+      }
+
+      return totalTableHeight + "px";
     },
   },
 
