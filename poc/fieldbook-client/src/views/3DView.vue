@@ -2662,11 +2662,11 @@ export default {
     /**
      * 
      */
-    resetPlaceModelInfo: function() {
+     resetPlaceModelInfo: function() {
       this.plaModel.allNumbers = [];
       this.plaModel.allTitles = [];
       this.plaModel.chosenfinalModel = [];
-    },
+     },
     
     /**
      * 
