@@ -1295,17 +1295,31 @@ export default {
 
       this.measureTool.allTitles = [];
 
+      console.log(this.measureTool.infoBlock.some( e => e.renamedTo === this.measureTool.textField ))
+
       this.measureTool.infoBlock.forEach( element => {
-        if ( ( element.name === this.measureTool.title ||
-             element.renamedTo === this.measureTool.title ) &&
-             !element.deleted && this.measureTool.textField != null) {
-          element.renamedTo = this.measureTool.textField
-          this.measureTool.title = element.renamedTo
-          this.measureTool.allTitles.push( element.renamedTo );
-        } else if ( !element.deleted ) {
-          this.measureTool.allTitles.push( element.name );
+        if ( element.renamedTo != null && !element.deleted) {
+          
+          if ( element.renamedTo == this.measureTool.title ) {
+            console.log("SAME NAME WARNING")
+          } else {
+            console.log("Push 1")
+            this.measureTool.allTitles.push( element.renamedTo );
+          }
+        } else if ( element.renamedTo == null && !element.deleted ) {
+          if ( element.name == this.measureTool.title ) {
+            console.log("Renamed")
+            element.renamedTo = this.measureTool.textField
+            this.measureTool.title = element.renamedTo
+            this.measureTool.allTitles.push( element.renamedTo );
+          } else {
+            console.log("Push 2")
+            this.measureTool.allTitles.push( element.name );
+          }
         }
       })
+
+
 
       console.log(this.measureTool.infoBlock)
 
@@ -1592,75 +1606,20 @@ export default {
         } else if ( elem.deleted && !placeInDB.lines.includes( elem.name )) {
           console.log("THINK before you draw lines!")
         } else if ( !elem.deleted ) {
-        const line = this.sceneMain.getObjectByName(elem.line)
-          const lineAttr = {
-            name: line.name,
-            geoPosition: [
-              line.geometry.attributes.position.array[0],
-              line.geometry.attributes.position.array[1],
-              line.geometry.attributes.position.array[2],
-              line.geometry.attributes.position.array[3],
-              line.geometry.attributes.position.array[4],
-              line.geometry.attributes.position.array[5]],
-          }
-
-          /* Lable */
-          const lable = this.sceneMain.getObjectByName(elem.lable)
-          const lableAttr = {
-            name: lable.name,
-            position: [
-              lable.position.x,
-              lable.position.y,
-              lable.position.z],
-          }
-
-          /* Balls */
-          const balls = [
-            this.sceneMain.getObjectByName(elem.balls[0]),
-            this.sceneMain.getObjectByName(elem.balls[1]),
-          ]
-
-          const ballsAttr = []
-          balls.forEach(elem => {
-            ballsAttr.push(elem.name)
-          })
-
-          /* Create new entry */
-          const newLineEntry = {
-            id: elem.id,
-            name: elem.name,
-            line: lineAttr,
-            lable: lableAttr,
-            balls: ballsAttr,
-            renamedTo: null,
-            deleted: false,
-          }
-
-          if ( elem.renamedTo != null && !placeInDB.lines.includes( elem.name ) ) {
-            console.log("Save renamed - not existing in DB")
-            newLineEntry.name = elem.renamedTo;
-            placeInDB.lines.push( elem.renamedTo );
-            await fromOfflineDB.addObject( newLineEntry, 'Lines', 'lines' );
-          } 
+          const lineInDB = linesInDB.find( e => e.id === elem.id)
           
-          else if ( elem.renamedTo != null && placeInDB.lines.includes( elem.name ) ) {
+          if ( elem.renamedTo != null && placeInDB.lines.includes( elem.name ) ) {
             console.log("Save renamed - existing in DB")
-            newLineEntry.name = elem.renamedTo;
+            lineInDB.name = elem.renamedTo;
             const idx = placeInDB.lines.indexOf( elem.name );
             placeInDB.lines.splice(idx, 1);
             placeInDB.lines.push( elem.renamedTo );
-            await fromOfflineDB.updateObject( newLineEntry, 'Lines', 'lines' );
-          } 
-          
-          else if ( elem.renamedTo == null && !placeInDB.lines.includes( elem.name ) ) {
-            console.log("Save not renamed - not existing in DB")
-            placeInDB.lines.push( elem.name );
-            await fromOfflineDB.addObject( newLineEntry, 'Lines', 'lines' );
-          } 
+            await fromOfflineDB.updateObject( lineInDB, 'Lines', 'lines' );
+          }
           
           else if ( elem.renamedTo == null && placeInDB.lines.includes( elem.name ) ) { 
             console.log("Save not renamed - existing in DB")
-            await fromOfflineDB.updateObject( newLineEntry, 'Lines', 'lines' );
+            await fromOfflineDB.updateObject( lineInDB, 'Lines', 'lines' );
           }
         }
       }
@@ -2127,7 +2086,7 @@ export default {
     /**
      * 
      */
-    onClick: function() {
+    onClick: async function() {
       if ( this.ctrlDown ) {
         this.raycaster2.setFromCamera( this.pointer2, this.cameraMain );
         const intersects = this.raycaster2.intersectObjects( this.modelsInMain,
@@ -2162,6 +2121,9 @@ export default {
 
             this.drawingLine = true;
           } else {
+            const placeInDB = await fromOfflineDB.getObject( 
+              VueCookies.get('currentPlace'), 'Places', 'places' )
+
             const positions = this.line.geometry.attributes.position;
             positions.array[3] = intersects[0].point.x;
             positions.array[4] = intersects[0].point.y;
@@ -2190,9 +2152,45 @@ export default {
               renamedTo: null,
               deleted: false,
             }
+
+            const lineAttr = {
+              name: this.line.name,
+              geoPosition: [
+                this.line.geometry.attributes.position.array[0],
+                this.line.geometry.attributes.position.array[1],
+                this.line.geometry.attributes.position.array[2],
+                this.line.geometry.attributes.position.array[3],
+                this.line.geometry.attributes.position.array[4],
+                this.line.geometry.attributes.position.array[5] ],
+            }
+
+            /* Lable */
+            const lableAttr = {
+              name: this.measurementLable.name,
+              position: [
+                this.measurementLable.position.x,
+                this.measurementLable.position.y,
+                this.measurementLable.position.z ],
+            }
+
+            /* Create new entry */
+            const newLineEntry = {
+              id: this.lineID,
+              name: nameOfLine,
+              line: lineAttr,
+              lable: lableAttr,
+              balls: nameOfBalls,
+              renamedTo: null,
+              deleted: false,
+            }
+
             this.measureTool.infoBlock.push( newLine );
-          
             this.measureTool.allTitles.push( nameOfLine );
+
+            await fromOfflineDB.addObject( newLineEntry, 'Lines', 'lines' )
+            placeInDB.lines.push(nameOfLine)
+            await fromOfflineDB.updateObject( placeInDB, 'Places', 'places' );
+
             this.lineID = String(Date.now());
             this.line = null;
             this.measurementLable = null;
