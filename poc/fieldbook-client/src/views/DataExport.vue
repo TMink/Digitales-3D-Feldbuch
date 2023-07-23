@@ -13,15 +13,13 @@
           <h2 class="text-center pb-4">AKTIVITÄTEN</h2>
 
           <!--Lists all locally saved positions-->
-          <div :style="getTableHeight">
-            <v-data-table-virtual
+          <v-data-table-virtual
               fixed-header
               :items="activities"
+              :height="getTableHeight"
               @click:row="setActivity"
-              :headers="activityHeaders"
-              :height="windowHeight - 450">
+              :headers="activityHeaders">
             </v-data-table-virtual>
-          </div>
         </v-window>
 
         <!-- PLACES LIST -->
@@ -39,15 +37,14 @@
           <h2 class="text-center pb-4">STELLEN</h2>
 
           <!--Lists all locally saved places-->
-          <div :style="getTableHeight">
-            <v-data-table-virtual
-              fixed-header
-              :items="places"
-              class="custom-table"
-              @click:row="setPlace"
-              :headers="placeHeaders">
-            </v-data-table-virtual>
-          </div>
+          <v-data-table-virtual
+            fixed-header
+            :items="places"
+            class="custom-table"
+            :height="getTableHeight"
+            @click:row="setPlace"
+            :headers="placeHeaders">
+          </v-data-table-virtual>
         </v-window>
         
         <!-- PLACES LIST -->
@@ -62,13 +59,12 @@
           <h2 class="text-center pb-4">POSITIONEN</h2>
           
           <!--Lists all locally saved positions-->
-          <div :style="getTableHeight">
-            <v-data-table-virtual
-              fixed-header
-              :items="positions"
-              :headers="positionHeaders">
-            </v-data-table-virtual>
-          </div>
+          <v-data-table-virtual
+            fixed-header
+            :items="positions"
+            :height="getTableHeight"
+            :headers="positionHeaders">
+          </v-data-table-virtual>
         </v-window>
         
         
@@ -82,11 +78,10 @@
               <!-- ACTIVITIES -->
               <v-col cols="4" class="align-center" hide-details>
                 <v-switch 
-                  hide-details 
-                  color="success" 
                   label="Activities"
                   :disabled="activity_open" 
-                  v-model="exportActivities">
+                  v-model="exportActivities"
+                  hide-details color="success">
                 </v-switch>
 
                 <v-col> 
@@ -302,12 +297,25 @@ export default {
   computed: {
     getTableHeight() {
       // Calculate the required table height based on the number of items
-      const numberOfRows = this.activities.length;
+      var numberOfRows = this.activities.length;
       const headerHeight = 56;
-      const rowHeight = 48;
+      const rowHeight = 52;
 
-      const totalTableHeight = headerHeight + numberOfRows * rowHeight + 10;
-      return { height: totalTableHeight + 'px' };
+      if (this.activity_open) {
+        if (this.place_open) {
+          numberOfRows = this.positions.length;
+        } else {
+          numberOfRows = this.places.length;
+        }
+      }
+
+      const totalTableHeight = headerHeight + numberOfRows * rowHeight;
+
+      if (totalTableHeight > (this.windowHeight - 385)) {
+        return this.windowHeight - 385;
+      }
+
+      return totalTableHeight + 'px';
     },
   },
   methods: {
@@ -635,7 +643,7 @@ export default {
           { header: 'Datierung', dataKey: 'dating' },
           { header: 'Ansprache von', dataKey: 'addressOf' },
           { header: 'Datum', dataKey: 'date' },
-          { header: 'Getrennt', dataKey: 'isSeperate' },
+          { header: 'Getrennt', dataKey: 'isSeparate' },
         ],
         body:
           allPositions
