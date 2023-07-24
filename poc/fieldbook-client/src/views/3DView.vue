@@ -2139,7 +2139,7 @@ export default {
             this.measureTool.allTitles.push( nameOfLine );
 
             await fromOfflineDB.addObject( newLineEntry, 'Lines', 'lines' );
-            placeInDB.lines.push(nameOfLine);
+            placeInDB.lines.push(this.lineID);
             await fromOfflineDB.updateObject( placeInDB, 'Places', 'places' );
 
             this.lineID = String(Date.now());
