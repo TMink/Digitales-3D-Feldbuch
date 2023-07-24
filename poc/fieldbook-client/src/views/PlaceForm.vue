@@ -5,8 +5,8 @@
         <v-card>
           <v-tabs v-model="tab" direction="vertical" color="primary">
             <v-tab value="one" rounded="0"> {{ $t('general') }} </v-tab>
-            <v-tab value="two" rounded="0"> Zeichnungen<!-- {{ $tc('model', 2) }} --> </v-tab>
-            <v-tab value="three" rounded="0"> {{ $tc('position', 2) }} </v-tab>
+            <v-tab value="two" rounded="0"> {{ $tc('position', 2) }} </v-tab>
+            <v-tab value="three" rounded="0"> Zeichnungen<!-- {{ $tc('model', 2) }} --> </v-tab>
             <v-tab value="four" rounded="0"> {{ $tc('model', 2) }} </v-tab>
             <v-btn rounded="0" v-on:click="savePlace()" color="primary">
               {{ $t('save') }}
@@ -285,39 +285,84 @@
                 </v-card>
               </v-col>
             </v-row>
-
-          </v-window-item>
-
-          <v-window-item value="two">
-            <ImageForm 
-              :object_id="place.id" 
-              object_type="Places"
-              @addImage="addImage($event)"/>
           </v-window-item>
 
           <!-- Tab item 'positions' -->
-          <v-window-item value="three">
+          <v-window-item value="two">
             <v-form>
+              <!-- LIST TITLE -->
+              <v-card-text v-if="positions.length !== 0">
+                <div>
+                  <h3><v-row class="justify-center">
+                      <v-col cols="1" class="text-left">
+                        Nr.
+                      </v-col>
+                      <v-col cols="2" class="text-left">
+                        Unter-Nr.
+                      </v-col>
+                      <v-col cols="6" class="text-left">
+                        Titel
+                      </v-col>
+                      <v-col cols="2" class="text-left">
+                        Datum
+                      </v-col>
+                    </v-row></h3>
+                </div>
+              </v-card-text>
               <v-card>
-                <v-list>
-                  <v-list-subheader v-if="positions.length === 0">
-                    {{ $t('not_created_yet', { object: $tc('position', 1) }) }}
-                  </v-list-subheader>
+                <v-data-table-virtual
+                  :items="positions"
+                  class="elevation-1"
+                  :height="getTableHeight"
+                  max-height>
 
-                  <template v-for="(position, i) in positions" :key="position">
-                    <v-list-item class="positionItem mt-3" v-on:click="moveToPosition(position.id)">
+                  <template v-slot:item="{ item }">
+                    <v-list-item v-on:click="moveToPosition(item.raw.id)">
+                      <v-row class="justify-center align-center my-2">
+                        <v-col cols="1">
+                          <v-list-item-title>
+                            {{ item.raw.positionNumber }}
+                          </v-list-item-title>
+                        
+                        </v-col>
+                        <v-col cols="2">
+                          <v-list-item-title>
+                            {{ item.raw.subNumber }}
+                          </v-list-item-title>
+                        </v-col>
 
-                      <v-list-item-title class="text-h6">
-                        Nr. {{ position.positionNumber }} - {{ position.date }}
-                      </v-list-item-title>
+                        <v-col cols="6">
+                          <v-list-item-title
+                            class="text-wrap" 
+                            v-if="item.raw.title.length != 0">
+                            {{ item.raw.title }}
+                          </v-list-item-title>
 
-                      <v-list-item-subtitle class="text-subtitle-1">
-                        {{ position.description }}
-                      </v-list-item-subtitle>
+                          <v-list-item-title 
+                            class="text-grey-darken-1" 
+                            v-if="item.raw.title.length == 0">
+                            {{ $t('title') }}
+                          </v-list-item-title>
+                        </v-col>
+
+                        <v-col cols="2">
+                          <v-list-item-title 
+                            v-if="item.raw.date.length != 0">
+                            {{ item.raw.date }}
+                          </v-list-item-title>
+
+                          <v-list-item-title 
+                            class="text-grey-darken-1" 
+                            v-if="item.raw.date.length == 0">
+                            {{ $t('date') }}
+                          </v-list-item-title>
+                        </v-col>
+
+                      </v-row>
+                      <v-divider></v-divider>
                     </v-list-item>
-                    <v-divider v-if="i !== positions.length - 1"></v-divider>
                   </template>
-                </v-list>
+                </v-data-table-virtual>
               </v-card>
 
               <AddPosition 
@@ -326,6 +371,13 @@
                 @updatePositions="updatePositions()" />
 
             </v-form>
+          </v-window-item>
+
+          <v-window-item value="three">
+            <ImageForm 
+              :object_id="place.id" 
+              object_type="Places"
+              @addImage="addImage($event)"/>
           </v-window-item>
 
           <!-- Tab item 'models' -->
@@ -358,6 +410,7 @@ import AddPosition from '../components/AddPosition.vue';
 import ImageForm from '../components/ImageForm.vue';
 import ModelForm from '../components/ModelForm.vue';
 import { toRaw } from 'vue';
+import { useWindowSize } from 'vue-window-size';
 
 export default {
 
@@ -369,6 +422,13 @@ export default {
     ModelForm
   },
   emits: ['view'],
+  setup() {
+    const { width, height } = useWindowSize();
+    return {
+      windowWidth: width,
+      windowHeight: height,
+    };
+  },
   /**
    * Reactive Vue.js data
    */
@@ -409,6 +469,17 @@ export default {
         lastChanged: '',
         lastSync: ''
       },
+      headers: [
+        {
+          title: 'positionNumber',
+          align: 'start',
+          sortable: true,
+          key: 'positionNumber',
+        },
+        { title: 'title', align: 'start', key: 'title' },
+        { title: 'date', align: 'end', key: 'date' },
+      ],
+      searchQuery: '',
       positions: null,
       titles: [],
       datings: [],
@@ -444,6 +515,21 @@ export default {
       if (val.length > 5) {
         this.$nextTick(() => this.place.title.pop())
       }
+    },
+  },
+
+  computed: {
+    getTableHeight() {
+      // Calculate the required table height based on the number of items
+      const numberOfRows = this.positions.length;
+      const rowHeight = 73;
+      const totalTableHeight = numberOfRows * rowHeight;
+
+      if (totalTableHeight > (this.windowHeight - 350)) {
+        return this.windowHeight - 350;
+      }
+
+      return totalTableHeight + "px";
     },
   },
 
