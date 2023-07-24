@@ -359,8 +359,19 @@ export default {
       // remove the modelID from connected place
       var index = this.object.models.indexOf(model.id);
       if (index != -1) {
-        this.object.models.splice(index, 1)
+        this.object.models.splice(index, 1);
         this.object.lastChanged = Date.now();
+        if ( this.object_type === 'Places') {
+          if ( this.object.lines.length > 0 ) {
+            for ( const line of this.object.lines ) {
+              const lineToBeDeleted = await fromOfflineDB.getObject(line, 
+                'Lines', 'lines');
+              await fromOfflineDB.deleteObject(lineToBeDeleted, 'Lines', 
+                'lines')
+            }
+            this.object.lines = []
+          }
+        }
         await fromOfflineDB.updateObject(
           toRaw(this.object), this.object_type, this.object_type.toLowerCase());
       }
