@@ -48,7 +48,6 @@
                   </v-text-field>
                 </v-col>
 
-                
                 <v-col lg="2">
                   <v-text-field 
                     color="primary" 
@@ -64,7 +63,7 @@
                   <v-checkbox
                     class="pl-4"
                     hide-details
-                    v-model="isSeperate"
+                    v-model="isSeparate"
                     label="isSeparate" >
                   </v-checkbox>
                   <!-- maybe as tooltip -->

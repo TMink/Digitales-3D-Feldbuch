@@ -52,7 +52,7 @@ export default {
         dating: '',
         addressOf: '',
         date: new Date().toLocaleDateString("de-DE"),
-        isSeperate: false,
+        isSeparate: false,
 
         images: [],
         models: [],
