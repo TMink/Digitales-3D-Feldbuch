@@ -64,4 +64,5 @@ export default {
   current_selection: "Current Selection",
   confirm_del: "Do you really want to delete {object} Nr. {object_nr}?",
   overview: "{msg} Overview",
+  visibilities: "Bad | Moderate | Good | Very Good"
 };
