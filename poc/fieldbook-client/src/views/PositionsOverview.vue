@@ -1,103 +1,276 @@
 <template>
   <div id="wrapper">
     <Navigation active_tab_prop="2" />
-    <v-row class="pt-4">
-      <v-spacer></v-spacer>
-      <v-form class="w-75 pa-2">
 
-        <!-- LIST TITLE -->
-        <v-card-text v-if="positions.length !== 0">
-          <div>
-            <h3><v-row class="justify-center">
-                <v-col cols="1" class="text-left">
-                  Nr.
-                </v-col>
-                <v-col cols="2" class="text-left">
-                  Unter-Nr.
-                </v-col>
-                <v-col cols="6" class="text-left">
-                  Titel
-                </v-col>
-                <v-col cols="2" class="text-left">
-                  Datum
-                </v-col>
-              </v-row></h3>
-          </div>
-        </v-card-text>
+    <v-row no-gutters class="align-center pa-2">
+        <v-spacer></v-spacer>
+        <v-card class="ma-2 w-50" variant="text">
+          <v-row no-gutters class="align-center pa-2">
+
+            <!-- SHOW ALL SWITCH-->
+            <v-col cols="3">
+              <v-switch
+                class="pl-3" 
+                v-model="showAllInfo"
+                hide-details 
+                label="Show all info">
+              </v-switch>
+            </v-col>
+          
+            <v-divider vertical class="ml-2 mr-6" />
+            <!-- PLACES SEARCH -->
+            <v-col cols="8">
+              <v-text-field 
+                v-model="searchQuery" 
+                append-icon="mdi-magnify" 
+                label="Search" 
+                single-line 
+                hide-details>
+              </v-text-field>
+            </v-col>
+          </v-row>
+        </v-card>
+        <v-spacer></v-spacer>
+      </v-row>
+
+    <v-form class="px-6">
+      <v-row>
+        <v-spacer></v-spacer>
 
         <!-- POSITIONS LIST -->
-        <v-card>
-          <v-list-subheader v-if="positions.length === 0">
-            {{ $t('not_created_yet', { object: $tc('position', 2) }) }}
-          </v-list-subheader>
-
-          <v-card-title>
-            <v-text-field
-              v-model="searchQuery"
-              append-icon="mdi-magnify"
-              label="Search"
-              single-line
-              hide-details
-            ></v-text-field>
-          </v-card-title>
+        <v-card class="pa-3"
+          :min-width="windowWidth * 0.5">
 
           <v-data-table-virtual
+            v-show="!showAllInfo"
             :items="filteredPositions"
-            class="elevation-1"
+            fixed-header
             :height="getTableHeight"
+            :headers="headers"
             max-height>
 
-            <template v-slot:item="{ item }">
-              <v-list-item v-on:click="moveToPosition(item.raw.id)">
-                <v-row class="justify-center align-center my-2">
-                  <v-col cols="1">
+            <template v-slot:item="{ item, index }">
+              <tr v-on:click="moveToPosition(item.raw.id)"
+                  @mouseenter="setHoveredRow(index, true)"
+                  @mouseleave="setHoveredRow(index, false)">
+
+                  <!-- POSITION NUMBER -->
+                  <td :style="getRowStyle(index)">
                     <v-list-item-title>
                       {{ item.raw.positionNumber }}
                     </v-list-item-title>
-                    
-                  </v-col>
-                  <v-col cols="2">
+                  </td>
+
+                  <!-- SUB NUMBER -->
+                  <td :style="getRowStyle(index)">
                     <v-list-item-title>
                       {{ item.raw.subNumber }}
                     </v-list-item-title>
-                  </v-col>
+                  </td>
 
-                  <v-col cols="6">
+                  <!-- TITLE -->
+                  <td class="py-6" :style="getRowStyle(index)">
                     <v-list-item-title
-                      class="text-wrap" 
-                      v-if="item.raw.title.length != 0">
+                      v-if="item.raw.title.length > 0"
+                      style="min-width:200px" 
+                      class="text-wrap">
                       {{ item.raw.title }}
                     </v-list-item-title>
 
                     <v-list-item-title 
-                      class="text-grey-darken-1" 
-                      v-if="item.raw.title.length == 0">
-                      {{ $t('title') }}
+                      v-if="item.raw.title.length == 0" style="color:dimgrey;">
+                      -
                     </v-list-item-title>
-                  </v-col>
+                  </td>
 
-                  <v-col cols="2">
-                    <v-list-item-title 
-                      v-if="item.raw.date.length != 0">
-                      {{ item.raw.date }}
+                  <!-- DATE -->
+                  <td :style="getRowStyle(index)">
+                    <v-list-item-title>
+                      {{ item.raw.date || '-' }}
                     </v-list-item-title>
-
-                    <v-list-item-title 
-                      class="text-grey-darken-1" 
-                      v-if="item.raw.date.length == 0">
-                      {{ $t('date') }}
-                    </v-list-item-title>
-                  </v-col>
-
-                </v-row>
-                <v-divider></v-divider>
-              </v-list-item>
+                  </td>
+              </tr>
             </template>
           </v-data-table-virtual>
+
+          <!-- POSITIONS LIST COMPLETE -->
+            <v-data-table-virtual
+              fixed-header
+              v-show="showAllInfo"
+              :items="filteredPositions" 
+              :height="getTableHeight"
+              :headers="fullHeaders">
+
+              <template v-slot:item="{ item, index }">
+                <tr v-on:click="moveToPosition(item.raw.id)" 
+                  @mouseenter="setHoveredRow(index, true)"
+                  @mouseleave="setHoveredRow(index, false)">
+
+                  <!-- PLACE NUMBER -->
+                  <td :style="getRowStyle(index)">
+                    <v-list-item-title>
+                      {{ item.raw.positionNumber }}
+                    </v-list-item-title>
+                  </td>
+
+                  <!-- SUB NUMBER -->
+                  <td :style="getRowStyle(index)">
+                    <v-list-item-title>
+                      {{ item.raw.subNumber }}
+                    </v-list-item-title>
+                  </td>
+
+                  <!-- TITLE -->
+                  <td class="py-2" :style="getRowStyle(index)">
+                    <v-list-item-title
+                      v-if="item.raw.title.length > 0"
+                      style="min-width:200px" 
+                      class="text-wrap">
+                      {{ item.raw.title }}
+                    </v-list-item-title>
+
+                    <v-list-item-title 
+                      v-if="item.raw.title.length == 0" style="color:dimgrey;">
+                      -
+                    </v-list-item-title>
+                  </td>
+
+                  <!-- DATING -->
+                    <td :style="getRowStyle(index)">
+                      <v-list-item-title 
+                        v-if="item.raw.dating">
+                        {{ item.raw.dating }}
+                      </v-list-item-title>
+
+                      <v-list-item-title 
+                        v-if="!item.raw.dating" style="color:dimgrey;">
+                        -
+                      </v-list-item-title>
+                    </td>
+
+                  <!-- RIGHT VALUES -->
+                  <td :style="getRowStyle(index)" class="align-right">
+                    <v-list-item-title 
+                      v-if="item.raw.right">
+                      {{ item.raw.right }}
+                    </v-list-item-title>
+
+                    <v-list-item-title 
+                      v-if="!item.raw.right" style="color:dimgrey;">
+                      -
+                    </v-list-item-title>
+                  </td>
+
+                  <!-- UP VALUES -->
+                  <td :style="getRowStyle(index)" class="align-right">
+                    <v-list-item-title v-if="item.raw.up">
+                      {{ item.raw.up }}
+                    </v-list-item-title>
+
+                    <v-list-item-title 
+                      v-if="!item.raw.up" style="color:dimgrey;">
+                      -
+                    </v-list-item-title>
+                  </td>
+
+                  <!-- HEIGHT -->
+                    <td :style="getRowStyle(index)" class="align-right">
+                      <v-list-item-title v-if="item.raw.height">
+                        {{ item.raw.up }}
+                      </v-list-item-title>
+
+                      <v-list-item-title 
+                        v-if="!item.raw.height" style="color:dimgrey;">
+                        -
+                      </v-list-item-title>
+                    </td>
+
+                  <!-- PLANE -->
+                  <td :style="getRowStyle(index)">
+                    <v-list-item-title 
+                      v-if="item.raw.count != ''" class="text-wrap">
+                      {{ item.raw.count || '-' }}
+                    </v-list-item-title>
+                    <v-list-item-title 
+                      v-if="item.raw.count == ''" style="color:dimgrey;">
+                      -
+                    </v-list-item-title>
+                  </td>
+
+                  <!-- WEIGHT -->
+                  <td :style="getRowStyle(index)">
+                    <v-list-item-title 
+                      v-if="item.raw.weight != ''" class="text-wrap">
+                      {{ item.raw.weight || '-' }}
+                    </v-list-item-title>
+                    <v-list-item-title 
+                      v-if="item.raw.weight == ''" style="color:dimgrey;">
+                      -
+                    </v-list-item-title>
+                  </td>
+
+                  <!-- WEIGHT -->
+                    <td :style="getRowStyle(index)">
+                      <v-list-item-title 
+                        v-if="item.raw.material != ''" class="text-wrap">
+                        {{ item.raw.material || '-' }}
+                      </v-list-item-title>
+                      <v-list-item-title 
+                        v-if="item.raw.material == ''" style="color:dimgrey;">
+                        -
+                      </v-list-item-title>
+                    </td>
+
+                  <!-- DESCRIPTION -->
+                  <td :style="getRowStyle(index)">
+                    <v-list-item-title class="text-wrap">
+                      {{ item.raw.description }}
+                    </v-list-item-title>
+                    <v-list-item-title 
+                      v-if="item.raw.description == ''" style="color:dimgrey;">
+                      -
+                    </v-list-item-title>
+                  </td>
+
+                  <!-- EDITOR -->
+                  <td :style="getRowStyle(index)">
+                    <v-list-item-title
+                      v-if="item.raw.addressOf != ''">
+                      {{ item.raw.addressOf }}
+                    </v-list-item-title>
+                    <v-list-item-title 
+                      v-if="item.raw.addressOf == ''" style="color:dimgrey;">
+                      -
+                    </v-list-item-title>
+                  </td>
+
+                  <!-- DATE -->
+                  <td :style="getRowStyle(index)">
+                    <v-list-item-title>
+                      {{ item.raw.date}}
+                    </v-list-item-title>
+                  </td>
+
+                  <!-- IS SEPARATE -->
+                  <td :style="getRowStyle(index)">
+                    <v-list-item-title 
+                      v-if="item.raw.isSeparate">
+                      &cross;
+                    </v-list-item-title>
+
+                    <v-list-item-title 
+                      v-if="!item.raw.isSeparate" style="color:dimgrey;">
+                      -
+                    </v-list-item-title>
+                  </td>
+                  <v-divider></v-divider>
+                </tr>
+              </template>
+            </v-data-table-virtual>
         </v-card>
+        <v-spacer></v-spacer>
+      </v-row>
       </v-form>
-      <v-spacer></v-spacer>
-    </v-row>
 
     <AddPosition :positions_prop="positions" @updatePositions="updatePositions()" />
   </div>
@@ -128,15 +301,51 @@ export default {
     return {
       positions: [],
       searchQuery: '',
+      showAllInfo: false,
+      hoveredRow: -1,
       headers: [
         {
-          title: 'positionNumber',
+          title: 'Pos. Number',
+          align: 'start',
+          sortable: true,
+          key: 'positionNumber',
+          width: "50px",
+        },
+        {
+          title: 'Sub-\nNr.',
+          align: 'start',
+          sortable: true,
+          key: 'subNumber',
+          width: "50px",
+        },
+        { title: 'Title', align: 'start', key: 'title' },
+        { title: 'Date', align: 'start', key: 'date', width: "100px" },
+      ],
+      fullHeaders: [
+        {
+          title: 'Nr.',
           align: 'start',
           sortable: true,
           key: 'positionNumber',
         },
-        { title: 'title', align: 'start', key: 'title' },
-        { title: 'date', align: 'end', key: 'date' },
+        {
+          title: 'Sub-\nNr.',
+          align: 'start',
+          sortable: true,
+          key: 'subNumber',
+        },
+        { title: 'Title', align: 'start', key: 'title' },
+        { title: 'Dating', align: 'start', key: 'dating' },
+        { title: 'Right', align: 'start', key: 'right' },
+        { title: 'Up', align: 'start', key: 'up' },
+        { title: 'Height', align: 'start', key: 'height' },
+        { title: 'Count', align: 'start', key: 'count' },
+        { title: 'Weight', align: 'start', key: 'weight' },
+        { title: 'Material', align: 'start', key: 'material' },
+        { title: 'Description', align: 'start', key: 'description' },
+        { title: 'Editor', align: 'start', key: 'editor' },
+        { title: 'Date', align: 'start', key: 'date' },
+        { title: 'isSeparate', align: 'start', key: 'isSeparate' },
       ],
     };
   },
@@ -238,6 +447,34 @@ export default {
         item.title.match(re) ||
         item.date.match(re)
       );
+    },
+
+    /**
+     * Get the style for the row at the specified index.
+     *
+     * @param {number} index The index of the row
+     * @returns {Object} An object containing row style properties
+     */
+    getRowStyle(index) {
+      return {
+        backgroundColor: this.hoveredRow === index ? '#2f3845' : 'transparent',
+        cursor: 'pointer',
+        padding: '8px 16px'
+      };
+    },
+    /**
+     * Update the hoveredRow based on the isHovered flag.
+     *
+     * @param {number} index - The index of the row being hovered.
+     * @param {boolean} isHovered - Indicates if the row is being hovered 
+     *                              (true) or not (false).
+     */
+    setHoveredRow(index, isHovered) {
+      if (isHovered) {
+        this.hoveredRow = index;
+      } else if (this.hoveredRow === index) {
+        this.hoveredRow = -1;
+      }
     },
   }
 }
