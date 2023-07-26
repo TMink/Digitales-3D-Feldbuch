@@ -13,7 +13,7 @@
                 class="pl-3" 
                 v-model="showAllInfo"
                 hide-details 
-                label="Show all info">
+                :label="this.$t('showAll')">
               </v-switch>
             </v-col>
           
@@ -23,7 +23,7 @@
               <v-text-field 
                 v-model="searchQuery" 
                 append-icon="mdi-magnify" 
-                label="Search" 
+                :label="this.$t('search')" 
                 single-line 
                 hide-details>
               </v-text-field>
@@ -304,47 +304,47 @@ export default {
       hoveredRow: -1,
       headers: [
         {
-          title: 'Pos. Number',
+          title: this.$t('posNumber'),
           align: 'start',
           sortable: true,
           key: 'positionNumber',
           width: "50px",
         },
         {
-          title: 'Sub-\nNr.',
+          title: this.$t('subNumber'),
           align: 'start',
           sortable: true,
           key: 'subNumber',
           width: "50px",
         },
-        { title: 'Title', align: 'start', key: 'title' },
-        { title: 'Date', align: 'start', key: 'date', width: "100px" },
+        { title: this.$tc('title', 2), align: 'start', key: 'title' },
+        { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
       ],
       fullHeaders: [
         {
-          title: 'Nr.',
+          title: this.$t('posNumber'),
           align: 'start',
           sortable: true,
           key: 'positionNumber',
         },
         {
-          title: 'Sub-\nNr.',
+          title: this.$t('subNumber'),
           align: 'start',
           sortable: true,
           key: 'subNumber',
         },
-        { title: 'Title', align: 'start', key: 'title' },
-        { title: 'Dating', align: 'start', key: 'dating' },
-        { title: 'Right', align: 'start', key: 'right' },
-        { title: 'Up', align: 'start', key: 'up' },
-        { title: 'Height', align: 'start', key: 'height' },
-        { title: 'Count', align: 'start', key: 'count' },
-        { title: 'Weight', align: 'start', key: 'weight' },
-        { title: 'Material', align: 'start', key: 'material' },
-        { title: 'Description', align: 'start', key: 'description' },
-        { title: 'Editor', align: 'start', key: 'editor' },
-        { title: 'Date', align: 'start', key: 'date' },
-        { title: 'isSeparate', align: 'start', key: 'isSeparate' },
+        { title: this.$tc('title', 2), align: 'start', key: 'title' },
+        { title: this.$t('dating'), align: 'start', key: 'dating' },
+        { title: this.$t('right'), align: 'start', key: 'right' },
+        { title: this.$t('up'), align: 'start', key: 'up' },
+        { title: this.$t('height'), align: 'start', key: 'height' },
+        { title: this.$t('count'), align: 'start', key: 'count' },
+        { title: this.$t('weight'), align: 'start', key: 'weight' },
+        { title: this.$t('material'), align: 'start', key: 'material' },
+        { title: this.$t('description'), align: 'start', key: 'description' },
+        { title: this.$t('editor'), align: 'start', key: 'editor' },
+        { title: this.$t('date'), align: 'start', key: 'date' },
+        { title: this.$t('isSeparate'), align: 'start', key: 'isSeparate' },
       ],
     };
   },
