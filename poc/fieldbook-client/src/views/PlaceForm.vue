@@ -6,12 +6,12 @@
           <v-tabs v-model="tab" direction="vertical" color="primary">
             <v-tab value="one" rounded="0"> {{ $t('general') }} </v-tab>
             <v-tab value="two" rounded="0"> {{ $tc('position', 2) }} </v-tab>
-            <v-tab value="three" rounded="0"> Zeichnungen<!-- {{ $tc('model', 2) }} --> </v-tab>
+            <v-tab value="three" rounded="0"> {{ $tc('drawing', 2) }} </v-tab>
             <v-tab value="four" rounded="0"> {{ $tc('model', 2) }} </v-tab>
             <v-btn rounded="0" v-on:click="savePlace()" color="primary">
               {{ $t('save') }}
             </v-btn>
-            <v-btn rounded="0" color="error" v-on:click="confirmDeletion()">
+            <v-btn rounded="0" color="error" v-on:click="confirmDeletion(place)">
               {{ $t('delete') }}
             </v-btn>
 
@@ -42,10 +42,10 @@
                     color="primary"
                     :items="titles" 
                     persistent-hint
-                    label="Ansprache" 
+                    :label="$tc('title', 2)" 
                     :hide-no-data="false" 
-                    v-model="place.title/* place.title */" 
-                    hint="Add max. 5 tags which describe the place">
+                    v-model="place.title" 
+                    :hint="$t('addMax5')">
 
                     <template #selection="{ item }">
                       <v-chip color="secondary">{{ item }}</v-chip>
@@ -54,9 +54,7 @@
                     <template v-slot:no-data>
                       <v-list-item>
                         <v-list-item-title>
-                          No results matching 
-                          "<strong>{{ search }}</strong>".
-                           Press <kbd>enter</kbd> to create a new one
+                          {{ $t('noResults')}}
                         </v-list-item-title>
                       </v-list-item>
                     </template>
@@ -91,14 +89,14 @@
                   <v-row class="pl-4 pb-4 justify-center">
                     <v-col cols="6">
                       <v-tooltip
-                        text="Falls die Stelle kein Befund ist (Arbeitsbereich, Störung, natürliche Verfärbung etc.)"
+                        :text="$t('noFindDescr')"
                         location="bottom">
                         <template v-slot:activator="{ props }">
                           <v-checkbox 
                             v-bind="props" 
                             color="primary" 
                             persistent-hint 
-                            label="Kein Befund"
+                            :label="$t('noFind')"
                             v-model="place.noFinding">
                           </v-checkbox>
                         </template>
@@ -107,14 +105,14 @@
 
                     <v-col cols="6">
                       <v-tooltip
-                        text="Falls bei einem Bodeneingriff der Befund noch unterhalb der Eingriffstiefe erhalten ist."
+                        :text="$t('restFindDescr')"
                         location="bottom">
                         <template v-slot:activator="{ props }">
                           <v-checkbox 
                             v-bind="props" 
                             persistent-hint 
                             color="secondary" 
-                            label="Rest Befund"
+                            :label="$t('restFind')"
                             v-model="place.restFinding">
                           </v-checkbox>
                         </template>
@@ -131,7 +129,7 @@
             <v-card>
               <v-card-text>
                 <h2 class="text-h6 font-weight-medium pb-2">
-                  Gauss-Krüger-Koordinaten
+                  {{$t('gaussKrueger')}}
                 </h2>
               </v-card-text>
               <v-row no-gutters justify="center">
@@ -449,19 +447,19 @@ export default {
       },
       headers: [
         {
-          title: 'Pos. Nr.',
+          title: this.$t('posNumber'),
           align: 'start',
           sortable: true,
           key: 'positionNumber',
         },
         {
-          title: 'Sub-\nNr.',
+          title: this.$t('subNumber'),
           align: 'start',
           sortable: true,
           key: 'subNumber',
         },
-        { title: 'title', align: 'start', key: 'title' },
-        { title: 'date', align: 'start', key: 'date' },
+        { title: this.$tc('title', 2), align: 'start', key: 'title' },
+        { title: this.$t('date'), align: 'start', key: 'date' },
       ],
       searchQuery: '',
       hoveredRow: -1,
@@ -550,13 +548,17 @@ export default {
     },
 
     /**
-     * Opens the confirmation dialog
+     * Opens the confirmation dialog for deletion#
+     * @param {Object} place 
      */
-    async confirmDeletion() {
+    async confirmDeletion(place) {
       if (
         await this.$refs.confirm.open(
-          "Confirm",
-          "Are you sure you want to delete the place " + this.place.placeNumber + "?"
+          this.$t('confirm'),
+          this.$t('confirm_del', {
+            object: this.$tc('place', 1),
+            object_nr: place.placeNumber
+          })
         )
       ) {
         this.deletePlace();
