@@ -40,7 +40,7 @@
 
   <!-- MODEL CREATION DIALOG -->
   <v-dialog v-model="create_dialog" max-width="800" persistent>
-    <v-card>
+    <v-card class="pa-4">
       <v-card-title>
         {{ $t('add', { msg: $t('model') }) }}
       </v-card-title>
@@ -48,7 +48,7 @@
         <v-row v-if='object.placeNumber > 0'>
           <v-col cols="2">
             <v-card-title>
-              Place
+              {{ $t('place') }}
             </v-card-title>
           </v-col>
 
@@ -64,7 +64,7 @@
         <v-row no-gutters v-if="object.positionNumber > 0">
           <v-col cols="2">
             <v-card-title>
-              Position
+              {{ $t('position') }}
             </v-card-title>
           </v-col>
 
@@ -121,7 +121,7 @@
           <v-row v-if='object.placeNumber > 0'>
             <v-col cols="2">
               <v-card-title>
-                Place
+                {{ $t('place')}}
               </v-card-title>
             </v-col>
 
@@ -137,7 +137,7 @@
           <v-row v-if="object.positionNumber > 0">
             <v-col cols="2">
               <v-card-title>
-                Position
+                {{ $t('position') }}
               </v-card-title>
             </v-col>
 
@@ -154,7 +154,7 @@
               <v-text-field 
                 disabled 
                 v-model="object.subNumber" 
-                label="Sub-Nr.">
+               :label="$t('subNumber')">
               </v-text-field>
             </v-col>
           </v-row>
@@ -162,7 +162,7 @@
           <v-row no-gutters>
             <v-col cols="2">
               <v-card-title>
-                Model
+                {{ $t('model') }}
               </v-card-title>
             </v-col>
             <v-col cols="3">
@@ -267,7 +267,6 @@ export default {
       var objectType = this.object_type.substring(0, this.object_type.length - 1);
       this.models = await fromOfflineDB.getAllObjectsWithID(
         this.object_id, objectType, 'Models', this.object_type.toLowerCase());
-        
     },
 
     /**
@@ -356,7 +355,7 @@ export default {
      */
     async deleteModel(model) {
 
-      // remove the modelID from connected place
+      // remove the modelID from connected place/position
       var index = this.object.models.indexOf(model.id);
       if (index != -1) {
         this.object.models.splice(index, 1);
