@@ -12,7 +12,7 @@
               class="pl-3" 
               v-model="showAllInfo"
               hide-details 
-              label="Show all info">
+              :label="this.$t('showAll')">
             </v-switch>
           </v-col>
           
@@ -22,7 +22,7 @@
             <v-text-field 
               v-model="searchQuery" 
               append-icon="mdi-magnify" 
-              label="Search" 
+              :label="this.$t('search')" 
               single-line 
               hide-details>
             </v-text-field>
@@ -155,7 +155,7 @@
                   <v-list-item-title 
                     v-if="item.raw.rightTo">
                     <span style="color:dimgrey">
-                      to
+                      {{ $t('to') }}
                     </span>
                     {{ item.raw.rightTo}}
                   </v-list-item-title>
@@ -178,7 +178,7 @@
                     </v-list-item-title>
                     <v-list-item-title>
                       <span style="color:dimgrey; text-align: left;">
-                        to
+                        {{ $t('to') }}
                       </span>
                       {{ item.raw.upTo || '-' }}
                     </v-list-item-title>
@@ -332,8 +332,8 @@ export default {
           key: 'placeNumber',
           width: "50px"
         },
-        { title: 'Title', align: 'start', key: 'title' },
-        { title: 'Date', align: 'start', key: 'date', width: "100px" },
+        { title: this.$tc('title',2), align: 'start', key: 'title' },
+        { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
       ],
       fullHeaders: [
         {
@@ -343,17 +343,17 @@ export default {
           key: 'placeNumber',
           width: "25px"
         },
-        { title: 'Title', align: 'start', key: 'title', width: "250px" },
-        { title: 'No\nFind', align: 'start', key: 'noFinding', width: "50px" },
-        { title: 'Rest\nFind', align: 'start', key: 'restFinding', width: "50px" },
-        { title: 'Right', align: 'end', key: 'right', width: "50px" },
-        { title: 'Up', align: 'end', key: 'up', width: "50px" },
-        { title: 'Depth', align: 'end', key: 'depthBot', width: "50px" },
-        { title: 'Plane', align: 'start', key: 'plane', width: "150px" },
-        { title: 'Visibility', align: 'start', key: 'visibility', width: "50px" },
-        { title: 'Description', align: 'start', key: 'description', width: "150px" },
-        { title: 'Editor', align: 'start', key: 'editor', width: "50px" },
-        { title: 'Date', align: 'start', key: 'date', width: "100px" },
+        { title: this.$tc('title', 2), align: 'start', key: 'title', width: "250px" },
+        { title: this.$t('noFind'), align: 'start', key: 'noFinding', width: "50px" },
+        { title: this.$t('restFind'), align: 'start', key: 'restFinding', width: "50px" },
+        { title: this.$t('right'), align: 'end', key: 'right', width: "50px" },
+        { title: this.$t('up'), align: 'end', key: 'up', width: "50px" },
+        { title: this.$t('depth'), align: 'end', key: 'depthBot', width: "50px" },
+        { title: this.$t('plane'), align: 'start', key: 'plane', width: "150px" },
+        { title: this.$t('visibility'), align: 'start', key: 'visibility', width: "50px" },
+        { title: this.$t('description'), align: 'start', key: 'description', width: "150px" },
+        { title: this.$t('editor'), align: 'start', key: 'editor', width: "50px" },
+        { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
       ],
     };
   },

@@ -17,7 +17,8 @@
               <v-row no-gutters v-if="!activity.edit" class="align-center">
 
                 <v-col cols="9">
-                  <v-list-item class="pa-2 ma-2" v-on:click="setActivity(activity.id)">
+                  <v-list-item 
+                    class="pa-2 ma-2" v-on:click="setActivity(activity.id)">
                     <v-list-item-title class="ma-4 text-center">
                       {{ activity.activityNumber }}
                     </v-list-item-title>
@@ -25,11 +26,19 @@
                 </v-col>
 
                 <v-col cols="3" class="pa-4">
-                  <v-btn icon class="ma-1" color="primary" v-on:click="activity.edit = !activity.edit">
+                  <v-btn 
+                    icon 
+                    class="ma-1" 
+                    color="primary" 
+                    v-on:click="activity.edit = !activity.edit">
                     <v-icon>mdi-pencil</v-icon>
                   </v-btn>
 
-                  <v-btn icon color="error" class="ma-1" v-on:click="confirmDeletion(activity)">
+                  <v-btn 
+                    icon 
+                    color="error" 
+                    class="ma-1" 
+                    v-on:click="confirmDeletion(activity)">
                     <v-icon>mdi-delete</v-icon>
                   </v-btn>
                 </v-col>
@@ -42,18 +51,34 @@
                   <v-row no-gutters class="justify-center">
 
                     <v-col id="activityBranchOffice" cols="4" class="pt-2 px-2">
-                      <v-text-field color="primary" counter maxlength="20" label="Außenstelle" :rules="[rules.required]"
+                      <v-text-field 
+                        counter 
+                        maxlength="20" 
+                        color="primary" 
+                        label="Außenstelle" 
+                        :rules="[rules.required]"
                         v-model="activity.branchOffice">
                       </v-text-field>
                     </v-col>
 
                     <v-col id="activityYear" min-width="300px" cols="3" class="pt-2 px-2">
-                      <v-text-field color="primary" counter label="Jahr" maxlength="4" v-model="activity.year" :rules="[rules.required]">
+                      <v-text-field 
+                        counter 
+                        label="Jahr" 
+                        maxlength="4" 
+                        color="primary" 
+                        v-model="activity.year" 
+                        :rules="[rules.required]">
                       </v-text-field>
                     </v-col>
 
                     <v-col id="activityNumber" cols="3" class="pt-2 px-2">
-                      <v-text-field color="primary" counter maxlength="4" label="Nummer" v-model="activity.number"
+                      <v-text-field 
+                        counter 
+                        maxlength="4" 
+                        label="Nummer" 
+                        color="primary" 
+                        v-model="activity.number"
                         :rules="[rules.required]">
                       </v-text-field>
                     </v-col>
@@ -61,10 +86,18 @@
                 </v-col>
 
                 <v-col cols="3" class="pa-4">
-                  <v-btn icon class="ma-1" color="primary" v-on:click="saveActivity(activity)">
+                  <v-btn 
+                    icon 
+                    class="ma-1" 
+                    color="primary" 
+                    v-on:click="saveActivity(activity)">
                     <v-icon>mdi-content-save-all</v-icon>
                   </v-btn>
-                  <v-btn icon class="ma-1" color="error" v-on:click="closeActivityEdit(activity)">
+                  <v-btn 
+                    icon 
+                    class="ma-1" 
+                    color="error" 
+                    v-on:click="closeActivityEdit(activity)">
                     <v-icon>mdi-close-circle</v-icon>
                   </v-btn>
                 </v-col>
@@ -227,14 +260,15 @@ export default {
 
     /**
      * Opens the confirmation dialog for deletion
-     * @param {*} activity 
+     * @param {Object} activity 
      */
     async confirmDeletion(activity) {
       if (
         await this.$refs.confirm.open(
-          "Confirm",
-          "Are you sure you want to delete the activity "
-          + activity.activityNumber + "?"
+          this.$t('confirm'),
+          this.$t('confirm_del', {
+              object: this.$tc('activity', 1), 
+              object_nr: activity.activityNumber })
         )
       ) {
         this.deleteActivity(activity);
@@ -252,7 +286,7 @@ export default {
 
       await fromOfflineDB.deleteCascade(activity.id, 'place', 'Places',
         'places');
-      await fromOfflineDB.deleteObject(toRaw(activity), 'Activities', 'activities')
+      await fromOfflineDB.deleteObject(toRaw(activity), 'Activities', 'activities');
       await this.updateActivities();
     },
   }
