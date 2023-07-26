@@ -38,8 +38,7 @@
         <v-spacer></v-spacer>
 
         <!-- POSITIONS LIST -->
-        <v-card class="pa-3"
-          :min-width="windowWidth * 0.5">
+        <v-card class="pa-3" :min-width="windowWidth * 0.5">
 
           <v-data-table-virtual
             v-show="!showAllInfo"
@@ -384,9 +383,10 @@ export default {
     },
     getTableHeight() {
       // Calculate the required table height based on the number of items
-      const numberOfRows = this.positions.length;
+      const numberOfRows = this.positions.length > 0 ? this.positions.length : 1;
+      const headerHeight = 56;
       const rowHeight = 73;
-      const totalTableHeight = numberOfRows * rowHeight;
+      const totalTableHeight = numberOfRows * rowHeight + headerHeight;
 
       if (totalTableHeight > (this.windowHeight - 450)) {
         return this.windowHeight - 450;

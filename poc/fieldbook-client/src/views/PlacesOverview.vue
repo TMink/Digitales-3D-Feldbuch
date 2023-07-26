@@ -39,7 +39,7 @@
         <!-- PLACES TABLE SMALL -->
         <v-card 
           class="pa-3"
-          :min-width="windowWidth * 0.75">
+          :min-width="windowWidth * 0.5">
           <v-data-table-virtual 
             v-show="!showAllInfo"
             :items="filteredPlaces"
@@ -58,13 +58,22 @@
                     {{ item.raw.placeNumber }}
                   </v-list-item-title>
                 </td>
+
                 <!-- TITLE -->
-                <td :style="getRowStyle(index)">
-                  <v-list-item-title 
-                    class="text-wrap">
-                    {{ item.raw.title.join("; ") || '-' }}
-                  </v-list-item-title>
-                </td>
+                  <td class="py-2" :style="getRowStyle(index)">
+                    <v-list-item-title
+                      v-if="item.raw.title.length > 0"
+                      style="min-width:200px" 
+                      class="text-wrap">
+                      {{ item.raw.title.join("; ") }}
+                    </v-list-item-title>
+
+                    <v-list-item-title 
+                      v-if="item.raw.title.length == 0" style="color:dimgrey;">
+                      -
+                    </v-list-item-title>
+                  </td>
+
                 <!-- DATE -->
                 <td :style="getRowStyle(index)">
                   <v-list-item-title>
@@ -74,10 +83,9 @@
               </tr>
             </template>
           </v-data-table-virtual>
-        
-
+                 
           <!-- PLACES LIST COMPLETE -->
-          <v-data-table-virtual 
+          <v-data-table-virtual
             fixed-header
             v-show="showAllInfo"
             :items="filteredPlaces" 
@@ -217,8 +225,13 @@
 
                 <!-- PLANE -->
                 <td :style="getRowStyle(index)">
-                  <v-list-item-title class="text-wrap">
+                  <v-list-item-title 
+                    v-if="item.raw.plane != ''" class="text-wrap">
                     {{ item.raw.plane || '-' }}
+                  </v-list-item-title>
+                  <v-list-item-title 
+                    v-if="item.raw.plane == ''" style="color:dimgrey;">
+                    -
                   </v-list-item-title>
                 </td>
 
@@ -230,21 +243,30 @@
                   </v-list-item-title>
                   <v-list-item-title 
                     v-if="item.raw.visibility == ''" style="color:dimgrey;">
-                      -
-                    </v-list-item-title>
+                    -
+                  </v-list-item-title>
                 </td>
 
                 <!-- DESCRIPTION -->
                 <td :style="getRowStyle(index)">
                   <v-list-item-title class="text-wrap">
-                    {{ item.raw.description || '-' }}
+                    {{ item.raw.description }}
+                  </v-list-item-title>
+                  <v-list-item-title 
+                    v-if="item.raw.description == ''" style="color:dimgrey;">
+                    -
                   </v-list-item-title>
                 </td>
 
                 <!-- EDITOR -->
                 <td :style="getRowStyle(index)">
-                  <v-list-item-title>
+                  <v-list-item-title
+                    v-if="item.raw.editor != ''">
                     {{ item.raw.editor || '-' }}
+                  </v-list-item-title>
+                  <v-list-item-title 
+                    v-if="item.raw.editor == ''" style="color:dimgrey;">
+                    -
                   </v-list-item-title>
                 </td>
 
@@ -369,9 +391,10 @@ export default {
     },
     getTableHeight() {
       // Calculate the required table height based on the number of items
-      const numberOfRows = this.places.length;
+      const numberOfRows = this.places.length > 0 ? this.places.length : 1;
+      const headerHeight = 56;
       const rowHeight = 73;
-      const totalTableHeight = numberOfRows * rowHeight;
+      const totalTableHeight = numberOfRows * rowHeight + headerHeight;
 
       if (totalTableHeight > (this.windowHeight - 450)) {
         return this.windowHeight - 450;

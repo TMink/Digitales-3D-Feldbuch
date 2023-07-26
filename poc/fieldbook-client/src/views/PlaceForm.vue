@@ -290,77 +290,55 @@
           <!-- Tab item 'positions' -->
           <v-window-item value="two">
             <v-form>
-              <!-- LIST TITLE -->
-              <v-card-text v-if="positions.length !== 0">
-                <div>
-                  <h3><v-row class="justify-center">
-                      <v-col cols="1" class="text-left">
-                        Nr.
-                      </v-col>
-                      <v-col cols="2" class="text-left">
-                        Unter-Nr.
-                      </v-col>
-                      <v-col cols="6" class="text-left">
-                        Titel
-                      </v-col>
-                      <v-col cols="2" class="text-left">
-                        Datum
-                      </v-col>
-                    </v-row></h3>
-                </div>
-              </v-card-text>
-              <v-card>
+              <v-card class="pa-3" :min-width="windowWidth * 0.5">
                 <v-data-table-virtual
                   :items="positions"
-                  class="elevation-1"
+                  fixed-header
                   :height="getTableHeight"
+                  :headers="headers"
                   max-height>
 
-                  <template v-slot:item="{ item }">
-                    <v-list-item v-on:click="moveToPosition(item.raw.id)">
-                      <v-row class="justify-center align-center my-2">
-                        <v-col cols="1">
+                  <template v-slot:item="{ item, index }">
+                    <tr v-on:click="moveToPosition(item.raw.id)"
+                        @mouseenter="setHoveredRow(index, true)"
+                        @mouseleave="setHoveredRow(index, false)">
+
+                        <!-- POSITION NUMBER -->
+                        <td :style="getRowStyle(index)">
                           <v-list-item-title>
                             {{ item.raw.positionNumber }}
                           </v-list-item-title>
-                        
-                        </v-col>
-                        <v-col cols="2">
+                        </td>
+
+                        <!-- SUB NUMBER -->
+                        <td :style="getRowStyle(index)">
                           <v-list-item-title>
                             {{ item.raw.subNumber }}
                           </v-list-item-title>
-                        </v-col>
+                        </td>
 
-                        <v-col cols="6">
+                        <!-- TITLE -->
+                        <td class="py-6" :style="getRowStyle(index)">
                           <v-list-item-title
-                            class="text-wrap" 
-                            v-if="item.raw.title.length != 0">
+                            v-if="item.raw.title.length > 0"
+                            style="min-width:200px" 
+                            class="text-wrap">
                             {{ item.raw.title }}
                           </v-list-item-title>
 
                           <v-list-item-title 
-                            class="text-grey-darken-1" 
-                            v-if="item.raw.title.length == 0">
-                            {{ $t('title') }}
+                            v-if="item.raw.title.length == 0" style="color:dimgrey;">
+                            -
                           </v-list-item-title>
-                        </v-col>
+                        </td>
 
-                        <v-col cols="2">
-                          <v-list-item-title 
-                            v-if="item.raw.date.length != 0">
-                            {{ item.raw.date }}
+                        <!-- DATE -->
+                        <td :style="getRowStyle(index)">
+                          <v-list-item-title>
+                            {{ item.raw.date || '-' }}
                           </v-list-item-title>
-
-                          <v-list-item-title 
-                            class="text-grey-darken-1" 
-                            v-if="item.raw.date.length == 0">
-                            {{ $t('date') }}
-                          </v-list-item-title>
-                        </v-col>
-
-                      </v-row>
-                      <v-divider></v-divider>
-                    </v-list-item>
+                        </td>
+                    </tr>
                   </template>
                 </v-data-table-virtual>
               </v-card>
@@ -471,15 +449,22 @@ export default {
       },
       headers: [
         {
-          title: 'positionNumber',
+          title: 'Pos. Nr.',
           align: 'start',
           sortable: true,
           key: 'positionNumber',
         },
+        {
+          title: 'Sub-\nNr.',
+          align: 'start',
+          sortable: true,
+          key: 'subNumber',
+        },
         { title: 'title', align: 'start', key: 'title' },
-        { title: 'date', align: 'end', key: 'date' },
+        { title: 'date', align: 'start', key: 'date' },
       ],
       searchQuery: '',
+      hoveredRow: -1,
       positions: null,
       titles: [],
       datings: [],
@@ -521,9 +506,10 @@ export default {
   computed: {
     getTableHeight() {
       // Calculate the required table height based on the number of items
-      const numberOfRows = this.positions.length;
+      const numberOfRows = this.positions.length > 0 ? this.positions.length : 1;
+      const headerHeight = 56;
       const rowHeight = 73;
-      const totalTableHeight = numberOfRows * rowHeight;
+      const totalTableHeight = numberOfRows * rowHeight + headerHeight;
 
       if (totalTableHeight > (this.windowHeight - 350)) {
         return this.windowHeight - 350;
@@ -656,6 +642,34 @@ export default {
         evt.preventDefault();
       } else {
         return true;
+      }
+    },
+
+    /**
+     * Get the style for the row at the specified index.
+     *
+     * @param {number} index The index of the row
+     * @returns {Object} An object containing row style properties
+     */
+    getRowStyle(index) {
+      return {
+        backgroundColor: this.hoveredRow === index ? '#2f3845' : 'transparent',
+        cursor: 'pointer',
+        padding: '8px 16px'
+      };
+    },
+    /**
+     * Update the hoveredRow based on the isHovered flag.
+     *
+     * @param {number} index - The index of the row being hovered.
+     * @param {boolean} isHovered - Indicates if the row is being hovered 
+     *                              (true) or not (false).
+     */
+    setHoveredRow(index, isHovered) {
+      if (isHovered) {
+        this.hoveredRow = index;
+      } else if (this.hoveredRow === index) {
+        this.hoveredRow = -1;
       }
     },
   }
