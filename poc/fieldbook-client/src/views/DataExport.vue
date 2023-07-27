@@ -10,7 +10,9 @@
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
 
-          <h2 class="text-center pb-4">AKTIVITÄTEN</h2>
+          <h2 class="text-center pb-4">
+            {{ $tc('activity', 2).toUpperCase() }}
+          </h2>
 
           <!--Lists all locally saved positions-->
           <v-data-table-virtual
@@ -34,7 +36,9 @@
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
 
-          <h2 class="text-center pb-4">STELLEN</h2>
+          <h2 class="text-center pb-4">
+            {{ $tc('place', 2).toUpperCase() }}
+          </h2>
 
           <!--Lists all locally saved places-->
           <v-data-table-virtual
@@ -56,7 +60,9 @@
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
           
-          <h2 class="text-center pb-4">POSITIONEN</h2>
+          <h2 class="text-center pb-4">
+            {{ $tc('position', 2).toUpperCase() }}
+          </h2>
           
           <!--Lists all locally saved positions-->
           <v-data-table-virtual
@@ -71,14 +77,14 @@
         <!-- EXPORT DIALOG -->
         <v-dialog v-model="export_overlay" max-width="800" persistent>
           <v-card>
-            <v-card-title>Export to PDF </v-card-title>
+            <v-card-title> {{ $t('export') }} </v-card-title>
             <v-card-text>
               <v-row class="text-center">
 
               <!-- ACTIVITIES -->
               <v-col cols="4" class="align-center" hide-details>
                 <v-switch 
-                  label="Activities"
+                  :label="$tc('activity', 2)"
                   :disabled="activity_open" 
                   v-model="exportActivities"
                   hide-details color="success">
@@ -86,10 +92,7 @@
 
                 <v-col> 
                   <p v-if="exportActivities">
-                    This will export {{ this.activities.length }} Activities
-                  </p>
-                  <p style="color:grey" v-if="!exportActivities">
-                    This will export 0 Activities
+                    {{ this.activities.length + ' ' + $tc('activity', 2) }}
                   </p>
                 </v-col>
               </v-col>
@@ -107,21 +110,20 @@
                 </v-switch>
                 <v-col>
                   <p v-if="exportPlaces">
-                    This will export {{ this.places.length }} Places
-                  </p>
-                  <p style="color:grey" v-if="!exportPlaces">
-                    This will export 0 Places
+                    {{ this.places.length + ' ' + $tc('place', 2) }}
                   </p>
                   <v-checkbox 
                     hide-details 
                     class="pt-4" 
-                    label="Export Drawings" 
+                    v-model="exportPlaceImages"
+                    :label="$t('exportObject', {object: $tc('image', 2) })" 
                     :disabled="!exportPlaces">
                   </v-checkbox>
 
                   <v-checkbox 
                     hide-details 
-                    label="Export Models" 
+                    v-model="exportPlaceModels"
+                    :label="$t('exportObject', {object: $tc('model', 2) })" 
                     :disabled="!exportPlaces">
                   </v-checkbox>
                 </v-col>
@@ -139,20 +141,17 @@
               
                 <v-col>
                   <p v-if="exportPositions">
-                    This will export {{ this.positions.length }} Positions
-                  </p>
-                  <p style="color:grey" v-if="!exportPositions">
-                    This will export 0 Positions
+                    {{ this.positions.length + ' ' + $tc('position', 2) }}
                   </p>
                   <v-checkbox 
                     hide-details 
                     class="pt-4" 
-                    label="Export Images" 
+                    :label="$t('exportObject', {object: $tc('image', 2) })" 
                     :disabled="!exportPositions">
                   </v-checkbox>
                   <v-checkbox 
                     hide-details 
-                    label="Export Models" 
+                    :label="$t('exportObject', { object: $tc('model', 2) })" 
                     :disabled="!exportPositions">
                   </v-checkbox>
                 </v-col>
@@ -166,16 +165,26 @@
 
                 <v-combobox 
                   class="pa-4" 
-                  label="Dateiformat"
+                  :label="$t('dataFormat')"
                   v-model="fileFormat"
                   :items="['.pdf', '.csv']">
                 </v-combobox>
               </v-col>
               <v-col cols="4">
 
-                <v-radio-group v-model="separator" class="ma-2" label="Separator" v-if="fileFormat == '.csv'">
-                  <v-radio label="Comma separated" value=","></v-radio>
-                  <v-radio label="Semicolon separated" value=";"></v-radio>
+                <v-radio-group 
+                  v-model="separator" 
+                  class="ma-2" 
+                  :label="$t('separator')" 
+                  v-if="fileFormat == '.csv'">
+                  <v-radio 
+                    :label="$t('objectSeparated', { 
+                      object: $t('comma')})" value=",">
+                  </v-radio>
+                  <v-radio 
+                    :label="$t('objectSeparated', { 
+                      object: $t('semicolon') })" value=";">
+                  </v-radio>
                 </v-radio-group>
               </v-col>
             </v-row>
@@ -194,9 +203,9 @@
           </v-card>
         </v-dialog>
 
-        <v-row no-gutters class="pa-1 justify-center">
+        <v-row no-gutters class="pa-2 justify-center">
           <v-btn class="ma-1" color="primary" v-on:click="export_overlay = true">
-            Export
+            {{ $t('export')}}
           </v-btn>
         </v-row>
 
@@ -244,6 +253,10 @@ export default {
       exportActivities: true,
       exportPlaces: true,
       exportPositions: true,
+      exportPlaceImages: false,
+      exportPlaceModels: false,
+      exportPositionImages: false,
+      exportPositionModels: false,
       rules: {
         required: value => !!value || 'Required.',
       },

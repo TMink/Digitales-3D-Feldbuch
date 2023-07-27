@@ -17,7 +17,7 @@
             <v-btn rounded="0" color="primary" v-on:click="savePosition()">
               {{ $t('save') }}
             </v-btn>
-            <v-btn rounded="0" color="error" v-on:click="confirmDeletion()">
+            <v-btn rounded="0" color="error" v-on:click="confirmDeletion(position)">
               {{ $t('delete') }}
             </v-btn>
             <v-btn rounded="0" color="secondary" v-on:click="goBack">
@@ -39,23 +39,23 @@
                 <v-col lg="2">
                   <v-text-field 
                     color="primary" 
-                    label="Posnr *" 
+                    :label="$t('posNumber') +' *'" 
                     maxlength="6"
                     :rules="is_required" 
                     v-model="position.positionNumber"
                     @keypress="filterAllNonNumeric(event)"
-                    :hint="$tc('please_input', 2, { msg: 'Posnr' })">
+                    :hint="$tc('please_input', 2, { msg: $t('posNumber') })">
                   </v-text-field>
                 </v-col>
 
                 <v-col lg="2">
                   <v-text-field 
                     color="primary" 
-                    label="Unternr *"
+                    :label="$t('subNumber') +' *'"
                     maxlength="5" 
                     :rules="is_required" 
                     v-model="position.subNumber"
-                    :hint="$tc('please_input', 2, { msg: 'Unternr' })">
+                    :hint="$tc('please_input', 2, { msg: $t('subNumber') })">
                   </v-text-field>
                 </v-col>
 
@@ -63,8 +63,8 @@
                   <v-checkbox
                     class="pl-4"
                     hide-details
-                    v-model="isSeparate"
-                    label="isSeparate" >
+                    v-model="position.isSeparate"
+                    :label="$t('isSeparate')">
                   </v-checkbox>
                   <!-- maybe as tooltip -->
                   <!-- <div class="text-caption">
@@ -76,7 +76,9 @@
               
                 <v-col lg="4">
                   <v-card class="pa-4" color="accent">
-                    <div class="text-h4 text-center" :label="$t('lastEdited')">
+                    <div 
+                      class="text-h4 text-center" 
+                      :label="$t('lastEdited')">
                       {{ position.date }}
                     </div>
                     <div class="text-grey text-center">
@@ -92,7 +94,7 @@
                     maxlength="40"
                     color="primary" 
                     :items="titles" 
-                    label="Ansprache" 
+                    :label="$tc('title', 2)" 
                     :rules="is_required"
                     v-model="position.title">
                   </v-combobox>
@@ -117,7 +119,7 @@
             <v-card>
               <v-card-text>
                 <h2 class="text-h6 font-weight-medium pb-3">
-                  Gauss-Krüger-Koordinaten
+                  {{ $t('gaussKrueger') }}
                 </h2>
               </v-card-text>
               <v-row class="pa-4 pt-0" justify="center">
@@ -126,7 +128,7 @@
                     maxlength="7"
                     color="primary" 
                     hide-details 
-                    label="Rechtswert *" 
+                    :label="$t('right') + ' *'" 
                     :rules="is_required"
                     v-model="position.right" 
                     @keypress="filterNonNumeric(event)"
@@ -141,7 +143,7 @@
                     maxlength="7" 
                     hide-details 
                     color="primary" 
-                    label="Hochwert *" 
+                    :label="$t('up') + ' *'" 
                     :rules="is_required" 
                     v-model="position.up"
                     @keypress="filterNonNumeric(event)"
@@ -155,7 +157,7 @@
                   <v-text-field 
                     maxlength="7"
                     hide-details 
-                    label="Höhe *" 
+                    :label="$t('height') + ' *'" 
                     color="primary" 
                     :rules="is_required" 
                     v-model="position.height"
@@ -175,7 +177,7 @@
                   <v-text-field 
                     maxlength="9"
                     color="primary" 
-                    label="Anzahl" 
+                    :label="$t('count')" 
                     class="ma-1 px-2 pt-2"
                     v-model="position.count"
                     @keypress="filterAllNonNumeric(event)"
@@ -189,7 +191,7 @@
                 <v-card>
                   <v-text-field 
                     color="primary" 
-                    label="Gewicht"
+                    :label="$t('weight')" 
                     class="ma-1 px-2 pt-2" 
                     v-model="position.weight"
                     @keypress="filterNonNumeric(event)"
@@ -204,7 +206,7 @@
                   <v-combobox 
                     maxlength="40"
                     color="primary" 
-                    label="Material" 
+                    :label="$t('material')"  
                     :items="materials"
                     :rules="is_required"
                     class="ma-1 px-2 pt-2"  
@@ -239,7 +241,7 @@
                   <v-text-field 
                     maxlength="50"
                     color="primary" 
-                    label="Ansprache von" 
+                    :label="$t('editor')" 
                     v-model="position.addressOf"
                     :hint="$tc('please_input', 2, { msg: 'Ansprache von' })">
                   </v-text-field>
@@ -397,12 +399,16 @@ export default {
     },
     /**
      * Opens the confirmation dialog
+     * @param {Object} position
      */
-    async confirmDeletion() {
+    async confirmDeletion(position) {
       if (
         await this.$refs.confirm.open(
-          "Confirm",
-          "Are you sure you want to delete the position " + this.position.positionNumber + "?"
+          this.$t('confirm'),
+          this.$t('confirm_del', {
+            object: this.$tc('position', 1),
+            object_nr: position.positionNumber
+          })
         )
       ) {
         this.deletePosition();

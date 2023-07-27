@@ -66,6 +66,14 @@ export default {
   pdf_export: "PDF Export",
   data_export: "Datenexport",
   data_backup: "Datensicherung",
+  adminArea: "Adminbereich",
+  export: "Exportieren",
+  exportObject: "{object} Exportieren",
+  dataFormat: "Dateiformat",
+  separator: "Separator",
+  objectSeparated: "{object} getrennt",
+  comma: "Komma",
+  semicolon: "Semikolon",
 
   // Phrases
   add: "{msg} hinzufügen",
@@ -87,4 +95,5 @@ export default {
     "Falls die Stelle kein Befund ist (Arbeitsbereich, Störung, natürliche Verfärbung etc.)",
   restFindDescr:
     "Falls bei einem Bodeneingriff der Befund noch unterhalb der Eingriffstiefe erhalten ist.",
+  thisExports: "Dies wird {count} {object} exportieren",
 };

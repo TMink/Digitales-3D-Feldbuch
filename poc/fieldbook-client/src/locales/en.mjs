@@ -66,6 +66,14 @@ export default {
   pdf_export: "PDF Export",
   data_export: "Data Export",
   data_backup: "Data Backup",
+  adminArea: "Admin Area",
+  export: "Export",
+  exportObject: "Export {object}",
+  dataFormat: "Data Format",
+  separator: "Separator",
+  objectSeparated: "{object} separated",
+  comma: "Comma",
+  semicolon: "Semicolon",
 
   // Phrases
   add: "Add {msg}",
@@ -86,4 +94,6 @@ export default {
   noFindDescr: "When the Place is not a Feature (Workspace, Disruption, natural staining etc.)",
   restFindDescr:
     "If the Feature is still preserved below the intervention depth during soil excavation.",
+  //thisExports: "This will export {count} {object}",
+  thisExports: "Export: {count} {object}",
 };

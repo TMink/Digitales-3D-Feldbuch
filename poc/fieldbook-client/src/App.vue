@@ -52,7 +52,7 @@
 
         <v-card variant="outlined" class="ma-3 mb-15">
           <v-card-title>
-            Admin Area
+            {{ $t('adminArea') }}
           </v-card-title>
           <v-divider></v-divider>
           <v-list-item link v-on:click="deleteCookies()">
