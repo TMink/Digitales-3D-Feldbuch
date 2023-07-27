@@ -45,7 +45,7 @@ export default {
   general: "General",
   title: "Title | Title",
   cookies: "Cookies",
-  number: "Number",
+  number: "Number | Nr.",
   year: "Year",
   branchOffice: "Branch Office",
   textfield: "Textfield",

@@ -2,7 +2,6 @@
   <v-card>
     <v-list>
 
-    
       <!-- IMAGES LIST -->
       <v-list-subheader v-if="images.length === 0">
         {{ $t('not_created_yet', { object: $tc('image', 1) }) }}
@@ -61,12 +60,12 @@
 
         <v-row v-if='object.placeNumber > 0'>
           <v-card-title>
-            Place
+            {{ $t('place') }}
           </v-card-title>
         
           <v-text-field 
             disabled 
-            label="Nr."
+            :label="$t('number')"
             v-model="object.placeNumber">
           </v-text-field>
         </v-row>
@@ -74,14 +73,14 @@
         <v-row no-gutters v-if="object.positionNumber > 0">
           <v-col cols="2">
             <v-card-title>
-              Position
+              {{ $t('position') }}
             </v-card-title>
           </v-col>
 
           <v-col cols="5">
             <v-text-field 
               disabled 
-              label="Nr."
+              :label="$t('number')"
               class="pr-2"
               v-model="object.positionNumber">
             </v-text-field>
@@ -91,7 +90,7 @@
             <v-text-field 
               disabled 
               v-model="object.subNumber" 
-              label="Sub-Nr.">
+              :label="$t('subNumber')">
             </v-text-field>
           </v-col>
         </v-row>
@@ -134,7 +133,7 @@
           <v-row v-if='object.placeNumber > 0'>
             <v-col cols="2">
               <v-card-title>
-                Place
+                {{ $tc('place', 2) }}
               </v-card-title>
             </v-col>
 
@@ -142,7 +141,7 @@
 
               <v-text-field 
                 disabled 
-                label="Nr."
+                :label="$t('number')"
                 v-model="object.placeNumber">
               </v-text-field>
             </v-col>
@@ -158,7 +157,7 @@
             <v-col cols="5">
               <v-text-field 
                 disabled 
-                label="Nr."
+                :label="$t('number')"
                 class="pr-2"
                 v-model="object.positionNumber">
               </v-text-field>
@@ -168,7 +167,7 @@
               <v-text-field 
                 disabled 
                 v-model="object.subNumber" 
-                label="Sub-Nr.">
+                :label="$t('subNumber')">
               </v-text-field>
             </v-col>
           </v-row>
@@ -184,7 +183,7 @@
               <v-text-field 
                 disabled
                 class="pr-2"
-                :label="$t('number')"
+                :label="$tc('number', 1)"
                 v-model="image.imageNumber">
               </v-text-field>
             </v-col>

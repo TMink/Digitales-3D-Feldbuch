@@ -55,7 +55,7 @@
                         counter 
                         maxlength="20" 
                         color="primary" 
-                        label="Außenstelle" 
+                        :label="$t('branchOffice')" 
                         :rules="[rules.required]"
                         v-model="activity.branchOffice">
                       </v-text-field>
@@ -64,7 +64,7 @@
                     <v-col id="activityYear" min-width="300px" cols="3" class="pt-2 px-2">
                       <v-text-field 
                         counter 
-                        label="Jahr" 
+                        :label="$t('year')"  
                         maxlength="4" 
                         color="primary" 
                         v-model="activity.year" 
@@ -76,7 +76,7 @@
                       <v-text-field 
                         counter 
                         maxlength="4" 
-                        label="Nummer" 
+                        :label="$t('number')" 
                         color="primary" 
                         v-model="activity.number"
                         :rules="[rules.required]">
@@ -198,14 +198,12 @@ export default {
         branchOffice: 'Platzhalter',
         year: new Date().getFullYear(),
         number: '0001',
-
         edit: true,
       }
 
       if (this.activities.length != 0) {
         const activityNumber = Math.max(...this.activities.map(o => o.number));
         var newActivityNumber = (activityNumber + 1).toString().padStart(4, '0');
-        //newActivityNumber = newActivityNumber.toString().padStart(4, '0'); 
         newActivity.number = newActivityNumber;
       }
       newActivity.activityNumber = newActivity.branchOffice

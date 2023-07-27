@@ -104,7 +104,7 @@
                 <v-switch 
                   hide-details 
                   color="success" 
-                  label="Places"
+                  :label="$tc('place', 2)" 
                   v-model="exportPlaces"
                   :disabled="place_open && activity_open">
                 </v-switch>
@@ -134,7 +134,10 @@
               <!-- POSITIONS -->
               <v-col cols="4" class="align-center">
                 <v-row no-gutters class="justify-center align-center">
-                  <v-switch hide-details color="success" label="Positions"
+                  <v-switch 
+                    hide-details 
+                    color="success" 
+                    :label="$tc('position', 2)" 
                     v-model="exportPositions">
                   </v-switch>
                 </v-row>

@@ -55,7 +55,7 @@
           <v-col cols="10">
             <v-text-field 
               disabled 
-              label="Nr."
+              :label="$tc('number', 2)"
               v-model="object.placeNumber">
             </v-text-field>
           </v-col>
@@ -71,7 +71,7 @@
           <v-col cols="5">
             <v-text-field 
               disabled 
-              label="Nr."
+              :label="$tc('number', 2)"
               class="pr-2"
               v-model="object.positionNumber">
             </v-text-field>
@@ -81,7 +81,7 @@
             <v-text-field 
               disabled 
               v-model="object.subNumber" 
-              label="Sub-Nr.">
+              :label="$t('subNumber')">
             </v-text-field>
           </v-col>
         </v-row>
@@ -128,7 +128,7 @@
             <v-col cols="10">
               <v-text-field 
                 disabled 
-                label="Nr."
+                :label="$tc('number', 2)"
                 v-model="object.placeNumber">
               </v-text-field>
             </v-col>
@@ -144,7 +144,7 @@
             <v-col cols="5">
               <v-text-field 
                 disabled 
-                label="Nr."
+                :label="$tc('number', 2)" 
                 class="pr-2"
                 v-model="object.positionNumber">
               </v-text-field>
