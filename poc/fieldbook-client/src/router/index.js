@@ -46,11 +46,11 @@ const router = createRouter({
       name: "3D-Ansicht",
       component: ModelViewer,
     },
-    {
+    /* {
       path: "/onlineSync",
       name: "OnlineSync",
       component: OnlineSync,
-    },
+    }, */
     {
       path: "/dataExport",
       name: "DataExport",
