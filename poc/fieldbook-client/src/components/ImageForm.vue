@@ -1,12 +1,14 @@
 <template>
-  <v-card>
+  <v-card v-if="images.length === 0">
     <v-list>
 
       <!-- IMAGES LIST -->
-      <v-list-subheader v-if="images.length === 0">
+      <v-list-subheader >
         {{ $t('not_created_yet', { object: $tc('image', 1) }) }}
       </v-list-subheader>
 
+    </v-list>
+  </v-card>
   <!-- LIST ITEM -->
   <!-- TODO: fix virtual scroller -->
   <!-- <v-virtual-scroll  :max-height="windowHeight - 300">
@@ -43,8 +45,6 @@
           </v-card>
         </v-col>
       </v-row>
-    </v-list>
-  </v-card>
 <!--     </template>
   </v-virtual-scroll> -->
 
@@ -175,7 +175,7 @@
           <v-row no-gutters>
             <v-col cols="2">
               <v-card-title>
-                Image
+                {{ $t('image') }}
               </v-card-title>
             </v-col>
 
