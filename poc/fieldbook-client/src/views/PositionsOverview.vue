@@ -13,7 +13,8 @@
                 class="pl-3" 
                 v-model="showAllInfo"
                 hide-details 
-                :label="this.$t('showAll')">
+                :label="this.$t('showAll')"
+                color="secondary">
               </v-switch>
             </v-col>
           
@@ -38,7 +39,7 @@
         <v-spacer></v-spacer>
 
         <!-- POSITIONS LIST -->
-        <v-card class="pa-3" :min-width="windowWidth * 0.5">
+        <v-card class="pa-3" :min-width="windowWidth * 0.6">
 
           <v-data-table-virtual
             v-show="!showAllInfo"
