@@ -18,6 +18,8 @@
               <v-list-item-subtitle class="text-subtitle-1">
                 {{ model.title }}
               </v-list-item-subtitle>
+
+              <canvas :id="'canvas' + i"></canvas>
               
             </v-list-item>
             <v-spacer/>
@@ -207,6 +209,7 @@ import AddButton from '../components/AddButton.vue';
 import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { toRaw } from 'vue';
+import * as THREE from 'three';
 
 export default {
   name: "ModelForm",
@@ -241,8 +244,77 @@ export default {
       create_dialog: false,
       edit_dialog: false,
       is_required: [v => !!v || 'Pflichtfeld'],
+      canvases: [],
+      contexts: [],
+      scenes: [],
+      cameras: [],
+      rendererToken: false,
+      modelsToken: 0,
+      renderer: null,
+      thanksBob: true,
+      deleteToken: false,
+      addToken: false,
+      stopAnimation: true,
     }
   },
+
+  watch: {
+    'models': {
+      handler: async function(event) {
+
+        if ( this.thanksBob ) {
+          if ( this.models.length > this.modelsToken ) {
+            console.log("--- Load models ---")
+            this.modelsToken = this.models.length
+            await new Promise((resolve) => {
+              resolve(this.beatTheDevilOutOfIt());
+            })
+            await new Promise((resolve) => {
+              resolve(this.doTheBobRoss());
+            })
+          }
+          this.thanksBob = false
+        }
+
+      }
+    },
+
+    'deleteToken': {
+      handler: async function(event) {
+        if ( this.models.length < this.modelsToken ) {
+          console.log("--- Delete model ---")
+          this.modelsToken = this.models.length
+          await new Promise( (resolve) => {
+            resolve(this.beatTheDevilOutOfIt());
+          })
+          await new Promise( (resolve) => {
+            resolve(this.doTheBobRoss());
+          })
+          if( this.modelsToken == 0 ) {
+            this.stopAnimation = true;
+          }
+        }
+        this.deleteToken = false
+      }
+    },
+
+    'addToken': {
+      handler: async function(event) {
+        if ( this.models.length > this.modelsToken) {
+          console.log("--- Add model ---")
+          this.modelsToken = this.models.length
+          await new Promise( (resolve) => {
+            resolve(this.beatTheDevilOutOfIt());
+          })
+          await new Promise( (resolve) => {
+            resolve(this.doTheBobRoss());
+          })
+        }
+        this.addToken = false;
+      }
+    }
+  },
+
   /**
    * Initialize data from IndexedDB to the reactive Vue.js data
    */
@@ -251,7 +323,177 @@ export default {
     await this.updateObject();
     await this.updateModels();
   },
+
+  /**
+   * Stop animation loop, if present + garbage collection
+   */
+   unmounted() {
+    if ( this.modelsToken > 0 ) {
+      console.log("--- Animation stop ---")
+      this.beatTheDevilOutOfIt();
+      this.stopAnimation = true;
+    }
+  },
+
   methods: {
+
+    /**
+     * Garbeage collection
+     */
+     beatTheDevilOutOfIt: function() {
+      if ( this.rendererToken ) {
+        console.log("--- Garbage Collection ---")
+
+        /* Cancel animation */
+        cancelAnimationFrame( this.animate );
+
+        /* Remove loaded meshes */
+        this.scenes.forEach( scene => {
+          scene.children[1].geometry.dispose()
+          scene.children[1].material.dispose()
+          scene.remove(scene.children[0])
+          scene.remove(scene.children[1])
+        } )
+
+        /* Dispose renderer */
+        this.renderer.dispose();
+        this.renderer.forceContextLoss();
+        
+        /* Reset arrays */
+        this.scenes = []
+        this.cameras = []
+        this.canvases = []
+        this.contexts = []
+
+        this.rendererToken = false
+      }
+    },
+
+    /**
+     * Bob does wonders on the canvas
+     */
+    doTheBobRoss: async function() {
+      for ( const [i, model] of this.models.entries() ) {
+        this.canvases.push( await this.waitForElm('canvas' + i) );
+      }
+      console.log(this.canvases)
+          
+      this.init()
+      if ( this.stopAnimation ) {
+        this.stopAnimation = false;
+        console.log("--- Animation start ---")
+        this.animate();
+      }
+    },
+
+    /**
+     * Initialize renderer and fill canvases with content
+     */
+    init: async function() {
+
+      const w = 300, h = 200;
+
+      /* Renderer */
+      this.renderer = new THREE.WebGLRenderer( { antialias: true } );
+      this.renderer.setPixelRatio( window.devicePixelRatio );
+      this.renderer.setSize( 300, 200 );
+      this.rendererToken = true;
+
+      this.models.forEach( model => {
+        this.createScene();
+      })
+      
+      for ( const [i, model] of this.models.entries() ) {
+        this.canvases[i].width = w * window.devicePixelRatio;
+        this.canvases[i].height = h * window.devicePixelRatio;
+        this.contexts.push( this.canvases[i].getContext( '2d' ) )
+      }
+
+      console.log( this.contexts );
+    },
+
+    /**
+     * Create scene ... yeah ...
+     */
+    createScene: function() {
+      /* Scene */
+      const scene = new THREE.Scene();
+
+      /* Camera */
+      const camera = new THREE.PerspectiveCamera( 50, 1, 1, 10 );
+      camera.position.z = 2;
+      
+      /* Light */
+      const light = new THREE.AmbientLight( 0xffffff );
+      scene.add( light );
+
+      const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+      const material = new THREE.MeshStandardMaterial( {
+        color: new THREE.Color().setHSL( Math.random(), 1, 0.75, THREE.SRGBColorSpace ),
+        roughness: 0.5,
+        metalness: 0,
+        flatShading: true
+      } );
+      const mesh = new THREE.Mesh( geometry, material );
+
+      scene.add( mesh )
+
+      this.scenes.push(scene)
+      this.cameras.push(camera)
+    },
+
+    /**
+     * Make things move, but beware! It's just an illusion!
+     */
+    animate: function() {
+        if(!this.stopAnimation) {
+
+          console.log("--- Animation runnning ---")
+
+          for ( const [i, context ] of this.contexts.entries() ) {
+            const rawScene = toRaw(this.scenes[i])
+            const rawCamera = toRaw(this.cameras[i])
+            this.renderer.render( rawScene, rawCamera )
+            context.drawImage(this.renderer.domElement, 0, 0);
+          }
+    
+          let rotationSpeed = 0.01
+    
+          this.scenes.forEach( scene => {
+            scene.children[1].rotation.y += rotationSpeed
+            rotationSpeed += 0.01
+          })
+    
+          requestAnimationFrame( this.animate );
+        }
+    },
+
+    /**
+     * 
+     * @param {*} selector 
+     */
+    waitForElm(selector) {
+      return new Promise(resolve => {
+        // if it already exists, return it
+        if (document.getElementById(selector)) {
+          return resolve(document.getElementById(selector));
+        }
+
+        // otherwise create a MutationObserver and wait for it
+        const observer = new MutationObserver(mutations => {
+          if (document.getElementById(selector)) {
+            resolve(document.getElementById(selector));
+            observer.disconnect();
+          }
+        });
+
+        observer.observe(document.body, {
+          childList: true,
+          subtree: true
+        });
+      });
+    },
+
     /**
      * Update reactive Vue.js object data
      */
@@ -336,6 +578,9 @@ export default {
       await this.updateModels(newModel.id);
 
       ctx.$emit('addModel', newModel.id);
+
+      /* Bob Ross */
+      this.addToken = true
     },
 
     /**
@@ -380,6 +625,9 @@ export default {
         model, 'Models', this.object_type.toLowerCase());
       VueCookies.remove('currentModel');
       await this.updateModels();
+
+      /* Bob Ross */
+      this.deleteToken = true
     },
 
     /**
