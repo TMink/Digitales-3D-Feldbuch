@@ -1,7 +1,7 @@
 <template>
     <v-footer app>
         <v-row>
-            <v-col icon class="text-center">
+            <v-col icon class="text-center pa-0">
                 {{ new Date().getFullYear() }} — <strong>TH-Köln</strong>
                 <v-btn  icon 
                         class="ma-1" 
