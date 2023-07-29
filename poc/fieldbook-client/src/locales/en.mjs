@@ -10,6 +10,8 @@ export default {
   image: "Image | Images",
   picture: "Picture | Pictures",
   model: "Model | Models",
+  camera: "Kamera | Kameras",
+  changes: "Änderung | Änderungen",
   file: "File",
   code: "Code",
   placeNumber: "Place Nr.",
@@ -74,6 +76,9 @@ export default {
   objectSeparated: "{object} separated",
   comma: "Comma",
   semicolon: "Semicolon",
+  backup: "Backup",
+  import: "Import",
+  data_import: "Data Import",
 
   // Phrases
   add: "Add {msg}",

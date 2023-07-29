@@ -8,8 +8,10 @@ export default {
   position_id: "Positions ID",
   texture: "Textur",
   image: "Bild | Bilder",
-  picture: "Bild | bilder",
+  picture: "Bild | Bilder",
   model: "Modell | Modelle",
+  camera: "Kamera | Kameras",
+  changes: "Änderung | Änderungen",
   file: "Datei",
   code: "Code",
   placeNumber: "Stellen-Nr.",
@@ -74,6 +76,9 @@ export default {
   objectSeparated: "{object} getrennt",
   comma: "Komma",
   semicolon: "Semikolon",
+  backup: "Backup",
+  import: "Import",
+  data_import: "Data Import",
 
   // Phrases
   add: "{msg} hinzufügen",
