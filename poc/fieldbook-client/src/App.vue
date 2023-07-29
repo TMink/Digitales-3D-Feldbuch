@@ -50,7 +50,8 @@
 
         <DataBackup/>
 
-        <v-card variant="outlined" class="ma-3 mb-15">
+        <!-- ADMIN MENU -->
+        <!-- <v-card variant="outlined" class="ma-3 mb-15">
           <v-card-title>
             {{ $t('adminArea') }}
           </v-card-title>
@@ -65,7 +66,7 @@
               {{ $t('delete', { msg: 'IndexedDB' }) }}
             </v-list-item-title>
           </v-list-item>
-        </v-card>
+        </v-card> -->
 
       </v-card>
     </v-navigation-drawer>

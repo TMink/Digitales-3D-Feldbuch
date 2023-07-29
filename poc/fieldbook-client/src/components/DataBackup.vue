@@ -1,5 +1,5 @@
 <template>
-  <v-card variant="outlined" class="ma-3 mb-15">
+  <v-card variant="outlined" class="ma-3 mb-6">
     <v-card-title>
       {{ $t('data_backup') }}
     </v-card-title>
