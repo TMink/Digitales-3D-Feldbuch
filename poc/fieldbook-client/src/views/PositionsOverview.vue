@@ -10,7 +10,7 @@
             <!-- SHOW ALL SWITCH-->
             <div class="d-flex justify-end">
               <v-switch
-                class="pr-3" 
+                class="px-3" 
                 v-model="showAllInfo"
                 hide-details 
                 :label="this.$t('showAll')"
