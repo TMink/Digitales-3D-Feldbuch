@@ -8,27 +8,25 @@
           <v-row no-gutters class="align-center pa-2">
 
             <!-- SHOW ALL SWITCH-->
-            <v-col cols="3">
+            <div class="d-flex justify-end">
               <v-switch
-                class="pl-3" 
+                class="pr-3" 
                 v-model="showAllInfo"
                 hide-details 
                 :label="this.$t('showAll')"
                 color="secondary">
               </v-switch>
-            </v-col>
+            </div>
           
             <v-divider vertical class="ml-2 mr-6" />
             <!-- PLACES SEARCH -->
-            <v-col cols="8">
-              <v-text-field 
-                v-model="searchQuery" 
-                append-icon="mdi-magnify" 
-                :label="this.$t('search')" 
-                single-line 
-                hide-details>
-              </v-text-field>
-            </v-col>
+            <v-text-field 
+              v-model="searchQuery" 
+              append-icon="mdi-magnify" 
+              :label="this.$t('search')" 
+              single-line 
+              hide-details>
+            </v-text-field>
           </v-row>
         </v-card>
         <v-spacer></v-spacer>
@@ -389,8 +387,8 @@ export default {
       const rowHeight = 73;
       const totalTableHeight = numberOfRows * rowHeight + headerHeight;
 
-      if (totalTableHeight > (this.windowHeight - 450)) {
-        return this.windowHeight - 450;
+      if (totalTableHeight > (this.windowHeight - 390)) {
+        return this.windowHeight - 390;
       }
 
       return totalTableHeight + "px";
