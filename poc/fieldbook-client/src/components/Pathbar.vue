@@ -1,6 +1,19 @@
 <template>
   <v-card flat rounded="0">
-    <v-card-title class="py-1 text-center"> <b>{{  $t('current_selection') }}:</b> {{ currentActivity }} / {{ currentPlace }} / {{ currentPosition }}</v-card-title>
+    <v-card-title class="py-1 text-center"> 
+      <b> {{  $t('current_selection') }}: </b> 
+      <v-chip label>
+        {{ currentActivity }}
+      </v-chip>
+      <v-icon size="small">mdi-arrow-right</v-icon>
+      <v-chip label>
+        {{ currentPlace }}
+      </v-chip>
+      <v-icon size="small">mdi-arrow-right</v-icon>
+      <v-chip label>
+        {{ currentPosition }}
+      </v-chip>
+    </v-card-title>
   </v-card>
 </template>
 
