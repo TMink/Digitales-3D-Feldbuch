@@ -239,14 +239,15 @@
               <!-- CARD 7 EDITOR -->
               <v-col lg="6">
                 <v-card class="pa-3" height="100%">
-                  <v-text-field 
+                  <v-textarea
                     maxlength="50"
                     color="primary"
+                    rows="4" 
                     :label="$t('editor')" 
                     v-model="position.addressOf"
                     no-resize
                     :hint="$tc('please_input', 2, { msg: 'Ansprache von' })">
-                  </v-text-field>
+                  </v-textarea>
                 </v-card>
               </v-col>
             </v-row>
