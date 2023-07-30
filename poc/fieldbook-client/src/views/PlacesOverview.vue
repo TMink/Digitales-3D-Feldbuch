@@ -38,7 +38,7 @@
         <!-- PLACES TABLE SMALL -->
         <v-card 
           class="pa-3"
-          :min-width="windowWidth * 0.6">
+          :min-width="windowWidth * 0.7">
           <v-data-table-virtual 
             v-show="!showAllInfo"
             :items="filteredPlaces"
