@@ -14,7 +14,7 @@
                              temporary
         >
           <v-list-item height="50" prepend-icon="mdi-camera-control"
-                       title="Tools"
+                       :title="$t('tools')"
           ></v-list-item>
 
           <v-divider></v-divider>
@@ -33,14 +33,14 @@
                       <v-card color="secondary">
                         <v-row no-gutters align="center" justify="center"
                                class="pa-1"
-                        > Abstand messen
+                        > {{ $t('measureDist') }}
                         </v-row>
                             
                         <v-card color="opp_background">
                           <v-row no-gutters class="pt-4 px-3">
                             <v-col>
                               <v-select v-model="measureTool.title"
-                                label="Linie"
+                                :label="$t('line')"
                                 color="opp_background"
                                 :items="measureTool.allTitles"
                                 :@update="updateTitle()"
@@ -55,7 +55,7 @@
                             <v-col cols="10">
                               <v-text-field
                                 v-model="measureTool.textField"
-                                placeholder="Neuer Bezeichner"
+                                :placeholder="$t('newIdentifier')"
                               >
                               </v-text-field>
                             </v-col>
@@ -98,7 +98,7 @@
                              temporary
         >
           <v-list-item height="50" prepend-icon="mdi-map-marker-radius-outline"
-            title="Stellen"
+            :title="$tc('place', 2)"
           ></v-list-item>
   
           <v-divider></v-divider>
@@ -113,14 +113,14 @@
 
                   <!-- Model -->
                   <v-row no-gutters class="pl-3">
-                    Model
+                    {{ $tc('model', 1) }}
                   </v-row>
 
                   <v-row no-gutters>
 
                     <v-col cols="3" class="pl-2 ">
                       <v-combobox v-model="plaModel.number"
-                        label="Nr"
+                        :label="$tc('number', 2)"
                         item-title="modelNumber"
                         bgColor="opp_background"
                         :items="plaModel.allNumbers"
@@ -129,7 +129,7 @@
 
                     <v-col cols="6" class="pl-2 ">
                       <v-combobox v-model="plaModel.title"
-                        label="Titel"
+                        :label="$t('title')"
                         item-title="modelTitel"
                         bgColor="opp_background"
                         :items="plaModel.allTitles"
@@ -155,7 +155,7 @@
                       <v-card color="secondary">
                         <v-row no-gutters align="center" justify="center"
                                class="pa-1"
-                        >Allgemein
+                        > {{  $t('general') }}
                         </v-row>
                             
                         <v-card color="opp_background" class="pa-2">
@@ -167,12 +167,12 @@
                                         :disabled="plaMods.disabled">
                               </v-slider>
                             </v-col>
-      
-                            <v-divider vertical=false></v-divider>
-      
+
+                            <v-divider vertical></v-divider>
+
                             <!-- Checkbox description-->
                             <v-col cols="10" class="py-5 px-4">
-                              Deckkraft
+                              {{ $t('opacity') }}
                             </v-col>
                           </v-row>
                         </v-card>
@@ -189,7 +189,7 @@
                       <v-card color="secondary">
                         <v-row no-gutters align="center" justify="center" 
                                class="pa-1"
-                        >Farbwähler
+                        > {{  $t('colorPicker') }}
                         </v-row>
           
                       <v-card id="cpPlace" color="opp_background" class="pa-2">
@@ -224,7 +224,7 @@
                              temporary
         >
           <v-list-item height="50" prepend-icon="mdi-map-marker-radius-outline"
-            title="Positions Filter"
+            :title="$t('posFilter')"
           ></v-list-item>
   
           <v-divider></v-divider>
@@ -239,14 +239,14 @@
 
                   <!-- Position -->
                   <v-row no-gutters class="pl-3">
-                    Position
+                     {{ $tc('position', 1) }}
                   </v-row>
 
                   <v-row no-gutters>
 
                     <v-col cols="3" class="pl-2">
                       <v-combobox v-model="posData.number"
-                        label="Nr"
+                        :label="$tc('number', 2)"
                         item-title="positionNumber"
                         bgColor="opp_background"
                         :items="posData.allNumbers"
@@ -255,7 +255,7 @@
 
                     <v-col cols="3" class="pl-2">
                       <v-combobox v-model="posData.subNumber"
-                        label="U.Nr"
+                        :label="$t('subNumber')"
                         bgColor="opp_background"
                         item-title="positionSubnumber"
                         :items="posData.allSubNumbers"
@@ -264,7 +264,7 @@
 
                     <v-col cols="6" class="pl-2 pr-2">
                       <v-combobox v-model="posData.title"
-                        label="Titel"
+                        :label="$t('title')"
                         item-title="positionTitle"
                         bgColor="opp_background"
                         :items="posData.allTitles"
@@ -275,14 +275,14 @@
 
                   <!-- Model -->
                   <v-row no-gutters class="pl-3">
-                    Model
+                    {{ $t('model') }}
                   </v-row>
 
                   <v-row no-gutters>
 
                     <v-col cols="3" class="pl-2 ">
                       <v-combobox v-model="posModel.number"
-                        label="Nr"
+                        :label="$tc('number', 2)"
                         item-title="modelNumber"
                         bgColor="opp_background"
                         :items="posModel.allNumbers"
@@ -292,7 +292,7 @@
 
                     <v-col cols="6" class="pl-2 ">
                       <v-combobox v-model="posModel.title"
-                        label="Titel"
+                        :label="$tc('title', 2)"
                         item-title="modelTitel"
                         bgColor="opp_background"
                         :items="posModel.allTitles"
@@ -319,7 +319,7 @@
                       <v-card color="secondary">
                         <v-row no-gutters align="center" justify="center"
                                class="pa-1"
-                        >Allgemein
+                        > {{  $t('general') }}
                         </v-row>
                             
                         <v-card color="opp_background" class="pa-2">
@@ -336,11 +336,11 @@
                               </v-checkbox>
                             </v-col>
 
-                            <v-divider vertical=false></v-divider>
+                            <v-divider vertical></v-divider>
 
                             <!-- Checkbox description-->
                             <v-col cols="10" class="px-4 py-9">
-                              Modell Bewegen
+                              {{ $t('moveObj', {obj: $t('model')})}}
                             </v-col>
     
                           </v-row>
@@ -356,11 +356,11 @@
                               </v-slider>
                             </v-col>
       
-                            <v-divider vertical=false></v-divider>
+                            <v-divider vertical></v-divider>
       
                             <!-- Checkbox description-->
                             <v-col cols="10" class="py-5 px-4">
-                              Deckkraft
+                              {{ $t('opacity')}}
                             </v-col>
                           </v-row>
                         </v-card>
@@ -377,7 +377,7 @@
                       <v-card color="secondary">
                         <v-row no-gutters align="center" justify="center" 
                                class="pa-1"
-                        >Farbwähler
+                        > {{  $t('colorPicker') }}
                         </v-row>
           
                       <v-card id="cpPosition" color="opp_background" class="pa-2">
@@ -448,7 +448,7 @@
         <v-card-text>
           <img src="../assets/keys/ALT_1.png" width="90" height="37" 
                style="vertical-align: -10px"> 
-          <font size="+2" color="black"> = Objektauswahl</font>
+          <font size="+2" color="black"> = {{ $t('objectSelection') }}</font>
         </v-card-text>
       </v-card>
 
@@ -457,7 +457,9 @@
         <v-card-text>
           <img src="../assets/keys/CTRL_1.png" width="90" height="37" 
                style="vertical-align: -10px"> 
-          <font size="+2" color="black"> = Modelle bewegen</font>
+          <font size="+2" color="black"> 
+            = {{ $t('moveObj', {obj: $t('model')}) }}
+          </font>
         </v-card-text>
       </v-card>
     </div>
@@ -479,7 +481,7 @@
             </v-list-item>
             <v-list-item>
               <v-list-item-subtitle>
-                Positionsnummber
+                {{ $tc('posNumber', 1)}}
               </v-list-item-subtitle>
             </v-list-item>
 
@@ -490,7 +492,7 @@
             </v-list-item>
             <v-list-item>
               <v-list-item-subtitle>
-                Unternummer
+                {{ $tc('subNumber', 1)}}
               </v-list-item-subtitle>
             </v-list-item>
 
@@ -501,7 +503,7 @@
             </v-list-item>
             <v-list-item>
               <v-list-item-subtitle>
-                Ansprache
+                {{ $tc('title', 2)}}
               </v-list-item-subtitle>
             </v-list-item>
 
@@ -512,7 +514,7 @@
             </v-list-item>
             <v-list-item>
               <v-list-item-subtitle>
-                Material
+                {{ $t('material') }}
               </v-list-item-subtitle>
             </v-list-item>
           </v-list>
@@ -533,7 +535,7 @@
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-subtitle>
-                    Rechtswert
+                    {{ $tc('right', 2) }}
                   </v-list-item-subtitle>
                 </v-list-item>
               </v-col>
@@ -546,7 +548,7 @@
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-subtitle>
-                    Hochwert
+                    {{ $tc('up', 2) }}
                   </v-list-item-subtitle>
                 </v-list-item>
               </v-col>
@@ -559,7 +561,7 @@
             </v-list-item>
             <v-list-item>
               <v-list-item-subtitle>
-                Höhe
+                {{ $t('height') }}
               </v-list-item-subtitle>
             </v-list-item>
 
@@ -589,7 +591,7 @@
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-subtitle>
-                    Anzahl
+                    {{ $t('count') }}
                   </v-list-item-subtitle>
                 </v-list-item>
               </v-col>
@@ -602,7 +604,7 @@
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-subtitle>
-                    Gewicht
+                    {{ $t('weight') }}
                   </v-list-item-subtitle>
                 </v-list-item>
               </v-col>
@@ -615,7 +617,7 @@
             </v-list-item>
             <v-list-item>
               <v-list-item-subtitle>
-                Datierung
+                {{ $t('dating')}}
               </v-list-item-subtitle>
             </v-list-item>
 
@@ -626,7 +628,7 @@
             </v-list-item>
             <v-list-item>
               <v-list-item-subtitle>
-                AnspracheVon
+                {{ $t('adressOf') }}
               </v-list-item-subtitle>
             </v-list-item>
 
@@ -637,7 +639,7 @@
             </v-list-item>
             <v-list-item>
               <v-list-item-subtitle>
-                Beschreibung
+                {{ $t('description') }}
               </v-list-item-subtitle>
             </v-list-item>
           </v-list>
