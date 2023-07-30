@@ -41,7 +41,7 @@
                             <v-col>
                               <v-select v-model="measureTool.title"
                                 :label="$t('line')"
-                                color="opp_background"
+                                color="primary"
                                 :items="measureTool.allTitles"
                                 :@update="updateTitle()"
                               ></v-select>
@@ -55,6 +55,7 @@
                             <v-col cols="10">
                               <v-text-field
                                 v-model="measureTool.textField"
+                                color="primary"
                                 :placeholder="$t('newIdentifier')"
                               >
                               </v-text-field>
@@ -165,8 +166,13 @@
                           <v-row no-gutters>
                             <!-- Opacity-->
                             <v-col cols="2" class="px-2 pt-4">
-                              <v-slider v-model="plaMods.opacitySliderValue" :max="1"
-                                        :disabled="plaMods.disabled">
+                              <v-slider 
+                              v-model="plaMods.opacitySliderValue" 
+                              :max="1"
+                              :disabled="plaMods.disabled" 
+                              track-color="primary" 
+                              thumb-color="secondary" 
+                              color="warning">
                               </v-slider>
                             </v-col>
 
@@ -338,6 +344,7 @@
                                 :disabled="posMods.disabled"
                                 :true-value="posMods.attachTransformControls"
                                 :false-value="!posMods.attachTransformControls"
+                                color="primary"
                                 @Click="attachTransformControls(
                                   posMods.attachTransformControls)">
                               </v-checkbox>
@@ -357,9 +364,13 @@
                           <v-row no-gutters>
                             <!-- Opacity-->
                             <v-col cols="2" class="px-2 pt-4">
-                              <v-slider :disabled="posMods.disabled"
-                                v-model="posMods.opacitySliderValue"
-                                :max="1">
+                              <v-slider 
+                              :disabled="posMods.disabled"
+                              v-model="posMods.opacitySliderValue"
+                              :max="1"
+                              track-color="primary" 
+                              thumb-color="secondary" 
+                              color="warning">
                               </v-slider>
                             </v-col>
       
