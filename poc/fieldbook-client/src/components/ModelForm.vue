@@ -1,42 +1,49 @@
 <template>
-  <v-card>
-    <v-list>
-      <v-list-subheader v-if="models.length === 0">
+    <v-list v-if="models.length === 0">
+      <v-list-subheader>
         {{ $t('not_created_yet', { object: $tc('model', 1) }) }}
       </v-list-subheader>
-
-      <!-- MODEL LIST -->
-      <template v-for="(model, i) in models" :key="model">
-        <v-row no-gutters class="align-center">
-          <v-col>
-            <v-list-item class="modelItem mt-3">
-              
-              <v-list-item-title class="text-h6">
-                Nr. {{ model.modelNumber }}
-              </v-list-item-title>
-              
-              <v-list-item-subtitle class="text-subtitle-1">
-                {{ model.title }}
-              </v-list-item-subtitle>
-
-              <canvas :id="'canvas' + i"></canvas>
-              
-            </v-list-item>
-            <v-spacer/>
-          </v-col>
-
-          <v-btn color="primary" class="ma-4" v-on:click="editModel(model)">
-              <v-icon>mdi-pencil</v-icon>
-            </v-btn>
-          <v-btn color="error" class="ma-4" v-on:click="deleteModel(model)">
-            <v-icon>mdi-delete</v-icon>
-          </v-btn>
-        </v-row>
-
-        <v-divider v-if="i !== models.length - 1"></v-divider>
-      </template>
     </v-list>
-  </v-card>
+      <!-- MODEL LIST -->
+      <v-row no-gutters class="align-center">
+        <v-col xl="3" md="4" sm="6" v-for="(model, i) in models" :key="model">
+          <v-card class="pa-2 ma-2" width="410" height="490" align="center">
+            <v-card-title> Nr. {{ model.modelNumber }} - {{ model.title }}</v-card-title>
+
+            <v-row no-gutters class="align-center">
+              <v-col>
+                
+                    <canvas :id="'canvas' + i" v-show="true" width="370" 
+                            height="370"
+                            style="display: inline;
+                                   border: 1px solid rgb(255, 255, 255)">
+                    </canvas>
+                
+              </v-col>
+            </v-row>
+            
+            <v-row no-gutters>
+              <v-col class="pa-1 pl-2">
+
+                <v-btn width="172" color="primary" 
+                       v-on:click="editModel(model)">
+                  <v-icon>mdi-pencil</v-icon>
+                </v-btn>
+
+              </v-col>
+              <v-col class="pa-1 pr-2">
+
+                <v-btn width="172" color="error" 
+                       v-on:click="deleteModel(model)">
+                  <v-icon>mdi-delete</v-icon>
+                </v-btn>
+
+              </v-col>
+            </v-row>
+          </v-card>
+        </v-col>
+      </v-row>
+    
 
   <AddButton v-on:click="create_dialog = true" />
 
@@ -210,6 +217,10 @@ import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { toRaw } from 'vue';
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { OrbitControls } from
+  'three/examples/jsm/controls/OrbitControls.js';
+import { Box3 } from 'three';
 
 export default {
   name: "ModelForm",
@@ -255,6 +266,8 @@ export default {
       deleteToken: false,
       addToken: false,
       stopAnimation: true,
+      glbLoader: null,
+      reloadAfterEdit: false,
     }
   },
 
@@ -263,7 +276,7 @@ export default {
       handler: async function(event) {
 
         if ( this.thanksBob ) {
-          if ( this.models.length > this.modelsToken ) {
+          if ( (this.models.length > this.modelsToken) || this.reloadAfterEdit ) {
             console.log("--- Load models ---")
             this.modelsToken = this.models.length
             await new Promise((resolve) => {
@@ -272,6 +285,7 @@ export default {
             await new Promise((resolve) => {
               resolve(this.doTheBobRoss());
             })
+            this.reloadAfterEdit = false;
           }
           this.thanksBob = false
         }
@@ -287,10 +301,11 @@ export default {
           await new Promise( (resolve) => {
             resolve(this.beatTheDevilOutOfIt());
           })
-          await new Promise( (resolve) => {
-            resolve(this.doTheBobRoss());
-          })
-          if( this.modelsToken == 0 ) {
+          if ( this.modelsToken > 0 ) {
+            await new Promise( (resolve) => {
+              resolve(this.doTheBobRoss());
+            })
+          } else if( this.modelsToken == 0 ) {
             this.stopAnimation = true;
           }
         }
@@ -340,25 +355,28 @@ export default {
     /**
      * Garbeage collection
      */
-     beatTheDevilOutOfIt: function() {
+     beatTheDevilOutOfIt: async function() {
       if ( this.rendererToken ) {
         console.log("--- Garbage Collection ---")
 
         /* Cancel animation */
-        cancelAnimationFrame( this.animate );
 
         /* Remove loaded meshes */
         this.scenes.forEach( scene => {
-          scene.children[1].geometry.dispose()
-          scene.children[1].material.dispose()
+          scene.children[1].traverse( ( child ) => {
+            if ( child instanceof THREE.Mesh ) {
+            child.geometry.dispose();
+            child.material.dispose();
+            }
+          } )
           scene.remove(scene.children[0])
           scene.remove(scene.children[1])
         } )
 
         /* Dispose renderer */
-        this.renderer.dispose();
-        this.renderer.forceContextLoss();
-        
+        this.renderer.dispose(),
+        this.renderer.forceContextLoss()
+
         /* Reset arrays */
         this.scenes = []
         this.cameras = []
@@ -374,12 +392,15 @@ export default {
      */
     doTheBobRoss: async function() {
       for ( const [i, model] of this.models.entries() ) {
-        this.canvases.push( await this.waitForElm('canvas' + i) );
+          this.canvases.push( await this.waitForElm('canvas' + i) );
       }
-      console.log(this.canvases)
+      console.log( this.canvases );
           
-      this.init()
-      if ( this.stopAnimation ) {
+      await new Promise( (resolve) => {
+        resolve( this.init() );
+      } )
+
+      if ( this.stopAnimation && this.scenes.length > 0 ) {
         this.stopAnimation = false;
         console.log("--- Animation start ---")
         this.animate();
@@ -391,55 +412,80 @@ export default {
      */
     init: async function() {
 
-      const w = 300, h = 200;
+      this.glbLoader = new GLTFLoader();
 
       /* Renderer */
       this.renderer = new THREE.WebGLRenderer( { antialias: true } );
-      this.renderer.setPixelRatio( window.devicePixelRatio );
-      this.renderer.setSize( 300, 200 );
+      this.renderer.setPixelRatio( this.canvases[0].devicePixelRatio );
+      this.renderer.setSize( this.canvases[0].clientWidth, 
+        this.canvases[0].clientHeight );
+      this.renderer.setClearColor( 0x263238, 1 );
       this.rendererToken = true;
 
-      this.models.forEach( model => {
-        this.createScene();
-      })
+      for ( const [ i, model ] of this.models.entries() ) {
+        await new Promise( ( resolve ) => { 
+          resolve( this.createScene( model ) )
+        } );
+      }
       
       for ( const [i, model] of this.models.entries() ) {
-        this.canvases[i].width = w * window.devicePixelRatio;
-        this.canvases[i].height = h * window.devicePixelRatio;
         this.contexts.push( this.canvases[i].getContext( '2d' ) )
       }
-
       console.log( this.contexts );
     },
 
     /**
      * Create scene ... yeah ...
      */
-    createScene: function() {
+    createScene: async function(model) {
       /* Scene */
       const scene = new THREE.Scene();
 
       /* Camera */
-      const camera = new THREE.PerspectiveCamera( 50, 1, 1, 10 );
-      camera.position.z = 2;
+      const aspect = this.canvases[0].clientWidth / this.canvases[0].clientHeight;
+      const camera = new THREE.PerspectiveCamera( 50, aspect, 1, 1000 );
+      //camera.position.z = 2;
       
       /* Light */
       const light = new THREE.AmbientLight( 0xffffff );
       scene.add( light );
 
-      const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-      const material = new THREE.MeshStandardMaterial( {
-        color: new THREE.Color().setHSL( Math.random(), 1, 0.75, THREE.SRGBColorSpace ),
-        roughness: 0.5,
-        metalness: 0,
-        flatShading: true
+      /* Controls */
+      const controls = new OrbitControls( camera, this.renderer.domElement );
+
+      /* Modells */
+      const loadedModel = await this.loadModels( model, camera )
+      scene.add( loadedModel );
+
+      this.scenes.push( scene );
+      this.cameras.push( camera );
+    },
+
+    loadModels: async function(model, camera) {
+      /* Load model */
+      const meshGroup = await new Promise( ( resolve ) => {
+        this.glbLoader.parse( model.model, '', ( glb ) => {
+          glb.scene.traverse( ( child ) => {
+            if ( child instanceof THREE.Mesh ) {
+              child.name = model.id;
+            }
+          } );
+          resolve(glb.scene);
+        } );
       } );
-      const mesh = new THREE.Mesh( geometry, material );
 
-      scene.add( mesh )
+      /* Reposition camera according to model */
+      const bbox = new THREE.Box3().setFromObject( meshGroup );
+      const vec3 = new THREE.Vector3();
+      bbox.getCenter( vec3 )
+      meshGroup.position.set( -vec3.x, -vec3.y, -vec3.z )
+      const height = bbox.max.y - bbox.min.y;
+      const width = bbox.max.x - bbox.min.x;
+      const length = bbox.max.z - bbox.max.z;
+      const largest = Math.max(height, width, length)
+      camera.position.z = largest * 2;
 
-      this.scenes.push(scene)
-      this.cameras.push(camera)
+      return meshGroup
     },
 
     /**
@@ -449,6 +495,8 @@ export default {
         if(!this.stopAnimation) {
 
           console.log("--- Animation runnning ---")
+
+          requestAnimationFrame( this.animate );
 
           for ( const [i, context ] of this.contexts.entries() ) {
             const rawScene = toRaw(this.scenes[i])
@@ -461,10 +509,8 @@ export default {
     
           this.scenes.forEach( scene => {
             scene.children[1].rotation.y += rotationSpeed
-            rotationSpeed += 0.01
           })
-    
-          requestAnimationFrame( this.animate );
+
         }
     },
 
@@ -589,6 +635,9 @@ export default {
      * @param {*} item 
      */
     editModel(item) {
+      this.thanksBob = true
+      this.reloadAfterEdit = true
+
       this.backup_model = item.model;
       this.model = toRaw(item)
 

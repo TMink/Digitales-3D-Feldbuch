@@ -2894,7 +2894,7 @@ export default {
       /* Event listener */
       this.canvasSub.addEventListener( 'mousemove', () => {
         console.log( "Mouse moved" );
-      } )
+      } );
 
     },
 
