@@ -325,7 +325,7 @@ export default {
       hoveredRow: -1,
       headers: [
         {
-          title: 'Nr.',
+          title: this.$t('placeNumber'),
           align: 'start',
           sortable: true,
           key: 'placeNumber',
@@ -336,7 +336,7 @@ export default {
       ],
       fullHeaders: [
         {
-          title: 'Nr.',
+          title: this.$t('placeNumber'),
           align: 'start',
           sortable: true,
           key: 'placeNumber',

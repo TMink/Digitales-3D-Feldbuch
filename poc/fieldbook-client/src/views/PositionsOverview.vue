@@ -303,14 +303,14 @@ export default {
       hoveredRow: -1,
       headers: [
         {
-          title: this.$t('posNumber'),
+          title: this.$tc('posNumber', 2),
           align: 'start',
           sortable: true,
           key: 'positionNumber',
           width: "50px",
         },
         {
-          title: this.$t('subNumber'),
+          title: this.$tc('subNumber', 2),
           align: 'start',
           sortable: true,
           key: 'subNumber',
@@ -321,13 +321,13 @@ export default {
       ],
       fullHeaders: [
         {
-          title: this.$t('posNumber'),
+          title: this.$tc('posNumber', 2),
           align: 'start',
           sortable: true,
           key: 'positionNumber',
         },
         {
-          title: this.$t('subNumber'),
+          title: this.$tc('subNumber', 2),
           align: 'start',
           sortable: true,
           key: 'subNumber',
