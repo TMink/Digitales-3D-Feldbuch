@@ -488,4 +488,12 @@ export default {
   border-bottom: 2px solid black;
   background-color: rgb(221, 221, 221);
 }
+
+td {
+  padding: 6px !important;
+}
+
+th {
+  padding: 6px !important;
+}
 </style>

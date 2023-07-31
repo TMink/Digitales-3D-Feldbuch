@@ -109,7 +109,7 @@
                     v-if="item.raw.title.length > 0"
                     style="min-width:200px" 
                     class="text-wrap">
-                    {{ item.raw.title.join("; ")}}
+                    {{ item.raw.title.join("; ") }}
                   </v-list-item-title>
 
                   <v-list-item-title 
@@ -565,5 +565,13 @@ export default {
 
 .align-right {
   text-align: right;
+}
+
+td {
+  padding: 6px !important;
+}
+
+th {
+  padding: 6px !important;
 }
 </style>
