@@ -7,13 +7,17 @@
     slider-color="slider"
     v-model="active_tab">
     
-    
     <v-tab 
       id="activity" 
       class="text-h6" 
       max-width="250px" 
       @click="changePage('ActivitiesOverview')">
-      {{$t('activity')}}
+      <v-window>
+        <v-card-subtitle>
+          {{ currentActivity }}
+        </v-card-subtitle>
+        {{$t('activity')}}
+      </v-window>
     </v-tab>
     
     <v-tab 
@@ -21,8 +25,13 @@
       class="text-h6" 
       max-width="250px" 
       @click="changePage('PlacesOverview')" 
-      :disabled="!activityIsSet"> 
-      {{ $t('place') }}
+      :disabled="!activityIsSet">
+      <v-window>
+        <v-card-subtitle>
+          {{ currentPlace }}
+        </v-card-subtitle>
+        {{ $t('place') }}
+      </v-window>
     </v-tab>
     
     <v-tab 
@@ -30,8 +39,13 @@
       class="text-h6" 
       max-width="250px" 
       @click="changePage('PositionsOverview')" 
-      :disabled="!placeIsSet"> 
-      {{ $t('position') }}
+      :disabled="!placeIsSet">
+      <v-window>
+        <v-card-subtitle>
+          {{ currentPosition }}
+        </v-card-subtitle>
+        {{ $t('position') }}
+      </v-window> 
     </v-tab>
     
   </v-tabs>
@@ -40,6 +54,7 @@
 <script>
  import VueCookies from 'vue-cookies'
  import { useI18n } from 'vue-i18n'
+ import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
  
   export default {
     setup () {
@@ -57,10 +72,15 @@
         activityIsSet: false,
         activityID: '',
         positionIsSet: false,
-        positionID: ''
+        positionID: '',
+        currentActivity: '-',
+        currentPlace: '-',
+        currentPosition: '-',
       }
     },
-    created () {
+    async created () {
+      await fromOfflineDB.syncLocalDBs();
+      await this.updatePathbar();
       this.active_tab = this.active_tab_prop;
       this.placeID = VueCookies.get('currentPlace')
       if (this.placeID !== null) {
@@ -85,11 +105,56 @@
           console.log(error)
         }
       })
+      },
+      async updatePathbar() {
+      if( VueCookies.get('currentActivity') ) {
+        await this.getInfo("Activity")
+      } 
+      if( VueCookies.get('currentPlace') ) {
+        await this.getInfo("Place")
       }
+      if( VueCookies.get('currentPosition') ) {
+        await this.getInfo("Position")
+      }
+    },
+    
+    async getInfo(selection) { 
+      const id = VueCookies.get('current' + selection);
+      
+      let db = null;
+      let st = null;
+      if(selection === "Activity") {
+        db = "Activities"
+        st = "activities"
+      } else {
+        db = selection + "s"
+        st = selection.toLowerCase() + "s"
+      }
+      const name = await fromOfflineDB.getObject( id, db, st);
+    
+      switch(selection) {
+        case "Activity":
+          this.currentActivity = name.activityNumber;
+          break;
+        case "Place":
+          this.currentPlace = name.placeNumber;
+          break;
+        case "Position":
+          this.currentPosition = name.positionNumber;
+          break;
+        default:
+          console.log( "Error" );
+      }
+      
+    },
     }
   }
 </script>
 
 <style scoped>
+
+.v-tabs, .v-tab {
+  height: 70px;
+}
     
 </style>

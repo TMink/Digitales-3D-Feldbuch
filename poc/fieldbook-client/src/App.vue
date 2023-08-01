@@ -73,7 +73,6 @@
 
     <!-- Main Content -->
     <v-main>
-      <Pathbar color="accent" :key="path_reload" />
       <router-view @view="onViewChange"></router-view>
     </v-main>
 
@@ -107,7 +106,10 @@ export default {
 
     return {
       theme,
-      toggleTheme: () => theme.global.name.value = theme.global.current.value.dark ? 'fieldbook_light' : 'fieldbook_dark'
+      toggleTheme() {
+        theme.global.name.value = theme.global.current.value.dark ? 'fieldbook_light' : 'fieldbook_dark'
+        VueCookies.set('currentTheme', theme.global.name.value)
+      }
     }
   },
   data: function () {
