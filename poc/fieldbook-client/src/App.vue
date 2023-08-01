@@ -107,7 +107,10 @@ export default {
 
     return {
       theme,
-      toggleTheme: () => theme.global.name.value = theme.global.current.value.dark ? 'fieldbook_light' : 'fieldbook_dark'
+      toggleTheme() {
+        theme.global.name.value = theme.global.current.value.dark ? 'fieldbook_light' : 'fieldbook_dark'
+        VueCookies.set('currentTheme', theme.global.name.value)
+      }
     }
   },
   data: function () {
