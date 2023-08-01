@@ -73,7 +73,6 @@
 
     <!-- Main Content -->
     <v-main>
-      <Pathbar color="accent" :key="path_reload" />
       <router-view @view="onViewChange"></router-view>
     </v-main>
 
