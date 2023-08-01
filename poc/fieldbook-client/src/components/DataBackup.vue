@@ -277,6 +277,7 @@ export default {
 
       // close the import dialog
       this.importDialog = false;
+      this.$router.go();
     },
 
     /**
