@@ -24,7 +24,8 @@
               append-icon="mdi-magnify" 
               :label="this.$t('search')" 
               single-line 
-              hide-details>
+              hide-details
+              color="primary">
             </v-text-field>
         </v-row>
       </v-card>
@@ -50,7 +51,8 @@
               <tr 
                 v-on:click="moveToPlace(item.raw.id)"
                 @mouseenter="setHoveredRow(index, true)"
-                @mouseleave="setHoveredRow(index, false)">
+                @mouseleave="setHoveredRow(index, false)"
+                >
                 <!-- PLACE NUMBER -->
                 <td class="py-6" :style="getRowStyle(index)">
                   <v-list-item-title>

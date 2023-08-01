@@ -25,7 +25,8 @@
               append-icon="mdi-magnify" 
               :label="this.$t('search')" 
               single-line 
-              hide-details>
+              hide-details
+              color="primary">
             </v-text-field>
           </v-row>
         </v-card>
