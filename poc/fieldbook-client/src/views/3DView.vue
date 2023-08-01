@@ -41,7 +41,7 @@
                             <v-col>
                               <v-select v-model="measureTool.title"
                                 :label="$t('line')"
-                                color="opp_background"
+                                color="primary"
                                 :items="measureTool.allTitles"
                                 :@update="updateTitle()"
                               ></v-select>
@@ -55,6 +55,7 @@
                             <v-col cols="10">
                               <v-text-field
                                 v-model="measureTool.textField"
+                                color="primary"
                                 :placeholder="$t('newIdentifier')"
                               >
                               </v-text-field>
@@ -97,7 +98,7 @@
                              style="left: 49px; top:104px; width: 470px;" 
                              temporary
         >
-          <v-list-item height="50" prepend-icon="mdi-map-marker-radius-outline"
+          <v-list-item height="50" prepend-icon="mdi-radar"
             :title="$tc('place', 2)"
           ></v-list-item>
   
@@ -122,6 +123,7 @@
                       <v-combobox v-model="plaModel.number"
                         :label="$tc('number', 2)"
                         item-title="modelNumber"
+                        color="primary"
                         bgColor="opp_background"
                         :items="plaModel.allNumbers"
                       ></v-combobox>
@@ -131,6 +133,7 @@
                       <v-combobox v-model="plaModel.title"
                         :label="$t('title')"
                         item-title="modelTitel"
+                        color="primary"
                         bgColor="opp_background"
                         :items="plaModel.allTitles"
                       ></v-combobox>
@@ -163,8 +166,13 @@
                           <v-row no-gutters>
                             <!-- Opacity-->
                             <v-col cols="2" class="px-2 pt-4">
-                              <v-slider v-model="plaMods.opacitySliderValue" :max="1"
-                                        :disabled="plaMods.disabled">
+                              <v-slider 
+                              v-model="plaMods.opacitySliderValue" 
+                              :max="1"
+                              :disabled="plaMods.disabled" 
+                              track-color="primary" 
+                              thumb-color="secondary" 
+                              color="warning">
                               </v-slider>
                             </v-col>
 
@@ -248,6 +256,7 @@
                       <v-combobox v-model="posData.number"
                         :label="$tc('number', 2)"
                         item-title="positionNumber"
+                        color="primary"
                         bgColor="opp_background"
                         :items="posData.allNumbers"
                       ></v-combobox>
@@ -256,6 +265,7 @@
                     <v-col cols="3" class="pl-2">
                       <v-combobox v-model="posData.subNumber"
                         :label="$t('subNumber')"
+                        color="primary"
                         bgColor="opp_background"
                         item-title="positionSubnumber"
                         :items="posData.allSubNumbers"
@@ -266,6 +276,7 @@
                       <v-combobox v-model="posData.title"
                         :label="$t('title')"
                         item-title="positionTitle"
+                        color="primary"
                         bgColor="opp_background"
                         :items="posData.allTitles"
                       ></v-combobox>
@@ -284,6 +295,7 @@
                       <v-combobox v-model="posModel.number"
                         :label="$tc('number', 2)"
                         item-title="modelNumber"
+                        color="primary"
                         bgColor="opp_background"
                         :items="posModel.allNumbers"
                         :disabled="!posModel.disableInput"
@@ -294,6 +306,7 @@
                       <v-combobox v-model="posModel.title"
                         :label="$tc('title', 2)"
                         item-title="modelTitel"
+                        color="primary"
                         bgColor="opp_background"
                         :items="posModel.allTitles"
                         :disabled="!posModel.disableInput"
@@ -331,6 +344,7 @@
                                 :disabled="posMods.disabled"
                                 :true-value="posMods.attachTransformControls"
                                 :false-value="!posMods.attachTransformControls"
+                                color="primary"
                                 @Click="attachTransformControls(
                                   posMods.attachTransformControls)">
                               </v-checkbox>
@@ -350,9 +364,13 @@
                           <v-row no-gutters>
                             <!-- Opacity-->
                             <v-col cols="2" class="px-2 pt-4">
-                              <v-slider :disabled="posMods.disabled"
-                                v-model="posMods.opacitySliderValue"
-                                :max="1">
+                              <v-slider 
+                              :disabled="posMods.disabled"
+                              v-model="posMods.opacitySliderValue"
+                              :max="1"
+                              track-color="primary" 
+                              thumb-color="secondary" 
+                              color="warning">
                               </v-slider>
                             </v-col>
       
@@ -408,7 +426,12 @@
       <!-- Navigation buttons -->
       <v-card rounded="0" width="50" height="86.6vh">
         <v-card rounded="0" align="center" width="50" height="50">
-          <v-card-text>S</v-card-text>
+          <v-row no-gutters class="pt-3">
+            <v-col>
+              <v-icon>mdi-cogs</v-icon>
+            </v-col>
+          </v-row>
+          <!--<v-card-text>S</v-card-text>-->
         </v-card>
         <!-- Controls -->
         <v-btn v-model="leftDrawer.btnNames[0]" rounded="0" icon="mdi-camera-control" 

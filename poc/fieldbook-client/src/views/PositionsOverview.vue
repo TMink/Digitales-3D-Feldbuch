@@ -25,7 +25,8 @@
               append-icon="mdi-magnify" 
               :label="this.$t('search')" 
               single-line 
-              hide-details>
+              hide-details
+              color="primary">
             </v-text-field>
           </v-row>
         </v-card>
@@ -37,7 +38,7 @@
         <v-spacer></v-spacer>
 
         <!-- POSITIONS LIST -->
-        <v-card class="pa-3" :min-width="windowWidth * 0.6">
+        <v-card class="pa-3" :min-width="windowWidth * 0.7">
 
           <v-data-table-virtual
             v-show="!showAllInfo"
@@ -303,14 +304,14 @@ export default {
       hoveredRow: -1,
       headers: [
         {
-          title: this.$t('posNumber'),
+          title: this.$tc('posNumber', 2),
           align: 'start',
           sortable: true,
           key: 'positionNumber',
           width: "50px",
         },
         {
-          title: this.$t('subNumber'),
+          title: this.$tc('subNumber', 2),
           align: 'start',
           sortable: true,
           key: 'subNumber',
@@ -321,13 +322,13 @@ export default {
       ],
       fullHeaders: [
         {
-          title: this.$t('posNumber'),
+          title: this.$tc('posNumber', 2),
           align: 'start',
           sortable: true,
           key: 'positionNumber',
         },
         {
-          title: this.$t('subNumber'),
+          title: this.$tc('subNumber', 2),
           align: 'start',
           sortable: true,
           key: 'subNumber',
@@ -449,17 +450,26 @@ export default {
     },
 
     /**
-     * Get the style for the row at the specified index.
+     * Get the style for the row at the specified index. 
+     * Furthermore get the currentTheme from Cookies and decide which colorattribute to use.
      *
      * @param {number} index The index of the row
      * @returns {Object} An object containing row style properties
      */
-    getRowStyle(index) {
+     getRowStyle(index) {
+      var currentTheme = VueCookies.get('currentTheme')
+      if (currentTheme !== 'fieldbook_light') {
+        return {
+          cursor: 'pointer',
+          padding: '8px 16px',
+          backgroundColor: this.hoveredRow === index ? '#2f3845' : 'transparent'
+        }
+      } 
       return {
-        backgroundColor: this.hoveredRow === index ? '#2f3845' : 'transparent',
         cursor: 'pointer',
-        padding: '8px 16px'
-      };
+        padding: '8px 16px',
+        backgroundColor: this.hoveredRow === index ? '#F6F6F6' : 'transparent'
+      }
     },
     /**
      * Update the hoveredRow based on the isHovered flag.
@@ -487,5 +497,13 @@ export default {
   border-top: 2px solid black;
   border-bottom: 2px solid black;
   background-color: rgb(221, 221, 221);
+}
+
+td {
+  padding: 6px !important;
+}
+
+th {
+  padding: 6px !important;
 }
 </style>

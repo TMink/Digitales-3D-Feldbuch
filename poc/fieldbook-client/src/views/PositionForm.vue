@@ -64,6 +64,7 @@
                     class="pl-4"
                     hide-details
                     v-model="position.isSeparate"
+                    color="primary"
                     :label="$t('isSeparate')">
                   </v-checkbox>
                   <!-- maybe as tooltip -->
@@ -222,7 +223,7 @@
             <v-row>
               <!-- CARD 6 DESCRIPTION -->
               <v-col lg="6">
-                <v-card class="pa-3">
+                <v-card class="pa-3" height="100%">
                   <v-textarea 
                     counter 
                     rows="4" 
@@ -237,14 +238,16 @@
               
               <!-- CARD 7 EDITOR -->
               <v-col lg="6">
-                <v-card class="pa-3">
-                  <v-text-field 
+                <v-card class="pa-3" height="100%">
+                  <v-textarea
                     maxlength="50"
-                    color="primary" 
+                    color="primary"
+                    rows="4" 
                     :label="$t('editor')" 
                     v-model="position.addressOf"
+                    no-resize
                     :hint="$tc('please_input', 2, { msg: 'Ansprache von' })">
-                  </v-text-field>
+                  </v-textarea>
                 </v-card>
               </v-col>
             </v-row>

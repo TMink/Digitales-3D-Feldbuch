@@ -24,7 +24,8 @@
               append-icon="mdi-magnify" 
               :label="this.$t('search')" 
               single-line 
-              hide-details>
+              hide-details
+              color="primary">
             </v-text-field>
         </v-row>
       </v-card>
@@ -38,7 +39,7 @@
         <!-- PLACES TABLE SMALL -->
         <v-card 
           class="pa-3"
-          :min-width="windowWidth * 0.6">
+          :min-width="windowWidth * 0.7">
           <v-data-table-virtual 
             v-show="!showAllInfo"
             :items="filteredPlaces"
@@ -50,7 +51,8 @@
               <tr 
                 v-on:click="moveToPlace(item.raw.id)"
                 @mouseenter="setHoveredRow(index, true)"
-                @mouseleave="setHoveredRow(index, false)">
+                @mouseleave="setHoveredRow(index, false)"
+                >
                 <!-- PLACE NUMBER -->
                 <td class="py-6" :style="getRowStyle(index)">
                   <v-list-item-title>
@@ -109,7 +111,7 @@
                     v-if="item.raw.title.length > 0"
                     style="min-width:200px" 
                     class="text-wrap">
-                    {{ item.raw.title.join("; ")}}
+                    {{ item.raw.title.join("; ") }}
                   </v-list-item-title>
 
                   <v-list-item-title 
@@ -325,7 +327,7 @@ export default {
       hoveredRow: -1,
       headers: [
         {
-          title: 'Nr.',
+          title: this.$t('placeNumber'),
           align: 'start',
           sortable: true,
           key: 'placeNumber',
@@ -336,7 +338,7 @@ export default {
       ],
       fullHeaders: [
         {
-          title: 'Nr.',
+          title: this.$t('placeNumber'),
           align: 'start',
           sortable: true,
           key: 'placeNumber',
@@ -400,7 +402,7 @@ export default {
       }
 
       return totalTableHeight + "px";
-    },
+    }
   },
 
   methods: {
@@ -529,17 +531,26 @@ export default {
     },
 
     /**
-     * Get the style for the row at the specified index.
+     * Get the style for the row at the specified index. 
+     * Furthermore get the currentTheme from Cookies and decide which colorattribute to use.
      *
      * @param {number} index The index of the row
      * @returns {Object} An object containing row style properties
      */
     getRowStyle(index) {
+      var currentTheme = VueCookies.get('currentTheme')
+      if (currentTheme !== 'fieldbook_light') {
+        return {
+          cursor: 'pointer',
+          padding: '8px 16px',
+          backgroundColor: this.hoveredRow === index ? '#2f3845' : 'transparent'
+        }
+      } 
       return {
-        backgroundColor: this.hoveredRow === index ? '#2f3845' : 'transparent',
         cursor: 'pointer',
-        padding: '8px 16px'
-      };
+        padding: '8px 16px',
+        backgroundColor: this.hoveredRow === index ? '#F6F6F6' : 'transparent'
+      }
     },
     /**
      * Update the hoveredRow based on the isHovered flag.
@@ -565,5 +576,13 @@ export default {
 
 .align-right {
   text-align: right;
+}
+
+td {
+  padding: 6px !important;
+}
+
+th {
+  padding: 6px !important;
 }
 </style>

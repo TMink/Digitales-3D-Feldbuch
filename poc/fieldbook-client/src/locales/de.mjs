@@ -15,7 +15,7 @@ export default {
   file: "Datei",
   code: "Code",
   placeNumber: "Stellen-Nr.",
-  posNumber: "Positionsnumber | Pos-Nr.",
+  posNumber: "Positionsnummer | Pos-Nr.",
   subNumber: "Unternummer | Unter-Nr.",
   posFilter: "Positions Filter",
   dating: "Datierung",
