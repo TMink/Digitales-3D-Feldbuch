@@ -282,9 +282,7 @@ export default {
       VueCookies.remove('currentPlace');
       VueCookies.remove('currentActivity');
 
-      await fromOfflineDB.deleteCascade(activity.id, 'place', 'Places',
-        'places');
-      await fromOfflineDB.deleteObject(toRaw(activity), 'Activities', 'activities');
+      await fromOfflineDB.deleteCascade(activity.id, 'activity', 'Activities', 'activities');
       await this.updateActivities();
     },
   }

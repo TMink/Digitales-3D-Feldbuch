@@ -490,6 +490,7 @@ export default class ConnectionToOfflineDB {
    */
   async deleteObject(object, localDBName, storeName) {
     var localDB = this.getLocalDBFromName(localDBName);
+
     return new Promise((resolve, _reject) => {
       const trans = localDB.transaction([storeName], "readwrite");
       trans.oncomplete = (_e) => {
@@ -529,7 +530,7 @@ export default class ConnectionToOfflineDB {
   }
 
   /**
-   * @param {String} placeID
+   * @param {String} objectID
    *    ID of the currently selected place
    * @param {String} localDBName
    *    Database name
@@ -539,36 +540,60 @@ export default class ConnectionToOfflineDB {
   async deleteCascade(id, selection, localDBName, storeName) {
     const localDB = this.getLocalDBFromName(localDBName);
 
-    await new Promise((resolve, _reject) => {
-      const trans = localDB.transaction([storeName], "readwrite");
+    const context = this;
+    var object = await this.getObject(id, localDBName, storeName);
+
+   await new Promise(async function(resolve, _reject) {
+      const trans = localDB.transaction(storeName, "readwrite");
       trans.oncomplete = (_e) => {
         resolve();
-      };
+      };      
 
-      const store = trans.objectStore(storeName);
-
-      store.openCursor().onsuccess = (e) => {
-        let cursor = e.target.result;
-        if (cursor) {
-          switch (selection) {
-            case "place":
-              if (cursor.value.activityID === id) {
-                this.deleteCascade(cursor.value.id, "position", "Positions", "positions");
-                store.delete(cursor.value.id);
-              }
-              break;
-            case "position":
-              if (cursor.value.placeID === id) {
-                store.delete(cursor.value.id);
-              }
-              break;
-            default:
-              console.log("Error");
+      switch (selection) {
+        case "activity":
+          if (object.places.length > 0) {
+            for (var i=0; i<object.places.length; i++) {
+              context.deleteCascade(object.places[i], "place", "Places", "places");
+            }
           }
+          break;
+        case "place":
+          if (object.positions.length > 0) {
+            for (var j=0; j<object.positions.length; j++) {
+              context.deleteCascade(object.positions[j], "position", "Positions", "positions");
+            }
+          }
+          if (object.images.length > 0) {
+            for (var k=0; k<object.images.length; k++) {
+              var image = await context.getObject(object.images[k], 'Images', 'images');
+              await fromOfflineDB.deleteObject(image, 'Images', 'images');
+            }
+          }
+          if (object.models.length != 0) {
+            for (var l=0; l<object.models.length; l++) {
+              var model = await context.getObject(object.models[l], 'Models', 'places');
+              await fromOfflineDB.deleteObject(model, 'Models', 'places');
+            }
+          }
+          break;
+        case "position":
+          if (object.images.length != 0) {
+            for (var m=0; m<object.images.length; m++) {
+              var image = await context.getObject(object.images[m], 'Images', 'images');
+              await fromOfflineDB.deleteObject(image, 'Images', 'images');
+            }
+          }
+          if (object.models.length != 0) {
+            for (var n=0; n<object.models.length; n++) {
+              var model = await context.getObject(object.models[n], 'Models', 'positions');
+              await fromOfflineDB.deleteObject(model, 'Models', 'positions');            }
+          }
+          break;
+        default:
+          console.log("Error");
+      }
 
-          cursor.continue();
-        }
-      };
+      await fromOfflineDB.deleteObject(object, localDBName, storeName);
     });
   }
 
