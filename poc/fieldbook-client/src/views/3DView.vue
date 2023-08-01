@@ -424,7 +424,7 @@
       </v-card>
 
       <!-- Navigation buttons -->
-      <v-card rounded="0" width="50" height="86.6vh">
+      <v-card rounded="0" width="50" height="85vh">
         <v-card rounded="0" align="center" width="50" height="50">
           <v-row no-gutters class="pt-3">
             <v-col>
@@ -1423,7 +1423,7 @@ export default {
 
       /* Set canvasMain size */
       this.canvasMain.width = window.innerWidth;
-      this.canvasMain.height = window.innerHeight - 168;
+      this.canvasMain.height = window.innerHeight - 110;
 
       /* Auto Resize */
       window.addEventListener( 'resize', this.onWindowResize, false )
