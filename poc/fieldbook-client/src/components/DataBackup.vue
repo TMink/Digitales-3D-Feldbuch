@@ -202,8 +202,9 @@ export default {
       zip.file(filename + ".txt", blob);
 
       zip.generateAsync({ type: "blob" }).then(function (content) {
+        var fileName = "fieldbookBackup_" + new Date().toLocaleDateString("en-EN") + ".zip" 
         // see FileSaver.js
-        saveAs(content, "example.zip");
+        saveAs(content, fileName);
       });
     },
 
