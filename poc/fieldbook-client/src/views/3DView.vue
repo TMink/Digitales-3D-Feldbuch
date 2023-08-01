@@ -467,200 +467,102 @@
 
   <!-- Bottom drawer: Position information-->
   <v-navigation-drawer v-model="bottomDrawer.showDrawer" location="bottom" 
-                       temporary width="385">
-    <v-row class="pt-4 pl-4">
-      <!-- 1st BOX -->
-      <v-col cols="3">
-        <v-card variant="tonal" class="pa-2">
-          <v-list density="compact">
-
-            <v-list-item variant="tonal">
-              <v-list-item-title class="text-h6">
-                {{ posInfo.positionNumber }}
-              </v-list-item-title>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-subtitle>
-                {{ $tc('posNumber', 1)}}
-              </v-list-item-subtitle>
-            </v-list-item>
-
-            <v-list-item variant="tonal">
-              <v-list-item-title class="text-h6">
-                {{ posInfo.subNumber }}
-              </v-list-item-title>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-subtitle>
-                {{ $tc('subNumber', 1)}}
-              </v-list-item-subtitle>
-            </v-list-item>
-
-            <v-list-item variant="tonal">
-              <v-list-item-title class="text-h6">
-                {{ posInfo.title }}
-              </v-list-item-title>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-subtitle>
-                {{ $tc('title', 2)}}
-              </v-list-item-subtitle>
-            </v-list-item>
-
-            <v-list-item variant="tonal">
-              <v-list-item-title style="color:white" class="text-h6">
-                {{ posInfo.material }}
-              </v-list-item-title>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-subtitle>
-                {{ $t('material') }}
-              </v-list-item-subtitle>
-            </v-list-item>
-          </v-list>
-        </v-card>
-      </v-col>
-
-      <!-- 2nd BOX -->
-      <v-col cols="3">
-        <v-card variant="tonal" class="pa-2">
-          <v-list density="compact">
-            <v-row>
-
-              <v-col cols="6">
-                <v-list-item variant="tonal">
-                  <v-list-item-title class="text-h6">
-                    {{ posInfo.right }}
-                  </v-list-item-title>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-subtitle>
-                    {{ $tc('right', 2) }}
-                  </v-list-item-subtitle>
-                </v-list-item>
-              </v-col>
-
-              <v-col cols="6">
-                <v-list-item variant="tonal">
-                  <v-list-item-title style="color:white" class="text-h6">
-                    {{ posInfo.up }}
-                  </v-list-item-title>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-subtitle>
-                    {{ $tc('up', 2) }}
-                  </v-list-item-subtitle>
-                </v-list-item>
-              </v-col>
-            </v-row>
-
-            <v-list-item variant="tonal">
-              <v-list-item-title style="color:white" class="text-h6">
-                {{ posInfo.height }}
-              </v-list-item-title>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-subtitle>
-                {{ $t('height') }}
-              </v-list-item-subtitle>
-            </v-list-item>
-
-            <v-card class="pa-4" color="accent">
-              <div class="text-h4 text-center" :label="$t('lastEdited')">
-                {{ posInfo.date }}
-              </div>
-              <div class="text-grey text-center">
-                {{ $t('lastEdited') }}
-              </div>
-            </v-card>
-          </v-list>
-        </v-card>
-      </v-col>
-
-      <!-- 3rd BOX -->
-      <v-col cols="3">
-        <v-card variant="tonal" class="pa-2">
-          <v-list density="compact">
-            <v-row>
-
-              <v-col cols="6">
-                <v-list-item variant="tonal">
-                  <v-list-item-title class="text-h6">
-                    {{ posInfo.count }}
-                  </v-list-item-title>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-subtitle>
-                    {{ $t('count') }}
-                  </v-list-item-subtitle>
-                </v-list-item>
-              </v-col>
-
-              <v-col cols="6">
-                <v-list-item variant="tonal">
-                  <v-list-item-title class="text-h6">
-                    {{ posInfo.weight }}
-                  </v-list-item-title>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-subtitle>
-                    {{ $t('weight') }}
-                  </v-list-item-subtitle>
-                </v-list-item>
-              </v-col>
-            </v-row>
-
-            <v-list-item variant="tonal">
-              <v-list-item-title class="text-h6">
-                {{ posInfo.dating }}
-              </v-list-item-title>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-subtitle>
-                {{ $t('dating')}}
-              </v-list-item-subtitle>
-            </v-list-item>
-
-            <v-list-item variant="tonal">
-              <v-list-item-title style="color:white" class="text-h6">
-                {{ posInfo.adressOf }}
-              </v-list-item-title>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-subtitle>
-                {{ $t('adressOf') }}
-              </v-list-item-subtitle>
-            </v-list-item>
-
-            <v-list-item variant="tonal">
-              <v-list-item-title style="color:white" class="text-h6">
-                {{ posInfo.description }}
-              </v-list-item-title>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-subtitle>
-                {{ $t('description') }}
-              </v-list-item-subtitle>
-            </v-list-item>
-          </v-list>
-        </v-card>
-      </v-col>
-
-      <!-- SubCanvas -->
-      <v-divider vertical></v-divider>
-      <v-col class="pa-0" cols="3">
-        <v-list-item class="justify-center pt-4">
-          {{ posInfo.modelName }}
-        </v-list-item>
-
+                       temporary width="300">
+    
+    <v-row>
+      <v-col>
+        <v-row no-gutters>
+          <v-col cols="2" class="pa-1 pt-3 pl-8">
+            Positionsnummer: {{ posInfo.positionNumber }}
+          </v-col>
+          <v-col cols="2" class="pa-1 pt-3 pl-8">
+            Unternummer: {{ posInfo.subNumber }}
+          </v-col>
+          <v-col cols="5" class="pa-1 pt-3 pl-8">
+            Zuletzt Bearbeitet: {{ posInfo.date }}
+          </v-col>
+          <v-divider vertical></v-divider>
+          <v-col cols="1" class="pa-1">
+            <v-btn v-on:click="savePosition()" color="primary">
+              Speichern
+            </v-btn>
+          </v-col>
+          <v-divider vertical></v-divider>
+          <v-col cols="2" align="center" class="pt-3">
+            {{ posInfo.modelName }}
+          </v-col>
+        </v-row>
         <v-divider></v-divider>
-        <div style="text-align:center" class="pt-4">
-          <canvas v-show="true" id="subCanvas" width="300" height="300"
+      </v-col>      
+    </v-row>
+    
+    <v-row no-gutters>
+      <v-col cols="8">
+        <v-row no-gutters>
+          <v-col cols="4">
+            <v-text-field class="pt-4 pl-4" :label="$t('title')" v-model="posInfo.title">
+              
+            </v-text-field>
+          </v-col>
+          <v-col cols="4" align="center">
+            <v-text-field class="pt-4 pl-4" :label="$t('date')" v-model="posInfo.dating">
+            </v-text-field>
+          </v-col>
+          <v-col cols="4" align="center">
+            <v-text-field class="pt-4 pl-4 pr-4" :label="$t('adressOf')" v-model="posInfo.adressOf">
+            </v-text-field>
+          </v-col>
+        </v-row>
+        <v-row no-gutters>
+          <v-col cols="4">
+            <v-text-field class="pt-0 pl-4" :label="$t('count')" v-model="posInfo.count">
+            </v-text-field>
+          </v-col>
+          <v-col cols="4" align="center">
+            <v-text-field class="pt-0 pl-4" :label="$t('weight')" v-model="posInfo.weight">
+            </v-text-field>
+          </v-col>
+          <v-col cols="4" align="center">
+            <v-text-field class="pt-0 pl-4 pr-4" :label="$t('material')" v-model="posInfo.material">
+            </v-text-field>
+          </v-col>
+        </v-row>
+        <v-row no-gutters>
+          <v-col>
+            <v-text-field class="pt-0 pl-4 pr-4" :label="$t('description')" v-model="posInfo.description">
+            </v-text-field>
+          </v-col>
+        </v-row>
+      </v-col>
+      <v-divider vertical></v-divider>
+      <v-col cols="2" align="center">
+        <v-row no-gutters>
+          <v-col class="pt-4">
+            <v-text-field class="pl-4 pr-4" :label="$t('right')" v-model="posInfo.right">
+            </v-text-field>
+          </v-col>
+        </v-row>
+        <v-row no-gutters>
+          <v-col>
+            <v-text-field class="pl-4 pr-4" :label="$t('up')" v-model="posInfo.up">
+            </v-text-field>
+          </v-col>
+        </v-row>
+        <v-row no-gutters>
+          <v-col>
+            <v-text-field class="pl-4 pr-4" :label="$t('height')" v-model="posInfo.height">
+            </v-text-field>
+          </v-col>
+        </v-row>
+      </v-col>
+      <v-divider vertical></v-divider>
+      <v-col cols="2" align="center" class="py-6">
+        <v-divider vertical></v-divider>
+          <canvas v-show="true" id="subCanvas" width="200" height="200"
                   style="display: inline;
                          border: 1px solid rgb(255, 255, 255)">
           </canvas>
-        </div>
-      </v-col>
+      </v-col>      
     </v-row>
   </v-navigation-drawer>
 </template>
@@ -758,6 +660,7 @@ import { GammaCorrectionShader } from
   'three/examples/jsm/shaders/GammaCorrectionShader';
 import { CSS2DRenderer, CSS2DObject } from 
   'three/examples/jsm/renderers/CSS2DRenderer'
+import { toRaw } from 'vue'
 
 const params = {
   sceneMain: {
@@ -1282,6 +1185,53 @@ export default {
 
   methods: {
 
+    /**
+     * Save a Position to local storage for the current place
+     */
+    async savePosition() {
+
+      //convert from vue proxy to JSON object
+      const rawPosition = toRaw(this.posInfo);
+      rawPosition.count = Number(rawPosition.count);
+      rawPosition.lastChanged = Date.now();
+      
+      var positionFromDb = await fromOfflineDB.getObject(rawPosition.id, 'Positions', 'positions');
+      var newSubNumber = this.calcSubNumber(rawPosition, positionFromDb);
+      rawPosition.subNumber = newSubNumber;
+
+      await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions');
+    },
+
+    /**
+     * Calculates the SubNumber of a position
+     */
+    calcSubNumber(curPos, prevPos) {
+      if (prevPos == undefined) {
+        return 1;
+      }
+
+      if (prevPos.positionNumber < curPos.positionNumber) {
+        return 1;
+      }
+      
+      var subNumber = prevPos.subNumber;
+
+      if (/* curPos.activity == prevPos.activity && */
+        curPos.placeID == prevPos.placeID &&
+        curPos.positionNumber == prevPos.positionNumber &&
+        curPos.right == prevPos.right &&
+        curPos.up == prevPos.up &&
+        curPos.height == prevPos.height &&
+        curPos.dating == prevPos.dating &&
+        curPos.title == prevPos.title &&
+        curPos.date == prevPos.date &&
+        !curPos.isSeparate) {
+        return parseInt(subNumber);
+      }
+
+      return parseInt(subNumber) + 1;
+    },
+
     updateTitle: function() {
       if ( this.measureTool.texttoken ) {
         this.measureTool.title = this.measureTool.textField
@@ -1571,6 +1521,9 @@ export default {
       }
     },
 
+    /**
+     *
+     */
     updateModelOpacityAndColor: async function(modelID, storeName) {
       const modelInScene = this.sceneMain.getObjectByName( modelID );
       const modelInDB = await fromOfflineDB.getObject( modelID, 'Models',
@@ -1978,19 +1931,8 @@ export default {
             const positionID = this.positionModelsInScene[ i ].positionID;
             const positionInDB = await fromOfflineDB.getObject( positionID,
               'Positions', 'positions' );
-            this.posInfo.positionNumber = positionInDB.positionNumber;
-            this.posInfo.subNumber = positionInDB.subNumber;
-            this.posInfo.date = positionInDB.date;
-            this.posInfo.title = positionInDB.title;
-            this.posInfo.material = positionInDB.material;
-            this.posInfo.right = positionInDB.right;
-            this.posInfo.up = positionInDB.up;
-            this.posInfo.height = positionInDB.height;
-            this.posInfo.count = positionInDB.count;
-            this.posInfo.weight = positionInDB.weight;
-            this.posInfo.description = positionInDB.description;
-            this.posInfo.dating = positionInDB.dating;
-            this.posInfo.adressOf = positionInDB.adressOf;
+            this.posInfo = positionInDB;
+            console.log(this.posInfo)
           }
         }
       }
