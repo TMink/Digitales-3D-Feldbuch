@@ -480,7 +480,13 @@ export default {
    * Initialize data from localDB to the reactive Vue.js data
    */
   async created() {
-    this.$emit("view", this.$t('edit', { msg: this.$tc('place', 1) }));
+    const acID = String(VueCookies.get('currentActivity'))
+    var activity = await fromOfflineDB.getObject(acID, 'Activities', 'activities')
+
+    const plID = String(VueCookies.get('currentPlace'))
+    var place = await fromOfflineDB.getObject(plID, 'Places', 'places')
+    
+    this.$emit("view", activity.activityNumber + ' ' + place.placeNumber);
 
     this.titles = JSON.parse(import.meta.env.VITE_TITLES);
     this.datings = JSON.parse(import.meta.env.VITE_DATINGS);
