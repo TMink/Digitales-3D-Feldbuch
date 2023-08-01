@@ -402,7 +402,7 @@ export default {
       }
 
       return totalTableHeight + "px";
-    },
+    }
   },
 
   methods: {
@@ -531,17 +531,26 @@ export default {
     },
 
     /**
-     * Get the style for the row at the specified index.
+     * Get the style for the row at the specified index. 
+     * Furthermore get the currentTheme from Cookies and decide which colorattribute to use.
      *
      * @param {number} index The index of the row
      * @returns {Object} An object containing row style properties
      */
     getRowStyle(index) {
+      var currentTheme = VueCookies.get('currentTheme')
+      if (currentTheme !== 'fieldbook_light') {
+        return {
+          cursor: 'pointer',
+          padding: '8px 16px',
+          backgroundColor: this.hoveredRow === index ? '#2f3845' : 'transparent'
+        }
+      } 
       return {
-        backgroundColor: this.hoveredRow === index ? '#2f3845' : 'transparent',
         cursor: 'pointer',
-        padding: '8px 16px'
-      };
+        padding: '8px 16px',
+        backgroundColor: this.hoveredRow === index ? '#F6F6F6' : 'transparent'
+      }
     },
     /**
      * Update the hoveredRow based on the isHovered flag.
