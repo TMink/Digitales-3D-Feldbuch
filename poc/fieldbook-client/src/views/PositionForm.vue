@@ -92,7 +92,6 @@
               <v-row>
                 <v-col lg="6">
                   <v-combobox 
-                    maxlength="40"
                     color="primary" 
                     :items="titles" 
                     :label="$tc('title', 2)" 
