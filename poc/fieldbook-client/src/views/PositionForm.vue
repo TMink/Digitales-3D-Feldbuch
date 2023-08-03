@@ -34,37 +34,46 @@
           <v-window-item value="one">
             <!-- CARD 1 GENERAL -->
             <v-card class="pa-4">
-              <v-row class="pt-2">
+              <v-row class="pt-2 align-center">
 
-                <v-col lg="2">
+                <v-col cols="3">
                   <v-text-field 
                     color="primary" 
-                    :label="$t('posNumber') +' *'" 
+                    :label="$tc('posNumber', 2) +' *'" 
                     maxlength="6"
+                    hide-details
                     :rules="is_required" 
                     v-model="position.positionNumber"
-                    @keypress="filterAllNonNumeric(event)"
-                    :hint="$tc('please_input', 2, { msg: $t('posNumber') })">
+                    @keypress="filterAllNonNumeric(event)">
                   </v-text-field>
                 </v-col>
 
-                <v-col lg="2">
+                <v-col cols="2">
                   <v-text-field 
+                    hide-details
                     color="primary" 
-                    :label="$t('subNumber') +' *'"
+                    :label="$tc('subNumber', 2)"
                     maxlength="5" 
-                    :rules="is_required" 
-                    v-model="position.subNumber"
-                    :hint="$tc('please_input', 2, { msg: $t('subNumber') })">
+                    :disabled="!position.hasSubNumber"
+                    v-model="position.subNumber">
                   </v-text-field>
                 </v-col>
 
-                <v-col lg="4">
+                <v-col cols="2">
+                  <v-checkbox
+                    hide-details
+                    :label="$t('hasSubNumber')"
+                    v-model="position.hasSubNumber"> 
+                  </v-checkbox>
+                </v-col>
+
+                <v-col cols="2">
                   <v-checkbox
                     class="pl-4"
                     hide-details
                     v-model="position.isSeparate"
                     color="primary"
+                    :disabled="!position.hasSubNumber"
                     :label="$t('isSeparate')">
                   </v-checkbox>
                   <!-- maybe as tooltip -->
@@ -75,15 +84,15 @@
                   </div> -->
                 </v-col>
               
-                <v-col lg="4">
-                  <v-card class="pa-4" color="accent">
+                <v-col cols="3" class="pa-0">
+                  <v-card class="pa-4 ma-2 mr-3" color="accent">
                     <div 
-                      class="text-h4 text-center" 
-                      :label="$t('lastEdited')">
+                      class="text-h6 text-center" 
+                      :label="$t('date')">
                       {{ position.date }}
                     </div>
-                    <div class="text-grey text-center">
-                      {{ $t('lastEdited') }}
+                    <div class="text-body-2 text-grey text-center">
+                      {{ $t('date') }}
                     </div>
                   </v-card>
                 </v-col>
@@ -94,7 +103,8 @@
                   <v-combobox 
                     color="primary" 
                     :items="titles" 
-                    :label="$tc('title', 2)" 
+                    hide-details
+                    :label="$tc('title', 2) + ' *'" 
                     :rules="is_required"
                     v-model="position.title">
                   </v-combobox>
@@ -103,10 +113,11 @@
                 <v-col lg="6">
                   <v-combobox 
                     counter 
+                    hide-details
                     maxlength="50" 
                     color="primary" 
                     :items="datings" 
-                    :label="$t('dating') + ' *'"
+                    :label="$t('dating')"
                     v-model="position.dating">
                   </v-combobox>
                 </v-col> 
@@ -242,7 +253,8 @@
                     maxlength="50"
                     color="primary"
                     rows="4" 
-                    :label="$t('editor')" 
+                    :label="$t('editor') + ' *'" 
+                    :rules="is_required"
                     v-model="position.addressOf"
                     no-resize
                     :hint="$tc('please_input', 2, { msg: 'Ansprache von' })">
@@ -334,6 +346,7 @@ export default {
         dating: '',
         addressOf: '',
         date: '',
+        hasSubNumber: false,
         isSeparate: false,
 
         images: [],
@@ -404,8 +417,11 @@ export default {
       rawPosition.lastChanged = Date.now();
       
       var test = await fromOfflineDB.getObjectBefore(rawPosition.id, 'Positions', 'positions');
-      var newSubNumber = this.calcSubNumber(rawPosition, test);
-      rawPosition.subNumber = newSubNumber;
+      
+      if (rawPosition.hasSubNumber) {
+        var newSubNumber = this.calcSubNumber(rawPosition, test);
+        rawPosition.subNumber = newSubNumber;
+      }
 
       await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions')
       this.$router.push({ name: "PositionsOverview" });
@@ -547,5 +563,6 @@ export default {
 };
 </script>
   
-<style scoped></style>
+<style scoped>
+</style>
   

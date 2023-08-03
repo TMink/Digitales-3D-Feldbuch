@@ -85,6 +85,7 @@ export default {
   semicolon: "Semicolon",
   backup: "Backup",
   import: "Import",
+  hasSubNumber: "Has Sub-Nr.",
   data_import: "Data Import",
 
   // Phrases

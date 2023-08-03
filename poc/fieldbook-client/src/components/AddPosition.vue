@@ -52,6 +52,7 @@ export default {
         dating: '',
         addressOf: '',
         date: new Date().toLocaleDateString("de-DE"),
+        hasSubNumber: false,
         isSeparate: false,
 
         images: [],
@@ -62,54 +63,19 @@ export default {
 
       if (this.positions_prop.length == 0) {
         newPosition.positionNumber = 1;
-        newPosition.subNumber = 1;
       } else {
         var lastPos = 
             await fromOfflineDB.getLastAddedObject('Positions', 'positions');
 
         newPosition.positionNumber = lastPos.positionNumber + 1;
-        newPosition.subNumber = await this.calcSubNumber(newPosition, lastPos);
-
-
         //TODO: autoincrement posNumber and implement the divide Checkbox
       }
-
+      
       await fromOfflineDB.updateObject(curPlace, 'Places', 'places');
       await fromOfflineDB.addObject(newPosition, "Positions", "positions");
       await fromOfflineDB.addObject(
             { id: newPositionID, object: 'positions' }, 'Changes', 'created');
       this.closeDiag();
-    },
-    /**
-     * Calculates the SubNumber of a position
-     */
-    async calcSubNumber(curPos, prevPos) {
-      var subNumber = prevPos.subNumber;
-
-      if (prevPos == undefined) {
-        return 1;
-      }
-
-      if (prevPos.positionNumber < curPos.positionNumber) {
-        return 1;
-      }
-
-      //TODO: include activity in subNumber calculation
-      // --> maybe edit the fromOfflineDB function
-      if (/* curPos.activity == prevPos.activity && */
-        curPos.placeID == prevPos.placeID &&
-        curPos.positionNumber == prevPos.positionNumber &&
-        curPos.right == prevPos.right &&
-        curPos.up == prevPos.up &&
-        curPos.height == prevPos.height &&
-        curPos.dating == prevPos.dating &&
-        curPos.addressOf == prevPos.addressOf &&
-        curPos.date == prevPos.date &&
-        !curPos.separate) {
-        return subNumber;
-      }
-
-      return subNumber + 1;
     },
   }
 }
