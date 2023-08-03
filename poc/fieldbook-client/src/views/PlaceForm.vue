@@ -62,8 +62,7 @@
 
                   <v-combobox 
                     counter 
-                    class="pt-4" 
-                    maxlength="45" 
+                    class="pt-4"
                     color="primary" 
                     :items="datings"
                     :label="$t('dating')"
@@ -134,8 +133,7 @@
               </v-card-text>
               <v-row no-gutters justify="center">
                 <v-text-field 
-                  hide-details 
-                  maxlength="6"
+                  hide-details
                   color="primary" 
                   class="px-4 pb-4" 
                   density="compact"
@@ -146,7 +144,6 @@
 
                 <v-text-field 
                   hide-details
-                  maxlength="6"
                   color="primary" 
                   class="pr-4 pb-4" 
                   density="compact" 
@@ -159,7 +156,6 @@
 
                 <v-text-field 
                   hide-details
-                  maxlength="7"
                   color="primary" 
                   class="px-4 pb-4" 
                   density="compact" 
@@ -170,7 +166,6 @@
 
                 <v-text-field 
                   hide-details
-                  maxlength="7"
                   color="primary" 
                   class="pr-4 pb-4" 
                   density="compact" 
@@ -183,7 +178,6 @@
 
                 <v-text-field 
                   hide-details
-                  maxlength="7"
                   color="primary" 
                   class="px-4 pb-4" 
                   density="compact" 
@@ -193,8 +187,7 @@
                 </v-text-field>
 
                 <v-text-field 
-                  hide-details 
-                  maxlength="7"
+                  hide-details
                   color="primary" 
                   class="pr-4 pb-4" 
                   density="compact" 
@@ -239,8 +232,7 @@
                     counter 
                     rows="4"
                     no-resize 
-                    color="primary" 
-                    maxlength="254" 
+                    color="primary"
                     class="ma-1 px-2 pt-2" 
                     v-model="place.description" 
                     :label="$t('description')">
@@ -257,8 +249,7 @@
                 <v-card height="100%">
                   <v-textarea 
                     rows="2" 
-                    counter 
-                    maxlength="254"
+                    counter
                     no-resize 
                     color="primary" 
                     class="ma-1 px-2 pt-2"
@@ -273,10 +264,10 @@
                   <v-textarea 
                     counter 
                     rows="2" 
-                    no-resize 
-                    maxlength="50"
+                    no-resize
                     color="primary"
                     :label="$t('editor')"
+                    :rules="is_required"
                     class="ma-1 px-2 pt-2" 
                     v-model="place.editor">
                   </v-textarea>

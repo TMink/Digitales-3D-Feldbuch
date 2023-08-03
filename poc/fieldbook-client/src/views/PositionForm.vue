@@ -135,8 +135,7 @@
               </v-card-text>
               <v-row class="pa-4 pt-0" justify="center">
                 <v-col lg="3">
-                  <v-text-field 
-                    maxlength="7"
+                  <v-text-field
                     color="primary" 
                     hide-details 
                     :label="$t('right') + ' *'" 
@@ -150,8 +149,7 @@
                 <v-divider class="mt-1 mb-n2" vertical></v-divider>
 
                 <v-col lg="3">
-                  <v-text-field
-                    maxlength="7" 
+                  <v-text-field 
                     hide-details 
                     color="primary" 
                     :label="$t('up') + ' *'" 
@@ -165,8 +163,7 @@
                 <v-divider class="mt-1 mb-n2" vertical></v-divider>
 
                 <v-col lg="3">
-                  <v-text-field 
-                    maxlength="7"
+                  <v-text-field
                     hide-details 
                     :label="$t('height') + ' *'" 
                     color="primary" 
@@ -185,8 +182,7 @@
               <!-- CARD 3 COUNT -->
               <v-col lg="3">
                 <v-card height="100%">
-                  <v-text-field 
-                    maxlength="9"
+                  <v-text-field
                     color="primary" 
                     :label="$t('count')" 
                     class="ma-1 px-2 pt-2"
@@ -214,12 +210,10 @@
               <!-- CARD 5 MATERIAL -->
               <v-col lg="6">
                 <v-card>
-                  <v-combobox 
-                    maxlength="40"
+                  <v-combobox
                     color="primary" 
                     :label="$t('material')"  
                     :items="materials"
-                    :rules="is_required"
                     class="ma-1 px-2 pt-2"  
                     v-model="position.material" 
                     :hint="$tc('please_input', 2, { msg: 'Material' })">
@@ -239,7 +233,6 @@
                     rows="4" 
                     no-resize 
                     color="primary" 
-                    maxlength="254" 
                     :label="$t('description')"
                     v-model="position.description">
                   </v-textarea>
@@ -250,7 +243,6 @@
               <v-col lg="6">
                 <v-card class="pa-3" height="100%">
                   <v-textarea
-                    maxlength="50"
                     color="primary"
                     rows="4" 
                     :label="$t('editor') + ' *'" 
