@@ -200,7 +200,6 @@
                     color="primary" 
                     :label="$t('material')"  
                     :items="materials"
-                    :rules="is_required"
                     class="ma-1 px-2 pt-2"  
                     v-model="position.material" 
                     :hint="$tc('please_input', 2, { msg: 'Material' })">
@@ -232,7 +231,8 @@
                   <v-textarea
                     color="primary"
                     rows="4" 
-                    :label="$t('editor')" 
+                    :label="$t('editor')"
+                    :rules="is_required"
                     v-model="position.addressOf"
                     no-resize
                     :hint="$tc('please_input', 2, { msg: 'Ansprache von' })">

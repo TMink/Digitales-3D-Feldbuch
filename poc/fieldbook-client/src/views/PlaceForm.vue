@@ -267,6 +267,7 @@
                     no-resize
                     color="primary"
                     :label="$t('editor')"
+                    :rules="is_required"
                     class="ma-1 px-2 pt-2" 
                     v-model="place.editor">
                   </v-textarea>
