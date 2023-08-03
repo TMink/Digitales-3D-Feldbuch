@@ -53,7 +53,7 @@
                     <v-col id="activityBranchOffice" cols="4" class="pt-2 px-2">
                       <v-text-field 
                         counter 
-                        maxlength="20" 
+                         
                         color="primary" 
                         :label="$t('branchOffice')" 
                         :rules="[rules.required]"

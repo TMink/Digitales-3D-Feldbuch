@@ -89,7 +89,7 @@
 
               <v-row>
                 <v-col lg="6">
-                  <v-combobox
+                  <v-combobox 
                     color="primary" 
                     :items="titles" 
                     :label="$tc('title', 2)" 
@@ -344,7 +344,18 @@ export default {
    * Initialize data from localDB and .env to the reactive Vue.js data
    */
   async created() {
-    this.$emit("view", this.$t('edit', { msg: this.$tc('position', 1) }));
+    const acID = String(VueCookies.get('currentActivity'))
+    var activity = await fromOfflineDB.getObject(acID, 'Activities', 'activities')
+
+    const plID = String(VueCookies.get('currentPlace'))
+    var place = await fromOfflineDB.getObject(plID, 'Places', 'places')
+
+    const poID = String(VueCookies.get('currentPosition'))
+    var position = await fromOfflineDB.getObject(poID, 'Positions', 'positions')
+    
+    this.$emit("view", activity.activityNumber + ' ' + place.placeNumber + ' ' + position.positionNumber);
+    
+
     this.materials = JSON.parse(import.meta.env.VITE_MATERIALS);
     this.titles = JSON.parse(import.meta.env.VITE_TITLES);
     this.datings = JSON.parse(import.meta.env.VITE_DATINGS);
