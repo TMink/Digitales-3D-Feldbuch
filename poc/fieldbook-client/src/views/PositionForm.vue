@@ -353,7 +353,33 @@ export default {
       error_message: '',
       is_required: [v => !!v || 'Pflichtfeld'],
       tab: null,
+      hasUnsavedChanges: false,
+      componentHasLoaded: false,
     }
+  },
+  watch: {
+    'position': {
+      handler: 'handlePositionChange',
+      deep: true,
+    },
+  },
+  /**
+   * Check if there are unsaved changes to the position 
+   * before leaving the PositionForm
+   * @param {*} to 
+   * @param {*} from 
+   * @param {*} next 
+   */
+  async beforeRouteLeave(to, from, next) {
+        var confirmation = false;
+        if (this.hasUnsavedChanges) {
+          confirmation = await this.confirmRouteChange();
+          if (confirmation) {
+            next();
+          }
+        } else {
+          next();
+        }
   },
   /**
    * Initialize data from localDB and .env to the reactive Vue.js data
@@ -361,10 +387,10 @@ export default {
   async created() {
     const acID = String(VueCookies.get('currentActivity'))
     var activity = await fromOfflineDB.getObject(acID, 'Activities', 'activities')
-
+    
     const plID = String(VueCookies.get('currentPlace'))
     var place = await fromOfflineDB.getObject(plID, 'Places', 'places')
-
+    
     const poID = String(VueCookies.get('currentPosition'))
     var position = await fromOfflineDB.getObject(poID, 'Positions', 'positions')
     
@@ -377,6 +403,7 @@ export default {
 
     await fromOfflineDB.syncLocalDBs();
     await this.updatePosition();
+    this.componentHasLoaded = true;
   },
   methods: {
     /**
@@ -415,7 +442,8 @@ export default {
         rawPosition.subNumber = newSubNumber;
       }
 
-      await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions')
+      await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions');
+      this.hasUnsavedChanges = false;
       this.$router.push({ name: "PositionsOverview" });
     },
     /**
@@ -433,6 +461,17 @@ export default {
         )
       ) {
         this.deletePosition();
+      }
+    },
+    /**
+     * Opens the confirmation dialog for leaving the form
+     */
+     async confirmRouteChange() {
+      if (await this.$refs.confirm.open(this.$t('confirm'),
+          this.$t('wantToLeave'))) {
+        return true;
+      } else {
+        return false;
       }
     },
     /**
@@ -518,6 +557,20 @@ export default {
      */
     goBack: function () {
       this.$router.push({ name: "PositionsOverview" });
+    },
+
+    /**
+     * Gets called every time some info of the current position changes.
+     * Once a change has happend, the flag `hasUnsavedChanges` gets set to `true`
+     */
+    handlePositionChange() {
+      if (this.hasUnsavedChanges) {
+        return
+      }
+
+      if (this.componentHasLoaded) {
+        this.hasUnsavedChanges = true;
+      }
     },
 
     /**

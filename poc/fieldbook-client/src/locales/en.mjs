@@ -112,4 +112,5 @@ export default {
     "If the Feature is still preserved below the intervention depth during soil excavation.",
   //thisExports: "This will export {count} {object}",
   thisExports: "Export: {count} {object}",
+  wantToLeave: "Do you really want to leave? You have unsaved changes.",
 };
