@@ -32,7 +32,7 @@
             <!-- CARD 1 GENERAL-->
             <v-card class="pa-4">
               <v-row class="pt-2">
-                <v-col lg="8">
+                <v-col lg="4">
 
                   <v-combobox 
                     chips 
@@ -44,8 +44,7 @@
                     persistent-hint
                     :label="$tc('title', 2)" 
                     :hide-no-data="false" 
-                    v-model="place.title" 
-                    :hint="$t('addMax5')">
+                    v-model="place.title">
 
                     <template #selection="{ item }">
                       <v-chip color="secondary">{{ item }}</v-chip>
@@ -60,64 +59,38 @@
                     </template>
                   </v-combobox>
 
-                  <v-combobox 
-                    counter 
-                    class="pt-4"
-                    color="primary" 
-                    :items="datings"
-                    :label="$t('dating')"
-                    v-model="place.dating">
-                  </v-combobox>
+                  <v-text-field
+                    class="pt-1"
+                    no-resize 
+                    hide-selected
+                    color="primary"
+                    :items="titles"
+                    persistent-hint
+                    :hide-no-data="false"
+                    :label="$t('date')"
+                    v-model="place.date">
+                  </v-text-field>
+
+                  <v-text-field
+                    class="pt-1"
+                    rows="2" 
+                    no-resize
+                    color="primary"
+                    :label="$t('editor')"
+                    :rules="is_required" 
+                    v-model="place.editor">
+                  </v-text-field>
+
                 </v-col>
 
-                <v-col lg="4">
-                  <v-card class="pa-4" color="accent">
-                    <div 
-                      class="text-h4 text-center" 
-                      :label="$t('lastEdited')"> 
-                      {{ place.date }}
-                    </div>
-                    <div 
-                      class="text-grey text-center"> 
-                      {{ $t('lastEdited') }}
-                    </div>
-                  </v-card>
-
-                  <v-spacer class="pa-1"></v-spacer>
-
-                  <v-row class="pl-4 pb-4 justify-center">
-                    <v-col cols="6">
-                      <v-tooltip
-                        :text="$t('noFindDescr')"
-                        location="bottom">
-                        <template v-slot:activator="{ props }">
-                          <v-checkbox 
-                            v-bind="props" 
-                            color="primary" 
-                            persistent-hint 
-                            :label="$t('noFind')"
-                            v-model="place.noFinding">
-                          </v-checkbox>
-                        </template>
-                      </v-tooltip>
-                    </v-col>
-
-                    <v-col cols="6">
-                      <v-tooltip
-                        :text="$t('restFindDescr')"
-                        location="bottom">
-                        <template v-slot:activator="{ props }">
-                          <v-checkbox 
-                            v-bind="props" 
-                            persistent-hint 
-                            color="secondary" 
-                            :label="$t('restFind')"
-                            v-model="place.restFinding">
-                          </v-checkbox>
-                        </template>
-                      </v-tooltip>
-                    </v-col>
-                  </v-row>
+                <v-col lg="8">         
+                  <v-textarea
+                    rows="8"
+                    no-resize
+                    color="primary"
+                    v-model="place.description" 
+                    :label="$t('description')">
+                  </v-textarea>
                 </v-col>
               </v-row>
             </v-card>
@@ -228,15 +201,39 @@
               <!-- CARD 4 DESCRIPTION -->
               <v-col lg="6">
                 <v-card>
-                  <v-textarea 
-                    counter 
-                    rows="4"
-                    no-resize 
-                    color="primary"
-                    class="ma-1 px-2 pt-2" 
-                    v-model="place.description" 
-                    :label="$t('description')">
-                  </v-textarea>
+                  <v-row class="pl-4 pb-4 justify-center">
+                    <v-col cols="6">
+                      <v-tooltip
+                        :text="$t('noFindDescr')"
+                        location="bottom">
+                        <template v-slot:activator="{ props }">
+                          <v-checkbox 
+                            v-bind="props" 
+                            color="primary" 
+                            persistent-hint 
+                            :label="$t('noFind')"
+                            v-model="place.noFinding">
+                          </v-checkbox>
+                        </template>
+                      </v-tooltip>
+                    </v-col>
+
+                    <v-col cols="6">
+                      <v-tooltip
+                        :text="$t('restFindDescr')"
+                        location="bottom">
+                        <template v-slot:activator="{ props }">
+                          <v-checkbox 
+                            v-bind="props" 
+                            persistent-hint 
+                            color="secondary" 
+                            :label="$t('restFind')"
+                            v-model="place.restFinding">
+                          </v-checkbox>
+                        </template>
+                      </v-tooltip>
+                    </v-col>
+                  </v-row>                  
                 </v-card>
               </v-col>
             </v-row>
@@ -259,18 +256,16 @@
                 </v-card>
               </v-col>
               <v-col lg="6">
-                <!-- CARD 3 EDITOR -->
-                <v-card>
-                  <v-textarea 
+                <!-- CARD 3 DATINGS -->
+                <v-card class="pa-4">
+                  <v-combobox 
                     counter 
-                    rows="2" 
-                    no-resize
-                    color="primary"
-                    :label="$t('editor')"
-                    :rules="is_required"
-                    class="ma-1 px-2 pt-2" 
-                    v-model="place.editor">
-                  </v-textarea>
+                    class="pt-4"
+                    color="primary" 
+                    :items="datings"
+                    :label="$t('dating')"
+                    v-model="place.dating">
+                  </v-combobox>
                 </v-card>
               </v-col>
             </v-row>
@@ -537,7 +532,7 @@ export default {
     async savePlace() {
       //convert from vue proxy to JSON object
       const inputPlace = toRaw(this.place);
-      inputPlace.date = new Date().toLocaleDateString("de-DE");
+      //inputPlace.date = new Date().toLocaleDateString("de-DE");
       inputPlace.lastChanged = Date.now();
 
       await fromOfflineDB.updateObject(inputPlace, 'Places', 'places');

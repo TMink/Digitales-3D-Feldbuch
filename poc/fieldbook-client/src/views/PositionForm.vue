@@ -85,7 +85,7 @@
                 </v-col>
               
                 <v-col cols="3" class="pa-0">
-                  <v-card class="pa-4 ma-2 mr-3" color="accent">
+                  <!--<v-card class="pa-4 ma-2 mr-3" color="accent">
                     <div 
                       class="text-h6 text-center" 
                       :label="$t('date')">
@@ -94,12 +94,12 @@
                     <div class="text-body-2 text-grey text-center">
                       {{ $t('date') }}
                     </div>
-                  </v-card>
+                  </v-card> -->
                 </v-col>
               </v-row>
 
               <v-row>
-                <v-col lg="6">
+                <v-col lg="4">
                   <v-combobox 
                     color="primary" 
                     :items="titles" 
@@ -108,18 +108,36 @@
                     :rules="is_required"
                     v-model="position.title">
                   </v-combobox>
+
+                  <v-text-field
+                    class="pt-6"
+                    no-resize
+                    color="primary"
+                    :hide-no-data="false"
+                    :label="$t('date')"
+                    v-model="position.date">
+                  </v-text-field>
+
+                  <v-text-field
+                    class="pt-0"
+                    color="primary"
+                    rows="2" 
+                    :label="$t('editor') + ' *'" 
+                    :rules="is_required"
+                    v-model="position.addressOf"
+                    no-resize
+                    :hint="$tc('please_input', 2, { msg: 'Ansprache von' })">
+                  </v-text-field>
                 </v-col>
 
-                <v-col lg="6">
-                  <v-combobox 
-                    counter 
-                    hide-details
-                    maxlength="50" 
+                <v-col lg="8">
+                  <v-textarea 
+                    rows="8" 
+                    no-resize 
                     color="primary" 
-                    :items="datings" 
-                    :label="$t('dating')"
-                    v-model="position.dating">
-                  </v-combobox>
+                    :label="$t('description')"
+                    v-model="position.description">
+                  </v-textarea>
                 </v-col> 
               </v-row>
             </v-card>
@@ -228,29 +246,22 @@
               <!-- CARD 6 DESCRIPTION -->
               <v-col lg="6">
                 <v-card class="pa-3" height="100%">
-                  <v-textarea 
+                  <v-combobox 
                     counter 
-                    rows="4" 
-                    no-resize 
+                    hide-details
+                    maxlength="50" 
                     color="primary" 
-                    :label="$t('description')"
-                    v-model="position.description">
-                  </v-textarea>
+                    :items="datings" 
+                    :label="$t('dating')"
+                    v-model="position.dating">
+                  </v-combobox>
                 </v-card>
               </v-col>
               
               <!-- CARD 7 EDITOR -->
               <v-col lg="6">
                 <v-card class="pa-3" height="100%">
-                  <v-textarea
-                    color="primary"
-                    rows="4" 
-                    :label="$t('editor') + ' *'" 
-                    :rules="is_required"
-                    v-model="position.addressOf"
-                    no-resize
-                    :hint="$tc('please_input', 2, { msg: 'Ansprache von' })">
-                  </v-textarea>
+                  
                 </v-card>
               </v-col>
             </v-row>
