@@ -285,6 +285,7 @@
                   fixed-header
                   :height="getTableHeight"
                   :headers="headers"
+                  :sort-by="[{ key: 'positionNumber', order: 'asc' }]"
                   max-height>
 
                   <template v-slot:item="{ item, index }">
