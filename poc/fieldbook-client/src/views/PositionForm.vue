@@ -63,6 +63,7 @@
                   <v-checkbox
                     hide-details
                     :label="$t('hasSubNumber')"
+                    color="secondary"
                     v-model="position.hasSubNumber"> 
                   </v-checkbox>
                 </v-col>
