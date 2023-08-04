@@ -46,6 +46,7 @@
             fixed-header
             :height="getTableHeight"
             :headers="headers"
+            :sort-by="[{ key: 'positionNumber', order: 'asc' }]"
             max-height>
 
             <template v-slot:item="{ item, index }">
@@ -98,7 +99,8 @@
               v-show="showAllInfo"
               :items="filteredPositions" 
               :height="getTableHeight"
-              :headers="fullHeaders">
+              :headers="fullHeaders"
+              :sort-by="[{ key: 'positionNumber', order: 'asc' }]">
 
               <template v-slot:item="{ item, index }">
                 <tr v-on:click="moveToPosition(item.raw.id)" 
