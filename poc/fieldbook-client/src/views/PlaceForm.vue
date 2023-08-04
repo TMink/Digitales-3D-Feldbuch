@@ -459,9 +459,29 @@ export default {
         2: this.$t('good'),
         1: this.$t('moderate'),
         0: this.$t('bad'),
-      }
+      },
+      hasUnsavedChanges: false,
+      componentHasLoaded: false,
     }
 
+  },
+  /**
+   * Check if there are unsaved changes to the position 
+   * before leaving the PositionForm
+   * @param {*} to 
+   * @param {*} from 
+   * @param {*} next 
+   */
+  async beforeRouteLeave(to, from, next) {
+    var confirmation = false;
+    if (this.hasUnsavedChanges) {
+      confirmation = await this.confirmRouteChange();
+      if (confirmation) {
+        next();
+      }
+    } else {
+      next();
+    }
   },
   /**
    * Initialize data from localDB to the reactive Vue.js data
@@ -481,8 +501,13 @@ export default {
     await fromOfflineDB.syncLocalDBs();
     await this.updatePlace();
     await this.updatePositions();
+    this.componentHasLoaded = true;
   },
   watch: {
+    'place': {
+      handler: 'handlePlaceChange',
+      deep: true,
+    },
     /**
      * Ensure that only 5 items are selected
      * @param {*} val 
@@ -537,6 +562,7 @@ export default {
       inputPlace.lastChanged = Date.now();
 
       await fromOfflineDB.updateObject(inputPlace, 'Places', 'places');
+      this.hasUnsavedChanges = false;
       this.$router.push({ name: "PlacesOverview" });
     },
 
@@ -555,6 +581,18 @@ export default {
         )
       ) {
         this.deletePlace();
+      }
+    },
+
+    /**
+     * Opens the confirmation dialog for leaving the form
+     */
+     async confirmRouteChange() {
+      if (await this.$refs.confirm.open(this.$t('confirm'),
+          this.$t('wantToLeave'))) {
+        return true;
+      } else {
+        return false;
       }
     },
 
@@ -578,7 +616,7 @@ export default {
       // Delete the place itself
       await fromOfflineDB.deleteObject(toRaw(this.place), 'Places', 'places');
       VueCookies.remove('currentPlace');
-
+      this.hasUnsavedChanges = false;
       this.$router.push({ name: "PlacesOverview" });
     },
 
@@ -622,6 +660,20 @@ export default {
      */
     cancelPlace() {
       this.$router.push({ name: "PlacesOverview" });
+    },
+
+    /**
+     * Gets called every time some info of the current position changes.
+     * Once a change has happend, the flag `hasUnsavedChanges` gets set to `true`
+     */
+     handlePlaceChange() {
+      if (this.hasUnsavedChanges) {
+        return;
+      }
+
+      if (this.componentHasLoaded) {
+        this.hasUnsavedChanges = true;
+      }
     },
 
     /**
