@@ -506,7 +506,7 @@ export default {
       // Delete the position itself
       await fromOfflineDB.deleteObject(rawPosition, 'Positions', 'positions')
       VueCookies.remove('currentPosition');
-
+      this.hasUnsavedChanges = false;
       this.$router.push({ name: "PositionsOverview" });
     },
 
