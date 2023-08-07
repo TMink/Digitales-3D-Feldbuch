@@ -40,13 +40,13 @@
 /**
  * Methods overview:
  */
-import ModuleGeneral from '../components/ModuleGeneral.vue';
-import ModuleCoordinates from '../components/ModuleCoordinates.vue';
-import ModuleVisibility from '../components/ModuleVisibility.vue';
-import ModuleFindTypes from '../components/ModuleFindTypes.vue';
-import ModulePlane from '../components/ModulePlane.vue';
-import ModuleDating from '../components/ModuleDating.vue';
-import ModulePositionsList from '../components/ModulePositionsList.vue';
+import ModuleGeneral from '../components/modules/ModuleGeneral.vue';
+import ModuleCoordinates from '../components/modules/ModuleCoordinates.vue';
+import ModuleVisibility from '../components/modules/ModuleVisibility.vue';
+import ModuleFindTypes from '../components/modules/ModuleFindTypes.vue';
+import ModulePlane from '../components/modules/ModulePlane.vue';
+import ModuleDating from '../components/modules/ModuleDating.vue';
+import ModulePositionsList from '../components/modules/ModulePositionsList.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB';
 import { useWindowSize } from 'vue-window-size';
 
