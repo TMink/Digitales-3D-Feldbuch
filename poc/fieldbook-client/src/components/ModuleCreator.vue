@@ -10,14 +10,14 @@
           <v-card outline>
             <v-row no-gutters>
               <v-col>
-                <v-text-field label="Title" v-model="cur_preset.title"></v-text-field>
-                <v-checkbox hide-details label="General" v-model="cur_preset.general"></v-checkbox>
-                <v-checkbox hide-details label="PositionsList" v-model="cur_preset.positionslist"></v-checkbox>
-                <v-checkbox hide-details label="Coordinates" v-model="cur_preset.coordinates"></v-checkbox>
-                <v-checkbox hide-details label="Visibility" v-model="cur_preset.visibility"></v-checkbox>
-                <v-checkbox hide-details label="FindTypes" v-model="cur_preset.findTypes"></v-checkbox>
-                <v-checkbox hide-details label="Plane" v-model="cur_preset.plane"></v-checkbox>
-                <v-checkbox hide-details label="Dating" v-model="cur_preset.dating"></v-checkbox>
+                <v-text-field label="Title" v-model="curPreset.title"></v-text-field>
+                <v-checkbox hide-details label="General" v-model="curPreset.general"></v-checkbox>
+                <v-checkbox hide-details label="PositionsList" v-model="curPreset.positionslist"></v-checkbox>
+                <v-checkbox hide-details label="Coordinates" v-model="curPreset.coordinates"></v-checkbox>
+                <v-checkbox hide-details label="Visibility" v-model="curPreset.visibility"></v-checkbox>
+                <v-checkbox hide-details label="FindTypes" v-model="curPreset.findTypes"></v-checkbox>
+                <v-checkbox hide-details label="Plane" v-model="curPreset.plane"></v-checkbox>
+                <v-checkbox hide-details label="Dating" v-model="curPreset.dating"></v-checkbox>
               </v-col>
             </v-row>
             <v-btn color="primary" v-on:click="saveModulePreset">SAVE Preset</v-btn>
@@ -38,7 +38,6 @@
                 v-for="item in modulePresets"
                 :key="item.title"
                 :title="item.title">
-
               </v-list-item>
             </v-list>
           </v-card>
@@ -59,7 +58,7 @@ export default {
 
   data: () => ({
     dialog: false,
-    cur_preset: {
+    curPreset: {
       title: null,
 
       general: false,
@@ -89,10 +88,9 @@ export default {
     },
 
     async saveModulePreset(){
-      
       //only save the preset if it doesn't already exist
       if (!this.presetAlreadyExists(false)) {
-        var rawPreset = toRaw(this.cur_preset);
+        var rawPreset = toRaw(this.curPreset);
 
         rawPreset.id = String(Date.now());
         
@@ -102,7 +100,6 @@ export default {
       } else {
         console.log("Preset already exists");
       }
-
     },
 
     /**
@@ -113,6 +110,7 @@ export default {
       //TODO: functionality (function name can be renamed)
       return input;
     },
+    
   },
 };
 </script>

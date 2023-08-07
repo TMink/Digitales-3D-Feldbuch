@@ -333,6 +333,14 @@ export default {
       windowHeight: height,
     };
   },
+
+  watch: {
+    'curModulePreset': {
+      handler: 'saveModulePresetToCookies',
+      deep: true,
+    }
+  },
+
   /**
    * Reactive Vue.js data
    */
@@ -440,6 +448,9 @@ export default {
 
     async updateModulePresets() {
       this.modulePresets = await fromOfflineDB.getAllObjects('ModulePresets', 'modulePresets');
+      this.curModulePreset = await fromOfflineDB.getObject(
+          String(VueCookies.get('placeModulesPreset')), 'ModulePresets', 'modulePresets');
+      console.log(this.curModulePreset);
     },
 
     /**
@@ -493,7 +504,7 @@ export default {
 
       // set new placeNumber
       if (this.places.length == 0) {
-        newPlace.placeNumber = 1
+        newPlace.placeNumber = 1;
       } else {
         const placeNumbers = await fromOfflineDB.getPropertiesWithID(acID, 'place', 'placeNumber', 'Places', 'places')
         const newPlaceNumber = Math.max(...placeNumbers) + 1;
@@ -600,6 +611,10 @@ export default {
       } else if (this.hoveredRow === index) {
         this.hoveredRow = -1;
       }
+    },
+
+    saveModulePresetToCookies() {
+      VueCookies.set('placeModulesPreset', this.curModulePreset.id);
     },
 
   }
