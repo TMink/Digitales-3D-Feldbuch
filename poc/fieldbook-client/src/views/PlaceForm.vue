@@ -30,7 +30,8 @@
           <v-window-item value="one">
             <ModelViewer
               :object_id="place.id"  
-              object_type="Places"/>
+              object_type="Places"
+              @place.dating="object.dating"/>
           </v-window-item>
 
           <v-window-item value="three">

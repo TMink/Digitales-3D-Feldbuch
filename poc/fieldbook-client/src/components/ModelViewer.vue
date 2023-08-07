@@ -24,7 +24,9 @@
         </v-window-item>
         
         <v-window-item v-if="object.modules.dating">
-          <ModuleDating/>
+          <ModuleDating
+            :dating="object.dating"
+            @dating="object.dating"/>
         </v-window-item>
         
         <v-window-item v-if="object.modules.positionList">
@@ -60,14 +62,20 @@ export default {
     ModulePlane,
     ModuleDating,
     ModulePositionsList,
-    
-    props: {
-      object_id: String,
-      object_type: String,
-    },
   },
 
-  emits: ['view'],
+  watch: {
+		'dating': {
+			handler: function() { 
+				this.$emit("dating");
+			}
+		}
+	},
+  
+  props: {
+    object_id: String,
+    object_type: String,
+  },
   
   setup() {
     const { width, height } = useWindowSize();
@@ -84,6 +92,14 @@ export default {
     return {
       object: null,
     }
+  },
+
+  watcher: {
+    'dating': {
+			handler: function() {
+				this.$emit("dating");
+			}
+		}
   },
 
   async created() {
