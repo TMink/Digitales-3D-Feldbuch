@@ -668,7 +668,7 @@ const offlineDBLines = {
 const offlineDBModulePresets = {
   name: "ModulePresets",
   version: 1,
-  storeNames: ["modulePresets"],
+  storeNames: ["places", "positions"],
 }
 
 const fromOfflineDB = new ConnectionToOfflineDB([

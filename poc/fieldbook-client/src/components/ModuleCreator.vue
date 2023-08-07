@@ -54,6 +54,9 @@ import { toRaw } from 'vue';
 
 export default {
 
+  props: {
+    objectTypeProp: String
+  },
   emits: ['updateModulePresets'],
 
   data: () => ({
@@ -84,7 +87,7 @@ export default {
 
   methods: {
     async updateModulePresets() {
-      this.modulePresets = await fromOfflineDB.getAllObjects('ModulePresets', 'modulePresets');
+      this.modulePresets = await fromOfflineDB.getAllObjects('ModulePresets', this.objectTypeProp);
     },
 
     async saveModulePreset(){
@@ -94,7 +97,7 @@ export default {
 
         rawPreset.id = String(Date.now());
         
-        await fromOfflineDB.addObject(rawPreset, 'ModulePresets', 'modulePresets');
+        await fromOfflineDB.addObject(rawPreset, 'ModulePresets', this.objectTypeProp);
         await this.updateModulePresets();
         this.$emit('updateModulePresets');
       } else {
@@ -110,7 +113,7 @@ export default {
       //TODO: functionality (function name can be renamed)
       return input;
     },
-    
+
   },
 };
 </script>
