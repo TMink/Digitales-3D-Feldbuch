@@ -665,6 +665,12 @@ const offlineDBLines = {
   storeNames: ["lines"],
 }
 
+const offlineDBModulePresets = {
+  name: "ModulePresets",
+  version: 1,
+  storeNames: ["modulePresets"],
+}
+
 const fromOfflineDB = new ConnectionToOfflineDB([
   offlineDBModels,
   offlineDBActivities,
@@ -674,4 +680,5 @@ const fromOfflineDB = new ConnectionToOfflineDB([
   offlineDBImages,
   offlineDBCameras,
   offlineDBLines,
+  offlineDBModulePresets
 ]);

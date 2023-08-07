@@ -285,8 +285,22 @@
         <v-spacer></v-spacer>
       </v-row>
     </v-form>
-    <AddButton v-on:click="addPlace()" />
+    <v-row class="align-center">
+      <v-spacer></v-spacer>
+      <AddButton v-on:click="addPlace()"/>
+      <v-combobox 
+        hide-details 
+        v-model="curModulePreset"
+        label="Module Presets" 
+        :items="modulePresets">
+      </v-combobox>
+      <v-btn @click="moduleCreatorOverlay = !moduleCreatorOverlay">
+        new preset
+      </v-btn>
+      <v-spacer></v-spacer>
+    </v-row>
   </div>
+  <ModuleCreator v-model="moduleCreatorOverlay" @updateModulePresets="updateModulePresets()"/>
 </template>
 
 <script>
@@ -298,15 +312,18 @@
  */
 import Navigation from '../components/Navigation.vue';
 import AddButton from '../components/AddButton.vue';
+import ModuleCreator from '../components/ModuleCreator.vue';
 import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { useWindowSize } from 'vue-window-size';
+import { toRaw } from 'vue';
 
 export default {
   name: 'PlacesOverview',
   components: {
     Navigation,
-    AddButton
+    AddButton,
+    ModuleCreator
   },
   emits: ['view'],
   setup() {
@@ -356,6 +373,9 @@ export default {
         { title: this.$t('editor'), align: 'start', key: 'editor', width: "50px" },
         { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
       ],
+      modulePresets: [],
+      curModulePreset: null,
+      moduleCreatorOverlay: false,
     };
   },
   /**
@@ -365,6 +385,7 @@ export default {
     this.$emit("view", this.$t('overview', { msg: this.$tc('place', 2) }));
     await fromOfflineDB.syncLocalDBs();
     await this.updatePlaces();
+    await this.updateModulePresets();
   },
   computed: {
     /**
@@ -414,7 +435,11 @@ export default {
 
       this.places = await fromOfflineDB.getAllObjectsWithID(
         curActivityID, 'Activity', 'Places', 'places');
-      this.places.sort((a, b) => (a.placeNumber > b.placeNumber) ? 1 : -1)
+      this.places.sort((a, b) => (a.placeNumber > b.placeNumber) ? 1 : -1);
+    },
+
+    async updateModulePresets() {
+      this.modulePresets = await fromOfflineDB.getAllObjects('ModulePresets', 'modulePresets');
     },
 
     /**
@@ -459,9 +484,12 @@ export default {
         images: [],
         models: [],
         lines: [],
+        modulePreset: {},
         lastChanged: Date.now(),
         lastSync: ''
       }
+
+      newPlace.modulePreset = toRaw(this.curModulePreset);
 
       // set new placeNumber
       if (this.places.length == 0) {
@@ -477,6 +505,13 @@ export default {
       await fromOfflineDB.addObject(newPlace, 'Places', 'places')
       await fromOfflineDB.addObject({ id: newPlaceID, object: 'places' }, 'Changes', 'created');
       await this.updatePlaces(newPlace.id)
+    },
+
+    /**
+     * Opens the module presets overlay
+     */
+    openPresetOverlay() {
+      this.moduleCreatorOverlay = true;
     },
 
     /**
