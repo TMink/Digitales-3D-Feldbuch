@@ -1,5 +1,7 @@
 export default {
   // Words
+  generalInformation: "Allgemeine Informationen",
+  coordinates: "Koordinaten",
   fieldbook: "Digitales 3D-Feldbuch",
   activity: "Aktivität | Aktivitäten",
   place: "Stelle | Stellen",
