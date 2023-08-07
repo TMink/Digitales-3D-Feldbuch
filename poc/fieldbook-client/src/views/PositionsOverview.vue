@@ -321,6 +321,14 @@ export default {
       windowHeight: height,
     };
   },
+
+  watch: {
+    'curModulePreset': {
+      handler: 'saveModulePresetToCookies',
+      deep: true,
+    }
+  },
+
   data() {
     return {
       positions: [],
@@ -521,6 +529,10 @@ export default {
       } else if (this.hoveredRow === index) {
         this.hoveredRow = -1;
       }
+    },
+
+    saveModulePresetToCookies() {
+      VueCookies.set('positionModulesPreset', this.curModulePreset.id);
     },
   }
 }
