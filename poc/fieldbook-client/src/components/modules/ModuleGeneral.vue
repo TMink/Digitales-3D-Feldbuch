@@ -1,6 +1,6 @@
 <template>
   <v-card class="pa-4">
-  <v-card-text>
+    <v-card-text>
         <h2 
           class="text-h6 font-weight-medium pb-2">
           {{ $t('generalInformation')}}
@@ -8,7 +8,6 @@
       </v-card-text>
   <v-row class="pt-2">
     <v-col lg="4">
-
       <v-combobox 
         chips 
         multiple 

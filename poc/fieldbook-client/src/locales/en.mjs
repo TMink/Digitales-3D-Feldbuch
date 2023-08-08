@@ -1,5 +1,6 @@
 export default {
   // Words
+  findType: "Find Type",
   generalInformation: "general information",
   coordinates: "coordinates",
   fieldbook: "Digital 3d-Fieldbook",
