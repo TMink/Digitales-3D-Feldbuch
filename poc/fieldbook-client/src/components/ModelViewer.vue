@@ -2,36 +2,34 @@
   <v-container fluid> 
     <v-row>
       <v-col>
-
-        <v-window-item v-if="object.modules.general">
+ 
+        <v-card>
           <ModuleGeneral/>
-        </v-window-item>
+        </v-card>
 
-        <v-window-item v-if="object.modules.coordinates">
+        <v-card>
           <ModuleCoordinates/>
-        </v-window-item>
+        </v-card>
         
-        <v-window-item v-if="object.modules.visibility">
+        <v-card>
           <ModuleVisibility/>
-        </v-window-item>
+        </v-card>
         
-        <v-window-item v-if="object.modules.findTypes">
+        <v-card>
           <ModuleFindTypes/>
-        </v-window-item>
+        </v-card>
         
-        <v-window-item v-if="object.modules.plane">
+        <v-card>
           <ModulePlane/>
-        </v-window-item>
-        
-        <v-window-item v-if="object.modules.dating">
-          <ModuleDating
-            :dating="object.dating"
-            @dating="object.dating"/>
-        </v-window-item>
-        
-        <v-window-item v-if="object.modules.positionList">
+        </v-card>
+
+        <v-card>
+          <ModuleDating/>
+        </v-card>
+
+        <v-card>
           <ModulePositionsList/>
-        </v-window-item>
+        </v-card>
 
       </v-col>
     </v-row>
@@ -42,6 +40,7 @@
 /**
  * Methods overview:
  */
+ import VueCookies from 'vue-cookies';
 import ModuleGeneral from '../components/modules/ModuleGeneral.vue';
 import ModuleCoordinates from '../components/modules/ModuleCoordinates.vue';
 import ModuleVisibility from '../components/modules/ModuleVisibility.vue';
@@ -53,7 +52,7 @@ import { fromOfflineDB } from '../ConnectionToOfflineDB';
 import { useWindowSize } from 'vue-window-size';
 
 export default {
-  name: 'PlaceCreation',
+
   components: {
     ModuleGeneral,
     ModuleCoordinates,
@@ -62,19 +61,6 @@ export default {
     ModulePlane,
     ModuleDating,
     ModulePositionsList,
-  },
-
-  watch: {
-		'dating': {
-			handler: function() { 
-				this.$emit("dating");
-			}
-		}
-	},
-  
-  props: {
-    object_id: String,
-    object_type: String,
   },
   
   setup() {
@@ -85,32 +71,37 @@ export default {
     };
   },
   
-  /**
-   * Reactive Vue.js data
-   */
   data() {
     return {
       object: null,
+      pathNames: null,
+      id: null,
     }
   },
 
-  watcher: {
-    'dating': {
-			handler: function() {
-				this.$emit("dating");
-			}
-		}
-  },
-
   async created() {
+  },
+  
+  async mounted() {
     await fromOfflineDB.syncLocalDBs();
+    this.getPathAndID(this.$route.path);
     await this.updateObject();
   },
   
   methods: {
     async updateObject() {
-      this.object = await fromOfflineDB.getObject(this.object_id,
-                        this.object_type, this.object_type.toLowerCase());
+      this.object = await fromOfflineDB.getObject(this.id, this.pathNames.db, this.pathNames.os);
+      console.log(this.object)
+    },
+
+    getPathAndID(path) {
+      this.id = path.split("/", 3)[2]
+      const lowerName = path.substring(
+        path.indexOf("/") + 1, 
+        path.lastIndexOf("/")
+      );
+      const upperName = lowerName.charAt(0).toUpperCase() + lowerName.slice(1);
+      this.pathNames = { db: upperName, os: lowerName }
     }
   }
 };
