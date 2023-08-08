@@ -1,41 +1,40 @@
 <template>
-    <v-col lg="6">
-        <v-card height="10em">
-            <v-row class="pl-4 pb-4 justify-center">
-                <v-col cols="6">
-                    <v-tooltip 
-                        :text="$t('noFindDescr')" 
-                        location="bottom">
-                        <template v-slot:activator="{ props }">
-                            <v-checkbox 
-                                v-bind="props" 
-                                color="primary" 
-                                persistent-hint 
-                                :label="$t('noFind')"
-                                v-model="place.noFinding">
-                            </v-checkbox>
-                        </template>
-                    </v-tooltip>
-                </v-col>
+  <v-col lg="6">
+    <v-row class="pl-4 pb-4 justify-center">
+      <v-col cols="6">
+        <v-tooltip 
+          :text="$t('noFindDescr')" 
+          location="bottom">
+          <template v-slot:activator="{ props }">
+            <v-checkbox 
+              v-bind="props" 
+              color="primary" 
+              persistent-hint 
+              :label="$t('noFind')" 
+              v-model="place.noFinding">
+            </v-checkbox>
+          </template>
+        </v-tooltip>
+      </v-col>
 
-                <v-col cols="6">
-                    <v-tooltip 
-                        :text="$t('restFindDescr')" 
-                        location="bottom">
-                        <template v-slot:activator="{ props }">
-                            <v-checkbox 
-                                v-bind="props" 
-                                persistent-hint 
-                                color="secondary" 
-                                :label="$t('restFind')"
-                                v-model="place.restFinding">
-                            </v-checkbox>
-                        </template>
-                    </v-tooltip>
-                </v-col>
-            </v-row>
-        </v-card>
-    </v-col>
+      <v-col cols="6">
+        <v-tooltip 
+          :text="$t('restFindDescr')" 
+          location="bottom">
+          <template v-slot:activator="{ props }">
+            <v-checkbox 
+              v-bind="props" 
+              persistent-hint 
+              color="secondary" 
+              :label="$t('restFind')"
+              v-model="place.restFinding">
+            </v-checkbox>
+          </template>
+        </v-tooltip>
+      </v-col>
+    </v-row>
+
+  </v-col>
 </template>
 
 <script>
@@ -52,11 +51,7 @@ export default {
   },
   emits: ['view'],
   setup() {
-    const { width, height } = useWindowSize();
-    return {
-      windowWidth: width,
-      windowHeight: height,
-    };
+   
   },
   /**
    * Reactive Vue.js data
