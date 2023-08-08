@@ -288,14 +288,11 @@
     <v-row class="align-center">
       <v-spacer></v-spacer>
       <AddButton v-on:click="addPlace()"/>
-      <v-combobox 
-        hide-details 
-        v-model="curModulePreset"
-        label="Module Presets" 
-        :items="modulePresets">
-      </v-combobox>
       <v-btn @click="moduleCreatorOverlay = !moduleCreatorOverlay">
         new preset
+        <v-card-subtitle>
+          {{  curModulePreset.title }}
+        </v-card-subtitle>
       </v-btn>
       <v-spacer></v-spacer>
     </v-row>
@@ -335,13 +332,6 @@ export default {
       windowWidth: width,
       windowHeight: height,
     };
-  },
-
-  watch: {
-    'curModulePreset': {
-      handler: 'saveModulePresetToCookies',
-      deep: true,
-    }
   },
 
   /**
@@ -385,14 +375,14 @@ export default {
         { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
       ],
       modulePresets: [],
-      curModulePreset: null,
+      curModulePreset: '',
       moduleCreatorOverlay: false,
     };
   },
   /**
    * Retrieve data from IndexedDB
    */
-  async created() {
+  async mounted() {
     this.$emit("view", this.$t('overview', { msg: this.$tc('place', 2) }));
     await fromOfflineDB.syncLocalDBs();
     await this.updatePlaces();
@@ -439,7 +429,7 @@ export default {
 
   methods: {
     /**
-     * Get all places from IndexedDb
+     * Get all places from IndexedDB
      */
     async updatePlaces() {
       var curActivityID = String(VueCookies.get('currentActivity'));
@@ -449,10 +439,16 @@ export default {
       this.places.sort((a, b) => (a.placeNumber > b.placeNumber) ? 1 : -1);
     },
 
+    /**
+     * Get all ModulePresets from IndexedDB
+     */
     async updateModulePresets() {
-      this.modulePresets = await fromOfflineDB.getAllObjects('ModulePresets', 'places');
-      this.curModulePreset = await fromOfflineDB.getObject(
-          String(VueCookies.get('placeModulesPreset')), 'ModulePresets', 'places');
+      let presetFromCookies = String(VueCookies.get('placeModulesPreset'));
+
+      if (presetFromCookies.length > 0) {
+        this.curModulePreset = await fromOfflineDB.getObject(
+          presetFromCookies, 'ModulePresets', 'places');
+        }
     },
 
     /**
