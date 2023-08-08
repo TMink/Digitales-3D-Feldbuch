@@ -1,11 +1,11 @@
 <template>
-  <v-card class="pa-4" height="12em">
-    <v-card-text>
-      <h2 class="text-h6 font-weight-medium pb-2">
-        {{ $t('findType') }}
-      </h2>
-    </v-card-text>
-    <v-col lg="6">
+  <v-col lg="6">
+    <v-card class="pa-4" height="12em">
+      <v-card-text>
+        <h2 class="text-h6 font-weight-medium pb-2">
+          {{ $t('findType') }}
+        </h2>
+      </v-card-text>
       <v-row class="pl-4 pb-4 justify-center">
         <v-col cols="6">
           <v-tooltip 
@@ -39,9 +39,8 @@
           </v-tooltip>
         </v-col>
       </v-row>
-
-    </v-col>
-  </v-card>
+    </v-card>
+  </v-col>
 </template>
 
 <script>
