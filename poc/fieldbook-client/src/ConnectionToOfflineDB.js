@@ -502,7 +502,9 @@ export default class ConnectionToOfflineDB {
 
       // Make sure that no 'changes' get marked for synchronization
       // and don't mark objects, that never got uploaded before deletion
-      if (localDBName != "Changes" && localDBName != 'Lines') {
+      if (localDBName != "Changes" 
+        && localDBName != 'Lines' 
+        && localDBName != 'ModulePresets') {
         if (object.lastSync.length > 0) {
           this.addObject({ id: object.id, object: localDBName }, "Changes", "deleted");
         }
