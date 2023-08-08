@@ -300,7 +300,10 @@
       <v-spacer></v-spacer>
     </v-row>
   </div>
-  <ModuleCreator v-model="moduleCreatorOverlay" @updateModulePresets="updateModulePresets()"/>
+  <ModuleCreator 
+    v-model="moduleCreatorOverlay" 
+    objectTypeProp="places"
+    @updateModulePresets="updateModulePresets()"/>
 </template>
 
 <script>
@@ -447,10 +450,9 @@ export default {
     },
 
     async updateModulePresets() {
-      this.modulePresets = await fromOfflineDB.getAllObjects('ModulePresets', 'modulePresets');
+      this.modulePresets = await fromOfflineDB.getAllObjects('ModulePresets', 'places');
       this.curModulePreset = await fromOfflineDB.getObject(
-          String(VueCookies.get('placeModulesPreset')), 'ModulePresets', 'modulePresets');
-      console.log(this.curModulePreset);
+          String(VueCookies.get('placeModulesPreset')), 'ModulePresets', 'places');
     },
 
     /**

@@ -273,13 +273,33 @@
       </v-row>
       </v-form>
 
-    <AddPosition :positions_prop="positions" @updatePositions="updatePositions()" />
+      <v-row class="align-center">
+      <v-spacer></v-spacer>
+      <AddPosition 
+      :positions_prop="positions" 
+      @updatePositions="updatePositions()"/>
+      <v-combobox 
+        hide-details 
+        v-model="curModulePreset"
+        label="Module Presets" 
+        :items="modulePresets">
+      </v-combobox>
+      <v-btn @click="moduleCreatorOverlay = !moduleCreatorOverlay">
+        new preset
+      </v-btn>
+      <v-spacer></v-spacer>
+    </v-row>
   </div>
+  <ModuleCreator 
+    v-model="moduleCreatorOverlay" 
+    objectTypeProp="positions"
+    @updateModulePresets="updateModulePresets()"/>
 </template>
 
 <script>
 import Navigation from '../components/Navigation.vue';
 import VueCookies from 'vue-cookies';
+import ModuleCreator from '../components/ModuleCreator.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import AddPosition from '../components/AddPosition.vue';
 import { useWindowSize } from 'vue-window-size';
@@ -288,9 +308,12 @@ export default {
   name: 'PositionsOverview',
   components: {
     Navigation,
-    AddPosition
+    AddPosition,
+    ModuleCreator
   },
+  
   emits: ['view'],
+
   setup() {
     const { width, height } = useWindowSize();
     return {
@@ -298,6 +321,14 @@ export default {
       windowHeight: height,
     };
   },
+
+  watch: {
+    'curModulePreset': {
+      handler: 'saveModulePresetToCookies',
+      deep: true,
+    }
+  },
+
   data() {
     return {
       positions: [],
@@ -348,6 +379,9 @@ export default {
         { title: this.$t('date'), align: 'start', key: 'date' },
         { title: this.$t('isSeparate'), align: 'start', key: 'isSeparate' },
       ],
+      modulePresets: [],
+      curModulePreset: null,
+      moduleCreatorOverlay: false,
     };
   },
   /**
@@ -357,6 +391,7 @@ export default {
     this.$emit("view", this.$t('overview', { msg: this.$tc('position', 2) }));
     await fromOfflineDB.syncLocalDBs();
     await this.updatePositions();
+    await this.updateModulePresets();
   },
 
   computed: {
@@ -383,6 +418,7 @@ export default {
         });
       }
     },
+
     getTableHeight() {
       // Calculate the required table height based on the number of items
       const numberOfRows = this.positions.length > 0 ? this.positions.length : 1;
@@ -397,6 +433,7 @@ export default {
       return totalTableHeight + "px";
     },
   },
+
   methods: {
     /**
      * Update reactive Vue.js position data
@@ -407,13 +444,19 @@ export default {
       this.positions = await fromOfflineDB.getAllObjectsWithID(
         curPlaceID, 'Place', 'Positions', 'positions');
     },
+
+    async updateModulePresets() {
+      this.modulePresets = await fromOfflineDB.getAllObjects('ModulePresets', 'positions');
+      this.curModulePreset = await fromOfflineDB.getObject(
+          String(VueCookies.get('positionModulesPreset')), 'ModulePresets', 'positions');
+    },
+
     /**
      * Routes to the PositionForm for the chosen positionID
      * 
      * @param {String} positionID 
      */
     moveToPosition(positionID) {
-
       if (positionID !== 'new') {
         VueCookies.set('currentPosition', positionID);
       }
@@ -486,6 +529,10 @@ export default {
       } else if (this.hoveredRow === index) {
         this.hoveredRow = -1;
       }
+    },
+
+    saveModulePresetToCookies() {
+      VueCookies.set('positionModulesPreset', this.curModulePreset.id);
     },
   }
 }
