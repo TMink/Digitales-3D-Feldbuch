@@ -1,7 +1,8 @@
 <template>
-  <v-dialog>
-    <v-card>
-      MODULE CREATION
+  <v-dialog style="z-index: 2;" max-width="1000px">
+    <v-card class="pa-4">
+      
+      <v-card-title>MODULE MANAGEMENT - {{ objectTypeProp.toUpperCase() }}</v-card-title>
       <v-row no-gutters>
         <v-col cols="5">
           <v-card-title>
@@ -26,21 +27,41 @@
 
         <v-divider vertical></v-divider>
 
-        <v-col cols="5">
+        <v-col cols="6">
+          <v-card-subtitle>
+            Existing Presets
+          </v-card-subtitle>
 
-          <v-card outlined>
-            <v-list>
-              <v-list-title v-if="modulePresets.length == 0">
-                No presets exist.
-              </v-list-title>
-              
-              <v-list-item
-                v-for="item in modulePresets"
-                :key="item.title"
-                :title="item.title">
-              </v-list-item>
-            </v-list>
-          </v-card>
+            <v-data-table-virtual :items="modulePresets" hide-headers>
+
+              <template v-slot:item="{ item, index }">
+                <tr @mouseenter="setHoveredRow(index, true)"
+                  @mouseleave="setHoveredRow(index, false)">
+
+                  <v-row no-gutters>
+                    <td v-on:click="setModulePreset(item.raw)" colspan="3" :style="getRowStyle(index)">
+                      <v-list-item-title>
+                        {{ item.raw.title || '-' }}
+                      </v-list-item-title>
+                  </v-row>
+                </tr>
+              </template>
+            </v-data-table-virtual>
+        </v-col>
+      </v-row>
+      <v-divider></v-divider>
+      <v-row no-gutter class="mt-0 pa-n2 align-center text-center">
+        <v-col cols="6">
+          <v-btn color="primary" v-on:click="saveModulePreset">SAVE Preset</v-btn>
+        </v-col>
+        <v-divider vertical></v-divider>
+        <v-col cols="6">
+          <v-card-subtitle>
+            Selected Preset
+          </v-card-subtitle>
+          <v-card-title>
+            {{ selectedPreset.title || '-'}}
+          </v-card-title>
         </v-col>
       </v-row>
     </v-card>
@@ -50,9 +71,15 @@
 <script>
 
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
+import ConfirmDialog from '../components/ConfirmDialog.vue';
 import { toRaw } from 'vue';
+import VueCookies from 'vue-cookies';
 
 export default {
+
+  components: {
+    ConfirmDialog,
+  },
 
   props: {
     objectTypeProp: String
@@ -77,7 +104,9 @@ export default {
       //position specific
       objectDescribers: false,
     },
+    selectedPreset: '',
     modulePresets: [],
+    hoveredRow: -1,
   }),
 
   async created() {
@@ -90,7 +119,7 @@ export default {
       this.modulePresets = await fromOfflineDB.getAllObjects('ModulePresets', this.objectTypeProp);
     },
 
-    async saveModulePreset(){
+    async saveModulePreset() {
       //only save the preset if it doesn't already exist
       if (!this.presetAlreadyExists(false)) {
         var rawPreset = toRaw(this.curPreset);
@@ -112,6 +141,75 @@ export default {
     presetAlreadyExists(input) {
       //TODO: functionality (function name can be renamed)
       return input;
+    },
+
+    /**
+     *  Routes to the PositionForm for the chosen positionID
+     * @param {String} positionID 
+     */
+     setModulePreset(item) {
+      let rawPreset = toRaw(item);
+      this.selectedPreset = rawPreset;
+      VueCookies.set('currentModulePreset', rawPreset.id)
+    },
+
+    editPreset() {
+      console.log("EDIT")
+    }, 
+
+    /**
+     * Deletes a selected ModulePreset from IndexedDB
+     * @param {Object} object 
+     */
+    async deletePreset(object) {
+      let rawObject = toRaw(object);
+
+      await fromOfflineDB.deleteObject(rawObject, 'ModulePresets', this.objectTypeProp);
+      await this.updateModulePresets();
+    },
+
+    /**
+     * Opens the confirmation dialog for deletion#
+     * @param {Object} place 
+     */
+     async confirmDeletion(object) {
+      if (
+        await this.$refs.confirm.open(
+          this.$t('confirm'),
+          "Do you really want to delete this preset?"
+        )
+      ) {
+        this.deletePreset(object);
+      }
+    },
+
+    /**
+     * Get the style for the row at the specified index.
+     *
+     * @param {number} index The index of the row
+     * @returns {Object} An object containing row style properties
+     */
+     getRowStyle(index) {
+      return {
+        backgroundColor: this.hoveredRow === index ? '#2f3845' : 'transparent',
+        width: '60%',
+        cursor: 'pointer',
+        padding: '8px 16px'
+      };
+    },
+    /**
+     * Update the hoveredRow based on the isHovered flag.
+     *
+     * @param {number} index - The index of the row being hovered.
+     * @param {boolean} isHovered - Indicates if the row is being hovered 
+     *                              (true) or not (false).
+     */
+    setHoveredRow(index, isHovered) {
+      if (isHovered) {
+        this.hoveredRow = index;
+      } else if (this.hoveredRow === index) {
+        this.hoveredRow = -1;
+      }
     },
 
   },
