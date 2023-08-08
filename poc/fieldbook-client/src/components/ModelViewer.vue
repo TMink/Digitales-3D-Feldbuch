@@ -2,34 +2,29 @@
   <v-container fluid> 
     <v-row>
       <v-col>
- 
-        <v-card>
-          <ModuleGeneral/>
-        </v-card>
+ <!-- 
+        <ModuleGeneral
+          @dataToModelViewer="sendData($event)"/>
 
-        <v-card>
-          <ModuleCoordinates/>
-        </v-card>
+        <ModuleCoordinates
+          @dataToModelViewer="sendData($event)"/>
         
-        <v-card>
-          <ModuleVisibility/>
-        </v-card>
+        <ModuleVisibility
+          @dataToModelViewer="sendData($event)"/>
         
-        <v-card>
-          <ModuleFindTypes/>
-        </v-card>
+        <ModuleFindTypes
+          @dataToModelViewer="sendData($event)"/>
         
-        <v-card>
-          <ModulePlane/>
-        </v-card>
+        <ModulePlane
+          @dataToModelViewer="sendData($event)"/>
 
-        <v-card>
-          <ModuleDating/>
-        </v-card>
-
-        <v-card>
-          <ModulePositionsList/>
-        </v-card>
+        <ModulePositionsList
+          @dataToModelViewer="sendData($event)"/>
+        
+        <ModuleDating
+          :dating="object.dating"
+          @dataToModelViewer="sendData($event)"/>
+-->
 
       </v-col>
     </v-row>
@@ -40,7 +35,6 @@
 /**
  * Methods overview:
  */
- import VueCookies from 'vue-cookies';
 import ModuleGeneral from '../components/modules/ModuleGeneral.vue';
 import ModuleCoordinates from '../components/modules/ModuleCoordinates.vue';
 import ModuleVisibility from '../components/modules/ModuleVisibility.vue';
@@ -62,6 +56,8 @@ export default {
     ModuleDating,
     ModulePositionsList,
   },
+
+  emits: ['dataToPlaceForm'],
   
   setup() {
     const { width, height } = useWindowSize();
@@ -73,19 +69,19 @@ export default {
   
   data() {
     return {
-      object: null,
+      object: {
+        dating: '',
+      },
       pathNames: null,
       id: null,
     }
   },
 
   async created() {
-  },
-  
-  async mounted() {
     await fromOfflineDB.syncLocalDBs();
-    this.getPathAndID(this.$route.path);
-    await this.updateObject();
+    const path = this.$route.path
+    this.getPathAndID(path)
+    this.object = await fromOfflineDB.getObject(this.id, this.pathNames.db, this.pathNames.os);
   },
   
   methods: {
@@ -102,6 +98,10 @@ export default {
       );
       const upperName = lowerName.charAt(0).toUpperCase() + lowerName.slice(1);
       this.pathNames = { db: upperName, os: lowerName }
+    },
+
+    sendData(data) {
+      this.$emit("dataToPlaceForm", data)
     }
   }
 };

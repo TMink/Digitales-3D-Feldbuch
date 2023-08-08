@@ -30,7 +30,8 @@
           <v-window-item value="one">
             <ModelViewer
               :object_id="place.id"  
-              object_type="Places"/>
+              object_type="Places"
+              @dataToPlaceForm="console.log($event)"/>
           </v-window-item>
 
           <v-window-item value="three">
