@@ -1,7 +1,8 @@
 <template>
   <v-card>
     <v-form>
-      <v-card class="pa-3" :min-width="windowWidth * 0.5">
+      
+      <v-card class="pa-0" :min-width="windowWidth * 0.5">
         <v-data-table-virtual :items="positions" fixed-header :height="getTableHeight" :headers="headers"
           :sort-by="[{ key: 'positionNumber', order: 'asc' }]" max-height>
 
@@ -24,7 +25,7 @@
               </td>
 
               <!-- TITLE -->
-              <td class="py-6" :style="getRowStyle(index)">
+              <td class="py-0" :style="getRowStyle(index)">
                 <v-list-item-title v-if="item.raw.title.length > 0" style="min-width:200px" class="text-wrap">
                   {{ item.raw.title }}
                 </v-list-item-title>
@@ -45,22 +46,74 @@
         </v-data-table-virtual>
       </v-card>
 
-      <AddPosition :positions_prop="positions" @updatePlace="updatePlace()" @updatePositions="updatePositions()" />
-
+      <!-- <AddPosition :positions_prop="positions" @updatePlace="updatePlace()" @updatePositions="updatePositions()" /> -->
+      
     </v-form>
   </v-card>
 </template>
   
 <script>
+import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../../ConnectionToOfflineDB';
-
+import AddPosition from '../../components/AddPosition.vue';
+import { useWindowSize } from 'vue-window-size';
 
 export default {
 
+  computed: {
+    getTableHeight() {
+      // Calculate the required table height based on the number of items
+      const numberOfRows = this.positions.length > 0 ? this.positions.length : 1;
+      const headerHeight = 56;
+      const rowHeight = 73;
+      const totalTableHeight = numberOfRows * rowHeight + headerHeight;
+
+      if (totalTableHeight > (this.windowHeight - 350)) {
+        return this.windowHeight - 350;
+      }
+
+      return totalTableHeight + "px";
+    },
+  },
+
+  setup() {
+    const { width, height } = useWindowSize();
+    return {
+      windowWidth: width,
+      windowHeight: height,
+    };
+  },
+
+  components: {
+    AddPosition,
+  },
+
+  props: {
+    placeProp: Object,
+  },
+
   data() {
     return {
+      placePositions: null,
       place: [],
       positions: [],
+      headers: [
+        {
+          title: this.$t('posNumber'),
+          align: 'start',
+          sortable: true,
+          key: 'positionNumber',
+        },
+        {
+          title: this.$t('subNumber'),
+          align: 'start',
+          sortable: true,
+          key: 'subNumber',
+        },
+        { title: this.$tc('title', 2), align: 'start', key: 'title' },
+        { title: this.$t('date'), align: 'start', key: 'date' },
+      ],
+      hoveredRow: -1,
     }
   },
 
@@ -73,25 +126,26 @@ export default {
 
   async created() {
     await fromOfflineDB.syncLocalDBs();
-    await this.updatePlace();
+  },
+
+  async updated() {
     await this.updatePositions();
   },
 
-  mounted: {
-    /**
-    * Update reactive Vue.js place data
-    */
+  methods: {
+
     async updatePlace() {
       const currentPlace = VueCookies.get('currentPlace');
       const data = await fromOfflineDB.getObject(currentPlace, 'Places', 'places');
       this.place = data;
     },
 
-    /**
-    * Update reactive Vue.js positions data
-    */
     async updatePositions() {
-      this.positions = await fromOfflineDB.getAllObjectsWithID(this.place.id, 'Place', 'Positions', 'positions');
+      //if (this.placeProp.length > 0) {
+      //  this.positions = await fromOfflineDB.getAllObjectsFromArray(this.placeProp, 'Positions', 'positions');
+      //}
+
+      this.positions = await fromOfflineDB.getAllObjectsWithID(this.placeProp.id, 'Place', 'Positions', 'positions');
     },
 
     /**
@@ -132,6 +186,20 @@ export default {
         VueCookies.set('currentPosition', positionID);
       }
       this.$router.push({ name: 'PositionCreation', params: { positionID: positionID } });
+    },
+
+    /**
+     * Gets called every time some info of the current position changes.
+     * Once a change has happend, the flag `hasUnsavedChanges` gets set to `true`
+     */
+     handlePlaceChange() {
+      if (this.hasUnsavedChanges) {
+        return;
+      }
+
+      if (this.componentHasLoaded) {
+        this.hasUnsavedChanges = true;
+      }
     },
   },
 

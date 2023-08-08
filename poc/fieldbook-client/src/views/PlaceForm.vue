@@ -5,7 +5,7 @@
         <v-card>
           <v-tabs v-model="tab" direction="vertical" color="primary">
             <v-tab value="one" rounded="0"> {{ $t('general') }} </v-tab>
-            <v-tab value="two" rounded="0"> {{ $tc('position', 2) }} </v-tab>
+            <v-tab value="two" rounded="0"> {{ $t('position') }} </v-tab>
             <v-tab value="three" rounded="0"> {{ $tc('image', 2) }} </v-tab>
             <v-tab value="four" rounded="0"> {{ $tc('model', 2) }} </v-tab>
             <v-btn rounded="0" v-on:click="savePlace()" color="primary">
@@ -26,7 +26,7 @@
 
       <v-col cols="10">
         <v-window v-model="tab">
-          <!-- TAB ITEM 'GENERAL' -->
+          <!-- Tab item 'GENERAL' -->
           <v-window-item value="one">
             <ModelViewer
               :object_id="place.id"  
@@ -34,6 +34,72 @@
               @dataToPlaceForm="getEmitedData($event)"/>
           </v-window-item>
 
+          <!-- Tab item 'positions' -->
+          <v-window-item value="two">
+            <v-form>
+              <v-card class="pa-3" :min-width="windowWidth * 0.5">
+                <v-data-table-virtual
+                  :items="positions"
+                  fixed-header
+                  :height="getTableHeight"
+                  :headers="headers"
+                  :sort-by="[{ key: 'positionNumber', order: 'asc' }]"
+                  max-height>
+
+                  <template v-slot:item="{ item, index }">
+                    <tr v-on:click="moveToPosition(item.raw.id)"
+                        @mouseenter="setHoveredRow(index, true)"
+                        @mouseleave="setHoveredRow(index, false)">
+
+                        <!-- POSITION NUMBER -->
+                        <td :style="getRowStyle(index)">
+                          <v-list-item-title>
+                            {{ item.raw.positionNumber }}
+                          </v-list-item-title>
+                        </td>
+
+                        <!-- SUB NUMBER -->
+                        <td :style="getRowStyle(index)">
+                          <v-list-item-title>
+                            {{ item.raw.subNumber }}
+                          </v-list-item-title>
+                        </td>
+
+                        <!-- TITLE -->
+                        <td class="py-6" :style="getRowStyle(index)">
+                          <v-list-item-title
+                            v-if="item.raw.title.length > 0"
+                            style="min-width:200px" 
+                            class="text-wrap">
+                            {{ item.raw.title }}
+                          </v-list-item-title>
+
+                          <v-list-item-title 
+                            v-if="item.raw.title.length == 0" style="color:dimgrey;">
+                            -
+                          </v-list-item-title>
+                        </td>
+
+                        <!-- DATE -->
+                        <td :style="getRowStyle(index)">
+                          <v-list-item-title>
+                            {{ item.raw.date || '-' }}
+                          </v-list-item-title>
+                        </td>
+                    </tr>
+                  </template>
+                </v-data-table-virtual>
+              </v-card>
+
+              <AddPosition 
+                :positions_prop="positions" 
+                @updatePlace="updatePlace()" 
+                @updatePositions="updatePositions()" />
+
+            </v-form>
+          </v-window-item>
+
+          <!-- Tab item 'pictures' -->
           <v-window-item value="three">
             <ImageForm 
               :object_id="place.id"  
@@ -377,7 +443,7 @@ export default {
      * Gets called every time some info of the current position changes.
      * Once a change has happend, the flag `hasUnsavedChanges` gets set to `true`
      */
-     handlePlaceChange() {
+    handlePlaceChange() {
       if (this.hasUnsavedChanges) {
         return;
       }
