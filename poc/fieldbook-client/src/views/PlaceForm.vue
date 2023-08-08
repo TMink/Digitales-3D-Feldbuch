@@ -306,7 +306,10 @@ export default {
     getEmitedData(data) {
       switch (data[0]) {
         case 'dating':
-          this.place.dating = data[1]
+          this.place.dating = data[1];
+          break;
+        case 'visibility':
+          this.place.visibility = data[1];
           break;
         default:
           console.log( error )
