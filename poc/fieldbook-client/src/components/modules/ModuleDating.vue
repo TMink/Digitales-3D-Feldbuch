@@ -13,41 +13,46 @@
 	export default {
 		
 		props: {
-			dating_prop: String,
+			datingProp: String,
 		},
+
+    emits: ['dataToModelViewer'],
 
 		data () {
 			return {
 				datings: [],
 				dating: null,
+        pathNames: null,
+
 			}
 		},
 
-		watch: {
-			'dating': {
-				handler: function() { 
-					this.$emit("dating");
-				}
-			}
-		},
+    watch: {
+      "dating": {
+        handler: function() {
+          if ( this.dating != null ) {
+            console.log("Hey")
+            this.$emit("dataToModelViewer", [ 'dating', this.dating ]);
+          }
+        }
+      }
+    },
 
 		async created() {
 			this.datings = JSON.parse(import.meta.env.VITE_DATINGS);
-			dating = dating_prop;
-
-			await this.updatePlace();
 		},
+    
+		mounted() {
+      this.dating = this.datingProp;
+      this.updatePlace();
+		},
+    
+    methods: {
+      async updatePlace() {
+        console.log("Test")
+      },
 
-		mounted: {
-			/**
-     	* Update reactive Vue.js place data
-     	*/
-		 	async updatePlace() {
-     	 	const currentPlace = VueCookies.get('currentPlace');
-     	 	const data = await fromOfflineDB.getObject(currentPlace, 'Places', 'places');
-     	 	this.place = data;
-    	},
-		}
+    }
 		
 	}
 

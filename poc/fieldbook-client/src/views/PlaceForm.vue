@@ -31,7 +31,7 @@
             <ModelViewer
               :object_id="place.id"  
               object_type="Places"
-              @dataToPlaceForm="console.log($event)"/>
+              @dataToPlaceForm="getEmitedData($event)"/>
           </v-window-item>
 
           <v-window-item value="three">
@@ -236,6 +236,17 @@ export default {
   },
 
   methods: {
+
+    getEmitedData(data) {
+      switch (data[0]) {
+        case 'dating':
+          this.place.dating = data[1]
+          break;
+        default:
+          console.log( error )
+      }
+    },
+
     /**
      * Update reactive Vue.js place data
      */
