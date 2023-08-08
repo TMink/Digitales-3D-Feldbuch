@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialog" :max-width="options.width" :style="{ zIndex: options.zIndex }" @keydown.esc="cancel">
+    <v-dialog v-model="dialog" :max-width="options.width" style="z-index: 3;" @keydown.esc="cancel">
         <v-card>
             <v-toolbar dark :color="options.color" dense flat>
                 <v-toolbar-title>{{ title }}</v-toolbar-title>
@@ -26,7 +26,6 @@ export default {
         options: {
             color: 'warning',
             width: 290,
-            zIndex: 200
         }
     }),
     methods: {

@@ -7,7 +7,7 @@
     </head>
 
     <!-- App Bar -->
-    <v-app-bar color="accent_dark">
+    <v-app-bar style="z-index: 1;" color="accent_dark">
       <v-btn icon v-on:click="goback">
         <v-icon>mdi-arrow-left</v-icon>
       </v-btn>
