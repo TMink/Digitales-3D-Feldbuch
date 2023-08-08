@@ -30,8 +30,7 @@
           <v-window-item value="one">
             <ModelViewer
               :object_id="place.id"  
-              object_type="Places"
-              @place.dating="object.dating"/>
+              object_type="Places"/>
           </v-window-item>
 
           <v-window-item value="three">
@@ -128,7 +127,7 @@ export default {
         positions: [],
         images: [],
         models: [],
-        lines: [],
+        lines: [],    
         lastChanged: '',
         lastSync: ''
       },
