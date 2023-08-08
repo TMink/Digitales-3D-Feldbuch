@@ -289,10 +289,12 @@
       <v-spacer></v-spacer>
       <AddButton v-on:click="addPlace()"/>
       <v-btn @click="moduleCreatorOverlay = !moduleCreatorOverlay">
-        new preset
-        <v-card-subtitle>
-          {{  curModulePreset.title }}
-        </v-card-subtitle>
+        <v-row>
+          Module Presets
+          <v-card-subtitle>
+            {{  curModulePreset.title }}
+          </v-card-subtitle>
+        </v-row>
       </v-btn>
       <v-spacer></v-spacer>
     </v-row>

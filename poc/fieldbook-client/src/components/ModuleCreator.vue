@@ -156,12 +156,10 @@ export default {
     async saveModulePreset() {
       var rawPreset = toRaw(this.curPreset);
 
-
       //only save the preset if it doesn't already exist
       var presetExists = await this.presetAlreadyExists(rawPreset);
 
       if (!presetExists) {
-
         rawPreset.id = String(Date.now());
         
         await fromOfflineDB.addObject(rawPreset, 'ModulePresets', this.objectTypeProp);
@@ -203,7 +201,7 @@ export default {
     setModulePreset(item) {
       let rawPreset = toRaw(item);
       this.selectedPreset = rawPreset;
-      VueCookies.set('currentModulePreset', rawPreset.id)
+      VueCookies.set('placeModulesPreset', rawPreset.id);
     },
 
     editPreset(object) {
