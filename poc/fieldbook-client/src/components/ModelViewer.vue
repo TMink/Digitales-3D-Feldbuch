@@ -10,6 +10,7 @@
           @dataToModelViewer="sendData($event)"/>
         
         <ModuleVisibility v-if='object.modulePreset.visibility'
+          :visibilityProp="object.visibility"
           @dataToModelViewer="sendData($event)"/>
         
         <ModuleFindTypes v-if='object.modulePreset.findTypes'
@@ -25,7 +26,7 @@
         <ModuleDating v-if='object.modulePreset.dating'
           :datingProp="object.dating"
           @dataToModelViewer="sendData($event)"/>
-          
+
       </v-col>
     </v-row>
   </v-container>
