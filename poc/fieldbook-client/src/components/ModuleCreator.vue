@@ -5,9 +5,9 @@
       
       <v-card-title>MODULE MANAGEMENT - {{ objectTypeProp.toUpperCase() }}</v-card-title>
       <v-row no-gutters>
-        <v-col cols="6">
+        <v-col cols="6" v-show="!editPresetForm">
           <v-card-subtitle>
-            Module Selection
+            Add new Preset
           </v-card-subtitle>
           <v-window class="ma-2">
 
@@ -22,6 +22,23 @@
           </v-window>
         </v-col>
 
+        <v-col cols="6" v-show="editPresetForm">
+          <v-card-subtitle>
+            Edit Module
+          </v-card-subtitle>
+          <v-window class="ma-2">
+
+            <v-text-field hide-details label="Title" class="pr-6" v-model="selectedPreset.title"></v-text-field>
+            <v-checkbox hide-details label="General" v-model="selectedPreset.general"></v-checkbox>
+            <v-checkbox hide-details label="PositionsList" v-model="selectedPreset.positionslist"></v-checkbox>
+            <v-checkbox hide-details label="Coordinates" v-model="selectedPreset.coordinates"></v-checkbox>
+            <v-checkbox hide-details label="Visibility" v-model="selectedPreset.visibility"></v-checkbox>
+            <v-checkbox hide-details label="FindTypes" v-model="selectedPreset.findTypes"></v-checkbox>
+            <v-checkbox hide-details label="Plane" v-model="selectedPreset.plane"></v-checkbox>
+            <v-checkbox hide-details label="Dating" v-model="selectedPreset.dating"></v-checkbox>
+          </v-window>
+        </v-col>
+
         <v-divider vertical></v-divider>
 
         <v-col cols="6">
@@ -29,25 +46,25 @@
             Existing Presets
           </v-card-subtitle>
 
-            <v-data-table-virtual :items="modulePresets" hide-headers>
+            <v-data-table-virtual :items="modulePresets" class="pt-2" hide-headers height="400px">
 
               <template v-slot:item="{ item, index }">
                 <tr @mouseenter="setHoveredRow(index, true)"
                   @mouseleave="setHoveredRow(index, false)">
 
-                  <v-row no-gutters>
-                    <td v-on:click="setModulePreset(item.raw)" colspan="3" :style="getRowStyle(index)">
+                  <v-row no-gutters class="align-center">
+                    <td v-on:click="setModulePreset(item.raw), editPreset(item.raw)" :style="getRowStyle(index)">
                       <v-list-item-title>
                         {{ item.raw.title || '-' }}
                       </v-list-item-title>
                     </td>  
-                      <v-btn 
+                      <!-- <v-btn 
                         class="mx-2 " 
                         color="primary" 
                         density="compact" 
                         v-on:click="editPreset(item.raw)">
                         <v-icon>mdi-pencil</v-icon>
-                      </v-btn>
+                      </v-btn> -->
                       <v-btn 
                         class="mr-2" 
                         color="error" 
@@ -59,12 +76,16 @@
                 </tr>
               </template>
             </v-data-table-virtual>
+            <v-row no-gutters class="pt-2 justify-center">
+              <v-btn color="secondary" v-on:click="editPresetForm=false">ADD new preset</v-btn>
+            </v-row>
         </v-col>
       </v-row>
       <v-divider></v-divider>
       <v-row no-gutter class="mt-0 pa-n2 align-center text-center">
         <v-col cols="6">
-          <v-btn color="primary" v-on:click="saveModulePreset">SAVE Preset</v-btn>
+          <v-btn color="primary" v-show="!editPresetForm" v-on:click="saveModulePreset">SAVE Preset</v-btn>
+          <v-btn color="primary" v-show="editPresetForm" v-on:click="saveModulePreset">SAVE edited Preset</v-btn>
         </v-col>
         <v-divider vertical></v-divider>
         <v-col cols="6">
@@ -119,6 +140,7 @@ export default {
     selectedPreset: '',
     modulePresets: [],
     hoveredRow: -1,
+    editPresetForm: false,
   }),
 
   async created() {
@@ -132,9 +154,13 @@ export default {
     },
 
     async saveModulePreset() {
+      var rawPreset = toRaw(this.curPreset);
+
+
       //only save the preset if it doesn't already exist
-      if (!this.presetAlreadyExists(false)) {
-        var rawPreset = toRaw(this.curPreset);
+      var presetExists = await this.presetAlreadyExists(rawPreset);
+
+      if (!presetExists) {
 
         rawPreset.id = String(Date.now());
         
@@ -150,23 +176,39 @@ export default {
      * Checks if a preset already exists before saving it
      * @return {Boolean} returns `true` or `false`
      */
-    presetAlreadyExists(input) {
-      //TODO: functionality (function name can be renamed)
-      return input;
+    async presetAlreadyExists(newPreset) {
+      const excludedFields = ['id', 'title'];
+      var allPresets = await fromOfflineDB.getAllObjects('ModulePresets', this.objectTypeProp);
+
+      const keys1 = Object.keys(newPreset).filter(key => !excludedFields.includes(key));
+      var alreadyExists = false;
+
+      allPresets.forEach(existingPreset => {
+        for (const key of keys1) {
+          alreadyExists = true;
+          if (newPreset[key] !== existingPreset[key]) {
+            alreadyExists = false;
+            break;
+          }
+        }
+      });
+
+      return alreadyExists;
     },
 
     /**
      *  Routes to the PositionForm for the chosen positionID
      * @param {String} positionID 
      */
-     setModulePreset(item) {
+    setModulePreset(item) {
       let rawPreset = toRaw(item);
       this.selectedPreset = rawPreset;
       VueCookies.set('currentModulePreset', rawPreset.id)
     },
 
-    editPreset() {
-      console.log("EDIT")
+    editPreset(object) {
+      this.editPresetForm = true;
+      this.selectedPreset = toRaw(object)
     }, 
 
     /**
@@ -204,7 +246,7 @@ export default {
      getRowStyle(index) {
       return {
         backgroundColor: this.hoveredRow === index ? '#2f3845' : 'transparent',
-        width: '60%',
+        width: '80%',
         cursor: 'pointer',
         padding: '8px 16px'
       };
