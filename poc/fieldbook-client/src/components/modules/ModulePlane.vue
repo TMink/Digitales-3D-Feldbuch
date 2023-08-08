@@ -1,15 +1,16 @@
 <template>
-    <v-card height="10em">
+  <v-col lg="6">
+    <v-card class="pa-4" height="12em">
         <v-textarea 
-            rows="2" 
+            rows="4" 
             counter 
-            no-resize 
             color="primary" 
             class="ma-1 px-2 pt-2" 
             v-model="place.plane"
             :label="$t('plane')">
         </v-textarea>
     </v-card>
+  </v-col>
 </template>
 
 <script>

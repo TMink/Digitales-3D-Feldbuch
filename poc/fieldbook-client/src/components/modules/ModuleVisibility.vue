@@ -1,23 +1,25 @@
 <template>
+  <v-col lg="6">
     <v-card class="pa-4" height="12em">
-        <v-card-text>
-            <h2 class="text-h6 font-weight-medium pb-2">
-                {{ $t('visibility') }}
-            </h2>
-        </v-card-text>
-        <v-slider 
-            :max="3" 
-            step="1" 
-            class="pa-4" 
-            tick-size="4" 
-            :ticks="tickLabels" 
-            show-ticks="always" 
-            track-color="primary"
-            thumb-color="secondary" 
-            v-model="place.visibility" 
-            color="warning">
-        </v-slider>
+      <v-card-text>
+        <h2 class="text-h6 font-weight-medium pb-2">
+          {{ $t('visibility') }}
+        </h2>
+      </v-card-text>
+      <v-slider 
+        :max="3" 
+        step="1" 
+        class="pa-4" 
+        tick-size="4" 
+        :ticks="tickLabels" 
+        show-ticks="always" 
+        track-color="primary"
+        thumb-color="secondary" 
+        v-model="place.visibility" 
+        color="warning">
+      </v-slider>
     </v-card>
+  </v-col>
 </template>
 
 <script>
