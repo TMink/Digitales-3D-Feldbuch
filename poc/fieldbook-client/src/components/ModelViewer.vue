@@ -2,30 +2,30 @@
   <v-container fluid> 
     <v-row>
       <v-col>
- <!-- 
-        <ModuleGeneral
+
+        <ModuleGeneral v-if='object.modulePreset.general'
           @dataToModelViewer="sendData($event)"/>
 
-        <ModuleCoordinates
+        <ModuleCoordinates v-if='object.modulePreset.coordinates'
           @dataToModelViewer="sendData($event)"/>
         
-        <ModuleVisibility
+        <ModuleVisibility v-if='object.modulePreset.visibility'
           @dataToModelViewer="sendData($event)"/>
         
-        <ModuleFindTypes
+        <ModuleFindTypes v-if='object.modulePreset.findTypes'
           @dataToModelViewer="sendData($event)"/>
         
-        <ModulePlane
+        <ModulePlane v-if='object.modulePreset.plane'
           @dataToModelViewer="sendData($event)"/>
 
-        <ModulePositionsList
+        <ModulePositionsList v-if='object.modulePreset.positionslist'
+          :placeProp="object"
           @dataToModelViewer="sendData($event)"/>
-        
-        <ModuleDating
-          :dating="object.dating"
+   
+        <ModuleDating v-if='object.modulePreset.dating'
+          :datingProp="object.dating"
           @dataToModelViewer="sendData($event)"/>
--->
-
+          
       </v-col>
     </v-row>
   </v-container>
@@ -71,17 +71,33 @@ export default {
     return {
       object: {
         dating: '',
+        modulePreset: {
+          coordinates: false,
+          dating: false,
+          findTypes: false,
+          general: false,
+          id: false,
+          objectDescriber: false,
+          plane: false,
+          positionslist: false,
+          title: false,
+          visibility: false,
+        }
       },
       pathNames: null,
       id: null,
     }
   },
 
-  async created() {
+  async beforeCreate() {
     await fromOfflineDB.syncLocalDBs();
     const path = this.$route.path
     this.getPathAndID(path)
     this.object = await fromOfflineDB.getObject(this.id, this.pathNames.db, this.pathNames.os);
+    console.log(this.object.modulePreset)
+  },
+
+  async created() {
   },
   
   methods: {
@@ -101,6 +117,7 @@ export default {
     },
 
     sendData(data) {
+      /* Send data back to PlaceForm.vue */
       this.$emit("dataToPlaceForm", data)
     }
   }
