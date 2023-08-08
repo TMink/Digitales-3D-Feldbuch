@@ -612,7 +612,7 @@ export default {
     },
 
     saveModulePresetToCookies() {
-      if (this.curModulePreset != undefined) {
+      if ( this.curModulePreset ) {
         VueCookies.set('placeModulesPreset', this.curModulePreset.id);
       }
     },

@@ -2,36 +2,29 @@
   <v-container fluid> 
     <v-row>
       <v-col>
+ <!-- 
+        <ModuleGeneral
+          @dataToModelViewer="sendData($event)"/>
 
-        <v-window-item v-if="object.modules.general">
-          <ModuleGeneral/>
-        </v-window-item>
+        <ModuleCoordinates
+          @dataToModelViewer="sendData($event)"/>
+        
+        <ModuleVisibility
+          @dataToModelViewer="sendData($event)"/>
+        
+        <ModuleFindTypes
+          @dataToModelViewer="sendData($event)"/>
+        
+        <ModulePlane
+          @dataToModelViewer="sendData($event)"/>
 
-        <v-window-item v-if="object.modules.coordinates">
-          <ModuleCoordinates/>
-        </v-window-item>
+        <ModulePositionsList
+          @dataToModelViewer="sendData($event)"/>
         
-        <v-window-item v-if="object.modules.visibility">
-          <ModuleVisibility/>
-        </v-window-item>
-        
-        <v-window-item v-if="object.modules.findTypes">
-          <ModuleFindTypes/>
-        </v-window-item>
-        
-        <v-window-item v-if="object.modules.plane">
-          <ModulePlane/>
-        </v-window-item>
-        
-        <v-window-item v-if="object.modules.dating">
-          <ModuleDating
-            :dating="object.dating"
-            @dating="object.dating"/>
-        </v-window-item>
-        
-        <v-window-item v-if="object.modules.positionList">
-          <ModulePositionsList/>
-        </v-window-item>
+        <ModuleDating
+          :dating="object.dating"
+          @dataToModelViewer="sendData($event)"/>
+-->
 
       </v-col>
     </v-row>
@@ -53,7 +46,7 @@ import { fromOfflineDB } from '../ConnectionToOfflineDB';
 import { useWindowSize } from 'vue-window-size';
 
 export default {
-  name: 'PlaceCreation',
+
   components: {
     ModuleGeneral,
     ModuleCoordinates,
@@ -64,18 +57,7 @@ export default {
     ModulePositionsList,
   },
 
-  watch: {
-		'dating': {
-			handler: function() { 
-				this.$emit("dating");
-			}
-		}
-	},
-  
-  props: {
-    object_id: String,
-    object_type: String,
-  },
+  emits: ['dataToPlaceForm'],
   
   setup() {
     const { width, height } = useWindowSize();
@@ -85,32 +67,41 @@ export default {
     };
   },
   
-  /**
-   * Reactive Vue.js data
-   */
   data() {
     return {
-      object: null,
+      object: {
+        dating: '',
+      },
+      pathNames: null,
+      id: null,
     }
-  },
-
-  watcher: {
-    'dating': {
-			handler: function() {
-				this.$emit("dating");
-			}
-		}
   },
 
   async created() {
     await fromOfflineDB.syncLocalDBs();
-    await this.updateObject();
+    const path = this.$route.path
+    this.getPathAndID(path)
+    this.object = await fromOfflineDB.getObject(this.id, this.pathNames.db, this.pathNames.os);
   },
   
   methods: {
     async updateObject() {
-      this.object = await fromOfflineDB.getObject(this.object_id,
-                        this.object_type, this.object_type.toLowerCase());
+      this.object = await fromOfflineDB.getObject(this.id, this.pathNames.db, this.pathNames.os);
+      console.log(this.object)
+    },
+
+    getPathAndID(path) {
+      this.id = path.split("/", 3)[2]
+      const lowerName = path.substring(
+        path.indexOf("/") + 1, 
+        path.lastIndexOf("/")
+      );
+      const upperName = lowerName.charAt(0).toUpperCase() + lowerName.slice(1);
+      this.pathNames = { db: upperName, os: lowerName }
+    },
+
+    sendData(data) {
+      this.$emit("dataToPlaceForm", data)
     }
   }
 };
