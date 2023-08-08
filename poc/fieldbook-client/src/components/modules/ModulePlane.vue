@@ -26,11 +26,7 @@ export default {
   },
   emits: ['view'],
   setup() {
-    const { width, height } = useWindowSize();
-    return {
-      windowWidth: width,
-      windowHeight: height,
-    };
+    
   },
   /**
    * Reactive Vue.js data
