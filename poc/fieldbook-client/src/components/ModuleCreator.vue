@@ -182,8 +182,8 @@ export default {
       var alreadyExists = false;
 
       allPresets.forEach(existingPreset => {
+        alreadyExists = true;
         for (const key of keys1) {
-          alreadyExists = true;
           if (newPreset[key] !== existingPreset[key]) {
             alreadyExists = false;
             break;
