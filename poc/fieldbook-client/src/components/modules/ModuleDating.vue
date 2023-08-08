@@ -1,11 +1,8 @@
 <template>
-	<v-col lg="6">
-		<!-- CARD 3 DATINGS -->
-		<v-card class="pa-4">
-			<v-combobox counter class="pt-4" color="primary" :items="datings" :label="$t('dating')" v-model="dating">
-			</v-combobox>
-		</v-card>
-	</v-col>
+	<v-card class="pa-2">
+		<v-combobox hide-details counter class="pt-0" color="primary" :items="datings" :label="$t('dating')" v-model="dating">
+		</v-combobox>
+	</v-card>
 </template>
 
 <script>
@@ -31,7 +28,7 @@
       "dating": {
         handler: function() {
           if ( this.dating != null ) {
-            console.log("Hey")
+            /* Send data back to ModelViewer.vue */
             this.$emit("dataToModelViewer", [ 'dating', this.dating ]);
           }
         }
@@ -41,18 +38,10 @@
 		async created() {
 			this.datings = JSON.parse(import.meta.env.VITE_DATINGS);
 		},
-    
-		mounted() {
-      this.dating = this.datingProp;
-      this.updatePlace();
-		},
-    
-    methods: {
-      async updatePlace() {
-        console.log("Test")
-      },
 
-    }
+    updated() {
+      this.dating = this.datingProp;
+    },
 		
 	}
 
