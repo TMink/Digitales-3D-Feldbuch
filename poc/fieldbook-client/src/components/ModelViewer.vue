@@ -2,17 +2,14 @@
   <v-container fluid> 
     <v-row>
       <v-col>
-        
-        <!--
+ 
         <v-card>
           <ModuleGeneral/>
         </v-card>
-      
-        
+
         <v-card>
           <ModuleCoordinates/>
         </v-card>
-        
         
         <v-card>
           <ModuleVisibility/>
@@ -21,22 +18,18 @@
         <v-card>
           <ModuleFindTypes/>
         </v-card>
-
+        
         <v-card>
           <ModulePlane/>
         </v-card>
-        -->
 
         <v-card>
           <ModuleDating/>
         </v-card>
 
-        <!--
-
         <v-card>
           <ModulePositionsList/>
         </v-card>
-        -->
 
       </v-col>
     </v-row>

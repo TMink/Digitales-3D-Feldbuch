@@ -87,20 +87,57 @@ import { fromOfflineDB } from '../../ConnectionToOfflineDB';
 
 export default {
 
+  name: 'PlaceCreation',
+  components: {
+
+  },
+  emits: ['view'],
+  setup() {
+    const { width, height } = useWindowSize();
+    return {
+      windowWidth: width,
+      windowHeight: height,
+    };
+  },
+  /**
+   * Reactive Vue.js data
+   */
   data() {
 
     return {
+      tab: null,
       place: {
+        id: '',
+        activityID: '',
         placeNumber: '',
+
+        code: '',         //can maybe be removed
         title: [],
+        datingCode: '',   //can maybe be removed
+        dating: '',
+        noFinding: false,
+        restFinding: false,
         right: '',
         rightTo: '',
         up: '',
         upTo: '',
         depthTop: '',
         depthBot: '',
+        plane: '',
+        profile: '',
+        visibility: '',
+        drawing: '',
+        description: '',
+        planum: '',
+        editor: '',
         date: '',
-        positions: []
+
+        positions: [],
+        images: [],
+        models: [],
+        lines: [],
+        lastChanged: '',
+        lastSync: ''
       },
       headers: [
         {
@@ -118,9 +155,18 @@ export default {
         { title: this.$tc('title', 2), align: 'start', key: 'title' },
         { title: this.$t('date'), align: 'start', key: 'date' },
       ],
+      searchQuery: '',
+      hoveredRow: -1,
       positions: null,
       titles: [],
       datings: [],
+      is_required: [v => !!v || 'Pflichtfeld'],
+      tickLabels: {
+        3: this.$t('veryGood'),
+        2: this.$t('good'),
+        1: this.$t('moderate'),
+        0: this.$t('bad'),
+      },
       hasUnsavedChanges: false,
       componentHasLoaded: false,
     }
@@ -181,7 +227,19 @@ export default {
   },
 
   computed: {
-   
+    getTableHeight() {
+      // Calculate the required table height based on the number of items
+      const numberOfRows = this.positions.length > 0 ? this.positions.length : 1;
+      const headerHeight = 56;
+      const rowHeight = 73;
+      const totalTableHeight = numberOfRows * rowHeight + headerHeight;
+
+      if (totalTableHeight > (this.windowHeight - 350)) {
+        return this.windowHeight - 350;
+      }
+
+      return totalTableHeight + "px";
+    },
   },
 
   methods: {

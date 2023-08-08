@@ -1,5 +1,6 @@
 <template>
     <v-col lg="6">
+        <v-card height="10em">
             <v-row class="pl-4 pb-4 justify-center">
                 <v-col cols="6">
                     <v-tooltip 
@@ -33,6 +34,7 @@
                     </v-tooltip>
                 </v-col>
             </v-row>
+        </v-card>
     </v-col>
 </template>
 
@@ -50,7 +52,11 @@ export default {
   },
   emits: ['view'],
   setup() {
-    
+    const { width, height } = useWindowSize();
+    return {
+      windowWidth: width,
+      windowHeight: height,
+    };
   },
   /**
    * Reactive Vue.js data
