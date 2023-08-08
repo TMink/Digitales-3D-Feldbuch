@@ -1,5 +1,5 @@
 <template>
-    <v-footer app>
+    <v-footer style="z-index: 1;" app>
         <v-row>
             <v-col icon class="text-center pa-0">
                 {{ new Date().getFullYear() }} — <strong>TH-Köln</strong>
