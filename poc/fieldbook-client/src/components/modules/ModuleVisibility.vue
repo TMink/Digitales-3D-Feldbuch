@@ -24,6 +24,7 @@
 /**
  * Methods overview:
  */
+import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../../ConnectionToOfflineDB';
 
 export default {
@@ -34,11 +35,7 @@ export default {
   },
   emits: ['view'],
   setup() {
-    const { width, height } = useWindowSize();
-    return {
-      windowWidth: width,
-      windowHeight: height,
-    };
+    
   },
   /**
    * Reactive Vue.js data
