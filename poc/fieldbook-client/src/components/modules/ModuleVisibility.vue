@@ -1,5 +1,5 @@
 <template>
-    <v-card height="10em">
+    <v-card class="pa-4" height="12em">
         <v-card-text>
             <h2 class="text-h6 font-weight-medium pb-2">
                 {{ $t('visibility') }}

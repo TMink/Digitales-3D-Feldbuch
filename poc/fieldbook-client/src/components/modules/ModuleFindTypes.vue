@@ -1,40 +1,47 @@
 <template>
-  <v-col lg="6">
-    <v-row class="pl-4 pb-4 justify-center">
-      <v-col cols="6">
-        <v-tooltip 
-          :text="$t('noFindDescr')" 
-          location="bottom">
-          <template v-slot:activator="{ props }">
-            <v-checkbox 
-              v-bind="props" 
-              color="primary" 
-              persistent-hint 
-              :label="$t('noFind')" 
-              v-model="place.noFinding">
-            </v-checkbox>
-          </template>
-        </v-tooltip>
-      </v-col>
+  <v-card class="pa-4" height="12em">
+    <v-card-text>
+      <h2 class="text-h6 font-weight-medium pb-2">
+        {{ $t('findType') }}
+      </h2>
+    </v-card-text>
+    <v-col lg="6">
+      <v-row class="pl-4 pb-4 justify-center">
+        <v-col cols="6">
+          <v-tooltip 
+            :text="$t('noFindDescr')" 
+            location="bottom">
+            <template v-slot:activator="{ props }">
+              <v-checkbox 
+                v-bind="props" 
+                color="primary" 
+                persistent-hint 
+                :label="$t('noFind')" 
+                v-model="place.noFinding">
+              </v-checkbox>
+            </template>
+          </v-tooltip>
+        </v-col>
 
-      <v-col cols="6">
-        <v-tooltip 
-          :text="$t('restFindDescr')" 
-          location="bottom">
-          <template v-slot:activator="{ props }">
-            <v-checkbox 
-              v-bind="props" 
-              persistent-hint 
-              color="secondary" 
-              :label="$t('restFind')"
-              v-model="place.restFinding">
-            </v-checkbox>
-          </template>
-        </v-tooltip>
-      </v-col>
-    </v-row>
+        <v-col cols="6">
+          <v-tooltip 
+            :text="$t('restFindDescr')" 
+            location="bottom">
+            <template v-slot:activator="{ props }">
+              <v-checkbox 
+                v-bind="props" 
+                persistent-hint 
+                color="secondary" 
+                :label="$t('restFind')"
+                v-model="place.restFinding">
+              </v-checkbox>
+            </template>
+          </v-tooltip>
+        </v-col>
+      </v-row>
 
-  </v-col>
+    </v-col>
+  </v-card>
 </template>
 
 <script>
