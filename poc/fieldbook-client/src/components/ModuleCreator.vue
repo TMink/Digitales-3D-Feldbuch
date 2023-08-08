@@ -1,28 +1,25 @@
 <template>
   <v-dialog style="z-index: 2;" max-width="1000px">
+    <ConfirmDialog ref="confirm" />
     <v-card class="pa-4">
       
       <v-card-title>MODULE MANAGEMENT - {{ objectTypeProp.toUpperCase() }}</v-card-title>
       <v-row no-gutters>
-        <v-col cols="5">
-          <v-card-title>
-            Single Modules
-          </v-card-title>
-          <v-card outline>
-            <v-row no-gutters>
-              <v-col>
-                <v-text-field label="Title" v-model="curPreset.title"></v-text-field>
-                <v-checkbox hide-details label="General" v-model="curPreset.general"></v-checkbox>
-                <v-checkbox hide-details label="PositionsList" v-model="curPreset.positionslist"></v-checkbox>
-                <v-checkbox hide-details label="Coordinates" v-model="curPreset.coordinates"></v-checkbox>
-                <v-checkbox hide-details label="Visibility" v-model="curPreset.visibility"></v-checkbox>
-                <v-checkbox hide-details label="FindTypes" v-model="curPreset.findTypes"></v-checkbox>
-                <v-checkbox hide-details label="Plane" v-model="curPreset.plane"></v-checkbox>
-                <v-checkbox hide-details label="Dating" v-model="curPreset.dating"></v-checkbox>
-              </v-col>
-            </v-row>
-            <v-btn color="primary" v-on:click="saveModulePreset">SAVE Preset</v-btn>
-          </v-card>
+        <v-col cols="6">
+          <v-card-subtitle>
+            Module Selection
+          </v-card-subtitle>
+          <v-window class="ma-2">
+
+            <v-text-field hide-details label="Title" class="pr-6" v-model="curPreset.title"></v-text-field>
+            <v-checkbox hide-details label="General" v-model="curPreset.general"></v-checkbox>
+            <v-checkbox hide-details label="PositionsList" v-model="curPreset.positionslist"></v-checkbox>
+            <v-checkbox hide-details label="Coordinates" v-model="curPreset.coordinates"></v-checkbox>
+            <v-checkbox hide-details label="Visibility" v-model="curPreset.visibility"></v-checkbox>
+            <v-checkbox hide-details label="FindTypes" v-model="curPreset.findTypes"></v-checkbox>
+            <v-checkbox hide-details label="Plane" v-model="curPreset.plane"></v-checkbox>
+            <v-checkbox hide-details label="Dating" v-model="curPreset.dating"></v-checkbox>
+          </v-window>
         </v-col>
 
         <v-divider vertical></v-divider>
@@ -43,6 +40,21 @@
                       <v-list-item-title>
                         {{ item.raw.title || '-' }}
                       </v-list-item-title>
+                    </td>  
+                      <v-btn 
+                        class="mx-2 " 
+                        color="primary" 
+                        density="compact" 
+                        v-on:click="editPreset(item.raw)">
+                        <v-icon>mdi-pencil</v-icon>
+                      </v-btn>
+                      <v-btn 
+                        class="mr-2" 
+                        color="error" 
+                        density="compact"
+                        v-on:click="confirmDeletion(item.raw)">
+                        <v-icon>mdi-delete</v-icon>
+                      </v-btn>
                   </v-row>
                 </tr>
               </template>
