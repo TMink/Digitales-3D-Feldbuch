@@ -51,8 +51,7 @@
               <tr 
                 v-on:click="moveToPlace(item.raw.id)"
                 @mouseenter="setHoveredRow(index, true)"
-                @mouseleave="setHoveredRow(index, false)"
-                >
+                @mouseleave="setHoveredRow(index, false)">
                 <!-- PLACE NUMBER -->
                 <td class="py-6" :style="getRowStyle(index)">
                   <v-list-item-title>
@@ -384,6 +383,13 @@ export default {
       moduleCreatorOverlay: false,
     };
   },
+
+  watch: {
+    'showAllInfo': {
+      handler: 'toggleAllInfo',
+    }
+  },
+
   /**
    * Retrieve data from IndexedDB
    */
@@ -391,8 +397,11 @@ export default {
     this.$emit("view", this.$t('overview', { msg: this.$tc('place', 2) }));
     await fromOfflineDB.syncLocalDBs();
     await this.updatePlaces();
-    await this.updateModulePresets();
+    await this.updateModulePresets(); 
+    this.setShowAllInfoSwitch();   
   },
+
+
   computed: {
     /**
      * Returns an array of filtered places based on the search query.
@@ -417,6 +426,7 @@ export default {
         });
       }
     },
+
     getTableHeight() {
       // Calculate the required table height based on the number of items
       const numberOfRows = this.places.length > 0 ? this.places.length : 1;
@@ -433,6 +443,7 @@ export default {
   },
 
   methods: {
+
     /**
      * Get all places from IndexedDB
      */
@@ -541,6 +552,26 @@ export default {
     },
 
     /**
+     * Set the toggleAllInfo switch state depending on VueCookies
+     */
+    setShowAllInfoSwitch() {
+      var showAllCookie = VueCookies.get('showAllPlaceInfo');
+
+      if (showAllCookie == "true") {
+        this.showAllInfo = true;
+      } else {
+        this.showAllInfo = false;
+      }
+    },
+
+    /**
+     * Save the change toogle all info state to cookies
+     */
+    toggleAllInfo() {
+      VueCookies.set('showAllPlaceInfo', this.showAllInfo);
+    },
+
+    /**
      * Escapes special characters in a given string to treat 
      * them as literal characters.
      *
@@ -601,6 +632,7 @@ export default {
         backgroundColor: this.hoveredRow === index ? '#F6F6F6' : 'transparent'
       }
     },
+    
     /**
      * Update the hoveredRow based on the isHovered flag.
      *

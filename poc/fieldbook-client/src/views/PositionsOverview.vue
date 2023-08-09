@@ -327,7 +327,10 @@ export default {
     'curModulePreset': {
       handler: 'saveModulePresetToCookies',
       deep: true,
-    }
+    },
+    'showAllInfo': {
+      handler: 'toggleAllInfo',
+    },
   },
 
   data() {
@@ -394,6 +397,7 @@ export default {
     await fromOfflineDB.syncLocalDBs();
     await this.updatePositions();
     await this.updateModulePresets();
+    this.setShowAllInfoSwitch();
   },
 
   computed: {
@@ -467,6 +471,26 @@ export default {
       }
 
       this.$router.push({ name: 'PositionCreation', params: { positionID: positionID } })
+    },
+
+    /**
+     * Set the toggleAllInfo switch state depending on VueCookies
+     */
+     setShowAllInfoSwitch() {
+      var showAllCookie = VueCookies.get('showAllPosInfo');
+
+      if (showAllCookie == "true") {
+        this.showAllInfo = true;
+      } else {
+        this.showAllInfo = false;
+      }
+    },
+
+    /**
+     * Save the change toogle all info state to cookies
+     */
+    toggleAllInfo() {
+      VueCookies.set('showAllPosInfo', this.showAllInfo);
     },
 
     /**
