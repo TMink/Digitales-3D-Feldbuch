@@ -1,5 +1,6 @@
 export default {
   // Words
+  moduleManagement: "Module Management",
   findType: "Find Type",
   generalInformation: "General Information",
   coordinates: "Coordinates",
