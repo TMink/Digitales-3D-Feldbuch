@@ -48,7 +48,7 @@
   export default {
 		
 		props: {
-			object: Object,
+			objectProp: Object,
 		},
 
     emits: ['dataToModelViewer'],

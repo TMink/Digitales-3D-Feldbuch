@@ -141,10 +141,6 @@ export default {
     },
 
     async updatePositions() {
-      //if (this.placeProp.length > 0) {
-      //  this.positions = await fromOfflineDB.getAllObjectsFromArray(this.placeProp, 'Positions', 'positions');
-      //}
-
       this.positions = await fromOfflineDB.getAllObjectsWithID(this.placeProp.id, 'Place', 'Positions', 'positions');
     },
 

@@ -12,7 +12,7 @@
             hide-details 
             :label="$t('right') + ' *'" 
             :rules="is_required"
-            v-model="position.right" 
+            v-model="object.right" 
             @keypress="filterNonNumeric(event)"
             :hint="$tc('please_input', 2, { msg: 'Rechtswert' })">
           </v-text-field>
@@ -26,7 +26,7 @@
             color="primary" 
             :label="$t('up') + ' *'" 
             :rules="is_required" 
-            v-model="position.up"
+            v-model="object.up"
             @keypress="filterNonNumeric(event)"
             :hint="$tc('please_input', 2, { msg: 'Hochwert' })">
           </v-text-field>
@@ -40,7 +40,7 @@
             :label="$t('height') + ' *'" 
             color="primary" 
             :rules="is_required" 
-            v-model="position.height"
+            v-model="object.height"
             @keypress="filterNonNumeric(event)"
             :hint="$tc('please_input', 2, { msg: 'Höhe' })">
           </v-text-field>
@@ -147,6 +147,8 @@ export default {
           up: null,
           rightTo: null,
           right: null,
+
+          height: null,
         },
 			}
 		},
@@ -197,6 +199,30 @@ export default {
           if ( this.object.depthTop != null ) {
             /* Send data back to ModelViewer.vue */
             this.$emit("dataToModelViewer", [ 'depthTop', this.object.depthTop ]);
+          }
+        }
+      },
+      "object.right": {
+        handler: function() {
+          if ( this.object.right != null && this.type == 'positions' ) {
+            /* Send data back to ModelViewer.vue */
+            this.$emit("dataToModelViewer", [ 'right', this.object.right ]);
+          }
+        }
+      },
+      "object.up": {
+        handler: function() {
+          if ( this.object.up != null && this.type == 'positions' ) {
+            /* Send data back to ModelViewer.vue */
+            this.$emit("dataToModelViewer", [ 'up', this.object.up ]);
+          }
+        }
+      },
+      "object.height": {
+        handler: function() {
+          if ( this.object.height != null && this.type == 'positions' ) {
+            /* Send data back to ModelViewer.vue */
+            this.$emit("dataToModelViewer", [ 'height', this.object.height ]);
           }
         }
       }

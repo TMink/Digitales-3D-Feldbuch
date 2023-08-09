@@ -337,22 +337,28 @@ export default {
       position: {
         id: '',
         placeID: '',
-        positionNumber: '',
-        subNumber: '',
+        dating: '',
+        isSeparate: false,
+        
+        /* Coordinates */
         right: '',
         up: '',
         height: '',
-        count: '',
-        weight: '',
-        material: '',
-        title: '',
+        
+        /* General */
         description: '',
-        dating: '',
         addressOf: '',
         date: '',
+        title: '',
+        positionNumber: '',
         hasSubNumber: false,
-        isSeparate: false,
-
+        subNumber: '',
+        
+        /* ObjectDescriber */
+        material: '',
+        weight: '',
+        count: '',
+        
         images: [],
         models: [],
         lastChanged: Date.now(),
@@ -424,6 +430,41 @@ export default {
      */
     getEmitedData(data) {
       switch (data[0]) {
+        /* Module: Coordinates */
+        case 'right':
+          this.position.right = data[1];
+          break;
+        case 'up':
+          this.position.up = data[1];
+          break;
+        case 'height':
+          this.position.height = data[1];
+          break;
+
+        /* Module: General */
+        case 'description':
+          this.position.description = data[1];
+          break;
+        case 'addressOf':
+          this.position.addressOf = data[1];
+          break;
+        case 'date':
+          this.position.date = data[1];
+          break;
+        case 'title':
+          this.position.title = data[1];
+          break;
+        case 'positionNumber':
+          this.position.positionNumber = data[1];
+          break;
+        case 'hasSubNumber':
+          this.position.hasSubNumber = data[1];
+          break;
+        case 'subNumber':
+          this.position.subNumber = data[1];
+          break;
+
+        /* Module: ObjectDescriber */
         case 'material':
           this.position.material = data[1];
           break;

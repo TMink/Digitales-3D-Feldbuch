@@ -169,34 +169,43 @@ export default {
         id: '',
         activityID: '',
         placeNumber: '',
-
         code: '',         //can maybe be removed
-        title: [],
         datingCode: '',   //can maybe be removed
-        dating: '',
-        noFinding: false,
-        restFinding: false,
+        profile: '',
+        drawing: '',
+        positions: [],
+        images: [],
+        models: [],
+        lines: [],    
+        lastChanged: '',
+        lastSync: '',
+        
+        /* Coordinates */
         right: '',
         rightTo: '',
         up: '',
         upTo: '',
         depthTop: '',
         depthBot: '',
-        plane: '',
-        profile: '',
-        visibility: '',
-        drawing: '',
+        
+        /* Dating */
+        dating: '',
+        
+        /* FindTypes */
+        noFinding: false,
+        restFinding: false,
+        
+        /* General */
         description: '',
-        planum: '',
         editor: '',
         date: '',
+        title: [],
 
-        positions: [],
-        images: [],
-        models: [],
-        lines: [],    
-        lastChanged: '',
-        lastSync: ''
+        /* Plane */
+        plane: '',
+
+        /* Visibility */
+        visibility: '',
       },
       headers: [
         {
@@ -305,12 +314,7 @@ export default {
 
     getEmitedData(data) {
       switch (data[0]) {
-        case 'dating':
-          this.place.dating = data[1];
-          break;
-        case 'visibility':
-          this.place.visibility = data[1];
-          break;
+        /* Module: Coordinates */
         case 'right':
           this.place.right = data[1];
           break;
@@ -323,18 +327,49 @@ export default {
         case 'upTo':
           this.place.upTo = data[1];
           break;
-        case 'depthBot':
-          this.place.depthBot = data[1];
-          break;
         case 'depthTop':
           this.place.depthTop = data[1];
           break;
+        case 'depthBot':
+          this.place.depthBot = data[1];
+          break;
+
+        /* Module: Dating */
+        case 'dating':
+          this.place.dating = data[1];
+          break;
+
+        /* Module: FindTypes */
         case 'noFinding':
           this.place.noFinding = data[1];
           break;
         case 'restFinding':
           this.place.restFinding = data[1];
           break;
+
+        /* Module: General */
+        case 'description':
+          this.place.description = data[1];
+          break;
+        case 'editor':
+          this.place.editor = data[1];
+          break;
+        case 'date':
+          this.place.date = data[1];
+          break;
+        case 'title':
+          this.place.title = data[1];
+          break;
+
+        /* Module: Plane */
+        case 'plane':
+          this.place.plane = data[1];
+
+        /* Module: Visibility */
+        case 'visibility':
+          this.place.visibility = data[1];
+          break;
+        
         default:
           console.log( error )
       }
