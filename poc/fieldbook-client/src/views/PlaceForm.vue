@@ -29,8 +29,7 @@
           <!-- Tab item 'GENERAL' -->
           <v-window-item value="one">
             <ModelViewer
-              :object_id="place.id"
-              :updateListFirstProp="place.testBool"
+              :object_id="place.id"  
               object_type="Places"
               @dataToPlaceForm="getEmitedData($event)"/>
           </v-window-item>
@@ -94,8 +93,8 @@
 
               <AddPosition 
                 :positions_prop="positions" 
-                @updatePositions="updatePositions()"
-                @updatePlace="updatePlace2()"/>
+                @updatePlace="updatePlace()" 
+                @updatePositions="updatePositions()" />
 
             </v-form>
           </v-window-item>
@@ -204,9 +203,6 @@ export default {
 
         /* Plane */
         plane: '',
-
-        /* PositionsList */
-        testBool: false,
 
         /* Visibility */
         visibility: '',
@@ -317,73 +313,65 @@ export default {
   methods: {
 
     getEmitedData(data) {
-      if ( data[1] || data[1] === false) {
-        switch (data[0]) {
-          /* Module: Coordinates */
-          case 'right':
-            this.place.right = data[1];
-            break;
-          case 'rightTo':
-            this.place.rightTo = data[1];
-            break;
-          case 'up':
-            this.place.up = data[1];
-            break;
-          case 'upTo':
-            this.place.upTo = data[1];
-            break;
-          case 'depthTop':
-            this.place.depthTop = data[1];
-            break;
-          case 'depthBot':
-            this.place.depthBot = data[1];
-            break;
-  
-          /* Module: Dating */
-          case 'dating':
-            this.place.dating = data[1];
-            break;
-  
-          /* Module: FindTypes */
-          case 'noFinding':
-            this.place.noFinding = data[1];
-            break;
-          case 'restFinding':
-            this.place.restFinding = data[1];
-            break;
-  
-          /* Module: General */
-          case 'description':
-            this.place.description = data[1];
-            break;
-          case 'editor':
-            this.place.editor = data[1];
-            break;
-          case 'date':
-            this.place.date = data[1];
-            break;
-          case 'title':
-            this.place.title = data[1];
-            break;
-  
-          /* Module: Plane */
-          case 'plane':
-            this.place.plane = data[1];
-            break;
+      switch (data[0]) {
+        /* Module: Coordinates */
+        case 'right':
+          this.place.right = data[1];
+          break;
+        case 'rightTo':
+          this.place.rightTo = data[1];
+          break;
+        case 'up':
+          this.place.up = data[1];
+          break;
+        case 'upTo':
+          this.place.upTo = data[1];
+          break;
+        case 'depthTop':
+          this.place.depthTop = data[1];
+          break;
+        case 'depthBot':
+          this.place.depthBot = data[1];
+          break;
 
-          /* Module: PositionList */
-          case 'resetBool':
-            this.place.testBool = data[1];
-            break;
-  
-          /* Module: Visibility */
-          case 'visibility':
-            this.place.visibility = data[1];
-            break;
-          
-          default:
-            console.log( error )
-        }
+        /* Module: Dating */
+        case 'dating':
+          this.place.dating = data[1];
+          break;
+
+        /* Module: FindTypes */
+        case 'noFinding':
+          this.place.noFinding = data[1];
+          break;
+        case 'restFinding':
+          this.place.restFinding = data[1];
+          break;
+
+        /* Module: General */
+        case 'description':
+          this.place.description = data[1];
+          break;
+        case 'editor':
+          this.place.editor = data[1];
+          break;
+        case 'date':
+          this.place.date = data[1];
+          break;
+        case 'title':
+          this.place.title = data[1];
+          break;
+
+        /* Module: Plane */
+        case 'plane':
+          this.place.plane = data[1];
+
+        /* Module: Visibility */
+        case 'visibility':
+          this.place.visibility = data[1];
+          break;
+        
+        default:
+          console.log( error )
       }
     },
 
@@ -396,19 +384,10 @@ export default {
       this.place = data;
     },
 
-    async updatePlace2() {
-      const currentPlace = VueCookies.get('currentPlace');
-      const data = await fromOfflineDB.getObject(currentPlace, 'Places', 'places');
-      const rawPositions = toRaw(this.positions)
-      data.positions = rawPositions;
-      await fromOfflineDB.updateObject( data, 'Places', 'places' )
-    },
-    
     /**
      * Update reactive Vue.js positions data
      */
     async updatePositions() {
-      this.place.testBool = true;
       this.positions = await fromOfflineDB.getAllObjectsWithID(this.place.id, 'Place', 'Positions', 'positions');
     },
 
