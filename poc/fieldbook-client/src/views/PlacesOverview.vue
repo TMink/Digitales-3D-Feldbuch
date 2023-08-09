@@ -288,10 +288,12 @@
     <v-row class="align-center">
       <v-spacer></v-spacer>
       <AddButton v-on:click="addPlace()"/>
-      <v-btn @click="moduleCreatorOverlay = !moduleCreatorOverlay">
+      <v-btn 
+        @click="moduleCreatorOverlay = !moduleCreatorOverlay"
+        color="primary">
+        <v-icon>mdi-tune-vertical</v-icon>
         <v-row no-gutters>
           <v-col>
-            Module Presets
             <v-card-subtitle>
               {{  curModulePreset.title }}
             </v-card-subtitle>
