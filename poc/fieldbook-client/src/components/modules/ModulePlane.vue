@@ -1,8 +1,13 @@
 <template>
-  <v-col lg="6">
-    <v-card class="pa-4" height="12em">
+  <v-col lg="6" class="pt-0">
+    <v-card class="pa-4">
+      <v-card-text>
+        <h2 class="text-h6 font-weight-medium pb-2">
+          {{ $t('plane') }}
+        </h2>
+      </v-card-text>
         <v-textarea 
-            rows="4" 
+            rows="2" 
             counter 
             color="primary" 
             class="ma-1 px-2 pt-2" 
