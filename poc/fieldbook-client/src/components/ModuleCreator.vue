@@ -84,8 +84,8 @@
       <v-divider></v-divider>
       <v-row no-gutter class="align-center text-center">
         <v-col cols="6">
-          <v-btn color="primary" v-show="!editPresetForm" v-on:click="saveModulePreset">SAVE Preset</v-btn>
-          <v-btn color="primary" v-show="editPresetForm" v-on:click="saveModulePreset">SAVE edited Preset</v-btn>
+          <v-btn color="primary" v-show="!editPresetForm" v-on:click="saveNewPreset">SAVE Preset</v-btn>
+          <v-btn color="primary" v-show="editPresetForm" v-on:click="saveEditedPreset">SAVE edited Preset</v-btn>
         </v-col>
         <v-divider vertical></v-divider>
         <v-col cols="6">
@@ -93,7 +93,7 @@
             Selected Preset
           </v-card-subtitle>
           <v-card-title class="pa-0">
-            {{ selectedPreset.title }}
+            {{ selectedPreset.title || '-'}}
           </v-card-title>
         </v-col>
       </v-row>
@@ -138,7 +138,7 @@ export default {
       objectDescribers: false,
     },
     selectedPreset: {
-      title: '-',
+      title: '',
     },
     modulePresets: [],
     hoveredRow: -1,
@@ -155,7 +155,7 @@ export default {
       this.modulePresets = await fromOfflineDB.getAllObjects('ModulePresets', this.objectTypeProp);
     },
 
-    async saveModulePreset() {
+    async saveNewPreset() {
       var rawPreset = toRaw(this.curPreset);
 
       //only save the preset if it doesn't already exist
@@ -166,6 +166,23 @@ export default {
         
         await fromOfflineDB.addObject(rawPreset, 'ModulePresets', this.objectTypeProp);
         await this.updateModulePresets();
+        this.$root.vtoast.show({ message: 'Successfully added the preset'})
+        this.$emit('updateModulePresets');
+      } else {
+        this.$root.vtoast.show({ message: 'A preset with the same modules already exists', color: 'error' })
+      }
+    },
+
+    async saveEditedPreset() {
+      var rawPreset = toRaw(this.selectedPreset);
+
+      //only save the preset if it doesn't already exist
+      var presetExists = await this.presetAlreadyExists(rawPreset);
+
+      if (!presetExists) {
+        await fromOfflineDB.updateObject(rawPreset, 'ModulePresets', this.objectTypeProp);
+        await this.updateModulePresets();
+        this.$root.vtoast.show({ message: 'Successfully saved the preset'})
         this.$emit('updateModulePresets');
       } else {
         this.$root.vtoast.show({ message: 'A preset with the same modules already exists' })
