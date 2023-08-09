@@ -387,7 +387,6 @@ export default {
             var changeCreated = await fromOfflineDB.getObject(change.id, 'Changes', 'created')
             var changeDeleted = await fromOfflineDB.getObject(change.id, 'Changes', 'deleted')
 
-            console.log(change)
             if (changeCreated != undefined) {
                 fromOfflineDB.deleteObject(change, 'Changes', 'created');
             } else if (changeDeleted != undefined) {
