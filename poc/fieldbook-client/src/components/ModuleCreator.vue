@@ -5,6 +5,8 @@
       
       <v-card-title>MODULE MANAGEMENT - {{ objectTypeProp.toUpperCase() }}</v-card-title>
       <v-row no-gutters>
+
+        <!-- NEW PRESET -->
         <v-col cols="6" v-show="!editPresetForm">
           <v-card-subtitle>
             Add new Preset
@@ -62,6 +64,8 @@
           </v-window>
         </v-col>
 
+
+        <!-- EDIT PRESET -->
         <v-col cols="6" v-show="editPresetForm">
           <v-card-subtitle>
             Edit Module
@@ -231,10 +235,17 @@ export default {
   },
 
   methods: {
+    /**
+     * Get all module presets from IndexedDB
+     */
     async updateModulePresets() {
       this.modulePresets = await fromOfflineDB.getAllObjects('ModulePresets', this.objectTypeProp);
     },
 
+    /**
+     * Saves a new preset to IndexedDB
+     * (if no other similar preset exists)
+     */
     async saveNewPreset() {
       var rawPreset = toRaw(this.curPreset);
 
@@ -254,6 +265,10 @@ export default {
       }
     },
 
+    /**
+     * Saves an edited preset to IndexedDB
+     * (if no other similar preset exists)
+     */
     async saveEditedPreset() {
       var rawPreset = toRaw(this.selectedPreset);
 
@@ -301,7 +316,7 @@ export default {
     },
 
     /**
-     *  Routes to the PositionForm for the chosen positionID
+     * Routes to the PositionForm for the chosen positionID
      * @param {String} positionID 
      */
     setModulePreset(item) {
@@ -315,6 +330,9 @@ export default {
       this.$emit('updateModulePresets');
     },
 
+    /**
+     * Opens the preset editing input fields
+     */
     editPreset(object) {
       this.editPresetForm = true;
       this.selectedPreset = toRaw(object);
@@ -373,6 +391,7 @@ export default {
         padding: '8px 16px'
       };
     },
+    
     /**
      * Update the hoveredRow based on the isHovered flag.
      *
