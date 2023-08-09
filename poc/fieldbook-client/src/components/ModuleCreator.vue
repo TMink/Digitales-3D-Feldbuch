@@ -11,14 +11,54 @@
           </v-card-subtitle>
           <v-window class="ma-2">
             <v-text-field hide-details label="Title" class="pr-6" v-model="curPreset.title"></v-text-field>
-            <v-checkbox hide-details label="General" v-model="curPreset.general"></v-checkbox>
-            <v-checkbox hide-details label="PositionsList" v-model="curPreset.positionslist"></v-checkbox>
-            <v-checkbox hide-details label="Coordinates" v-model="curPreset.coordinates"></v-checkbox>
-            <v-checkbox hide-details label="Visibility" v-model="curPreset.visibility"></v-checkbox>
-            <v-checkbox hide-details label="FindTypes" v-model="curPreset.findTypes"></v-checkbox>
-            <v-checkbox hide-details label="Plane" v-model="curPreset.plane"></v-checkbox>
-            <v-checkbox hide-details label="Dating" v-model="curPreset.dating"></v-checkbox>
-            <v-checkbox hide-details label="Object Describers" v-model="curPreset.objectDescribers"></v-checkbox>
+            <v-checkbox 
+              hide-details 
+              label="General" 
+              v-model="curPreset.general">
+            </v-checkbox>
+            <v-checkbox 
+              hide-details 
+              label="Coordinates" 
+              v-model="curPreset.coordinates">
+            </v-checkbox>
+            <v-checkbox 
+              hide-details 
+              label="Visibility" 
+              v-model="curPreset.visibility">
+            </v-checkbox>
+            <v-checkbox 
+              hide-details 
+              label="Dating" 
+              v-model="curPreset.dating">
+            </v-checkbox>
+
+            <!-- PLACE SPECIFIC -->
+            <v-checkbox 
+              hide-details 
+              label="Plane" 
+              v-if="objectTypeProp == 'places'" 
+              v-model="curPreset.plane">
+            </v-checkbox>
+            <v-checkbox 
+              hide-details 
+              label="FindTypes" 
+              v-if="objectTypeProp == 'places'" 
+              v-model="curPreset.findTypes">
+            </v-checkbox>
+            <v-checkbox 
+              hide-details 
+              label="PositionsList" 
+              v-if="objectTypeProp == 'places'" 
+              v-model="curPreset.positionslist">
+            </v-checkbox>
+
+            <!-- POSITION SPECIFIC -->
+            <v-checkbox 
+              hide-details 
+              label="Object Describers" 
+              v-if="objectTypeProp == 'positions'" 
+              v-model="curPreset.objectDescribers">
+            </v-checkbox>
           </v-window>
         </v-col>
 
@@ -28,14 +68,54 @@
           </v-card-subtitle>
           <v-window class="ma-2">
             <v-text-field hide-details label="Title" class="pr-6" v-model="selectedPreset.title"></v-text-field>
-            <v-checkbox hide-details label="General" v-model="selectedPreset.general"></v-checkbox>
-            <v-checkbox hide-details label="PositionsList" v-model="selectedPreset.positionslist"></v-checkbox>
-            <v-checkbox hide-details label="Coordinates" v-model="selectedPreset.coordinates"></v-checkbox>
-            <v-checkbox hide-details label="Visibility" v-model="selectedPreset.visibility"></v-checkbox>
-            <v-checkbox hide-details label="FindTypes" v-model="selectedPreset.findTypes"></v-checkbox>
-            <v-checkbox hide-details label="Plane" v-model="selectedPreset.plane"></v-checkbox>
-            <v-checkbox hide-details label="Dating" v-model="selectedPreset.dating"></v-checkbox>
-            <v-checkbox hide-details label="Object Describers" v-model="selectedPreset.objectDescribers"></v-checkbox>
+            <v-checkbox 
+              hide-details 
+              label="General" 
+              v-model="selectedPreset.general">
+            </v-checkbox>
+            <v-checkbox 
+              hide-details 
+              label="Coordinates" 
+              v-model="selectedPreset.coordinates">
+            </v-checkbox>
+            <v-checkbox 
+              hide-details 
+              label="Visibility" 
+              v-model="selectedPreset.visibility">
+            </v-checkbox>
+            <v-checkbox 
+              hide-details 
+              label="Dating" 
+              v-model="selectedPreset.dating">
+            </v-checkbox>
+
+            <!-- PLACE SPECIFIC -->
+            <v-checkbox 
+              hide-details 
+              label="Plane" 
+              v-if="objectTypeProp == 'places'" 
+              v-model="selectedPreset.plane">
+            </v-checkbox>
+            <v-checkbox 
+              hide-details 
+              label="FindTypes" 
+              v-if="objectTypeProp == 'places'" 
+              v-model="selectedPreset.findTypes">
+            </v-checkbox>
+            <v-checkbox 
+              hide-details 
+              label="PositionsList" 
+              v-if="objectTypeProp == 'places'" 
+              v-model="selectedPreset.positionslist">
+            </v-checkbox>
+
+            <!-- POSITION SPECIFIC -->
+            <v-checkbox 
+              hide-details 
+              label="Object Describers" 
+              v-if="objectTypeProp == 'positions'" 
+              v-model="selectedPreset.objectDescribers">
+            </v-checkbox>
           </v-window>
         </v-col>
 
@@ -226,7 +306,11 @@ export default {
     setModulePreset(item) {
       let rawPreset = toRaw(item);
       this.selectedPreset = rawPreset;
-      VueCookies.set('placeModulesPreset', rawPreset.id);
+      if (this.objectTypeProp == 'places') {
+        VueCookies.set('placeModulesPreset', rawPreset.id);
+      } else if (this.objectTypeProp == 'positions') {
+        VueCookies.set('positionModulesPreset', rawPreset.id);
+      }
       this.$emit('updateModulePresets');
     },
 

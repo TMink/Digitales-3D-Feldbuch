@@ -378,7 +378,6 @@ export default {
         { title: this.$t('editor'), align: 'start', key: 'editor', width: "50px" },
         { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
       ],
-      modulePresets: [],
       curModulePreset: {
         title: '-',
       },

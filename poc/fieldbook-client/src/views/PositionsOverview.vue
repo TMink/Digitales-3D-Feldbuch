@@ -278,14 +278,15 @@
       <AddPosition 
       :positions_prop="positions" 
       @updatePositions="updatePositions()"/>
-      <v-combobox 
-        hide-details 
-        v-model="curModulePreset"
-        label="Module Presets" 
-        :items="modulePresets">
-      </v-combobox>
       <v-btn @click="moduleCreatorOverlay = !moduleCreatorOverlay">
-        new preset
+        <v-row no-gutters>
+          <v-col>
+            Module Presets
+            <v-card-subtitle>
+              {{  curModulePreset.title }}
+            </v-card-subtitle>
+          </v-col>
+        </v-row>
       </v-btn>
       <v-spacer></v-spacer>
     </v-row>
@@ -379,8 +380,9 @@ export default {
         { title: this.$t('date'), align: 'start', key: 'date' },
         { title: this.$t('isSeparate'), align: 'start', key: 'isSeparate' },
       ],
-      modulePresets: [],
-      curModulePreset: null,
+      curModulePreset: {
+        title: '-',
+      },
       moduleCreatorOverlay: false,
     };
   },
@@ -446,9 +448,12 @@ export default {
     },
 
     async updateModulePresets() {
-      this.modulePresets = await fromOfflineDB.getAllObjects('ModulePresets', 'positions');
-      this.curModulePreset = await fromOfflineDB.getObject(
-          String(VueCookies.get('positionModulesPreset')), 'ModulePresets', 'positions');
+      let curPresetID = VueCookies.get('positionModulesPreset');
+
+      if (curPresetID) {
+        this.curModulePreset = await fromOfflineDB.getObject(
+          curPresetID, 'ModulePresets', 'positions');
+        }
     },
 
     /**
