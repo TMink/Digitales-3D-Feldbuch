@@ -402,7 +402,6 @@ export default {
 
       await fromOfflineDB.updateObject(inputPlace, 'Places', 'places');
       this.hasUnsavedChanges = false;
-      this.$router.push({ name: "PlacesOverview" });
     },
 
     /**
