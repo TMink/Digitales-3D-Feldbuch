@@ -519,7 +519,6 @@ export default {
 
       await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions');
       this.hasUnsavedChanges = false;
-      this.$router.push({ name: "PositionsOverview" });
     },
     /**
      * Opens the confirmation dialog

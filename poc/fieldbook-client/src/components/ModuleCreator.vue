@@ -5,6 +5,8 @@
       
       <v-card-title>{{ $t('moduleManagement') }} - {{ objectTypeProp.toUpperCase() }}</v-card-title>
       <v-row no-gutters>
+
+        <!-- NEW PRESET -->
         <v-col cols="6" v-show="!editPresetForm">
           <v-card-subtitle>
             Add new Preset
@@ -68,6 +70,8 @@
           </v-window>
         </v-col>
 
+
+        <!-- EDIT PRESET -->
         <v-col cols="6" v-show="editPresetForm">
           <v-card-subtitle>
             Edit Module
@@ -222,7 +226,7 @@ export default {
   data: () => ({
     dialog: false,
     curPreset: {
-      title: null,
+      title: '',
 
       general: false,
       coordinates: false,
@@ -251,10 +255,17 @@ export default {
   },
 
   methods: {
+    /**
+     * Get all module presets from IndexedDB
+     */
     async updateModulePresets() {
       this.modulePresets = await fromOfflineDB.getAllObjects('ModulePresets', this.objectTypeProp);
     },
 
+    /**
+     * Saves a new preset to IndexedDB
+     * (if no other similar preset exists)
+     */
     async saveNewPreset() {
       var rawPreset = toRaw(this.curPreset);
 
@@ -268,11 +279,16 @@ export default {
         await this.updateModulePresets();
         this.$root.vtoast.show({ message: 'Successfully added the preset'})
         this.$emit('updateModulePresets');
+        this.clearPresetInputs();
       } else {
         this.$root.vtoast.show({ message: 'A preset with the same modules already exists', color: 'error' })
       }
     },
 
+    /**
+     * Saves an edited preset to IndexedDB
+     * (if no other similar preset exists)
+     */
     async saveEditedPreset() {
       var rawPreset = toRaw(this.selectedPreset);
 
@@ -320,7 +336,7 @@ export default {
     },
 
     /**
-     *  Routes to the PositionForm for the chosen positionID
+     * Routes to the PositionForm for the chosen positionID
      * @param {String} positionID 
      */
     setModulePreset(item) {
@@ -334,10 +350,26 @@ export default {
       this.$emit('updateModulePresets');
     },
 
+    /**
+     * Opens the preset editing input fields
+     */
     editPreset(object) {
       this.editPresetForm = true;
       this.selectedPreset = toRaw(object);
     }, 
+
+    /**
+     * Clears the input fields for new presets
+     */
+    clearPresetInputs() {
+      for (let prop in this.curPreset) {
+        if (prop == 'title') {
+          this.curPreset[prop] = '';
+        } else {
+          this.curPreset[prop] = false;
+        }
+      }
+    },
 
     /**
      * Deletes a selected ModulePreset from IndexedDB
@@ -379,6 +411,7 @@ export default {
         padding: '8px 16px'
       };
     },
+    
     /**
      * Update the hoveredRow based on the isHovered flag.
      *

@@ -459,8 +459,8 @@ export default class ConnectionToOfflineDB {
 
   /**
    * Updates an object from IndexedDB
-   * @param {Int} id
-   *    Key for identifying the object, which will be updated
+   * @param {Int} data
+   *    Data object, which will be updated
    * @param {String} localDBName
    *    Database name
    * @param {String} storeName
