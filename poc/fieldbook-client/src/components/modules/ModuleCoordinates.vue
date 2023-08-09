@@ -180,7 +180,7 @@ export default {
         handler: function() {
           if ( this.object.rightTo != null ) {
             /* Send data back to ModelViewer.vue */
-            this.$emit("dataToModelViewer", [ 'rightTo', this.rightTo ]);
+            this.$emit("dataToModelViewer", [ 'rightTo', this.object.rightTo ]);
           }
         }
       },
@@ -216,22 +216,6 @@ export default {
           }
         }
       },
-      "object.right": {
-        handler: function() {
-          if ( this.object.right != null && this.type == 'positions' ) {
-            /* Send data back to ModelViewer.vue */
-            this.$emit("dataToModelViewer", [ 'right', this.object.right ]);
-          }
-        }
-      },
-      "object.up": {
-        handler: function() {
-          if ( this.object.up != null && this.type == 'positions' ) {
-            /* Send data back to ModelViewer.vue */
-            this.$emit("dataToModelViewer", [ 'up', this.object.up ]);
-          }
-        }
-      },
       "object.height": {
         handler: function() {
           if ( this.object.height != null && this.type == 'positions' ) {
@@ -244,9 +228,6 @@ export default {
 
     created() {
       this.type = this.getType(this.$route.path)
-    },
-
-    updated() {
       this.object = this.objectProp;
     },
 

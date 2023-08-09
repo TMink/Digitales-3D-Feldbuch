@@ -54,7 +54,7 @@
       }
     },
 
-    updated() {
+    created() {
       this.visibility = this.visibilityProp;
     },
 		
