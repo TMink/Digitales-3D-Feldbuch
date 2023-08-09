@@ -20,6 +20,7 @@
           
         <ModulePositionsList v-if='object.modulePreset.positionslist'
           :placeProp="object"
+          :updateListSecondProp="updateListFirstProp"
           @dataToModelViewer="sendData($event)"/>
 
         <ModuleVisibility v-if='object.modulePreset.visibility'
@@ -69,6 +70,10 @@ export default {
 },
 
   emits: ['dataToPlaceForm'],
+
+  props: {
+    updateListFirstProp: Boolean,
+  },
   
   setup() {
     const { width, height } = useWindowSize();
@@ -105,13 +110,11 @@ export default {
     const path = this.$route.path
     this.getPathNamesAndID(path)
     this.object = await fromOfflineDB.getObject(this.id, this.pathNames.db, this.pathNames.os);
-    console.log(this.object.modulePreset)
   },
   
   methods: {
     async updateObject() {
       this.object = await fromOfflineDB.getObject(this.id, this.pathNames.db, this.pathNames.os);
-      console.log(this.object)
     },
 
     getPathNamesAndID(path) {

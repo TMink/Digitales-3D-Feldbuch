@@ -107,6 +107,7 @@ export default {
 
   props: {
     placeProp: Object,
+    updateListSecondProp: Boolean,
   },
 
   data() {
@@ -131,22 +132,29 @@ export default {
         { title: this.$t('date'), align: 'start', key: 'date' },
       ],
       hoveredRow: -1,
+      testBool: false,
     }
   },
 
+  emits: ['dataToModelViewer'],
+
   watch: {
+    'updateListSecondProp': {
+      handler: async function() {
+        await this.updatePositions();
+        this.$emit( "dataToModelViewer", [ 'resetBool', false ] );
+      }
+    },
     'place': {
       handler: 'handlePlaceChange',
       deep: true,
     },
+
   },
 
   async created() {
     await fromOfflineDB.syncLocalDBs();
-  },
-
-  async updated() {
-    await this.updatePositions();
+    this.place = this.placeProp;
   },
 
   methods: {
