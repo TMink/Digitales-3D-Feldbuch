@@ -178,18 +178,24 @@ export default {
       const excludedFields = ['id', 'title'];
       var allPresets = await fromOfflineDB.getAllObjects('ModulePresets', this.objectTypeProp);
 
+      // exclude certain keys from the checks
       const keys1 = Object.keys(newPreset).filter(key => !excludedFields.includes(key));
       var alreadyExists = false;
 
-      allPresets.forEach(existingPreset => {
+      // go through all existing presets
+      for (const existingPreset of allPresets) {
         alreadyExists = true;
-        for (const key of keys1) {
+        // check if an exiting preset is the same as the newPreset
+        for (const key of  keys1) {
           if (newPreset[key] !== existingPreset[key]) {
             alreadyExists = false;
             break;
           }
         }
-      });
+        if (alreadyExists) {
+          break;
+        }
+      }
 
       return alreadyExists;
     },
