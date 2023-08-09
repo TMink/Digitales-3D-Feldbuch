@@ -20,6 +20,7 @@
           
         <ModulePositionsList v-if='object.modulePreset.positionslist'
           :placeProp="object"
+          :updateListSecondProp="updateListFirstProp"
           @dataToModelViewer="sendData($event)"/>
 
         <ModuleVisibility v-if='object.modulePreset.visibility'
@@ -69,6 +70,10 @@ export default {
 },
 
   emits: ['dataToPlaceForm'],
+
+  props: {
+    updateListFirstProp: Boolean,
+  },
   
   setup() {
     const { width, height } = useWindowSize();
