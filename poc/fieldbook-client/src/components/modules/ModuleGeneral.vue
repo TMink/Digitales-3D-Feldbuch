@@ -277,9 +277,11 @@ export default {
   created() {
     this.type = this.getType(this.$route.path)
     this.titles = JSON.parse(import.meta.env.VITE_TITLES);
-    this.object = this.objectProp;
   },
   
+  updated() {
+    this.object = this.objectProp;
+  },
 
   methods: {
     getType(path) {

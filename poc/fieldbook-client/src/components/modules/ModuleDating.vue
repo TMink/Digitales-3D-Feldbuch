@@ -50,6 +50,9 @@ export default {
 
 	async created() {
 		this.datings = JSON.parse(import.meta.env.VITE_DATINGS);
+	},
+
+	updated() {
 		this.dating = this.datingProp;
 	},
 

@@ -1,4 +1,4 @@
- <template>
+<template>
   <AddButton @click="addPosition()" />
 </template>
 
