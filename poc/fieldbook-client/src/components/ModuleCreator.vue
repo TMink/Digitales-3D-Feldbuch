@@ -10,15 +10,55 @@
             Add new Preset
           </v-card-subtitle>
           <v-window class="ma-2">
-
             <v-text-field hide-details label="Title" class="pr-6" v-model="curPreset.title"></v-text-field>
-            <v-checkbox hide-details label="General" v-model="curPreset.general"></v-checkbox>
-            <v-checkbox hide-details label="PositionsList" v-model="curPreset.positionslist"></v-checkbox>
-            <v-checkbox hide-details label="Coordinates" v-model="curPreset.coordinates"></v-checkbox>
-            <v-checkbox hide-details label="Visibility" v-model="curPreset.visibility"></v-checkbox>
-            <v-checkbox hide-details label="FindTypes" v-model="curPreset.findTypes"></v-checkbox>
-            <v-checkbox hide-details label="Plane" v-model="curPreset.plane"></v-checkbox>
-            <v-checkbox hide-details label="Dating" v-model="curPreset.dating"></v-checkbox>
+            <v-checkbox 
+              hide-details 
+              label="General" 
+              v-model="curPreset.general">
+            </v-checkbox>
+            <v-checkbox 
+              hide-details 
+              label="Coordinates" 
+              v-model="curPreset.coordinates">
+            </v-checkbox>
+            <v-checkbox 
+              hide-details 
+              label="Visibility" 
+              v-model="curPreset.visibility">
+            </v-checkbox>
+            <v-checkbox 
+              hide-details 
+              label="Dating" 
+              v-model="curPreset.dating">
+            </v-checkbox>
+
+            <!-- PLACE SPECIFIC -->
+            <v-checkbox 
+              hide-details 
+              label="Plane" 
+              v-if="objectTypeProp == 'places'" 
+              v-model="curPreset.plane">
+            </v-checkbox>
+            <v-checkbox 
+              hide-details 
+              label="FindTypes" 
+              v-if="objectTypeProp == 'places'" 
+              v-model="curPreset.findTypes">
+            </v-checkbox>
+            <v-checkbox 
+              hide-details 
+              label="PositionsList" 
+              v-if="objectTypeProp == 'places'" 
+              v-model="curPreset.positionslist">
+            </v-checkbox>
+
+            <!-- POSITION SPECIFIC -->
+            <v-checkbox 
+              hide-details 
+              label="Object Describers" 
+              v-if="objectTypeProp == 'positions'" 
+              v-model="curPreset.objectDescribers">
+            </v-checkbox>
           </v-window>
         </v-col>
 
@@ -27,15 +67,55 @@
             Edit Module
           </v-card-subtitle>
           <v-window class="ma-2">
-
             <v-text-field hide-details label="Title" class="pr-6" v-model="selectedPreset.title"></v-text-field>
-            <v-checkbox hide-details label="General" v-model="selectedPreset.general"></v-checkbox>
-            <v-checkbox hide-details label="PositionsList" v-model="selectedPreset.positionslist"></v-checkbox>
-            <v-checkbox hide-details label="Coordinates" v-model="selectedPreset.coordinates"></v-checkbox>
-            <v-checkbox hide-details label="Visibility" v-model="selectedPreset.visibility"></v-checkbox>
-            <v-checkbox hide-details label="FindTypes" v-model="selectedPreset.findTypes"></v-checkbox>
-            <v-checkbox hide-details label="Plane" v-model="selectedPreset.plane"></v-checkbox>
-            <v-checkbox hide-details label="Dating" v-model="selectedPreset.dating"></v-checkbox>
+            <v-checkbox 
+              hide-details 
+              label="General" 
+              v-model="selectedPreset.general">
+            </v-checkbox>
+            <v-checkbox 
+              hide-details 
+              label="Coordinates" 
+              v-model="selectedPreset.coordinates">
+            </v-checkbox>
+            <v-checkbox 
+              hide-details 
+              label="Visibility" 
+              v-model="selectedPreset.visibility">
+            </v-checkbox>
+            <v-checkbox 
+              hide-details 
+              label="Dating" 
+              v-model="selectedPreset.dating">
+            </v-checkbox>
+
+            <!-- PLACE SPECIFIC -->
+            <v-checkbox 
+              hide-details 
+              label="Plane" 
+              v-if="objectTypeProp == 'places'" 
+              v-model="selectedPreset.plane">
+            </v-checkbox>
+            <v-checkbox 
+              hide-details 
+              label="FindTypes" 
+              v-if="objectTypeProp == 'places'" 
+              v-model="selectedPreset.findTypes">
+            </v-checkbox>
+            <v-checkbox 
+              hide-details 
+              label="PositionsList" 
+              v-if="objectTypeProp == 'places'" 
+              v-model="selectedPreset.positionslist">
+            </v-checkbox>
+
+            <!-- POSITION SPECIFIC -->
+            <v-checkbox 
+              hide-details 
+              label="Object Describers" 
+              v-if="objectTypeProp == 'positions'" 
+              v-model="selectedPreset.objectDescribers">
+            </v-checkbox>
           </v-window>
         </v-col>
 
@@ -82,17 +162,17 @@
         </v-col>
       </v-row>
       <v-divider></v-divider>
-      <v-row no-gutter class="mt-0 pa-n2 align-center text-center">
+      <v-row no-gutter class="align-center text-center">
         <v-col cols="6">
-          <v-btn color="primary" v-show="!editPresetForm" v-on:click="saveModulePreset">SAVE Preset</v-btn>
-          <v-btn color="primary" v-show="editPresetForm" v-on:click="saveModulePreset">SAVE edited Preset</v-btn>
+          <v-btn color="primary" v-show="!editPresetForm" v-on:click="saveNewPreset">SAVE Preset</v-btn>
+          <v-btn color="primary" v-show="editPresetForm" v-on:click="saveEditedPreset">SAVE edited Preset</v-btn>
         </v-col>
         <v-divider vertical></v-divider>
         <v-col cols="6">
-          <v-card-subtitle>
+          <v-card-subtitle class="pt-2">
             Selected Preset
           </v-card-subtitle>
-          <v-card-title>
+          <v-card-title class="pa-0">
             {{ selectedPreset.title || '-'}}
           </v-card-title>
         </v-col>
@@ -137,13 +217,15 @@ export default {
       //position specific
       objectDescribers: false,
     },
-    selectedPreset: '',
+    selectedPreset: {
+      title: '',
+    },
     modulePresets: [],
     hoveredRow: -1,
     editPresetForm: false,
   }),
 
-  async created() {
+  async updated() {
     await fromOfflineDB.syncLocalDBs();
     await this.updateModulePresets();
   },
@@ -153,7 +235,7 @@ export default {
       this.modulePresets = await fromOfflineDB.getAllObjects('ModulePresets', this.objectTypeProp);
     },
 
-    async saveModulePreset() {
+    async saveNewPreset() {
       var rawPreset = toRaw(this.curPreset);
 
       //only save the preset if it doesn't already exist
@@ -164,9 +246,26 @@ export default {
         
         await fromOfflineDB.addObject(rawPreset, 'ModulePresets', this.objectTypeProp);
         await this.updateModulePresets();
+        this.$root.vtoast.show({ message: 'Successfully added the preset'})
         this.$emit('updateModulePresets');
       } else {
-        console.log("Preset already exists");
+        this.$root.vtoast.show({ message: 'A preset with the same modules already exists', color: 'error' })
+      }
+    },
+
+    async saveEditedPreset() {
+      var rawPreset = toRaw(this.selectedPreset);
+
+      //only save the preset if it doesn't already exist
+      var presetExists = await this.presetAlreadyExists(rawPreset);
+
+      if (!presetExists) {
+        await fromOfflineDB.updateObject(rawPreset, 'ModulePresets', this.objectTypeProp);
+        await this.updateModulePresets();
+        this.$root.vtoast.show({ message: 'Successfully saved the preset'})
+        this.$emit('updateModulePresets');
+      } else {
+        this.$root.vtoast.show({ message: 'A preset with the same modules already exists' })
       }
     },
 
@@ -178,18 +277,24 @@ export default {
       const excludedFields = ['id', 'title'];
       var allPresets = await fromOfflineDB.getAllObjects('ModulePresets', this.objectTypeProp);
 
+      // exclude certain keys from the checks
       const keys1 = Object.keys(newPreset).filter(key => !excludedFields.includes(key));
       var alreadyExists = false;
 
-      allPresets.forEach(existingPreset => {
+      // go through all existing presets
+      for (const existingPreset of allPresets) {
         alreadyExists = true;
-        for (const key of keys1) {
+        // check if an exiting preset is the same as the newPreset
+        for (const key of  keys1) {
           if (newPreset[key] !== existingPreset[key]) {
             alreadyExists = false;
             break;
           }
         }
-      });
+        if (alreadyExists) {
+          break;
+        }
+      }
 
       return alreadyExists;
     },
@@ -201,12 +306,17 @@ export default {
     setModulePreset(item) {
       let rawPreset = toRaw(item);
       this.selectedPreset = rawPreset;
-      VueCookies.set('placeModulesPreset', rawPreset.id);
+      if (this.objectTypeProp == 'places') {
+        VueCookies.set('placeModulesPreset', rawPreset.id);
+      } else if (this.objectTypeProp == 'positions') {
+        VueCookies.set('positionModulesPreset', rawPreset.id);
+      }
+      this.$emit('updateModulePresets');
     },
 
     editPreset(object) {
       this.editPresetForm = true;
-      this.selectedPreset = toRaw(object)
+      this.selectedPreset = toRaw(object);
     }, 
 
     /**

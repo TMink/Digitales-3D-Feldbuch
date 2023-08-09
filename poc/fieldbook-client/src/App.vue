@@ -19,7 +19,7 @@
     </v-app-bar>
 
     <!-- Navigation Drawer -->
-    <v-navigation-drawer color="surface" v-model="navdrawer" location="right">
+    <v-navigation-drawer color="surface" style="z-index: 1;" v-model="navdrawer" location="right">
       <v-card height="100%" class="d-flex flex-column">
 
         <v-list-item>

@@ -116,68 +116,69 @@
           {{ $t('generalInformation')}}
         </h2>
       </v-card-text>
-  <v-row class="pt-2">
-    <v-col lg="4">
-      <v-combobox 
-        chips 
-        multiple 
-        hide-selected
-        closable-chips
-        color="primary"
-        :items="titles" 
-        persistent-hint
-        :label="$tc('title', 2)" 
-        :hide-no-data="false" 
-        v-model="object.title">
+      <v-row class="pt-2">
+        <v-col lg="4">
+          <v-combobox 
+            chips 
+            multiple 
+            hide-selected 
+            closable-chips 
+            color="primary" 
+            :items="titles" 
+            persistent-hint
+            :label="$tc('title', 2)" 
+            :hide-no-data="false" 
+            v-model="object.title">
 
-        <template #selection="{ item }">
-          <v-chip color="secondary">{{ item }}</v-chip>
-        </template>
+            <template #selection="{ item }">
+              <v-chip color="secondary">{{ item }}</v-chip>
+            </template>
 
-        <template v-slot:no-data>
-          <v-list-item>
-            <v-list-item-title>
-              {{ $t('noResults')}}
-            </v-list-item-title>
-          </v-list-item>
-        </template>
-      </v-combobox>
+            <template v-slot:no-data>
+              <v-list-item>
+                <v-list-item-title>
+                  {{ $t('noResults') }}
+                </v-list-item-title>
+              </v-list-item>
+            </template>
+          </v-combobox>
 
-      <v-text-field
-        class="pt-1"
-        no-resize 
-        hide-selected
-        color="primary"
-        :items="titles"
-        persistent-hint
-        :hide-no-data="false"
-        :label="$t('date')"
-        v-model="object.date">
-      </v-text-field>
+          <v-text-field 
+            class="pt-1" 
+            no-resize 
+            hide-selected 
+            color="primary" 
+            :items="titles" 
+            persistent-hint
+            :hide-no-data="false" 
+            :label="$t('date')" 
+            v-model="object.date">
+          </v-text-field>
 
-      <v-text-field
-        class="pt-1"
-        rows="2" 
-        no-resize
-        color="primary"
-        :label="$t('editor')"
-        :rules="is_required" 
-        v-model="object.editor">
-      </v-text-field>
+          <v-text-field 
+            class="pt-1" 
+            rows="2" 
+            no-resize 
+            color="primary" 
+            :label="$t('editor')" 
+            :rules="is_required"
+            v-model="object.editor">
+          </v-text-field>
 
-    </v-col>
+        </v-col>
 
-    <v-col lg="8">         
-      <v-textarea
-        rows="8"
-        no-resize
-        color="primary"
-        v-model="object.description" 
-        :label="$t('description')">
-      </v-textarea>
-    </v-col>
-  </v-row>
-</v-card>
+        <v-col lg="8">
+          <v-textarea 
+            rows="8" 
+            no-resize 
+            color="primary" 
+            v-model="object.description" 
+            :label="$t('description')">
+          </v-textarea>
+        </v-col>
+      </v-row>
+    </v-card>
+  </v-col>
 </template>
 
 <script>

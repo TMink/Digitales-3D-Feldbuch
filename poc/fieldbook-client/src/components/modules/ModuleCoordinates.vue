@@ -1,13 +1,18 @@
 <template>
-    <v-card v-if="type == 'positions'">
+  <v-col lg="12">
+    <v-card 
+      class="pa-4" 
+      v-if="type == 'positions'">
       <v-card-text>
         <h2 class="text-h6 font-weight-medium pb-3">
           {{ $t('gaussKrueger') }}
         </h2>
       </v-card-text>
-      <v-row class="pa-4 pt-0" justify="center">
+      <v-row 
+        class="pa-4 pt-0" 
+        justify="center">
         <v-col lg="3">
-          <v-text-field
+          <v-text-field 
             color="primary" 
             hide-details 
             :label="$t('right') + ' *'" 
@@ -18,7 +23,10 @@
           </v-text-field>
         </v-col>
 
-        <v-divider class="mt-1 mb-n2" vertical></v-divider>
+        <v-divider 
+          class="mt-1 mb-n2" 
+          vertical>
+        </v-divider>
 
         <v-col lg="3">
           <v-text-field 
@@ -32,10 +40,13 @@
           </v-text-field>
         </v-col>
 
-        <v-divider class="mt-1 mb-n2" vertical></v-divider>
+        <v-divider 
+          class="mt-1 mb-n2" 
+          vertical>
+        </v-divider>
 
         <v-col lg="3">
-          <v-text-field
+          <v-text-field 
             hide-details 
             :label="$t('height') + ' *'" 
             color="primary" 
@@ -47,85 +58,88 @@
         </v-col>
       </v-row>
     </v-card>
-    
-    <v-card class="pa-4" height="12em" v-if="type == 'places'">
-        <v-card-text>
-            <h2 class="text-h6 font-weight-medium pb-2">
-                {{ $t('coordinates') }}
-            </h2>
-        </v-card-text>
-        <v-row 
-            no-gutters 
-            justify="center">
 
-            <v-text-field 
-                hide-details 
-                color="primary" 
-                class="px-4 pb-4" 
-                density="compact" 
-                v-model="object.right"
-                :label="$t('right')" 
-                @keypress="filterNonNumeric(event)">
-            </v-text-field>
+    <v-card 
+      class="pa-4" 
+      v-if="type == 'places'">
+      <v-card-text>
+        <h2 class="text-h6 font-weight-medium pb-2">
+          {{ $t('coordinates') }}
+        </h2>
+      </v-card-text>
+      <v-row 
+        no-gutters 
+        justify="center">
 
-            <v-text-field 
-                hide-details 
-                color="primary" 
-                class="pr-4 pb-4" 
-                density="compact" 
-                :label="$t('rightTo')"
-                v-model="object.rightTo" 
-                @keypress="filterNonNumeric(event)">
-            </v-text-field>
+        <v-text-field 
+          hide-details 
+          color="primary" 
+          class="px-4 pb-4" 
+          density="compact" 
+          v-model="object.right"
+          :label="$t('right')" 
+          @keypress="filterNonNumeric(event)">
+        </v-text-field>
 
-            <v-divider 
-                class="mt-n1 mb-n2" 
-                vertical />
-            <v-text-field 
-                hide-details 
-                color="primary" 
-                class="px-4 pb-4" 
-                density="compact" 
-                :label="$t('up')"
-                v-model="object.up" 
-                @keypress="filterNonNumeric(event)">
-            </v-text-field>
+        <v-text-field 
+          hide-details 
+          color="primary" 
+          class="pr-4 pb-4" 
+          density="compact" 
+          :label="$t('rightTo')"
+          v-model="object.rightTo" 
+          @keypress="filterNonNumeric(event)">
+        </v-text-field>
 
-            <v-text-field 
-                hide-details 
-                color="primary" 
-                class="pr-4 pb-4" 
-                density="compact" 
-                :label="$t('upTo')"
-                v-model="object.upTo" 
-                @keypress="filterNonNumeric(event)">
-            </v-text-field>
+        <v-divider 
+          class="mt-n1 mb-n2" 
+          vertical />
+        <v-text-field 
+          hide-details 
+          color="primary" 
+          class="px-4 pb-4" 
+          density="compact" 
+          :label="$t('up')"
+          v-model="object.up" 
+          @keypress="filterNonNumeric(event)">
+        </v-text-field>
 
-            <v-divider 
-                class="mt-n1 mb-n2" 
-                vertical />
+        <v-text-field 
+          hide-details 
+          color="primary" 
+          class="pr-4 pb-4" 
+          density="compact" 
+          :label="$t('upTo')"
+          v-model="object.upTo" 
+          @keypress="filterNonNumeric(event)">
+        </v-text-field>
 
-            <v-text-field 
-                hide-details 
-                color="primary" 
-                class="px-4 pb-4" 
-                density="compact" 
-                :label="$t('depthTop')"
-                v-model="object.depthTop" 
-                @keypress="filterNonNumeric(event)">
-            </v-text-field>
+        <v-divider 
+          class="mt-n1 mb-n2" 
+          vertical />
 
-            <v-text-field 
-                hide-details 
-                color="primary" 
-                class="pr-4 pb-4" 
-                density="compact" 
-                :label="$t('depthBot')"
-                v-model="object.depthBot" 
-                @keypress="filterNonNumeric(event)">
-            </v-text-field>
-        </v-row>
+        <v-text-field 
+          hide-details 
+          color="primary" 
+          class="px-4 pb-4" 
+          density="compact" 
+          :label="$t('depthTop')"
+          v-model="object.depthTop" 
+          @keypress="filterNonNumeric(event)">
+        </v-text-field>
+
+        <v-text-field 
+          hide-details 
+          color="primary" 
+          class="pr-4 pb-4" 
+          density="compact" 
+          :label="$t('depthBot')"
+          v-model="object.depthBot" 
+          @keypress="filterNonNumeric(event)">
+        </v-text-field>
+      </v-row>
     </v-card>
+  </v-col>
 </template>
 
 <script>

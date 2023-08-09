@@ -352,7 +352,6 @@ export default {
       this.create_dialog = false;
 
       this.clearImgProxy();
-      console.log(newImage)
       // update IndexedDB
       await fromOfflineDB.updateObject(rawObject, this.object_type, this.object_type.toLowerCase());
       await fromOfflineDB.addObject(newImage, "Images", "images");

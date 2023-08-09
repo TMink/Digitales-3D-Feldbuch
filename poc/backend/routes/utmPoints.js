@@ -81,7 +81,6 @@ router.get("/:utmPoint_id", function (req, res, next) {
 
 /* POST new utmPoint */
 router.post("/", function (req, res, next) {
-    console.log(req.body)
   utmPoints
     .add(req.body)
     .then((response) => {
