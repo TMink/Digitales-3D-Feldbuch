@@ -1,13 +1,26 @@
 <template>
-  <v-card>
+  <v-col lg="12">
     <v-form>
-      
-      <v-card class="pa-0" :min-width="windowWidth * 0.5">
-        <v-data-table-virtual :items="positions" fixed-header :height="getTableHeight" :headers="headers"
-          :sort-by="[{ key: 'positionNumber', order: 'asc' }]" max-height>
+      <v-card 
+        class="pa-4" 
+        :min-width="windowWidth * 0.5">
+        <v-card-text>
+          <h2 class="text-h6 font-weight-medium pb-2">
+            {{ $tc('position', 2) }}
+          </h2>
+        </v-card-text>
+        <v-data-table-virtual 
+          :items="positions" 
+          fixed-header 
+          :height="getTableHeight" 
+          :headers="headers"
+          :sort-by="[{ key: 'positionNumber', order: 'asc' }]" 
+          max-height>
 
           <template v-slot:item="{ item, index }">
-            <tr v-on:click="moveToPosition(item.raw.id)" @mouseenter="setHoveredRow(index, true)"
+            <tr 
+              v-on:click="moveToPosition(item.raw.id)" 
+              @mouseenter="setHoveredRow(index, true)"
               @mouseleave="setHoveredRow(index, false)">
 
               <!-- POSITION NUMBER -->
@@ -25,8 +38,12 @@
               </td>
 
               <!-- TITLE -->
-              <td class="py-0" :style="getRowStyle(index)">
-                <v-list-item-title v-if="item.raw.title.length > 0" style="min-width:200px" class="text-wrap">
+              <td 
+                class="py-0" 
+                :style="getRowStyle(index)">
+                <v-list-item-title v-if="item.raw.title.length > 0" 
+                    style="min-width:200px" 
+                    class="text-wrap">
                   {{ item.raw.title }}
                 </v-list-item-title>
 
@@ -47,9 +64,9 @@
       </v-card>
 
       <!-- <AddPosition :positions_prop="positions" @updatePlace="updatePlace()" @updatePositions="updatePositions()" /> -->
-      
+
     </v-form>
-  </v-card>
+  </v-col>
 </template>
   
 <script>
