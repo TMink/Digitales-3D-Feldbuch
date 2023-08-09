@@ -1,8 +1,9 @@
 export default {
   // Words
+  moduleManagement: "Module Management",
   findType: "Find Type",
-  generalInformation: "general information",
-  coordinates: "coordinates",
+  generalInformation: "General Information",
+  coordinates: "Coordinates",
   fieldbook: "Digital 3d-Fieldbook",
   activity: "Activity | Activities",
   place: "Place | Places",

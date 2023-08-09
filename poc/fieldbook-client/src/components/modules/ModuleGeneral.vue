@@ -1,58 +1,60 @@
 <template>
-  <v-card class="pa-4" v-if="type == 'positions'">
-    <v-row class="pt-2 align-center">
+  <v-col lg="12" class="pt-0 pl-0 pr-0">
+    <v-card 
+      class="pa-4" 
+      v-if="type == 'positions'">
+      <v-row class="pt-2 align-center">
 
-      <v-col cols="3">
-        <v-text-field 
-          color="primary" 
-          :label="$tc('posNumber', 2) +' *'" 
-          maxlength="6"
-          hide-details
-          :rules="is_required" 
-          v-model="object.positionNumber"
-          @keypress="filterAllNonNumeric(event)">
-        </v-text-field>
-      </v-col>
+        <v-col cols="3">
+          <v-text-field 
+            color="primary" 
+            :label="$tc('posNumber', 2) + ' *'" 
+            maxlength="6" 
+            hide-details 
+            :rules="is_required"
+            v-model="object.positionNumber" 
+            @keypress="filterAllNonNumeric(event)">
+          </v-text-field>
+        </v-col>
 
-      <v-col cols="2">
-        <v-text-field 
-          hide-details
-          color="primary" 
-          :label="$tc('subNumber', 2)"
-          maxlength="5" 
-          :disabled="!object.hasSubNumber"
-          v-model="object.subNumber">
-        </v-text-field>
-      </v-col>
+        <v-col cols="2">
+          <v-text-field 
+            hide-details color="primary" 
+            :label="$tc('subNumber', 2)" 
+            maxlength="5"
+            :disabled="!object.hasSubNumber" 
+            v-model="object.subNumber">
+          </v-text-field>
+        </v-col>
 
-      <v-col cols="2">
-        <v-checkbox
-          hide-details
-          :label="$t('hasSubNumber')"
-          color="secondary"
-          v-model="object.hasSubNumber"> 
-        </v-checkbox>
-      </v-col>
+        <v-col cols="2">
+          <v-checkbox 
+            hide-details 
+            :label="$t('hasSubNumber')" 
+            color="secondary" 
+            v-model="object.hasSubNumber">
+          </v-checkbox>
+        </v-col>
 
-      <v-col cols="2">
-        <v-checkbox
-          class="pl-4"
-          hide-details
-          v-model="object.isSeparate"
-          color="primary"
-          :disabled="!object.hasSubNumber"
-          :label="$t('isSeparate')">
-        </v-checkbox>
-        <!-- maybe as tooltip -->
-        <!-- <div class="text-caption">
+        <v-col cols="2">
+          <v-checkbox 
+            class="pl-4" 
+            hide-details 
+            v-model="object.isSeparate" 
+            color="primary"
+            :disabled="!object.hasSubNumber" 
+            :label="$t('isSeparate')">
+          </v-checkbox>
+          <!-- maybe as tooltip -->
+          <!-- <div class="text-caption">
           Check, if the position should be saved with a separate
           sub-number, even though the information is similar to the 
           previous position.
         </div> -->
-      </v-col>
-              
-      <v-col cols="3" class="pa-0">
-        <!--<v-card class="pa-4 ma-2 mr-3" color="accent">
+        </v-col>
+
+        <v-col cols="3" class="pa-0">
+          <!--<v-card class="pa-4 ma-2 mr-3" color="accent">
           <div 
             class="text-h6 text-center" 
             :label="$t('date')">
@@ -62,58 +64,55 @@
             {{ $t('date') }}
           </div>
         </v-card> -->
-      </v-col>
-    </v-row>
+        </v-col>
+      </v-row>
 
-    <v-row>
-      <v-col lg="4">
-        <v-combobox 
-          color="primary" 
-          :items="titles"
-          hide-details
-          :label="$tc('title', 2) + ' *'" 
-          :rules="is_required"
-          v-model="object.title">
-        </v-combobox>
+      <v-row>
+        <v-col lg="4">
+          <v-combobox 
+            color="primary" 
+            :items="titles" 
+            hide-details 
+            :label="$tc('title', 2) + ' *'" 
+            :rules="is_required"
+            v-model="object.title">
+          </v-combobox>
 
-        <v-text-field
-          class="pt-6"
-          no-resize
-          color="primary"
-          :hide-no-data="false"
-          :label="$t('date')"
-          v-model="object.date">
-        </v-text-field>
+          <v-text-field 
+            class="pt-6" 
+            no-resize color="primary" 
+            :hide-no-data="false" 
+            :label="$t('date')"
+            v-model="object.date">
+          </v-text-field>
 
-        <v-text-field
-          class="pt-0"
-          color="primary"
-          rows="2" 
-          :label="$t('editor') + ' *'" 
-          :rules="is_required"
-          v-model="object.addressOf"
-          no-resize
-          :hint="$tc('please_input', 2, { msg: 'Ansprache von' })">
-        </v-text-field>
-      </v-col>
+          <v-text-field 
+            class="pt-0" 
+            color="primary" 
+            rows="2" 
+            :label="$t('editor') + ' *'" 
+            :rules="is_required"
+            v-model="object.addressOf" 
+            no-resize :hint="$tc('please_input', 2, { msg: 'Ansprache von' })">
+          </v-text-field>
+        </v-col>
 
-      <v-col lg="8">
-        <v-textarea 
-          rows="8" 
-          no-resize 
-          color="primary" 
-          :label="$t('description')"
-          v-model="object.description">
-        </v-textarea>
-      </v-col> 
-    </v-row>
-  </v-card>
+        <v-col lg="8">
+          <v-textarea 
+            rows="8" 
+            no-resize 
+            color="primary" 
+            :label="$t('description')" 
+            v-model="object.description">
+          </v-textarea>
+        </v-col>
+      </v-row>
+    </v-card>
 
-  <v-card class="pa-4" v-if="type == 'places'">
-    <v-card-text>
-        <h2 
-          class="text-h6 font-weight-medium pb-2">
-          {{ $t('generalInformation')}}
+    <v-card class="pa-4" v-if="type == 'places'">
+      <v-card-text>
+        <h2 class="text-h6 font-weight-medium pb-2">
+          {{ $t('generalInformation') }}
         </h2>
       </v-card-text>
       <v-row class="pt-2">
@@ -178,6 +177,7 @@
         </v-col>
       </v-row>
     </v-card>
+  </v-col>
 </template>
 
 <script>
