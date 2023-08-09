@@ -311,6 +311,30 @@ export default {
         case 'visibility':
           this.place.visibility = data[1];
           break;
+        case 'right':
+          this.place.right = data[1];
+          break;
+        case 'rightTo':
+          this.place.rightTo = data[1];
+          break;
+        case 'up':
+          this.place.up = data[1];
+          break;
+        case 'upTo':
+          this.place.upTo = data[1];
+          break;
+        case 'depthBot':
+          this.place.depthBot = data[1];
+          break;
+        case 'depthTop':
+          this.place.depthTop = data[1];
+          break;
+        case 'noFinding':
+          this.place.noFinding = data[1];
+          break;
+        case 'restFinding':
+          this.place.restFinding = data[1];
+          break;
         default:
           console.log( error )
       }

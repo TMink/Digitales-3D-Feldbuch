@@ -419,6 +419,28 @@ export default {
   },
   methods: {
     /**
+     * TODO
+     * @param {*} data 
+     */
+    getEmitedData(data) {
+      switch (data[0]) {
+        case 'material':
+          this.position.material = data[1];
+          break;
+        case 'weight':
+          this.position.weight = data[1];
+          break;
+        case 'count':
+          this.position.count = data[1];
+          break;
+        case 'materials':
+          this.materials = data[1];
+          break;
+        default:
+          console.log( error )
+      }
+    },
+    /**
      * Update reactive Vue.js place data
      */
     async updatePosition() {
