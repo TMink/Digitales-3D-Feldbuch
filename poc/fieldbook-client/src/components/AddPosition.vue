@@ -64,11 +64,9 @@ export default {
       if (this.positions_prop.length == 0) {
         newPosition.positionNumber = 1;
       } else {
-        var lastPos = 
-            await fromOfflineDB.getLastAddedObject('Positions', 'positions');
+        var lastPosNumber = await fromOfflineDB.getLastAddedPosition();
 
-        newPosition.positionNumber = lastPos.positionNumber + 1;
-        //TODO: autoincrement posNumber and implement the divide Checkbox
+        newPosition.positionNumber = lastPosNumber + 1;
       }
       
       await fromOfflineDB.updateObject(curPlace, 'Places', 'places');
