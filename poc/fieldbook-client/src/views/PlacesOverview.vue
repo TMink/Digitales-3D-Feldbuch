@@ -289,11 +289,13 @@
       <v-spacer></v-spacer>
       <AddButton v-on:click="addPlace()"/>
       <v-btn @click="moduleCreatorOverlay = !moduleCreatorOverlay">
-        <v-row>
-          Module Presets
-          <v-card-subtitle>
-            {{  curModulePreset.title }}
-          </v-card-subtitle>
+        <v-row no-gutters>
+          <v-col>
+            Module Presets
+            <v-card-subtitle>
+              {{  curModulePreset.title }}
+            </v-card-subtitle>
+          </v-col>
         </v-row>
       </v-btn>
       <v-spacer></v-spacer>
@@ -377,14 +379,16 @@ export default {
         { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
       ],
       modulePresets: [],
-      curModulePreset: '',
+      curModulePreset: {
+        title: '-',
+      },
       moduleCreatorOverlay: false,
     };
   },
   /**
    * Retrieve data from IndexedDB
    */
-  async mounted() {
+  async created() {
     this.$emit("view", this.$t('overview', { msg: this.$tc('place', 2) }));
     await fromOfflineDB.syncLocalDBs();
     await this.updatePlaces();
@@ -445,9 +449,9 @@ export default {
      * Get all ModulePresets from IndexedDB
      */
     async updateModulePresets() {
-      let presetFromCookies = String(VueCookies.get('placeModulesPreset'));
+      let presetFromCookies = VueCookies.get('placeModulesPreset');
 
-      if (presetFromCookies.length > 0) {
+      if (presetFromCookies) {
         this.curModulePreset = await fromOfflineDB.getObject(
           presetFromCookies, 'ModulePresets', 'places');
         }
@@ -513,9 +517,9 @@ export default {
 
       // update IndexedDB
       await fromOfflineDB.updateObject(activity, 'Activities', 'activities');
-      await fromOfflineDB.addObject(newPlace, 'Places', 'places')
+      await fromOfflineDB.addObject(newPlace, 'Places', 'places');
       await fromOfflineDB.addObject({ id: newPlaceID, object: 'places' }, 'Changes', 'created');
-      await this.updatePlaces(newPlace.id)
+      await this.updatePlaces(newPlace.id);
     },
 
     /**
@@ -610,12 +614,6 @@ export default {
         this.hoveredRow = index;
       } else if (this.hoveredRow === index) {
         this.hoveredRow = -1;
-      }
-    },
-
-    saveModulePresetToCookies() {
-      if ( this.curModulePreset ) {
-        VueCookies.set('placeModulesPreset', this.curModulePreset.id);
       }
     },
 
