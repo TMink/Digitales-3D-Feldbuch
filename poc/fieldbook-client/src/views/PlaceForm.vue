@@ -280,6 +280,7 @@ export default {
     await fromOfflineDB.syncLocalDBs();
     await this.updatePlace();
     await this.updatePositions();
+    this.componentHasLoaded = true;
   },
   watch: {
     'place': {
@@ -393,7 +394,6 @@ export default {
       const currentPlace = VueCookies.get('currentPlace');
       const data = await fromOfflineDB.getObject(currentPlace, 'Places', 'places');
       this.place = data;
-      hasUnsavedChanges = false;
     },
 
     async updatePlace2() {
