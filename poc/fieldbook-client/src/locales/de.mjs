@@ -1,5 +1,6 @@
 export default {
   // Words
+  objectDescribers: "Objektbeschreibung",
   moduleManagement: "Modul Management",
   findType: "Fund Typ",
   generalInformation: "Allgemeine Informationen",
