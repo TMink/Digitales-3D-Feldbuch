@@ -3,51 +3,59 @@
     <ConfirmDialog ref="confirm" />
     <v-card class="pa-4">
       
-      <v-card-title>MODULE MANAGEMENT - {{ objectTypeProp.toUpperCase() }}</v-card-title>
+      <v-card-title>{{ $t('moduleManagement') }} - {{ objectTypeProp.toUpperCase() }}</v-card-title>
       <v-row no-gutters>
+
+        <!-- NEW PRESET -->
         <v-col cols="6" v-show="!editPresetForm">
           <v-card-subtitle>
             Add new Preset
           </v-card-subtitle>
           <v-window class="ma-2">
-            <v-text-field hide-details label="Title" class="pr-6" v-model="curPreset.title"></v-text-field>
+            <v-text-field 
+              hide-details 
+              color="primary"
+              label="Title" 
+              class="pr-6"
+              clearable
+              v-model="curPreset.title"></v-text-field>
             <v-checkbox 
               hide-details 
-              label="General" 
+              :label="$t('generalInformation')"
               v-model="curPreset.general">
             </v-checkbox>
             <v-checkbox 
               hide-details 
-              label="Coordinates" 
+              :label="$t('coordinates')"
               v-model="curPreset.coordinates">
             </v-checkbox>
             <v-checkbox 
               hide-details 
-              label="Visibility" 
+              :label="$t('visibility')"
               v-model="curPreset.visibility">
             </v-checkbox>
             <v-checkbox 
               hide-details 
-              label="Dating" 
+              :label="$t('dating')"
               v-model="curPreset.dating">
             </v-checkbox>
 
             <!-- PLACE SPECIFIC -->
             <v-checkbox 
               hide-details 
-              label="Plane" 
+              :label="$t('plane')" 
               v-if="objectTypeProp == 'places'" 
               v-model="curPreset.plane">
             </v-checkbox>
             <v-checkbox 
               hide-details 
-              label="FindTypes" 
+              :label="$t('findType')"
               v-if="objectTypeProp == 'places'" 
               v-model="curPreset.findTypes">
             </v-checkbox>
             <v-checkbox 
               hide-details 
-              label="PositionsList" 
+              :label="$tc('position', 2)" 
               v-if="objectTypeProp == 'places'" 
               v-model="curPreset.positionslist">
             </v-checkbox>
@@ -62,12 +70,21 @@
           </v-window>
         </v-col>
 
+
+        <!-- EDIT PRESET -->
         <v-col cols="6" v-show="editPresetForm">
           <v-card-subtitle>
             Edit Module
           </v-card-subtitle>
           <v-window class="ma-2">
-            <v-text-field hide-details label="Title" class="pr-6" v-model="selectedPreset.title"></v-text-field>
+            <v-text-field 
+              hide-details 
+              label="Title"
+              color="primary" 
+              append-inner-icon="mdi-close-circle"
+              @click:append-inner="editPresetForm = false"
+              class="pr-6" 
+              v-model="selectedPreset.title"></v-text-field>
             <v-checkbox 
               hide-details 
               label="General" 
@@ -146,7 +163,7 @@
                         <v-icon>mdi-pencil</v-icon>
                       </v-btn> -->
                       <v-btn 
-                        class="mr-2" 
+                        class="mr-2"
                         color="error" 
                         density="compact"
                         v-on:click="confirmDeletion(item.raw)">
@@ -156,16 +173,23 @@
                 </tr>
               </template>
             </v-data-table-virtual>
-            <v-row no-gutters class="pt-2 justify-center">
-              <v-btn color="secondary" v-on:click="editPresetForm=false">ADD new preset</v-btn>
-            </v-row>
         </v-col>
       </v-row>
       <v-divider></v-divider>
       <v-row no-gutter class="align-center text-center">
         <v-col cols="6">
-          <v-btn color="primary" v-show="!editPresetForm" v-on:click="saveNewPreset">SAVE Preset</v-btn>
-          <v-btn color="primary" v-show="editPresetForm" v-on:click="saveEditedPreset">SAVE edited Preset</v-btn>
+          <v-btn 
+            color="primary" 
+            v-show="!editPresetForm" 
+            v-on:click="saveNewPreset">
+            <v-icon>mdi-content-save-all</v-icon>
+          </v-btn>
+          <v-btn 
+            color="primary" 
+            v-show="editPresetForm" 
+            v-on:click="saveEditedPreset">
+            <v-icon>mdi-content-save-all</v-icon>
+          </v-btn>
         </v-col>
         <v-divider vertical></v-divider>
         <v-col cols="6">
@@ -202,7 +226,7 @@ export default {
   data: () => ({
     dialog: false,
     curPreset: {
-      title: null,
+      title: '',
 
       general: false,
       coordinates: false,
@@ -231,10 +255,17 @@ export default {
   },
 
   methods: {
+    /**
+     * Get all module presets from IndexedDB
+     */
     async updateModulePresets() {
       this.modulePresets = await fromOfflineDB.getAllObjects('ModulePresets', this.objectTypeProp);
     },
 
+    /**
+     * Saves a new preset to IndexedDB
+     * (if no other similar preset exists)
+     */
     async saveNewPreset() {
       var rawPreset = toRaw(this.curPreset);
 
@@ -248,11 +279,16 @@ export default {
         await this.updateModulePresets();
         this.$root.vtoast.show({ message: 'Successfully added the preset'})
         this.$emit('updateModulePresets');
+        this.clearPresetInputs();
       } else {
         this.$root.vtoast.show({ message: 'A preset with the same modules already exists', color: 'error' })
       }
     },
 
+    /**
+     * Saves an edited preset to IndexedDB
+     * (if no other similar preset exists)
+     */
     async saveEditedPreset() {
       var rawPreset = toRaw(this.selectedPreset);
 
@@ -300,7 +336,7 @@ export default {
     },
 
     /**
-     *  Routes to the PositionForm for the chosen positionID
+     * Routes to the PositionForm for the chosen positionID
      * @param {String} positionID 
      */
     setModulePreset(item) {
@@ -314,10 +350,26 @@ export default {
       this.$emit('updateModulePresets');
     },
 
+    /**
+     * Opens the preset editing input fields
+     */
     editPreset(object) {
       this.editPresetForm = true;
       this.selectedPreset = toRaw(object);
     }, 
+
+    /**
+     * Clears the input fields for new presets
+     */
+    clearPresetInputs() {
+      for (let prop in this.curPreset) {
+        if (prop == 'title') {
+          this.curPreset[prop] = '';
+        } else {
+          this.curPreset[prop] = false;
+        }
+      }
+    },
 
     /**
      * Deletes a selected ModulePreset from IndexedDB
@@ -359,6 +411,7 @@ export default {
         padding: '8px 16px'
       };
     },
+    
     /**
      * Update the hoveredRow based on the isHovered flag.
      *

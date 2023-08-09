@@ -1,5 +1,5 @@
 <template>
-  <v-col lg="12">
+  <v-col lg="12" class="pt-0 pl-0 pr-0">
     <v-card 
       class="pa-4" 
       v-if="type == 'positions'">

@@ -127,6 +127,7 @@ export default {
   },
   mounted() {
     this.$root.vtoast = this.$refs.vtoast;
+    this.initCookies();
   },
   methods: {
     goback() {
@@ -139,6 +140,10 @@ export default {
     async clearLocalData() {
       this.deleteCookies();
       await this.clearIndexedDB();
+    },
+    initCookies() {
+      VueCookies.set('showAllPlaceInfo', false);
+      VueCookies.set('showAllPosInfo', false);
     },
     deleteCookies() {
       VueCookies.keys().forEach(cookie => VueCookies.remove(cookie));

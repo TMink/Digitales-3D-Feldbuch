@@ -22,6 +22,7 @@
  *                            place
  */
 export { fromOfflineDB };
+import VueCookies from 'vue-cookies';
 
 export default class ConnectionToOfflineDB {
   constructor(offlineDB) {
@@ -372,33 +373,13 @@ export default class ConnectionToOfflineDB {
    * @param {String} storeName
    * @returns the object that was added last to the IndexedDB
    */
-  async getLastAddedObject(localDBName, storeName) {
-    const localDB = this.getLocalDBFromName(localDBName);
+  async getLastAddedPosition() {
+    var curPlaceID = VueCookies.get('currentPlace');
+    var curPlace = await this.getObject(curPlaceID, 'Places', 'places');
+    var lastPosID = curPlace.positions[curPlace.positions.length-1];
+    var lastAddedPos = await this.getObject(lastPosID, 'Positions', 'positions');
 
-    return new Promise((resolve, _reject) => {
-      const trans = localDB.transaction(storeName, "readonly");
-      const store = trans.objectStore(storeName);
-
-      trans.oncomplete = (_e) => {
-        resolve(lastAddedObj);
-      };
-
-      var lastAddedObj;
-      store.openCursor().onsuccess = (e) => {
-        let cursor = e.target.result;
-
-        if (cursor) {
-          if (lastAddedObj == undefined) {
-            lastAddedObj = cursor.value;
-          }
-
-          if (lastAddedObj.id < cursor.key) {
-            lastAddedObj = cursor.value;
-          }
-          cursor.continue();
-        }
-      };
-    });
+    return lastAddedPos.positionNumber;
   }
 
   /**
@@ -459,8 +440,8 @@ export default class ConnectionToOfflineDB {
 
   /**
    * Updates an object from IndexedDB
-   * @param {Int} id
-   *    Key for identifying the object, which will be updated
+   * @param {Int} data
+   *    Data object, which will be updated
    * @param {String} localDBName
    *    Database name
    * @param {String} storeName
