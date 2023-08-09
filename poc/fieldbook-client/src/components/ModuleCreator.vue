@@ -145,7 +145,7 @@ export default {
     editPresetForm: false,
   }),
 
-  async created() {
+  async updated() {
     await fromOfflineDB.syncLocalDBs();
     await this.updateModulePresets();
   },
@@ -168,7 +168,7 @@ export default {
         await this.updateModulePresets();
         this.$emit('updateModulePresets');
       } else {
-        console.log("Preset already exists");
+        this.$root.vtoast.show({ message: 'A preset with the same modules already exists' })
       }
     },
 
@@ -210,6 +210,7 @@ export default {
       let rawPreset = toRaw(item);
       this.selectedPreset = rawPreset;
       VueCookies.set('placeModulesPreset', rawPreset.id);
+      this.$emit('updateModulePresets');
     },
 
     editPreset(object) {
