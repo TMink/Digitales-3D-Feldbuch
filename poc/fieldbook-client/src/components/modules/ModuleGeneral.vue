@@ -18,7 +18,7 @@
         persistent-hint
         :label="$tc('title', 2)" 
         :hide-no-data="false" 
-        v-model="place.title">
+        v-model="object.title">
 
         <template #selection="{ item }">
           <v-chip color="secondary">{{ item }}</v-chip>
@@ -42,7 +42,7 @@
         persistent-hint
         :hide-no-data="false"
         :label="$t('date')"
-        v-model="place.date">
+        v-model="object.date">
       </v-text-field>
 
       <v-text-field
@@ -52,7 +52,7 @@
         color="primary"
         :label="$t('editor')"
         :rules="is_required" 
-        v-model="place.editor">
+        v-model="object.editor">
       </v-text-field>
 
     </v-col>
@@ -62,7 +62,7 @@
         rows="8"
         no-resize
         color="primary"
-        v-model="place.description" 
+        v-model="object.description" 
         :label="$t('description')">
       </v-textarea>
     </v-col>
@@ -71,146 +71,77 @@
 </template>
 
 <script>
-/**
-* Methods overview:
-*  updatePlace     - Updates existing presentation of the place
-*  savePlace       - Saves the current processing status
-*  confirmDeletion - Opens the confirmation dialog
-*  deletePlace     - Deletes the currently selected place
-*  moveToPosition  - Loads the view of the selected position
-*  cancelPlace     - Cancels all not already saved actions
-*/
-import VueCookies from 'vue-cookies';
-import { fromOfflineDB } from '../../ConnectionToOfflineDB';
-import { useWindowSize } from 'vue-window-size';
-
 export default {
-emits: ['view'],
-setup() {
-  const { width, height } = useWindowSize();
-  return {
-    windowWidth: width,
-    windowHeight: height,
-  };
-},
-/**
- * Reactive Vue.js data
- */
-data() {
+		
+	props: {
+    objectProp: Object,
+  },
 
-  return {
-    tab: null,
-    place: {
-      id: '',
-      activityID: '',
-      placeNumber: '',
-      title: [],
-      dating: '',
-      noFinding: false,
-      restFinding: false,
-      right: '',
-      rightTo: '',
-      up: '',
-      upTo: '',
-      depthTop: '',
-      depthBot: '',
-      plane: '',
-      profile: '',
-      visibility: '',
-      drawing: '',
-      description: '',
-      planum: '',
-      editor: '',
-      date: '',
+  emits: ['dataToModelViewer'],
 
-      positions: [],
-      images: [],
-      models: [],
-      lines: [],
-      lastChanged: '',
-      lastSync: ''
+  data() {
+    return {
+      type: null,
+      object: {
+        describer: null,
+        editor: null,
+        date: null,
+        title: null,
+      }
+    }
+  },
+
+  watch: {
+    "object.describer": {
+      handler: function () {
+        if ( this.object.describer != null ) {
+          /* Send data back to ModelViewer.vue */
+          this.$emit("dataToModelViewer", ['describer', this.object.describer]);
+        }
+      }
     },
-    headers: [
-      {
-        title: this.$t('posNumber'),
-        align: 'start',
-        sortable: true,
-        key: 'positionNumber',
-      },
-      {
-        title: this.$t('subNumber'),
-        align: 'start',
-        sortable: true,
-        key: 'subNumber',
-      },
-      { title: this.$tc('title', 2), align: 'start', key: 'title' },
-      { title: this.$t('date'), align: 'start', key: 'date' },
-    ],
-    searchQuery: '',
-    hoveredRow: -1,
-    positions: null,
-    titles: [],
-    datings: [],
-    is_required: [v => !!v || 'Pflichtfeld'],
-    hasUnsavedChanges: false,
-    componentHasLoaded: false,
-  }
-
-},
-/**
- * Check if there are unsaved changes to the position 
- * before leaving the PositionForm
- * @param {*} to 
- * @param {*} from 
- * @param {*} next 
- */
-async beforeRouteLeave(to, from, next) {
-  var confirmation = false;
-  if (this.hasUnsavedChanges) {
-    confirmation = await this.confirmRouteChange();
-    if (confirmation) {
-      next();
-    }
-  } else {
-    next();
-  }
-},
-/**
- * Initialize data from localDB to the reactive Vue.js data
- */
-async created() {
-  const acID = String(VueCookies.get('currentActivity'))
-  var activity = await fromOfflineDB.getObject(acID, 'Activities', 'activities')
-
-  const plID = String(VueCookies.get('currentPlace'))
-  var place = await fromOfflineDB.getObject(plID, 'Places', 'places')
-  
-  this.$emit("view", activity.activityNumber + ' ' + place.placeNumber);
-
-  this.titles = JSON.parse(import.meta.env.VITE_TITLES);
-  this.datings = JSON.parse(import.meta.env.VITE_DATINGS);
-
-  await fromOfflineDB.syncLocalDBs();
-  await this.updatePlace();
-  await this.updatePositions();
-  this.componentHasLoaded = true;
-},
-watch: {
-  'place': {
-    handler: 'handlePlaceChange',
-    deep: true,
-  },
-  /**
-   * Ensure that only 5 items are selected
-   * @param {*} val 
-   */
-  'place.title'(val) {
-    if (val.length > 5) {
-      this.$nextTick(() => this.place.title.pop())
+    "object.editor": {
+      handler: function () {
+        if ( this.object.editor != null ) {
+          /* Send data back to ModelViewer.vue */
+          this.$emit("dataToModelViewer", ['editor', this.object.editor]);
+        }
+      }
+    },
+    "object.date": {
+      handler: function () {
+        if ( this.object.date != null ) {
+          /* Send data back to ModelViewer.vue */
+          this.$emit("dataToModelViewer", ['date', this.object.date]);
+        }
+      }
+    },
+    "object.title": {
+      handler: function () {
+        if ( this.object.title != null ) {
+          /* Send data back to ModelViewer.vue */
+          this.$emit("dataToModelViewer", ['title', this.object.title]);
+        }
+      }
     }
   },
-},
-};
+
+  updated() {
+    this.type = this.getType(this.$route.path)
+    this.object = this.objectProp;
+  },
+
+  methods: {
+    getType(path) {
+      const lowerName = path.substring(
+        path.indexOf("/") + 1, 
+        path.lastIndexOf("/")
+      );
+      return lowerName
+    },
+  }
+
+}
 
 </script>
 
