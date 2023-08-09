@@ -15,7 +15,7 @@
         show-ticks="always" 
         track-color="primary"
         thumb-color="secondary" 
-        v-model="place.visibility" 
+        v-model="visibility" 
         color="warning">
       </v-slider>
     </v-card>
@@ -34,6 +34,12 @@
 		data () {
 			return {
 				visibility: null,
+        tickLabels: {
+        3: this.$t('veryGood'),
+        2: this.$t('good'),
+        1: this.$t('moderate'),
+        0: this.$t('bad'),
+        },
 			}
 		},
 
