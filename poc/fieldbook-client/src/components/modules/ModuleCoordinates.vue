@@ -1,5 +1,54 @@
 <template>
-    <v-card class="pa-4" height="12em">
+    <v-card v-if="type == 'positions'">
+      <v-card-text>
+        <h2 class="text-h6 font-weight-medium pb-3">
+          {{ $t('gaussKrueger') }}
+        </h2>
+      </v-card-text>
+      <v-row class="pa-4 pt-0" justify="center">
+        <v-col lg="3">
+          <v-text-field
+            color="primary" 
+            hide-details 
+            :label="$t('right') + ' *'" 
+            :rules="is_required"
+            v-model="position.right" 
+            @keypress="filterNonNumeric(event)"
+            :hint="$tc('please_input', 2, { msg: 'Rechtswert' })">
+          </v-text-field>
+        </v-col>
+
+        <v-divider class="mt-1 mb-n2" vertical></v-divider>
+
+        <v-col lg="3">
+          <v-text-field 
+            hide-details 
+            color="primary" 
+            :label="$t('up') + ' *'" 
+            :rules="is_required" 
+            v-model="position.up"
+            @keypress="filterNonNumeric(event)"
+            :hint="$tc('please_input', 2, { msg: 'Hochwert' })">
+          </v-text-field>
+        </v-col>
+
+        <v-divider class="mt-1 mb-n2" vertical></v-divider>
+
+        <v-col lg="3">
+          <v-text-field
+            hide-details 
+            :label="$t('height') + ' *'" 
+            color="primary" 
+            :rules="is_required" 
+            v-model="position.height"
+            @keypress="filterNonNumeric(event)"
+            :hint="$tc('please_input', 2, { msg: 'Höhe' })">
+          </v-text-field>
+        </v-col>
+      </v-row>
+    </v-card>
+    
+    <v-card class="pa-4" height="12em" v-if="type == 'places'">
         <v-card-text>
             <h2 class="text-h6 font-weight-medium pb-2">
                 {{ $t('coordinates') }}
@@ -14,7 +63,7 @@
                 color="primary" 
                 class="px-4 pb-4" 
                 density="compact" 
-                v-model="place.right"
+                v-model="object.right"
                 :label="$t('right')" 
                 @keypress="filterNonNumeric(event)">
             </v-text-field>
@@ -25,7 +74,7 @@
                 class="pr-4 pb-4" 
                 density="compact" 
                 :label="$t('rightTo')"
-                v-model="place.rightTo" 
+                v-model="object.rightTo" 
                 @keypress="filterNonNumeric(event)">
             </v-text-field>
 
@@ -38,7 +87,7 @@
                 class="px-4 pb-4" 
                 density="compact" 
                 :label="$t('up')"
-                v-model="place.up" 
+                v-model="object.up" 
                 @keypress="filterNonNumeric(event)">
             </v-text-field>
 
@@ -48,7 +97,7 @@
                 class="pr-4 pb-4" 
                 density="compact" 
                 :label="$t('upTo')"
-                v-model="place.upTo" 
+                v-model="object.upTo" 
                 @keypress="filterNonNumeric(event)">
             </v-text-field>
 
@@ -62,7 +111,7 @@
                 class="px-4 pb-4" 
                 density="compact" 
                 :label="$t('depthTop')"
-                v-model="place.depthTop" 
+                v-model="object.depthTop" 
                 @keypress="filterNonNumeric(event)">
             </v-text-field>
 
@@ -72,7 +121,7 @@
                 class="pr-4 pb-4" 
                 density="compact" 
                 :label="$t('depthBot')"
-                v-model="place.depthBot" 
+                v-model="object.depthBot" 
                 @keypress="filterNonNumeric(event)">
             </v-text-field>
         </v-row>
@@ -80,127 +129,113 @@
 </template>
 
 <script>
-/**
- * Methods overview:
- */
-import { fromOfflineDB } from '../../ConnectionToOfflineDB';
-
 export default {
-  data() {
+		
+		props: {
+			objectProp: Object,
+		},
 
-    return {
-      place: {
-        placeNumber: '',
-        title: [],
-        right: '',
-        rightTo: '',
-        up: '',
-        upTo: '',
-        depthTop: '',
-        depthBot: '',
-        date: '',
+    emits: ['dataToModelViewer'],
+
+		data () {
+			return {
+        type: null,
+        object: {
+          depthBot: null,
+          depthTop: null,
+          upTo: null,
+          up: null,
+          rightTo: null,
+          right: null,
+        },
+			}
+		},
+
+    watch: {
+      "object.right": {
+        handler: function() {
+          if ( this.object.right != null ) {
+            /* Send data back to ModelViewer.vue */
+            this.$emit("dataToModelViewer", [ 'right', this.object.right ]);
+          }
+        }
       },
-      headers: [
-        {
-          title: this.$t('posNumber'),
-          align: 'start',
-          sortable: true,
-          key: 'positionNumber',
-        },
-        {
-          title: this.$t('subNumber'),
-          align: 'start',
-          sortable: true,
-          key: 'subNumber',
-        },
-        { title: this.$tc('title', 2), align: 'start', key: 'title' },
-        { title: this.$t('date'), align: 'start', key: 'date' },
-      ],
-      positions: null,
-      titles: [],
-      datings: [],
-      hasUnsavedChanges: false,
-      componentHasLoaded: false,
-    }
-
-  },
-  /**
-   * Check if there are unsaved changes to the position 
-   * before leaving the PositionForm
-   * @param {*} to 
-   * @param {*} from 
-   * @param {*} next 
-   */
-  async beforeRouteLeave(to, from, next) {
-    var confirmation = false;
-    if (this.hasUnsavedChanges) {
-      confirmation = await this.confirmRouteChange();
-      if (confirmation) {
-        next();
-      }
-    } else {
-      next();
-    }
-  },
-  /**
-   * Initialize data from localDB to the reactive Vue.js data
-   */
-  async created() {
-    const acID = String(VueCookies.get('currentActivity'))
-    var activity = await fromOfflineDB.getObject(acID, 'Activities', 'activities')
-
-    const plID = String(VueCookies.get('currentPlace'))
-    var place = await fromOfflineDB.getObject(plID, 'Places', 'places')
-    
-    this.$emit("view", activity.activityNumber + ' ' + place.placeNumber);
-
-    this.titles = JSON.parse(import.meta.env.VITE_TITLES);
-    this.datings = JSON.parse(import.meta.env.VITE_DATINGS);
-
-    await fromOfflineDB.syncLocalDBs();
-    await this.updatePlace();
-    await this.updatePositions();
-    this.componentHasLoaded = true;
-  },
-  watch: {
-    'place': {
-      handler: 'handlePlaceChange',
-      deep: true,
-    },
-    /**
-     * Ensure that only 5 items are selected
-     * @param {*} val 
-     */
-    'place.title'(val) {
-      if (val.length > 5) {
-        this.$nextTick(() => this.place.title.pop())
+      "object.rightTo": {
+        handler: function() {
+          if ( this.object.rightTo != null ) {
+            /* Send data back to ModelViewer.vue */
+            this.$emit("dataToModelViewer", [ 'rightTo', this.rightTo ]);
+          }
+        }
+      },
+      "object.up": {
+        handler: function() {
+          if ( this.object.up != null ) {
+            /* Send data back to ModelViewer.vue */
+            this.$emit("dataToModelViewer", [ 'up', this.object.up ]);
+          }
+        }
+      },
+      "object.upTo": {
+        handler: function() {
+          if ( this.object.upTo != null ) {
+            /* Send data back to ModelViewer.vue */
+            this.$emit("dataToModelViewer", [ 'upTo', this.object.upTo ]);
+          }
+        }
+      },
+      "object.depthBot": {
+        handler: function() {
+          if ( this.object.depthBot != null ) {
+            /* Send data back to ModelViewer.vue */
+            this.$emit("dataToModelViewer", [ 'depthBot', this.object.depthBot ]);
+          }
+        }
+      },
+      "object.depthTop": {
+        handler: function() {
+          if ( this.object.depthTop != null ) {
+            /* Send data back to ModelViewer.vue */
+            this.$emit("dataToModelViewer", [ 'depthTop', this.object.depthTop ]);
+          }
+        }
       }
     },
-  },
 
-  computed: {
-   
-  },
+    created() {
+      this.type = this.getType(this.$route.path)
+    },
 
-  methods: {
-    /**
-     * Prevents the input of non numeric values 
-     * (allows one single `,` or `.` for float values)
-     * @param {*} evt 
-     */
-    filterNonNumeric(evt) {
-      evt = (evt) ? evt : window.event;
-      let expect = evt.target.value.toString() + evt.key.toString();
+    updated() {
+      this.object = this.objectProp;
+    },
 
-      if (!/^[-+]?[0-9]*[,.]?[0-9]*$/.test(expect)) {
-        evt.preventDefault();
-      } else {
-        return true;
-      }
+    methods: {
+      getType(path) {
+        const lowerName = path.substring(
+          path.indexOf("/") + 1, 
+          path.lastIndexOf("/")
+        );
+        return lowerName
+      },
+      /**
+      * Prevents the input of non numeric values 
+      * (allows one single `,` or `.` for float values)
+      * @param {*} evt 
+      */
+      filterNonNumeric(evt) {
+        evt = (evt) ? evt : window.event;
+        let expect = evt.target.value.toString() + evt.key.toString();
+
+        if (!/^[-+]?[0-9]*[,.]?[0-9]*$/.test(expect)) {
+          evt.preventDefault();
+        } else {
+          return true;
+        }
+      },
     }
-  }
-};
-
+		
+	}
 </script>
 
 <style scoped></style>
