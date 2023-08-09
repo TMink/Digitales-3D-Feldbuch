@@ -202,7 +202,7 @@ export default {
   data: () => ({
     dialog: false,
     curPreset: {
-      title: null,
+      title: '',
 
       general: false,
       coordinates: false,
@@ -248,6 +248,7 @@ export default {
         await this.updateModulePresets();
         this.$root.vtoast.show({ message: 'Successfully added the preset'})
         this.$emit('updateModulePresets');
+        this.clearPresetInputs();
       } else {
         this.$root.vtoast.show({ message: 'A preset with the same modules already exists', color: 'error' })
       }
@@ -318,6 +319,19 @@ export default {
       this.editPresetForm = true;
       this.selectedPreset = toRaw(object);
     }, 
+
+    /**
+     * Clears the input fields for new presets
+     */
+    clearPresetInputs() {
+      for (let prop in this.curPreset) {
+        if (prop == 'title') {
+          this.curPreset[prop] = '';
+        } else {
+          this.curPreset[prop] = false;
+        }
+      }
+    },
 
     /**
      * Deletes a selected ModulePreset from IndexedDB
