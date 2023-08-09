@@ -81,7 +81,7 @@
       }
     },
 
-    updated() {
+    created() {
       this.object = this.objectProp;
     },
 		

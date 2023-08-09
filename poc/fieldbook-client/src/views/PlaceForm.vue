@@ -94,7 +94,7 @@
 
               <AddPosition 
                 :positions_prop="positions" 
-                @updatePlace="updatePlace()" 
+                @updatePlace="updatePlace2()" 
                 @updatePositions="updatePositions()" />
 
             </v-form>
@@ -396,9 +396,10 @@ export default {
     async updatePlace2() {
       const currentPlace = VueCookies.get('currentPlace');
       const data = await fromOfflineDB.getObject(currentPlace, 'Places', 'places');
-      const rawPositions = toRaw(this.positions)
+      const rawPositions = toRaw(this.positions);
+      data = this.place
       data.positions = rawPositions;
-      await fromOfflineDB.updateObject( data, 'Places', 'places' )
+      await fromOfflineDB.updateObject( data, 'Places', 'places' );
     },
 
     /**
