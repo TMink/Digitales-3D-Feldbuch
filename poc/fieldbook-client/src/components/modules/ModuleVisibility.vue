@@ -44,11 +44,11 @@
 		},
 
     watch: {
-      "dating": {
+      "visibility": {
         handler: function() {
           if ( this.visibility != null ) {
             /* Send data back to ModelViewer.vue */
-            this.$emit("dataToModelViewer", [ 'dating', this.visibility ]);
+            this.$emit("dataToModelViewer", [ 'visibility', this.visibility ]);
           }
         }
       }
