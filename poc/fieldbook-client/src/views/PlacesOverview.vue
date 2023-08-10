@@ -400,7 +400,12 @@ export default {
     await fromOfflineDB.syncLocalDBs();
     await this.updatePlaces();
     await this.updateModulePresets(); 
-    this.setShowAllInfoSwitch();   
+    this.setShowAllInfoSwitch();
+    
+    // Init first place as technical place
+    if (this.places.length == 0) {
+      this.addPlace();
+    }
   },
 
 
