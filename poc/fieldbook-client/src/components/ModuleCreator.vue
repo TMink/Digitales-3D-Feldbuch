@@ -87,41 +87,41 @@
               v-model="selectedPreset.title"></v-text-field>
             <v-checkbox 
               hide-details 
-              label="General" 
+              :label="$t('generalInformation')" 
               v-model="selectedPreset.general">
             </v-checkbox>
             <v-checkbox 
               hide-details 
-              label="Coordinates" 
+              :label="$t('coordinates')"
               v-model="selectedPreset.coordinates">
             </v-checkbox>
             <v-checkbox 
               hide-details 
-              label="Visibility" 
+              :label="$t('visibility')"
               v-model="selectedPreset.visibility">
             </v-checkbox>
             <v-checkbox 
               hide-details 
-              label="Dating" 
+              :label="$t('dating')" 
               v-model="selectedPreset.dating">
             </v-checkbox>
 
             <!-- PLACE SPECIFIC -->
             <v-checkbox 
               hide-details 
-              label="Plane" 
+              :label="$t('plane')" 
               v-if="objectTypeProp == 'places'" 
               v-model="selectedPreset.plane">
             </v-checkbox>
             <v-checkbox 
               hide-details 
-              label="FindTypes" 
+              :label="$t('findType')" 
               v-if="objectTypeProp == 'places'" 
               v-model="selectedPreset.findTypes">
             </v-checkbox>
             <v-checkbox 
               hide-details 
-              label="PositionsList" 
+              :label="$t('position')"
               v-if="objectTypeProp == 'places'" 
               v-model="selectedPreset.positionslist">
             </v-checkbox>
@@ -129,7 +129,7 @@
             <!-- POSITION SPECIFIC -->
             <v-checkbox 
               hide-details 
-              label="Object Describers" 
+              :label="$t('objectDescriber')" 
               v-if="objectTypeProp == 'positions'" 
               v-model="selectedPreset.objectDescribers">
             </v-checkbox>

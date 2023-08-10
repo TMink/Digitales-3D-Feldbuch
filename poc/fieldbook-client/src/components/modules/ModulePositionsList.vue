@@ -105,8 +105,11 @@ export default {
     AddPosition,
   },
 
+  emits: ['dataToModelViewer'],
+
   props: {
     placeProp: Object,
+    updateListSecondProp: Boolean,
   },
 
   data() {
@@ -135,6 +138,12 @@ export default {
   },
 
   watch: {
+    'updateListSecondProp': {
+      handler: async function() {
+        await this.updatePositions();
+        this.$emit( "dataToModelViewer", [ 'resetBool', false ] );
+      }
+    },
     'place': {
       handler: 'handlePlaceChange',
       deep: true,

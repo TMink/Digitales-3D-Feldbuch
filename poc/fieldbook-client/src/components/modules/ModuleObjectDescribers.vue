@@ -102,11 +102,8 @@ export default {
 
 		async created() {
 			this.materials = JSON.parse(import.meta.env.VITE_MATERIALS);
-		},
-
-    updated() {
       this.object = this.objectProp;
-    },
+		},
 
     methods: {
       /**

@@ -29,7 +29,8 @@
           <!-- Tab item 'GENERAL' -->
           <v-window-item value="one">
             <ModelViewer
-              :object_id="place.id"  
+              :object_id="place.id"
+              :updateListFirstProp="place.testBool"  
               object_type="Places"
               @dataToPlaceForm="getEmitedData($event)"/>
           </v-window-item>
@@ -93,7 +94,7 @@
 
               <AddPosition 
                 :positions_prop="positions" 
-                @updatePlace="updatePlace()" 
+                @updatePlace="updatePlace2()" 
                 @updatePositions="updatePositions()" />
 
             </v-form>
@@ -204,6 +205,9 @@ export default {
         /* Plane */
         plane: '',
 
+        /* PositionsList */
+        testBool: false,
+
         /* Visibility */
         visibility: '',
       },
@@ -276,7 +280,6 @@ export default {
     await fromOfflineDB.syncLocalDBs();
     await this.updatePlace();
     await this.updatePositions();
-    this.componentHasLoaded = true;
   },
   watch: {
     'place': {
@@ -365,6 +368,11 @@ export default {
         case 'plane':
           this.place.plane = data[1];
 
+        /* Module: PositionList */
+        case 'resetBool':
+          this.place.testBool = data[1];
+          break;
+
         /* Module: Visibility */
         case 'visibility':
           this.place.visibility = data[1];
@@ -382,12 +390,23 @@ export default {
       const currentPlace = VueCookies.get('currentPlace');
       const data = await fromOfflineDB.getObject(currentPlace, 'Places', 'places');
       this.place = data;
+      this.componentHasLoaded = true;
+    },
+
+    async updatePlace2() {
+      const currentPlace = VueCookies.get('currentPlace');
+      const data = await fromOfflineDB.getObject(currentPlace, 'Places', 'places');
+      const rawPositions = toRaw(this.positions);
+      data = this.place
+      data.positions = rawPositions;
+      await fromOfflineDB.updateObject( data, 'Places', 'places' );
     },
 
     /**
      * Update reactive Vue.js positions data
      */
     async updatePositions() {
+      this.place.testBool = true;
       this.positions = await fromOfflineDB.getAllObjectsWithID(this.place.id, 'Place', 'Positions', 'positions');
     },
 

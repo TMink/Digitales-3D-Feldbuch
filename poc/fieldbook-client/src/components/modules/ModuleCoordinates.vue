@@ -244,9 +244,6 @@ export default {
 
     created() {
       this.type = this.getType(this.$route.path)
-    },
-
-    updated() {
       this.object = this.objectProp;
     },
 

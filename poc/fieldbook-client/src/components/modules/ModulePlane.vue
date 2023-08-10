@@ -50,7 +50,7 @@ export default {
     },
   },
 
-  updated() {
+  created() {
     this.plane = this.planeProp;
   },
 
