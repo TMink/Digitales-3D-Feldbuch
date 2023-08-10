@@ -264,7 +264,7 @@ export default {
         }
       }
     },
-    "object.adressOf": {
+    "object.addressOf": {
       handler: function () {
         if ( this.object.addressOf != null && this.type == 'positions' ) {
           /* Send data back to ModelViewer.vue */
