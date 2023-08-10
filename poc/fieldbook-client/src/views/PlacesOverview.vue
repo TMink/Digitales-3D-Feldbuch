@@ -506,6 +506,7 @@ export default {
         description: '',
         editor: '',
         date: new Date().toLocaleDateString("de-DE"),
+        technical: '',
 
         positions: [],
         images: [],

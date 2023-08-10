@@ -30,242 +30,10 @@
 
       <v-col>
         <v-window v-model="tab">
-          <!-- TAB ITEM 'GENERAL' -->
+          <!-- CARD 1 MODELVIEWER -->
           <v-window-item value="one">
-            <!-- CARD 1 GENERAL -->
-            <v-card class="pa-4">
-              <v-row class="pt-2 align-center">
-
-                <v-col cols="3">
-                  <v-text-field 
-                    color="primary" 
-                    :label="$tc('posNumber', 2) +' *'" 
-                    maxlength="6"
-                    hide-details
-                    :rules="is_required" 
-                    v-model="position.positionNumber"
-                    @keypress="filterAllNonNumeric(event)">
-                  </v-text-field>
-                </v-col>
-
-                <v-col cols="2">
-                  <v-text-field 
-                    hide-details
-                    color="primary" 
-                    :label="$tc('subNumber', 2)"
-                    maxlength="5" 
-                    :disabled="!position.hasSubNumber"
-                    v-model="position.subNumber">
-                  </v-text-field>
-                </v-col>
-
-                <v-col cols="2">
-                  <v-checkbox
-                    hide-details
-                    :label="$t('hasSubNumber')"
-                    color="secondary"
-                    v-model="position.hasSubNumber"> 
-                  </v-checkbox>
-                </v-col>
-
-                <v-col cols="2">
-                  <v-checkbox
-                    class="pl-4"
-                    hide-details
-                    v-model="position.isSeparate"
-                    color="primary"
-                    :disabled="!position.hasSubNumber"
-                    :label="$t('isSeparate')">
-                  </v-checkbox>
-                  <!-- maybe as tooltip -->
-                  <!-- <div class="text-caption">
-                    Check, if the position should be saved with a separate
-                    sub-number, even though the information is similar to the 
-                    previous position.
-                  </div> -->
-                </v-col>
-              
-                <v-col cols="3" class="pa-0">
-                  <!--<v-card class="pa-4 ma-2 mr-3" color="accent">
-                    <div 
-                      class="text-h6 text-center" 
-                      :label="$t('date')">
-                      {{ position.date }}
-                    </div>
-                    <div class="text-body-2 text-grey text-center">
-                      {{ $t('date') }}
-                    </div>
-                  </v-card> -->
-                </v-col>
-              </v-row>
-
-              <v-row>
-                <v-col lg="4">
-                  <v-combobox 
-                    color="primary" 
-                    :items="titles" 
-                    hide-details
-                    :label="$tc('title', 2) + ' *'" 
-                    :rules="is_required"
-                    v-model="position.title">
-                  </v-combobox>
-
-                  <v-text-field
-                    class="pt-6"
-                    no-resize
-                    color="primary"
-                    :hide-no-data="false"
-                    :label="$t('date')"
-                    v-model="position.date">
-                  </v-text-field>
-
-                  <v-text-field
-                    class="pt-0"
-                    color="primary"
-                    rows="2" 
-                    :label="$t('editor') + ' *'" 
-                    :rules="is_required"
-                    v-model="position.addressOf"
-                    no-resize
-                    :hint="$tc('please_input', 2, { msg: 'Ansprache von' })">
-                  </v-text-field>
-                </v-col>
-
-                <v-col lg="8">
-                  <v-textarea 
-                    rows="8" 
-                    no-resize 
-                    color="primary" 
-                    :label="$t('description')"
-                    v-model="position.description">
-                  </v-textarea>
-                </v-col> 
-              </v-row>
-            </v-card>
-
-            <v-spacer class="pa-3"></v-spacer>
-
-            <!-- CARD 2 GAUSS-KRÜGER -->
-            <v-card>
-              <v-card-text>
-                <h2 class="text-h6 font-weight-medium pb-3">
-                  {{ $t('gaussKrueger') }}
-                </h2>
-              </v-card-text>
-              <v-row class="pa-4 pt-0" justify="center">
-                <v-col lg="3">
-                  <v-text-field
-                    color="primary" 
-                    hide-details 
-                    :label="$t('right') + ' *'" 
-                    :rules="is_required"
-                    v-model="position.right" 
-                    @keypress="filterNonNumeric(event)"
-                    :hint="$tc('please_input', 2, { msg: 'Rechtswert' })">
-                  </v-text-field>
-                </v-col>
-
-                <v-divider class="mt-1 mb-n2" vertical></v-divider>
-
-                <v-col lg="3">
-                  <v-text-field 
-                    hide-details 
-                    color="primary" 
-                    :label="$t('up') + ' *'" 
-                    :rules="is_required" 
-                    v-model="position.up"
-                    @keypress="filterNonNumeric(event)"
-                    :hint="$tc('please_input', 2, { msg: 'Hochwert' })">
-                  </v-text-field>
-                </v-col>
-
-                <v-divider class="mt-1 mb-n2" vertical></v-divider>
-
-                <v-col lg="3">
-                  <v-text-field
-                    hide-details 
-                    :label="$t('height') + ' *'" 
-                    color="primary" 
-                    :rules="is_required" 
-                    v-model="position.height"
-                    @keypress="filterNonNumeric(event)"
-                    :hint="$tc('please_input', 2, { msg: 'Höhe' })">
-                  </v-text-field>
-                </v-col>
-              </v-row>
-            </v-card>
-
-            <v-spacer class="pa-3"></v-spacer>
-
-            <v-row>
-              <!-- CARD 3 COUNT -->
-              <v-col lg="3">
-                <v-card height="100%">
-                  <v-text-field
-                    color="primary" 
-                    :label="$t('count')" 
-                    class="ma-1 px-2 pt-2"
-                    v-model="position.count"
-                    @keypress="filterAllNonNumeric(event)"
-                    :hint="$tc('please_input', 2, { msg: 'Anzahl' })">
-                  </v-text-field>
-                </v-card>
-              </v-col>
-
-              <!-- CARD 4 WEIGHT -->
-              <v-col lg="3">
-                <v-card>
-                  <v-text-field 
-                    color="primary" 
-                    :label="$t('weight')" 
-                    class="ma-1 px-2 pt-2" 
-                    v-model="position.weight"
-                    @keypress="filterNonNumeric(event)"
-                    :hint="$tc('please_input', 2, { msg: 'Gewicht' })">
-                  </v-text-field>
-                </v-card>
-              </v-col>
-
-              <!-- CARD 5 MATERIAL -->
-              <v-col lg="6">
-                <v-card>
-                  <v-combobox
-                    color="primary" 
-                    :label="$t('material')"  
-                    :items="materials"
-                    class="ma-1 px-2 pt-2"  
-                    v-model="position.material" 
-                    :hint="$tc('please_input', 2, { msg: 'Material' })">
-                  </v-combobox>
-                </v-card>
-              </v-col>
-            </v-row>           
-
-            <v-spacer class="pa-3"></v-spacer>
-
-            <v-row>
-              <!-- CARD 6 DESCRIPTION -->
-              <v-col lg="6">
-                <v-card class="pa-3" height="100%">
-                  <v-combobox 
-                    counter 
-                    hide-details
-                    maxlength="50" 
-                    color="primary" 
-                    :items="datings" 
-                    :label="$t('dating')"
-                    v-model="position.dating">
-                  </v-combobox>
-                </v-card>
-              </v-col>
-              
-              <!-- CARD 7 EDITOR -->
-              <v-col lg="6">
-                <v-card class="pa-3" height="100%">
-                  
-                </v-card>
-              </v-col>
-            </v-row>
+            <ModelViewer
+              @dataToPlaceForm="getEmitedData($event)"/>
           </v-window-item>
 
           <!-- TAB ITEM 'IMAGES' -->
@@ -319,6 +87,7 @@ import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import ConfirmDialog from '../components/ConfirmDialog.vue';
 import ImageForm from '../components/ImageForm.vue';
 import ModelForm from '../components/ModelForm.vue';
+import ModelViewer from '../components/ModelViewer.vue';
 import { toRaw } from 'vue';
 
 export default {
@@ -326,7 +95,8 @@ export default {
   components: {
     ConfirmDialog,
     ImageForm,
-    ModelForm
+    ModelForm,
+    ModelViewer,
   },
   emits: ['view'],
   /**
@@ -473,6 +243,9 @@ export default {
           break;
         case 'count':
           this.position.count = data[1];
+          break;
+        case 'dating':
+          this.position.dating = data[1];
           break;
         case 'materials':
           this.materials = data[1];
