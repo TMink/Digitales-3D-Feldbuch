@@ -37,7 +37,7 @@
           @dataToModelViewer="sendData($event)"/>
         
         <ModuleTechnical v-if='object.modulePreset.technical'
-          :technicalProp="object.technical"
+          :objectProp="object"
           @dataToModelViewer="sendData($event)"/>
 
       </v-col>

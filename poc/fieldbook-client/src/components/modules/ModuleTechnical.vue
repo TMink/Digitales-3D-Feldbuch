@@ -6,54 +6,68 @@
             {{ $t('Technische Daten') }}
           </h2>
         </v-card-text>
-          <v-textarea 
+        <v-col>
+          <v-text-field
+            class="ma-1 px-2 pt-2"
+            no-resize color="primary" 
+            :hide-no-data="false"
+            :label="$t('date')"
+            v-model="object.date">
+          </v-text-field>
+          </v-col>
+          <v-col>
+            <v-textarea 
               rows="19" 
               counter 
-              color="primary" 
-              class="ma-1 px-2 pt-2" 
-              v-model="technical">
-          </v-textarea>
+              color="primary"
+              class="ma-1 px-2 pt-2"
+              v-model="object.technical">
+           </v-textarea>
+        </v-col>
       </v-card>
     </v-col>
 </template>
   
 <script>
-  /**
-   * Methods overview:
-   */
   export default {
   
     props: {
-      technicalProp: String,
+      objectProp: Object,
     },
   
     emits: ['dataToModelViewer'],
-  
-    /**
-     * Reactive Vue.js data
-     */
+
     data() {
       return {
-        technical: null,
+        object: {
+          date: null,
+          technical: null,
+        }
       }
     },
   
     watch: {
-      'technical': {
+      'object.date': {
         handler: function() {
-          if (this.technical != null) {
-            this.$emit("dataToModelViewer", [ 'technical', this.technical ]);
+          if (this.object.date != null) {
+            this.$emit("dataToModelViewer", [ 'date', this.object.date ]);
+          }
+        }
+      },
+      'object.technical': {
+        handler: function() {
+          if (this.object.technical != null) {
+            this.$emit("dataToModelViewer", [ 'technical', this.object.technical ]);
           }
         }
       },
     },
   
     created() {
-      this.technical = this.technicalProp;
+      this.object = this.objectProp;
     },
   
   };
-  
   </script>
   
   <style scoped></style>
