@@ -61,17 +61,27 @@
 
                 <!-- TITLE -->
                   <td class="py-2" :style="getRowStyle(index)">
-                    <v-list-item-title
-                      v-if="item.raw.title.length > 0"
-                      style="min-width:200px" 
-                      class="text-wrap">
-                      {{ item.raw.title.join("; ") }}
-                    </v-list-item-title>
+                    <div v-if="item.raw.placeNumber > 1">
+                      <v-list-item-title
+                        v-if="item.raw.title.length > 0"
+                        style="min-width:200px" 
+                        class="text-wrap">
+                        {{ item.raw.title.join("; ") }}
+                      </v-list-item-title>
+                      
+                      <v-list-item-title 
+                        v-if="item.raw.title.length == 0" 
+                        style="color:dimgrey;">
+                        -
+                      </v-list-item-title>
+                    </div>
 
                     <v-list-item-title 
-                      v-if="item.raw.title.length == 0" style="color:dimgrey;">
-                      -
+                      v-if="item.raw.placeNumber == 1" 
+                      style="color:#C4A484;">
+                      {{ $t('technical') }}
                     </v-list-item-title>
+
                   </td>
 
                 <!-- DATE -->
@@ -106,17 +116,25 @@
 
                 <!-- TITLE -->
                 <td class="py-2" :style="getRowStyle(index)">
-                  <v-list-item-title
-                    v-if="item.raw.title.length > 0"
-                    style="min-width:200px" 
-                    class="text-wrap">
-                    {{ item.raw.title.join("; ") }}
-                  </v-list-item-title>
+                  <div v-if="item.raw.placeNumber > 1">
+                    <v-list-item-title
+                      v-if="item.raw.title.length > 0"
+                      style="min-width:200px" 
+                      class="text-wrap">
+                      {{ item.raw.title.join("; ") }}
+                    </v-list-item-title>
 
+                    <v-list-item-title 
+                      v-if="item.raw.title.length == 0" 
+                      style="color:dimgrey;">
+                      -
+                    </v-list-item-title>
+                  </div>
                   <v-list-item-title 
-                    v-if="item.raw.title.length == 0" style="color:dimgrey;">
-                    -
-                  </v-list-item-title>
+                      v-if="item.raw.placeNumber == 1" 
+                      style="color:#C4A484;">
+                      {{ $t('technical') }}
+                    </v-list-item-title>
                 </td>
 
                 <!-- NO FINDING -->
@@ -527,7 +545,7 @@ export default {
       // set new placeNumber
       if (this.places.length == 0) {
         newPlace.placeNumber = 1;
-        
+
         //set place to technical place if it is the 1. place
         newPlace.modulePreset = await fromOfflineDB.getFirstEntry('ModulePresets', 'places');
       } else {
