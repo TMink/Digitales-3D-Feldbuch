@@ -4,8 +4,9 @@
 
 <script>
 import AddButton from '../components/AddButton.vue';
-import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
+import VueCookies from 'vue-cookies';
+import { toRaw } from 'vue';
 
 export default {
   name: "AddPosition",
@@ -18,13 +19,32 @@ export default {
   emits: ['updatePositions', 'updatePlace'],
   data() {
     return {
+      curModulePreset: {
+        title: '-',
+      },
     }
+  },
+  async created() {
+    await this.updateModulePresets();
   },
   methods: {
     closeDiag() {
       this.$emit('updatePositions');
       this.$emit('updatePlace');
     },
+
+    /**
+     * Get all ModulePresets from IndexedDB
+     */
+     async updateModulePresets() {
+      let presetFromCookies = VueCookies.get('placeModulesPreset');
+
+      if (presetFromCookies) {
+        this.curModulePreset = await fromOfflineDB.getObject(
+          presetFromCookies, 'ModulePresets', 'places');
+        }
+    },
+
     /**
      * Adds a new position to the local storage for the current place
      */
@@ -60,6 +80,8 @@ export default {
         lastChanged: Date.now(),
         lastSync: ''
       };
+
+      newPosition.modulePreset = toRaw(this.curModulePreset);
 
       if (this.positions_prop.length == 0) {
         newPosition.positionNumber = 1;

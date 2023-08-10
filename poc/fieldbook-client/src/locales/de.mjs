@@ -118,4 +118,5 @@ export default {
     "Falls bei einem Bodeneingriff der Befund noch unterhalb der Eingriffstiefe erhalten ist.",
   thisExports: "Dies wird {count} {object} exportieren",
   wantToLeave: "Möchten Sie diese Seite wirklich verlassen? Sie haben noch ungespeicherte Änderungen.",
+  saveSuccess: "Speichern erfolgreich",
 };

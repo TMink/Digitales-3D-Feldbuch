@@ -249,9 +249,23 @@ export default {
     editPresetForm: false,
   }),
 
-  async updated() {
+  async created() {
     await fromOfflineDB.syncLocalDBs();
     await this.updateModulePresets();
+
+    var curPresetID = null;
+    if (this.objectTypeProp == 'places') {
+      curPresetID = VueCookies.get('placeModulesPreset');
+    } else if (this.objectTypeProp == 'positions') {
+      curPresetID = VueCookies.get('posModulesPreset');
+    }
+
+    if (curPresetID != null) {
+
+      var curPreset = await fromOfflineDB.getObject(curPresetID, 'ModulePresets', this.objectTypeProp);
+      this.selectedPreset = curPreset;
+      this.editPresetForm = true;
+    }
   },
 
   methods: {
@@ -345,7 +359,7 @@ export default {
       if (this.objectTypeProp == 'places') {
         VueCookies.set('placeModulesPreset', rawPreset.id);
       } else if (this.objectTypeProp == 'positions') {
-        VueCookies.set('positionModulesPreset', rawPreset.id);
+        VueCookies.set('posModulesPreset', rawPreset.id);
       }
       this.$emit('updateModulePresets');
     },

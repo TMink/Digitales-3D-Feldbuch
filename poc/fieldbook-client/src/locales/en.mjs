@@ -118,4 +118,5 @@ export default {
   //thisExports: "This will export {count} {object}",
   thisExports: "Export: {count} {object}",
   wantToLeave: "Do you really want to leave? You have unsaved changes.",
+  saveSuccess: "Saving successful",
 };

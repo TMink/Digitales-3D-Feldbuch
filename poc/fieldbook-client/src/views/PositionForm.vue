@@ -292,6 +292,7 @@ export default {
 
       await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions');
       this.hasUnsavedChanges = false;
+      this.$root.vtoast.show({ message: this.$t('saveSuccess')});
     },
     /**
      * Opens the confirmation dialog

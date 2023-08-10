@@ -563,7 +563,7 @@ export default {
     },
 
     saveModulePresetToCookies() {
-      VueCookies.set('positionModulesPreset', this.curModulePreset.id);
+      VueCookies.set('posModulesPreset', this.curModulePreset.id);
     },
   }
 }
