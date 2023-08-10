@@ -68,11 +68,8 @@
       return {
         active_tab: '0',
         placeIsSet: false,
-        placeID: '',
         activityIsSet: false,
-        activityID: '',
         positionIsSet: false,
-        positionID: '',
         currentActivity: '-',
         currentPlace: '-',
         currentPosition: '-',
@@ -83,20 +80,21 @@
       await this.updatePathbar();
       this.active_tab = this.active_tab_prop;
       
-      this.activityID = VueCookies.get('currentActivity')
-      if (this.activityID !== null){
+      var activityID = VueCookies.get('currentActivity')
+      if (activityID !== null){
         this.activityIsSet = true
       }
 
-      this.placeID = VueCookies.get('currentPlace');
-      var placeNumber = await fromOfflineDB.getObject(this.placeID, 'Places', 'places').placeNumber;
-      if (this.placeID !== null && placeNumber > 1) {
-        this.placeIsSet = true
+      var placeID = VueCookies.get('currentPlace');
+      if (placeID !== null ) {
+        var curPlace = await fromOfflineDB.getObject(placeID, 'Places', 'places');
+        if (curPlace.placeNumber > 1) {
+          this.placeIsSet = true
+        }
       }
 
-
-      this.positionID = VueCookies.get('currentPosition')
-      if( this.positionID !== null)
+      var positionID = VueCookies.get('currentPosition')
+      if ( positionID !== null)
         this.positionIsSet = true
     },
     methods: {
