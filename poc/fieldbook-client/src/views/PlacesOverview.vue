@@ -517,15 +517,19 @@ export default {
         lastSync: ''
       }
 
-      newPlace.modulePreset = toRaw(this.curModulePreset);
+      
 
       // set new placeNumber
       if (this.places.length == 0) {
         newPlace.placeNumber = 1;
+        
+        //set place to technical place if it is the 1. place
+        newPlace.modulePreset = await fromOfflineDB.getFirstEntry('ModulePresets', 'places');
       } else {
         const placeNumbers = await fromOfflineDB.getPropertiesWithID(acID, 'place', 'placeNumber', 'Places', 'places')
         const newPlaceNumber = Math.max(...placeNumbers) + 1;
         newPlace.placeNumber = newPlaceNumber;
+        newPlace.modulePreset = toRaw(this.curModulePreset);
       }
 
       // update IndexedDB
