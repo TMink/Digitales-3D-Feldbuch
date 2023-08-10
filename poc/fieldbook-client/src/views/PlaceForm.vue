@@ -1,4 +1,5 @@
 <template>
+  <Navigation active_tab_prop="1" />
   <v-container fluid>
     <v-row>
       <v-col cols="2">
@@ -140,11 +141,13 @@ import ModelViewer from '../components/ModelViewer.vue';
 import ModelForm from '../components/ModelForm.vue';
 import { toRaw } from 'vue';
 import { useWindowSize } from 'vue-window-size';
+import Navigation from '../components/Navigation.vue';
 
 export default {
 
   name: 'PlaceCreation',
   components: {
+    Navigation,
     ConfirmDialog,
     AddPosition,
     ImageForm,

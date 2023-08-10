@@ -1,7 +1,6 @@
 <template>
   <div id="wrapper">
     <Navigation active_tab_prop="2" />
-
     <v-row no-gutters class="align-center pa-2">
         <v-spacer></v-spacer>
         <v-card class="ma-2 w-50" variant="text">

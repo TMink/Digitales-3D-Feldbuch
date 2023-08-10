@@ -1,4 +1,5 @@
 <template>
+  <Navigation active_tab_prop="2" />
   <v-container fluid>
     <v-row>
       <!-- SIDE TABS -->
@@ -88,6 +89,7 @@ import ConfirmDialog from '../components/ConfirmDialog.vue';
 import ImageForm from '../components/ImageForm.vue';
 import ModelForm from '../components/ModelForm.vue';
 import ModelViewer from '../components/ModelViewer.vue';
+import Navigation from '../components/Navigation.vue';
 import { toRaw } from 'vue';
 
 export default {
@@ -97,6 +99,7 @@ export default {
     ImageForm,
     ModelForm,
     ModelViewer,
+    Navigation
   },
   emits: ['view'],
   /**
