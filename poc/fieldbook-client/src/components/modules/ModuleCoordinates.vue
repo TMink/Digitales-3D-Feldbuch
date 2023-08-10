@@ -108,7 +108,7 @@
       <v-row 
         class="pa-4 pt-0" 
         justify="center">
-        <v-col lg="3">
+        <v-col lg="4">
           <v-text-field 
             color="primary" 
             hide-details 
@@ -125,7 +125,7 @@
           vertical>
         </v-divider>
 
-        <v-col lg="3">
+        <v-col lg="4">
           <v-text-field 
             hide-details 
             color="primary" 
@@ -142,7 +142,7 @@
           vertical>
         </v-divider>
 
-        <v-col lg="3">
+        <v-col lg="4">
           <v-text-field 
             hide-details 
             :label="$t('height') + ' *'" 
