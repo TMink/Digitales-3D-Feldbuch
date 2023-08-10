@@ -92,6 +92,7 @@ export default {
   import: "Import",
   hasSubNumber: "Has Sub-Nr.",
   data_import: "Data Import",
+  technical: "Technical Place",
 
   // Phrases
   add: "Add {msg}",

@@ -180,7 +180,7 @@ export default {
         id: String(Date.now()),
         title: 'Technical Place',
 
-        //technical: true,
+        technical: true,
         general: false,
         coordinates: false,
         visibility: false,
@@ -194,13 +194,14 @@ export default {
         //position specific
         objectDescribers: false,
       }
-      //await fromOfflineDB.addObject(technicalPlace, 'ModulePresets', 'places');
 
+      await fromOfflineDB.addObject(technicalPlace, 'ModulePresets', 'places');
+      
       var allPlaceModules = {
         id: String(Date.now()),
         title: 'ALL Place Modules',
 
-        //technical: false,
+        technical: false,
         general: true,
         coordinates: true,
         visibility: true,
@@ -214,6 +215,10 @@ export default {
         //position specific
         objectDescribers: false,
       }
+
+      var placePresetID = 
+        await fromOfflineDB.addObject(allPlaceModules, 'ModulePresets', 'places');
+      VueCookies.set('placeModulesPreset', placePresetID);
 
       var allPosModules = {
         id: String(Date.now()),
@@ -234,10 +239,6 @@ export default {
         //position specific
         objectDescribers: true,
       }
-
-      var placePresetID = 
-        await fromOfflineDB.addObject(allPlaceModules, 'ModulePresets', 'places');
-      VueCookies.set('placeModulesPreset', placePresetID);
       
       var posPresetID = 
         await fromOfflineDB.addObject(allPosModules, 'ModulePresets', 'positions');

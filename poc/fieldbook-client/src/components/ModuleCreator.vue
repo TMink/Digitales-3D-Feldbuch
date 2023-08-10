@@ -85,11 +85,20 @@
               @click:append-inner="editPresetForm = false"
               class="pr-6" 
               v-model="selectedPreset.title"></v-text-field>
+            
+            <v-checkbox 
+              hide-details 
+              :label="$t('technical')" 
+              v-if="objectTypeProp == 'places'"
+              v-model="selectedPreset.technical">
+            </v-checkbox>
+
             <v-checkbox 
               hide-details 
               :label="$t('generalInformation')" 
               v-model="selectedPreset.general">
             </v-checkbox>
+
             <v-checkbox 
               hide-details 
               :label="$t('coordinates')"
@@ -227,6 +236,8 @@ export default {
     dialog: false,
     curPreset: {
       title: '',
+
+      technical: false,
 
       general: false,
       coordinates: false,
