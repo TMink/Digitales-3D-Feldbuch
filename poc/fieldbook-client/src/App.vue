@@ -19,7 +19,11 @@
     </v-app-bar>
 
     <!-- Navigation Drawer -->
-    <v-navigation-drawer color="surface" style="z-index: 1;" v-model="navdrawer" location="right">
+    <v-navigation-drawer 
+      color="surface" 
+      style="z-index: 1;" 
+      v-model="navdrawer" 
+      location="right">
       <v-card height="100%" class="d-flex flex-column">
 
         <v-list-item>
@@ -89,8 +93,9 @@ import Pathbar from './components/Pathbar.vue';
 import VToast from './components/VToast.vue';
 import VueCookies from 'vue-cookies';
 import { useTheme } from 'vuetify/lib/framework.mjs';
-import LocaleChanger from './components/LocaleChanger.vue'
-import DataBackup from './components/DataBackup.vue'
+import LocaleChanger from './components/LocaleChanger.vue';
+import DataBackup from './components/DataBackup.vue';
+import { fromOfflineDB } from './ConnectionToOfflineDB.js';
 
 export default {
   name: 'App',
@@ -122,13 +127,28 @@ export default {
         { link: "/", title: this.$t('overview',  {msg: this.$tc('activity', 2)}) },
         { link: "/3dview", title: this.$t('threeD_view') },
         /* { link: "/onlineSync", title: this.$t('online_sync') }, */
-      ]
+      ],
+      initDone: false,
+
     }
   },
-  mounted() {
+
+  async mounted() {
     this.$root.vtoast = this.$refs.vtoast;
-    this.initCookies();
   },
+
+  async created() {
+    var isInitDone = VueCookies.get('initDone');
+
+    // only initialize Cookies and IndexedDB data once
+    if (!isInitDone) {
+      await fromOfflineDB.syncLocalDBs();
+      this.initCookies();
+      await this.initIndexedDB();
+      VueCookies.set('initDone', true);
+    }
+  },
+
   methods: {
     goback() {
       this.$router.go(-1);
@@ -137,21 +157,102 @@ export default {
       this.toolbar_title = title;
       this.path_reload += 1;
     },
+
     async clearLocalData() {
       this.deleteCookies();
       await this.clearIndexedDB();
     },
+
+    /**
+     * Initializes required cookie entries
+     */
     initCookies() {
       VueCookies.set('showAllPlaceInfo', false);
       VueCookies.set('showAllPosInfo', false);
     },
+
+    /**
+     * Initializes required IndexedDB data
+     */
+    async initIndexedDB() {
+
+      var technicalPlace = {
+        id: String(Date.now()),
+        title: 'Technical Place',
+
+        //technical: true,
+        general: false,
+        coordinates: false,
+        visibility: false,
+        dating: false,
+
+        //place specific
+        plane: false,
+        findTypes: false,
+        positionslist: false,
+
+        //position specific
+        objectDescribers: false,
+      }
+      //await fromOfflineDB.addObject(technicalPlace, 'ModulePresets', 'places');
+
+      var allPlaceModules = {
+        id: String(Date.now()),
+        title: 'ALL Place Modules',
+
+        //technical: false,
+        general: true,
+        coordinates: true,
+        visibility: true,
+        dating: true,
+
+        //place specific
+        plane: true,
+        findTypes: true,
+        positionslist: true,
+
+        //position specific
+        objectDescribers: false,
+      }
+
+      var allPosModules = {
+        id: String(Date.now()),
+        title: 'ALL Pos. Modules',
+
+        technical: false,
+
+        general: true,
+        coordinates: true,
+        visibility: true,
+        dating: true,
+
+        //place specific
+        plane: false,
+        findTypes: false,
+        positionslist: false,
+
+        //position specific
+        objectDescribers: true,
+      }
+
+      var placePresetID = 
+        await fromOfflineDB.addObject(allPlaceModules, 'ModulePresets', 'places');
+      VueCookies.set('placeModulesPreset', placePresetID);
+      
+      var posPresetID = 
+        await fromOfflineDB.addObject(allPosModules, 'ModulePresets', 'positions');
+      VueCookies.set('posModulesPreset', posPresetID);
+    },
+
     deleteCookies() {
       VueCookies.keys().forEach(cookie => VueCookies.remove(cookie));
       this.$router.go();
     },
+
     async clearIndexedDB() {
       const dbs = await window.indexedDB.databases()
       dbs.forEach(db => { window.indexedDB.deleteDatabase(db.name) })
+      this.deleteCookies();
       this.$router.go();
     }
   }
