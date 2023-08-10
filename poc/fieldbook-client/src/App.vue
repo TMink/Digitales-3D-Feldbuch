@@ -19,7 +19,11 @@
     </v-app-bar>
 
     <!-- Navigation Drawer -->
-    <v-navigation-drawer color="surface" style="z-index: 1;" v-model="navdrawer" location="right">
+    <v-navigation-drawer 
+      color="surface" 
+      style="z-index: 1;" 
+      v-model="navdrawer" 
+      location="right">
       <v-card height="100%" class="d-flex flex-column">
 
         <v-list-item>
@@ -135,7 +139,7 @@ export default {
 
   async created() {
     var isInitDone = VueCookies.get('initDone');
-    
+
     // only initialize Cookies and IndexedDB data once
     if (!isInitDone) {
       await fromOfflineDB.syncLocalDBs();
@@ -210,9 +214,8 @@ export default {
         //position specific
         objectDescribers: false,
       }
-      await fromOfflineDB.addObject(allPlaceModules, 'ModulePresets', 'places');
 
-      var allPositionModules = {
+      var allPosModules = {
         id: String(Date.now()),
         title: 'ALL Pos. Modules',
 
@@ -231,14 +234,21 @@ export default {
         //position specific
         objectDescribers: true,
       }
-      await fromOfflineDB.addObject(allPositionModules, 'ModulePresets', 'positions');
-   
+
+      var placePresetID = 
+        await fromOfflineDB.addObject(allPlaceModules, 'ModulePresets', 'places');
+      VueCookies.set('placeModulesPreset', placePresetID);
+      
+      var posPresetID = 
+        await fromOfflineDB.addObject(allPosModules, 'ModulePresets', 'positions');
+      VueCookies.set('posModulesPreset', posPresetID);
     },
 
     deleteCookies() {
       VueCookies.keys().forEach(cookie => VueCookies.remove(cookie));
       this.$router.go();
     },
+
     async clearIndexedDB() {
       const dbs = await window.indexedDB.databases()
       dbs.forEach(db => { window.indexedDB.deleteDatabase(db.name) })

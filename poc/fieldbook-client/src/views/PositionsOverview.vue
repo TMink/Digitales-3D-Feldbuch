@@ -454,7 +454,7 @@ export default {
     },
 
     async updateModulePresets() {
-      let curPresetID = VueCookies.get('positionModulesPreset');
+      let curPresetID = VueCookies.get('posModulesPreset');
 
       if (curPresetID) {
         this.curModulePreset = await fromOfflineDB.getObject(
