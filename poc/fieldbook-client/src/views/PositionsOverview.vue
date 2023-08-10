@@ -272,36 +272,15 @@
       </v-row>
       </v-form>
 
-      <v-row class="align-center">
-      <v-spacer></v-spacer>
       <AddPosition 
-      :positions_prop="positions" 
-      @updatePositions="updatePositions()"/>
-      <v-btn 
-        @click="moduleCreatorOverlay = !moduleCreatorOverlay"
-        color="primary">
-        <v-icon>mdi-tune-vertical</v-icon>
-        <v-row no-gutters>
-          <v-col>
-            <v-card-subtitle>
-              {{  curModulePreset.title }}
-            </v-card-subtitle>
-          </v-col>
-        </v-row>
-      </v-btn>
-      <v-spacer></v-spacer>
-    </v-row>
+        :positions_prop="positions" 
+        @updatePositions="updatePositions()"/>
   </div>
-  <ModuleCreator 
-    v-model="moduleCreatorOverlay" 
-    objectTypeProp="positions"
-    @updateModulePresets="updateModulePresets()"/>
 </template>
 
 <script>
 import Navigation from '../components/Navigation.vue';
 import VueCookies from 'vue-cookies';
-import ModuleCreator from '../components/ModuleCreator.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import AddPosition from '../components/AddPosition.vue';
 import { useWindowSize } from 'vue-window-size';
@@ -311,7 +290,6 @@ export default {
   components: {
     Navigation,
     AddPosition,
-    ModuleCreator
   },
   
   emits: ['view'],
@@ -384,10 +362,6 @@ export default {
         { title: this.$t('date'), align: 'start', key: 'date' },
         { title: this.$t('isSeparate'), align: 'start', key: 'isSeparate' },
       ],
-      curModulePreset: {
-        title: '-',
-      },
-      moduleCreatorOverlay: false,
     };
   },
   /**
@@ -397,7 +371,6 @@ export default {
     this.$emit("view", this.$t('overview', { msg: this.$tc('position', 2) }));
     await fromOfflineDB.syncLocalDBs();
     await this.updatePositions();
-    await this.updateModulePresets();
     this.setShowAllInfoSwitch();
   },
 
@@ -450,15 +423,6 @@ export default {
 
       this.positions = await fromOfflineDB.getAllObjectsWithID(
         curPlaceID, 'Place', 'Positions', 'positions');
-    },
-
-    async updateModulePresets() {
-      let curPresetID = VueCookies.get('posModulesPreset');
-
-      if (curPresetID) {
-        this.curModulePreset = await fromOfflineDB.getObject(
-          curPresetID, 'ModulePresets', 'positions');
-        }
     },
 
     /**

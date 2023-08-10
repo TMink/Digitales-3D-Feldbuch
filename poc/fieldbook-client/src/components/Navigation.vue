@@ -141,202 +141,49 @@
 </template>
 
 <script>
-import Pathbar from './Pathbar.vue';
-import VToast from './VToast.vue';
-import VueCookies from 'vue-cookies';
-import { useTheme } from 'vuetify/lib/framework.mjs';
-import LocaleChanger from './LocaleChanger.vue';
-import DataBackup from './DataBackup.vue';
-import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
-import { useI18n } from 'vue-i18n'
-
-export default {
-  name: 'App',
-  components: {
-    Pathbar,
-    LocaleChanger,
-    DataBackup,
-    VToast
-  },
-  setup() {
-    const theme = useTheme()
-    const { t } = useI18n() // use as global scope
-
-    return {
-      t,
-      theme,
-      toggleTheme() {
-        theme.global.name.value = theme.global.current.value.dark ? 'fieldbook_light' : 'fieldbook_dark'
-        VueCookies.set('currentTheme', theme.global.name.value)
+ import VueCookies from 'vue-cookies'
+ import { useI18n } from 'vue-i18n'
+ import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
+ 
+  export default {
+    setup () {
+      const { t } = useI18n() // use as global scope
+      return { t }
+    },
+    props: {
+      active_tab_prop: String
+    },
+    data: function (){
+      return {
+        active_tab: '0',
+        placeIsSet: false,
+        activityIsSet: false,
+        positionIsSet: false,
+        currentActivity: '-',
+        currentPlace: '-',
+        currentPosition: '-',
       }
-    }
-  },
-  props: {
-    active_tab_prop: String
-  },
-  data: function () {
-    return {
-      active_tab: '0',
-      placeIsSet: false,
-      placeID: '',
-      activityIsSet: false,
-      activityID: '',
-      positionIsSet: false,
-      positionID: '',
-      currentActivity: '-',
-      currentPlace: '-',
-      currentPosition: '-',
-      backbutton_link: '',
-      navdrawer: false,
-      toolbar_title: this.$t('fieldbook'),
-      path_reload: 0,
-      navbar_items: [
-        { link: "/", title: this.$t('overview', { msg: this.$tc('activity', 2) }) },
-        { link: "/3dview", title: this.$t('threeD_view') },
-        /* { link: "/onlineSync", title: this.$t('online_sync') }, */
-      ],
-      initDone: false,
-
-    }
-  },
-
-  async mounted() {
-    this.$root.vtoast = this.$refs.vtoast;
-  },
-
-  async created() {
-    var isInitDone = VueCookies.get('initDone');
-
-    // only initialize Cookies and IndexedDB data once
-    if (!isInitDone) {
+    },
+    async created () {
       await fromOfflineDB.syncLocalDBs();
-      this.initCookies();
-      await this.initIndexedDB();
-      VueCookies.set('initDone', true);
-    }
-
-    await fromOfflineDB.syncLocalDBs();
-    await this.updatePathbar();
-    this.active_tab = this.active_tab_prop; //VueCookies.get('active_tab_prop') //this.active_tab_prop;
-    this.placeID = VueCookies.get('currentPlace')
-    if (this.placeID !== null) {
-      this.placeIsSet = true
-    }
-    this.activityID = VueCookies.get('currentActivity')
-    if (this.activityID !== null) {
-      this.activityIsSet = true
-    }
-    this.positionID = VueCookies.get('currentPosition')
-    if (this.positionID !== null)
-      this.positionIsSet = true
-  },
-
-  methods: {
-    goback() {
-      this.$router.go(-1);
-    },
-    onViewChange(title) {
-      this.toolbar_title = title;
-      this.path_reload += 1;
-    },
-
-    async clearLocalData() {
-      this.deleteCookies();
-      await this.clearIndexedDB();
-    },
-
-    /**
-     * Initializes required cookie entries
-     */
-    initCookies() {
-      VueCookies.set('showAllPlaceInfo', false);
-      VueCookies.set('showAllPosInfo', false);
-    },
-
-    /**
-     * Initializes required IndexedDB data
-     */
-    async initIndexedDB() {
-
-      var technicalPlace = {
-        id: String(Date.now()),
-        title: 'Technical Place',
-
-        technical: true,
-        general: false,
-        coordinates: false,
-        dating: false,
-
-        //place specific
-        plane: false,
-        findTypes: false,
-        visibility: false,
-        positionslist: false,
-
-        //position specific
-        objectDescribers: false,
+      await this.updatePathbar();
+      this.active_tab = this.active_tab_prop;
+      
+      var activityID = VueCookies.get('currentActivity')
+      if (activityID !== null){
+        this.activityIsSet = true
       }
 
-      await fromOfflineDB.addObject(technicalPlace, 'ModulePresets', 'places');
-
-      var allPlaceModules = {
-        id: String(Date.now()),
-        title: 'ALL Place Modules',
-
-        technical: false,
-        general: true,
-        coordinates: true,
-        dating: true,
-
-        //place specific
-        plane: true,
-        findTypes: true,
-        visibility: true,
-        positionslist: true,
-
-        //position specific
-        objectDescribers: false,
+      var placeID = VueCookies.get('currentPlace');
+      var placeNumber = await fromOfflineDB.getObject(placeID, 'Places', 'places').placeNumber;
+      if (placeID !== null && placeNumber > 1) {
+        this.placeIsSet = true
       }
 
-      var placePresetID =
-        await fromOfflineDB.addObject(allPlaceModules, 'ModulePresets', 'places');
-      VueCookies.set('placeModulesPreset', placePresetID);
 
-      var allPosModules = {
-        id: String(Date.now()),
-        title: 'ALL Pos. Modules',
-
-        technical: false,
-
-        general: true,
-        coordinates: true,
-        dating: true,
-
-        //place specific
-        plane: false,
-        findTypes: false,
-        visibility: false,
-        positionslist: false,
-
-        //position specific
-        objectDescribers: true,
-      }
-
-      var posPresetID =
-        await fromOfflineDB.addObject(allPosModules, 'ModulePresets', 'positions');
-      VueCookies.set('posModulesPreset', posPresetID);
-    },
-
-    deleteCookies() {
-      VueCookies.keys().forEach(cookie => VueCookies.remove(cookie));
-      this.$router.go();
-    },
-
-    async clearIndexedDB() {
-      const dbs = await window.indexedDB.databases()
-      dbs.forEach(db => { window.indexedDB.deleteDatabase(db.name) })
-      this.deleteCookies();
-      this.$router.go();
+      var positionID = VueCookies.get('currentPosition')
+      if( positionID !== null)
+        this.positionIsSet = true
     },
 
     changePage: function (routeName) {
