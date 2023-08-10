@@ -1,59 +1,83 @@
 <template>
-    <v-col class="pt-0 pl-0 pr-0">
-      <v-card class="pa-2">
-        <v-card-text>
-          <h2 class="text-h6 font-weight-medium">
-            {{ $t('Technische Daten') }}
-          </h2>
-        </v-card-text>
-          <v-textarea 
-              rows="19" 
-              counter 
-              color="primary" 
-              class="ma-1 px-2 pt-2" 
-              v-model="technical">
-          </v-textarea>
-      </v-card>
-    </v-col>
+  <v-col 
+    lg="12" 
+    class="pt-0 pl-0 pr-0">
+    <v-card class="pa-2">
+      <v-row>
+        <v-col>
+          <v-card-text>
+            <h2 class="text-h6 font-weight-medium">
+              {{ $t('technical') }}
+            </h2>
+          </v-card-text>
+
+        </v-col>
+        <v-col lg="3">
+          <v-text-field 
+            class="ma-1 px-2 pt-2" 
+            no-resize color="primary" 
+            :hide-no-data="false" 
+            :label="$t('date')"
+            v-model="object.date">
+          </v-text-field>
+
+        </v-col>
+      </v-row>
+      <v-row>
+      <v-col>
+        <v-textarea 
+          rows="19" 
+          counter 
+          color="primary" 
+          class="ma-1 px-2 pt-2" 
+          v-model="object.technical">
+        </v-textarea>
+      </v-col>
+    </v-row>
+    </v-card>
+  </v-col>
 </template>
   
 <script>
-  /**
-   * Methods overview:
-   */
   export default {
   
     props: {
-      technicalProp: String,
+      objectProp: Object,
     },
   
     emits: ['dataToModelViewer'],
-  
-    /**
-     * Reactive Vue.js data
-     */
+
     data() {
       return {
-        technical: null,
+        object: {
+          date: null,
+          technical: null,
+        }
       }
     },
   
     watch: {
-      'technical': {
+      'object.date': {
         handler: function() {
-          if (this.technical != null) {
-            this.$emit("dataToModelViewer", [ 'technical', this.technical ]);
+          if (this.object.date != null) {
+            this.$emit("dataToModelViewer", [ 'date', this.object.date ]);
+          }
+        }
+      },
+      'object.technical': {
+        handler: function() {
+          if (this.object.technical != null) {
+            this.$emit("dataToModelViewer", [ 'technical', this.object.technical ]);
           }
         }
       },
     },
   
     created() {
-      this.technical = this.technicalProp;
+      this.object = this.objectProp;
     },
   
   };
-  
   </script>
   
   <style scoped></style>

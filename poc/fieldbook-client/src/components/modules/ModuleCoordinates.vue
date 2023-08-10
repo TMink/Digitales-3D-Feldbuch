@@ -39,7 +39,6 @@
         <v-divider 
           class="mt-n1 mb-n2" 
           horizontal />
-          
       </v-row>
       <v-row>
         <v-col lg="6">
@@ -98,35 +97,60 @@
       </v-row>
     </v-card>
 
-    <v-card class="pa-4" v-if="type == 'positions'">
+    <v-card 
+      class="pa-4" v-if="type == 'positions'">
       <v-card-text>
         <h2 class="text-h6 font-weight-medium pb-3">
           {{ $t('coordinates') }}
         </h2>
       </v-card-text>
-      <v-row class="pa-4 pt-0" justify="center">
+
+      <v-row 
+        class="pa-4 pt-0" 
+        justify="center">
         <v-col lg="3">
-          <v-text-field color="primary" hide-details :label="$t('right') + ' *'" :rules="is_required"
-            v-model="object.right" @keypress="filterNonNumeric(event)"
+          <v-text-field 
+            color="primary" 
+            hide-details 
+            :label="$t('right') + ' *'" 
+            :rules="is_required"
+            v-model="object.right" 
+            @keypress="filterNonNumeric(event)"
             :hint="$tc('please_input', 2, { msg: 'Rechtswert' })">
           </v-text-field>
         </v-col>
 
-        <v-divider class="mt-1 mb-n2" vertical>
+        <v-divider 
+          class="mt-1 mb-n2" 
+          vertical>
         </v-divider>
 
         <v-col lg="3">
-          <v-text-field hide-details color="primary" :label="$t('up') + ' *'" :rules="is_required" v-model="object.up"
-            @keypress="filterNonNumeric(event)" :hint="$tc('please_input', 2, { msg: 'Hochwert' })">
+          <v-text-field 
+            hide-details 
+            color="primary" 
+            :label="$t('up') + ' *'" 
+            :rules="is_required" 
+            v-model="object.up"
+            @keypress="filterNonNumeric(event)" 
+            :hint="$tc('please_input', 2, { msg: 'Hochwert' })">
           </v-text-field>
         </v-col>
 
-        <v-divider class="mt-1 mb-n2" vertical>
+        <v-divider 
+          class="mt-1 mb-n2" 
+          vertical>
         </v-divider>
 
         <v-col lg="3">
-          <v-text-field hide-details :label="$t('height') + ' *'" color="primary" :rules="is_required"
-            v-model="object.height" @keypress="filterNonNumeric(event)" :hint="$tc('please_input', 2, { msg: 'Höhe' })">
+          <v-text-field 
+            hide-details 
+            :label="$t('height') + ' *'" 
+            color="primary" 
+            :rules="is_required"
+            v-model="object.height" 
+            @keypress="filterNonNumeric(event)" 
+            :hint="$tc('please_input', 2, { msg: 'Höhe' })">
           </v-text-field>
         </v-col>
       </v-row>

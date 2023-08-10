@@ -78,8 +78,8 @@
             v-model="object.title">
           </v-combobox>
 
-          <v-text-field 
-            class="pt-6" 
+          <v-text-field
+            class="pt-6"
             no-resize color="primary" 
             :hide-no-data="false" 
             :label="$t('date')"
