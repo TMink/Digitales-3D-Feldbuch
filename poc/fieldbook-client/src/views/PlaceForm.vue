@@ -5,9 +5,9 @@
         <v-card>
           <v-tabs v-model="tab" direction="vertical" color="primary">
             <v-tab value="one" rounded="0"> {{ $t('general') }} </v-tab>
-            <v-tab value="two" rounded="0"> {{ $t('position') }} </v-tab>
+            <v-tab class="hideable" value="two" rounded="0"> {{ $t('position') }} </v-tab>
             <v-tab value="three" rounded="0"> {{ $tc('image', 2) }} </v-tab>
-            <v-tab value="four" rounded="0"> {{ $tc('model', 2) }} </v-tab>
+            <v-tab class="hideable" value="four" rounded="0"> {{ $tc('model', 2) }} </v-tab>
             <v-btn rounded="0" v-on:click="savePlace()" color="primary">
               {{ $t('save') }}
             </v-btn>
@@ -268,24 +268,19 @@ export default {
   /**
    * Initialize data from localDB to the reactive Vue.js data
    */
-  async created() {
-    const acID = String(VueCookies.get('currentActivity'))
-    var activity = await fromOfflineDB.getObject(acID, 'Activities', 'activities')
-
-    const plID = String(VueCookies.get('currentPlace'))
-    var place = await fromOfflineDB.getObject(plID, 'Places', 'places')
-    
-    this.$emit("view", activity.activityNumber + ' ' + place.placeNumber);
-
+  async created() {    
     this.titles = JSON.parse(import.meta.env.VITE_TITLES);
     this.datings = JSON.parse(import.meta.env.VITE_DATINGS);
-
+    
     await fromOfflineDB.syncLocalDBs();
     await this.updatePlace();
     await this.updatePositions();
+    await this.setAppBarTitle();
+    this.hideNonTechnicalTabs();
     this.componentHasLoaded = true;
     this.hasUnsavedChanges = false;
   },
+
   watch: {
     'place': {
       handler: 'handlePlaceChange',
@@ -531,6 +526,34 @@ export default {
     },
 
     /**
+     * Hide the side tabs that are not required for a technical place
+     */
+    hideNonTechnicalTabs() {
+      if (this.place.placeNumber == 1) {
+        // Get all elements with the class "hideable"
+        const hideableElements = document.querySelectorAll('.hideable');
+        
+        // Hide all hideable elements
+        hideableElements.forEach(element => {
+          element.style.display = 'none';
+        });
+      }
+    },
+
+    /**
+     * Sets the AppBarTitle to the current ActivityNumber + PlaceNumber
+     */
+    async setAppBarTitle() {
+      const acID = String(VueCookies.get('currentActivity'));
+      var activity = await fromOfflineDB.getObject(acID, 'Activities', 'activities');
+
+      const plID = String(VueCookies.get('currentPlace'))
+      var place = await fromOfflineDB.getObject(plID, 'Places', 'places')
+    
+      this.$emit("view", activity.activityNumber + ' ' + place.placeNumber);
+    },
+
+    /**
      * Gets called every time some info of the current position changes.
      * Once a change has happend, the flag `hasUnsavedChanges` gets set to `true`
      */
@@ -573,6 +596,7 @@ export default {
         padding: '8px 16px'
       };
     },
+
     /**
      * Update the hoveredRow based on the isHovered flag.
      *
