@@ -1,5 +1,6 @@
 <template>
   <div style="position: relative">
+    <Navigation active_tab_prop="1" />
 
     <!-- Main Scene-->
     <canvas id="mainCanvas" style="position: absolute" tabindex='1'></canvas>
@@ -662,6 +663,7 @@
  */
 
 import * as THREE from 'three';
+import Navigation from '../components/Navigation.vue';
 import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { ArcballControls } from
@@ -705,6 +707,9 @@ const params = {
 
 export default {
   name: 'ModelViewer',
+  components: {
+    Navigation
+  },
 
   data() {
     return {
