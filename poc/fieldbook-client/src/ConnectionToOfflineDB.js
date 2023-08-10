@@ -123,6 +123,29 @@ export default class ConnectionToOfflineDB {
   }
 
   /**
+   * Gets the first entry of the specified localDBName and storeName
+   * 
+   * @param {String} localDBName 
+   * @param {String} storeName 
+   * @returns the first entry of the specified localDB + store
+   */
+  async getFirstEntry(localDBName, storeName) {
+    const localDB = this.getLocalDBFromName(localDBName);
+
+    return new Promise((resolve, _reject) => {
+      const trans = localDB.transaction([storeName], "readonly");
+      const store = trans.objectStore(storeName);
+
+      store.openCursor().onsuccess = (e) => {
+        let cursor = e.target.result;
+        if (cursor) {
+          resolve(cursor.value);
+        }
+      };
+    });
+  }
+
+  /**
    * @param {String} localDBName
    *    Database name
    * @param {String} storeName

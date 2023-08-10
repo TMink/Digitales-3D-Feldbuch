@@ -19,11 +19,20 @@
               class="pr-6"
               clearable
               v-model="curPreset.title"></v-text-field>
+
+            <v-checkbox 
+              hide-details 
+              :label="$t('technical')" 
+              v-if="objectTypeProp == 'places'"
+              v-model="selectedPreset.technical">
+            </v-checkbox>
+
             <v-checkbox 
               hide-details 
               :label="$t('generalInformation')"
               v-model="curPreset.general">
             </v-checkbox>
+
             <v-checkbox 
               hide-details 
               :label="$t('coordinates')"
