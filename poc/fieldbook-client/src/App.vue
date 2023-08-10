@@ -183,12 +183,12 @@ export default {
         technical: true,
         general: false,
         coordinates: false,
-        visibility: false,
         dating: false,
-
+        
         //place specific
         plane: false,
         findTypes: false,
+        visibility: false,
         positionslist: false,
 
         //position specific
@@ -204,12 +204,12 @@ export default {
         technical: false,
         general: true,
         coordinates: true,
-        visibility: true,
         dating: true,
-
+        
         //place specific
         plane: true,
         findTypes: true,
+        visibility: true,
         positionslist: true,
 
         //position specific
@@ -228,12 +228,12 @@ export default {
 
         general: true,
         coordinates: true,
-        visibility: true,
         dating: true,
-
+        
         //place specific
         plane: false,
         findTypes: false,
+        visibility: false,
         positionslist: false,
 
         //position specific

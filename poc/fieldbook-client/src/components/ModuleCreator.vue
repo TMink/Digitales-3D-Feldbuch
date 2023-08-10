@@ -40,11 +40,6 @@
             </v-checkbox>
             <v-checkbox 
               hide-details 
-              :label="$t('visibility')"
-              v-model="curPreset.visibility">
-            </v-checkbox>
-            <v-checkbox 
-              hide-details 
               :label="$t('dating')"
               v-model="curPreset.dating">
             </v-checkbox>
@@ -61,6 +56,12 @@
               :label="$t('findType')"
               v-if="objectTypeProp == 'places'" 
               v-model="curPreset.findTypes">
+            </v-checkbox>
+            <v-checkbox 
+              hide-details 
+              :label="$t('visibility')"
+              v-if="objectTypeProp == 'places'"
+              v-model="curPreset.visibility">
             </v-checkbox>
             <v-checkbox 
               hide-details 
@@ -115,11 +116,6 @@
             </v-checkbox>
             <v-checkbox 
               hide-details 
-              :label="$t('visibility')"
-              v-model="selectedPreset.visibility">
-            </v-checkbox>
-            <v-checkbox 
-              hide-details 
               :label="$t('dating')" 
               v-model="selectedPreset.dating">
             </v-checkbox>
@@ -136,6 +132,12 @@
               :label="$t('findType')" 
               v-if="objectTypeProp == 'places'" 
               v-model="selectedPreset.findTypes">
+            </v-checkbox>
+            <v-checkbox 
+              hide-details 
+              :label="$t('visibility')"
+              v-if="objectTypeProp == 'places'"
+              v-model="selectedPreset.visibility">
             </v-checkbox>
             <v-checkbox 
               hide-details 
@@ -250,13 +252,13 @@ export default {
 
       general: false,
       coordinates: false,
-      visibility: false,
       dating: false,
 
       //place specific
       plane: false,
       findTypes: false,
       positionslist: false,
+      visibility: false,
 
       //position specific
       objectDescribers: false,
