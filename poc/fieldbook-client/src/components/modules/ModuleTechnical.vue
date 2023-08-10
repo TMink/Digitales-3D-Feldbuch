@@ -35,8 +35,7 @@
      */
     data() {
       return {
-        plane: null,
-        pathNames: null,
+        technical: null,
       }
     },
   
