@@ -82,14 +82,19 @@
       await fromOfflineDB.syncLocalDBs();
       await this.updatePathbar();
       this.active_tab = this.active_tab_prop;
-      this.placeID = VueCookies.get('currentPlace')
-      if (this.placeID !== null) {
-        this.placeIsSet = true
-      }
+      
       this.activityID = VueCookies.get('currentActivity')
       if (this.activityID !== null){
         this.activityIsSet = true
       }
+
+      this.placeID = VueCookies.get('currentPlace');
+      var placeNumber = await fromOfflineDB.getObject(this.placeID, 'Places', 'places').placeNumber;
+      if (this.placeID !== null && placeNumber > 1) {
+        this.placeIsSet = true
+      }
+
+
       this.positionID = VueCookies.get('currentPosition')
       if( this.positionID !== null)
         this.positionIsSet = true
