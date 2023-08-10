@@ -139,7 +139,7 @@
             </v-checkbox>
             <v-checkbox 
               hide-details 
-              :label="$t('position')"
+              :label="$tc('position', 2)"
               v-if="objectTypeProp == 'places'" 
               v-model="selectedPreset.positionslist">
             </v-checkbox>

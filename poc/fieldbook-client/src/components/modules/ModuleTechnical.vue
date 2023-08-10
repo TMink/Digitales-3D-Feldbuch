@@ -1,24 +1,23 @@
 <template>
-    <v-col lg="6" class="pt-0 pl-0 pr-0">
-      <v-card class="pa-4">
+    <v-col class="pt-0 pl-0 pr-0">
+      <v-card class="pa-2">
         <v-card-text>
-          <h2 class="text-h6 font-weight-medium pb-2">
-            {{ $t('plane') }}
+          <h2 class="text-h6 font-weight-medium">
+            {{ $t('Technische Daten') }}
           </h2>
         </v-card-text>
           <v-textarea 
-              rows="2" 
+              rows="19" 
               counter 
               color="primary" 
               class="ma-1 px-2 pt-2" 
-              v-model="technical"
-              :label="$t('plane')">
+              v-model="technical">
           </v-textarea>
       </v-card>
     </v-col>
-  </template>
+</template>
   
-  <script>
+<script>
   /**
    * Methods overview:
    */
@@ -50,7 +49,7 @@
     },
   
     created() {
-      this.technical = this.technical;
+      this.technical = this.technicalProp;
     },
   
   };

@@ -35,6 +35,10 @@
           :objectProp="object"
           :materialsProp="materials"
           @dataToModelViewer="sendData($event)"/>
+        
+        <ModuleTechnical v-if='object.modulePreset.technical'
+          :technicalProp="object.technical"
+          @dataToModelViewer="sendData($event)"/>
 
       </v-col>
     </v-row>
@@ -53,6 +57,7 @@ import ModulePlane from '../components/modules/ModulePlane.vue';
 import ModuleDating from '../components/modules/ModuleDating.vue';
 import ModulePositionsList from '../components/modules/ModulePositionsList.vue';
 import ModuleObjectDescribers from '../components/modules/ModuleObjectDescribers.vue';
+import ModuleTechnical from './modules/ModuleTechnical.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB';
 import { useWindowSize } from 'vue-window-size';
 
@@ -66,7 +71,8 @@ export default {
     ModulePlane,
     ModuleDating,
     ModulePositionsList,
-    ModuleObjectDescribers
+    ModuleObjectDescribers,
+    ModuleTechnical,
 },
 
   emits: ['dataToPlaceForm'],
@@ -87,6 +93,7 @@ export default {
     return {
       object: {
         dating: '',
+        technical: '',
         modulePreset: {
           coordinates: false,
           dating: false,
@@ -98,6 +105,7 @@ export default {
           positionslist: false,
           title: false,
           visibility: false,
+          technical: false,
         }
       },
       pathNames: null,
@@ -110,7 +118,6 @@ export default {
     const path = this.$route.path
     this.getPathNamesAndID(path)
     this.object = await fromOfflineDB.getObject(this.id, this.pathNames.db, this.pathNames.os);
-    console.log(this.object.modulePreset)
   },
   
   methods: {
