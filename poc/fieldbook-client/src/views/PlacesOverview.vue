@@ -419,6 +419,7 @@ export default {
     await this.updatePlaces();
     await this.updateModulePresets(); 
     this.setShowAllInfoSwitch();
+    VueCookies.set('active_tab_prop', 1)
     
     // Init first place as technical place
     if (this.places.length == 0) {
