@@ -1,5 +1,4 @@
 <template>
-  <Navigation active_tab_prop="1" />
   <v-container fluid>
     <v-row>
       <v-col cols="2">
@@ -132,7 +131,6 @@
  *  moveToPosition  - Loads the view of the selected position
  *  cancelPlace     - Cancels all not already saved actions
  */
-import Navigation from '../components/Navigation.vue';
 import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import ConfirmDialog from '../components/ConfirmDialog.vue';
@@ -147,7 +145,6 @@ export default {
 
   name: 'PlaceCreation',
   components: {
-    Navigation,
     ConfirmDialog,
     AddPosition,
     ImageForm,

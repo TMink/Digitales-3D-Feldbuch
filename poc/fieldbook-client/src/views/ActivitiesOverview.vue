@@ -149,7 +149,6 @@ export default {
     this.$emit("view", this.$t('overview', { msg: this.$tc('activity', 2) }));
     await fromOfflineDB.syncLocalDBs();
     await this.updateActivities();
-    VueCookies.set('active_tab_prop', 0)
   },
   methods: {
     /**

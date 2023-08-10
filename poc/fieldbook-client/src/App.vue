@@ -6,6 +6,75 @@
       <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
     </head>
 
+    <!-- App Bar -->
+    <v-app-bar style="z-index: 1;" color="accent_dark">
+      <v-btn icon v-on:click="goback">
+        <v-icon>mdi-arrow-left</v-icon>
+      </v-btn>
+      <v-toolbar-title> {{ toolbar_title }} </v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn icon @click.stop="navdrawer = !navdrawer"> 
+        <v-icon>mdi-menu</v-icon>
+      </v-btn>
+    </v-app-bar>
+
+    <!-- Navigation Drawer -->
+    <v-navigation-drawer 
+      color="surface" 
+      style="z-index: 1;" 
+      v-model="navdrawer" 
+      location="right">
+      <v-card height="100%" class="d-flex flex-column">
+
+        <v-list-item>
+          <v-list-item-title class="text-h6">
+            {{ $t('menu') }}
+          </v-list-item-title>
+        </v-list-item>
+
+        <v-divider></v-divider>
+
+        <v-list-item 
+          v-for="item in navbar_items" 
+          :key="item.title" 
+          link :to="item.link">
+          <v-list-item-title>
+            {{ item.title }}
+          </v-list-item-title>
+        </v-list-item>
+
+        <v-row class="d-flex justify-center ma-3">
+          <LocaleChanger class="ma-2" />
+          <v-btn @click="toggleTheme" color="background" class="ma-2">
+            <v-icon>mdi-theme-light-dark</v-icon>
+          </v-btn>
+        </v-row>
+
+        <v-spacer></v-spacer>
+
+        <DataBackup/>
+
+        <!-- ADMIN MENU -->
+        <v-card variant="outlined" class="ma-3 mb-15">
+          <v-card-title>
+            {{ $t('adminArea') }}
+          </v-card-title>
+          <v-divider></v-divider>
+          <v-list-item link v-on:click="deleteCookies()">
+            <v-list-item-title>
+              {{ $t('delete', { msg: 'Cookies' }) }}
+            </v-list-item-title>
+          </v-list-item>
+          <v-list-item link v-on:click="clearIndexedDB()">
+            <v-list-item-title>
+              {{ $t('delete', { msg: 'IndexedDB' }) }}
+            </v-list-item-title>
+          </v-list-item>
+        </v-card>
+
+      </v-card>
+    </v-navigation-drawer>
+
     <!-- Main Content -->
     <v-main>
       <router-view @view="onViewChange"></router-view>
@@ -27,7 +96,6 @@ import { useTheme } from 'vuetify/lib/framework.mjs';
 import LocaleChanger from './components/LocaleChanger.vue';
 import DataBackup from './components/DataBackup.vue';
 import { fromOfflineDB } from './ConnectionToOfflineDB.js';
-import { useI18n } from 'vue-i18n'
 
 export default {
   name: 'App',
@@ -40,10 +108,8 @@ export default {
   },
   setup() {
     const theme = useTheme()
-    const { t } = useI18n() // use as global scope
 
     return {
-      t,
       theme,
       toggleTheme() {
         theme.global.name.value = theme.global.current.value.dark ? 'fieldbook_light' : 'fieldbook_dark'
@@ -51,27 +117,14 @@ export default {
       }
     }
   },
-  props: {
-    active_tab_prop: String
-  },
   data: function () {
     return {
-      active_tab: '0',
-      placeIsSet: false,
-      placeID: '',
-      activityIsSet: false,
-      activityID: '',
-      positionIsSet: false,
-      positionID: '',
-      currentActivity: '-',
-      currentPlace: '-',
-      currentPosition: '-',
       backbutton_link: '',
       navdrawer: false,
       toolbar_title: this.$t('fieldbook'),
       path_reload: 0,
       navbar_items: [
-        { link: "/", title: this.$t('overview', { msg: this.$tc('activity', 2) }) },
+        { link: "/", title: this.$t('overview',  {msg: this.$tc('activity', 2)}) },
         { link: "/3dview", title: this.$t('threeD_view') },
         /* { link: "/onlineSync", title: this.$t('online_sync') }, */
       ],
@@ -94,21 +147,6 @@ export default {
       await this.initIndexedDB();
       VueCookies.set('initDone', true);
     }
-
-    await fromOfflineDB.syncLocalDBs();
-    await this.updatePathbar();
-    this.active_tab = this.active_tab_prop; //VueCookies.get('active_tab_prop') //this.active_tab_prop;
-    this.placeID = VueCookies.get('currentPlace')
-    if (this.placeID !== null) {
-      this.placeIsSet = true
-    }
-    this.activityID = VueCookies.get('currentActivity')
-    if (this.activityID !== null) {
-      this.activityIsSet = true
-    }
-    this.positionID = VueCookies.get('currentPosition')
-    if (this.positionID !== null)
-      this.positionIsSet = true
   },
 
   methods: {
@@ -146,7 +184,7 @@ export default {
         general: false,
         coordinates: false,
         dating: false,
-
+        
         //place specific
         plane: false,
         findTypes: false,
@@ -158,7 +196,7 @@ export default {
       }
 
       await fromOfflineDB.addObject(technicalPlace, 'ModulePresets', 'places');
-
+      
       var allPlaceModules = {
         id: String(Date.now()),
         title: 'ALL Place Modules',
@@ -167,7 +205,7 @@ export default {
         general: true,
         coordinates: true,
         dating: true,
-
+        
         //place specific
         plane: true,
         findTypes: true,
@@ -178,7 +216,7 @@ export default {
         objectDescribers: false,
       }
 
-      var placePresetID =
+      var placePresetID = 
         await fromOfflineDB.addObject(allPlaceModules, 'ModulePresets', 'places');
       VueCookies.set('placeModulesPreset', placePresetID);
 
@@ -191,7 +229,7 @@ export default {
         general: true,
         coordinates: true,
         dating: true,
-
+        
         //place specific
         plane: false,
         findTypes: false,
@@ -201,8 +239,8 @@ export default {
         //position specific
         objectDescribers: true,
       }
-
-      var posPresetID =
+      
+      var posPresetID = 
         await fromOfflineDB.addObject(allPosModules, 'ModulePresets', 'positions');
       VueCookies.set('posModulesPreset', posPresetID);
     },
@@ -217,59 +255,6 @@ export default {
       dbs.forEach(db => { window.indexedDB.deleteDatabase(db.name) })
       this.deleteCookies();
       this.$router.go();
-    },
-
-    changePage: function (routeName) {
-      this.$router.push({ name: routeName })
-        .catch(error => {
-          if (
-            error.name !== 'NavigationDuplicated' &&
-            !error.message.includes('Avoided redundant navigation to current location')
-          ) {
-            console.log(error)
-          }
-        })
-    },
-    async updatePathbar() {
-      if (VueCookies.get('currentActivity')) {
-        await this.getInfo("Activity")
-      }
-      if (VueCookies.get('currentPlace')) {
-        await this.getInfo("Place")
-      }
-      if (VueCookies.get('currentPosition')) {
-        await this.getInfo("Position")
-      }
-    },
-
-    async getInfo(selection) {
-      const id = VueCookies.get('current' + selection);
-
-      let db = null;
-      let st = null;
-      if (selection === "Activity") {
-        db = "Activities"
-        st = "activities"
-      } else {
-        db = selection + "s"
-        st = selection.toLowerCase() + "s"
-      }
-      const name = await fromOfflineDB.getObject(id, db, st);
-
-      switch (selection) {
-        case "Activity":
-          this.currentActivity = name.activityNumber;
-          break;
-        case "Place":
-          this.currentPlace = name.placeNumber;
-          break;
-        case "Position":
-          this.currentPosition = name.positionNumber;
-          break;
-        default:
-          console.log("Error");
-      }
-
     }
   }
 }
@@ -301,8 +286,4 @@ export default {
   background: #555;
 }
 
-.v-tabs,
-.v-tab {
-  height: 70px;
-}
 </style>

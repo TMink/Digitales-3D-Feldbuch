@@ -1,5 +1,4 @@
 <template>
-  <Navigation active_tab_prop="2" />
   <v-container fluid>
     <v-row>
       <!-- SIDE TABS -->
@@ -83,7 +82,6 @@
  *  calcSubNumber   - Calculates the subnumber depending on prev position
  *  goBack          - Goes back to PlaceForm
  */
-import Navigation from '../components/Navigation.vue';
 import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import ConfirmDialog from '../components/ConfirmDialog.vue';
@@ -95,7 +93,6 @@ import { toRaw } from 'vue';
 export default {
   name: 'PositionCreation',
   components: {
-    Navigation,
     ConfirmDialog,
     ImageForm,
     ModelForm,
