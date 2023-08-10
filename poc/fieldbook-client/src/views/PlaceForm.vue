@@ -421,6 +421,7 @@ export default {
 
       await fromOfflineDB.updateObject(inputPlace, 'Places', 'places');
       this.hasUnsavedChanges = false;
+      this.$root.vtoast.show({ message: this.$t('saveSuccess')});
     },
 
     /**
