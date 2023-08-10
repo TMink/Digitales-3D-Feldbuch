@@ -207,7 +207,10 @@ export default {
 
         /* PositionsList */
         testBool: false,
-
+        
+        /* Technical */
+        technical: '',
+        
         /* Visibility */
         visibility: '',
       },
@@ -280,6 +283,8 @@ export default {
     await fromOfflineDB.syncLocalDBs();
     await this.updatePlace();
     await this.updatePositions();
+    this.componentHasLoaded = true;
+    this.hasUnsavedChanges = false;
   },
   watch: {
     'place': {
@@ -373,6 +378,11 @@ export default {
           this.place.testBool = data[1];
           break;
 
+        /* Module: Technical */
+        case 'technical':
+          this.place.technical = data[1]
+          break;
+
         /* Module: Visibility */
         case 'visibility':
           this.place.visibility = data[1];
@@ -390,7 +400,6 @@ export default {
       const currentPlace = VueCookies.get('currentPlace');
       const data = await fromOfflineDB.getObject(currentPlace, 'Places', 'places');
       this.place = data;
-      this.componentHasLoaded = true;
     },
 
     async updatePlace2() {
@@ -400,6 +409,7 @@ export default {
       data = this.place
       data.positions = rawPositions;
       await fromOfflineDB.updateObject( data, 'Places', 'places' );
+      this.hasUnsavedChanges = false;
     },
 
     /**
