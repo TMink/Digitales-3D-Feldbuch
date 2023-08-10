@@ -1,30 +1,9 @@
 <template>
-  <v-row class="align-center">
-    <v-spacer></v-spacer>
-    <AddButton @click="addPosition()" />
-    <v-btn 
-      @click="moduleCreatorOverlay = !moduleCreatorOverlay"
-      color="primary">
-      <v-icon>mdi-tune-vertical</v-icon>
-      <v-row no-gutters>
-        <v-col>
-          <v-card-subtitle>
-            {{  curModulePreset.title }}
-          </v-card-subtitle>
-        </v-col>
-      </v-row>
-    </v-btn>
-    <v-spacer></v-spacer>
-    <ModuleCreator 
-      v-model="moduleCreatorOverlay" 
-      objectTypeProp="positions"
-      @updateModulePresets="updateModulePresets()"/>
-  </v-row>
+  <AddButton @click="addPosition()" />
 </template>
 
 <script>
 import AddButton from '../components/AddButton.vue';
-import ModuleCreator from '../components/ModuleCreator.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import VueCookies from 'vue-cookies';
 import { toRaw } from 'vue';
@@ -32,8 +11,7 @@ import { toRaw } from 'vue';
 export default {
   name: "AddPosition",
   components: {
-    AddButton,
-    ModuleCreator
+    AddButton
   },
   props: {
     positions_prop: Array,
@@ -44,7 +22,6 @@ export default {
       curModulePreset: {
         title: '-',
       },
-      moduleCreatorOverlay: false,
     }
   },
   async created() {
@@ -66,7 +43,7 @@ export default {
       if (presetFromCookies) {
         this.curModulePreset = await fromOfflineDB.getObject(
           presetFromCookies, 'ModulePresets', 'positions');
-      }
+        }
     },
 
     /**
