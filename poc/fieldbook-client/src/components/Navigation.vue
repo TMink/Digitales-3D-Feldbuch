@@ -1,5 +1,4 @@
 <template>
-  
 
   <!-- App Bar -->
     <v-app-bar 
@@ -175,16 +174,20 @@
       }
 
       var placeID = VueCookies.get('currentPlace');
-      var placeNumber = await fromOfflineDB.getObject(placeID, 'Places', 'places').placeNumber;
-      if (placeID !== null && placeNumber > 1) {
-        this.placeIsSet = true
+      if (placeID !== null ) {
+        var curPlace = await fromOfflineDB.getObject(placeID, 'Places', 'places');
+        if (curPlace.placeNumber > 1) {
+          this.placeIsSet = true
+        }
       }
 
 
       var positionID = VueCookies.get('currentPosition')
-      if( positionID !== null)
+      if ( positionID !== null)
         this.positionIsSet = true
     },
+
+  methods: {
 
     changePage: function (routeName) {
       this.$router.push({ name: routeName })
@@ -240,7 +243,6 @@
     }
   }
 }
-
 </script>
 
 <style>
