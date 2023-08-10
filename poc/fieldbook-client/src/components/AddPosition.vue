@@ -25,6 +25,7 @@ export default {
     }
   },
   async created() {
+    await fromOfflineDB.syncLocalDBs();
     await this.updateModulePresets();
   },
   methods: {
@@ -37,11 +38,11 @@ export default {
      * Get all ModulePresets from IndexedDB
      */
      async updateModulePresets() {
-      let presetFromCookies = VueCookies.get('placeModulesPreset');
+      let presetFromCookies = VueCookies.get('posModulesPreset');
 
       if (presetFromCookies) {
         this.curModulePreset = await fromOfflineDB.getObject(
-          presetFromCookies, 'ModulePresets', 'places');
+          presetFromCookies, 'ModulePresets', 'positions');
         }
     },
 
