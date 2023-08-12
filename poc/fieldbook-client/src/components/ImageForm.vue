@@ -9,32 +9,21 @@
 
     </v-list>
   </v-card>
+
   <!-- LIST ITEM -->
-  <!-- TODO: fix virtual scroller -->
-  <!-- <v-virtual-scroll  :max-height="windowHeight - 300">
-    <template v-slot:default="{ item }" > -->
       <v-row no-gutters class="align-center">
         <v-col xl="3" md="4" sm="6" v-for="(item, i) in images" :key="item">
           <v-card class="pa-2 ma-2">
             <v-card-title> Nr. {{ item.imageNumber }} </v-card-title>
             <v-card-subtitle> {{ item.title }} </v-card-subtitle>
             
-              <v-img 
-                style="cursor: pointer;" 
-                class="my-2" 
-                height="150" 
-                :src="item.image"
-                v-on:click="openImage(item)">
-              <template v-slot:placeholder>
-                <v-row no-gutters 
-                  class="align-center justify-center" 
-                  style="height: 100%;">
-                  <v-progress-circular
-                    color="grey-lighten-4"
-                    indeterminate
-                  ></v-progress-circular>
-                </v-row>
-              </template>
+            <v-img 
+              cover
+              height="200" 
+              class="ma-2 my-4" 
+              :src="item.image"
+              style="cursor: zoom-in"
+              v-on:click="openImage(i)">
             </v-img>
             
             <v-row no-gutters>
@@ -60,80 +49,41 @@
 
   <!-- IMAGE CREATION DIALOG -->
   <v-dialog v-model="create_dialog" max-width="800" persistent>
-    <v-card>
+    <v-card class="px-4 pt-2">
       <v-card-title>
         {{ $t('add', { msg: $t('image') }) }}
       </v-card-title>
-      <v-card-text>
 
-        <!-- <v-row v-if='object.placeNumber > 0'>
-          <v-card-title>
-            {{ $t('place') }}
-          </v-card-title>
-        
-          <v-text-field 
-            disabled 
-            :label="$t('number')"
-            v-model="object.placeNumber">
+      <v-row no-gutters>
+        <v-col cols="3">
+          <v-checkbox
+            v-model="automaticNaming"
+            label="automatic Naming">
+          </v-checkbox>
+        </v-col>
+        <v-col cols="9">
+          <v-text-field v-if="automaticNaming"
+            :disabled="automaticNaming">
+            {{ curPath }}*imgNumber*
           </v-text-field>
-        </v-row> -->
+          <v-text-field 
+            v-if="!automaticNaming"
+            v-model="image.title" 
+            :label="$t('title')" 
+            :hint="$t('please_input', 
+              {msg: $t('title_of', { msg: $t('image') })})">
+          </v-text-field>
+        </v-col>
+      </v-row>
 
-        <!-- <v-row no-gutters v-if="object.positionNumber > 0">
-          <v-col cols="2">
-            <v-card-title>
-              {{ $t('position') }}
-            </v-card-title>
-          </v-col>
-
-          <v-col cols="5">
-            <v-text-field 
-              disabled 
-              :label="$t('number')"
-              class="pr-2"
-              v-model="object.positionNumber">
-            </v-text-field>
-          </v-col>
-
-          <v-col cols="5">
-            <v-text-field 
-              disabled 
-              v-model="object.subNumber" 
-              :label="$t('subNumber')">
-            </v-text-field>
-          </v-col>
-        </v-row> -->
-
-        <v-row>
-          <v-col cols="3">
-            <v-checkbox
-              v-model="automaticNaming"
-              label="automatic Naming">
-            </v-checkbox>
-          </v-col>
-          <v-col cols="9">
-            <v-text-field v-if="automaticNaming"
-                :disabled="automaticNaming">
-                {{ curPath }}*imgNumber*
-              </v-text-field>
-            <v-text-field 
-              v-if="!automaticNaming"
-              v-model="image.title" 
-              :label="$t('title')" 
-              :hint="$t('please_input', 
-                {msg: $t('title_of', { msg: $t('image') })})">
-            </v-text-field>
-          </v-col>
-        </v-row>
-
-        <v-file-input 
-          counter
-          multiple
-          show-size 
-          v-model="uploadImages" 
-          prepend-icon="mdi-camera"
-          accept="image/png, image/jpeg, image/bmp">
-        </v-file-input>
-      </v-card-text>
+      <v-file-input 
+        counter
+        multiple
+        show-size 
+        v-model="uploadImages" 
+        prepend-icon="mdi-camera"
+        accept="image/png, image/jpeg, image/bmp">
+      </v-file-input>
 
       <v-card-actions class="justify-center">
         <v-btn icon color="primary" v-on:click="addMultipleImages()">
@@ -148,87 +98,58 @@
 
   <!-- IMAGE EDITING DIALOG -->
     <v-dialog v-model="edit_dialog" max-width="800" persistent>
-      <v-card class="pa-2">
+      <v-card class="px-4 pt-2">
         <v-card-title>
           {{ $t('edit', { msg: $t('image') }) }}
         </v-card-title>
 
-          <v-row v-if='object.placeNumber > 0'>
-            <v-col cols="2">
-              <v-card-title>
-                {{ $tc('place', 2) }}
-              </v-card-title>
-            </v-col>
-
-            <v-col cols="10">
-
-              <v-text-field 
-                disabled 
-                :label="$t('number')"
-                v-model="object.placeNumber">
-              </v-text-field>
-            </v-col>
-          </v-row>
-
-          <v-row v-if="object.positionNumber > 0">
-            <v-col cols="2">
-              <v-card-title>
-                Position
-              </v-card-title>
-            </v-col>
-
-            <v-col cols="5">
-              <v-text-field 
-                disabled 
-                :label="$t('number')"
-                class="pr-2"
-                v-model="object.positionNumber">
-              </v-text-field>
-            </v-col>
-
-            <v-col cols="5">
-              <v-text-field 
-                disabled 
-                v-model="object.subNumber" 
-                :label="$t('subNumber')">
-              </v-text-field>
-            </v-col>
-          </v-row>
-
           <v-row no-gutters>
-            <v-col cols="2">
-              <v-card-title>
-                {{ $t('image') }}
-              </v-card-title>
-            </v-col>
 
-            <v-col cols="3">
+            <v-col cols="2" class="px-1">
               <v-text-field 
                 disabled
                 class="pr-2"
+                no-hints
                 :label="$tc('number', 1)"
                 v-model="image.imageNumber">
               </v-text-field>
             </v-col>
-            <v-col cols="7">
+            <v-divider vertical class="mb-4"></v-divider>
+
+            <v-col cols="2">
+              <v-checkbox
+                no-hints
+                v-model="automaticNaming"
+                label="automatic Naming">
+              </v-checkbox>
+            </v-col>
+
+            <v-col cols="8">
               <v-text-field 
+                no-hints
+                v-if="automaticNaming"
+                :disabled="automaticNaming">
+                {{ curPath + String(image.imageNumber).padStart(4, '0') }}
+              </v-text-field>
+
+              <v-text-field 
+                no-hints
+                v-if="!automaticNaming"
                 v-model="image.title" 
-                :label="$tc('title', 1)" 
+                :label="$t('title')" 
                 :hint="$t('please_input',
                   { msg: $t('title_of', { msg: $t('image') }) })">
               </v-text-field>
             </v-col>
           </v-row>
           
-          <v-row>
-            <v-file-input 
-              counter
-              show-size 
-              v-model="temp_editing_img" 
-              prepend-icon="mdi-camera"
-              accept="image/png, image/jpeg, image/bmp">
-            </v-file-input>
-          </v-row>
+          <v-file-input 
+            counter
+            show-size 
+            v-model="temp_editing_img" 
+            prepend-icon="mdi-camera"
+            accept="image/png, image/jpeg, image/bmp">
+          </v-file-input>
 
         <v-card-actions class="justify-center">
           <v-btn icon color="primary" v-on:click="saveImage()">
@@ -242,10 +163,15 @@
     </v-dialog>
 
   <!-- IMAGE CAROUSEL DIALOG -->
-  <v-dialog v-model="img_carousel_dialog" max-width="800px">
-    <div id="imgContainer">
-      <img id="realImg" style="cursor: zoom-in" :src="openedImage" alt="">
-    </div>
+  <v-dialog v-model="img_carousel_dialog">
+      <v-carousel hide-delimiters :model-value="carouselIndex" height="100vh">
+        <v-carousel-item
+          @click="closeImgDialog"
+          v-for="(item, i) in images"
+          :key="i"
+          :src="item.image">
+        </v-carousel-item>
+      </v-carousel>
   </v-dialog>
 </template>
 
@@ -336,15 +262,23 @@ export default {
      */
     async saveImage() {
       var rawImage = toRaw(this.image);
+      var index = this.images.indexOf(this.image);
+      
       if (this.temp_editing_img.length == 0) {
         rawImage.image = this.backup_image;
       } else {
         rawImage.image = await this.textureToBase64(this.temp_editing_img);
       }
-      await fromOfflineDB.updateObject(rawImage, 'Images', 'images');
-      await this.updateImages();
 
-      this.clearImgProxy();
+      // automatically name the image title
+      if (this.automaticNaming) {
+        var imgNumber = String(rawImage.imageNumber).padStart(4, '0');
+        rawImage.title = this.curPath + imgNumber;
+      }
+
+      await fromOfflineDB.updateObject(rawImage, 'Images', 'images');
+
+      this.images[index] = await fromOfflineDB.getObject(rawImage.id, 'Images', 'images');
       this.edit_dialog = false;
     },
 
@@ -408,7 +342,7 @@ export default {
         lastSync: ''
       };
 
-      // automaticall name the image title
+      // automatically name the image title
       if (this.automaticNaming) {
         var imgNumber = String(imageNumber).padStart(4, '0');
         filledImg.title = this.curPath + imgNumber;
@@ -434,6 +368,18 @@ export default {
       this.image = toRaw(item)
 
       this.edit_dialog = true;
+    },
+
+    /**
+     * Clears relevant image VueProxy data for future image creation/editing
+     */
+    clearImgProxy() {
+      this.image.id = '';
+      //this.image.positionID = '';
+      //this.image.placeID = '';
+      this.image.title = '';
+      this.image.image = [];
+      this.temp_editing_img = [];
     },
 
     /**
@@ -496,42 +442,16 @@ export default {
      * Opens an image in a dedicated dialog
      * @param {ImageObject} image 
      */
-    async openImage(image) {
+    async openImage(index) {
       this.img_carousel_dialog = true;
-      this.openedImage = image.image;
+      this.carouselIndex = index;
+    },
 
-      const imgContainer = await this.waitForElm('imgContainer');
-      const img = await this.waitForElm('realImg');
-      
-      // zoom in/out on click and change the mouse cursor
-      imgContainer.addEventListener("click", (e) => {
-        if (img.style.cursor == "zoom-in") {
-          img.style.cursor = "zoom-out";
-        } else {
-          img.style.cursor = "zoom-in";
-        }
-
-        if(img.style.transform == "scale(2)") {
-          img.style.transform = "scale(1)";
-        } else {
-          img.style.transform = "scale(2)";
-        }
-      });
-
-      // change img position according to mouse
-      imgContainer.addEventListener("mousemove", (e) => {
-        const x = e.x - 550; //TODO: find perfect offsets
-        const y = e.y  //+ (img.height/2)// maybe with e.target.offset*LEFT/TOP*
-        img.style.transformOrigin = `${x}px ${y}px`;
-      });
-
-      // zoom out when mouse leaves img bounds
-      /* imgContainer.addEventListener("mouseleave", (e) => {
-        img.style.transform = ' translate(-50%, -50%) scale(1)'
-        img.style.cursor = "zoom-in";
-        img.style.transformOrigin = 'center';
-        img.style.transform = "scale(1)";
-      }); */
+    /**
+     * Closes the image carousel dialog
+     */
+    closeImgDialog() {
+      this.img_carousel_dialog = false;
     },
 
     /**
@@ -567,8 +487,8 @@ export default {
 
       return autoTitle;
     },
+
     /**
-     * 
      * Waits until the HTML element exists
      * @param {String} selector 
      */
@@ -598,19 +518,4 @@ export default {
 </script>
 
 <style scoped>
-
-#imgContainer {
-  align-items: center;
-  justify-content: center;
-  margin: auto;
-  box-shadow: 3px 3px 4px rgba(0,0,0,0.3);
-  overflow: hidden;
-}
-
-img {
-  transform-origin: center;
-  object-fit: cover;
-  height: 100%;
-  width: 100%;
-}
 </style>
