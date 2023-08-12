@@ -14,17 +14,27 @@
   <!-- <v-virtual-scroll  :max-height="windowHeight - 300">
     <template v-slot:default="{ item }" > -->
       <v-row no-gutters class="align-center">
-        <v-col xl="3" md="4" sm="6" v-for="item in images" :key="item">
+        <v-col xl="3" md="4" sm="6" v-for="(item, i) in images" :key="item">
           <v-card class="pa-2 ma-2">
             <v-card-title> Nr. {{ item.imageNumber }} </v-card-title>
             <v-card-subtitle> {{ item.title }} </v-card-subtitle>
             
               <v-img 
-              style="cursor: pointer;" 
-              class="my-2" 
-              height="150" 
-              :src=item.image
-              v-on:click="openImage(item)">
+                style="cursor: pointer;" 
+                class="my-2" 
+                height="150" 
+                :src="item.image"
+                v-on:click="openImage(item)">
+              <template v-slot:placeholder>
+                <v-row no-gutters 
+                  class="align-center justify-center" 
+                  style="height: 100%;">
+                  <v-progress-circular
+                    color="grey-lighten-4"
+                    indeterminate
+                  ></v-progress-circular>
+                </v-row>
+              </template>
             </v-img>
             
             <v-row no-gutters>
@@ -45,8 +55,6 @@
           </v-card>
         </v-col>
       </v-row>
-<!--     </template>
-  </v-virtual-scroll> -->
 
   <AddButton v-on:click="create_dialog = true" />
 
@@ -58,7 +66,7 @@
       </v-card-title>
       <v-card-text>
 
-        <v-row v-if='object.placeNumber > 0'>
+        <!-- <v-row v-if='object.placeNumber > 0'>
           <v-card-title>
             {{ $t('place') }}
           </v-card-title>
@@ -68,9 +76,9 @@
             :label="$t('number')"
             v-model="object.placeNumber">
           </v-text-field>
-        </v-row>
+        </v-row> -->
 
-        <v-row no-gutters v-if="object.positionNumber > 0">
+        <!-- <v-row no-gutters v-if="object.positionNumber > 0">
           <v-col cols="2">
             <v-card-title>
               {{ $t('position') }}
@@ -327,20 +335,24 @@ export default {
      */
     async addMultipleImages() {
       var rawImageArray = toRaw(this.uploadImages);
+      var curImages = [];
+      const initImageNumbers = this.images.length;
 
       for (var i=0; i<rawImageArray.length; i++) {
-       await this.addImage(rawImageArray[i]);
-      }
 
-      await this.updateImages();
+        var imageNumber = initImageNumbers + 1 + i;
+        var addedImg = await this.addImage(rawImageArray[i], imageNumber)
+        curImages.push(addedImg);
+      }
+      this.images = this.images.concat(curImages);
     },
 
     /**
      * Adds a new image-placeholder to the images-array
      */
-    async addImage(imageFile) {
+    async addImage(imageFile, imageNumber) {
       // get all data for the new image
-      var newImage = await this.fillNewImgData(imageFile);
+      var newImage = await this.fillNewImgData(imageFile, imageNumber);
 
       // add imageID to the object array of all images
       var rawObject = toRaw(this.object);
@@ -354,23 +366,24 @@ export default {
 
       this.clearImgProxy();
       // update IndexedDB
-      await fromOfflineDB.updateObject(rawObject, this.object_type, this.object_type.toLowerCase());
-      await fromOfflineDB.addObject(newImage, "Images", "images");
-      await fromOfflineDB.addObject({ id: newImage.id, object: 'images' }, 'Changes', 'created');
-      
+      fromOfflineDB.updateObject(rawObject, this.object_type, this.object_type.toLowerCase());
+      fromOfflineDB.addObject(newImage, "Images", "images");
+      fromOfflineDB.addObject({ id: newImage.id, object: 'images' }, 'Changes', 'created');
+      return newImage;
     },
 
     /**
      * Collects all relevant data for the new Image
      * @param {*} imageFile 
      */
-    async fillNewImgData(imageFile) {
+    async fillNewImgData(imageFile, imageNumber) {
       var newImageID = String(Date.now());
       var rawImage = toRaw(this.image);
+
       // new image data
       var filledImg = {
         id: newImageID,
-        imageNumber: null,
+        imageNumber: imageNumber,
         title: rawImage.title,
         image: await this.textureToBase64([imageFile]),
         lastChanged: Date.now(),
@@ -382,16 +395,6 @@ export default {
         filledImg.positionID = this.object_id;
       } else {
         filledImg.placeID = this.object_id;
-      }
-
-      // set new imageNumber
-      if (this.images.length == 0) {
-        filledImg.imageNumber = 1;
-      } else {
-        this.updateImages();
-        const imageNumber = Math.max(...this.images.map(o => o.imageNumber));
-        const newImageNumber = imageNumber + 1;
-        filledImg.imageNumber = newImageNumber;
       }
 
       return filledImg;
@@ -464,6 +467,7 @@ export default {
 
       await this.updateImages();
     },
+    
     /**
      * Opens an image in a dedicated dialog
      * @param {ImageObject} image 
@@ -505,6 +509,7 @@ export default {
         img.style.transform = "scale(1)";
       }); */
     },
+
     /**
      * Clears relevant image VueProxy data for future image creation/editing
      */
