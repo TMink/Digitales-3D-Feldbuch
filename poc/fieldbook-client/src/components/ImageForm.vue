@@ -106,7 +106,7 @@
           counter
           multiple
           show-size 
-          v-model="image.image" 
+          v-model="uploadImages" 
           prepend-icon="mdi-camera"
           accept="image/png, image/jpeg, image/bmp">
         </v-file-input>
@@ -257,9 +257,10 @@ export default {
         positionID: '',
         placeID: '',
         title: '',
-        image: [],
+        image: '',
       },
       images: [],
+      uploadImages: [],
       temp_editing_img: [],
       openedImage: '',
       backup_image: '',
@@ -325,10 +326,10 @@ export default {
      * for the current Place/Position 
      */
     async addMultipleImages() {
-      var rawImageArray = toRaw(this.image);
+      var rawImageArray = toRaw(this.uploadImages);
 
-      for (var i=0; i<rawImageArray.image.length; i++) {
-       await this.addImage(rawImageArray.image[i]);
+      for (var i=0; i<rawImageArray.length; i++) {
+       await this.addImage(rawImageArray[i]);
       }
 
       await this.updateImages();
