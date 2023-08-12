@@ -489,7 +489,7 @@ export default {
       await fromOfflineDB.deleteObject(image, 'Images', 'images');
       VueCookies.remove('currentImage');
 
-      await this.updateImages();
+      this.images.splice(index, 1);
     },
     
     /**
