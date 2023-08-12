@@ -254,7 +254,7 @@ export default {
           this.materials = data[1];
           break;
         default:
-          console.log( error )
+          console.log( 'Error getting emitted data from Modules' )
       }
     },
     /**
