@@ -101,14 +101,29 @@
               :label="$t('subNumber')">
             </v-text-field>
           </v-col>
-        </v-row>
+        </v-row> -->
 
-        <v-text-field 
-          v-model="image.title" 
-          :label="$t('title')" 
-          :hint="$t('please_input', 
-          {msg: $t('title_of', { msg: $t('image') })})">
-        </v-text-field>
+        <v-row>
+          <v-col cols="3">
+            <v-checkbox
+              v-model="automaticNaming"
+              label="automatic Naming">
+            </v-checkbox>
+          </v-col>
+          <v-col cols="9">
+            <v-text-field v-if="automaticNaming"
+                :disabled="automaticNaming">
+                {{ curPath }}*imgNumber*
+              </v-text-field>
+            <v-text-field 
+              v-if="!automaticNaming"
+              v-model="image.title" 
+              :label="$t('title')" 
+              :hint="$t('please_input', 
+                {msg: $t('title_of', { msg: $t('image') })})">
+            </v-text-field>
+          </v-col>
+        </v-row>
 
         <v-file-input 
           counter
@@ -274,6 +289,8 @@ export default {
       backup_image: '',
       hovering: false,
       create_dialog: false,
+      automaticNaming: true,
+      curPath: '',
       edit_dialog: false,
       img_carousel_dialog: false,
       is_required: [v => !!v || 'Pflichtfeld'],
@@ -293,6 +310,8 @@ export default {
     await fromOfflineDB.syncLocalDBs();
     await this.updateObject();
     await this.updateImages();
+
+    this.curPath = await this.getAutoImgTitle();
   },
   methods: {
     /**
@@ -364,7 +383,6 @@ export default {
       // hide image creation dialog
       this.create_dialog = false;
 
-      this.clearImgProxy();
       // update IndexedDB
       fromOfflineDB.updateObject(rawObject, this.object_type, this.object_type.toLowerCase());
       fromOfflineDB.addObject(newImage, "Images", "images");
@@ -389,6 +407,12 @@ export default {
         lastChanged: Date.now(),
         lastSync: ''
       };
+
+      // automaticall name the image title
+      if (this.automaticNaming) {
+        var imgNumber = String(imageNumber).padStart(4, '0');
+        filledImg.title = this.curPath + imgNumber;
+      }
 
       // set the image parentID
       if (this.object_type == "Positions") {
@@ -511,15 +535,37 @@ export default {
     },
 
     /**
-     * Clears relevant image VueProxy data for future image creation/editing
+     * Creates and returns the title beginning of an image for 
+     * the current `place`/`position`.
+     * 
+     * To create a full image title the `imageNumber` has to be 
+     * appended to this return `String`.
+     * @returns {String} image title 
      */
-    clearImgProxy() {
-      this.image.id = '';
-      this.image.positionID = '';
-      this.image.placeID = '';
-      this.image.title = '';
-      this.image.image = [];
-      this.temp_editing_img = [];
+    async getAutoImgTitle() {
+      const curActivityID = VueCookies.get('currentActivity');
+      const curActivity = await fromOfflineDB.getObject(curActivityID, 'Activities', 'activities');
+
+      const curPlaceID = VueCookies.get('currentPlace');
+      const curPlace = await fromOfflineDB.getObject(curPlaceID, 'Places', 'places');
+      const placeNumber = curPlace.placeNumber.toString().padStart(4, '0');
+
+      var autoTitle = curActivity.activityNumber
+        + '_' + placeNumber
+        + '_';
+
+      if (this.object_type == 'positions') {
+        const curPosID = VueCookies.get('currentPosition');
+        const curPos = await fromOfflineDB.getObject(curPosID, 'Positions', 'positions');
+        const posNumber = curPos.positionNumber.toString().padStart(4, '0');
+
+        autoTitle = curActivity.activityNumber
+          + '_' + placeNumber
+          + '_' + posNumber
+          + '_';
+      }
+
+      return autoTitle;
     },
     /**
      * 
