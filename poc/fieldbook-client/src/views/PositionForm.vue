@@ -1,10 +1,10 @@
 <template>
   <Navigation active_tab_prop="2" />
   <v-container fluid>
-    <v-row>
+    <v-row no-gutters>
       <!-- SIDE TABS -->
       <v-col cols="2">
-        <v-card>
+        <v-card style="position:fixed; width:15%;">
           <v-tabs v-model="tab" direction="vertical" color="primary">
             <v-tab value="one" rounded="0">
               {{ $t('general') }}
@@ -29,7 +29,7 @@
         </v-card>
       </v-col>
 
-      <v-col>
+      <v-col cols="10">
         <v-window v-model="tab">
           <!-- CARD 1 MODELVIEWER -->
           <v-window-item value="one">

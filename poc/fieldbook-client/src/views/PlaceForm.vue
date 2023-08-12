@@ -1,9 +1,9 @@
 <template>
   <Navigation active_tab_prop="1" />
   <v-container fluid>
-    <v-row>
+    <v-row no-gutters>
       <v-col cols="2">
-        <v-card>
+        <v-card style="position:fixed; width:15%;">
           <v-tabs v-model="tab" direction="vertical" color="primary">
             <v-tab value="one" rounded="0"> {{ $t('general') }} </v-tab>
             <v-tab class="hideable" value="two" rounded="0"> {{ $t('position') }} </v-tab>
