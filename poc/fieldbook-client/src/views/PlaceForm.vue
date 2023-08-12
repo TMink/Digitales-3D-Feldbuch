@@ -370,6 +370,7 @@ export default {
         /* Module: Plane */
         case 'plane':
           this.place.plane = data[1];
+          break;
 
         /* Module: PositionList */
         case 'resetBool':
@@ -387,7 +388,7 @@ export default {
           break;
         
         default:
-          console.log( error )
+          console.log( 'Error getting emitted data from Modules' )
       }
     },
 
@@ -402,7 +403,7 @@ export default {
 
     async updatePlace2() {
       const currentPlace = VueCookies.get('currentPlace');
-      const data = await fromOfflineDB.getObject(currentPlace, 'Places', 'places');
+      var data = await fromOfflineDB.getObject(currentPlace, 'Places', 'places');
       const rawPositions = toRaw(this.positions);
       data = this.place
       data.positions = rawPositions;
