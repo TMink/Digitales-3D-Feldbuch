@@ -1,16 +1,15 @@
 <template>
-	<v-col lg="6" class="pt-0 pl-0 pr-0">
+	<v-col lg="6">
 		<v-card class="pa-4">
-		<v-card-text>
-          <h2 class="text-h6 font-weight-medium pb-2">
-            {{ $t('dating') }}
-          </h2>
-        </v-card-text>
+      <h2 class="text-h6 font-weight-medium pb-1">
+        {{ $t('dating') }}
+      </h2>
+      <v-divider></v-divider>
 			<v-combobox 
 				hide-details 
 				counter 
-				class="pt-0" 
 				color="primary" 
+        style="padding-top:46px"
 				:items="datings" 
 				:label="$t('dating')"
 				v-model="dating">

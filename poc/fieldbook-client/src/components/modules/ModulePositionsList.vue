@@ -1,8 +1,7 @@
 <template>
-  <v-col lg="12" class="pt-0 pl-0 pr-0">
+  <v-col lg="12">
     <v-form>
       <v-card 
-        class="pa-4" 
         :min-width="windowWidth * 0.5">
         <v-card-text>
           <h2 class="text-h6 font-weight-medium pb-2">

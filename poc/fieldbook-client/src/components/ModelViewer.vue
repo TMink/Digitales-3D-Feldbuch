@@ -1,11 +1,15 @@
  <template>
   <v-container fluid class="pa-0 ma-0"> 
     <v-row>
-      <v-col>
 
         <ModuleGeneral v-if='object.modulePreset.general'
           :objectProp="object"
           @dataToModelViewer="sendData($event)"/>
+
+        <ModulePositionsList v-if='object.modulePreset.positionslist'
+            :placeProp="object"
+            :updateListSecondProp="updateListFirstProp"
+            @dataToModelViewer="sendData($event)"/>
 
         <ModuleCoordinates v-if='object.modulePreset.coordinates'
           :objectProp="object"
@@ -16,11 +20,6 @@
           @dataToModelViewer="sendData($event)"/>
           
         <ModulePlane v-if='object.modulePreset.plane'
-          @dataToModelViewer="sendData($event)"/>
-          
-        <ModulePositionsList v-if='object.modulePreset.positionslist'
-          :placeProp="object"
-          :updateListSecondProp="updateListFirstProp"
           @dataToModelViewer="sendData($event)"/>
 
         <ModuleVisibility v-if='object.modulePreset.visibility'
@@ -40,7 +39,6 @@
           :objectProp="object"
           @dataToModelViewer="sendData($event)"/>
 
-      </v-col>
     </v-row>
   </v-container>
 </template>

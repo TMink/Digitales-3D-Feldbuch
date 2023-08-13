@@ -1,42 +1,31 @@
 <template>
-  <v-col lg="6" class="pt-0 pl-0 pr-0">
+  <v-col lg="6" >
     <v-card class="pa-4">
-      <v-card-text>
-        <h2 class="text-h6 font-weight-medium pb-2">
-          {{ $t('findType') }}
-        </h2>
-      </v-card-text>
-      <v-row class="pl-4 pb-4 justify-center">
+      <h2 class="text-h6 font-weight-medium pb-1">
+        {{ $t('findType') }}
+      </h2>
+      <v-divider></v-divider>
+      <v-row no-gutters class="mt-4">
         <v-col cols="6">
-          <v-tooltip 
-            :text="$t('noFindDescr')"
-            location="bottom">
-            <template v-slot:activator="{ props }">
-              <v-checkbox
-                v-bind="props" 
-                color="primary"
-                persistent-hint 
-                :label="$t('noFind')" 
-                v-model="object.noFinding">
-              </v-checkbox>
-            </template>
-          </v-tooltip>
+          <v-checkbox
+            v-bind="props" 
+            color="primary"
+            persistent-hint 
+            :label="$t('noFind')" 
+            :hint="$t('noFindDescr')"
+            v-model="object.noFinding">
+          </v-checkbox>
         </v-col>
 
         <v-col cols="6">
-          <v-tooltip 
-            :text="$t('restFindDescr')" 
-            location="bottom">
-            <template v-slot:activator="{ props }">
-              <v-checkbox 
-                v-bind="props" 
-                persistent-hint 
-                color="secondary" 
-                :label="$t('restFind')"
-                v-model="object.restFinding">
-              </v-checkbox>
-            </template>
-          </v-tooltip>
+          <v-checkbox 
+            v-bind="props" 
+            persistent-hint 
+            color="secondary"
+            :hint="$t('restFindDescr')" 
+            :label="$t('restFind')"
+            v-model="object.restFinding">
+          </v-checkbox>
         </v-col>
       </v-row>
     </v-card>

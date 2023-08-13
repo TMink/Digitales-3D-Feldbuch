@@ -1,8 +1,7 @@
 <template>
   <v-col 
-    lg="12" 
-    class="pt-0 pl-0 pr-0">
-    <v-card class="pa-2">
+    lg="12" >
+    <v-card >
       <v-row>
         <v-col>
           <v-card-text>
@@ -14,7 +13,6 @@
         </v-col>
         <v-col lg="3">
           <v-text-field 
-            class="ma-1 px-2 pt-2" 
             no-resize color="primary" 
             :hide-no-data="false" 
             :label="$t('date')"
@@ -29,7 +27,6 @@
           rows="19" 
           counter 
           color="primary" 
-          class="ma-1 px-2 pt-2" 
           v-model="object.technical">
         </v-textarea>
       </v-col>
