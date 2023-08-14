@@ -1,28 +1,27 @@
 <template>
 	<v-col lg="6">
 		<v-card class="pa-4">
-          <h2 class="text-h6 font-weight-medium pb-1">
-            {{ $t('dating') }}
-          </h2>
-		<v-divider></v-divider>
+			<h2 class="text-h6 font-weight-medium pb-1">
+				{{ $t('dating') }}
+			</h2>
+			<v-divider></v-divider>
 			<v-combobox 
 				hide-details 
 				counter 
-				class="pt-0" 
-				color="primary"
-				style="padding-top:46px"
+				color="primary" 
+				style="padding-top: 46px" 
 				:items="datingItemsSecondProp"
-				:label="$t('dating')"
-				:hide-no-data="false"
+				:label="$t('dating')" 
+				:hide-no-data="false" 
 				v-model="dating">
-				
+
 				<template v-slot:no-data>
-          <v-list-item>
-            <v-list-item-title>
-              {{ $t('noResults') }}
-            </v-list-item-title>
-          </v-list-item>
-        </template>
+					<v-list-item>
+						<v-list-item-title>
+							{{ $t('noResults') }}
+						</v-list-item-title>
+					</v-list-item>
+				</template>
 			</v-combobox>
 		</v-card>
 	</v-col>
