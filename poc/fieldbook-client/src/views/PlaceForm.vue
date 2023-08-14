@@ -288,6 +288,22 @@ export default {
     await fromOfflineDB.syncLocalDBs();
     await this.updatePlace();
     await this.updatePositions();
+
+    const datingFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', 'datings');
+    datingFromDB.forEach(element => {
+      this.datingsList.push( element.item )
+    });
+
+    const editorsFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', 'editors');
+    editorsFromDB.forEach(element => {
+      this.editorsList.push( element.item )
+    });
+
+    const titlesFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', 'titles');
+    titlesFromDB.forEach(element => {
+      this.titlesList.push( element.item )
+    });
+
     this.componentHasLoaded = true;
     this.hasUnsavedChanges = false;
   },
@@ -362,6 +378,7 @@ export default {
         /* Module: Plane */
         case 'plane':
           this.place.plane = data[1];
+          break;
 
         /* Module: PositionList */
         case 'resetBool':
@@ -379,7 +396,7 @@ export default {
           break;
         
         default:
-          console.log( error )
+          console.log( 'Cant specify emitted data: ' + data[0] )
       }
     },
 
@@ -422,6 +439,51 @@ export default {
       await fromOfflineDB.updateObject(inputPlace, 'Places', 'places');
       this.hasUnsavedChanges = false;
       this.$root.vtoast.show({ message: this.$t('saveSuccess')});
+      
+      this.updateAutoFillList( 'datings', this.place.dating, this.datingsList )
+      this.updateAutoFillList( 'editors', this.place.editor, this.editorsList )
+      this.updateAutoFillList( 'titles', this.place.title, this.titlesList )
+    },
+
+    async updateAutoFillList( storeName, item, itemList) {
+      const newEditor = {}
+
+      const editorsFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', storeName);
+      if ( editorsFromDB.length > 0 ) {
+        let hasItem = false;
+        
+        editorsFromDB.forEach( element => {
+          if ( element.item == item ) {
+            hasItem = true;
+          }
+        })
+        if ( !hasItem && item != '' ) {
+          newEditor.id = String(Date.now())
+          newEditor.item = toRaw(item)
+        }
+      } else if ( item != '' ) {
+        newEditor.id = String(Date.now())
+        newEditor.item = toRaw(item)
+      }
+      if ( !!Object.keys(newEditor).length ) {
+        await fromOfflineDB.addObject(newEditor, 'AutoFillLists', storeName)
+      }
+      
+      if ( itemList.length > 0 ) {
+        let notKnown = true
+        itemList.forEach( element => {
+          if ( element == item ) {
+            notKnown = false
+          }
+        })
+        if ( notKnown ) {
+          itemList.push( item )
+        }
+      } else {
+        if ( item != '' ) {
+          itemList.push( item )
+        }
+      }
     },
 
     /**
