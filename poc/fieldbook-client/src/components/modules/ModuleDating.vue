@@ -6,15 +6,23 @@
             {{ $t('dating') }}
           </h2>
         </v-card-text>
-			<v-combobox 
-				hide-details 
-				counter 
-				class="pt-0" 
-				color="primary" 
-				:items="datings" 
-				:label="$t('dating')"
-				v-model="dating">
-			</v-combobox>
+			<v-combobox
+            hide-selected
+            color="primary" 
+            persistent-hint
+            :items="datingItemsSecondProp" 
+            :label="$t('dating')" 
+            :hide-no-data="false"
+            v-model="dating">
+
+            <template v-slot:no-data>
+              <v-list-item>
+                <v-list-item-title>
+                  {{ $t('noResults') }}
+                </v-list-item-title>
+              </v-list-item>
+            </template>
+          </v-combobox>
 		</v-card>
 	</v-col>
 </template>
@@ -24,13 +32,14 @@
 export default {
 	props: {
 		datingProp: String,
+		datingItemsSecondProp: Array,
 	},
 
 	emits: ['dataToModelViewer'],
 
 	data() {
 		return {
-			datings: [],
+			datings: null,
 			dating: null,
 			pathNames: null,
 
@@ -49,7 +58,7 @@ export default {
 	},
 
 	async created() {
-		this.datings = JSON.parse(import.meta.env.VITE_DATINGS);
+		//this.datings = JSON.parse(import.meta.env.VITE_DATINGS);
 		this.dating = this.datingProp;
 	},
 
