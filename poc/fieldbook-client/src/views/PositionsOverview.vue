@@ -49,7 +49,7 @@
             max-height>
 
             <template v-slot:item="{ item, index }">
-              <tr v-on:click="moveToPosition(item.raw.id)"
+              <tr v-on:click="handleRowClick(item.raw.id)"
                   @mouseenter="setHoveredRow(index, true)"
                   @mouseleave="setHoveredRow(index, false)">
 
@@ -102,7 +102,7 @@
               :sort-by="[{ key: 'positionNumber', order: 'asc' }]">
 
               <template v-slot:item="{ item, index }">
-                <tr v-on:click="moveToPosition(item.raw.id)" 
+                <tr v-on:click="handleRowClick(item.raw.id)" 
                   @mouseenter="setHoveredRow(index, true)"
                   @mouseleave="setHoveredRow(index, false)">
 
@@ -275,8 +275,8 @@
       <v-row class="align-center">
       <v-spacer></v-spacer>
       <AddPosition 
-      :positions_prop="positions" 
-      @updatePositions="updatePositions()"/>
+        :positions_prop="positions" 
+        @updatePositions="updatePositions()"/>
       <v-btn 
         @click="moduleCreatorOverlay = !moduleCreatorOverlay"
         color="primary">
@@ -289,6 +289,10 @@
           </v-col>
         </v-row>
       </v-btn>
+
+      <!-- DUPLICATE SWITCH -->
+      <v-switch v-model="toggleDuplicate"></v-switch>
+      
       <v-spacer></v-spacer>
     </v-row>
   </div>
@@ -301,6 +305,7 @@
 <script>
 import Navigation from '../components/Navigation.vue';
 import VueCookies from 'vue-cookies';
+import { toRaw } from 'vue';
 import ModuleCreator from '../components/ModuleCreator.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import AddPosition from '../components/AddPosition.vue';
@@ -388,8 +393,10 @@ export default {
         title: '-',
       },
       moduleCreatorOverlay: false,
+      toggleDuplicate: false,
     };
   },
+
   /**
    * Initialize data from localDB to the reactive Vue.js data
    */
@@ -462,6 +469,42 @@ export default {
     },
 
     /**
+     * Creates `count` duplicates of the selected Place
+     * @param {Object} place 
+     * @param {Int} count 
+     */
+     async duplicatePosition(positionID) {
+      var newPositionID = await this.addPosition();
+      
+      var newPosition = await fromOfflineDB.getObject(newPositionID, 'Positions', 'positions');
+      var dupPosition = await fromOfflineDB.getObject(positionID, 'Positions', 'positions');
+      
+      dupPosition.id = newPositionID;
+      dupPosition.positionNumber = newPosition.positionNumber;
+      dupPosition.images = [];
+      dupPosition.models = [];
+      dupPosition.lastChanged = Date.now();
+
+      await fromOfflineDB.updateObject(dupPosition, 'Positions', 'positions');
+      this.updatePositions();
+    },
+
+    /**
+     * Handle a click to a row of the positionsTable.
+     * Either moves to a Position or duplicates it, 
+     * depending on if the duplicateSwitch is toggled or not.
+     * 
+     * @param {String} placeID 
+     */
+    handleRowClick(positionID) {
+      if (this.toggleDuplicate) {
+        this.duplicatePosition(positionID);
+      } else {
+        this.moveToPosition(positionID);
+      }
+    },
+
+    /**
      * Routes to the PositionForm for the chosen positionID
      * 
      * @param {String} positionID 
@@ -485,6 +528,62 @@ export default {
       } else {
         this.showAllInfo = false;
       }
+    },
+
+    /**
+     * DUPLICATE FUNCTION FROM ADDPOSITION.VUE
+     * TODO: REMOVE UND JUST USE THE EXISTING FUNCTION
+     *       MAYBE OVER PROPS 
+     *                --> CAN YOU CALL FUNCTIONS OVER PROPS???
+     */
+    async addPosition() {
+      var curPlaceID = VueCookies.get('currentPlace');
+      var curPlace = await fromOfflineDB.getObject(curPlaceID, "Places", "places");
+      var newPositionID = String(Date.now());
+
+      curPlace.positions.push(newPositionID);
+      curPlace.lastChanged = Date.now();
+
+      const newPosition = {
+        id: newPositionID,
+        placeID: curPlaceID,
+        positionNumber: '',
+        subNumber: '',
+        right: '',
+        up: '',
+        height: '',
+        count: '',
+        weight: '',
+        material: '',
+        title: '',
+        description: '',
+        dating: '',
+        addressOf: '',
+        date: new Date().toLocaleDateString("de-DE"),
+        hasSubNumber: false,
+        isSeparate: false,
+
+        images: [],
+        models: [],
+        lastChanged: Date.now(),
+        lastSync: ''
+      };
+
+      newPosition.modulePreset = toRaw(this.curModulePreset);
+
+      if (this.positions.length == 0) {
+        newPosition.positionNumber = 1;
+      } else {
+        var lastPosNumber = await fromOfflineDB.getLastAddedPosition();
+        newPosition.positionNumber = lastPosNumber + 1;
+      }
+      
+      await fromOfflineDB.updateObject(curPlace, 'Places', 'places');
+      await fromOfflineDB.addObject(newPosition, "Positions", "positions");
+      await fromOfflineDB.addObject(
+            { id: newPositionID, object: 'positions' }, 'Changes', 'created');
+      
+      return newPositionID;
     },
 
     /**
