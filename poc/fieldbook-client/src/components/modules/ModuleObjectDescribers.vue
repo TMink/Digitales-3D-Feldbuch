@@ -1,46 +1,57 @@
 <template>
-    <v-row>
-        <!-- CARD 3 COUNT -->
-        <v-col lg="3">
-            <v-card height="100%">
-                <v-text-field 
-                    color="primary" 
-                    :label="$t('count')" 
-                    class="ma-1 px-2 pt-2" 
-                    v-model="object.count"
-                    @keypress="filterAllNonNumeric(event)" 
-                    :hint="$tc('please_input', 2, { msg: 'Anzahl' })">
-                </v-text-field>
-            </v-card>
-        </v-col>
+  <v-row>
+    <!-- CARD 3 COUNT -->
+    <v-col lg="3">
+      <v-card height="100%">
+        <v-text-field 
+          color="primary" 
+          :label="$t('count')" 
+          class="ma-1 px-2 pt-2" 
+          v-model="object.count"
+          @keypress="filterAllNonNumeric(event)" 
+          :hint="$tc('please_input', 2, { msg: 'Anzahl' })">
+        </v-text-field>
+      </v-card>
+    </v-col>
 
-        <!-- CARD 4 WEIGHT -->
-        <v-col lg="3">
-            <v-card>
-                <v-text-field
-                    color="primary" 
-                    :label="$t('weight')" 
-                    class="ma-1 px-2 pt-2" 
-                    v-model="object.weight"
-                    @keypress="filterNonNumeric(event)" 
-                    :hint="$tc('please_input', 2, { msg: 'Gewicht' })">
-                </v-text-field>
-            </v-card>
-        </v-col>
+    <!-- CARD 4 WEIGHT -->
+    <v-col lg="3">
+      <v-card>
+        <v-text-field 
+          color="primary"
+          :label="$t('weight')" 
+          class="ma-1 px-2 pt-2" 
+          v-model="object.weight"
+          @keypress="filterNonNumeric(event)" 
+          :hint="$tc('please_input', 2, { msg: 'Gewicht' })">
+        </v-text-field>
+      </v-card>
+    </v-col>
 
-        <!-- CARD 5 MATERIAL -->
-        <v-col lg="6">
-            <v-card>
-                <v-combobox
-                    color="primary"
-                    :label="$t('material')"
-                    :items="materials" class="ma-1 px-2 pt-2"
-                    v-model="object.material"
-                    :hint="$tc('please_input', 2, { msg: 'Material' })">
-                </v-combobox>
-            </v-card>
-        </v-col>
-    </v-row>
+    <!-- CARD 5 MATERIAL -->
+    <v-col lg="6">
+      <v-card>
+        <v-combobox 
+          hide-selected 
+          color="primary" 
+          :items="materialItemsSecondProp"
+          persistent-hint
+          :label="$t('material') + ' *'"
+          class="ma-1 px-2 pt-2"
+          :hint="$tc('please_input', 2, { msg: 'Material' })"
+          v-model="object.material">
+
+          <template v-slot:no-data>
+            <v-list-item>
+              <v-list-item-title>
+                {{ $t('noResults') }}
+              </v-list-item-title>
+            </v-list-item>
+          </template>
+        </v-combobox>
+      </v-card>
+    </v-col>
+  </v-row>
 </template>
 
 <script>

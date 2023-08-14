@@ -69,13 +69,22 @@
 
       <v-row>
         <v-col lg="4">
-          <v-combobox 
+          <v-combobox
+            hide-selected 
             color="primary" 
-            :items="titles" 
-            hide-details 
+            :items="titleItemsSecondProp"
+            persistent-hint
             :label="$tc('title', 2) + ' *'" 
-            :rules="is_required"
+            :hide-no-data="false" 
             v-model="object.title">
+
+            <template v-slot:no-data>
+              <v-list-item>
+                <v-list-item-title>
+                  {{ $t('noResults') }}
+                </v-list-item-title>
+              </v-list-item>
+            </template>
           </v-combobox>
 
           <v-text-field
@@ -86,15 +95,25 @@
             v-model="object.date">
           </v-text-field>
 
-          <v-text-field 
-            class="pt-0" 
+          <v-combobox
+            hide-selected
             color="primary" 
-            rows="2" 
+            persistent-hint
+            :items="editorItemsSecondProp" 
             :label="$t('editor') + ' *'" 
+            :hide-no-data="false" 
             :rules="is_required"
-            v-model="object.addressOf" 
-            no-resize :hint="$tc('please_input', 2, { msg: 'Ansprache von' })">
-          </v-text-field>
+            v-model="object.addressOf"
+            :hint="$tc('please_input', 2, { msg: 'Ansprache von' })">
+
+            <template v-slot:no-data>
+              <v-list-item>
+                <v-list-item-title>
+                  {{ $t('noResults') }}
+                </v-list-item-title>
+              </v-list-item>
+            </template>
+          </v-combobox>
         </v-col>
 
         <v-col lg="8">
@@ -117,21 +136,14 @@
       </v-card-text>
       <v-row class="pt-2">
         <v-col lg="4">
-          <v-combobox 
-            chips 
-            multiple 
+          <v-combobox
             hide-selected 
-            closable-chips 
             color="primary" 
-            :items="titles" 
+            :items="titleItemsSecondProp" 
             persistent-hint
             :label="$tc('title', 2)" 
             :hide-no-data="false" 
             v-model="object.title">
-
-            <template #selection="{ item }">
-              <v-chip color="secondary">{{ item }}</v-chip>
-            </template>
 
             <template v-slot:no-data>
               <v-list-item>
@@ -142,27 +154,35 @@
             </template>
           </v-combobox>
 
-          <v-text-field 
+          <v-text-field
             class="pt-1" 
             no-resize 
             hide-selected 
-            color="primary" 
-            :items="titles" 
+            color="primary"
             persistent-hint
             :hide-no-data="false" 
             :label="$t('date')" 
             v-model="object.date">
           </v-text-field>
 
-          <v-text-field 
-            class="pt-1" 
-            rows="2" 
-            no-resize 
+          <v-combobox
+            hide-selected
             color="primary" 
+            persistent-hint
+            :items="editorItemsSecondProp" 
             :label="$t('editor')" 
+            :hide-no-data="false" 
             :rules="is_required"
             v-model="object.editor">
-          </v-text-field>
+
+            <template v-slot:no-data>
+              <v-list-item>
+                <v-list-item-title>
+                  {{ $t('noResults') }}
+                </v-list-item-title>
+              </v-list-item>
+            </template>
+          </v-combobox>
 
         </v-col>
 
