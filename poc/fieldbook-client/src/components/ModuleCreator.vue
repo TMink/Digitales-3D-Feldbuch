@@ -111,7 +111,8 @@
             
             <v-checkbox 
               hide-details 
-              :label="$t('technical')" 
+              :label="$t('technical')"
+              :disabled="!selectedPreset.canEdit"
               v-if="objectTypeProp == 'places'"
               v-model="selectedPreset.technical"
               color="secondary">
@@ -119,7 +120,8 @@
 
             <v-checkbox 
               hide-details 
-              :label="$t('generalInformation')" 
+              :label="$t('generalInformation')"
+              :disabled="!selectedPreset.canEdit"
               v-model="selectedPreset.general"
               color="secondary">
             </v-checkbox>
@@ -127,6 +129,7 @@
             <v-checkbox 
               hide-details 
               :label="$t('coordinates')"
+              :disabled="!selectedPreset.canEdit"
               v-model="selectedPreset.coordinates"
               color="secondary">
             </v-checkbox>
@@ -134,6 +137,7 @@
             <v-checkbox 
               hide-details 
               :label="$t('dating')" 
+              :disabled="!selectedPreset.canEdit"
               v-model="selectedPreset.dating"
               color="secondary">
             </v-checkbox>
@@ -142,6 +146,7 @@
             <v-checkbox 
               hide-details 
               :label="$t('plane')" 
+              :disabled="!selectedPreset.canEdit"
               v-if="objectTypeProp == 'places'" 
               v-model="selectedPreset.plane"
               color="secondary">
@@ -150,6 +155,7 @@
             <v-checkbox 
               hide-details 
               :label="$t('findType')" 
+              :disabled="!selectedPreset.canEdit"
               v-if="objectTypeProp == 'places'" 
               v-model="selectedPreset.findTypes"
               color="secondary">
@@ -158,6 +164,7 @@
             <v-checkbox 
               hide-details 
               :label="$t('visibility')"
+              :disabled="!selectedPreset.canEdit"
               v-if="objectTypeProp == 'places'"
               v-model="selectedPreset.visibility"
               color="secondary">
@@ -166,6 +173,7 @@
             <v-checkbox 
               hide-details 
               :label="$tc('position', 2)"
+              :disabled="!selectedPreset.canEdit"
               v-if="objectTypeProp == 'places'" 
               v-model="selectedPreset.positionslist"
               color="secondary">
@@ -175,6 +183,7 @@
             <v-checkbox 
               hide-details 
               :label="$t('objectDescribers')" 
+              :disabled="!selectedPreset.canEdit"
               v-if="objectTypeProp == 'positions'" 
               v-model="selectedPreset.objectDescribers"
               color="secondary">
