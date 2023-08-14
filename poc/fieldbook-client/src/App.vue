@@ -155,6 +155,9 @@ export default {
 
         //position specific
         objectDescribers: false,
+
+        //can be edited?
+        canEdit: false
       }
 
       await fromOfflineDB.addObject(technicalPlace, 'ModulePresets', 'places');
@@ -176,6 +179,9 @@ export default {
 
         //position specific
         objectDescribers: false,
+
+        //can be edited?
+        canEdit: false
       }
 
       var placePresetID =
@@ -200,6 +206,9 @@ export default {
 
         //position specific
         objectDescribers: true,
+
+        //can be edited?
+        canEdit: false
       }
 
       var posPresetID =

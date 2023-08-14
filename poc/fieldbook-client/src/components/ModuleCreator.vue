@@ -209,6 +209,7 @@
                         <v-icon>mdi-pencil</v-icon>
                       </v-btn> -->
                       <v-btn 
+                        v-if="item.raw.canEdit"
                         class="mr-2"
                         color="error" 
                         density="compact"
@@ -288,6 +289,9 @@ export default {
 
       //position specific
       objectDescribers: false,
+
+      //can be edited?
+      canEdit: true
     },
     selectedPreset: {
       title: '',
