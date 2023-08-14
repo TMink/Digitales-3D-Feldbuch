@@ -30,9 +30,10 @@
           <!-- Tab item 'GENERAL' -->
           <v-window-item value="one">
             <ModelViewer
-              :object_id="place.id"
-              :updateListFirstProp="place.testBool"  
-              object_type="Places"
+              :updateListFirstProp="place.testBool"
+              :datingItemsFirstProp="datingsList"
+              :editorItemsFirstProp="editorsList"
+              :titleItemsFirstProp="titlesList"
               @dataToPlaceForm="getEmitedData($event)"/>
           </v-window-item>
 
@@ -203,7 +204,7 @@ export default {
         description: '',
         editor: '',
         date: '',
-        title: [],
+        title: '',
 
         /* Plane */
         plane: '',
@@ -247,6 +248,10 @@ export default {
       },
       hasUnsavedChanges: false,
       componentHasLoaded: false,
+
+      datingsList: [],
+      editorsList: [],
+      titlesList: [],
     }
 
   },
@@ -278,26 +283,26 @@ export default {
     await fromOfflineDB.syncLocalDBs();
     await this.updatePlace();
     await this.updatePositions();
+
+    const datingFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', 'datings');
+    datingFromDB.forEach(element => {
+      this.datingsList.push( element.item )
+    });
+
+    const editorsFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', 'editors');
+    editorsFromDB.forEach(element => {
+      this.editorsList.push( element.item )
+    });
+
+    const titlesFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', 'titles');
+    titlesFromDB.forEach(element => {
+      this.titlesList.push( element.item )
+    });
+
     await this.setAppBarTitle();
     this.hideNonTechnicalTabs();
     this.componentHasLoaded = true;
     this.hasUnsavedChanges = false;
-  },
-
-  watch: {
-    'place': {
-      handler: 'handlePlaceChange',
-      deep: true,
-    },
-    /**
-     * Ensure that only 5 items are selected
-     * @param {*} val 
-     */
-    'place.title'(val) {
-      if (val.length > 5) {
-        this.$nextTick(() => this.place.title.pop())
-      }
-    },
   },
 
   computed: {
@@ -318,7 +323,7 @@ export default {
 
   methods: {
 
-    getEmitedData(data) {
+    async getEmitedData(data) {
       switch (data[0]) {
         /* Module: Coordinates */
         case 'right':
@@ -388,7 +393,7 @@ export default {
           break;
         
         default:
-          console.log( 'Error getting emitted data from Modules' )
+          console.log( 'Cant specify emitted data: ' + data[0] )
       }
     },
 
@@ -431,6 +436,51 @@ export default {
       await fromOfflineDB.updateObject(inputPlace, 'Places', 'places');
       this.hasUnsavedChanges = false;
       this.$root.vtoast.show({ message: this.$t('saveSuccess')});
+      
+      this.updateAutoFillList( 'datings', this.place.dating, this.datingsList )
+      this.updateAutoFillList( 'editors', this.place.editor, this.editorsList )
+      this.updateAutoFillList( 'titles', this.place.title, this.titlesList )
+    },
+
+    async updateAutoFillList( storeName, item, itemList) {
+      const newEditor = {}
+
+      const editorsFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', storeName);
+      if ( editorsFromDB.length > 0 ) {
+        let hasItem = false;
+        
+        editorsFromDB.forEach( element => {
+          if ( element.item == item ) {
+            hasItem = true;
+          }
+        })
+        if ( !hasItem && item != '' ) {
+          newEditor.id = String(Date.now())
+          newEditor.item = toRaw(item)
+        }
+      } else if ( item != '' ) {
+        newEditor.id = String(Date.now())
+        newEditor.item = toRaw(item)
+      }
+      if ( !!Object.keys(newEditor).length ) {
+        await fromOfflineDB.addObject(newEditor, 'AutoFillLists', storeName)
+      }
+      
+      if ( itemList.length > 0 ) {
+        let notKnown = true
+        itemList.forEach( element => {
+          if ( element == item ) {
+            notKnown = false
+          }
+        })
+        if ( notKnown ) {
+          itemList.push( item )
+        }
+      } else {
+        if ( item != '' ) {
+          itemList.push( item )
+        }
+      }
     },
 
     /**

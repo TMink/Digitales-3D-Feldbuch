@@ -34,6 +34,11 @@
           <!-- CARD 1 MODELVIEWER -->
           <v-window-item value="one">
             <ModelViewer
+              :updateListFirstProp="position.testBool"
+              :datingItemsFirstProp="datingsList"
+              :titleItemsFirstProp="titlesList"
+              :materialItemsFirstProp="materialsList"
+              :editorItemsFirstProp="editorsList"
               @dataToPlaceForm="getEmitedData($event)"/>
           </v-window-item>
 
@@ -136,6 +141,7 @@ export default {
         models: [],
         lastChanged: Date.now(),
         lastSync: '',
+        testBool: false,
       },
       materials: [],
       titles: [],
@@ -146,6 +152,11 @@ export default {
       tab: null,
       hasUnsavedChanges: false,
       componentHasLoaded: false,
+
+      datingsList: [],
+      titlesList: [],
+      materialsList: [],
+      editorsList: [],
     }
   },
   watch: {
@@ -186,7 +197,6 @@ export default {
     var position = await fromOfflineDB.getObject(poID, 'Positions', 'positions')
     
     this.$emit("view", activity.activityNumber + ' ' + place.placeNumber + ' ' + position.positionNumber);
-    
 
     this.materials = JSON.parse(import.meta.env.VITE_MATERIALS);
     this.titles = JSON.parse(import.meta.env.VITE_TITLES);
@@ -194,6 +204,27 @@ export default {
 
     await fromOfflineDB.syncLocalDBs();
     await this.updatePosition();
+
+    const datingFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', 'datings');
+    datingFromDB.forEach(element => {
+      this.datingsList.push( element.item )
+    });
+
+    const editorsFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', 'editors');
+    editorsFromDB.forEach(element => {
+      this.editorsList.push( element.item )
+    });
+    
+    const materialsFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', 'materials');
+    materialsFromDB.forEach(element => {
+      this.materialsList.push( element.item )
+    });
+
+    const titlesFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', 'titles');
+    titlesFromDB.forEach(element => {
+      this.titlesList.push( element.item )
+    });
+
     this.componentHasLoaded = true;
   },
   methods: {
@@ -215,7 +246,7 @@ export default {
           break;
 
         /* Module: General */
-        case 'description':
+        case 'description':             
           this.position.description = data[1];
           break;
         case 'addressOf':
@@ -250,11 +281,8 @@ export default {
         case 'dating':
           this.position.dating = data[1];
           break;
-        case 'materials':
-          this.materials = data[1];
-          break;
         default:
-          console.log( 'Error getting emitted data from Modules' )
+          console.log( 'Cant specify emitted data: ' + data[0] )
       }
     },
     /**
@@ -283,6 +311,7 @@ export default {
 
       //convert from vue proxy to JSON object
       const rawPosition = toRaw(this.position);
+      console.log(this.position)
       rawPosition.positionNumber = Number(rawPosition.positionNumber);
       rawPosition.lastChanged = Date.now();
       
@@ -296,7 +325,55 @@ export default {
       await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions');
       this.hasUnsavedChanges = false;
       this.$root.vtoast.show({ message: this.$t('saveSuccess')});
+
+      this.updateAutoFillList( 'datings', this.position.dating, this.datingsList )
+      this.updateAutoFillList( 'titles', this.position.title, this.titlesList )
+      this.updateAutoFillList( 'materials', this.position.material, this.materialsList )
+      this.updateAutoFillList( 'editors', this.position.addressOf, this.editorsList )
     },
+
+    async updateAutoFillList( storeName, item, itemList) {
+      const newEditor = {}
+
+      const editorsFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', storeName);
+      if ( editorsFromDB.length > 0 ) {
+        let hasItem = false;
+        
+        editorsFromDB.forEach( element => {
+          if ( element.item == item ) {
+            hasItem = true;
+          }
+        })
+        if ( !hasItem && item != '' ) {
+          newEditor.id = String(Date.now())
+          newEditor.item = toRaw(item)
+        }
+      } else if ( item != '' ) {
+        console.log( item )
+        newEditor.id = String(Date.now())
+        newEditor.item = toRaw(item)
+      }
+      if ( !!Object.keys(newEditor).length ) {
+        await fromOfflineDB.addObject(newEditor, 'AutoFillLists', storeName)
+      }
+
+      if ( itemList.length > 0 ) {
+        let notKnown = true
+        itemList.forEach( element => {
+          if ( element == item ) {
+            notKnown = false
+          }
+        })
+        if ( notKnown ) {
+          itemList.push( item )
+        }
+      } else {
+        if ( item != '' ) {
+          itemList.push( item )
+        }
+      }
+    },
+
     /**
      * Opens the confirmation dialog
      * @param {Object} position

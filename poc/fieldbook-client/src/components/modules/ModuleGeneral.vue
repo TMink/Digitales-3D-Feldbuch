@@ -92,23 +92,52 @@
 
       <v-row class="pt-2">
         <v-col lg="4">
-          <v-combobox 
+          <v-combobox
+            hide-selected 
             color="primary" 
-            :items="titles" 
+            :items="titleItemsSecondProp"
+            persistent-hint
             :label="$tc('title', 2) + ' *'" 
-            :rules="is_required"
+            :hide-no-data="false" 
             v-model="object.title">
+
+            <template v-slot:no-data>
+              <v-list-item>
+                <v-list-item-title>
+                  {{ $t('noResults') }}
+                </v-list-item-title>
+              </v-list-item>
+            </template>
           </v-combobox>
 
-          <v-text-field 
-            class="pt-4" 
-            color="primary" 
-            hide-details
-            :label="$t('editor') + ' *'" 
-            :rules="is_required"
-            v-model="object.addressOf" 
-            no-resize :hint="$tc('please_input', 2, { msg: 'Ansprache von' })">
+          <v-text-field
+            class="pt-6"
+            no-resize color="primary" 
+            :hide-no-data="false" 
+            :label="$t('date')"
+            v-model="object.date">
           </v-text-field>
+
+          <v-combobox
+            class="pt-4"
+            hide-selected
+            color="primary" 
+            persistent-hint
+            :items="editorItemsSecondProp" 
+            :label="$t('editor') + ' *'" 
+            :hide-no-data="false" 
+            :rules="is_required"
+            v-model="object.addressOf"
+            :hint="$tc('please_input', 2, { msg: 'Ansprache von' })">
+
+            <template v-slot:no-data>
+              <v-list-item>
+                <v-list-item-title>
+                  {{ $t('noResults') }}
+                </v-list-item-title>
+              </v-list-item>
+            </template>
+          </v-combobox>
         </v-col>
 
         <v-col lg="8">
@@ -131,20 +160,14 @@
       <v-divider/>
       <v-row class="pt-4">
         <v-col lg="4">
-          <v-combobox 
-            chips 
-            multiple 
+          <v-combobox
             hide-selected 
-            closable-chips 
             color="primary" 
-            :items="titles" 
+            :items="titleItemsSecondProp" 
+            persistent-hint
             :label="$tc('title', 2)" 
             :hide-no-data="false" 
             v-model="object.title">
-
-            <template #selection="{ item }">
-              <v-chip color="secondary">{{ item }}</v-chip>
-            </template>
 
             <template v-slot:no-data>
               <v-list-item>
@@ -155,27 +178,36 @@
             </template>
           </v-combobox>
 
-          <v-text-field 
+          <v-text-field
             class="pt-1" 
             no-resize 
-            hide-selected
-            color="primary" 
-            :items="titles" 
+            hide-selected 
+            color="primary"
+            persistent-hint
             :hide-no-data="false" 
             :label="$t('date')" 
             v-model="object.date">
           </v-text-field>
 
-          <v-text-field 
-            class="pt-1" 
-            rows="2" 
-            no-resize 
-            hide-details
+          <v-combobox
+            hide-selected
+            class="pt-1"
             color="primary" 
+            persistent-hint
+            :items="editorItemsSecondProp" 
             :label="$t('editor')" 
+            :hide-no-data="false" 
             :rules="is_required"
             v-model="object.editor">
-          </v-text-field>
+
+            <template v-slot:no-data>
+              <v-list-item>
+                <v-list-item-title>
+                  {{ $t('noResults') }}
+                </v-list-item-title>
+              </v-list-item>
+            </template>
+          </v-combobox>
 
         </v-col>
 
@@ -198,6 +230,8 @@ export default {
 		
 	props: {
     objectProp: Object,
+    titleItemsSecondProp: Array,
+    editorItemsSecondProp: Array,
   },
 
   emits: ['dataToModelViewer'],
@@ -217,6 +251,8 @@ export default {
         addressOf: null,
       },
       is_required: [v => !!v || 'Pflichtfeld'],
+      titleItems: [],
+      editorItems: [],
     }
   },
 
@@ -231,9 +267,11 @@ export default {
     },
     "object.editor": {
       handler: function () {
-        if ( this.object.editor != null ) {
+        if ( this.object.editor != null && this.type == 'places' ) {
           /* Send data back to ModelViewer.vue */
           this.$emit("dataToModelViewer", ['editor', this.object.editor]);
+        } else if ( this.object.editor == null && this.type == 'places' ) {
+          this.$emit("dataToModelViewer", ['editor', '']);
         }
       }
     },
@@ -242,6 +280,8 @@ export default {
         if ( this.object.date != null ) {
           /* Send data back to ModelViewer.vue */
           this.$emit("dataToModelViewer", ['date', this.object.date]);
+        } else {
+          this.$emit("dataToModelViewer", ['date', '']);
         }
       }
     },
@@ -250,6 +290,8 @@ export default {
         if ( this.object.title != null ) {
           /* Send data back to ModelViewer.vue */
           this.$emit("dataToModelViewer", ['title', this.object.title]);
+        } else {
+          this.$emit("dataToModelViewer", ['title', '']);
         }
       }
     },
@@ -282,14 +324,16 @@ export default {
         if ( this.object.addressOf != null && this.type == 'positions' ) {
           /* Send data back to ModelViewer.vue */
           this.$emit("dataToModelViewer", ['addressOf', this.object.addressOf]);
+        } else if ( this.object.addressOf == null && this.type == 'positions' ) {
+          this.$emit("dataToModelViewer", ['addressOf', '']);
         }
       }
     }
   },
 
   created() {
-    this.type = this.getType(this.$route.path)
-    this.titles = JSON.parse(import.meta.env.VITE_TITLES);
+    this.type = this.getType(this.$route.path);
+    //this.titles = JSON.parse(import.meta.env.VITE_TITLES);
     this.object = this.objectProp;
   },
 

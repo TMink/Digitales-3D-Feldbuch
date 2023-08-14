@@ -6,6 +6,7 @@
         <h2 class="text-h6 font-weight-medium pb-1">
           {{ $tc('position', 2) }}
         </h2>
+        <v-divider></v-divider>
         <v-data-table-virtual 
           :items="positions" 
           fixed-header 
@@ -15,7 +16,7 @@
           max-height>
 
           <template v-slot:item="{ item, index }">
-            <tr 
+            <tr
               v-on:click="moveToPosition(item.raw.id)" 
               @mouseenter="setHoveredRow(index, true)"
               @mouseleave="setHoveredRow(index, false)">

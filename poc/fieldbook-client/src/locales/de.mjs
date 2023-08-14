@@ -1,5 +1,6 @@
 export default {
   // Words
+  autoNaming: "Auto Benennung",
   objectDescribers: "Objektbeschreibung",
   moduleManagement: "Modul Management",
   findType: "Fund Typ",

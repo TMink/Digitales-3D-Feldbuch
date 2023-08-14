@@ -677,10 +677,10 @@ const offlineDBModulePresets = {
   storeNames: ["places", "positions"],
 }
 
-const offlineDBEditors = {
-  name: "Editors",
+const offlineDBAutoFillLists = {
+  name: "AutoFillLists",
   version: 1,
-  storeNames: ["editors"],
+  storeNames: ["editors", "addressOf", "materials", "titles", "datings"],
 }
 
 const fromOfflineDB = new ConnectionToOfflineDB([
@@ -693,5 +693,5 @@ const fromOfflineDB = new ConnectionToOfflineDB([
   offlineDBCameras,
   offlineDBLines,
   offlineDBModulePresets,
-  offlineDBEditors
+  offlineDBAutoFillLists,
 ]);

@@ -147,6 +147,7 @@ export default {
           right: null,
 
           height: null,
+          is_required: [v => !!v || 'Pflichtfeld'],
         },
 			}
 		},

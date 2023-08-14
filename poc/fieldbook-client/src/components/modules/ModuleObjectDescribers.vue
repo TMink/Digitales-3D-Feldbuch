@@ -40,13 +40,21 @@
         <v-combobox
             color="primary"
             :label="$t('material')"
-            :items="materials"
+            :items="materialItemsSecondProp"
             hide-details
             class="pr-3"
             style="padding-top: 29px;"
             v-model="object.material"
             :hint="$tc('please_input', 2, { msg: 'Material' })">
         </v-combobox>
+
+        <template v-slot:no-data>
+          <v-list-item>
+            <v-list-item-title>
+              {{ $t('noResults') }}
+            </v-list-item-title>
+          </v-list-item>
+        </template>
       </v-card>
   </v-col>
 </template>
@@ -54,102 +62,93 @@
 <script>
 
 export default {
-		
-		props: {
-			objectProp: Object,
-      materialsProp: Array,
-		},
 
-    emits: ['dataToModelViewer'],
+  props: {
+    objectProp: Object,
+    materialItemsSecondProp: Array,
+  },
 
-		data () {
-			return {
-        object: {
-          material: null,
-          weight: null,
-          count: null,
-        },
-        materials: null,
-			}
-		},
+  emits: ['dataToModelViewer'],
 
-    watch: {
-      "object.material": {
-        handler: function() {
-          if ( this.object.material != null ) {
-            /* Send data back to ModelViewer.vue */
-            this.$emit("dataToModelViewer", [ 'material', this.object.material ]);
-          }
-        }
+  data() {
+    return {
+      object: {
+        material: null,
+        weight: null,
+        count: null,
       },
-      "object.weight": {
-        handler: function() {
-          if ( this.object.weight != null ) {
-            /* Send data back to ModelViewer.vue */
-            this.$emit("dataToModelViewer", [ 'weight', this.object.weight ]);
-          }
-        }
-      },
-      "object.count": {
-        handler: function() {
-          if ( this.object.count != null ) {
-            /* Send data back to ModelViewer.vue */
-            this.$emit("dataToModelViewer", [ 'count', this.object.count ]);
-          }
-        }
-      },
-      "materials": {
-        handler: function() {
-          if ( this.materials != null ) {
-            /* Send data back to ModelViewer.vue */
-            this.$emit("dataToModelViewer", [ 'materials', this.materials ]);
-          }
+    }
+  },
+
+  watch: {
+    "object.material": {
+      handler: function () {
+        if (this.object.material != null) {
+          /* Send data back to ModelViewer.vue */
+          this.$emit("dataToModelViewer", ['material', this.object.material]);
+          console.log(this.object.material)
         }
       }
     },
-
-		async created() {
-			this.materials = JSON.parse(import.meta.env.VITE_MATERIALS);
-      this.object = this.objectProp;
-		},
-
-    methods: {
-      /**
-       * Prevents the input of non numeric values 
-       * @param {*} evt 
-       */
-      filterAllNonNumeric(evt) {
-        evt = (evt) ? evt : window.event;
-        let expect = evt.target.value.toString() + evt.key.toString();
-
-        if (!/^[0-9]*$/.test(expect)) {
-          evt.preventDefault();
-        } else {
-          return true;
+    "object.weight": {
+      handler: function () {
+        if (this.object.weight != null) {
+          /* Send data back to ModelViewer.vue */
+          this.$emit("dataToModelViewer", ['weight', this.object.weight]);
         }
-      },
-
-     /**
-      * Prevents the input of non numeric values 
-      * (allows one single `,` or `.` for float values)
-      * @param {*} evt 
-      */
-      filterNonNumeric(evt) {
-        evt = (evt) ? evt : window.event;
-        let expect = evt.target.value.toString() + evt.key.toString();
-
-        if (!/^[-+]?[0-9]*[,.]?[0-9]*$/.test(expect)) {
-          evt.preventDefault();
-        } else {
-          return true;
+      }
+    },
+    "object.count": {
+      handler: function () {
+        if (this.object.count != null) {
+          /* Send data back to ModelViewer.vue */
+          this.$emit("dataToModelViewer", ['count', this.object.count]);
         }
-      },
+      }
     }
-		
-	}
+  },
+
+  async created() {
+    //this.materials = JSON.parse(import.meta.env.VITE_MATERIALS);
+    this.object = this.objectProp;
+  },
+
+  methods: {
+    /**
+     * Prevents the input of non numeric values 
+     * @param {*} evt 
+     */
+    filterAllNonNumeric(evt) {
+      evt = (evt) ? evt : window.event;
+      let expect = evt.target.value.toString() + evt.key.toString();
+
+      if (!/^[0-9]*$/.test(expect)) {
+        evt.preventDefault();
+      } else {
+        return true;
+      }
+    },
+
+    /**
+     * Prevents the input of non numeric values 
+     * (allows one single `,` or `.` for float values)
+     * @param {*} evt 
+     */
+    filterNonNumeric(evt) {
+      evt = (evt) ? evt : window.event;
+      let expect = evt.target.value.toString() + evt.key.toString();
+
+      if (!/^[-+]?[0-9]*[,.]?[0-9]*$/.test(expect)) {
+        evt.preventDefault();
+      } else {
+        return true;
+      }
+    },
+  }
+
+}
 
 </script>
   
-<style scoped>
-</style>
+<style scoped></style>
   
