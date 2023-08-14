@@ -65,7 +65,7 @@
                       v-if="item.raw.title.length > 0"
                       style="min-width:200px" 
                       class="text-wrap">
-                      {{ item.raw.title.join("; ") }}
+                      {{ item.raw.title }}
                     </v-list-item-title>
 
                     <v-list-item-title 
@@ -110,7 +110,7 @@
                     v-if="item.raw.title.length > 0"
                     style="min-width:200px" 
                     class="text-wrap">
-                    {{ item.raw.title.join("; ") }}
+                    {{ item.raw.title }}
                   </v-list-item-title>
 
                   <v-list-item-title 
@@ -608,7 +608,7 @@ export default {
       const re = new RegExp(query, 'i');
       return (
         item.placeNumber.toString().match(re) ||
-        item.title.join('; ').match(re) ||
+        item.title.match(re) ||
         item.right.toString().match(re) ||
         item.rightTo.toString().match(re) ||
         item.up.match(re) ||
