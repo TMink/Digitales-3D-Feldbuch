@@ -1,18 +1,18 @@
 <template>
-  <v-col lg="6" class="pt-0 pl-0 pr-0">
+  <v-col lg="6">
     <v-card class="pa-4">
-      <v-card-text>
-        <h2 class="text-h6 font-weight-medium pb-2">
-          {{ $t('visibility') }}
-        </h2>
-      </v-card-text>
+      <h2 class="text-h6 font-weight-medium pb-1">
+        {{ $t('visibility') }}
+      </h2>
+      <v-divider></v-divider>
       <v-slider 
         :max="3" 
-        step="1" 
-        class="pa-4" 
+        step="1"
         tick-size="4" 
         :ticks="tickLabels" 
         show-ticks="always" 
+        class="px-2"
+        style="padding-top:44px"
         track-color="primary"
         thumb-color="secondary" 
         v-model="visibility" 

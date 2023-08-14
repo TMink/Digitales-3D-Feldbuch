@@ -24,24 +24,29 @@
               hide-details 
               :label="$t('technical')" 
               v-if="objectTypeProp == 'places'"
-              v-model="selectedPreset.technical">
+              v-model="selectedPreset.technical"
+              color="secondary">
             </v-checkbox>
 
             <v-checkbox 
               hide-details 
               :label="$t('generalInformation')"
-              v-model="curPreset.general">
+              v-model="curPreset.general"
+              color="secondary">
             </v-checkbox>
 
             <v-checkbox 
               hide-details 
               :label="$t('coordinates')"
-              v-model="curPreset.coordinates">
+              v-model="curPreset.coordinates"
+              color="secondary">
             </v-checkbox>
+
             <v-checkbox 
               hide-details 
               :label="$t('dating')"
-              v-model="curPreset.dating">
+              v-model="curPreset.dating"
+              color="secondary">
             </v-checkbox>
 
             <!-- PLACE SPECIFIC -->
@@ -49,33 +54,41 @@
               hide-details 
               :label="$t('plane')" 
               v-if="objectTypeProp == 'places'" 
-              v-model="curPreset.plane">
+              v-model="curPreset.plane"
+              color="secondary">
             </v-checkbox>
+
             <v-checkbox 
               hide-details 
               :label="$t('findType')"
               v-if="objectTypeProp == 'places'" 
-              v-model="curPreset.findTypes">
+              v-model="curPreset.findTypes"
+              color="secondary">
             </v-checkbox>
+
             <v-checkbox 
               hide-details 
               :label="$t('visibility')"
               v-if="objectTypeProp == 'places'"
-              v-model="curPreset.visibility">
+              v-model="curPreset.visibility"
+              color="secondary">
             </v-checkbox>
+
             <v-checkbox 
               hide-details 
               :label="$tc('position', 2)" 
               v-if="objectTypeProp == 'places'" 
-              v-model="curPreset.positionslist">
+              v-model="curPreset.positionslist"
+              color="secondary">
             </v-checkbox>
 
             <!-- POSITION SPECIFIC -->
             <v-checkbox 
               hide-details 
-              label="Object Describers" 
+              :label="$t('objectDescribers')" 
               v-if="objectTypeProp == 'positions'" 
-              v-model="curPreset.objectDescribers">
+              v-model="curPreset.objectDescribers"
+              color="secondary">
             </v-checkbox>
           </v-window>
         </v-col>
@@ -98,60 +111,82 @@
             
             <v-checkbox 
               hide-details 
-              :label="$t('technical')" 
+              :label="$t('technical')"
+              :disabled="!selectedPreset.canEdit"
               v-if="objectTypeProp == 'places'"
-              v-model="selectedPreset.technical">
+              v-model="selectedPreset.technical"
+              color="secondary">
             </v-checkbox>
 
             <v-checkbox 
               hide-details 
-              :label="$t('generalInformation')" 
-              v-model="selectedPreset.general">
+              :label="$t('generalInformation')"
+              :disabled="!selectedPreset.canEdit"
+              v-model="selectedPreset.general"
+              color="secondary">
             </v-checkbox>
 
             <v-checkbox 
               hide-details 
               :label="$t('coordinates')"
-              v-model="selectedPreset.coordinates">
+              :disabled="!selectedPreset.canEdit"
+              v-model="selectedPreset.coordinates"
+              color="secondary">
             </v-checkbox>
+
             <v-checkbox 
               hide-details 
               :label="$t('dating')" 
-              v-model="selectedPreset.dating">
+              :disabled="!selectedPreset.canEdit"
+              v-model="selectedPreset.dating"
+              color="secondary">
             </v-checkbox>
 
             <!-- PLACE SPECIFIC -->
             <v-checkbox 
               hide-details 
               :label="$t('plane')" 
+              :disabled="!selectedPreset.canEdit"
               v-if="objectTypeProp == 'places'" 
-              v-model="selectedPreset.plane">
+              v-model="selectedPreset.plane"
+              color="secondary">
             </v-checkbox>
+
             <v-checkbox 
               hide-details 
               :label="$t('findType')" 
+              :disabled="!selectedPreset.canEdit"
               v-if="objectTypeProp == 'places'" 
-              v-model="selectedPreset.findTypes">
+              v-model="selectedPreset.findTypes"
+              color="secondary">
             </v-checkbox>
+
             <v-checkbox 
               hide-details 
               :label="$t('visibility')"
+              :disabled="!selectedPreset.canEdit"
               v-if="objectTypeProp == 'places'"
-              v-model="selectedPreset.visibility">
+              v-model="selectedPreset.visibility"
+              color="secondary">
             </v-checkbox>
+
             <v-checkbox 
               hide-details 
               :label="$tc('position', 2)"
+              :disabled="!selectedPreset.canEdit"
               v-if="objectTypeProp == 'places'" 
-              v-model="selectedPreset.positionslist">
+              v-model="selectedPreset.positionslist"
+              color="secondary">
             </v-checkbox>
 
             <!-- POSITION SPECIFIC -->
             <v-checkbox 
               hide-details 
-              :label="$t('objectDescriber')" 
+              :label="$t('objectDescribers')" 
+              :disabled="!selectedPreset.canEdit"
               v-if="objectTypeProp == 'positions'" 
-              v-model="selectedPreset.objectDescribers">
+              v-model="selectedPreset.objectDescribers"
+              color="secondary">
             </v-checkbox>
           </v-window>
         </v-col>
@@ -183,6 +218,7 @@
                         <v-icon>mdi-pencil</v-icon>
                       </v-btn> -->
                       <v-btn 
+                        v-if="item.raw.canEdit"
                         class="mr-2"
                         color="error" 
                         density="compact"
@@ -262,6 +298,9 @@ export default {
 
       //position specific
       objectDescribers: false,
+
+      //can be edited?
+      canEdit: true
     },
     selectedPreset: {
       title: '',

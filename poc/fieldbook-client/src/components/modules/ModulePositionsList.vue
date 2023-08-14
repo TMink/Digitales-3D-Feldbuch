@@ -1,14 +1,11 @@
 <template>
-  <v-col lg="12" class="pt-0 pl-0 pr-0">
+  <v-col lg="12">
     <v-form>
-      <v-card 
-        class="pa-4" 
+      <v-card class="pa-4 pb-0"
         :min-width="windowWidth * 0.5">
-        <v-card-text>
-          <h2 class="text-h6 font-weight-medium pb-2">
-            {{ $tc('position', 2) }}
-          </h2>
-        </v-card-text>
+        <h2 class="text-h6 font-weight-medium pb-1">
+          {{ $tc('position', 2) }}
+        </h2>
         <v-data-table-virtual 
           :items="positions" 
           fixed-header 

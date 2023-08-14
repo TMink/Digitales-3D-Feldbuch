@@ -1,35 +1,32 @@
 <template>
-  <v-col 
-    lg="12" 
-    class="pt-0 pl-0 pr-0">
-    <v-card class="pa-2">
-      <v-row>
-        <v-col>
-          <v-card-text>
-            <h2 class="text-h6 font-weight-medium">
-              {{ $t('technical') }}
-            </h2>
-          </v-card-text>
-
+  <v-col cols="12" >
+    <v-card class="pa-4">
+      <v-row class="align-center pb-2">
+        <v-col cols="2">
+          <h2 class="text-h6 font-weight-medium">
+            {{ $t('technical') }}
+          </h2>
         </v-col>
-        <v-col lg="3">
+
+        <v-spacer></v-spacer>
+
+        <v-col cols="2">
           <v-text-field 
-            class="ma-1 px-2 pt-2" 
-            no-resize color="primary" 
+            hide-details
+            color="primary" 
             :hide-no-data="false" 
             :label="$t('date')"
             v-model="object.date">
           </v-text-field>
-
         </v-col>
       </v-row>
-      <v-row>
+      <v-divider/>
+      <v-row class="pt-4">
       <v-col>
         <v-textarea 
-          rows="19" 
-          counter 
+          rows="22" 
+          hide-details 
           color="primary" 
-          class="ma-1 px-2 pt-2" 
           v-model="object.technical">
         </v-textarea>
       </v-col>

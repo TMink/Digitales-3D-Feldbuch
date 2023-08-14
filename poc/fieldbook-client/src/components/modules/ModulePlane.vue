@@ -1,19 +1,19 @@
 <template>
-  <v-col lg="6" class="pt-0 pl-0 pr-0">
+  <v-col lg="6">
     <v-card class="pa-4">
-      <v-card-text>
-        <h2 class="text-h6 font-weight-medium pb-2">
-          {{ $t('plane') }}
-        </h2>
-      </v-card-text>
-        <v-textarea 
-            rows="2" 
-            counter 
-            color="primary" 
-            class="ma-1 px-2 pt-2" 
-            v-model="plane"
-            :label="$t('plane')">
-        </v-textarea>
+      <h2 class="text-h6 font-weight-medium pb-1">
+        {{ $t('plane') }}
+      </h2>
+      <v-divider></v-divider>
+      <v-textarea 
+        rows="2"
+        counter 
+        class="pt-1 mt-5"
+        hide-details
+        color="primary" 
+        v-model="plane"
+        :label="$t('plane')">
+      </v-textarea>
     </v-card>
   </v-col>
 </template>

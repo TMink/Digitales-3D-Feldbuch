@@ -1,34 +1,26 @@
 <template>
-  <v-col 
-    lg="6" 
-    class="pt-0 pl-0 pr-0">
-    <v-card 
-      class="pa-4" 
-      v-if="type == 'places'">
-      <v-card-text>
-        <h2 class="text-h6 font-weight-medium pb-2">
-          {{ $t('coordinates') }}
-        </h2>
-      </v-card-text>
+  <v-col lg="6" >
+    <v-card v-if="type == 'places'" class="pa-4">
+      <h2 class="text-h6 font-weight-medium pb-1">
+        {{ $t('coordinates') }}
+      </h2>
+
+      <v-divider/>
       
-      <v-row justify="center">
-        <v-col lg="6">
+      <v-row class="pt-2">
+        <!-- RIGHT -->
+        <v-col lg="4">
           <v-text-field 
             hide-details 
             color="primary" 
-            class="px-4 pb-4" 
             density="compact" 
             v-model="object.right"
             :label="$t('right')" 
             @keypress="filterNonNumeric(event)">
           </v-text-field>
-        </v-col>
-
-        <v-col lg="6">
           <v-text-field 
             hide-details 
             color="primary" 
-            class="pr-4 pb-4" 
             density="compact" 
             :label="$t('rightTo')"
             v-model="object.rightTo" 
@@ -36,28 +28,22 @@
           </v-text-field>
         </v-col>
 
-        <v-divider 
-          class="mt-n1 mb-n2" 
-          horizontal />
-      </v-row>
-      <v-row>
-        <v-col lg="6">
+        <v-divider vertical class="mt-1"/>
+
+        <!-- UP -->
+        <v-col lg="4">
           <v-text-field 
             hide-details 
             color="primary" 
-            class="px-4 pb-4" 
             density="compact" 
             :label="$t('up')"
             v-model="object.up" 
             @keypress="filterNonNumeric(event)">
           </v-text-field>
-        </v-col>
 
-        <v-col lg="6">
           <v-text-field 
             hide-details 
             color="primary" 
-            class="pr-4 pb-4" 
             density="compact" 
             :label="$t('upTo')"
             v-model="object.upTo" 
@@ -65,29 +51,22 @@
           </v-text-field>
         </v-col>
 
-        <v-divider 
-          class="mt-n1 mb-n2" 
-          horizontal />
-      </v-row>
+        <v-divider vertical class="mt-1"/>
 
-      <v-row>
-        <v-col lg="6">
+        <!-- DEPTH -->
+        <v-col lg="4">
           <v-text-field 
             hide-details 
             color="primary" 
-            class="px-4 pb-4" 
             density="compact" 
             :label="$t('depthTop')"
             v-model="object.depthTop" 
             @keypress="filterNonNumeric(event)">
           </v-text-field>
-        </v-col>
 
-        <v-col lg="6">
           <v-text-field 
             hide-details 
             color="primary" 
-            class="pr-4 pb-4" 
             density="compact" 
             :label="$t('depthBot')"
             v-model="object.depthBot" 
@@ -97,18 +76,13 @@
       </v-row>
     </v-card>
 
-    <v-card 
-      class="pa-4" v-if="type == 'positions'">
-      <v-card-text>
-        <h2 class="text-h6 font-weight-medium pb-3">
-          {{ $t('coordinates') }}
-        </h2>
-      </v-card-text>
-
-      <v-row 
-        class="pa-4 pt-0" 
-        justify="center">
-        <v-col lg="3">
+    <v-card  v-if="type == 'positions'" class="pa-4">
+      <h2 class="text-h6 font-weight-medium pb-1">
+        {{ $t('coordinates') }}
+      </h2>
+      <v-divider/>
+      <v-row style="padding-top:46px">
+        <v-col lg="4">
           <v-text-field 
             color="primary" 
             hide-details 
@@ -120,12 +94,9 @@
           </v-text-field>
         </v-col>
 
-        <v-divider 
-          class="mt-1 mb-n2" 
-          vertical>
-        </v-divider>
+        <v-divider vertical/>
 
-        <v-col lg="3">
+        <v-col lg="4">
           <v-text-field 
             hide-details 
             color="primary" 
@@ -137,12 +108,9 @@
           </v-text-field>
         </v-col>
 
-        <v-divider 
-          class="mt-1 mb-n2" 
-          vertical>
-        </v-divider>
+        <v-divider vertical/>
 
-        <v-col lg="3">
+        <v-col lg="4">
           <v-text-field 
             hide-details 
             :label="$t('height') + ' *'" 
@@ -292,4 +260,9 @@ export default {
 	}
 </script>
 
-<style scoped></style>
+<style scoped>
+
+.v-field__input {
+  padding-top: 0px !important;
+}
+</style>

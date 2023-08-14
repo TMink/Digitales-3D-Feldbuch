@@ -116,8 +116,9 @@ export default {
   noFindDescr:
     "Falls die Stelle kein Befund ist (Arbeitsbereich, Störung, natürliche Verfärbung etc.)",
   restFindDescr:
-    "Falls bei einem Bodeneingriff der Befund noch unterhalb der Eingriffstiefe erhalten ist.",
+    "Falls der Befund bei einem Bodeneingriff noch unterhalb der Eingriffstiefe erhalten ist.",
   thisExports: "Dies wird {count} {object} exportieren",
-  wantToLeave: "Möchten Sie diese Seite wirklich verlassen? Sie haben noch ungespeicherte Änderungen.",
+  wantToLeave:
+    "Möchten Sie diese Seite wirklich verlassen? Sie haben noch ungespeicherte Änderungen.",
   saveSuccess: "Speichern erfolgreich",
 };

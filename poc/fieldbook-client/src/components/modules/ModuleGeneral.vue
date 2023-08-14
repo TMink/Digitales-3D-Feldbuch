@@ -1,11 +1,13 @@
 <template>
-  <v-col lg="12" class="pt-0 pl-0 pr-0">
-    <v-card 
-      class="pa-4" 
+  <v-col lg="12">
+    <v-card class="pa-4"
       v-if="type == 'positions'">
-      <v-row class="pt-2 align-center">
-
-        <v-col cols="3">
+      <h2 class="text-h6 font-weight-medium pb-1">
+        {{ $t('generalInformation') }}
+      </h2>
+      <v-divider/>
+      <v-row class="align-center pt-4">
+        <v-col cols="2">
           <v-text-field 
             color="primary" 
             :label="$tc('posNumber', 2) + ' *'" 
@@ -19,7 +21,8 @@
 
         <v-col cols="2">
           <v-text-field 
-            hide-details color="primary" 
+            hide-details 
+            color="primary" 
             :label="$tc('subNumber', 2)" 
             maxlength="5"
             :disabled="!object.hasSubNumber" 
@@ -28,46 +31,66 @@
         </v-col>
 
         <v-col cols="2">
-          <v-checkbox 
-            hide-details 
-            :label="$t('hasSubNumber')" 
-            color="secondary" 
-            v-model="object.hasSubNumber">
-          </v-checkbox>
+          <v-tooltip location="bottom">
+            <template v-slot:activator="{ props }">
+              <v-checkbox 
+                hide-details 
+                v-bind="props"
+                :label="$t('hasSubNumber')" 
+                color="secondary" 
+                v-model="object.hasSubNumber">
+              </v-checkbox>
+            </template>
+            Check, if the position should have a dedicated subNumber.
+          </v-tooltip>
         </v-col>
 
         <v-col cols="2">
-          <v-checkbox 
-            class="pl-4" 
-            hide-details 
-            v-model="object.isSeparate" 
-            color="primary"
-            :disabled="!object.hasSubNumber" 
-            :label="$t('isSeparate')">
-          </v-checkbox>
-          <!-- maybe as tooltip -->
-          <!-- <div class="text-caption">
-          Check, if the position should be saved with a separate
-          sub-number, even though the information is similar to the 
-          previous position.
-        </div> -->
+          <v-tooltip location="bottom">
+              <template v-slot:activator="{ props }">
+                <v-checkbox 
+                  class="pl-4" 
+                  v-bind="props"
+                  hide-details 
+                  v-model="object.isSeparate" 
+                  color="primary"
+                  :disabled="!object.hasSubNumber" 
+                  :label="$t('isSeparate')">
+                </v-checkbox>
+              </template>
+              Check, if the position should be saved with a separate
+              subNumber, <br>even though the information is similar to the 
+                          previous position.
+            </v-tooltip>
         </v-col>
 
-        <v-col cols="3" class="pa-0">
-          <!--<v-card class="pa-4 ma-2 mr-3" color="accent">
+        <!-- <v-col cols="2" class="pa-0">
+          <v-card class="pa-4 ma-2 mr-3" color="accent">
           <div 
             class="text-h6 text-center" 
             :label="$t('date')">
-            {{ position.date }}
+            {{ object.date }}
           </div>
           <div class="text-body-2 text-grey text-center">
             {{ $t('date') }}
           </div>
-        </v-card> -->
+        </v-card>
+        </v-col> -->
+        <v-spacer></v-spacer>
+
+        <v-col cols="2">
+
+          <v-text-field
+            hide-details
+            color="primary" 
+            :hide-no-data="false" 
+            :label="$t('date')"
+            v-model="object.date">
+          </v-text-field>
         </v-col>
       </v-row>
 
-      <v-row>
+      <v-row class="pt-2">
         <v-col lg="4">
           <v-combobox
             hide-selected 
@@ -96,6 +119,7 @@
           </v-text-field>
 
           <v-combobox
+            class="pt-4"
             hide-selected
             color="primary" 
             persistent-hint
@@ -118,8 +142,9 @@
 
         <v-col lg="8">
           <v-textarea 
-            rows="8" 
+            rows="5" 
             no-resize 
+            hide-details
             color="primary" 
             :label="$t('description')" 
             v-model="object.description">
@@ -129,12 +154,11 @@
     </v-card>
 
     <v-card class="pa-4" v-if="type == 'places'">
-      <v-card-text>
-        <h2 class="text-h6 font-weight-medium pb-2">
-          {{ $t('generalInformation') }}
-        </h2>
-      </v-card-text>
-      <v-row class="pt-2">
+      <h2 class="text-h6 font-weight-medium pb-1">
+        {{ $t('generalInformation') }}
+      </h2>
+      <v-divider/>
+      <v-row class="pt-4">
         <v-col lg="4">
           <v-combobox
             hide-selected 
@@ -167,6 +191,7 @@
 
           <v-combobox
             hide-selected
+            class="pt-1"
             color="primary" 
             persistent-hint
             :items="editorItemsSecondProp" 
@@ -189,7 +214,7 @@
         <v-col lg="8">
           <v-textarea 
             rows="8" 
-            no-resize 
+            hide-details
             color="primary" 
             v-model="object.description" 
             :label="$t('description')">
