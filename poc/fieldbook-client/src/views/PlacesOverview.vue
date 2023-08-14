@@ -48,8 +48,7 @@
             :headers="headers">
 
             <template v-slot:item="{ item, index }">
-              <tr 
-                v-on:click="moveToPlace(item.raw.id)"
+              <tr v-on:click="handleRowClick(item.raw.id)"
                 @mouseenter="setHoveredRow(index, true)"
                 @mouseleave="setHoveredRow(index, false)">
                 <!-- PLACE NUMBER -->
@@ -103,7 +102,7 @@
             :headers="fullHeaders">
 
             <template v-slot:item="{ item, index }">
-              <tr v-on:click="moveToPlace(item.raw.id)" 
+              <tr v-on:click="handleRowClick(item.raw.id)" 
                 @mouseenter="setHoveredRow(index, true)"
                 @mouseleave="setHoveredRow(index, false)">
 
@@ -317,6 +316,10 @@
           </v-col>
         </v-row>
       </v-btn>
+
+      <!-- DUPLICATE SWITCH -->
+      <v-switch v-model="toggleDuplicate"></v-switch>
+
       <v-spacer></v-spacer>
     </v-row>
   </div>
@@ -401,6 +404,7 @@ export default {
         title: '-',
       },
       moduleCreatorOverlay: false,
+      toggleDuplicate: false,
     };
   },
 
@@ -540,8 +544,6 @@ export default {
         lastSync: ''
       }
 
-      
-
       // set new placeNumber
       if (this.places.length == 0) {
         newPlace.placeNumber = 1;
@@ -560,6 +562,41 @@ export default {
       await fromOfflineDB.addObject(newPlace, 'Places', 'places');
       await fromOfflineDB.addObject({ id: newPlaceID, object: 'places' }, 'Changes', 'created');
       await this.updatePlaces(newPlace.id);
+      return newPlaceID;
+    },
+
+    /**
+     * Creates `count` duplicates of the selected Place
+     * @param {Object} place 
+     * @param {Int} count 
+     */
+    async duplicatePlace(placeID) {
+      var newPlaceID = await this.addPlace();
+      var newPlace = await fromOfflineDB.getObject(newPlaceID, 'Places', 'places');
+      var dupPlace = await fromOfflineDB.getObject(placeID, 'Places', 'places');
+      
+      dupPlace.id = newPlaceID;
+      dupPlace.placeNumber = newPlace.placeNumber;
+      dupPlace.positions = [];
+      dupPlace.lastChanged = Date.now();
+
+      await fromOfflineDB.updateObject(dupPlace, 'Places', 'places');
+      this.updatePlaces();
+    },
+
+    /**
+     * Handle a click to a row of the placesTable.
+     * Either moves to a Place or duplicates it, 
+     * depending on if the duplicateSwitch is toggled or not.
+     * 
+     * @param {String} placeID 
+     */
+    handleRowClick(placeID) {
+      if (this.toggleDuplicate) {
+        this.duplicatePlace(placeID);
+      } else {
+        this.moveToPlace(placeID);
+      }
     },
 
     /**
@@ -595,7 +632,7 @@ export default {
     },
 
     /**
-     * Save the change toogle all info state to cookies
+     * Save the change toggle all info state to cookies
      */
     toggleAllInfo() {
       VueCookies.set('showAllPlaceInfo', this.showAllInfo);
