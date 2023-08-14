@@ -29,9 +29,10 @@
           <!-- Tab item 'GENERAL' -->
           <v-window-item value="one">
             <ModelViewer
-              :object_id="place.id"
-              :updateListFirstProp="place.testBool"  
-              object_type="Places"
+              :updateListFirstProp="place.testBool"
+              :datingItemsFirstProp="datingsList"
+              :editorItemsFirstProp="editorsList"
+              :titleItemsFirstProp="titlesList"
               @dataToPlaceForm="getEmitedData($event)"/>
           </v-window-item>
 
@@ -200,7 +201,7 @@ export default {
         description: '',
         editor: '',
         date: '',
-        title: [],
+        title: '',
 
         /* Plane */
         plane: '',
@@ -244,6 +245,10 @@ export default {
       },
       hasUnsavedChanges: false,
       componentHasLoaded: false,
+
+      datingsList: [],
+      editorsList: [],
+      titlesList: [],
     }
 
   },
@@ -320,7 +325,7 @@ export default {
 
   methods: {
 
-    getEmitedData(data) {
+    async getEmitedData(data) {
       switch (data[0]) {
         /* Module: Coordinates */
         case 'right':

@@ -33,6 +33,11 @@
           <!-- CARD 1 MODELVIEWER -->
           <v-window-item value="one">
             <ModelViewer
+              :updateListFirstProp="position.testBool"
+              :datingItemsFirstProp="datingsList"
+              :titleItemsFirstProp="titlesList"
+              :materialItemsFirstProp="materialsList"
+              :editorItemsFirstProp="editorsList"
               @dataToPlaceForm="getEmitedData($event)"/>
           </v-window-item>
 
@@ -133,6 +138,7 @@ export default {
         models: [],
         lastChanged: Date.now(),
         lastSync: '',
+        testBool: false,
       },
       materials: [],
       titles: [],
@@ -143,6 +149,11 @@ export default {
       tab: null,
       hasUnsavedChanges: false,
       componentHasLoaded: false,
+
+      datingsList: [],
+      titlesList: [],
+      materialsList: [],
+      editorsList: [],
     }
   },
   watch: {
@@ -183,7 +194,6 @@ export default {
     var position = await fromOfflineDB.getObject(poID, 'Positions', 'positions')
     
     this.$emit("view", activity.activityNumber + ' ' + place.placeNumber + ' ' + position.positionNumber);
-    
 
     this.materials = JSON.parse(import.meta.env.VITE_MATERIALS);
     this.titles = JSON.parse(import.meta.env.VITE_TITLES);

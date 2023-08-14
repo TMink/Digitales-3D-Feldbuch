@@ -5,6 +5,8 @@
 
         <ModuleGeneral v-if='object.modulePreset.general'
           :objectProp="object"
+          :titleItemsSecondProp="titleItemsFirstProp"
+          :editorItemsSecondProp="editorItemsFirstProp"
           @dataToModelViewer="sendData($event)"/>
 
         <ModuleCoordinates v-if='object.modulePreset.coordinates'
@@ -29,11 +31,12 @@
           
         <ModuleDating v-if='object.modulePreset.dating'
           :datingProp="object.dating"
+          :datingItemsSecondProp="datingItemsFirstProp"
           @dataToModelViewer="sendData($event)"/>
         
         <ModuleObjectDescribers v-if='object.modulePreset.objectDescribers'
           :objectProp="object"
-          :materialsProp="materials"
+          :materialItemsSecondProp="materialItemsFirstProp"
           @dataToModelViewer="sendData($event)"/>
         
         <ModuleTechnical v-if='object.modulePreset.technical'
@@ -79,6 +82,10 @@ export default {
 
   props: {
     updateListFirstProp: Boolean,
+    datingItemsFirstProp: Array,
+    editorItemsFirstProp: Array,
+    materialItemsFirstProp: Array,
+    titleItemsFirstProp: Array,
   },
   
   setup() {

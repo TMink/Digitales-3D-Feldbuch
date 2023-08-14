@@ -494,7 +494,7 @@ export default {
         activityID: acID,
         placeNumber: '',
 
-        title: [],
+        title: '',
         dating: '',
         noFinding: false,
         restFinding: false,
