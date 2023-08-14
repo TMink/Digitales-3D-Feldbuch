@@ -205,6 +205,8 @@ export default {
 		
 	props: {
     objectProp: Object,
+    titleItemsSecondProp: Array,
+    editorItemsSecondProp: Array,
   },
 
   emits: ['dataToModelViewer'],
@@ -224,6 +226,8 @@ export default {
         addressOf: null,
       },
       is_required: [v => !!v || 'Pflichtfeld'],
+      titleItems: [],
+      editorItems: [],
     }
   },
 
@@ -238,9 +242,11 @@ export default {
     },
     "object.editor": {
       handler: function () {
-        if ( this.object.editor != null ) {
+        if ( this.object.editor != null && this.type == 'places' ) {
           /* Send data back to ModelViewer.vue */
           this.$emit("dataToModelViewer", ['editor', this.object.editor]);
+        } else if ( this.object.editor == null && this.type == 'places' ) {
+          this.$emit("dataToModelViewer", ['editor', '']);
         }
       }
     },
@@ -249,6 +255,8 @@ export default {
         if ( this.object.date != null ) {
           /* Send data back to ModelViewer.vue */
           this.$emit("dataToModelViewer", ['date', this.object.date]);
+        } else {
+          this.$emit("dataToModelViewer", ['date', '']);
         }
       }
     },
@@ -257,6 +265,8 @@ export default {
         if ( this.object.title != null ) {
           /* Send data back to ModelViewer.vue */
           this.$emit("dataToModelViewer", ['title', this.object.title]);
+        } else {
+          this.$emit("dataToModelViewer", ['title', '']);
         }
       }
     },
@@ -289,14 +299,16 @@ export default {
         if ( this.object.addressOf != null && this.type == 'positions' ) {
           /* Send data back to ModelViewer.vue */
           this.$emit("dataToModelViewer", ['addressOf', this.object.addressOf]);
+        } else if ( this.object.addressOf == null && this.type == 'positions' ) {
+          this.$emit("dataToModelViewer", ['addressOf', '']);
         }
       }
     }
   },
 
   created() {
-    this.type = this.getType(this.$route.path)
-    this.titles = JSON.parse(import.meta.env.VITE_TITLES);
+    this.type = this.getType(this.$route.path);
+    //this.titles = JSON.parse(import.meta.env.VITE_TITLES);
     this.object = this.objectProp;
   },
 
