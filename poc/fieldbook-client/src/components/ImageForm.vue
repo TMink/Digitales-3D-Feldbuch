@@ -58,7 +58,8 @@
         <v-col cols="3">
           <v-checkbox
             v-model="automaticNaming"
-            label="automatic Naming">
+            :label="$t('autoNaming')"
+            color="secondary">
           </v-checkbox>
         </v-col>
         <v-col cols="9">
