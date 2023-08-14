@@ -291,21 +291,6 @@ export default {
     this.componentHasLoaded = true;
     this.hasUnsavedChanges = false;
   },
-  watch: {
-    'place': {
-      handler: 'handlePlaceChange',
-      deep: true,
-    },
-    /**
-     * Ensure that only 5 items are selected
-     * @param {*} val 
-     */
-    'place.title'(val) {
-      if (val.length > 5) {
-        this.$nextTick(() => this.place.title.pop())
-      }
-    },
-  },
 
   computed: {
     getTableHeight() {
