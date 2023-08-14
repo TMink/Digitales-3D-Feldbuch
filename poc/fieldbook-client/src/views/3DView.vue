@@ -11,7 +11,7 @@
         <!-- Tools -->
         <v-navigation-drawer v-model="leftDrawer.showDrawers[0]" 
                              color="background"
-                             style="left: 49px; top:104px; width: 351px;"
+                             style="left: 49px; top:64px; width: 351px;"
                              temporary
         >
           <v-list-item height="50" prepend-icon="mdi-camera-control"
@@ -96,7 +96,7 @@
         <!-- Place -->
         <v-navigation-drawer v-model="leftDrawer.showDrawers[1]" 
                              color="background"
-                             style="left: 49px; top:104px; width: 470px;" 
+                             style="left: 49px; top:64px; width: 470px;" 
                              temporary
         >
           <v-list-item height="50" prepend-icon="mdi-radar"
@@ -229,7 +229,7 @@
         <!-- Positions -->
         <v-navigation-drawer v-model="leftDrawer.showDrawers[2]" 
                              color="background"
-                             style="left: 49px; top:104px; width: 470px;" 
+                             style="left: 49px; top:64px; width: 470px;" 
                              temporary
         >
           <v-list-item height="50" prepend-icon="mdi-map-marker-radius-outline"
