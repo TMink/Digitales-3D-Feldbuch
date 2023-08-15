@@ -207,9 +207,9 @@
     if (placeID !== null) {
       
       var curPlace = await fromOfflineDB.getObject(placeID, 'Places', 'places');
-      if (curPlace.placeNumber > 1) {
+      //if (curPlace.placeNumber > 1) {
         this.placeIsSet = true
-      }
+      //}
     }
 
     var positionID = VueCookies.get('currentPosition')
