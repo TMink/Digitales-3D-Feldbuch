@@ -110,14 +110,6 @@
             </template>
           </v-combobox>
 
-          <v-text-field
-            class="pt-6"
-            no-resize color="primary" 
-            :hide-no-data="false" 
-            :label="$t('date')"
-            v-model="object.date">
-          </v-text-field>
-
           <v-combobox
             class="pt-4"
             hide-selected
