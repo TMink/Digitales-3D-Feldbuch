@@ -6,7 +6,7 @@ export default {
   findType: "Find Type",
   generalInformation: "General Information",
   coordinates: "Coordinates",
-  fieldbook: "Digital 3d-Fieldbook",
+  fieldbook: "Digital 3D-Fieldbook",
   activity: "Activity | Activities",
   place: "Place | Places",
   place_id: "Place ID",
