@@ -96,7 +96,7 @@
 
               <AddPosition 
                 :positions_prop="positions" 
-                @updatePlace="updatePlace2()" 
+                @updatePlace="addPosIDToPlace($event)" 
                 @updatePositions="updatePositions()" />
 
             </v-form>
@@ -406,13 +406,12 @@ export default {
       this.place = data;
     },
 
-    async updatePlace2() {
-      const currentPlace = VueCookies.get('currentPlace');
-      var data = await fromOfflineDB.getObject(currentPlace, 'Places', 'places');
-      const rawPositions = toRaw(this.positions);
-      data = this.place
-      data.positions = rawPositions;
-      await fromOfflineDB.updateObject( data, 'Places', 'places' );
+    /**
+     * Adds the array of position IDs to the 
+     * current Place and saves it to IndexedDB
+     */
+    async addPosIDToPlace(posID) {
+      this.place.positions.push(posID);
       this.hasUnsavedChanges = false;
     },
 
