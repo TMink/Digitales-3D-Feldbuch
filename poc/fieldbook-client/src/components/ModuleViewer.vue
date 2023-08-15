@@ -8,10 +8,11 @@
           :editorItemsSecondProp="editorItemsFirstProp"
           @dataToModuleViewer="sendData($event)"/>
 
-        <ModulePositionsList v-if='object.modulePreset.positionslist'
-            :placeProp="object"
-            :updateListSecondProp="updateListFirstProp"
-            @dataToModuleViewer="sendData($event)"/>
+        <ModulePositionsList 
+          ref="posListRef"
+          v-if='object.modulePreset.positionslist'
+          :placeProp="object"
+          @dataToModuleViewer="sendData($event)"/>
 
         <ModuleCoordinates v-if='object.modulePreset.coordinates'
           :objectProp="object"
@@ -79,20 +80,10 @@ export default {
   emits: ['dataToPlaceForm'],
 
   props: {
-    updateListFirstProp: Boolean,
     datingItemsFirstProp: Array,
     editorItemsFirstProp: Array,
     materialItemsFirstProp: Array,
     titleItemsFirstProp: Array,
-  },
-
-  watch: {
-    'updateListFirstProp': {
-      handler: async function() {
-        //this.updateListSecondProp = this.updateListFirstProp;
-        //this.$emit( "dataToModuleViewer", [ 'resetBool', false ] );
-      }
-    },
   },
   
   setup() {
@@ -124,7 +115,6 @@ export default {
       },
       pathNames: null,
       id: null,
-      updateListSecondProp: false,
     }
   },
 
@@ -136,6 +126,7 @@ export default {
   },
   
   methods: {
+
     async updateObject() {
       this.object = await fromOfflineDB.getObject(this.id, this.pathNames.db, this.pathNames.os);
     },
@@ -153,7 +144,14 @@ export default {
     sendData(data) {
       /* Send data back to PlaceForm.vue */
       this.$emit("dataToPlaceForm", data)
-    }
+    },
+
+    /**
+     * Triggers the updatePositions function from ModulePositionsList
+     */
+    passRefFunctionCall() {
+      this.$refs.posListRef.updatePositions();
+    },
   }
 };
 

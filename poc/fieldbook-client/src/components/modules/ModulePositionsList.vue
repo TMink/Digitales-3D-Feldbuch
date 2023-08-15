@@ -107,7 +107,6 @@ export default {
 
   props: {
     placeProp: Object,
-    updateListSecondProp: Boolean,
   },
 
   data() {
@@ -136,12 +135,6 @@ export default {
   },
 
   watch: {
-    'updateListSecondProp': {
-      handler: async function() {
-        await this.updatePositions();
-        this.$emit( "dataToModuleViewer", [ 'resetBool', false ] );
-      }
-    },
     'place': {
       handler: 'handlePlaceChange',
       deep: true,
