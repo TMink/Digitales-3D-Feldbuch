@@ -30,7 +30,7 @@
           <!-- Tab item 'GENERAL' -->
           <v-window-item value="one">
             <ModuleViewer
-              :updateListFirstProp="place.testBool"
+              ref="moduleViewerRef"
               :datingItemsFirstProp="datingsList"
               :editorItemsFirstProp="editorsList"
               :titleItemsFirstProp="titlesList"
@@ -96,7 +96,6 @@
 
               <AddPosition 
                 :positions_prop="positions" 
-                @updatePlace="addPosIDToPlace($event)" 
                 @updatePositions="updatePositions()" />
 
             </v-form>
@@ -115,7 +114,8 @@
             <ModelForm 
               :object_id="place.id" 
               object_type="Places"
-              @addModel="addModel($event)"/>
+              @addModel="addModel($event)">
+            </ModelForm>
           </v-window-item>
         </v-window>
       </v-col>
@@ -174,8 +174,6 @@ export default {
         id: '',
         activityID: '',
         placeNumber: '',
-        code: '',         //can maybe be removed
-        datingCode: '',   //can maybe be removed
         profile: '',
         drawing: '',
         positions: [],
@@ -407,20 +405,11 @@ export default {
     },
 
     /**
-     * Adds the array of position IDs to the 
-     * current Place and saves it to IndexedDB
-     */
-    async addPosIDToPlace(posID) {
-      this.place.positions.push(posID);
-      this.hasUnsavedChanges = false;
-    },
-
-    /**
      * Update reactive Vue.js positions data
      */
     async updatePositions() {
-      this.place.testBool = true;
       this.positions = await fromOfflineDB.getAllObjectsWithID(this.place.id, 'Place', 'Positions', 'positions');
+      this.$refs.moduleViewerRef.passRefFunctionCall();
     },
 
     /**
@@ -438,7 +427,7 @@ export default {
       
       this.updateAutoFillList( 'datings', this.place.dating, this.datingsList );
       this.updateAutoFillList( 'editors', this.place.editor, this.editorsList );
-      this.updateAutoFillList( 'titles', this.place.title, this.titlesList );
+      this.updateAutoFillList( 'titles', this.place.title, this.titlesList );      
     },
 
     async updateAutoFillList( storeName, item, itemList) {

@@ -29,9 +29,8 @@ export default {
     await this.updateModulePresets();
   },
   methods: {
-    closeDiag(newPosID) {
+    closeDiag() {
       this.$emit('updatePositions');
-      this.$emit('updatePlace', newPosID);
     },
 
     /**
@@ -96,7 +95,7 @@ export default {
       await fromOfflineDB.addObject(newPosition, "Positions", "positions");
       await fromOfflineDB.addObject(
             { id: newPositionID, object: 'positions' }, 'Changes', 'created');
-      this.closeDiag(newPositionID);
+      this.closeDiag();
     },
   }
 }
