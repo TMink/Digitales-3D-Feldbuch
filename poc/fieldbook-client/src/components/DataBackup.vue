@@ -310,34 +310,24 @@ export default {
     async addData(data, dbName, storeName ) {
       if (data.length > 0) {
         for (var i = 0; i < data.length; i++) {
+          var allPreset = '';
 
-          var preset = {
-              technical: false,
-              general: true,
-              coordinates: true,
-              dating: true,
-
-              //place specific
-              plane: false,
-              findTypes: false,
-              visibility: false,
-              positionslist: false,
-
-              //position specific
-              objectDescribers: false,
-            } 
           if (dbName == 'Places') {
-            preset.plane = true;
-            preset.findTypes = true;
-            preset.visibility = true;
-            preset.positionslist = true;
+
+            // technical place for first place
+            if (i == 0) {
+              allPreset = await fromOfflineDB.getObjectByIndex(0, 'ModulePresets', 'places');
+            // otherwise use ALL preset
+            } else {
+              allPreset = await fromOfflineDB.getObjectByIndex(1, 'ModulePresets', 'places');
+            }
             
           } else if (dbName == 'Positions') {
-            preset.objectDescribers = true;
+            allPreset = await fromOfflineDB.getObjectByIndex(0, 'ModulePresets', 'positions');
           }
 
-          if (data[i].modulePresets == undefined) {
-            data[i].modulePresets = preset;
+          if (data[i].modulePreset == undefined) {
+            data[i].modulePreset = allPreset;
           }
         
           // encode the model file, if the data is for a model
