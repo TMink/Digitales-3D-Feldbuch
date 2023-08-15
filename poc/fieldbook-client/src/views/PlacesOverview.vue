@@ -60,7 +60,7 @@
 
                 <!-- TITLE -->
                   <td class="py-2" :style="getRowStyle(index)">
-                    <div v-if="item.raw.placeNumber > 1">
+                    <!-- <div v-if="item.raw.placeNumber > 1"> -->
                       <v-list-item-title
                         v-if="item.raw.title.length > 0"
                         style="min-width:200px" 
@@ -73,13 +73,13 @@
                         style="color:dimgrey;">
                         -
                       </v-list-item-title>
-                    </div>
+                    <!--</div>
 
-                    <v-list-item-title 
+                     <v-list-item-title 
                       v-if="item.raw.placeNumber == 1" 
                       style="color:#C4A484;">
                       {{ $t('technical') }}
-                    </v-list-item-title>
+                    </v-list-item-title> -->
 
                   </td>
 
@@ -421,7 +421,6 @@ export default {
         title: '-',
       },
       moduleCreatorOverlay: false,
-      toggleDuplicate: false
     };
   },
 
@@ -631,7 +630,6 @@ export default {
       if (placeID !== 'new') {
         VueCookies.set('currentPlace', placeID)
       }
-
       this.$router.push({ name: 'PlaceCreation', params: { placeID: placeID } })
     },
 
