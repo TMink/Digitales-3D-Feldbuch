@@ -1224,8 +1224,12 @@ export default {
       rawPosition.lastChanged = Date.now();
       
       var positionFromDb = await fromOfflineDB.getObject(rawPosition.id, 'Positions', 'positions');
-      var newSubNumber = this.calcSubNumber(rawPosition, positionFromDb);
-      rawPosition.subNumber = newSubNumber;
+      if ( positionFromDb.hasSubNumber ) {
+        var newSubNumber = this.calcSubNumber(rawPosition, positionFromDb);
+        rawPosition.subNumber = newSubNumber;
+      } else {
+        rawPosition.subNumber = '';
+      }
 
       await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions');
     },
@@ -1960,7 +1964,6 @@ export default {
             const positionInDB = await fromOfflineDB.getObject( positionID,
               'Positions', 'positions' );
             this.posInfo = positionInDB;
-            console.log(this.posInfo)
           }
         }
       }
@@ -2320,6 +2323,22 @@ export default {
       boundingBox.getCenter( center );
 
       return center;
+    },
+
+    /**
+     * 
+     * @param {*} models 
+     */
+    getAllModelCenter: function( models ) {
+      const modelsGroup = new THREE.Group();
+      models.forEach( element => {
+        modelsGroup.add( this.sceneMain.getObjectByName( element.modelID ) )
+      } )
+      let aabb = new THREE.Box3();
+      aabb.setFromObject( modelsGroup );
+      let size = new THREE.Vector3();
+      aabb.getCenter( size )
+      return size;
     },
 
     /**
