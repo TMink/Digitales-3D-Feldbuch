@@ -385,7 +385,7 @@ export default {
      * @return {Boolean} returns `true` or `false`
      */
     async presetAlreadyExists(newPreset) {
-      const excludedFields = ['id', 'title'];
+      const excludedFields = ['id', 'title','canEdit'];
       var allPresets = await fromOfflineDB.getAllObjects('ModulePresets', this.objectTypeProp);
 
       // exclude certain keys from the checks
@@ -438,11 +438,13 @@ export default {
      * Clears the input fields for new presets
      */
     clearPresetInputs() {
-      for (let prop in this.curPreset) {
+      for (let prop in this.newPreset) {
         if (prop == 'title') {
-          this.curPreset[prop] = '';
+          this.newPreset[prop] = '';
+        } else if (prop == 'canEdit') {
+          this.newPreset[prop] = true;
         } else {
-          this.curPreset[prop] = false;
+          this.newPreset[prop] = false;
         }
       }
     },
