@@ -254,8 +254,23 @@ export default {
      */
     async updateImages() {
       var objectType = this.object_type.substring(0, this.object_type.length - 1);
-      this.images = await fromOfflineDB.getAllObjectsWithID(
-                      this.object_id, objectType, 'Images', 'images');
+
+      if (this.$route.name == 'PlaceCreation') {
+        var allPositions = await fromOfflineDB.getAllObjectsFromArray(this.object.positions, 'Positions', 'positions');
+        var allImages = [];
+
+        allPositions.forEach(curPos => {
+          if (curPos.images.length > 0 ) {
+            curPos.images.forEach(imagesID => {
+              allImages.push(imagesID);
+            });
+          }
+        });
+        this.images = await fromOfflineDB.getAllObjectsFromArray(allImages, 'Images', 'images');
+      } else {
+        this.images = await fromOfflineDB.getAllObjectsWithID(
+                        this.object_id, objectType, 'Images', 'images');
+      }
     },
 
     /**
@@ -317,6 +332,7 @@ export default {
 
       // hide image creation dialog
       this.create_dialog = false;
+
 
       // update IndexedDB
       fromOfflineDB.updateObject(rawObject, this.object_type, this.object_type.toLowerCase());
