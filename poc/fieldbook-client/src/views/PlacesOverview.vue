@@ -318,9 +318,25 @@
       </v-btn>
 
       <!-- DUPLICATE SWITCH -->
-      <v-switch v-model="toggleDuplicate"></v-switch>
+      <v-switch
+          class="pl-5"
+          v-model="toggleDuplicate"
+          hide-details
+          color="secondary">
+          <template v-slot:prepend>
+            <v-icon color="warning">mdi-content-duplicate</v-icon> 
+          </template>
+      </v-switch>
 
-      <v-spacer></v-spacer>
+      <!-- Duplicate Snackbar - stays activated as long as switch value is true -->
+      <v-snackbar 
+        color="warning" 
+        timeout="-1" 
+        v-model="toggleDuplicate" 
+        location="bottom">
+        <v-icon start>mdi-content-duplicate</v-icon>
+        {{ $t('duplicationMode') }}
+      </v-snackbar>
     </v-row>
   </div>
   <ModuleCreator 
@@ -365,6 +381,7 @@ export default {
    */
   data() {
     return {
+      toggleDuplicate: false,
       places: [],
       searchQuery: '',
       showAllInfo: false,
@@ -404,7 +421,7 @@ export default {
         title: '-',
       },
       moduleCreatorOverlay: false,
-      toggleDuplicate: false,
+      toggleDuplicate: false
     };
   },
 
