@@ -192,7 +192,7 @@
   },
     async created () {
     await fromOfflineDB.syncLocalDBs();
-    if (this.$route.path == '/positions') {
+    if (this.$route.name != 'PositionCreation') {
       VueCookies.remove('currentPosition');
     }
     await this.updatePathbar();
