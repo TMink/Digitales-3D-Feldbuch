@@ -357,6 +357,7 @@
         st = selection.toLowerCase() + "s"
       }
       const name = await fromOfflineDB.getObject(id, db, st);
+      const currPlace = await fromOfflineDB.getObject(VueCookies.get('currentPlace'), 'Places', 'places');
 
       switch (selection) {
         case "Activity":
@@ -366,7 +367,11 @@
           this.currentPlace = name.placeNumber;
           break;
         case "Position":
-          this.currentPosition = name.positionNumber;
+          if (currPlace.placeNumber != '1') {
+            this.currentPosition = name.positionNumber;
+          } else {
+            this.currentPosition = '-';
+          }
           break;
         default:
           console.log("Error");
