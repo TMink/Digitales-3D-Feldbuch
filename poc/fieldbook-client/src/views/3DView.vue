@@ -1213,6 +1213,31 @@ export default {
 
   methods: {
 
+    async updateAutoFillList( storeName, item) {
+      const newEditor = {};
+
+      const editorsFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', storeName);
+      if ( editorsFromDB.length > 0 ) {
+        let hasItem = false;
+        
+        editorsFromDB.forEach( element => {
+          if ( element.item == item ) {
+            hasItem = true;
+          }
+        })
+        if ( !hasItem && item != '' ) {
+          newEditor.id = String(Date.now())
+          newEditor.item = toRaw(item)
+        }
+      } else if ( item != '' ) {
+        newEditor.id = String(Date.now())
+        newEditor.item = toRaw(item)
+      }
+      if ( !!Object.keys(newEditor).length ) {
+        await fromOfflineDB.addObject(newEditor, 'AutoFillLists', storeName)
+      }
+    },
+
     /**
      * Save a Position to local storage for the current place
      */
@@ -1232,6 +1257,11 @@ export default {
       }
 
       await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions');
+
+      this.updateAutoFillList( 'datings', this.posInfo.dating )
+      this.updateAutoFillList( 'titles', this.posInfo.title )
+      this.updateAutoFillList( 'materials', this.posInfo.material )
+      //this.updateAutoFillList( 'editors', this.posInfo.addressOf )
     },
 
     /**
