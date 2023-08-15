@@ -321,12 +321,13 @@ export default {
             }
 
             // technical place for first place
-            if (i == 0) {
+            //TODO: remove comments so technical place works again
+            /* if (i == 0) {
               allPreset = await fromOfflineDB.getObjectByIndex(0, 'ModulePresets', 'places');
             // otherwise use ALL preset
-            } else {
+            } else { */
               allPreset = await fromOfflineDB.getObjectByIndex(1, 'ModulePresets', 'places');
-            }
+            //}
             
           } else if (dbName == 'Positions') {
             allPreset = await fromOfflineDB.getObjectByIndex(0, 'ModulePresets', 'positions');
