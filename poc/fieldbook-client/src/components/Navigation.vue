@@ -191,7 +191,10 @@
     }
   },
     async created () {
-      await fromOfflineDB.syncLocalDBs();
+    await fromOfflineDB.syncLocalDBs();
+    if (this.$route.path == '/positions') {
+      VueCookies.remove('currentPosition');
+    }
     await this.updatePathbar();
     this.active_tab = this.active_tab_prop; //VueCookies.get('active_tab_prop') //this.active_tab_prop;
     
@@ -210,8 +213,11 @@
     }
 
     var positionID = VueCookies.get('currentPosition')
-    if (positionID !== null)
-      this.positionIsSet = true
+    if (positionID !== null) {
+      this.positionIsSet = true;
+    } else {
+      this.positionIsSet = false;
+    }
     },
     methods: {
       goback() {
@@ -339,8 +345,12 @@
       if (VueCookies.get('currentPlace')) {
         await this.getInfo("Place")
       }
-      if (VueCookies.get('currentPosition')) {
+
+      var test = VueCookies.get('currentPosition');
+      if (test) {
         await this.getInfo("Position")
+      } else {
+        this.currentPosition = '-';
       }
     },
 
