@@ -18,34 +18,34 @@
               label="Title" 
               class="pr-6"
               clearable
-              v-model="curPreset.title"></v-text-field>
+              v-model="newPreset.title"></v-text-field>
 
             <v-checkbox 
               hide-details 
               :label="$t('technical')" 
               v-if="objectTypeProp == 'places'"
-              v-model="selectedPreset.technical"
+              v-model="newPreset.technical"
               color="secondary">
             </v-checkbox>
 
             <v-checkbox 
               hide-details 
               :label="$t('generalInformation')"
-              v-model="curPreset.general"
+              v-model="newPreset.general"
               color="secondary">
             </v-checkbox>
 
             <v-checkbox 
               hide-details 
               :label="$t('coordinates')"
-              v-model="curPreset.coordinates"
+              v-model="newPreset.coordinates"
               color="secondary">
             </v-checkbox>
 
             <v-checkbox 
               hide-details 
               :label="$t('dating')"
-              v-model="curPreset.dating"
+              v-model="newPreset.dating"
               color="secondary">
             </v-checkbox>
 
@@ -54,7 +54,7 @@
               hide-details 
               :label="$t('plane')" 
               v-if="objectTypeProp == 'places'" 
-              v-model="curPreset.plane"
+              v-model="newPreset.plane"
               color="secondary">
             </v-checkbox>
 
@@ -62,7 +62,7 @@
               hide-details 
               :label="$t('findType')"
               v-if="objectTypeProp == 'places'" 
-              v-model="curPreset.findTypes"
+              v-model="newPreset.findTypes"
               color="secondary">
             </v-checkbox>
 
@@ -70,7 +70,7 @@
               hide-details 
               :label="$t('visibility')"
               v-if="objectTypeProp == 'places'"
-              v-model="curPreset.visibility"
+              v-model="newPreset.visibility"
               color="secondary">
             </v-checkbox>
 
@@ -78,7 +78,7 @@
               hide-details 
               :label="$tc('position', 2)" 
               v-if="objectTypeProp == 'places'" 
-              v-model="curPreset.positionslist"
+              v-model="newPreset.positionslist"
               color="secondary">
             </v-checkbox>
 
@@ -87,7 +87,7 @@
               hide-details 
               :label="$t('objectDescribers')" 
               v-if="objectTypeProp == 'positions'" 
-              v-model="curPreset.objectDescribers"
+              v-model="newPreset.objectDescribers"
               color="secondary">
             </v-checkbox>
           </v-window>
@@ -281,7 +281,7 @@ export default {
 
   data: () => ({
     dialog: false,
-    curPreset: {
+    newPreset: {
       title: '',
 
       technical: false,
@@ -342,7 +342,7 @@ export default {
      * (if no other similar preset exists)
      */
     async saveNewPreset() {
-      var rawPreset = toRaw(this.curPreset);
+      var rawPreset = toRaw(this.newPreset);
 
       //only save the preset if it doesn't already exist
       var presetExists = await this.presetAlreadyExists(rawPreset);
@@ -385,7 +385,7 @@ export default {
      * @return {Boolean} returns `true` or `false`
      */
     async presetAlreadyExists(newPreset) {
-      const excludedFields = ['id', 'title'];
+      const excludedFields = ['id', 'title','canEdit'];
       var allPresets = await fromOfflineDB.getAllObjects('ModulePresets', this.objectTypeProp);
 
       // exclude certain keys from the checks
@@ -417,6 +417,7 @@ export default {
     setModulePreset(item) {
       let rawPreset = toRaw(item);
       this.selectedPreset = rawPreset;
+
       if (this.objectTypeProp == 'places') {
         VueCookies.set('placeModulesPreset', rawPreset.id);
       } else if (this.objectTypeProp == 'positions') {
@@ -437,11 +438,13 @@ export default {
      * Clears the input fields for new presets
      */
     clearPresetInputs() {
-      for (let prop in this.curPreset) {
+      for (let prop in this.newPreset) {
         if (prop == 'title') {
-          this.curPreset[prop] = '';
+          this.newPreset[prop] = '';
+        } else if (prop == 'canEdit') {
+          this.newPreset[prop] = true;
         } else {
-          this.curPreset[prop] = false;
+          this.newPreset[prop] = false;
         }
       }
     },
@@ -453,8 +456,20 @@ export default {
     async deletePreset(object) {
       let rawObject = toRaw(object);
 
+      if (rawObject.id == VueCookies.get('placeModulesPreset')) {
+        var placeDefaultPreset = await fromOfflineDB.getObjectByIndex(1, 'ModulePresets', this.objectTypeProp);
+        this.selectedPreset = placeDefaultPreset;
+        VueCookies.set('placeModulesPreset', placeDefaultPreset.id);
+
+      } else if (rawObject.id == VueCookies.get('posModulesPreset')) {
+        var posDefaultPreset = await fromOfflineDB.getObjectByIndex(0, 'ModulePresets', this.objectTypeProp);
+        this.selectedPreset = posDefaultPreset;
+        VueCookies.set('posModulesPreset', posDefaultPreset.id);
+      }
+
       await fromOfflineDB.deleteObject(rawObject, 'ModulePresets', this.objectTypeProp);
       await this.updateModulePresets();
+      this.$emit('updateModulePresets');
     },
 
     /**

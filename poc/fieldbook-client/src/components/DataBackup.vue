@@ -307,14 +307,45 @@ export default {
      * @param {String} dbName 
      * @param {String} storeName 
      */
-    async addData(data, dbName, storeName ){
+    async addData(data, dbName, storeName ) {
       if (data.length > 0) {
         for (var i = 0; i < data.length; i++) {
+
+          var preset = {
+              technical: false,
+              general: true,
+              coordinates: true,
+              dating: true,
+
+              //place specific
+              plane: false,
+              findTypes: false,
+              visibility: false,
+              positionslist: false,
+
+              //position specific
+              objectDescribers: false,
+            } 
+          if (dbName == 'Places') {
+            preset.plane = true;
+            preset.findTypes = true;
+            preset.visibility = true;
+            preset.positionslist = true;
+            
+          } else if (dbName == 'Positions') {
+            preset.objectDescribers = true;
+          }
+
+          if (data[i].modulePresets == undefined) {
+            data[i].modulePresets = preset;
+          }
+        
           // encode the model file, if the data is for a model
           await fromOfflineDB.addObject(data[i], dbName, storeName);
         }
       }
     },
+    
   }
 }
 </script>

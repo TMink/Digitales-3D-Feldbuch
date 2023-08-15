@@ -1262,6 +1262,8 @@ export default {
       this.updateAutoFillList( 'titles', this.posInfo.title )
       this.updateAutoFillList( 'materials', this.posInfo.material )
       this.updateAutoFillList( 'editors', this.posInfo.addressOf )
+
+      this.$root.vtoast.show({ message: this.$t('saveSuccess')});
     },
 
     /**

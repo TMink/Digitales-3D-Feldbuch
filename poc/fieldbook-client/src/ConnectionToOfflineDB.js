@@ -123,6 +123,38 @@ export default class ConnectionToOfflineDB {
   }
 
   /**
+   * @param {String} index
+   *    Index of the object in the IndexedDB
+   * @param {String} localDBname
+   *    Database object, which contains the object store
+   * @param {String} storeName
+   *    Object store name
+   * @returns
+   *    an object, as Promise.
+   */
+  async getObjectByIndex(index, localDBName, storeName) {
+    const localDB = this.getLocalDBFromName(localDBName);
+
+    return new Promise((resolve, _reject) => {
+      const trans = localDB.transaction([storeName], "readonly");
+      const store = trans.objectStore(storeName);
+
+      var cursorIndex = 0;
+      store.openCursor().onsuccess = (e) => {
+        let cursor = e.target.result;
+        if (cursor) {
+          if (cursorIndex < index) {
+            cursorIndex++;
+            cursor.continue();
+          } else {
+            resolve(cursor.value);
+          }
+        }
+      };
+    });
+  }
+
+  /**
    * Gets the first entry of the specified localDBName and storeName
    * 
    * @param {String} localDBName 
