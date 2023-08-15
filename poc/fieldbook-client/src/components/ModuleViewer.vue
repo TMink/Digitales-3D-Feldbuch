@@ -6,41 +6,42 @@
           :objectProp="object"
           :titleItemsSecondProp="titleItemsFirstProp"
           :editorItemsSecondProp="editorItemsFirstProp"
-          @dataToModelViewer="sendData($event)"/>
+          @dataToModuleViewer="sendData($event)"/>
 
-        <ModulePositionsList v-if='object.modulePreset.positionslist'
-            :placeProp="object"
-            :updateListSecondProp="updateListFirstProp"
-            @dataToModelViewer="sendData($event)"/>
+        <ModulePositionsList 
+          ref="posListRef"
+          v-if='object.modulePreset.positionslist'
+          :placeProp="object"
+          @dataToModuleViewer="sendData($event)"/>
 
         <ModuleCoordinates v-if='object.modulePreset.coordinates'
           :objectProp="object"
-          @dataToModelViewer="sendData($event)"/>
+          @dataToModuleViewer="sendData($event)"/>
                   
         <ModuleFindTypes v-if='object.modulePreset.findTypes'
           :objectProp="object"
-          @dataToModelViewer="sendData($event)"/>
+          @dataToModuleViewer="sendData($event)"/>
           
         <ModulePlane v-if='object.modulePreset.plane'
-          @dataToModelViewer="sendData($event)"/>
+          @dataToModuleViewer="sendData($event)"/>
 
         <ModuleVisibility v-if='object.modulePreset.visibility'
           :visibilityProp="object.visibility"
-          @dataToModelViewer="sendData($event)"/>
+          @dataToModuleViewer="sendData($event)"/>
           
         <ModuleDating v-if='object.modulePreset.dating'
           :datingProp="object.dating"
           :datingItemsSecondProp="datingItemsFirstProp"
-          @dataToModelViewer="sendData($event)"/>
+          @dataToModuleViewer="sendData($event)"/>
         
         <ModuleObjectDescribers v-if='object.modulePreset.objectDescribers'
           :objectProp="object"
           :materialItemsSecondProp="materialItemsFirstProp"
-          @dataToModelViewer="sendData($event)"/>
+          @dataToModuleViewer="sendData($event)"/>
         
         <ModuleTechnical v-if='object.modulePreset.technical'
           :objectProp="object"
-          @dataToModelViewer="sendData($event)"/>
+          @dataToModuleViewer="sendData($event)"/>
 
     </v-row>
   </v-container>
@@ -79,7 +80,6 @@ export default {
   emits: ['dataToPlaceForm'],
 
   props: {
-    updateListFirstProp: Boolean,
     datingItemsFirstProp: Array,
     editorItemsFirstProp: Array,
     materialItemsFirstProp: Array,
@@ -120,15 +120,15 @@ export default {
 
   async beforeCreate() {
     await fromOfflineDB.syncLocalDBs();
-    const path = this.$route.path
-    this.getPathNamesAndID(path)
+    const path = this.$route.path;
+    this.getPathNamesAndID(path);
     this.object = await fromOfflineDB.getObject(this.id, this.pathNames.db, this.pathNames.os);
   },
   
   methods: {
+
     async updateObject() {
       this.object = await fromOfflineDB.getObject(this.id, this.pathNames.db, this.pathNames.os);
-      console.log(this.object)
     },
 
     getPathNamesAndID(path) {
@@ -144,7 +144,14 @@ export default {
     sendData(data) {
       /* Send data back to PlaceForm.vue */
       this.$emit("dataToPlaceForm", data)
-    }
+    },
+
+    /**
+     * Triggers the updatePositions function from ModulePositionsList
+     */
+    passRefFunctionCall() {
+      this.$refs.posListRef.updatePositions();
+    },
   }
 };
 

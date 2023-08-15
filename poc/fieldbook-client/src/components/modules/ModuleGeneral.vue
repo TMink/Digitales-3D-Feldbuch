@@ -234,7 +234,7 @@ export default {
     editorItemsSecondProp: Array,
   },
 
-  emits: ['dataToModelViewer'],
+  emits: ['dataToModuleViewer'],
 
   data() {
     return {
@@ -260,72 +260,72 @@ export default {
     "object.description": {
       handler: function () {
         if ( this.object.description != null ) {
-          /* Send data back to ModelViewer.vue */
-          this.$emit("dataToModelViewer", ['description', this.object.description]);
+          /* Send data back to ModuleViewer.vue */
+          this.$emit("dataToModuleViewer", ['description', this.object.description]);
         }
       }
     },
     "object.editor": {
       handler: function () {
         if ( this.object.editor != null && this.type == 'places' ) {
-          /* Send data back to ModelViewer.vue */
-          this.$emit("dataToModelViewer", ['editor', this.object.editor]);
+          /* Send data back to ModuleViewer.vue */
+          this.$emit("dataToModuleViewer", ['editor', this.object.editor]);
         } else if ( this.object.editor == null && this.type == 'places' ) {
-          this.$emit("dataToModelViewer", ['editor', '']);
+          this.$emit("dataToModuleViewer", ['editor', '']);
         }
       }
     },
     "object.date": {
       handler: function () {
         if ( this.object.date != null ) {
-          /* Send data back to ModelViewer.vue */
-          this.$emit("dataToModelViewer", ['date', this.object.date]);
+          /* Send data back to ModuleViewer.vue */
+          this.$emit("dataToModuleViewer", ['date', this.object.date]);
         } else {
-          this.$emit("dataToModelViewer", ['date', '']);
+          this.$emit("dataToModuleViewer", ['date', '']);
         }
       }
     },
     "object.title": {
       handler: function () {
         if ( this.object.title != null ) {
-          /* Send data back to ModelViewer.vue */
-          this.$emit("dataToModelViewer", ['title', this.object.title]);
+          /* Send data back to ModuleViewer.vue */
+          this.$emit("dataToModuleViewer", ['title', this.object.title]);
         } else {
-          this.$emit("dataToModelViewer", ['title', '']);
+          this.$emit("dataToModuleViewer", ['title', '']);
         }
       }
     },
     "object.positionNumber": {
       handler: function () {
         if ( this.object.positionNumber != null && this.type == 'positions' ) {
-          /* Send data back to ModelViewer.vue */
-          this.$emit("dataToModelViewer", ['positionNumber', this.object.positionNumber]);
+          /* Send data back to ModuleViewer.vue */
+          this.$emit("dataToModuleViewer", ['positionNumber', this.object.positionNumber]);
         }
       }
     },
     "object.hasSubNumber": {
       handler: function () {
         if ( this.object.hasSubNumber != null && this.type == 'positions' ) {
-          /* Send data back to ModelViewer.vue */
-          this.$emit("dataToModelViewer", ['hasSubNumber', this.object.hasSubNumber]);
+          /* Send data back to ModuleViewer.vue */
+          this.$emit("dataToModuleViewer", ['hasSubNumber', this.object.hasSubNumber]);
         }
       }
     },
     "object.subNumber": {
       handler: function () {
         if ( this.object.subNumber != null && this.type == 'positions' ) {
-          /* Send data back to ModelViewer.vue */
-          this.$emit("dataToModelViewer", ['subNumber', this.object.subNumber]);
+          /* Send data back to ModuleViewer.vue */
+          this.$emit("dataToModuleViewer", ['subNumber', this.object.subNumber]);
         }
       }
     },
     "object.addressOf": {
       handler: function () {
         if ( this.object.addressOf != null && this.type == 'positions' ) {
-          /* Send data back to ModelViewer.vue */
-          this.$emit("dataToModelViewer", ['addressOf', this.object.addressOf]);
+          /* Send data back to ModuleViewer.vue */
+          this.$emit("dataToModuleViewer", ['addressOf', this.object.addressOf]);
         } else if ( this.object.addressOf == null && this.type == 'positions' ) {
-          this.$emit("dataToModelViewer", ['addressOf', '']);
+          this.$emit("dataToModuleViewer", ['addressOf', '']);
         }
       }
     }

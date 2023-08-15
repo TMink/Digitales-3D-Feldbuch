@@ -42,7 +42,7 @@
       objectProp: Object,
     },
   
-    emits: ['dataToModelViewer'],
+    emits: ['dataToModuleViewer'],
 
     data() {
       return {
@@ -57,14 +57,14 @@
       'object.date': {
         handler: function() {
           if (this.object.date != null) {
-            this.$emit("dataToModelViewer", [ 'date', this.object.date ]);
+            this.$emit("dataToModuleViewer", [ 'date', this.object.date ]);
           }
         }
       },
       'object.technical': {
         handler: function() {
           if (this.object.technical != null) {
-            this.$emit("dataToModelViewer", [ 'technical', this.object.technical ]);
+            this.$emit("dataToModuleViewer", [ 'technical', this.object.technical ]);
           }
         }
       },

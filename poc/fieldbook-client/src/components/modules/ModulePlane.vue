@@ -28,7 +28,7 @@ export default {
     planeProp: String,
 	},
 
-  emits: ['dataToModelViewer'],
+  emits: ['dataToModuleViewer'],
 
   /**
    * Reactive Vue.js data
@@ -44,7 +44,7 @@ export default {
     'plane': {
       handler: function() {
         if (this.plane != null) {
-          this.$emit("dataToModelViewer", [ 'plane', this.plane ]);
+          this.$emit("dataToModuleViewer", [ 'plane', this.plane ]);
         }
       }
     },

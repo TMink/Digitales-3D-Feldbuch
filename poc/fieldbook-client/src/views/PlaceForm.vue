@@ -29,8 +29,8 @@
         <v-window v-model="tab">
           <!-- Tab item 'GENERAL' -->
           <v-window-item value="one">
-            <ModelViewer
-              :updateListFirstProp="place.testBool"
+            <ModuleViewer
+              ref="moduleViewerRef"
               :datingItemsFirstProp="datingsList"
               :editorItemsFirstProp="editorsList"
               :titleItemsFirstProp="titlesList"
@@ -96,7 +96,6 @@
 
               <AddPosition 
                 :positions_prop="positions" 
-                @updatePlace="updatePlace2()" 
                 @updatePositions="updatePositions()" />
 
             </v-form>
@@ -115,7 +114,8 @@
             <ModelForm 
               :object_id="place.id" 
               object_type="Places"
-              @addModel="addModel($event)"/>
+              @addModel="addModel($event)">
+            </ModelForm>
           </v-window-item>
         </v-window>
       </v-col>
@@ -138,7 +138,7 @@ import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import ConfirmDialog from '../components/ConfirmDialog.vue';
 import AddPosition from '../components/AddPosition.vue';
 import ImageForm from '../components/ImageForm.vue';
-import ModelViewer from '../components/ModelViewer.vue';
+import ModuleViewer from '../components/ModuleViewer.vue';
 import ModelForm from '../components/ModelForm.vue';
 import { toRaw } from 'vue';
 import { useWindowSize } from 'vue-window-size';
@@ -152,7 +152,7 @@ export default {
     ConfirmDialog,
     AddPosition,
     ImageForm,
-    ModelViewer,
+    ModuleViewer,
     ModelForm
   },
   emits: ['view'],
@@ -174,8 +174,6 @@ export default {
         id: '',
         activityID: '',
         placeNumber: '',
-        code: '',         //can maybe be removed
-        datingCode: '',   //can maybe be removed
         profile: '',
         drawing: '',
         positions: [],
@@ -406,22 +404,12 @@ export default {
       this.place = data;
     },
 
-    async updatePlace2() {
-      const currentPlace = VueCookies.get('currentPlace');
-      var data = await fromOfflineDB.getObject(currentPlace, 'Places', 'places');
-      const rawPositions = toRaw(this.positions);
-      data = this.place
-      data.positions = rawPositions;
-      await fromOfflineDB.updateObject( data, 'Places', 'places' );
-      this.hasUnsavedChanges = false;
-    },
-
     /**
      * Update reactive Vue.js positions data
      */
     async updatePositions() {
-      this.place.testBool = true;
       this.positions = await fromOfflineDB.getAllObjectsWithID(this.place.id, 'Place', 'Positions', 'positions');
+      this.$refs.moduleViewerRef.passRefFunctionCall();
     },
 
     /**
@@ -437,13 +425,13 @@ export default {
       this.hasUnsavedChanges = false;
       this.$root.vtoast.show({ message: this.$t('saveSuccess')});
       
-      this.updateAutoFillList( 'datings', this.place.dating, this.datingsList )
-      this.updateAutoFillList( 'editors', this.place.editor, this.editorsList )
-      this.updateAutoFillList( 'titles', this.place.title, this.titlesList )
+      this.updateAutoFillList( 'datings', this.place.dating, this.datingsList );
+      this.updateAutoFillList( 'editors', this.place.editor, this.editorsList );
+      this.updateAutoFillList( 'titles', this.place.title, this.titlesList );      
     },
 
     async updateAutoFillList( storeName, item, itemList) {
-      const newEditor = {}
+      const newEditor = {};
 
       const editorsFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', storeName);
       if ( editorsFromDB.length > 0 ) {

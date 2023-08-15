@@ -31,7 +31,6 @@ export default {
   methods: {
     closeDiag() {
       this.$emit('updatePositions');
-      this.$emit('updatePlace');
     },
 
     /**

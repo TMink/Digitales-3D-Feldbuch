@@ -35,7 +35,7 @@ export default {
 		datingItemsSecondProp: Array,
 	},
 
-	emits: ['dataToModelViewer'],
+	emits: ['dataToModuleViewer'],
 
 	data() {
 		return {
@@ -50,8 +50,8 @@ export default {
 		"dating": {
 			handler: function () {
 				if (this.dating != null) {
-					/* Send data back to ModelViewer.vue */
-					this.$emit("dataToModelViewer", ['dating', this.dating]);
+					/* Send data back to ModuleViewer.vue */
+					this.$emit("dataToModuleViewer", ['dating', this.dating]);
 				}
 			}
 		}

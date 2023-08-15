@@ -68,7 +68,7 @@ export default {
     materialItemsSecondProp: Array,
   },
 
-  emits: ['dataToModelViewer'],
+  emits: ['dataToModuleViewer'],
 
   data() {
     return {
@@ -84,25 +84,24 @@ export default {
     "object.material": {
       handler: function () {
         if (this.object.material != null) {
-          /* Send data back to ModelViewer.vue */
-          this.$emit("dataToModelViewer", ['material', this.object.material]);
-          console.log(this.object.material)
+          /* Send data back to ModuleViewer.vue */
+          this.$emit("dataToModuleViewer", ['material', this.object.material]);
         }
       }
     },
     "object.weight": {
       handler: function () {
         if (this.object.weight != null) {
-          /* Send data back to ModelViewer.vue */
-          this.$emit("dataToModelViewer", ['weight', this.object.weight]);
+          /* Send data back to ModuleViewer.vue */
+          this.$emit("dataToModuleViewer", ['weight', this.object.weight]);
         }
       }
     },
     "object.count": {
       handler: function () {
         if (this.object.count != null) {
-          /* Send data back to ModelViewer.vue */
-          this.$emit("dataToModelViewer", ['count', this.object.count]);
+          /* Send data back to ModuleViewer.vue */
+          this.$emit("dataToModuleViewerrr", ['count', this.object.count]);
         }
       }
     }

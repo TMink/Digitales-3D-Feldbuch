@@ -29,7 +29,7 @@
 			visibilityProp: String,
 		},
 
-    emits: ['dataToModelViewer'],
+    emits: ['dataToModuleViewer'],
 
 		data () {
 			return {
@@ -47,8 +47,8 @@
       "visibility": {
         handler: function() {
           if ( this.visibility != null ) {
-            /* Send data back to ModelViewer.vue */
-            this.$emit("dataToModelViewer", [ 'visibility', this.visibility ]);
+            /* Send data back to ModuleViewer.vue */
+            this.$emit("dataToModuleViewer", [ 'visibility', this.visibility ]);
           }
         }
       }

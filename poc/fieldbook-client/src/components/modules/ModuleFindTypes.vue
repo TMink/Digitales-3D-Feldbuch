@@ -8,7 +8,6 @@
       <v-row no-gutters class="mt-4">
         <v-col cols="6">
           <v-checkbox
-            v-bind="props" 
             color="primary"
             persistent-hint 
             :label="$t('noFind')" 
@@ -19,7 +18,6 @@
 
         <v-col cols="6">
           <v-checkbox 
-            v-bind="props" 
             persistent-hint 
             color="secondary"
             :hint="$t('restFindDescr')" 
@@ -40,7 +38,7 @@
 			objectProp: Object,
 		},
 
-    emits: ['dataToModelViewer'],
+    emits: ['dataToModuleViewer'],
 
 		data () {
 			return {
@@ -55,16 +53,16 @@
       "object.noFinding": {
         handler: function() {
           if ( this.object.noFinding != null ) {
-            /* Send data back to ModelViewer.vue */
-            this.$emit("dataToModelViewer", [ 'noFinding', this.object.noFinding ]);
+            /* Send data back to ModuleViewer.vue */
+            this.$emit("dataToModuleViewer", [ 'noFinding', this.object.noFinding ]);
           }
         }
       },
       "object.restFinding": {
         handler: function() {
           if ( this.object.restFinding != null ) {
-            /* Send data back to ModelViewer.vue */
-            this.$emit("dataToModelViewer", [ 'restFinding', this.object.restFinding ]);
+            /* Send data back to ModuleViewer.vue */
+            this.$emit("dataToModuleViewer", [ 'restFinding', this.object.restFinding ]);
           }
         }
       }
