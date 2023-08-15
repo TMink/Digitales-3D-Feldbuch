@@ -29,7 +29,7 @@
         <v-window v-model="tab">
           <!-- Tab item 'GENERAL' -->
           <v-window-item value="one">
-            <ModelViewer
+            <ModuleViewer
               :updateListFirstProp="place.testBool"
               :datingItemsFirstProp="datingsList"
               :editorItemsFirstProp="editorsList"
@@ -138,7 +138,7 @@ import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import ConfirmDialog from '../components/ConfirmDialog.vue';
 import AddPosition from '../components/AddPosition.vue';
 import ImageForm from '../components/ImageForm.vue';
-import ModelViewer from '../components/ModelViewer.vue';
+import ModuleViewer from '../components/ModuleViewer.vue';
 import ModelForm from '../components/ModelForm.vue';
 import { toRaw } from 'vue';
 import { useWindowSize } from 'vue-window-size';
@@ -152,7 +152,7 @@ export default {
     ConfirmDialog,
     AddPosition,
     ImageForm,
-    ModelViewer,
+    ModuleViewer,
     ModelForm
   },
   emits: ['view'],
@@ -436,13 +436,13 @@ export default {
       this.hasUnsavedChanges = false;
       this.$root.vtoast.show({ message: this.$t('saveSuccess')});
       
-      this.updateAutoFillList( 'datings', this.place.dating, this.datingsList )
-      this.updateAutoFillList( 'editors', this.place.editor, this.editorsList )
-      this.updateAutoFillList( 'titles', this.place.title, this.titlesList )
+      this.updateAutoFillList( 'datings', this.place.dating, this.datingsList );
+      this.updateAutoFillList( 'editors', this.place.editor, this.editorsList );
+      this.updateAutoFillList( 'titles', this.place.title, this.titlesList );
     },
 
     async updateAutoFillList( storeName, item, itemList) {
-      const newEditor = {}
+      const newEditor = {};
 
       const editorsFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', storeName);
       if ( editorsFromDB.length > 0 ) {

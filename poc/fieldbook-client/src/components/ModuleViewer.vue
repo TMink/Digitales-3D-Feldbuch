@@ -6,41 +6,41 @@
           :objectProp="object"
           :titleItemsSecondProp="titleItemsFirstProp"
           :editorItemsSecondProp="editorItemsFirstProp"
-          @dataToModelViewer="sendData($event)"/>
+          @dataToModuleViewer="sendData($event)"/>
 
         <ModulePositionsList v-if='object.modulePreset.positionslist'
             :placeProp="object"
             :updateListSecondProp="updateListFirstProp"
-            @dataToModelViewer="sendData($event)"/>
+            @dataToModuleViewer="sendData($event)"/>
 
         <ModuleCoordinates v-if='object.modulePreset.coordinates'
           :objectProp="object"
-          @dataToModelViewer="sendData($event)"/>
+          @dataToModuleViewer="sendData($event)"/>
                   
         <ModuleFindTypes v-if='object.modulePreset.findTypes'
           :objectProp="object"
-          @dataToModelViewer="sendData($event)"/>
+          @dataToModuleViewer="sendData($event)"/>
           
         <ModulePlane v-if='object.modulePreset.plane'
-          @dataToModelViewer="sendData($event)"/>
+          @dataToModuleViewer="sendData($event)"/>
 
         <ModuleVisibility v-if='object.modulePreset.visibility'
           :visibilityProp="object.visibility"
-          @dataToModelViewer="sendData($event)"/>
+          @dataToModuleViewer="sendData($event)"/>
           
         <ModuleDating v-if='object.modulePreset.dating'
           :datingProp="object.dating"
           :datingItemsSecondProp="datingItemsFirstProp"
-          @dataToModelViewer="sendData($event)"/>
+          @dataToModuleViewer="sendData($event)"/>
         
         <ModuleObjectDescribers v-if='object.modulePreset.objectDescribers'
           :objectProp="object"
           :materialItemsSecondProp="materialItemsFirstProp"
-          @dataToModelViewer="sendData($event)"/>
+          @dataToModuleViewer="sendData($event)"/>
         
         <ModuleTechnical v-if='object.modulePreset.technical'
           :objectProp="object"
-          @dataToModelViewer="sendData($event)"/>
+          @dataToModuleViewer="sendData($event)"/>
 
     </v-row>
   </v-container>
@@ -85,6 +85,15 @@ export default {
     materialItemsFirstProp: Array,
     titleItemsFirstProp: Array,
   },
+
+  watch: {
+    'updateListFirstProp': {
+      handler: async function() {
+        //this.updateListSecondProp = this.updateListFirstProp;
+        //this.$emit( "dataToModuleViewer", [ 'resetBool', false ] );
+      }
+    },
+  },
   
   setup() {
     const { width, height } = useWindowSize();
@@ -115,20 +124,20 @@ export default {
       },
       pathNames: null,
       id: null,
+      updateListSecondProp: false,
     }
   },
 
   async beforeCreate() {
     await fromOfflineDB.syncLocalDBs();
-    const path = this.$route.path
-    this.getPathNamesAndID(path)
+    const path = this.$route.path;
+    this.getPathNamesAndID(path);
     this.object = await fromOfflineDB.getObject(this.id, this.pathNames.db, this.pathNames.os);
   },
   
   methods: {
     async updateObject() {
       this.object = await fromOfflineDB.getObject(this.id, this.pathNames.db, this.pathNames.os);
-      console.log(this.object)
     },
 
     getPathNamesAndID(path) {

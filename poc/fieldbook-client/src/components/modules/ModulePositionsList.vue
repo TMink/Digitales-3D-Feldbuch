@@ -103,7 +103,7 @@ export default {
     AddPosition,
   },
 
-  emits: ['dataToModelViewer'],
+  emits: ['dataToModuleViewer'],
 
   props: {
     placeProp: Object,
@@ -139,7 +139,7 @@ export default {
     'updateListSecondProp': {
       handler: async function() {
         await this.updatePositions();
-        this.$emit( "dataToModelViewer", [ 'resetBool', false ] );
+        this.$emit( "dataToModuleViewer", [ 'resetBool', false ] );
       }
     },
     'place': {
@@ -150,9 +150,6 @@ export default {
 
   async created() {
     await fromOfflineDB.syncLocalDBs();
-  },
-
-  async updated() {
     await this.updatePositions();
   },
 

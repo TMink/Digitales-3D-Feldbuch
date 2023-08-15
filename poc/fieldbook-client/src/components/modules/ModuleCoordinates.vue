@@ -133,7 +133,7 @@ export default {
 			objectProp: Object,
 		},
 
-    emits: ['dataToModelViewer'],
+    emits: ['dataToModuleViewer'],
 
 		data () {
 			return {
@@ -156,72 +156,56 @@ export default {
       "object.right": {
         handler: function() {
           if ( this.object.right != null ) {
-            /* Send data back to ModelViewer.vue */
-            this.$emit("dataToModelViewer", [ 'right', this.object.right ]);
+            /* Send data back to ModuleViewer.vue */
+            this.$emit("dataToModuleViewer", [ 'right', this.object.right ]);
           }
         }
       },
       "object.rightTo": {
         handler: function() {
           if ( this.object.rightTo != null ) {
-            /* Send data back to ModelViewer.vue */
-            this.$emit("dataToModelViewer", [ 'rightTo', this.rightTo ]);
+            /* Send data back to ModuleViewer.vue */
+            this.$emit("dataToModuleViewer", [ 'rightTo', this.rightTo ]);
           }
         }
       },
       "object.up": {
         handler: function() {
           if ( this.object.up != null ) {
-            /* Send data back to ModelViewer.vue */
-            this.$emit("dataToModelViewer", [ 'up', this.object.up ]);
+            /* Send data back to ModuleViewer.vue */
+            this.$emit("dataToModuleViewer", [ 'up', this.object.up ]);
           }
         }
       },
       "object.upTo": {
         handler: function() {
           if ( this.object.upTo != null ) {
-            /* Send data back to ModelViewer.vue */
-            this.$emit("dataToModelViewer", [ 'upTo', this.object.upTo ]);
+            /* Send data back to ModuleViewer.vue */
+            this.$emit("dataToModuleViewer", [ 'upTo', this.object.upTo ]);
           }
         }
       },
       "object.depthBot": {
         handler: function() {
           if ( this.object.depthBot != null ) {
-            /* Send data back to ModelViewer.vue */
-            this.$emit("dataToModelViewer", [ 'depthBot', this.object.depthBot ]);
+            /* Send data back to ModuleViewer.vue */
+            this.$emit("dataToModuleViewer", [ 'depthBot', this.object.depthBot ]);
           }
         }
       },
       "object.depthTop": {
         handler: function() {
           if ( this.object.depthTop != null ) {
-            /* Send data back to ModelViewer.vue */
-            this.$emit("dataToModelViewer", [ 'depthTop', this.object.depthTop ]);
-          }
-        }
-      },
-      "object.right": {
-        handler: function() {
-          if ( this.object.right != null && this.type == 'positions' ) {
-            /* Send data back to ModelViewer.vue */
-            this.$emit("dataToModelViewer", [ 'right', this.object.right ]);
-          }
-        }
-      },
-      "object.up": {
-        handler: function() {
-          if ( this.object.up != null && this.type == 'positions' ) {
-            /* Send data back to ModelViewer.vue */
-            this.$emit("dataToModelViewer", [ 'up', this.object.up ]);
+            /* Send data back to ModuleViewer.vue */
+            this.$emit("dataToModuleViewer", [ 'depthTop', this.object.depthTop ]);
           }
         }
       },
       "object.height": {
         handler: function() {
           if ( this.object.height != null && this.type == 'positions' ) {
-            /* Send data back to ModelViewer.vue */
-            this.$emit("dataToModelViewer", [ 'height', this.object.height ]);
+            /* Send data back to ModuleViewer.vue */
+            this.$emit("dataToModuleViewer", [ 'height', this.object.height ]);
           }
         }
       }

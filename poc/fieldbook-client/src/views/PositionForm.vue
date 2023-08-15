@@ -31,9 +31,9 @@
 
       <v-col cols="10">
         <v-window v-model="tab">
-          <!-- CARD 1 MODELVIEWER -->
+          <!-- CARD 1 ModuleViewer -->
           <v-window-item value="one">
-            <ModelViewer
+            <ModuleViewer
               :updateListFirstProp="position.testBool"
               :datingItemsFirstProp="datingsList"
               :titleItemsFirstProp="titlesList"
@@ -93,7 +93,7 @@ import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import ConfirmDialog from '../components/ConfirmDialog.vue';
 import ImageForm from '../components/ImageForm.vue';
 import ModelForm from '../components/ModelForm.vue';
-import ModelViewer from '../components/ModelViewer.vue';
+import ModuleViewer from '../components/ModuleViewer.vue';
 import Navigation from '../components/Navigation.vue';
 import { toRaw } from 'vue';
 
@@ -103,7 +103,7 @@ export default {
     ConfirmDialog,
     ImageForm,
     ModelForm,
-    ModelViewer,
+    ModuleViewer,
     Navigation
   },
   emits: ['view'],
