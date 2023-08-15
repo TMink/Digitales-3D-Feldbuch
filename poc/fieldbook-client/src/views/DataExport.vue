@@ -1,12 +1,18 @@
 <template>
+  <Navigation />
   <div id="wrapper">
     <v-row class="pt-4">
       <v-spacer></v-spacer>
       <v-form class="w-75 pa-2">
-        
+
         <!-- LIST ACTIVITIES -->
-        <v-window color="background" v-if="!activity_open">
-          <v-btn icon color="decline" disabled>
+        <v-window 
+          color="background" 
+          v-if="!activity_open">
+          <v-btn 
+            icon 
+            color="decline" 
+            disabled>
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
 
@@ -15,13 +21,13 @@
           </h2>
 
           <!--Lists all locally saved positions-->
-          <v-data-table-virtual
-              fixed-header
-              :items="activities"
-              :height="getTableHeight"
-              @click:row="setActivity"
-              :headers="activityHeaders">
-            </v-data-table-virtual>
+          <v-data-table-virtual 
+            fixed-header 
+            :items="activities" 
+            :height="getTableHeight" 
+            @click:row="setActivity"
+            :headers="activityHeaders">
+          </v-data-table-virtual>
         </v-window>
 
         <!-- PLACES LIST -->
@@ -30,9 +36,9 @@
           v-if="activity_open && !place_open">
           <v-btn 
             icon 
-            @click="activity_open = false; 
-            exportPlaces = true; 
-            exportActivities = true">
+            @click="activity_open = false;
+          exportPlaces = true;
+          exportActivities = true">
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
 
@@ -41,174 +47,201 @@
           </h2>
 
           <!--Lists all locally saved places-->
-          <v-data-table-virtual
-            fixed-header
-            :items="places"
-            class="custom-table"
+          <v-data-table-virtual 
+            fixed-header 
+            :items="places" 
+            class="custom-table" 
             :height="getTableHeight"
-            @click:row="setPlace"
+            @click:row="setPlace" 
             :headers="placeHeaders">
           </v-data-table-virtual>
         </v-window>
-        
+
         <!-- PLACES LIST -->
-        <v-window color="background" v-if="place_open">
+        <v-window 
+          color="background" 
+          v-if="place_open">
           <v-btn 
             icon 
             color="decline" 
             @click="place_open = false; exportPlaces = true">
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
-          
+
           <h2 class="text-center pb-4">
             {{ $tc('position', 2).toUpperCase() }}
           </h2>
-          
+
           <!--Lists all locally saved positions-->
-          <v-data-table-virtual
-            fixed-header
-            :items="positions"
-            :height="getTableHeight"
+          <v-data-table-virtual 
+            fixed-header 
+            :items="positions" 
+            :height="getTableHeight" 
             :headers="positionHeaders">
           </v-data-table-virtual>
         </v-window>
-        
-        
+
+
         <!-- EXPORT DIALOG -->
-        <v-dialog v-model="export_overlay" max-width="800" persistent>
+        <v-dialog 
+          v-model="export_overlay" 
+          max-width="800" 
+          persistent>
           <v-card>
             <v-card-title> {{ $t('export') }} </v-card-title>
             <v-card-text>
               <v-row class="text-center">
 
-              <!-- ACTIVITIES -->
-              <v-col cols="4" class="align-center" hide-details>
-                <v-switch 
-                  :label="$tc('activity', 2)"
-                  :disabled="activity_open" 
-                  v-model="exportActivities"
-                  hide-details color="success">
-                </v-switch>
+                <!-- ACTIVITIES -->
+                <v-col 
+                  cols="4" 
+                  class="align-center" 
+                  hide-details>
+                  <v-switch 
+                    :label="$tc('activity', 2)" 
+                    :disabled="activity_open" 
+                    v-model="exportActivities" 
+                    hide-details
+                    color="success">
+                  </v-switch>
 
-                <v-col> 
-                  <p v-if="exportActivities">
-                    {{ this.activities.length + ' ' + $tc('activity', 2) }}
-                  </p>
+                  <v-col>
+                    <p v-if="exportActivities">
+                      {{ this.activities.length + ' ' + $tc('activity', 2) }}
+                    </p>
+                  </v-col>
                 </v-col>
-              </v-col>
-            
-              <v-divider vertical/>
 
-              <!-- PLACES -->
-              <v-col cols="4" class="align-center" >
-                <v-switch 
-                  hide-details 
-                  color="success" 
-                  :label="$tc('place', 2)" 
-                  v-model="exportPlaces"
-                  :disabled="place_open && activity_open">
-                </v-switch>
-                <v-col>
-                  <p v-if="exportPlaces">
-                    {{ this.places.length + ' ' + $tc('place', 2) }}
-                  </p>
-                  <v-checkbox 
-                    hide-details 
-                    class="pt-4" 
-                    v-model="exportPlaceImages"
-                    :label="$t('exportObject', {object: $tc('image', 2) })" 
-                    :disabled="!exportPlaces">
-                  </v-checkbox>
+                <v-divider vertical />
 
-                  <v-checkbox 
-                    hide-details 
-                    v-model="exportPlaceModels"
-                    :label="$t('exportObject', {object: $tc('model', 2) })" 
-                    :disabled="!exportPlaces">
-                  </v-checkbox>
-                </v-col>
-              </v-col>
-            
-              <v-divider vertical/>
-
-              <!-- POSITIONS -->
-              <v-col cols="4" class="align-center">
-                <v-row no-gutters class="justify-center align-center">
+                <!-- PLACES -->
+                <v-col cols="4" class="align-center">
                   <v-switch 
                     hide-details 
                     color="success" 
-                    :label="$tc('position', 2)" 
-                    v-model="exportPositions">
+                    :label="$tc('place', 2)" 
+                    v-model="exportPlaces"
+                    :disabled="place_open && activity_open">
                   </v-switch>
-                </v-row>
-              
-                <v-col>
-                  <p v-if="exportPositions">
-                    {{ this.positions.length + ' ' + $tc('position', 2) }}
-                  </p>
-                  <v-checkbox 
-                    hide-details 
-                    class="pt-4" 
-                    :label="$t('exportObject', {object: $tc('image', 2) })" 
-                    :disabled="!exportPositions">
-                  </v-checkbox>
-                  <v-checkbox 
-                    hide-details 
-                    :label="$t('exportObject', { object: $tc('model', 2) })" 
-                    :disabled="!exportPositions">
-                  </v-checkbox>
+                  <v-col>
+                    <p v-if="exportPlaces">
+                      {{ this.places.length + ' ' + $tc('place', 2) }}
+                    </p>
+                    <v-checkbox 
+                      hide-details 
+                      class="pt-4" 
+                      v-model="exportPlaceImages"
+                      :label="$t('exportObject', { object: $tc('image', 2) })" 
+                      :disabled="!exportPlaces"
+                      color="secondary">
+                    </v-checkbox>
+
+                    <v-checkbox 
+                      hide-details 
+                      v-model="exportPlaceModels"
+                      :label="$t('exportObject', { object: $tc('model', 2) })" 
+                      :disabled="!exportPlaces" 
+                      color="secondary">
+                    </v-checkbox>
+                  </v-col>
                 </v-col>
-              </v-col>
-            </v-row>
 
-            <v-divider class="mt-3"/>
+                <v-divider vertical />
 
-            <v-row no-gutters class="justify-center align-center">
-              <v-col cols="3" >
+                <!-- POSITIONS -->
+                <v-col cols="4" class="align-center">
+                  <v-row 
+                    no-gutters 
+                    class="justify-center align-center">
+                    <v-switch 
+                      hide-details 
+                      color="success" 
+                      :label="$tc('position', 2)" 
+                      v-model="exportPositions">
+                    </v-switch>
+                  </v-row>
 
-                <v-combobox 
-                  class="pa-4" 
-                  :label="$t('dataFormat')"
-                  v-model="fileFormat"
-                  :items="['.pdf', '.csv']">
-                </v-combobox>
-              </v-col>
-              <v-col cols="4">
+                  <v-col>
+                    <p v-if="exportPositions">
+                      {{ this.positions.length + ' ' + $tc('position', 2) }}
+                    </p>
+                    <v-checkbox 
+                      hide-details 
+                      class="pt-4" 
+                      :label="$t('exportObject', { object: $tc('image', 2) })"
+                      :disabled="!exportPositions" 
+                      color="secondary">
+                    </v-checkbox>
+                    <v-checkbox 
+                      hide-details 
+                      :label="$t('exportObject', { object: $tc('model', 2) })"
+                      :disabled="!exportPositions" 
+                      color="secondary">
+                    </v-checkbox>
+                  </v-col>
+                </v-col>
+              </v-row>
 
-                <v-radio-group 
-                  v-model="separator" 
-                  class="ma-2" 
-                  :label="$t('separator')" 
-                  v-if="fileFormat == '.csv'">
-                  <v-radio 
-                    :label="$t('objectSeparated', { 
-                      object: $t('comma')})" value=",">
-                  </v-radio>
-                  <v-radio 
-                    :label="$t('objectSeparated', { 
-                      object: $t('semicolon') })" value=";">
-                  </v-radio>
-                </v-radio-group>
-              </v-col>
-            </v-row>
+              <v-divider class="mt-3" />
+
+              <v-row 
+                no-gutters 
+                class="justify-center align-center">
+                <v-col cols="3">
+
+                  <v-combobox 
+                    class="pa-4" 
+                    :label="$t('dataFormat')" 
+                    v-model="fileFormat" 
+                    :items="['.pdf', '.csv']">
+                  </v-combobox>
+                </v-col>
+                <v-col cols="4">
+
+                  <v-radio-group 
+                    v-model="separator" 
+                    class="ma-2" 
+                    :label="$t('separator')" 
+                    v-if="fileFormat == '.csv'">
+                    <v-radio :label="$t('objectSeparated', {
+                      object: $t('comma')
+                    })" value=",">
+                    </v-radio>
+                    <v-radio :label="$t('objectSeparated', {
+                      object: $t('semicolon')
+                    })" value=";">
+                    </v-radio>
+                  </v-radio-group>
+                </v-col>
+              </v-row>
 
             </v-card-text>
 
             <v-card-actions class="justify-center">
-              <v-btn icon color="primary" v-on:click="startExport()" 
+              <v-btn 
+                icon 
+                color="primary" 
+                v-on:click="startExport()"
                 :disabled="!exportActivities && !exportPlaces && !exportPositions">
                 <v-icon>mdi-content-save-all</v-icon>
               </v-btn>
-              <v-btn icon color="error" @click="export_overlay = false">
+              <v-btn 
+                icon 
+                color="error" @click="export_overlay = false">
                 <v-icon>mdi-close-circle</v-icon>
               </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
 
-        <v-row no-gutters class="pa-2 justify-center">
-          <v-btn class="ma-1" color="primary" v-on:click="export_overlay = true">
-            {{ $t('export')}}
+        <v-row 
+          no-gutters 
+          class="pa-2 justify-center">
+          <v-btn 
+            class="ma-1" 
+            color="primary" 
+            v-on:click="export_overlay = true">
+            <v-icon size="x-large">mdi-file-export</v-icon>
           </v-btn>
         </v-row>
 
@@ -220,6 +253,7 @@
 </template>
   
 <script>
+import Navigation from '../components/Navigation.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 import { toRaw } from 'vue'
@@ -231,6 +265,7 @@ import { saveAs } from 'file-saver';
 export default {
   name: 'DataExport',
   components: {
+    Navigation,
     ConfirmDialog,
   },
   emits: ['view'],
