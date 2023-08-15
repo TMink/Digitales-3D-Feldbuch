@@ -1213,6 +1213,31 @@ export default {
 
   methods: {
 
+    async updateAutoFillList( storeName, item) {
+      const newEditor = {};
+
+      const editorsFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', storeName);
+      if ( editorsFromDB.length > 0 ) {
+        let hasItem = false;
+        
+        editorsFromDB.forEach( element => {
+          if ( element.item == item ) {
+            hasItem = true;
+          }
+        })
+        if ( !hasItem && item != '' ) {
+          newEditor.id = String(Date.now())
+          newEditor.item = toRaw(item)
+        }
+      } else if ( item != '' ) {
+        newEditor.id = String(Date.now())
+        newEditor.item = toRaw(item)
+      }
+      if ( !!Object.keys(newEditor).length ) {
+        await fromOfflineDB.addObject(newEditor, 'AutoFillLists', storeName)
+      }
+    },
+
     /**
      * Save a Position to local storage for the current place
      */
@@ -1224,10 +1249,19 @@ export default {
       rawPosition.lastChanged = Date.now();
       
       var positionFromDb = await fromOfflineDB.getObject(rawPosition.id, 'Positions', 'positions');
-      var newSubNumber = this.calcSubNumber(rawPosition, positionFromDb);
-      rawPosition.subNumber = newSubNumber;
+      if ( positionFromDb.hasSubNumber ) {
+        var newSubNumber = this.calcSubNumber(rawPosition, positionFromDb);
+        rawPosition.subNumber = newSubNumber;
+      } else {
+        rawPosition.subNumber = '';
+      }
 
       await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions');
+
+      this.updateAutoFillList( 'datings', this.posInfo.dating )
+      this.updateAutoFillList( 'titles', this.posInfo.title )
+      this.updateAutoFillList( 'materials', this.posInfo.material )
+      //this.updateAutoFillList( 'editors', this.posInfo.addressOf )
     },
 
     /**
@@ -1960,7 +1994,6 @@ export default {
             const positionInDB = await fromOfflineDB.getObject( positionID,
               'Positions', 'positions' );
             this.posInfo = positionInDB;
-            console.log(this.posInfo)
           }
         }
       }
@@ -2320,6 +2353,22 @@ export default {
       boundingBox.getCenter( center );
 
       return center;
+    },
+
+    /**
+     * 
+     * @param {*} models 
+     */
+    getAllModelCenter: function( models ) {
+      const modelsGroup = new THREE.Group();
+      models.forEach( element => {
+        modelsGroup.add( this.sceneMain.getObjectByName( element.modelID ) )
+      } )
+      let aabb = new THREE.Box3();
+      aabb.setFromObject( modelsGroup );
+      let size = new THREE.Vector3();
+      aabb.getCenter( size )
+      return size;
     },
 
     /**
