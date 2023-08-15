@@ -490,7 +490,7 @@ export default {
     async updateModulePresets() {
       let presetFromCookies = VueCookies.get('placeModulesPreset');
 
-      if (presetFromCookies) {
+      if (presetFromCookies.length > 0) {
         this.curModulePreset = await fromOfflineDB.getObject(
           presetFromCookies, 'ModulePresets', 'places');
         }
