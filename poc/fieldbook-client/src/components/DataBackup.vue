@@ -80,16 +80,33 @@
   </v-dialog>
 
   <!-- IMPORT DIALOG -->
-  <v-dialog v-model="importDialog">
+  <v-dialog :width="windowWidth * 0.5" v-model="importDialog">
     <v-card class="pa-2 ma-2">
       <v-card-title> {{ $t('data_import') }} </v-card-title>
     
         <v-file-input
+          v-if="!isLoading"
           id="file"
           show-size 
           v-model="importedData" 
-          accept=".zip">
+          accept=".zip"
+          color="primary">
         </v-file-input>
+        
+        <v-col cols="12">
+          <v-progress-linear
+            indeterminate
+            rounded
+            color="secondary"
+            v-if="isLoading">
+          </v-progress-linear>
+        </v-col>
+        <v-col
+          class="text-subtitle-1 text-center"
+          cols="12"
+          v-if="isLoading">
+          {{ $t('getBackup') }}
+        </v-col>
     
       <v-row no-gutters>
         <v-spacer/>
@@ -140,6 +157,7 @@ export default {
       cameras: [],
       createdChanges: [],
       deletedChanges: [],
+      isLoading: false
     };
   },
   methods: {
@@ -214,6 +232,7 @@ export default {
      * @param {*} file 
      */
     async importData(file) {
+      this.isLoading = true
       const context = this;
       var rawFile = toRaw(file);
       var modelFiles = [];
