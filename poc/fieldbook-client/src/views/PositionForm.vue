@@ -311,7 +311,6 @@ export default {
 
       //convert from vue proxy to JSON object
       const rawPosition = toRaw(this.position);
-      console.log(this.position)
       rawPosition.positionNumber = Number(rawPosition.positionNumber);
       rawPosition.lastChanged = Date.now();
       
