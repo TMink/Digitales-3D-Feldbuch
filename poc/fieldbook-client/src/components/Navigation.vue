@@ -357,7 +357,11 @@
         st = selection.toLowerCase() + "s"
       }
       const name = await fromOfflineDB.getObject(id, db, st);
-      const currPlace = await fromOfflineDB.getObject(VueCookies.get('currentPlace'), 'Places', 'places');
+      var curPlaceID = VueCookies.get('currentPlace');
+      var curPlace = '';
+      if (curPlaceID.length > 0) {
+        curPlace = await fromOfflineDB.getObject(curPlaceID, 'Places', 'places');
+      }
 
       switch (selection) {
         case "Activity":
@@ -367,7 +371,7 @@
           this.currentPlace = name.placeNumber;
           break;
         case "Position":
-          if (currPlace.placeNumber != '1') {
+          if (curPlace.placeNumber != '1') {
             this.currentPosition = name.positionNumber;
           } else {
             this.currentPosition = '-';
