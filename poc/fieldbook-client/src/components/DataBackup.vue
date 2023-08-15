@@ -314,6 +314,12 @@ export default {
 
           if (dbName == 'Places') {
 
+            // join old title that consisted of multiple titles in an array
+            // to one continuous string
+            if (Array.isArray(data[i].title)){
+              data[i].title = data[i].title.join(';');
+            }
+
             // technical place for first place
             if (i == 0) {
               allPreset = await fromOfflineDB.getObjectByIndex(0, 'ModulePresets', 'places');
