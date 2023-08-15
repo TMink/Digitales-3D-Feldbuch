@@ -533,7 +533,7 @@
             </v-text-field>
           </v-col>
           <v-col cols="4" align="center">
-            <v-text-field class="pt-4 pl-4 pr-4" :label="$t('adressOf')" v-model="posInfo.adressOf">
+            <v-text-field class="pt-4 pl-4 pr-4" :label="$t('editor')" v-model="posInfo.addressOf">
             </v-text-field>
           </v-col>
         </v-row>
@@ -732,7 +732,7 @@ export default {
         weight: null,
         description: null,
         dating: null,
-        adressOf: null,
+        addressOf: null,
         modelName: null,
       },
 
@@ -1261,7 +1261,9 @@ export default {
       this.updateAutoFillList( 'datings', this.posInfo.dating )
       this.updateAutoFillList( 'titles', this.posInfo.title )
       this.updateAutoFillList( 'materials', this.posInfo.material )
-      //this.updateAutoFillList( 'editors', this.posInfo.addressOf )
+      this.updateAutoFillList( 'editors', this.posInfo.addressOf )
+
+      this.$root.vtoast.show({ message: this.$t('saveSuccess')});
     },
 
     /**

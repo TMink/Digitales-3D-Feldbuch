@@ -121,4 +121,5 @@ export default {
   thisExports: "Export: {count} {object}",
   wantToLeave: "Do you really want to leave? You have unsaved changes.",
   saveSuccess: "Saving successful",
+  duplicationMode: "Duplicationmode activated"
 };
