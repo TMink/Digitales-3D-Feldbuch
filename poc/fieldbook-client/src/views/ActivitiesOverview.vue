@@ -155,8 +155,7 @@ export default {
      * Get all activities from IndexedDb
      */
     async updateActivities() {
-      /* Receive all IDs in store */
-      this.activities = await fromOfflineDB.getAllObjects('Activities', 'activities')
+      this.activities = await fromOfflineDB.getAllObjects('Activities', 'activities');
     },
     
     /**
@@ -168,8 +167,8 @@ export default {
         VueCookies.remove('currentPlace');
         VueCookies.remove('currentPosition');
       }
-      VueCookies.set('currentActivity', activityID)
-      this.$router.push({ name: 'PlacesOverview' })
+      VueCookies.set('currentActivity', activityID);
+      this.$router.push({ name: 'PlacesOverview' });
     },
 
     /**
@@ -180,12 +179,12 @@ export default {
     closeActivityEdit(activity) {
       // if the activity has not been saved, discard it
       if (activity.id == undefined) {
-        var index = this.activities.indexOf(activity)
+        var index = this.activities.indexOf(activity);
         if (index != -1) {
           this.activities.splice(index, 1);
         }
       }
-      activity.edit = !activity.edit
+      activity.edit = !activity.edit;
     },
 
     /**
@@ -216,7 +215,7 @@ export default {
     /**
      * Saves/updates an `activity` in the IndexedDB if the 
      * activity mask is filled out correctly
-     * @param {*} proxyActivity 
+     * @param {ProxyObject} proxyActivity 
      */
     async saveActivity(proxyActivity) {
 
@@ -226,7 +225,7 @@ export default {
         && rawActivity.year != null
         && rawActivity.number != null) {
 
-          // new Activity data
+        // new Activity data
         const newActivity = {
           id: String(Date.now()),
           activityNumber: rawActivity.branchOffice
@@ -237,7 +236,7 @@ export default {
           number: rawActivity.number,
           places: [],
           lastChanged: Date.now(),
-          lastSync: ''
+          lastSync: '',
         }
 
         // Edit existing data
@@ -248,11 +247,9 @@ export default {
         } else {
           // Add new data to store 
           var activityID = await fromOfflineDB.addObject(newActivity, 'Activities', 'activities');
-
           await fromOfflineDB.addObject({ id: activityID, object: 'activities' }, 'Changes', 'created');
         }
       }
-
       await this.updateActivities();
     },
 
@@ -266,7 +263,7 @@ export default {
           this.$t('confirm'),
           this.$t('confirm_del', {
               object: this.$tc('activity', 1), 
-              object_nr: activity.activityNumber })
+              object_nr: activity.activityNumber }),
         )
       ) {
         this.deleteActivity(activity);
@@ -275,16 +272,18 @@ export default {
 
     /**
      * Removes an activity from IndexedDB and Cookies
-     * @param {*} activity 
+     * @param {Object} activity 
      */
     async deleteActivity(activity) {
       VueCookies.remove('currentPosition');
       VueCookies.remove('currentPlace');
       VueCookies.remove('currentActivity');
 
+      var activityIndex = this.activities.indexOf(activity);
+      this.activities.splice(activityIndex);
       await fromOfflineDB.deleteCascade(activity.id, 'activity', 'Activities', 'activities');
-      await this.updateActivities();
     },
+
   }
 }
 </script>
