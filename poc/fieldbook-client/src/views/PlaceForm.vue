@@ -298,7 +298,7 @@ export default {
     });
 
     await this.setAppBarTitle();
-    //this.hideNonTechnicalTabs();
+    this.hideNonTechnicalTabs();
     this.componentHasLoaded = true;
     this.hasUnsavedChanges = false;
   },

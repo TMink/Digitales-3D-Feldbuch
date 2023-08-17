@@ -135,22 +135,24 @@ export default {
       this.id = path.split("/", 3)[2]
       const lowerName = path.substring(
         path.indexOf("/") + 1, 
-        path.lastIndexOf("/")
+        path.lastIndexOf("/"),
       );
       const upperName = lowerName.charAt(0).toUpperCase() + lowerName.slice(1);
-      this.pathNames = { db: upperName, os: lowerName }
+      this.pathNames = { db: upperName, os: lowerName };
     },
 
     sendData(data) {
       /* Send data back to PlaceForm.vue */
-      this.$emit("dataToPlaceForm", data)
+      this.$emit("dataToPlaceForm", data);
     },
 
     /**
      * Triggers the updatePositions function from ModulePositionsList
      */
     passRefFunctionCall() {
-      this.$refs.posListRef.updatePositions();
+      if (this.$refs.posListRef != undefined) {
+        this.$refs.posListRef.updatePositions();
+      }
     },
   }
 };

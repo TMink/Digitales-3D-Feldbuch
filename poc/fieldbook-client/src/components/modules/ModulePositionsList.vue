@@ -155,7 +155,9 @@ export default {
     },
 
     async updatePositions() {
-      this.positions = await fromOfflineDB.getAllObjectsWithID(this.placeProp.id, 'Place', 'Positions', 'positions');
+      if (this.placeProp.id != undefined) {
+        this.positions = await fromOfflineDB.getAllObjectsWithID(this.placeProp.id, 'Place', 'Positions', 'positions');
+      }
     },
 
     /**
