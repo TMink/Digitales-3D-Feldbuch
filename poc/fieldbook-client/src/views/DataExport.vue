@@ -295,6 +295,8 @@ export default {
       exportPlaceModels: false,
       exportPositionImages: false,
       exportPositionModels: false,
+      allPlacesOfOneActivity: [],
+      allPositionsOfOnePlace: [],
       rules: {
         required: value => !!value || 'Required.',
       },
@@ -343,6 +345,7 @@ export default {
     await this.updateActivities();
     await this.updatePlaces();
     await this.updatePositions();
+    this.prepareTheStellenkarte();
   },
 
   computed: {
@@ -418,7 +421,11 @@ export default {
         if (placeId != position.placeID) {
           placeId = position.placeID;
           var tempPlace = await fromOfflineDB.getObject(placeId, 'Places', 'places');
+          if ( tempPlace == undefined ) {
+            continue
+          }
           placeNumber = tempPlace.placeNumber;
+
 
           // get and set the activityNumber of the current Position
           if (activityId != tempPlace.activityID) {
@@ -569,7 +576,7 @@ export default {
       // TODO: create one function das dynamically exports 
       // activities/places/positions depending on input parameters
       if (this.exportActivities) {
-        this.createActivitiesPDF();
+        this.createActivitiesPDF2( 0 );
       }
 
       if (this.exportPlaces) {
@@ -604,6 +611,218 @@ export default {
         body:
           toRaw(this.activities)
       });
+
+      // save the .pdf file
+      doc.save(filename + ".pdf");
+    },
+
+    prepareTheStellenkarte() {
+      // Get all places with same activityID
+      // save as: Array [ [0: activity1(object), 1: place(object), 2: place(object), ...]
+      //                  [0: activity2(object), 1: place(object), 2: place(object), ...] ]
+      const allPlaces = toRaw(this.places)
+      allPlaces.forEach( elem => {
+        if ( elem.noFinding == true ) {
+          elem.noFinding = '+'
+        } else {
+          elem.noFinding = ''
+        }
+
+        if ( elem.restFinding == true ) {
+          elem.restFinding = '+'
+        } else {
+          elem.restFinding = ''
+        }
+      })
+      const allActivitys = toRaw(this.activities)
+      
+      const allActivityIDs = []
+      allActivitys.forEach( elem => {
+        allActivityIDs.push( elem.id )
+      })
+      
+      allActivityIDs.forEach( aIds => {
+        const placeArr = []
+        const activity = this.activities.filter( activity => {
+          return activity.id == aIds
+        } )
+        placeArr.push(toRaw(activity[0]))
+        allPlaces.forEach( elem => {
+          if ( elem.activityID == aIds  ) {
+            placeArr.push(elem)
+          }
+        } )
+        this.allPlacesOfOneActivity.push( placeArr )
+      })
+
+      // Get all places with same activityID
+      // save as: Array [ [0: place1(object), 1: position(object), 2: position(object), ...]
+      //                  [0: place2(object), 1: position(object), 2: position(object), ...] ]
+      const allPositions = toRaw(this.positions)
+      
+      const allPlaceIds = []
+      allPlaces.forEach( elem => {
+        allPlaceIds.push( elem.id )
+      })
+      
+      allPlaceIds.forEach( pIds => {
+        const positionArr = []
+        const place = this.places.filter( place => {
+          return place.id == pIds
+        } )
+        positionArr.push(toRaw(place[0]))
+        allPositions.forEach( elem => {
+          if ( elem.placeID == pIds  ) {
+            positionArr.push(elem)
+          }
+        } )
+        this.allPositionsOfOnePlace.push( positionArr )
+      })
+
+    },
+    /**
+     * Creates and saves a pdf file of all activities
+     */
+    createActivitiesPDF2( whichActivity ) {
+
+      const doc = new jsPDF('landscape');
+      let date = new Date().toLocaleDateString("de-DE");
+      let filename = "activitylist_" + date;
+      doc.setFontSize(2)
+
+      const activityToBePrinted = this.allPlacesOfOneActivity[ whichActivity ]
+      const activity = activityToBePrinted.shift()
+      autoTable(doc, {
+        pageBreak: 'always',
+        border: { top: 10 },
+        margin: { top: 10 },
+        styles: { fontSize: 7 },
+        head: [
+          [
+            { content: activity.activityNumber, colSpan: 1 },
+            { content: '', colSpan: 1 },
+            { content: '', colSpan: 1 },
+            { content: '', colSpan: 1 },
+            { content: '', colSpan: 1 },
+            { content: '', colSpan: 1 },
+            { content: '', colSpan: 1 },
+            { content: '', colSpan: 1 },
+            { content: '', colSpan: 1 },
+            { content: '', colSpan: 1 },
+            { content: '', colSpan: 1 },
+            { content: '', colSpan: 1 },
+            { content: '', colSpan: 1 },
+            { content: '', colSpan: 1 },
+            { content: '', colSpan: 1 },
+            { content: '', colSpan: 1 },
+            { content: '', colSpan: 1 }
+          ],
+          [
+            { content: 'StellenNr' },
+            { content: 'Datum' },
+            { content: 'Ansprache' },
+            { content: 'Bearbeiter' },
+            { content: 'Beschreibung' },
+            { content: 'Datierung' },
+            { content: 'KeinBefund' },
+            { content: 'RestBefund' },
+            { content: 'Rechts' },
+            { content: 'Rechts bis' },
+            { content: 'Hoch' },
+            { content: 'Hoch bis' },
+            { content: 'TiefeOK' },
+            { content: 'TiefeUK' },
+            { content: 'Planum' },
+            { content: 'Profil' },
+            { content: 'Sichtbarkeit' }
+          ]
+        ],
+        columns: [
+          { header: 'StellenNr', dataKey: 'placeNumber' },
+          { header: 'Datum', dataKey: 'date' },
+          { header: 'Ansprache', dataKey: 'title' },
+          { header: 'Bearbeiter', dataKey: 'editor' },
+          { header: 'Beschreibung', dataKey: 'description' },
+          { header: 'Datierung', dataKey: 'dating' },
+          { header: 'KeinBefund', dataKey: 'noFinding' },
+          { header: 'RestBefund', dataKey: 'restFinding' },
+          { header: 'Rechts', dataKey: 'right' },
+          { header: 'Rechts bis', dataKey: 'rightTo' },
+          { header: 'Hoch', dataKey: 'up' },
+          { header: 'Hoch bis', dataKey: 'upTo' },
+          { header: 'TiefeOK', dataKey: 'depthTop' },
+          { header: 'TiefeUK', dataKey: 'depthBot' },
+          { header: 'Planum', dataKey: 'plane' },
+          { header: 'Profil', dataKey: 'profile' },
+          { header: 'Sichtbarkeit', dataKey: 'visibility' },
+        ],
+        body: 
+          activityToBePrinted
+      });
+      doc.deletePage(1)
+
+      const placeToBePrinted = this.allPositionsOfOnePlace
+      placeToBePrinted.forEach( place => {
+        const placeShift = place.shift()
+        const activityOfPlace = this.activities.filter( activity => {
+          return activity.places.includes(placeShift.id)
+        } )
+        if (activityOfPlace.length != 0) {
+          const activityNumber = toRaw(activityOfPlace)[0].activityNumber
+          autoTable(doc, {
+            pageBreak: 'always',
+            border: { top: 10 },
+            margin: { top: 10 },
+            styles: { fontSize: 7 },
+            head: [
+              [
+                { content: activityNumber, colSpan: 1 },
+                { content: '', colSpan: 1 },
+                { content: '', colSpan: 1 },
+                { content: '', colSpan: 1 },
+                { content: '', colSpan: 1 },
+                { content: '', colSpan: 1 },
+                { content: '', colSpan: 1 },
+                { content: '', colSpan: 1 },
+                { content: '', colSpan: 1 },
+                { content: '', colSpan: 1 },
+                { content: '', colSpan: 1 },
+                { content: 'Stelle:' + placeShift.placeNumber, colSpan: 1 },
+              ],
+              [
+                { content: 'PositionsNr' },
+                { content: 'Datum' },
+                { content: 'Ansprache'},
+                { content: 'Bearbeiter' },
+                { content: 'Beschreibung' },
+                { content: 'Rechts' },
+                { content: 'Hoch' },
+                { content: 'Höhe' },
+                { content: 'Datierung' },
+                { content: 'Anzahl' },
+                { content: 'Gewicht' },
+                { content: 'Material' },
+              ]
+            ],
+            columns: [
+              { header: 'PositionsNr', dataKey: 'positionNumber' },
+              { header: 'Datum', dataKey: 'date' },
+              { header: 'Ansprache', dataKey: 'title' },
+              { header: 'Bearbeiter', dataKey: 'addressOf' },
+              { header: 'Beschreibung', dataKey: 'description' },
+              { header: 'Rechts', dataKey: 'right' },
+              { header: 'Hoch', dataKey: 'up' },
+              { header: 'Höhe', dataKey: 'height' },
+              { header: 'Datierung', dataKey: 'dating' },
+              { header: 'Anzahl', dataKey: 'count' },
+              { header: 'Gewicht', dataKey: 'weight' },
+              { header: 'Material', dataKey: 'material' },
+            ],
+            body: 
+              place
+        });
+        }
+      })
 
       // save the .pdf file
       doc.save(filename + ".pdf");
