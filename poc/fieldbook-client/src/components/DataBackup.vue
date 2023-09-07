@@ -26,7 +26,23 @@
   <v-dialog :width="windowWidth * 0.6" v-model="backupDialog">
     <v-card  class="pa-2">
       <v-card-title> {{ $t('data_backup')}} </v-card-title>
-      <v-row>
+
+      <v-col cols="12">
+          <v-progress-linear
+            indeterminate
+            rounded
+            color="secondary"
+            v-if="isLoading">
+          </v-progress-linear>
+      </v-col>
+      <v-col
+          class="text-subtitle-1 text-center"
+          cols="12"
+          v-if="isLoading">
+          {{ $t('createBackup') }}
+        </v-col>
+
+      <v-row v-if="!isLoading">
         <v-col cols="6">
           <v-card-subtitle>{{ $t('backup')}}:</v-card-subtitle>
           <v-card-text 
@@ -179,6 +195,7 @@ export default {
      * one `.backup`-file and downloads it.
      */
     async backupData() {
+      this.isLoading = true
       await this.updateDBData();
       var filename = "fieldbook_" + new Date().toLocaleDateString('DE-de');
       var rawPlaceModels = toRaw(this.placeModels);
@@ -219,11 +236,15 @@ export default {
       // add the data .txt to the zip
       zip.file(filename + ".txt", blob);
 
-      zip.generateAsync({ type: "blob" }).then(function (content) {
+      await zip.generateAsync({ type: "blob" }).then(function (content) {
         var fileName = "fieldbookBackup_" + new Date().toLocaleDateString("en-EN") + ".zip" 
         // see FileSaver.js
         saveAs(content, fileName);
       });
+
+      // close the import dialog
+      this.importDialog = false;
+      this.$router.go();
     },
 
     /**
