@@ -426,14 +426,7 @@
 
       <!-- Navigation buttons -->
       <v-card rounded="0" width="50" height="85vh">
-        <v-card rounded="0" align="center" width="50" height="50">
-          <v-row no-gutters class="pt-3">
-            <v-col>
-              <v-icon>mdi-cogs</v-icon>
-            </v-col>
-          </v-row>
-          <!--<v-card-text>S</v-card-text>-->
-        </v-card>
+        
         <!-- Controls -->
         <v-btn v-model="leftDrawer.btnNames[0]" rounded="0" icon="mdi-camera-control" 
                width="50" height="50" :color="leftDrawer.btnColors[0]"
