@@ -123,5 +123,6 @@ export default {
     "Möchten Sie diese Seite wirklich verlassen? Sie haben noch ungespeicherte Änderungen.",
   saveSuccess: "Speichern erfolgreich",
   duplicationMode: "Duplikationsmodus aktiviert",
-  getBackup: "Ihre Daten werden geladen"
+  getBackup: "Ihre Daten werden geladen",
+  createBackup: "Ihre Daten werden gesammelt"
 };

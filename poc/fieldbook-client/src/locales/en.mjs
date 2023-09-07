@@ -122,5 +122,6 @@ export default {
   wantToLeave: "Do you really want to leave? You have unsaved changes.",
   saveSuccess: "Saving successful",
   duplicationMode: "Duplicationmode activated",
-  getBackup: "Getting your files"
+  getBackup: "Getting your files",
+  createBackup: "Collecting your files"
 };
