@@ -1,8 +1,9 @@
-- name: JSDoc Action
+name: JSDoc Action
   # You may pin to the exact commit or the version.
   # uses: andstor/jsdoc-action@06eafccd94e3fedcbf4ff0a8f23d775c169efdf2
-  uses: andstor/jsdoc-action@v1.2.1
-  with:
+on: push
+uses: andstor/jsdoc-action@v1.2.1
+ with:
     # Source directory to build documentation from
     source_dir: ./poc
     # Output folder for the generated documentation
