@@ -425,7 +425,7 @@
       </v-card>
 
       <!-- Navigation buttons -->
-      <v-card rounded="0" width="50" height="85vh">
+      <v-card rounded="0" width="50" height="91.2vh">
         
         <!-- Controls -->
         <v-btn v-model="leftDrawer.btnNames[0]" rounded="0" icon="mdi-camera-control" 
