@@ -14,7 +14,7 @@ const connectDB = require('./dbConn');
 connectDB();
 
 var indexRouter = require("./routes/index");
-var projectRouter = require("./routes/projects");
+/* var projectRouter = require("./routes/projects");
 var excavationRouter = require("./routes/excavations");
 var sectionRouter = require("./routes/sections");
 var artifactRouter = require("./routes/artifacts");
@@ -23,7 +23,7 @@ var sampleRouter = require("./routes/samples");
 var contactRouter = require("./routes/contacts");
 var dateRouter = require("./routes/dates");
 var colorRouter = require("./routes/colors");
-var utmRouter = require("./routes/utmPoints");
+var utmRouter = require("./routes/utmPoints"); */
 
 
 var activityRouter = require("./routes/activities");
@@ -44,8 +44,9 @@ app.use(cors());
 app.set("view engine", "pug");
 
 app.use("/", indexRouter);
+
 //####### DEPRECATED
-app.use("/projects", projectRouter);
+/* app.use("/projects", projectRouter);
 app.use("/excavations", excavationRouter);
 app.use("/sections", sectionRouter);
 app.use("/artifacts", artifactRouter);
@@ -54,7 +55,7 @@ app.use("/samples", sampleRouter);
 app.use("/contacts", contactRouter);
 app.use("/dates", dateRouter);
 app.use("/colors", colorRouter);
-app.use("/utmPoints", utmRouter);
+app.use("/utmPoints", utmRouter); */
 //####### DEPRECATED
 
 app.use("/activities", activityRouter);
