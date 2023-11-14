@@ -9,7 +9,8 @@
                         href="https://www.th-koeln.de/informatik-und-ingenieurwissenschaften/fakultaet-fuer-informatik-und-ingenieurwissenschaften_2466.php" 
                         target="_blank"
                         >
-                    <v-icon><v-img src="src/assets/logos/THCologne_Icon.png"></v-img></v-icon>
+                    <!-- <v-icon><v-img src="src/assets/logos/THCologne_Icon.png"></v-img></v-icon> -->
+                    <v-icon><v-img src="https://upload.wikimedia.org/wikipedia/commons/0/0e/TH_Koeln_Logo.svg"></v-img></v-icon>
                 </v-btn>
             </v-col>
         </v-row>
