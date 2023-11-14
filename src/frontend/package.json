@@ -1,12 +1,17 @@
 {
   "name": "fieldbook-client",
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "author": "Julian Hardtung, Aileen Jurkosek, Tobias Mink, Oliver Mertens, Methusshan Elankumaran",
+  "description": "A 3d fieldbook for documentation of archeological excavations",
   "private": true,
+  "main": "electron-main.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest",
+    "electron:start": "electron .",
+    "package": "electron-builder build"
   },
   "dependencies": {
     "axios": "^1.4.0",
@@ -29,6 +34,9 @@
     "@testing-library/vue": "^7.0.0",
     "@vitejs/plugin-vue": "^4.2.3",
     "@vue/test-utils": "^2.3.2",
+    "electron": "^27.0.4",
+    "electron-builder": "^24.6.4",
+    "electron-packager": "^17.1.2",
     "eslint": "^8.41.0",
     "eslint-plugin-vue": "^9.14.1",
     "eslint-plugin-vuetify": "^2.0.1",
@@ -38,5 +46,12 @@
     "vite": "^4.3.5",
     "vitest": "^0.32.2",
     "vue-router-mock": "^0.2.0"
+  },
+  "build": {
+    "appId": "com.thcologne.fieldbook",
+    "asar": true,
+    "win": {
+      "icon": "icon.ico"
+    }
   }
 }
