@@ -7,7 +7,6 @@ Weitere Details zur Arbeitsaufteilung und Projektplanung kann über [Notion](htt
 
 Der Ordner `src/` beinhaltet das Front-, sowie das Backend des Digitalen 3D Feldbuches. Im Folgenden werden die relevanten Order und Dateien erläutert, um eine Übersicht über die Projektstruktur und des Codes zu bilden.
 
-___
 
 ### Frontend 
 (`src/frontend/..`)
@@ -31,9 +30,24 @@ Weitere relevante Ordner werden hier Stichpunktartig aufgezählt und kurz erläu
   - `../src/tests`
      - Unit-Tests
 
-___
 
 ### Backend 
 (`src/backend/..`)
 
 Das Backend des digitalen 3D-Feldbuches ist mit dem node.js Framework [Express}(https://expressjs.com/) implementiert, welches mit einer MongoDB verbunden ist.
+
+__
+
+## Building and Packaging
+
+`npm run build`
+
+Builds and minifies the whole fieldbook frontend and saves it to `src/frontend/dist`
+
+`npm run electron:start`
+
+Starts the built project in Electrons simulated Chromium browser
+
+`npm run package`
+
+Packages the fieldbook project into an executable and/or installer
