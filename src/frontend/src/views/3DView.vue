@@ -608,8 +608,8 @@
  *  -> loadModelInSub               - 
  *  -------------------------------------------------------------------------
  *  # Model interaction:
- *  -> changeColor                  -
- *  -> changeOpacity                -
+ *  -> changeColor                  - 
+ *  -> changeOpacity                - 
  *  -------------------------------------------------------------------------
  *  # Controls:
  *  -> attachTransformControls      - 
@@ -673,12 +673,13 @@ import { RenderPass } from
 import { OutlinePass } from 
 'three/examples/jsm/postprocessing/OutlinePass';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
-import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader'
+import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader';
 import { GammaCorrectionShader } from
   'three/examples/jsm/shaders/GammaCorrectionShader';
 import { CSS2DRenderer, CSS2DObject } from 
   'three/examples/jsm/renderers/CSS2DRenderer'
 import { toRaw } from 'vue'
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader"
 
 const params = {
   sceneMain: {
@@ -1729,7 +1730,11 @@ export default {
      * @param {*} storeName 
      */
     loadModelInMain: async function( object, type ) {
-      /* Get 3D-Model from IndexedDB */
+      /* DRACOLoader */
+      const dLoader = new DRACOLoader();
+      dLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+      dLoader.setDecoderConfig({type: 'js'});
+      this.glbLoader.setDRACOLoader( dLoader )
 
       /* Load object */
       const meshGroup = await new Promise( ( resolve ) => {
