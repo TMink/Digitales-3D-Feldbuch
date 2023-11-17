@@ -22,7 +22,6 @@
 import AppFooter from './components/AppFooter.vue';
 import Pathbar from './components/Pathbar.vue';
 import VToast from './components/VToast.vue';
-import VueCookies from 'vue-cookies';
 import { useTheme } from 'vuetify/lib/framework.mjs';
 import LocaleChanger from './components/LocaleChanger.vue';
 import DataBackup from './components/DataBackup.vue';
@@ -47,7 +46,7 @@ export default {
       theme,
       toggleTheme() {
         theme.global.name.value = theme.global.current.value.dark ? 'fieldbook_light' : 'fieldbook_dark'
-        VueCookies.set('currentTheme', theme.global.name.value)
+        this.$cookies.set('currentTheme', theme.global.name.value)
       }
     }
   },
@@ -85,28 +84,28 @@ export default {
   },
 
   async created() {
-    var isInitDone = VueCookies.get('initDone');
+    var isInitDone = this.$cookies.get('initDone');
 
     // only initialize Cookies and IndexedDB data once
     if (!isInitDone) {
       await fromOfflineDB.syncLocalDBs();
       this.initCookies();
       await this.initIndexedDB();
-      VueCookies.set('initDone', true);
+      this.$cookies.set('initDone', true);
     }
 
     await fromOfflineDB.syncLocalDBs();
     await this.updatePathbar();
-    this.active_tab = this.active_tab_prop; //VueCookies.get('active_tab_prop') //this.active_tab_prop;
-    this.placeID = VueCookies.get('currentPlace')
+    this.active_tab = this.active_tab_prop; //this.$cookies.get('active_tab_prop') //this.active_tab_prop;
+    this.placeID = this.$cookies.get('currentPlace')
     if (this.placeID !== null) {
       this.placeIsSet = true
     }
-    this.activityID = VueCookies.get('currentActivity')
+    this.activityID = this.$cookies.get('currentActivity')
     if (this.activityID !== null) {
       this.activityIsSet = true
     }
-    this.positionID = VueCookies.get('currentPosition')
+    this.positionID = this.$cookies.get('currentPosition')
     if (this.positionID !== null)
       this.positionIsSet = true
   },
@@ -129,8 +128,8 @@ export default {
      * Initializes required cookie entries
      */
     initCookies() {
-      VueCookies.set('showAllPlaceInfo', false);
-      VueCookies.set('showAllPosInfo', false);
+      this.$cookies.set('showAllPlaceInfo', false);
+      this.$cookies.set('showAllPosInfo', false);
     },
 
     /**
@@ -186,7 +185,7 @@ export default {
 
       var placePresetID =
         await fromOfflineDB.addObject(allPlaceModules, 'ModulePresets', 'places');
-      VueCookies.set('placeModulesPreset', placePresetID);
+      this.$cookies.set('placeModulesPreset', placePresetID);
 
       var allPosModules = {
         id: String(Date.now()),
@@ -213,11 +212,11 @@ export default {
 
       var posPresetID =
         await fromOfflineDB.addObject(allPosModules, 'ModulePresets', 'positions');
-      VueCookies.set('posModulesPreset', posPresetID);
+      this.$cookies.set('posModulesPreset', posPresetID);
     },
 
     deleteCookies() {
-      VueCookies.keys().forEach(cookie => VueCookies.remove(cookie));
+      this.$cookies.keys().forEach(cookie => this.$cookies.remove(cookie));
       this.$router.go();
     },
 
@@ -240,19 +239,19 @@ export default {
         })
     },
     async updatePathbar() {
-      if (VueCookies.get('currentActivity')) {
+      if (this.$cookies.get('currentActivity')) {
         await this.getInfo("Activity")
       }
-      if (VueCookies.get('currentPlace')) {
+      if (this.$cookies.get('currentPlace')) {
         await this.getInfo("Place")
       }
-      if (VueCookies.get('currentPosition')) {
+      if (this.$cookies.get('currentPosition')) {
         await this.getInfo("Position")
       }
     },
 
     async getInfo(selection) {
-      const id = VueCookies.get('current' + selection);
+      const id = this.$cookies.get('current' + selection);
 
       let db = null;
       let st = null;

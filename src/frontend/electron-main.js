@@ -1,25 +1,30 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("node:path");
 
-const createWindow = () => {
+const createWindow = async () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
+      partition: "persist:infragistics",
+      nodeIntegration: true,
+      contextIsolation: false,
+      enableRemoteModule: true,
+      rejectPublicSuffixes: false,
       webSecurity: false,
     },
-    icon: path.join(__dirname, 'icon.ico')
+    icon: path.join(__dirname, "icon.ico")
   });
 
   // and load the index.html of the app.
-  mainWindow.loadFile("dist/index.html");
-  //mainWindow.loadURL(`file://${path.join(__dirname, "../dist/index.html")}`);
+  mainWindow.loadURL(`file://${__dirname}/dist/index.html`);
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
+
 };
 
 // This method will be called when Electron has finished
