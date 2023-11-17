@@ -138,7 +138,6 @@
 </template>
 
 <script>
- import VueCookies from 'vue-cookies'
  import { useI18n } from 'vue-i18n'
  import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
  import { useTheme } from 'vuetify/lib/framework.mjs';
@@ -161,7 +160,7 @@
       theme,
       toggleTheme() {
         theme.global.name.value = theme.global.current.value.dark ? 'fieldbook_light' : 'fieldbook_dark'
-        VueCookies.set('currentTheme', theme.global.name.value)
+        this.$cookies.set('currentTheme', theme.global.name.value)
       }
     }
     },
@@ -193,17 +192,17 @@
     async created () {
     await fromOfflineDB.syncLocalDBs();
     if (this.$route.name != 'PositionCreation') {
-      VueCookies.remove('currentPosition');
+      this.$cookies.remove('currentPosition');
     }
     await this.updatePathbar();
-    this.active_tab = this.active_tab_prop; //VueCookies.get('active_tab_prop') //this.active_tab_prop;
+    this.active_tab = this.active_tab_prop; //this.$cookies.get('active_tab_prop') //this.active_tab_prop;
     
-    var activityID = VueCookies.get('currentActivity')
+    var activityID = this.$cookies.get('currentActivity')
     if (activityID !== null) {
       this.activityIsSet = true
     }
 
-    var placeID = VueCookies.get('currentPlace');
+    var placeID = this.$cookies.get('currentPlace');
     if (placeID !== null) {
       
       var curPlace = await fromOfflineDB.getObject(placeID, 'Places', 'places');
@@ -212,7 +211,7 @@
       //}
     }
 
-    var positionID = VueCookies.get('currentPosition')
+    var positionID = this.$cookies.get('currentPosition')
     if (positionID !== null) {
       this.positionIsSet = true;
     } else {
@@ -237,8 +236,8 @@
      * Initializes required cookie entries
      */
     initCookies() {
-      VueCookies.set('showAllPlaceInfo', false);
-      VueCookies.set('showAllPosInfo', false);
+      this.$cookies.set('showAllPlaceInfo', false);
+      this.$cookies.set('showAllPosInfo', false);
     },
 
     /**
@@ -288,7 +287,7 @@
 
       var placePresetID =
         await fromOfflineDB.addObject(allPlaceModules, 'ModulePresets', 'places');
-      VueCookies.set('placeModulesPreset', placePresetID);
+      this.$cookies.set('placeModulesPreset', placePresetID);
 
       var allPosModules = {
         id: String(Date.now()),
@@ -312,11 +311,11 @@
 
       var posPresetID =
         await fromOfflineDB.addObject(allPosModules, 'ModulePresets', 'positions');
-      VueCookies.set('posModulesPreset', posPresetID);
+      this.$cookies.set('posModulesPreset', posPresetID);
     },
 
     deleteCookies() {
-      VueCookies.keys().forEach(cookie => VueCookies.remove(cookie));
+      this.$cookies.keys().forEach(cookie => this.$cookies.remove(cookie));
       this.$router.go();
     },
 
@@ -339,14 +338,14 @@
         })
     },
     async updatePathbar() {
-      if (VueCookies.get('currentActivity')) {
+      if (this.$cookies.get('currentActivity')) {
         await this.getInfo("Activity")
       }
-      if (VueCookies.get('currentPlace')) {
+      if (this.$cookies.get('currentPlace')) {
         await this.getInfo("Place")
       }
 
-      var test = VueCookies.get('currentPosition');
+      var test = this.$cookies.get('currentPosition');
       if (test) {
         await this.getInfo("Position")
       } else {
@@ -355,7 +354,7 @@
     },
 
     async getInfo(selection) {
-      const id = VueCookies.get('current' + selection);
+      const id = this.$cookies.get('current' + selection);
 
       let db = null;
       let st = null;
@@ -376,7 +375,7 @@
           this.currentPlace = name.placeNumber;
           break;
         case "Position":
-          var curPlaceID = VueCookies.get('currentPlace');
+          var curPlaceID = this.$cookies.get('currentPlace');
           var curPlace = '';
           if (curPlaceID.length > 0) {
             curPlace = await fromOfflineDB.getObject(curPlaceID, 'Places', 'places');

@@ -266,7 +266,6 @@
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import ConfirmDialog from '../components/ConfirmDialog.vue';
 import { toRaw } from 'vue';
-import VueCookies from 'vue-cookies';
 
 export default {
 
@@ -316,9 +315,9 @@ export default {
 
     var curPresetID = null;
     if (this.objectTypeProp == 'places') {
-      curPresetID = VueCookies.get('placeModulesPreset');
+      curPresetID = this.$cookies.get('placeModulesPreset');
     } else if (this.objectTypeProp == 'positions') {
-      curPresetID = VueCookies.get('posModulesPreset');
+      curPresetID = this.$cookies.get('posModulesPreset');
     }
 
     if (curPresetID != null) {
@@ -419,9 +418,9 @@ export default {
       this.selectedPreset = rawPreset;
 
       if (this.objectTypeProp == 'places') {
-        VueCookies.set('placeModulesPreset', rawPreset.id);
+        this.$cookies.set('placeModulesPreset', rawPreset.id);
       } else if (this.objectTypeProp == 'positions') {
-        VueCookies.set('posModulesPreset', rawPreset.id);
+        this.$cookies.set('posModulesPreset', rawPreset.id);
       }
       this.$emit('updateModulePresets');
     },
@@ -456,15 +455,15 @@ export default {
     async deletePreset(object) {
       let rawObject = toRaw(object);
 
-      if (rawObject.id == VueCookies.get('placeModulesPreset')) {
+      if (rawObject.id == this.$cookies.get('placeModulesPreset')) {
         var placeDefaultPreset = await fromOfflineDB.getObjectByIndex(1, 'ModulePresets', this.objectTypeProp);
         this.selectedPreset = placeDefaultPreset;
-        VueCookies.set('placeModulesPreset', placeDefaultPreset.id);
+        this.$cookies.set('placeModulesPreset', placeDefaultPreset.id);
 
-      } else if (rawObject.id == VueCookies.get('posModulesPreset')) {
+      } else if (rawObject.id == this.$cookies.get('posModulesPreset')) {
         var posDefaultPreset = await fromOfflineDB.getObjectByIndex(0, 'ModulePresets', this.objectTypeProp);
         this.selectedPreset = posDefaultPreset;
-        VueCookies.set('posModulesPreset', posDefaultPreset.id);
+        this.$cookies.set('posModulesPreset', posDefaultPreset.id);
       }
 
       await fromOfflineDB.deleteObject(rawObject, 'ModulePresets', this.objectTypeProp);

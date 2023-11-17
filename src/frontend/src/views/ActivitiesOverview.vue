@@ -120,7 +120,6 @@
   
 <script>
 import Navigation from '../components/Navigation.vue'
-import VueCookies from 'vue-cookies'
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 import AddButton from '../components/AddButton.vue'
@@ -163,13 +162,49 @@ export default {
      * @param {String} activityID 
      */
     async setActivity(activityID) {
-      if (VueCookies.get('currentActivity') !== activityID) {
-        VueCookies.remove('currentPlace');
-        VueCookies.remove('currentPosition');
+      if (this.$cookies.get('currentActivity') !== activityID) {
+        this.$cookies.remove('currentPlace');
+        this.$cookies.remove('currentPosition');
       }
-      VueCookies.set('currentActivity', activityID);
+
+      this.$cookies.set('currentActivity', activityID);
       this.$router.push({ name: 'PlacesOverview' });
     },
+
+    setCookie(data, name) {
+      var expiration = new Date();
+      var hour = expiration.getHours();
+      hour = hour + 6;
+      expiration.setHours(hour);
+      this.$cookies.set({
+        url: "", //the url of the cookie.
+        name: name, // a name to identify it.
+        value: data, // the value that you want to save
+        expirationDate: expiration.getTime()
+      }, function (error) {
+        console.log(error);
+      });
+    },
+
+    getCookie(callback) {
+      var self = this;
+
+      self.window.webContents.session.cookies.get({}, function (error, cookies) {
+        if (error) throw error;
+        self.cookies = cookies;
+
+        callback(null, cookies);
+      });
+    },
+
+    /* getCookie(name) {
+      var value = {
+        name: name // the request must have this format to search the cookie.
+      };
+      ses.cookies.get(value, function (error, cookies) {
+        console.console.log(cookies[0].value); // the value saved on the cookie
+      });
+    }, */
 
     /**
      * Closes the activity edit mask and removes 
@@ -275,9 +310,9 @@ export default {
      * @param {Object} activity 
      */
     async deleteActivity(activity) {
-      VueCookies.remove('currentPosition');
-      VueCookies.remove('currentPlace');
-      VueCookies.remove('currentActivity');
+      this.$cookies.remove('currentPosition');
+      this.$cookies.remove('currentPlace');
+      this.$cookies.remove('currentActivity');
 
       var activityIndex = this.activities.indexOf(activity);
       this.activities.splice(activityIndex);

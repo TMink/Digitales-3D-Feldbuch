@@ -355,7 +355,6 @@
 import Navigation from '../components/Navigation.vue';
 import AddButton from '../components/AddButton.vue';
 import ModuleCreator from '../components/ModuleCreator.vue';
-import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { useWindowSize } from 'vue-window-size';
 import { toRaw } from 'vue';
@@ -493,7 +492,7 @@ export default {
      * Get all places from IndexedDB
      */
     async updatePlaces() {
-      var curActivityID = String(VueCookies.get('currentActivity'));
+      var curActivityID = String(this.$cookies.get('currentActivity'));
 
       this.places = await fromOfflineDB.getAllObjectsWithID(
         curActivityID, 'Activity', 'Places', 'places');
@@ -504,7 +503,7 @@ export default {
      * Get all ModulePresets from IndexedDB
      */
     async updateModulePresets() {
-      let presetFromCookies = VueCookies.get('placeModulesPreset');
+      let presetFromCookies = this.$cookies.get('placeModulesPreset');
 
       if (presetFromCookies.length > 0) {
         this.curModulePreset = await fromOfflineDB.getObject(
@@ -516,7 +515,7 @@ export default {
      * Adds a new place to IndexedDB for the current activity
      */
     async addPlace() {
-      const acID = String(VueCookies.get('currentActivity'));
+      const acID = String(this.$cookies.get('currentActivity'));
       var newPlaceID = String(Date.now());
       var activity = await fromOfflineDB.getObject(acID, 'Activities', 'activities');
 
@@ -628,7 +627,7 @@ export default {
      */
     moveToPlace(placeID) {
       if (placeID !== 'new') {
-        VueCookies.set('currentPlace', placeID)
+        this.$cookies.set('currentPlace', placeID)
       }
       this.$router.push({ name: 'PlaceCreation', params: { placeID: placeID } })
     },
@@ -637,7 +636,7 @@ export default {
      * Set the toggleAllInfo switch state depending on VueCookies
      */
     setShowAllInfoSwitch() {
-      var showAllCookie = VueCookies.get('showAllPlaceInfo');
+      var showAllCookie = this.$cookies.get('showAllPlaceInfo');
 
       if (showAllCookie == "true") {
         this.showAllInfo = true;
@@ -650,7 +649,7 @@ export default {
      * Save the change toggle all info state to cookies
      */
     toggleAllInfo() {
-      VueCookies.set('showAllPlaceInfo', this.showAllInfo);
+      this.$cookies.set('showAllPlaceInfo', this.showAllInfo);
     },
 
     /**
@@ -700,7 +699,7 @@ export default {
      * @returns {Object} An object containing row style properties
      */
     getRowStyle(index) {
-      var currentTheme = VueCookies.get('currentTheme')
+      var currentTheme = this.$cookies.get('currentTheme')
       if (currentTheme !== 'fieldbook_light') {
         return {
           cursor: 'pointer',

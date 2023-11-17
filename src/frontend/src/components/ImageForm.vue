@@ -178,7 +178,6 @@
 
 <script>
 import AddButton from '../components/AddButton.vue';
-import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { useWindowSize } from 'vue-window-size';
 import { toRaw } from 'vue';
@@ -450,7 +449,7 @@ export default {
 
       // Delete the image itself
       await fromOfflineDB.deleteObject(image, 'Images', 'images');
-      VueCookies.remove('currentImage');
+      this.$cookies.remove('currentImage');
 
       this.images.splice(index, 1);
     },
@@ -480,10 +479,10 @@ export default {
      * @returns {String} image title 
      */
     async getAutoImgTitle() {
-      const curActivityID = VueCookies.get('currentActivity');
+      const curActivityID = this.$cookies.get('currentActivity');
       const curActivity = await fromOfflineDB.getObject(curActivityID, 'Activities', 'activities');
 
-      const curPlaceID = VueCookies.get('currentPlace');
+      const curPlaceID = this.$cookies.get('currentPlace');
       const curPlace = await fromOfflineDB.getObject(curPlaceID, 'Places', 'places');
       const placeNumber = curPlace.placeNumber.toString().padStart(4, '0');
 
@@ -492,7 +491,7 @@ export default {
         + '_';
 
       if (this.object_type == 'positions') {
-        const curPosID = VueCookies.get('currentPosition');
+        const curPosID = this.$cookies.get('currentPosition');
         const curPos = await fromOfflineDB.getObject(curPosID, 'Positions', 'positions');
         const posNumber = curPos.positionNumber.toString().padStart(4, '0');
 

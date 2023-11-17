@@ -68,7 +68,6 @@
 </template>
   
 <script>
-import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../../ConnectionToOfflineDB';
 import AddPosition from '../../components/AddPosition.vue';
 import { useWindowSize } from 'vue-window-size';
@@ -149,7 +148,7 @@ export default {
   methods: {
 
     async updatePlace() {
-      const currentPlace = VueCookies.get('currentPlace');
+      const currentPlace = this.$cookies.get('currentPlace');
       const data = await fromOfflineDB.getObject(currentPlace, 'Places', 'places');
       this.place = data;
     },
@@ -195,7 +194,7 @@ export default {
     */
     moveToPosition(positionID) {
       if (positionID !== 'new') {
-        VueCookies.set('currentPosition', positionID);
+        this.$cookies.set('currentPosition', positionID);
       }
       this.$router.push({ name: 'PositionCreation', params: { positionID: positionID } });
     },

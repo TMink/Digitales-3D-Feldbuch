@@ -22,7 +22,6 @@
  *                            place
  */
 export { fromOfflineDB };
-import VueCookies from 'vue-cookies';
 
 export default class ConnectionToOfflineDB {
   constructor(offlineDB) {
@@ -429,7 +428,7 @@ export default class ConnectionToOfflineDB {
    * @returns the object that was added last to the IndexedDB
    */
   async getLastAddedPosition() {
-    var curPlaceID = VueCookies.get('currentPlace');
+    var curPlaceID = this.$cookies.get("currentPlace");
     var curPlace = await this.getObject(curPlaceID, 'Places', 'places');
     var lastPosID = curPlace.positions[curPlace.positions.length-1];
     var lastAddedPos = await this.getObject(lastPosID, 'Positions', 'positions');

@@ -213,7 +213,6 @@
 
 <script>
 import AddButton from '../components/AddButton.vue';
-import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { toRaw } from 'vue';
 import * as THREE from 'three';
@@ -588,8 +587,8 @@ export default {
       // new model data
       const newModel = {
         id: newModelID,
-        placeID: String(VueCookies.get('currentPlace')),
-        positionID: String(VueCookies.get('currentPosition')),
+        placeID: String(this.$cookies.get('currentPlace')),
+        positionID: String(this.$cookies.get('currentPosition')),
         title: this.model.title,
         model: await this.modelToArrayBuffer(toRaw(this.model.model)),
         color: '#ffffff',
@@ -672,7 +671,7 @@ export default {
       // delete the model itself
       await fromOfflineDB.deleteObject(
         model, 'Models', this.object_type.toLowerCase());
-      VueCookies.remove('currentModel');
+      this.$cookies.remove('currentModel');
       await this.updateModels();
 
       /* Bob Ross */

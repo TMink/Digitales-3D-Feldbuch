@@ -133,7 +133,6 @@
  *  moveToPosition  - Loads the view of the selected position
  *  cancelPlace     - Cancels all not already saved actions
  */
-import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import ConfirmDialog from '../components/ConfirmDialog.vue';
 import AddPosition from '../components/AddPosition.vue';
@@ -399,7 +398,7 @@ export default {
      * Update reactive Vue.js place data
      */
     async updatePlace() {
-      const currentPlace = VueCookies.get('currentPlace');
+      const currentPlace = this.$cookies.get('currentPlace');
       const data = await fromOfflineDB.getObject(currentPlace, 'Places', 'places');
       this.place = data;
     },
@@ -507,7 +506,7 @@ export default {
     async deletePlace() {
 
       // Remove the placeID from connected activity
-      const acID = String(VueCookies.get('currentActivity'))
+      const acID = String(this.$cookies.get('currentActivity'))
       var activity = await fromOfflineDB.getObject(acID, 'Activities', 'activities')
       var index = activity.places.indexOf(this.place.id.toString())
 
@@ -516,11 +515,11 @@ export default {
 
       // Delete all data that is dependent on the place
       await fromOfflineDB.deleteCascade(this.place.id, 'position', 'Positions', 'positions');
-      VueCookies.remove('currentPosition');
+      this.$cookies.remove('currentPosition');
 
       // Delete the place itself
       await fromOfflineDB.deleteObject(toRaw(this.place), 'Places', 'places');
-      VueCookies.remove('currentPlace');
+      this.$cookies.remove('currentPlace');
       this.hasUnsavedChanges = false;
       this.$router.push({ name: "PlacesOverview" });
     },
@@ -555,7 +554,7 @@ export default {
      */
     moveToPosition(positionID) {
       if (positionID !== 'new') {
-        VueCookies.set('currentPosition', positionID);
+        this.$cookies.set('currentPosition', positionID);
       }
       this.$router.push({ name: 'PositionCreation', params: { positionID: positionID } });
     },
@@ -586,10 +585,10 @@ export default {
      * Sets the AppBarTitle to the current ActivityNumber + PlaceNumber
      */
     async setAppBarTitle() {
-      const acID = String(VueCookies.get('currentActivity'));
+      const acID = String(this.$cookies.get('currentActivity'));
       var activity = await fromOfflineDB.getObject(acID, 'Activities', 'activities');
 
-      const plID = String(VueCookies.get('currentPlace'))
+      const plID = String(this.$cookies.get('currentPlace'))
       var place = await fromOfflineDB.getObject(plID, 'Places', 'places')
     
       this.$emit("view", activity.activityNumber + ' ' + place.placeNumber);

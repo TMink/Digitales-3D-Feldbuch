@@ -88,7 +88,6 @@
  *  calcSubNumber   - Calculates the subnumber depending on prev position
  *  goBack          - Goes back to PlaceForm
  */
-import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import ConfirmDialog from '../components/ConfirmDialog.vue';
 import ImageForm from '../components/ImageForm.vue';
@@ -187,13 +186,13 @@ export default {
    * Initialize data from localDB and .env to the reactive Vue.js data
    */
   async created() {
-    const acID = String(VueCookies.get('currentActivity'))
+    const acID = String(this.$cookies.get('currentActivity'))
     var activity = await fromOfflineDB.getObject(acID, 'Activities', 'activities')
     
-    const plID = String(VueCookies.get('currentPlace'))
+    const plID = String(this.$cookies.get('currentPlace'))
     var place = await fromOfflineDB.getObject(plID, 'Places', 'places')
     
-    const poID = String(VueCookies.get('currentPosition'))
+    const poID = String(this.$cookies.get('currentPosition'))
     var position = await fromOfflineDB.getObject(poID, 'Positions', 'positions')
     
     this.$emit("view", activity.activityNumber + ' ' + place.placeNumber + ' ' + position.positionNumber);
@@ -290,7 +289,7 @@ export default {
      */
     async updatePosition() {
       /* Get id of selected place */
-      const currentPosition = VueCookies.get("currentPosition")
+      const currentPosition = this.$cookies.get("currentPosition")
 
       /* Get all data of selected place */
       if (this.$route.params.positionID != 'new') {
@@ -407,7 +406,7 @@ export default {
     async deletePosition() {
 
       // Remove the positionID from connected place
-      const placeID = String(VueCookies.get('currentPlace'));
+      const placeID = String(this.$cookies.get('currentPlace'));
       var place = await fromOfflineDB.getObject(placeID, 'Places', 'places');
       var rawPosition = toRaw(this.position);
       var index = place.positions.indexOf(rawPosition.id.toString())
@@ -420,7 +419,7 @@ export default {
 
       // Delete the position itself
       await fromOfflineDB.deleteObject(rawPosition, 'Positions', 'positions')
-      VueCookies.remove('currentPosition');
+      this.$cookies.remove('currentPosition');
       this.hasUnsavedChanges = false;
       this.$router.push({ name: "PositionsOverview" });
     },

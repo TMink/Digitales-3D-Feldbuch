@@ -320,7 +320,6 @@
 
 <script>
 import Navigation from '../components/Navigation.vue';
-import VueCookies from 'vue-cookies';
 import { toRaw } from 'vue';
 import ModuleCreator from '../components/ModuleCreator.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
@@ -469,14 +468,14 @@ export default {
      * Update reactive Vue.js position data
      */
     async updatePositions() {
-      var curPlaceID = String(VueCookies.get('currentPlace'));
+      var curPlaceID = String(this.$cookies.get('currentPlace'));
 
       this.positions = await fromOfflineDB.getAllObjectsWithID(
         curPlaceID, 'Place', 'Positions', 'positions');
     },
 
     async updateModulePresets() {
-      let curPresetID = VueCookies.get('posModulesPreset');
+      let curPresetID = this.$cookies.get('posModulesPreset');
 
       if (curPresetID) {
         this.curModulePreset = await fromOfflineDB.getObject(
@@ -527,7 +526,7 @@ export default {
      */
     moveToPosition(positionID) {
       if (positionID !== 'new') {
-        VueCookies.set('currentPosition', positionID);
+        this.$cookies.set('currentPosition', positionID);
       }
 
       this.$router.push({ name: 'PositionCreation', params: { positionID: positionID } })
@@ -537,7 +536,7 @@ export default {
      * Set the toggleAllInfo switch state depending on VueCookies
      */
      setShowAllInfoSwitch() {
-      var showAllCookie = VueCookies.get('showAllPosInfo');
+      var showAllCookie = this.$cookies.get('showAllPosInfo');
 
       if (showAllCookie == "true") {
         this.showAllInfo = true;
@@ -553,7 +552,7 @@ export default {
      *                --> CAN YOU CALL FUNCTIONS OVER PROPS???
      */
     async addPosition() {
-      var curPlaceID = VueCookies.get('currentPlace');
+      var curPlaceID = this.$cookies.get('currentPlace');
       var curPlace = await fromOfflineDB.getObject(curPlaceID, "Places", "places");
       var newPositionID = String(Date.now());
 
@@ -606,7 +605,7 @@ export default {
      * Save the change toogle all info state to cookies
      */
     toggleAllInfo() {
-      VueCookies.set('showAllPosInfo', this.showAllInfo);
+      this.$cookies.set('showAllPosInfo', this.showAllInfo);
     },
 
     /**
@@ -647,7 +646,7 @@ export default {
      * @returns {Object} An object containing row style properties
      */
      getRowStyle(index) {
-      var currentTheme = VueCookies.get('currentTheme')
+      var currentTheme = this.$cookies.get('currentTheme')
       if (currentTheme !== 'fieldbook_light') {
         return {
           cursor: 'pointer',
@@ -677,7 +676,7 @@ export default {
     },
 
     saveModulePresetToCookies() {
-      VueCookies.set('posModulesPreset', this.curModulePreset.id);
+      this.$cookies.set('posModulesPreset', this.curModulePreset.id);
     },
   }
 }

@@ -5,7 +5,6 @@
 <script>
 import AddButton from '../components/AddButton.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
-import VueCookies from 'vue-cookies';
 import { toRaw } from 'vue';
 
 export default {
@@ -37,7 +36,7 @@ export default {
      * Get all ModulePresets from IndexedDB
      */
      async updateModulePresets() {
-      let presetFromCookies = VueCookies.get('posModulesPreset');
+      let presetFromCookies = this.$cookies.get('posModulesPreset');
 
       if (presetFromCookies.length > 0) {
         this.curModulePreset = await fromOfflineDB.getObject(
@@ -49,7 +48,7 @@ export default {
      * Adds a new position to the local storage for the current place
      */
     async addPosition() {
-      var curPlaceID = VueCookies.get('currentPlace');
+      var curPlaceID = this.$cookies.get('currentPlace');
       var curPlace = await fromOfflineDB.getObject(curPlaceID, "Places", "places");
       var newPositionID = String(Date.now());
 

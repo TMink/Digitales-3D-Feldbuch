@@ -657,7 +657,6 @@
 
 import * as THREE from 'three';
 import Navigation from '../components/Navigation.vue';
-import VueCookies from 'vue-cookies';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { ArcballControls } from
   'three/examples/jsm/controls/ArcballControls.js';
@@ -1324,7 +1323,7 @@ export default {
     deleteLine: async function() {
 
       const placeInDB = await fromOfflineDB.getObject( 
-        VueCookies.get('currentPlace'), 'Places', 'places' );
+        this.$cookies.get('currentPlace'), 'Places', 'places' );
       const linesInDB = await fromOfflineDB.getAllObjects(
         'Lines', 'lines' );
 
@@ -1499,7 +1498,7 @@ export default {
      * 
      */
     updateCameraInDB: async function () { 
-      const placeID = VueCookies.get( 'currentPlace' );
+      const placeID = this.$cookies.get( 'currentPlace' );
       const cameraIDsInDB = await fromOfflineDB.getProperties( 'id', 'Cameras',
         'cameras' );
       const cameraInDB = await fromOfflineDB.getObject( placeID, 'Cameras',
@@ -1697,7 +1696,7 @@ export default {
      * 
      */
     loadPlaceModels: async function() {
-      const placeID = VueCookies.get( 'currentPlace' );
+      const placeID = this.$cookies.get( 'currentPlace' );
       const objects = await fromOfflineDB.getAllObjectsWithID( placeID, 'Place',
         'Models', 'places' );
 
@@ -1712,7 +1711,7 @@ export default {
      * 
      */
     loadPositionModels: async function() {
-      const placeID = VueCookies.get( 'currentPlace' );
+      const placeID = this.$cookies.get( 'currentPlace' );
       const objects = await fromOfflineDB.getAllObjectsWithID( placeID, 'Place',
         'Models', 'positions' );
 
@@ -2082,7 +2081,7 @@ export default {
             this.drawingLine = true;
           } else {
             const placeInDB = await fromOfflineDB.getObject( 
-              VueCookies.get('currentPlace'), 'Places', 'places' )
+              this.$cookies.get('currentPlace'), 'Places', 'places' )
 
             const positions = this.line.geometry.attributes.position;
             positions.array[3] = intersects[0].point.x;
@@ -2199,7 +2198,7 @@ export default {
      */
     updateArcball: async function( event ) {
       if ( event.ctrlKey ) {
-        const placeID = VueCookies.get( 'currentPlace' );
+        const placeID = this.$cookies.get( 'currentPlace' );
 
         this.getCamera( this.cameraMain, this.cameraData );
         const cameraIDsFromDB = await fromOfflineDB.getProperties( 'id',
@@ -2207,7 +2206,7 @@ export default {
 
         if ( cameraIDsFromDB.includes( placeID ) ) {
           const newCamera = await fromOfflineDB.getObject(
-            VueCookies.get( 'currentPlace' ), 'Cameras', 'cameras' );
+            this.$cookies.get( 'currentPlace' ), 'Cameras', 'cameras' );
 
           this.abControlsMain.target.set( newCamera.arcballAnchor[ 0 ],
             newCamera.arcballAnchor[ 1 ], newCamera.arcballAnchor[ 2 ]);
@@ -2251,14 +2250,14 @@ export default {
      * @param {*} modelName 
      */
     updateCamera: async function( modelName ) {
-      const placeID = VueCookies.get( 'currentPlace' );
+      const placeID = this.$cookies.get( 'currentPlace' );
       const cameraIDsFromDB = await fromOfflineDB.getProperties( 'id',
         'Cameras', 'cameras' );
 
       if ( cameraIDsFromDB.includes( placeID ) ) {
         /* Get camera data from IndexedDB */
         const cameraFromDB = await fromOfflineDB.getObject(
-          VueCookies.get( 'currentPlace' ), 'Cameras', 'cameras' );
+          this.$cookies.get( 'currentPlace' ), 'Cameras', 'cameras' );
 
         /* Update current camera state with camera data from IndexedDB */
         const cameraPosition = cameraFromDB.cameraPosition;

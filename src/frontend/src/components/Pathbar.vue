@@ -18,7 +18,6 @@
 </template>
 
 <script>
-import VueCookies from 'vue-cookies'
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
 
 export default {
@@ -38,19 +37,19 @@ export default {
   methods: {
 
     async updatePathbar() {
-      if( VueCookies.get('currentActivity') ) {
+      if( this.$cookies.get('currentActivity') ) {
         await this.getInfo("Activity")
       } 
-      if( VueCookies.get('currentPlace') ) {
+      if( this.$cookies.get('currentPlace') ) {
         await this.getInfo("Place")
       }
-      if( VueCookies.get('currentPosition') ) {
+      if( this.$cookies.get('currentPosition') ) {
         await this.getInfo("Position")
       }
     },
     
     async getInfo(selection) { 
-      const id = VueCookies.get('current' + selection);
+      const id = this.$cookies.get('current' + selection);
       
       let db = null;
       let st = null;
