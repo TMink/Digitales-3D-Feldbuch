@@ -7,8 +7,8 @@ const path = require("path");
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: path.resolve(__dirname, "/dist"),
   define: {
+    // base: path.resolve(__dirname, "/dist"),
     __VUE_I18N_FULL_INSTALL__: true,
     __VUE_I18N_LEGACY_API__: true,
     __INTLIFY_PROD_DEVTOOLS__: false,
