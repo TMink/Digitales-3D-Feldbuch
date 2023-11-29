@@ -9,6 +9,8 @@ import OnlineSync from "@/views/OnlineSync.vue";
 import DataExport from "@/views/DataExport.vue";
 import DataBackup from "@/components/DataBackup.vue";
 import Landingpage from "@/views/Landingpage.vue";
+import Login from "@/views/Login.vue";
+import Signup from "@/views/Signup.vue";
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -67,6 +69,16 @@ const router = createRouter({
       path: "/dataBackup",
       name: "DataBackup",
       component: DataBackup,
+    },
+    {
+      path: "/login",
+      name: "Login",
+      component: Login,
+    },
+    {
+      path: "/signup",
+      name: "Signup",
+      component: Signup,
     },
   ],
 });

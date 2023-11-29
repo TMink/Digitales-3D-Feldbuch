@@ -17,8 +17,8 @@
                 </h4>
 
                 <v-flex row wrap text-xs-center>
-                    <v-btn v-on:click="onClick()" color="primary" class="ma-2" prepend-icon="mdi-login">login</v-btn>
-                    <v-btn v-on:click="onClick()" color="secondary" class="ma-2" prepend-icon="mdi-account-plus-outline">signup</v-btn>
+                    <v-btn v-on:click="routeLogin()" color="primary" class="ma-2" prepend-icon="mdi-login">login</v-btn>
+                    <v-btn v-on:click="routeSignup()" color="secondary" class="ma-2" prepend-icon="mdi-account-plus-outline">signup</v-btn>
                 </v-flex>
             </div>
         </v-parallax>
@@ -56,6 +56,12 @@ export default {
     },
     methods: {
 
+      routeLogin() {
+        this.$router.push({ name: 'Login' });
+      },
+      routeSignup() {
+      this.$router.push({ name: 'Signup' });
+      },
     }
 }
 </script>
