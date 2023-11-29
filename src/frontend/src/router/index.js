@@ -11,7 +11,7 @@ import DataBackup from "@/components/DataBackup.vue";
 
 const router = createRouter({
   history: createWebHashHistory(),
-  //history: createWebHistory(import.meta.env.BASE_URL),
+  //history: process.env.IS_ELECTRON ? createWebHashHistory() : createWebHistory(),
   routes: [
     {
       path: "/",
