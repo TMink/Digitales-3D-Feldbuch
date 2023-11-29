@@ -8,6 +8,7 @@ import ModelViewer from "@/views/3DView.vue";
 import OnlineSync from "@/views/OnlineSync.vue";
 import DataExport from "@/views/DataExport.vue";
 import DataBackup from "@/components/DataBackup.vue";
+import Landingpage from "@/views/Landingpage.vue";
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -15,6 +16,11 @@ const router = createRouter({
   routes: [
     {
       path: "/",
+      name: "Landingpage",
+      component: Landingpage,
+    },
+    {
+      path: "/activities",
       name: "ActivitiesOverview",
       component: ActivitiesOverview,
     },
