@@ -1,3 +1,12 @@
+/**
+ * @ Author: Julian Hardtung
+ * @ Create Time: 09.06.2023 12:43:13
+ * @ Modified by: Julian Hardtung
+ * @ Modified time: 05.12.2023 11:06:22
+ * 
+ * Backend CRUD API routes for activities
+ */
+
 const express = require("express");
 const router = express.Router();
 const Activity = require("../model/Activity");

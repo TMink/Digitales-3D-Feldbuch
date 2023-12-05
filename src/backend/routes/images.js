@@ -1,3 +1,12 @@
+/**
+ * @ Author: Julian Hardtung
+ * @ Create Time: 10.05.2023 12:58:23
+ * @ Modified by: Julian Hardtung
+ * @ Modified time: 05.12.2023 11:08:44
+ * 
+ * Backend CRUD API routes for images
+ */
+
 const express = require("express");
 const router = express.Router();
 const fs = require("fs");

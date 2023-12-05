@@ -1,3 +1,12 @@
+/**
+ * @ Author: Julian Hardtung
+ * @ Create Time: 13.06.2023 13:54:24
+ * @ Modified by: Julian Hardtung
+ * @ Modified time: 05.12.2023 11:07:58
+ * 
+ * Backend CRUD API routes for models
+ */
+
 const express = require("express");
 const router = express.Router();
 const fs = require('fs');

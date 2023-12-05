@@ -1,3 +1,12 @@
+/**
+ * @ Author: Julian Hardtung
+ * @ Create Time: 12.06.2023 11:17:28
+ * @ Modified by: Julian Hardtung
+ * @ Modified time: 05.12.2023 11:08:13
+ * 
+ * Backend CRUD API routes for positions
+ */
+
 const express = require("express");
 const router = express.Router();
 const Position = require("../model/Position");

@@ -1,3 +1,12 @@
+/**
+ * @ Author: Julian Hardtung
+ * @ Create Time: 11.06.2023 18:13:25
+ * @ Modified by: Julian Hardtung
+ * @ Modified time: 05.12.2023 11:08:06
+ * 
+ * Backend CRUD API routes for places
+ */
+
 const express = require("express");
 const router = express.Router();
 const Place = require("../model/Place");

@@ -1,3 +1,12 @@
+/**
+ * @ Author: Julian Hardtung
+ * @ Create Time: 20.04.2023 17:59:15
+ * @ Modified by: Julian Hardtung
+ * @ Modified time: 05.12.2023 11:14:36
+ * 
+ * Node.js backend setup
+ */
+
 require("dotenv").config();
 var createError = require("http-errors");
 var express = require("express");
@@ -19,6 +28,7 @@ var placeRouter = require("./routes/places");
 var positionRouter = require("./routes/positions");
 var modelRouter = require("./routes/models");
 var imageRouter = require("./routes/images");
+var authRouter = require("./routes/auth");
 
 var app = express();
 
@@ -39,8 +49,14 @@ app.use("/places", placeRouter);
 app.use("/positions", positionRouter);
 app.use("/models", modelRouter);
 app.use("/images", imageRouter);
+app.use("/auth", authRouter);
 
 
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "http://localhost:5173/"); // update to match the domain you will make the request from
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -49,11 +65,11 @@ app.use(function (req, res, next) {
 
 const port = process.env.PORT || 3000;
 
+
 mongoose.connection.once('open', () => {
   console.log('Connected to MongoDB');
   app.listen(port, () => console.log(`Server started on port ${port}`));
 })
-
 
 
 // error handler

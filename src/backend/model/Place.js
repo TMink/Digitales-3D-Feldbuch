@@ -1,3 +1,12 @@
+/**
+ * @ Author: Julian Hardtung
+ * @ Create Time: 11.06.2023 18:12:00
+ * @ Modified by: Julian Hardtung
+ * @ Modified time: 05.12.2023 11:05:47
+ * 
+ * A mongoose Schema for Places, which maps to a MongoDb collection.
+ */
+
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
