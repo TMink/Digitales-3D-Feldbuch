@@ -2,7 +2,7 @@
  * @ Author: Julian Hardtung
  * @ Create Time: 20.04.2023 17:59:15
  * @ Modified by: Julian Hardtung
- * @ Modified time: 05.12.2023 11:14:36
+ * @ Modified time: 08.12.2023 10:50:04
  * 
  * Node.js backend setup
  */
@@ -28,7 +28,7 @@ var placeRouter = require("./routes/places");
 var positionRouter = require("./routes/positions");
 var modelRouter = require("./routes/models");
 var imageRouter = require("./routes/images");
-var authRouter = require("./routes/auth");
+var userRouter = require("./routes/user");
 
 var app = express();
 
@@ -37,7 +37,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
 app.set("view engine", "pug");
 
@@ -49,12 +54,14 @@ app.use("/places", placeRouter);
 app.use("/positions", positionRouter);
 app.use("/models", modelRouter);
 app.use("/images", imageRouter);
-app.use("/auth", authRouter);
+app.use("/user", userRouter);
 
 
 app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "http://localhost:5173/"); // update to match the domain you will make the request from
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  /* res.header("Access-Control-Allow-Origin", "http://localhost:5173/"); // update to match the domain you will make the request from
+  res.header("Access-Control_Allow-Credentials", true)
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS")
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept"); */
   next();
 });
 
