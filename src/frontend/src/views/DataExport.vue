@@ -1,3 +1,13 @@
+<!--
+ * Created Date: 26.06.2023 15:10:20
+ * Author: Julian Hardtung
+ * 
+ * Last Modified: 08.12.2023 14:50:07
+ * Modified By: Julian Hardtung
+ * 
+ * Description: export all (or only specified) data to .pdf or .csv
+ -->
+
 <template>
   <Navigation />
   <div id="wrapper">

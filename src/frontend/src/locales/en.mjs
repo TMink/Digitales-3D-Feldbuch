@@ -1,3 +1,13 @@
+/*
+ * Created Date: 07.06.2023 17:36:09
+ * Author: Julian Hardtung
+ * 
+ * Last Modified: 08.12.2023 14:47:15
+ * Modified By: Julian Hardtung
+ * 
+ * Description: english translations
+ */
+
 export default {
   // Words
   autoNaming: "Auto Naming",

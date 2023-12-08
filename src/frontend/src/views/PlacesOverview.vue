@@ -1,3 +1,13 @@
+<!--
+ * Created Date: 03.06.2023 10:25:57
+ * Author: Julian Hardtung
+ * 
+ * Last Modified: 08.12.2023 14:53:14
+ * Modified By: Julian Hardtung
+ * 
+ * Description: lists all places
+ -->
+
 <template>
   <div id="wrapper">
     <Navigation active_tab_prop="1" />

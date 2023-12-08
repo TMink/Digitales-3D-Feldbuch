@@ -1,3 +1,13 @@
+<!--
+ * Created Date: 12.08.2023 11:57:15
+ * Author: Tobias Mink
+ * 
+ * Last Modified: 08.12.2023 14:21:45
+ * Modified By: Julian Hardtung
+ * 
+ * Description: `coordinates` input module for places/positions
+ -->
+
 <template>
   <v-col lg="6" >
     <v-card v-if="type == 'places'" class="pa-4">

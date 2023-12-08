@@ -1,3 +1,14 @@
+<!--
+ * Created Date: 17.07.2023 11:31:35
+ * Author: Julian Hardtung
+ * 
+ * Last Modified: 08.12.2023 14:39:50
+ * Modified By: Julian Hardtung
+ * 
+ * Description: vue-component for downloading data backups and importing those
+ *              back to the fieldbook
+ -->
+
 <template>
   <v-card variant="outlined" class="ma-3 mb-6">
     <v-card-title>

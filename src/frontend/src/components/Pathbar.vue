@@ -1,3 +1,14 @@
+<!--
+ * Created Date: 03.06.2023 10:25:57
+ * Author: Julian Hardtung
+ * 
+ * Last Modified: 08.12.2023 14:42:29
+ * Modified By: Julian Hardtung
+ * 
+ * Description: `DEPRECATED` pathbar to show what activity, place, position 
+ *              the user has currently opened
+ -->
+
 <template>
   <v-card flat rounded="0">
     <v-card-title class="py-1 text-center"> 

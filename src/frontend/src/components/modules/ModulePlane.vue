@@ -1,3 +1,13 @@
+<!--
+ * Created Date: 12.08.2023 11:57:15
+ * Author: Tobias Mink
+ * 
+ * Last Modified: 08.12.2023 14:22:45
+ * Modified By: Julian Hardtung
+ * 
+ * Description: `plane` input module for places
+ -->
+
 <template>
   <v-col lg="6">
     <v-card class="pa-4">

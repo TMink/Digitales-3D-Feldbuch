@@ -1,3 +1,13 @@
+<!--
+ * Created Date: 06.07.2023 13:22:10
+ * Author: Julian Hardtung
+ * 
+ * Last Modified: 08.12.2023 14:46:12
+ * Modified By: Julian Hardtung
+ * 
+ * Description: list and input form for images of places/positions
+ -->
+
 <template>
   <v-card v-if="images.length === 0">
     <v-list>

@@ -1,3 +1,13 @@
+<!--
+ * Created Date: 12.08.2023 11:57:15
+ * Author: Tobias Mink
+ * 
+ * Last Modified: 08.12.2023 14:23:39
+ * Modified By: Julian Hardtung
+ * 
+ * Description: input module for technical places
+ -->
+
 <template>
   <v-col cols="12" >
     <v-card class="pa-4">

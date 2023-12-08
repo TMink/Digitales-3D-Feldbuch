@@ -1,3 +1,13 @@
+<!--
+ * Created Date: 07.06.2023 17:36:09
+ * Author: Julian Hardtung
+ * 
+ * Last Modified: 08.12.2023 14:50:53
+ * Modified By: Julian Hardtung
+ * 
+ * Description: `DEPRECATED AND BROKEN`synchronizes local data with online data
+ -->
+
 <template>
     <Navigation />
     <v-row class="justify-center">

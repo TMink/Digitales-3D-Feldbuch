@@ -1,3 +1,14 @@
+<!--
+ * Created Date: 12.08.2023 11:57:15
+ * Author: Julian Hardtung
+ * 
+ * Last Modified: 08.12.2023 14:44:56
+ * Modified By: Julian Hardtung
+ * 
+ * Description: component to create, edit, set input module presets 
+ *              for places/positions
+ -->
+
 <template>
   <v-dialog style="z-index: 2;" max-width="1000px">
     <ConfirmDialog ref="confirm" />

@@ -1,3 +1,13 @@
+<!--
+ * Created Date: 03.06.2023 10:25:57
+ * Author: Julian Hardtung
+ * 
+ * Last Modified: 08.12.2023 14:53:24
+ * Modified By: Julian Hardtung
+ * 
+ * Description: lists all positions
+ -->
+
 <template>
   <div id="wrapper">
     <Navigation active_tab_prop="2" />

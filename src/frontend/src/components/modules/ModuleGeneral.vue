@@ -1,3 +1,13 @@
+<!--
+ * Created Date: 12.08.2023 11:57:15
+ * Author: Tobias Mink
+ * 
+ * Last Modified: 08.12.2023 14:19:59
+ * Modified By: Julian Hardtung
+ * 
+ * Description: `general information` input module for places/positions
+ -->
+
 <template>
   <v-col lg="12">
     <v-card class="pa-4"

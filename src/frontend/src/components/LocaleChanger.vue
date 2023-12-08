@@ -1,3 +1,13 @@
+<!--
+ * Created Date: 07.06.2023 17:36:09
+ * Author: Julian Hardtung
+ * 
+ * Last Modified: 08.12.2023 14:45:55
+ * Modified By: Julian Hardtung
+ * 
+ * Description: language switcher
+ -->
+
 <template>
     <div class="LocaleChanger">
         <v-menu>

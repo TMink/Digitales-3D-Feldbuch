@@ -1,3 +1,13 @@
+<!--
+ * Created Date: 07.06.2023 17:36:09
+ * Author: Julian Hardtung
+ * 
+ * Last Modified: 08.12.2023 14:26:00
+ * Modified By: Julian Hardtung
+ * 
+ * Description: customizable confirm dialog for editing/deleting etc.
+ -->
+
 <template>
     <v-dialog v-model="dialog" :max-width="options.width" style="z-index: 3;" @keydown.esc="cancel">
         <v-card>

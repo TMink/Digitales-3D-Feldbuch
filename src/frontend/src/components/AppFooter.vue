@@ -1,3 +1,13 @@
+<!--
+ * Created Date: 03.06.2023 10:25:57
+ * Author: Julian Hardtung
+ * 
+ * Last Modified: 08.12.2023 14:25:28
+ * Modified By: Julian Hardtung
+ * 
+ * Description: app footer of the fieldbook
+ -->
+
 <template>
     <v-footer style="z-index: 1;" app>
         <v-row>

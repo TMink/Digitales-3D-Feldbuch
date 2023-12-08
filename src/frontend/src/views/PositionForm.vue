@@ -1,3 +1,14 @@
+<!--
+ * Created Date: 03.06.2023 10:25:57
+ * Author: Julian Hardtung
+ * 
+ * Last Modified: 08.12.2023 14:52:29
+ * Modified By: Julian Hardtung
+ * 
+ * Description: input page for positions data 
+ *              (shows input modules according to module preset)
+ -->
+
 <template>
   <Navigation active_tab_prop="2" />
   <v-container fluid>

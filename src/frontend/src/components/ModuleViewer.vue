@@ -1,3 +1,14 @@
+<!--
+ * Created Date: 06.09.2023 17:19:12
+ * Author: Julian Hardtung
+ * 
+ * Last Modified: 08.12.2023 14:44:04
+ * Modified By: Julian Hardtung
+ * 
+ * Description: input module viewer that shows all modules that are 
+ *              in the currently active module preset
+ -->
+
  <template>
   <v-container fluid class="pa-0 ma-0"> 
     <v-row>

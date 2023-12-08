@@ -1,3 +1,13 @@
+<!--
+ * Created Date: 10.06.2023 13:07:45
+ * Author: Julian Hardtung
+ * 
+ * Last Modified: 08.12.2023 14:41:30
+ * Modified By: Julian Hardtung
+ * 
+ * Description: customizable vToast based on vuetify v-snackbar
+ -->
+
 <template>
     <v-snackbar 
         :color="color" 

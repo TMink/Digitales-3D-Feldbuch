@@ -1,3 +1,13 @@
+<!--
+ * Created Date: 01.07.2023 14:01:06
+ * Author: Julian Hardtung
+ * 
+ * Last Modified: 08.12.2023 14:25:13
+ * Modified By: Julian Hardtung
+ * 
+ * Description: vue component for adding a position
+ -->
+
 <template>
   <AddButton @click="addPosition()" />
 </template>

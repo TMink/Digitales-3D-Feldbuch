@@ -1,3 +1,14 @@
+<!--
+ * Created Date: 03.06.2023 10:25:57
+ * Author: Julian Hardtung
+ * 
+ * Last Modified: 08.12.2023 14:54:50
+ * Modified By: Julian Hardtung
+ * 
+ * Description: main entry point for the fieldbook + 
+ *              imports globally usable vue-components
+ -->
+
 <template>
   <v-app id="app">
 

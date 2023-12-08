@@ -1,3 +1,13 @@
+<!--
+ * Created Date: 12.08.2023 11:57:15
+ * Author: Tobias Mink
+ * 
+ * Last Modified: 08.12.2023 14:23:24
+ * Modified By: Julian Hardtung
+ * 
+ * Description: `object descriptors` input module for positions
+ -->
+
 <template>
   <!-- CARD 3 COUNT -->
   <v-col cols="6">

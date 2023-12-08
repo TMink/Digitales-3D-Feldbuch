@@ -1,3 +1,13 @@
+<!--
+ * Created Date: 14.07.2023 17:06:51
+ * Author: Julian Hardtung
+ * 
+ * Last Modified: 08.12.2023 14:45:44
+ * Modified By: Julian Hardtung
+ * 
+ * Description: list and input form for 3d-models of places/positions
+ -->
+
 <template>
     <v-list v-if="models.length === 0">
       <v-list-subheader>

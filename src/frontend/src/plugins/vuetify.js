@@ -1,3 +1,13 @@
+/*
+ * Created Date: 03.06.2023 10:25:57
+ * Author: Julian Hardtung
+ * 
+ * Last Modified: 08.12.2023 14:46:45
+ * Modified By: Julian Hardtung
+ * 
+ * Description: vuetify and dark/light theme setup
+ */
+
 import "vuetify/styles";
 import { createVuetify } from "vuetify";
 import * as labsComponents from "vuetify/labs/components";
