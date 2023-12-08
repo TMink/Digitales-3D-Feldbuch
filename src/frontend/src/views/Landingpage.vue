@@ -1,3 +1,13 @@
+<!--
+ * Created Date: 29.11.2023 13:29:27
+ * Author: Oliver Mertens
+ * 
+ * Last Modified: 08.12.2023 14:35:33
+ * Modified By: Julian Hardtung
+ * 
+ * Description: LandingPage as the first entry point for new users
+ -->
+
 <template>
     <div id="wrapper">
         <Navigation active_tab_prop="" />
@@ -17,8 +27,8 @@
                 </h4>
 
                 <v-flex row wrap text-xs-center>
-                    <v-btn v-on:click="routeLogin()" color="primary" class="ma-2" prepend-icon="mdi-login">login</v-btn>
-                    <v-btn v-on:click="routeSignup()" color="secondary" class="ma-2" prepend-icon="mdi-account-plus-outline">signup</v-btn>
+                    <v-btn v-on:click="routeLogin()" color="primary" class="ma-2" prepend-icon="mdi-login">Login</v-btn>
+                    <v-btn v-on:click="routeRegistration()" color="secondary" class="ma-2" prepend-icon="mdi-account-plus-outline">Registration</v-btn>
                 </v-flex>
             </div>
         </v-parallax>
@@ -29,16 +39,11 @@
 <script>
 import Navigation from '../components/Navigation.vue'
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
-import ConfirmDialog from '../components/ConfirmDialog.vue'
-import AddButton from '../components/AddButton.vue'
-import { toRaw } from 'vue'
 
 export default {
     name: 'Landingpage',
     components: {
-        Navigation,
-        ConfirmDialog,
-        AddButton
+        Navigation
     },
     emits: ['view'],
     data() {
@@ -59,8 +64,8 @@ export default {
       routeLogin() {
         this.$router.push({ name: 'Login' });
       },
-      routeSignup() {
-      this.$router.push({ name: 'Signup' });
+      routeRegistration() {
+      this.$router.push({ name: 'Registration' });
       },
     }
 }

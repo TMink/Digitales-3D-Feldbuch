@@ -1,3 +1,14 @@
+<!--
+ * Created Date: 03.06.2023 10:25:57
+ * Author: Julian Hardtung
+ * 
+ * Last Modified: 08.12.2023 14:27:33
+ * Modified By: Julian Hardtung
+ * 
+ * Description: Vue component with navigation-bar and extendable side-bar
+ -->
+
+
 <template>
   <!-- App Bar -->
   <v-app-bar 
@@ -60,6 +71,7 @@
 
       </v-tabs>
       <v-spacer></v-spacer>
+      {{ message }}
       <v-btn 
         icon 
         @click.stop="navdrawer = !navdrawer">
@@ -105,6 +117,20 @@
           </v-btn>
         </v-row>
 
+        <v-row class="d-flex justify-center ma-3">
+            <v-btn v-if="userStore.user != null" @click="logout()">
+              Logout
+            </v-btn>
+          <span v-else>
+            <v-btn class="ma-2" @click="changePage('Registration')">
+              Registration
+            </v-btn>
+            <v-btn class="ma-2" @click="changePage('Login')">
+              Login
+            </v-btn>
+          </span>
+        </v-row>
+
         <v-spacer></v-spacer>
 
         <DataBackup />
@@ -138,50 +164,65 @@
 </template>
 
 <script>
- import { useI18n } from 'vue-i18n'
- import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
- import { useTheme } from 'vuetify/lib/framework.mjs';
- import LocaleChanger from './LocaleChanger.vue';
- import DataBackup from './DataBackup.vue';
- import Pathbar from './Pathbar.vue';
- 
-  export default {
-    name: 'Navigation',
-    components: {
-      Pathbar,
-      LocaleChanger,
-      DataBackup
-    },
-    setup () {
-      const theme = useTheme()
-      const { t } = useI18n() // use as global scope
-      return {
+import { useI18n } from 'vue-i18n'
+import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
+import { useTheme } from 'vuetify/lib/framework.mjs';
+import LocaleChanger from './LocaleChanger.vue';
+import DataBackup from './DataBackup.vue';
+import Pathbar from './Pathbar.vue';
+import isOnline from 'is-online';
+import { ref } from 'vue'
+import { useUserStore } from '../Authentication.js';
+import { toRaw } from "vue";
+
+export default {
+  name: 'Navigation',
+  components: {
+    Pathbar,
+    LocaleChanger,
+    DataBackup
+  },
+  setup() {
+    const theme = useTheme()
+    const { t } = useI18n() // use as global scope
+    const message = ref('You are not logged in!');
+    const userStore = useUserStore();
+
+
+    
+    if (userStore.authenticated) {
+      message.value = toRaw(userStore.user.username);
+    }
+
+    return {
       t,
       theme,
+      message,
+      userStore,
       toggleTheme() {
         theme.global.name.value = theme.global.current.value.dark ? 'fieldbook_light' : 'fieldbook_dark'
         this.$cookies.set('currentTheme', theme.global.name.value)
       }
     }
-    },
-    props: {
-      active_tab_prop: String
-    },
-    data: function (){
-      return {
-        active_tab: '0',
-        placeIsSet: false,
-        activityIsSet: false,
-        positionIsSet: false,
-        currentActivity: '-',
-        currentPlace: '-',
-        currentPosition: '-',
-        backbutton_link: '',
+  },
+  props: {
+    active_tab_prop: String
+  },
+  data: function () {
+    return {
+      active_tab: '0',
+      placeIsSet: false,
+      activityIsSet: false,
+      positionIsSet: false,
+      currentActivity: '-',
+      currentPlace: '-',
+      currentPosition: '-',
+      backbutton_link: '',
       navdrawer: false,
       toolbar_title: this.$t('fieldbook'),
       path_reload: 0,
       navbar_items: [
-        { link: "/", title: this.$t('overview', { msg: this.$tc('activity', 2) }) },
+        { link: "/", title: this.$t('home') },
         { link: "/3dview", title: this.$t('threeD_view') },
         /* { link: "/onlineSync", title: this.$t('online_sync') }, */
       ],
@@ -189,14 +230,15 @@
 
     }
   },
-    async created () {
+  async created() {
+    //console.log("is online?: " + await isOnline());
     await fromOfflineDB.syncLocalDBs();
     if (this.$route.name != 'PositionCreation') {
       this.$cookies.remove('currentPosition');
     }
     await this.updatePathbar();
     this.active_tab = this.active_tab_prop; //this.$cookies.get('active_tab_prop') //this.active_tab_prop;
-    
+
     var activityID = this.$cookies.get('currentActivity')
     if (activityID !== null) {
       this.activityIsSet = true
@@ -204,10 +246,10 @@
 
     var placeID = this.$cookies.get('currentPlace');
     if (placeID !== null) {
-      
+
       var curPlace = await fromOfflineDB.getObject(placeID, 'Places', 'places');
       //if (curPlace.placeNumber > 1) {
-        this.placeIsSet = true
+      this.placeIsSet = true
       //}
     }
 
@@ -217,9 +259,9 @@
     } else {
       this.positionIsSet = false;
     }
-    },
-    methods: {
-      goback() {
+  },
+  methods: {
+    goback() {
       this.$router.go(-1);
     },
     onViewChange(title) {
@@ -389,16 +431,28 @@
         default:
           console.log("Error");
       }
-    }
+    },
+
+    /**
+     * Logging out the current user
+     */
+    async logout() {
+      
+      try {
+        await this.userStore.logout();
+        this.message = "You are not logged in!"
+        this.$router.push({ name: "Login" });
+      } catch (error) {
+        console.log("Logout failed")
+      }
     }
   }
+}
 </script>
 
 <style>
-
 .v-tabs,
 .v-tab {
   height: 70px;
 }
-    
 </style>

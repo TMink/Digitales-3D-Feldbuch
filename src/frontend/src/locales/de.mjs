@@ -94,6 +94,7 @@ export default {
   hasSubNumber: "Hat Unter-Nr.",
   data_import: "Data Import",
   technical: "Technische Stelle",
+  home: "Startseite",
 
   // Phrases
   add: "{msg} hinzufügen",
@@ -124,5 +125,5 @@ export default {
   saveSuccess: "Speichern erfolgreich",
   duplicationMode: "Duplikationsmodus aktiviert",
   getBackup: "Ihre Daten werden geladen",
-  createBackup: "Ihre Daten werden gesammelt"
+  createBackup: "Ihre Daten werden gesammelt",
 };

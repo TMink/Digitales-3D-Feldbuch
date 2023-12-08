@@ -1,3 +1,14 @@
+/*
+ * Created Date: 03.06.2023 10:25:57
+ * Author: Julian Hardtung
+ * 
+ * Last Modified: 08.12.2023 12:30:00
+ * Modified By: Julian Hardtung
+ * 
+ * Description: Router paths to the different vue pages
+ */
+
+
 import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router'
 import ActivitiesOverview from "@/views/ActivitiesOverview.vue";
 import PlacesOverview from "@/views/PlacesOverview.vue";
@@ -10,7 +21,7 @@ import DataExport from "@/views/DataExport.vue";
 import DataBackup from "@/components/DataBackup.vue";
 import Landingpage from "@/views/Landingpage.vue";
 import Login from "@/views/Login.vue";
-import Signup from "@/views/Signup.vue";
+import Registration from "@/views/Registration.vue";
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -76,9 +87,9 @@ const router = createRouter({
       component: Login,
     },
     {
-      path: "/signup",
-      name: "Signup",
-      component: Signup,
+      path: "/registration",
+      name: "Registration",
+      component: Registration,
     },
   ],
 });

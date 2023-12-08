@@ -1,3 +1,14 @@
+<!--
+ * Created Date: 29.11.2023 01:45:54
+ * Author: Julian Hardtung
+ * 
+ * Last Modified: 08.12.2023 14:32:08
+ * Modified By: Julian Hardtung
+ * 
+ * Description: Vue component for user login
+ -->
+
+
 <template>
   <div id="wrapper">
     <Navigation active_tab_prop="" />
@@ -16,21 +27,21 @@
           </h4>
           <v-row no-gutters>
             <v-spacer></v-spacer>
-            <v-text-field variant="outlined" label="Username"></v-text-field>
+            <v-text-field v-model="form.username" variant="outlined" label="Username"></v-text-field>
             <v-spacer></v-spacer>
           </v-row>
           <v-row no-gutters>
             <v-spacer></v-spacer>
-            <v-text-field variant="outlined" type="input" label="Password"></v-text-field>
+            <v-text-field v-model="form.password" variant="outlined" type="input" label="Password"></v-text-field>
             <v-spacer></v-spacer>
           </v-row>
           
-          <v-btn v-on:click="onClick()" color="secondary" class="ma-2"
+          <v-btn v-on:click="login()" color="secondary" class="ma-2"
           prepend-icon="mdi-account-plus-outline">Login</v-btn>
           <v-row no-gutters text-xs-center>
             <v-spacer></v-spacer>
             <a href="url" class="pa-2">Forgot password</a>
-            <a v-on:click="routeSignup()" class="pa-2">Sign-up</a>
+            <a v-on:click="routeRegistration()" class="pa-2">Sign-up</a>
             <v-spacer></v-spacer>
           </v-row>
         </v-col>
@@ -41,44 +52,49 @@
     
 <script>
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
-import ConfirmDialog from '../components/ConfirmDialog.vue'
-import AddButton from '../components/AddButton.vue'
 import Navigation from '../components/Navigation.vue'
-import { toRaw } from 'vue'
+import { useUserStore } from '../Authentication.js';
 
 export default {
   name: 'Landingpage',
   components: {
     Navigation,
-    ConfirmDialog,
-    AddButton
+  },
+  setup() {
+    const userStore = useUserStore();
+    return { userStore };
   },
   emits: ['view'],
   data() {
     return {
       activities: [],
       toolbar_title: this.$t('fieldbook'),
+      form: {
+        username: "",
+        password: "",
+      },
     };
   },
-  /**
-   * Retrieve data from IndexedDB
-   */
-  async created() {
-    await fromOfflineDB.syncLocalDBs();
-  },
   methods: {
-    routeSignup() {
-      this.$router.push({ name: 'Signup' });
+    routeRegistration() {
+      this.$router.push({ name: 'Registration' });
+    },
+    /**
+     * Logging in the user with the given username + passsword
+     */
+    async login() {
+      try {
+        await this.userStore.login(this.form);
+        this.$router.push({ name: "ActivitiesOverview" });
+        
+      } catch (error) {
+        console.log("Login failed: " + error)
+      }
     },
   }
 }
 </script>
     
 <style scoped>
-#test {
-  text-align: center;
-}
-
-
 </style>
     
