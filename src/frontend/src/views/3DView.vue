@@ -585,76 +585,6 @@
 </template>
 
 <script>
-/**
- * Methods overview:
- *  -------------------------------------------------------------------------
- *  # Setup vuetify/html components:
- *  -> setupCanvases                - 
- *  -> onWindowResize               - 
- *  -> collapseDrawer               - 
- *  -------------------------------------------------------------------------
- *  # Update IndexedDb:
- *  -> updateCameraInDB             - 
- *  -> updateModelsInDB             - 
- *  -------------------------------------------------------------------------
- *  # CleanUp:
- *  -> clearCanvases                - 
- *  -> removeModelsInScene          - 
- *  -------------------------------------------------------------------------
- *  # Loaders:
- *  -> loadPlaceModels              - 
- *  -> loadPositionModels           - 
- *  -> loadModelInMain              - 
- *  -> loadModelInSub               - 
- *  -------------------------------------------------------------------------
- *  # Model interaction:
- *  -> changeColor                  - 
- *  -> changeOpacity                - 
- *  -------------------------------------------------------------------------
- *  # Controls:
- *  -> attachTransformControls      - 
- *  -> detachTransformControls      - 
- *  -> updateArcballControls        - 
- *  -> restoreArcballAnchor         - 
- *  -> updateCamera                 - 
- *  -------------------------------------------------------------------------
- *  # Camera:
- *  -> updateCamera                 - 
- *  -> getCamera                    - 
- *  -> setCamera                    - 
- *  -> makePerspektiveCamera        - 
- *  -------------------------------------------------------------------------
- *  # Utility:
- *  -> getModelCenter               - 
- *  -> addSelectedObject            - 
- *  -> getGroup                     - 
- *  -> gizmoChange                  - 
- *  ------------------------------------------------------------------------- 
- *  # Filter Model:
- *  -> fieldSearch                  - 
- *  -> layering                     - 
- *  -> fillAll                      - 
- *  -> resetFilter                  - 
- *  -> getPositionInfo              - 
- *  -> getPositionModelInfo         - 
- *  -> choseModels                  - 
- *  -> resetModelInfo2Input         - 
- *  -> resetModelInfo2              - 
- *  -> resetPositionInfo2           - 
- *  ------------------------------------------------------------------------- 
- *  # Inits:
- *  -> initMain                     - 
- *  -> initSub                      - 
- *  ------------------------------------------------------------------------
- *  # Animate:
- *  -> animate                      - 
- *  -> render                       - 
- *  -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *  # DEBUGGING:
- *  -> setCharAt                    - 
- *  -> stringReplacer               - 
- */
-
 import * as THREE from 'three';
 import Navigation from '../components/Navigation.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
@@ -1231,9 +1161,6 @@ export default {
       }
     },
 
-    /**
-     * Save a Position to local storage for the current place
-     */
     async savePosition() {
 
       //convert from vue proxy to JSON object
@@ -1259,9 +1186,6 @@ export default {
       this.$root.vtoast.show({ message: this.$t('saveSuccess')});
     },
 
-    /**
-     * Calculates the SubNumber of a position
-     */
     calcSubNumber(curPos, prevPos) {
       if (prevPos == undefined) {
         return 1;
@@ -1448,9 +1372,6 @@ export default {
      * -------------------------------------------------------------------------
      */
 
-    /**
-     * 
-     */
     setupCanvases: function() {
       this.canvasMain = document.getElementById( 'mainCanvas' );
       this.canvasSub = document.getElementById( 'subCanvas' );
@@ -1463,9 +1384,6 @@ export default {
       window.addEventListener( 'resize', this.onWindowResize, false )
     },
 
-    /**
-     * 
-     */
     onWindowResize: function () {
       this.cameraMain.aspect = this.canvasMain.clientWidth /
         this.canvasMain.clientHeight;
@@ -1482,21 +1400,11 @@ export default {
     },
 
     /**
-     * 
-     */
-    setupEventListeners: function() {
-      
-    },
-
-    /**
      * -------------------------------------------------------------------------
      * # Update IndexedDB
      * -------------------------------------------------------------------------
      */
 
-    /**
-     * 
-     */
     updateCameraInDB: async function () { 
       const placeID = this.$cookies.get( 'currentPlace' );
       const cameraIDsInDB = await fromOfflineDB.getProperties( 'id', 'Cameras',
@@ -1534,9 +1442,6 @@ export default {
       await fromOfflineDB.updateObject( newCamera, 'Cameras', 'cameras' );
     },
 
-    /**
-     * 
-     */
     updateModelsInDB: async function () {
       /* Update place models */
       for ( var i = 0; i < this.placeModelsInScene.length; i++ ) {
@@ -1578,9 +1483,6 @@ export default {
       }
     },
 
-    /**
-     *
-     */
     updateModelOpacityAndColor: async function(modelID, storeName) {
       const modelInScene = this.sceneMain.getObjectByName( modelID );
       const modelInDB = await fromOfflineDB.getObject( modelID, 'Models',
@@ -1598,9 +1500,6 @@ export default {
      * -------------------------------------------------------------------------
      */
 
-    /**
-     * 
-     */
     clearCanvases: function() {
       /* Remove models */
       this.removeModelsInScene( this.sceneMain, this.modelsInMain );
@@ -1631,11 +1530,6 @@ export default {
       this.canvasMain.removeEventListener( 'mousemove', this.onDocumentMouseMove, false);
     },
 
-    /**
-     * 
-     * @param {*} scene 
-     * @param {*} models 
-     */
     removeModelsInScene: function( scene, models ) {
       /* Dispose models in sceneMain */
       for ( let i = 0; i < models.length; i++ ) {
@@ -1653,11 +1547,6 @@ export default {
       }
     },
 
-    /**
-     * 
-     * @param {*} scene 
-     * @param {*} models 
-     */
     removeLinesInScene: function( scene, infoBlock ) {
       /* Dispose lines in sceneMain */
       infoBlock.forEach( elem => {
@@ -1692,9 +1581,6 @@ export default {
      * -------------------------------------------------------------------------
      */
 
-    /**
-     * 
-     */
     loadPlaceModels: async function() {
       const placeID = this.$cookies.get( 'currentPlace' );
       const objects = await fromOfflineDB.getAllObjectsWithID( placeID, 'Place',
@@ -1707,9 +1593,6 @@ export default {
       }
     },
 
-    /**
-     * 
-     */
     loadPositionModels: async function() {
       const placeID = this.$cookies.get( 'currentPlace' );
       const objects = await fromOfflineDB.getAllObjectsWithID( placeID, 'Place',
@@ -1722,12 +1605,6 @@ export default {
       }
     },
 
-    /**
-     * 
-     * @param {*} modelID 
-     * @param {*} dbName 
-     * @param {*} storeName 
-     */
     loadModelInMain: async function( object, type ) {
       /* DRACOLoader */
       const dLoader = new DRACOLoader();
@@ -1801,10 +1678,6 @@ export default {
       this.modelsInMain.push( meshGroup );
     },
 
-    /**
-     * 
-     * @param {*} modelname 
-     */
     loadModelInSub: async function( modelID ) {
       const object = await fromOfflineDB.getObject( modelID, 'Models',
         'positions' );
@@ -1919,10 +1792,6 @@ export default {
      * -------------------------------------------------------------------------
      */
 
-    /**
-     * 
-     * @param {*} modelName 
-     */
     changeColor: async function( color, modelGroup ) {
       if ( color != null && modelGroup != null ) {
 
@@ -1934,10 +1803,6 @@ export default {
       }
     },
 
-    /**
-     * 
-     * @param {*} modelName 
-     */
     changeOpacity: async function( i ) {
       const modelID = this.positionModelsInScene[ i ].modelID;
       const model = this.sceneMain.getObjectByName( modelID );
@@ -1950,10 +1815,6 @@ export default {
       }
     },
 
-    /**
-     * 
-     * @param {*} event 
-     */
     onMouseDown: async function( event ) {
       event.preventDefault();
 
@@ -1998,10 +1859,6 @@ export default {
       }
     },
 
-    /**
-     * 
-     * @param {*} event 
-     */
     onDocumentMouseMove: function ( event ) {
       event.preventDefault();
 
@@ -2042,9 +1899,6 @@ export default {
       }
     },
 
-    /**
-     * 
-     */
     onClick: async function() {
       if ( this.ctrlDown ) {
         this.raycaster2.setFromCamera( this.pointer2, this.cameraMain );
@@ -2155,11 +2009,6 @@ export default {
       }
     },
 
-    /**
-     * 
-     * @param {*} cords 
-     * @param {*} name 
-     */
     createRedBall: function( cords, name) {
       const geometry = new THREE.SphereGeometry( 0.03, 6, 4 );
       const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
@@ -2175,10 +2024,6 @@ export default {
      * -------------------------------------------------------------------------
      */
 
-    /**
-      * 
-      * @param {*} i 
-      */
     attachTransformControls: function() {
       if ( !this.posMods.attachTransformControls ) {
         this.posMods.attachTransformControls = true;
@@ -2192,10 +2037,6 @@ export default {
       }
     },
 
-    /**
-     * 
-     * @param {*} event 
-     */
     updateArcball: async function( event ) {
       if ( event.ctrlKey ) {
         const placeID = this.$cookies.get( 'currentPlace' );
@@ -2225,11 +2066,6 @@ export default {
       }
     },
 
-    /**
-     * 
-     * @param {*} arcballAnchor 
-     * @param {*} arcballControls 
-     */
     restoreArcballAnchor: function( arcballAnchor, arcballControls ) {
       /* Restore saved anchor position for the arcball target */
       arcballControls.target.set( arcballAnchor[ 0 ], arcballAnchor[ 1 ],
@@ -2245,10 +2081,6 @@ export default {
      * -------------------------------------------------------------------------
      */
     
-    /**
-     * 
-     * @param {*} modelName 
-     */
     updateCamera: async function( modelName ) {
       const placeID = this.$cookies.get( 'currentPlace' );
       const cameraIDsFromDB = await fromOfflineDB.getProperties( 'id',
@@ -2294,11 +2126,6 @@ export default {
       }
     },
 
-    /**
-     * 
-     * @param {*} camera 
-     * @param {*} cameraData 
-     */
     getCamera: function( camera, cameraData ) {
       cameraData.position = [ camera.position.x, camera.position.y,
       camera.position.z ];
@@ -2306,11 +2133,6 @@ export default {
       camera.rotation.z ];
     },
 
-    /**
-     * 
-     * @param {*} camera 
-     * @param {*} cameraData 
-     */
     setCamera: function( camera, cameraData ) {
       camera.position.set( cameraData.position[ 0 ], cameraData.position[ 1 ],
         cameraData.position[ 2 ] );
@@ -2318,9 +2140,6 @@ export default {
         cameraData.rotation[ 2 ]);
     },
 
-    /**
-     * 
-     */
     makePerspectiveCamera: function() {
       const fov = 45;
       const aspect = this.canvasMain.clientWidth / this.canvasMain.clientHeight;
@@ -2336,10 +2155,6 @@ export default {
      * -------------------------------------------------------------------------
      */
 
-    /**
-     * 
-     * @param {*} model 
-     */
     getModelCenter: function( model ) {
       var groupObject = model;
       while ( !( groupObject instanceof THREE.Group ) ) {
@@ -2354,10 +2169,6 @@ export default {
       return center;
     },
 
-    /**
-     * 
-     * @param {*} models 
-     */
     getAllModelCenter: function( models ) {
       const modelsGroup = new THREE.Group();
       models.forEach( element => {
@@ -2370,19 +2181,11 @@ export default {
       return size;
     },
 
-    /**
-     * 
-     * @param {*} object 
-     */
     addSelectedObject: function( object ) {
       this.selectedObjects = [];
       this.selectedObjects.push( object );
     },
 
-    /**
-     * 
-     * @param {THREE.Mesh} model 
-     */
     getGroup: function( model ) {
       var groupObject = model;
       while ( !( groupObject instanceof THREE.Group ) ) {
@@ -2391,10 +2194,6 @@ export default {
       return groupObject;
     },
 
-    /**
-     * 
-     * @param {*} event 
-     */
     gizmoChange: function( event ) {
       if ( event ) {
         this.abControlsMain.setGizmosVisible( false );
@@ -2411,14 +2210,6 @@ export default {
      * -------------------------------------------------------------------------
      */
 
-    /**
-     * 
-     * @param {*} typeSize
-     * @param {*} chosenModels
-     * @param {*} inputs
-     * @param {*} menues
-     * @param {*} infos
-     */
     fieldSearch: async function( typeSize, chosenModels, inputs, menues, infos ) {
       const areNull = [];
       const notNull = [];
@@ -2485,12 +2276,6 @@ export default {
       }
     },
 
-    /**
-     * 
-     * @param {*} layer
-     * @param {*} all
-     * @param {*} infoBlockItem
-     */
     layering: function( layer, all, infoBlockItem ) {
       const layercount = layer.length;
       let check = true;
@@ -2507,22 +2292,12 @@ export default {
       }
     },
 
-    /**
-     * 
-     * @param {*} list
-     * @param {*} blockItem
-     */
     fillAll: function( list, blockItem ) {
       if (!list.includes(blockItem)) {
         list.push(blockItem);
       }
     },
 
-    /**
-     * 
-     * @param {*} infos
-     * @param {*} menues
-     */
     resetFilter: function( infos, menues ) {
       for ( let a = 0; a < infos.length; a++ ) {
         for ( let b = 0; b < menues.length; b++ ) {
@@ -2535,9 +2310,6 @@ export default {
       }
     },
 
-    /**
-     * 
-     */
      getPlaceModelInfo: async function() {
       for ( let i=0; i < this.placeModelsInScene.length; i++) {
         const modelID = this.placeModelsInScene[ i ].modelID;
@@ -2566,9 +2338,6 @@ export default {
       }
     },
 
-    /**
-     * 
-     */
     getPositionInfo: async function() {
       const positionIDs = [];
 
@@ -2603,9 +2372,6 @@ export default {
       }
     },
 
-    /**
-     * 
-     */
     getPositionModelInfo: async function() {
       for ( let i=0; i < this.posData.chosenPositionModels.length; i++) {
         const modelID = this.posData.chosenPositionModels[ i ];
@@ -2633,13 +2399,6 @@ export default {
       }
     },
 
-    /**
-     * 
-     * @param {*} typeSize
-     * @param {*} chosenModels
-     * @param {*} inputs
-     * @param {*} infos
-     */
     choseModels: function( typeSize, chosenModels, inputs, infos ) {
       let isChosen = true;
 
@@ -2661,36 +2420,24 @@ export default {
       }
     },
 
-    /**
-     * 
-     */
     resetModelInfo2Input: function() {
       this.posModel.number = null;
       this.posModel.title = null;
       this.posModel.infoBlock = [];
     },
 
-    /**
-     * 
-     */
     resetModelInfo2: function() {
       this.posModel.allNumbers = [];
       this.posModel.allTitles = [];
       this.posModel.chosenfinalModel = [];
     },
 
-    /**
-     * 
-     */
      resetPlaceModelInfo: function() {
       this.plaModel.allNumbers = [];
       this.plaModel.allTitles = [];
       this.plaModel.chosenfinalModel = [];
      },
-    
-    /**
-     * 
-     */
+
     resetPositionInfo2: function() {
       this.posData.allNumbers = [];
       this.posData.allSubNumbers = [];
@@ -2698,9 +2445,6 @@ export default {
       this.posData.chosenPositionModels = [];
     },
 
-    /**
-     * 
-     */
     resetPositionMods: function() {
       this.posModel.chosenfinalModelGroup = null;
           this.posMods.disabled = true;
@@ -2712,9 +2456,6 @@ export default {
           this.posMods.token = false;
     },
 
-    /**
-     * 
-     */
     resetPlaceMods: function() {
       this.plaMods.token = false;
       this.plaMods.disabled = true;
@@ -2731,9 +2472,6 @@ export default {
      * -------------------------------------------------------------------------
      */
 
-    /**
-     * 
-     */
     mainInit: function() {
       /* All loaded meshes in main scene */
       this.modelsInMain = [];
@@ -2850,9 +2588,6 @@ export default {
 
     },
 
-    /**
-     * 
-     */
     keyDown: function( event ) {
       if (event.key === 'x') {
           this.ctrlDown = true;
@@ -2861,10 +2596,6 @@ export default {
       }
     },
 
-    /**
-     * 
-     * @param {*} event 
-     */
     keyUp: function(event) {
       if (event.key === 'x') {
         this.ctrlDown = false;
@@ -2878,9 +2609,6 @@ export default {
       }
     },
 
-    /**
-     * 
-     */
     subInit: function () {
       /* mesh in sub scene */
       this.modelInSub = [];
@@ -2922,9 +2650,6 @@ export default {
      * -------------------------------------------------------------------------
      */
 
-    /**
-     * 
-     */
     animate: function() {
       /* Check interactions */
       this.render();
@@ -2941,9 +2666,6 @@ export default {
       requestAnimationFrame( this.animate );
     },
 
-    /**
-     * 
-     */
     render: async function() {
       /* Dispose Model from sceneSub */
       if ( !this.bottomDrawer.showDrawer && this.sceneSub.children.length > 1 ) {
@@ -2968,22 +2690,11 @@ export default {
      * -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
      */
 
-    /**
-     * 
-     * @param {*} str
-     * @param {*} index
-     * @param {*} chr
-     */
     setCharAt: function( str, index, chr ) {
       if ( index > str.length - 1 ) return str;
       return str.substring( 0, index ) + chr + str.substring( index + 1 );
     },
 
-    /**
-     * 
-     * @param {*} typeSize
-     * @param {*} areNull
-     */
     stringReplacer: function( typeSize, areNull ) {
       let str = '';
 
