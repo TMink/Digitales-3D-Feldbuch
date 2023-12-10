@@ -595,6 +595,7 @@ import { TransformControls } from
 import { OrbitControls } from
   'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader"
 import { EffectComposer } from 
   'three/examples/jsm/postprocessing/EffectComposer';
 import { RenderPass } from 
@@ -608,7 +609,9 @@ import { GammaCorrectionShader } from
 import { CSS2DRenderer, CSS2DObject } from 
   'three/examples/jsm/renderers/CSS2DRenderer'
 import { toRaw } from 'vue'
-import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader"
+
+import { ObjectLoaders } from '../components/3dFunctions/ObjectLoaders.js'
+import { UpdateLocalVariables } from '../components/3dFunctions/UpdateLocalVariables.js'
 
 const params = {
   sceneMain: {
@@ -1100,7 +1103,6 @@ export default {
 
     /* Setup */
     this.setupCanvases();
-    this.setupEventListeners();
     document.addEventListener("click", this.func, false);
     this.posMods.disabled = true;
     this.plaMods.disabled = true;
@@ -1582,13 +1584,33 @@ export default {
      */
 
     loadPlaceModels: async function() {
+
+      const loaders = new ObjectLoaders( 'glb' )
+      const local = new UpdateLocalVariables()
+
       const placeID = this.$cookies.get( 'currentPlace' );
       const objects = await fromOfflineDB.getAllObjectsWithID( placeID, 'Place',
         'Models', 'places' );
 
       if ( objects ) {
         for ( var i = 0; i < objects.length; i++ ) {
-          await this.loadModelInMain( objects[ i ], 'Place' );
+          const loadedObject = await loaders.loadObject( objects[ i ] );
+
+          loadedObject.traverse( ( child ) => {
+            if ( child instanceof THREE.Mesh ) {
+              child.material.transparent = true;
+              child.material.opacity = objects[ i ].opacity;
+              child.material.color = new THREE.Color( objects[ i ].color );
+              child.name = objects[ i ].id;
+            }
+          } )
+
+          const updatedObject = await local.updateObjectsInScene
+            ( 'Place', objects[ i ], loadedObject )
+
+          this.placeModelsInScene.push( updatedObject[ 0 ] )
+          this.sceneMain.add( updatedObject[ 1 ] );
+          this.modelsInMain.push( updatedObject[ 1 ] );
         }
       }
     },
