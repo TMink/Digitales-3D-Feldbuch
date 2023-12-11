@@ -1,33 +1,54 @@
+/*
+ * Created Date: 10.12.2023 15:49:23
+ * Author: Tobias Mink
+ * 
+ * Last Modified: 11.12.2023 14:45:56
+ * Modified By: Tobias Mink
+ * 
+ * Description: 
+ */
 
-
-
+import * as THREE from 'three';
 export class UpdateLocalVariables {
 
-  async updateObjectsInScene( objectType, objectData, loadedMesh ) {
+  /**
+   * Creates a new entry with object params and adjust the object within
+   * 3D-space. These Informations are given by the IndexedDB entry.
+   * @param {*} objectType 
+   * @param {*} objectData 
+   * @param {*} loadedMesh 
+   * @returns new entry with object params and adjusted object
+   */
+  updateObjectsInScene( objectType, objectData, loadedObject ) {
 
-    const newEntry = {}
+    const entry = {}
 
     switch ( objectType ) {
-      case 'Place':
-        newEntry["placeID"] = objectData.placeID
-        newEntry["modelID"] = objectData.id
-        newEntry["modelTitle"] = objectData.title
+      case 'places':
+        entry["placeID"] = objectData.placeID
+        entry["modelID"] = objectData.id
+        entry["modelTitle"] = objectData.title
+
+        this.updateObjectMaterial( loadedObject, objectData )
+
         break;
 
-      case 'Position':
-        newEntry["positionID"] = objectData.positionID
-        newEntry["modelID"] = objectData.id
-        newEntry["modelTitle"] = objectData.title
+      case 'positions':
+        entry["positionID"] = objectData.positionID
+        entry["modelID"] = objectData.id
+        entry["modelTitle"] = objectData.title
+
+        this.updateObjectMaterial( loadedObject, objectData )
 
         /* Override coordinates (IndexedDB) */
         if ( objectData.coordinates != null ) {
-          loadedMesh.position.set( objectData.coordinates[ 0 ], 
+          loadedObject.position.set( objectData.coordinates[ 0 ], 
             objectData.coordinates[ 1 ], objectData.coordinates[ 2 ] );
         }
 
-        /* Override scale (IndexedDB*/
+        /* Override scale (IndexedDB) */
         if ( objectData.scale != null ) {
-          loadedMesh.scale.set( objectData.scale[ 0 ], objectData.scale[ 1 ], 
+          loadedObject.scale.set( objectData.scale[ 0 ], objectData.scale[ 1 ], 
             objectData.scale[ 2 ] );
         }
 
@@ -36,7 +57,7 @@ export class UpdateLocalVariables {
           const eulerRotation = new THREE.Euler( objectData.rotation[ 0 ],
             objectData.rotation[ 1 ], objectData.rotation[ 2 ],
             objectData.rotation[ 3 ] );
-            loadedMesh.setRotationFromEuler( eulerRotation );
+            loadedObject.setRotationFromEuler( eulerRotation );
         }
 
         break;
@@ -45,8 +66,19 @@ export class UpdateLocalVariables {
         console.log( "error" );
     }
 
-    return [ newEntry, loadedMesh ]
+    return { 'entry': entry, 'object': loadedObject }
 
+  }
+
+  updateObjectMaterial( loadedObject, objectData ) {
+    loadedObject.traverse( ( child ) => {
+      if ( child instanceof THREE.Mesh ) {
+        child.material.transparent = true;
+        child.material.opacity = objectData.opacity;
+        child.material.color = new THREE.Color( objectData.color );
+        child.name = objectData.id;
+      }
+    } )
   }
 
 }

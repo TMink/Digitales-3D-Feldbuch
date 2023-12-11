@@ -1,43 +1,31 @@
+/*
+ * Created Date: 10.12.2023 15:32:15
+ * Author: Tobias Mink
+ * 
+ * Last Modified: 11.12.2023 14:38:24
+ * Modified By: Tobias Mink
+ * 
+ * Description: 
+ */
 
-import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
-
-import { UpdateLocalVariables } from './UpdateLocalVariables.js';
-
 export class ObjectLoaders {
 
-  constructor( loaderType ) {
-    this.loaderType = loaderType
-
-  }
-
-  async getModelInfo() {
-
-  }
-
   /**
-   * 
-   * @param {String} loaderType 
-   * @param {*} objectData 
-   * @param {*} objectInfo 
+   * @param {*} objectData
    */
-  async loadObject( objectData ) {
+  async load( objectData ) {
 
-    // const local = new UpdateLocalVariables()
-
-    switch (this.loaderType) {
+    switch ( objectData.loaderType ) {
 
       case 'glb' || 'gltf':
-
         const loader = new GLTFLoader()
-
         const object = await new Promise( ( resolve ) => {
           loader.parse( objectData.model, '', ( glb ) => {
             resolve( glb.scene );
           });
         });
-        
         return object
 
       default:
