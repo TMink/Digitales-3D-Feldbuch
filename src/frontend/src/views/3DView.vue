@@ -1,3 +1,13 @@
+<!--
+ Created Date: 17.11.2023 16:18:33
+ Author: Tobias Mink
+ 
+ Last Modified: 11.12.2023 14:53:33
+ Modified By: Tobias Mink
+ 
+ Description: 
+ -->
+
 <template>
   <div style="position: relative">
     <Navigation active_tab_prop="1" />
@@ -1110,13 +1120,15 @@ export default {
     this.mainInit();
     this.subInit();
 
-    await this.loadPlaceModels();
+    // await this.loadPlaceModels();
+    await this.loadObjectsInScene( 'places' );
 
     if ( this.placeModelsInScene.length > 0 ) {
       this.updateCamera( this.placeModelsInScene[
         this.placeModelsInScene.length - 1 ].modelID )
 
-      await this.loadPositionModels();
+      // await this.loadPositionModels();
+      await this.loadObjectsInScene( 'positions' );
       await this.loadLines();
 
       this.getPositionInfo();
@@ -1583,121 +1595,40 @@ export default {
      * -------------------------------------------------------------------------
      */
 
-    loadPlaceModels: async function() {
+    loadObjectsInScene: async function( objectType ) {
 
-      const loaders = new ObjectLoaders( 'glb' )
-      const local = new UpdateLocalVariables()
-
-      const placeID = this.$cookies.get( 'currentPlace' );
-      const objects = await fromOfflineDB.getAllObjectsWithID( placeID, 'Place',
-        'Models', 'places' );
-
-      if ( objects ) {
-        for ( var i = 0; i < objects.length; i++ ) {
-          const loadedObject = await loaders.loadObject( objects[ i ] );
-
-          loadedObject.traverse( ( child ) => {
-            if ( child instanceof THREE.Mesh ) {
-              child.material.transparent = true;
-              child.material.opacity = objects[ i ].opacity;
-              child.material.color = new THREE.Color( objects[ i ].color );
-              child.name = objects[ i ].id;
-            }
-          } )
-
-          const updatedObject = await local.updateObjectsInScene
-            ( 'Place', objects[ i ], loadedObject )
-
-          this.placeModelsInScene.push( updatedObject[ 0 ] )
-          this.sceneMain.add( updatedObject[ 1 ] );
-          this.modelsInMain.push( updatedObject[ 1 ] );
-        }
-      }
-    },
-
-    loadPositionModels: async function() {
-      const placeID = this.$cookies.get( 'currentPlace' );
-      const objects = await fromOfflineDB.getAllObjectsWithID( placeID, 'Place',
-        'Models', 'positions' );
-
-      if ( objects ) {
-        for ( var i = 0; i < objects.length; i++ ) {
-          await this.loadModelInMain( objects[ i ], 'Position' );
-        }
-      }
-    },
-
-    loadModelInMain: async function( object, type ) {
       /* DRACOLoader */
-      const dLoader = new DRACOLoader();
-      dLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
-      dLoader.setDecoderConfig({type: 'js'});
-      this.glbLoader.setDRACOLoader( dLoader )
+      // const dLoader = new DRACOLoader();
+      // dLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+      // dLoader.setDecoderConfig({type: 'js'});
+      // this.glbLoader.setDRACOLoader( dLoader )
 
-      /* Load object */
-      const meshGroup = await new Promise( ( resolve ) => {
-        this.glbLoader.parse( object.model, '', ( glb ) => {
-          glb.scene.traverse( ( child ) => {
-            if ( child instanceof THREE.Mesh ) {
-              child.material.transparent = true;
-              child.material.opacity = object.opacity;
-              child.material.color = new THREE.Color( object.color );
-              child.name = object.id;
-            }
-          });
-          resolve( glb.scene );
-        });
-      });
+      // Init loader and updater
+      const loader = new ObjectLoaders()
+      const updater = new UpdateLocalVariables()
 
-      /* Save variables for  */
-      switch ( type ) {
-        case 'Place':
-          this.placeModelsInScene.push( {
-            placeID: object.placeID,
-            modelID: object.id, 
-            modelTitle: object.title
-          } );
+      // Get all objects of chosen place
+      const placeID = this.$cookies.get( 'currentPlace' );
+      const objects = await fromOfflineDB.getAllObjectsWithID( placeID, 'Place',
+        'Models', objectType );
 
-          break;
-
-        case 'Position':
-          this.positionModelsInScene.push( {
-            positionID: object.positionID,
-            modelID: object.id,
-            modelTitle: object.title
-          } );
-
-          this.positionModelsInSceneNames.push(object.title)
-
-          /* Override coordinates (IndexedDB) */
-          if ( object.coordinates != null ) {
-            meshGroup.position.set( object.coordinates[ 0 ], 
-              object.coordinates[ 1 ], object.coordinates[ 2 ] );
+      if ( objects ) {
+        for ( var i = 0; i < objects.length; i++ ) {
+          const loadedObject = await loader.load( objects[ i ] );
+          
+          const updated = updater.updateObjectsInScene
+          ( objectType, objects[ i ], loadedObject )
+          
+          if ( objectType === 'places') {
+            this.placeModelsInScene.push( updated.entry )
+          } else if ( objectType === 'positions' ) {
+            this.positionModelsInScene.push( updated.entry )
           }
-
-          /* Override scale (IndexedDB*/
-          if ( object.scale != null ) {
-            meshGroup.scale.set( object.scale[ 0 ], object.scale[ 1 ], 
-              object.scale[ 2 ] );
-          }
-
-          /* Override rotation (IndexedDB) */
-          if ( object.rotation != null ) {
-            const eulerRotation = new THREE.Euler( object.rotation[ 0 ], 
-              object.rotation[ 1 ], object.rotation[ 2 ], 
-              object.rotation[ 3 ] );
-              meshGroup.setRotationFromEuler( eulerRotation );
-          }
-
-          break;
-
-        default:
-          console.log( "error" );
+          this.sceneMain.add( updated.object );
+          this.modelsInMain.push( updated.object );
+        }
       }
 
-      /* Add mesh to main scene */
-      this.sceneMain.add( meshGroup );
-      this.modelsInMain.push( meshGroup );
     },
 
     loadModelInSub: async function( modelID ) {
@@ -2337,6 +2268,8 @@ export default {
         const modelID = this.placeModelsInScene[ i ].modelID;
         const modelInDB = await fromOfflineDB.getObject(modelID, 'Models', 
           'places');
+
+        console.log(modelInDB)
 
         if ( !this.plaModel.allNumbers.includes(modelInDB.modelNumber) ) {
           this.plaModel.allNumbers.push(modelInDB.modelNumber);
