@@ -607,7 +607,8 @@ export default {
         scale: null,
         rotation: null,
         lastChanged: Date.now(),
-        lastSync: ''
+        lastSync: '',
+        loaderType: this.model.model[0].name.split('.')[1]
       }
 
       // set new modelNumber
