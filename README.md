@@ -2,24 +2,49 @@
 
 This project is the digital 3D field book, which is intended to enable the digital documentation of archaeological excavations. The system was developed in collaboration with the archaeological institute at the University of Cologne.
 
-## Building and Packaging
+## Getting Started
 
-`npm run build`
+### Installing for Offline Usage
 
+The easiest way to get the fieldbook is to use the latest release. Though this release currently only works offline, so there is no online backup functionality.
+
+1. Download the latest [Release](https://github.com/TMink/Digitales-3D-Feldbuch-Projekt-3-/releases).
+2. Extract the downloaded files
+3. Launch the `fieldbook-client.exe`
+
+___
+
+### Installing for Development Usage
+
+These instructions will get you a copy of the fieldbook up and running on your local machine for development and testing purposes.
+
+1. Clone the repository
+2. Within a console of your choice, navigate to `src/frontend`
+3. Run `npm install` (if you get an error, try to run `npm install --force`
+4. Run `npm run dev`
+5. Within a console of your choice, navigate to `src/backend`
+6. Run `npm install` (if you get an error, try to run `npm install --force`
+7. Run `npm run dev`
+8. Download and install MongoDB and configure it as a Windows Service (you can follow [this](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-windows/) tutorial)
+9. The Fieldbook should now be accessible through any browser under `http://localhost:5173/`
+
+
+
+## Deployment (Building and Packaging)
+```
+npm run build
+```
 Builds and minifies the whole fieldbook frontend and saves it to `src/frontend/dist`
 
-`npm run electron:start`
+```
+npm run electron:start
+```
+Starts the building project in Electrons simulated Chromium browser
 
-Starts the built project in Electrons simulated Chromium browser
-
-`npm run package`
-
+```
+npm run package
+```
 Packages the fieldbook project into an executable and/or installer
-
-## Authors
-
-Click [here](https://github.com/TMink/Digitales-3D-Feldbuch-Projekt-3-/graphs/contributors) to see the list of contributors who participated in this project.
-
 
 ## Codedocumentation
 The `src/` folder contains the front- and backend of the digital 3D field book. The relevant folders and files are explained below to provide an overview of the project structure and code.
@@ -51,94 +76,16 @@ Other relevant folders are listed here in bullet points and briefly explained.
 
 The backend of the digital 3D field book is implemented with the node.js framework [Express](https://expressjs.com/), which is connected to a MongoDB.
 
-# Backend Server
 
-> Backend server of the archeological 3D-Fieldbook with express.js
+## Authors
 
-## Requirements
+Click [here](https://github.com/TMink/Digitales-3D-Feldbuch-Projekt-3-/graphs/contributors) to see the list of contributors who participated in this project.
 
-### CouchDB Setup 
- 1. Follow the installation guide of [CouchDB](https://docs.couchdb.org/en/stable/install/windows.html#installation-on-windows)
- 2. Open [Fauxton](http://localhost:5984/_utils) to check and edit the CouchDB
- 3. Create User "admin" with pw "1234"
-___
-#### Database 1: projects
+## License
+This project is licensed under the MIT license - see the LICENSE.md file for details
 
- 4. Create new Database named "projects"
- 5. Create new Doc inside "projects" with additional fields "name" and "description":
-<details>
-<summary>Example Values:</summary>
-<pre>
-"name": "Testprojekt",
-"description": "Dies ist ein Testobjekt, um die DB mit Daten zu füllen"
-</pre>
-</details>
+## Acknowledgments
 
- 6. Create new View inside "projects" with Design Document name "projects" and Index name "all":
- <details>
-<summary>Example Values:</summary>
-<pre>
- function (doc) {
-  emit(doc._id, {name: doc.name,
-        description: doc.description
-  });
-}
-</pre>
-</details>
- 
-
-
-___
-#### Database 2: excavations
-
- 7. Create new Database named "excavations"
- 8.  Create new Doc inside "excavations" with additional fields "name", "description", "organization", "client", "location", "length", "focus":
-<details>
-<summary>Example Values:</summary>
-<pre>
-"name": "Xanten",
-"description": "Dies ist die Ausgrabung in Xanten",
-"organization": "Archeologischen Institut Koeln",
-"client": "Technologische Hochschule Koeln",
-"location": "Xanten, Deutschland",
-"length": "20 Tage",
-"focus": "Interessante Funde"
-</pre>
-</details>
-
- 9. Create new View inside "excavations" with Design Document name "excavations" and Index name "all":
-<details>
-<summary>Example Values:</summary>
-<pre>
-function (doc) {
-  emit(doc._id, {name: doc.name, 
-                  date: doc.date, 
-                  description: doc.description, 
-                  organization: doc.organization, 
-                  client: doc.client, 
-                  location: doc.location,
-                  length: doc.length,
-                  focus: doc.focus
-  });
-}
-</pre>
-</details>
-
-___
-
-## Build Setup
-
-``` bash
-# install dependencies
-npm install
-
-# serve with hot reload at localhost:3000
-npm run dev
-
-# build for production with minification
-npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
-```
-
+- Thanks to the [Archäological Institute at the University of Cologne](https://archaeologie.phil-fak.uni-koeln.de/) for the valuable [evaluation and testing](https://archaeologie.phil-fak.uni-koeln.de/forschung/aktuelle-forschungen/detail-fa/eine-erste-kampagne-der-deutsch-niederlaendischen-lehrgrabung-auf-insula-29-der-colonia-ulpia-traiana-cut-1#news3631) during a month long excavation in Xanten, Germany
+- Also a big thanks to the [Archeological Park Xanten](https://apx.lvr.de/de/willkommen/willkommen_1.html) for letting us test out the system during this excavation
+- And thanks to [Prof. Dr. Horst Stenzel](https://www.th-koeln.de/personen/horst.stenzel/) for the supervision and support during the whole project
