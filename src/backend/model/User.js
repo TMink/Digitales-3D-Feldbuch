@@ -25,6 +25,9 @@ const userSchema = new Schema({
     minlength: 6,
     required: true,
   },
+  activities: {
+    type: Array,
+  }
 });
 
 module.exports = mongoose.model("User", userSchema);
