@@ -10,7 +10,33 @@
     <div id="app"></div>
     <script type="module" src="src/main.js"></script>
     <script>
-      require('electron-cookies')
+      if (isElectron()) {
+        require('electron-cookies')
+      }
+
+
+      function isElectron() {
+          // Renderer process
+          if (typeof window !== 'undefined' && typeof window.process === 'object' && window.process.type === 'renderer') {
+            console.log("renderer true");
+            return true;
+          }
+
+          // Main process
+          if (typeof process !== 'undefined' && typeof process.versions === 'object' && !!process.versions.electron) {
+            console.log("main process true");
+            return true;
+          }
+
+          // Detect the user agent when the `nodeIntegration` option is set to true
+          if (typeof navigator === 'object' && typeof navigator.userAgent === 'string' && navigator.userAgent.indexOf('Electron') >= 0) {
+            console.log("user agent true");
+            return true;
+          }
+
+          console.log("electron false");
+          return false;
+        }
     </script>
   </body>
 </html>
