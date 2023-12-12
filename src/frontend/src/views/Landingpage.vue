@@ -2,8 +2,8 @@
  * Created Date: 29.11.2023 13:29:27
  * Author: Oliver Mertens
  * 
- * Last Modified: 08.12.2023 14:35:33
- * Modified By: Julian Hardtung
+ * Last Modified: 12.12.2023 11:58:33
+ * Modified By: Oliver Mertens
  * 
  * Description: LandingPage as the first entry point for new users
  -->
@@ -14,7 +14,7 @@
 
         <v-parallax
             src="https://cdn.discordapp.com/attachments/537612240409329714/1179100383516299326/Background.png?ex=65788dce&is=656618ce&hm=1293c8ed1ee66a8d3707737d52fa50fc96a5e0ef73b21f9a0a392ee9e8d56f56&"
-            :height=getHeight()>
+            height="">
             <div class="d-flex flex-column fill-height justify-center align-center text-white">
 
                 <v-icon><v-img src="src/assets/logos/3DDF_Icon.png"></v-img></v-icon>
