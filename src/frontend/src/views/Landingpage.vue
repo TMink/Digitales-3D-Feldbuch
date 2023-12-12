@@ -2,8 +2,8 @@
  * Created Date: 29.11.2023 13:29:27
  * Author: Oliver Mertens
  * 
- * Last Modified: 08.12.2023 14:35:33
- * Modified By: Julian Hardtung
+ * Last Modified: 12.12.2023 11:58:33
+ * Modified By: Oliver Mertens
  * 
  * Description: LandingPage as the first entry point for new users
  -->
@@ -27,8 +27,10 @@
                 </h4>
 
                 <v-flex row wrap text-xs-center>
-                    <v-btn v-on:click="routeLogin()" color="primary" class="ma-2" prepend-icon="mdi-login">Login</v-btn>
-                    <v-btn v-on:click="routeRegistration()" color="secondary" class="ma-2" prepend-icon="mdi-account-plus-outline">Registration</v-btn>
+                    <v-btn v-on:click="routeLogin()" color="primary" class="ma-2" 
+                        prepend-icon="mdi-login">Login</v-btn>
+                    <v-btn v-on:click="routeRegistration()" color="secondary" class="ma-2"
+                        prepend-icon="mdi-account-plus-outline">Registration</v-btn>
                 </v-flex>
             </div>
         </v-parallax>
@@ -39,6 +41,7 @@
 <script>
 import Navigation from '../components/Navigation.vue'
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
+import { useWindowSize } from 'vue-window-size';
 
 export default {
     name: 'Landingpage',
@@ -52,6 +55,13 @@ export default {
             toolbar_title: this.$t('fieldbook'),
         };
     },
+    setup() {
+        const { width, height } = useWindowSize();
+        return {
+            windowWidth: width,
+            windowHeight: height,
+        };
+    },
     /**
      * Retrieve data from IndexedDB
      */
@@ -61,12 +71,15 @@ export default {
     },
     methods: {
 
-      routeLogin() {
-        this.$router.push({ name: 'Login' });
-      },
-      routeRegistration() {
-      this.$router.push({ name: 'Registration' });
-      },
+        routeLogin() {
+            this.$router.push({ name: 'Login' });
+        },
+        routeRegistration() {
+            this.$router.push({ name: 'Registration' });
+        },
+        getHeight(){
+            return this.windowHeight - 115;
+        }
     }
 }
 </script>
