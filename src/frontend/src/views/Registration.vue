@@ -2,7 +2,7 @@
  * Created Date: 29.11.2023 01:45:44
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.12.2023 14:32:49
+ * Last Modified: 12.12.2023 14:48:52
  * Modified By: Julian Hardtung
  * 
  * Description: Vue component for user registration
@@ -73,6 +73,7 @@ export default {
         username: "",
         mail: "",
         password: "",
+        activities: []
       },
     };
   },

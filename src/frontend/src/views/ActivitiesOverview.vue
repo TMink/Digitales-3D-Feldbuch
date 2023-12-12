@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.12.2023 14:48:50
+ * Last Modified: 12.12.2023 16:04:58
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -26,7 +26,7 @@
             displayed in list form or in edit form-->
               <v-row no-gutters v-if="!activity.edit" class="align-center">
 
-                <v-col cols="9">
+                <v-col cols="10">
                   <v-list-item 
                     class="pa-2 ma-2" v-on:click="setActivity(activity.id)">
                     <v-list-item-title class="ma-4 text-center">
@@ -35,29 +35,79 @@
                   </v-list-item>
                 </v-col>
 
-                <v-col cols="3" class="pa-4">
-                  <v-btn 
-                    icon 
-                    class="ma-1" 
-                    color="primary" 
-                    v-on:click="activity.edit = !activity.edit">
-                    <v-icon>mdi-pencil</v-icon>
-                  </v-btn>
+                <v-col cols="2" class="pa-4">
 
-                  <v-btn 
-                    icon 
-                    color="error" 
-                    class="ma-1" 
-                    v-on:click="confirmDeletion(activity)">
-                    <v-icon>mdi-delete</v-icon>
-                  </v-btn>
+                    <v-menu location="bottom">
+                      <template v-slot:activator="{ props }">
+                        <v-btn v-if="activity.editor.length>0"
+                          color="primary"
+                          v-bind="props">
+                          Options
+                          <v-icon>mdi-arrow-down-bold-box</v-icon>
+                        </v-btn>
+                        <v-btn v-else
+                            color="error"
+                            v-bind="props">
+                            <v-tooltip 
+                              activator="parent"
+                              location="bottom">
+                              This activity is only local and not yet assigned to an account
+                            </v-tooltip>
+                            Options
+                            <v-icon>mdi-arrow-down-bold-box</v-icon>
+                          </v-btn>
+                      </template>
+
+                      <v-list>
+                        <v-list-item 
+                          color="primary"
+                          rounded="0"
+                          :block="true"
+                          v-on:click="activity.edit = !activity.edit">
+                          Edit
+                          <v-icon>mdi-pencil</v-icon>
+                        </v-list-item>
+                        <v-list-item 
+                          color="error"
+                          v-on:click="confirmDeletion(activity)">
+                          Delete
+                          <v-icon>mdi-delete</v-icon>
+                        </v-list-item>
+                        <v-list-item 
+                          v-if="this.userStore.authenticated && activity.editor.length==0"
+                          rounded="0" 
+                          :block="true"
+                          v-on:click="addEditor(activity, this.userStore.user.username)">
+                          Add this your account
+                        </v-list-item>
+                        <v-list-item v-else
+                          rounded="0" 
+                          :block="true"
+                          class="wrap-text">
+                          Editors: 
+                          <v-list class="pa-0" v-if="activity.editor">
+                            <v-list-item
+                            v-for="editor in activity.editor"
+                            :key="editor">
+                            {{ editor }}
+                          </v-list-item>
+                          </v-list>
+                        </v-list-item>
+                        <v-list-item v-if="this.userStore.authenticated"
+                          color="error"
+                          v-on:click="openAddEditorDialog(activity)">
+                          Add other editor
+                          <v-icon>mdi-account-plus-outline</v-icon>
+                        </v-list-item> 
+                      </v-list>
+                    </v-menu>
                 </v-col>
-              </v-row>
+              </v-row> 
 
               <!--This is where the edit mask will be triggered-->
               <v-row id="editActivity" no-gutters v-if="activity.edit" class="align-center">
 
-                <v-col cols="9">
+                <v-col cols="10">
                   <v-row no-gutters class="justify-center">
 
                     <v-col id="activityBranchOffice" cols="4" class="pt-2 px-2">
@@ -95,19 +145,21 @@
                   </v-row>
                 </v-col>
 
-                <v-col cols="3" class="pa-4">
+                <v-col cols="2" class="pa-4">
                   <v-btn 
-                    icon 
+                    :block="true"
                     class="ma-1" 
                     color="primary" 
                     v-on:click="saveActivity(activity)">
+                    Save
                     <v-icon>mdi-content-save-all</v-icon>
                   </v-btn>
-                  <v-btn 
-                    icon 
-                    class="ma-1" 
+                  <v-btn
+                    :block="true"
+                    class="ma-1"
                     color="error" 
                     v-on:click="closeActivityEdit(activity)">
+                    Cancel
                     <v-icon>mdi-close-circle</v-icon>
                   </v-btn>
                 </v-col>
@@ -125,15 +177,32 @@
 
     <AddButton v-on:click="addActivity()" />
 
+    <v-dialog v-model="addEditorDialog" :max-width="290" style="z-index: 3;" @keydown.esc="cancelAddEditor()">
+          <v-card>
+              <v-toolbar dark color="success" dense flat>
+                  <v-toolbar-title>Add new Editor to activity</v-toolbar-title>
+              </v-toolbar>
+              <v-text-field label="Username" v-model="newEditorName"></v-text-field>
+              <v-card-actions class="pt-0">
+                  <v-spacer></v-spacer>
+                  <v-btn icon color="success"  @click="confirmAddEditor()"><v-icon>mdi-check-circle</v-icon></v-btn>
+                  <v-btn icon color="error" @click="cancelAddEditor()"><v-icon>mdi-close-circle</v-icon></v-btn>
+              </v-card-actions>
+          </v-card>
+      </v-dialog>
+
   </div>
 </template>
   
 <script>
 import Navigation from '../components/Navigation.vue'
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
+import { fromBackend } from '../ConnectionToBackend.js'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 import AddButton from '../components/AddButton.vue'
 import { toRaw } from 'vue'
+import { useUserStore } from '../Authentication.js';
+
 
 export default {
   name: 'ActivitiesOverview',
@@ -142,10 +211,22 @@ export default {
     ConfirmDialog,
     AddButton
   },
+  setup() {
+    const userStore = useUserStore();
+
+    return {
+      userStore
+    }
+  },
   emits: ['view'],
   data() {
     return {
       activities: [],
+      addEditorDialog: false,
+      newEditorName: "",
+      editActivity: null,
+      resolve: null,
+      reject: null,
       rules: {
         required: value => !!value || 'Required.',
       }
@@ -207,15 +288,6 @@ export default {
       });
     },
 
-    /* getCookie(name) {
-      var value = {
-        name: name // the request must have this format to search the cookie.
-      };
-      ses.cookies.get(value, function (error, cookies) {
-        console.console.log(cookies[0].value); // the value saved on the cookie
-      });
-    }, */
-
     /**
      * Closes the activity edit mask and removes 
      * an activy if it wasn't saved to IndexedDB
@@ -242,6 +314,8 @@ export default {
         branchOffice: 'Platzhalter',
         year: new Date().getFullYear(),
         number: '0001',
+        places: [],
+        editor: [],
         edit: true,
       }
 
@@ -265,6 +339,7 @@ export default {
     async saveActivity(proxyActivity) {
 
       const rawActivity = toRaw(proxyActivity);
+
       //TODO: use form.validate() instead of != null 
       if (rawActivity.branchOffice != null
         && rawActivity.year != null
@@ -279,9 +354,14 @@ export default {
           branchOffice: rawActivity.branchOffice,
           year: rawActivity.year,
           number: rawActivity.number,
-          places: [],
+          places: rawActivity.places,
           lastChanged: Date.now(),
           lastSync: '',
+          editor: rawActivity.editor,
+        }
+
+        if (this.userStore.authenticated) {
+          newActivity.editor.push(this.userStore.user.username);
         }
 
         // Edit existing data
@@ -296,6 +376,61 @@ export default {
         }
       }
       await this.updateActivities();
+    },
+
+    /**
+     * Opens the dialog for adding a new editor to an activity
+     * @param {*} activity 
+     */
+    openAddEditorDialog(activity) {
+      this.addEditorDialog = true;
+      this.editActivity = activity;
+      return new Promise((resolve, reject) => {
+        this.resolve = resolve
+        this.reject = reject
+      })
+    },
+
+    /**
+     * Confirms the addition of a new editor to an activity
+     * @param {*} activity 
+     */
+    confirmAddEditor() {
+      this.addEditor(this.editActivity, this.newEditorName);
+      this.resolve(true);
+      this.addEditorDialog = false;
+    },
+
+    /**
+     * Cancels the addition of a new editor to an activity
+     */
+    cancelAddEditor() {
+      this.resolve(false)
+      this.addEditorDialog = false;
+    },
+    
+    /**
+     * Adds a new `username` as an editor to an activity
+     * @param {Object} activity 
+     * @param {String} username 
+     */
+    async addEditor(activity, username) {
+      // Update the activity
+      var updatedActivity = toRaw(activity);
+      
+      updatedActivity.editor.push(username);
+
+      await fromOfflineDB.updateObject(updatedActivity, 'Activities', 'activities');
+      //await fromBackend.putData('activities', activity);
+
+      //update the user
+      const response = await fromBackend.getData('user/name', username)
+      const user = response.data.user;
+
+      user.activities.push(activity.id);
+
+      await fromBackend.putData('user', user);
+
     },
 
     /**
@@ -336,6 +471,10 @@ export default {
 <style scoped>
 #test {
   text-align: center;
+}
+
+.wrap-text {
+  -webkit-line-clamp: unset !important;
 }
 </style>
   
