@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.12.2023 14:53:14
+ * Last Modified: 15.12.2023 14:02:26
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -58,7 +58,7 @@
             :headers="headers">
 
             <template v-slot:item="{ item, index }">
-              <tr v-on:click="handleRowClick(item.raw.id)"
+              <tr v-on:click="handleRowClick(item.raw._id)"
                 @mouseenter="setHoveredRow(index, true)"
                 @mouseleave="setHoveredRow(index, false)">
                 <!-- PLACE NUMBER -->
@@ -112,7 +112,7 @@
             :headers="fullHeaders">
 
             <template v-slot:item="{ item, index }">
-              <tr v-on:click="handleRowClick(item.raw.id)" 
+              <tr v-on:click="handleRowClick(item.raw._id)" 
                 @mouseenter="setHoveredRow(index, true)"
                 @mouseleave="setHoveredRow(index, false)">
 
@@ -586,7 +586,7 @@ export default {
       await fromOfflineDB.updateObject(activity, 'Activities', 'activities');
       await fromOfflineDB.addObject(newPlace, 'Places', 'places');
       await fromOfflineDB.addObject({ id: newPlaceID, object: 'places' }, 'Changes', 'created');
-      await this.updatePlaces(newPlace.id);
+      await this.updatePlaces(newPlace._id);
       return newPlaceID;
     },
 
@@ -600,7 +600,7 @@ export default {
       var newPlace = await fromOfflineDB.getObject(newPlaceID, 'Places', 'places');
       var dupPlace = await fromOfflineDB.getObject(placeID, 'Places', 'places');
       
-      dupPlace.id = newPlaceID;
+      dupPlace._id = newPlaceID;
       dupPlace.placeNumber = newPlace.placeNumber;
       dupPlace.positions = [];
       dupPlace.lastChanged = Date.now();

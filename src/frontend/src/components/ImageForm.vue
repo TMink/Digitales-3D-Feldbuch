@@ -2,7 +2,7 @@
  * Created Date: 06.07.2023 13:22:10
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.12.2023 14:46:12
+ * Last Modified: 15.12.2023 14:00:54
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for images of places/positions
@@ -303,7 +303,7 @@ export default {
 
       await fromOfflineDB.updateObject(rawImage, 'Images', 'images');
 
-      this.images[index] = await fromOfflineDB.getObject(rawImage.id, 'Images', 'images');
+      this.images[index] = await fromOfflineDB.getObject(rawImage._id, 'Images', 'images');
       this.edit_dialog = false;
     },
 
@@ -336,7 +336,7 @@ export default {
       var rawObject = toRaw(this.object);
 
       // update lastChanged date of object
-      rawObject.images.push(newImage.id);
+      rawObject.images.push(newImage._id);
       rawObject.lastChanged = Date.now();
 
       // hide image creation dialog
@@ -346,7 +346,7 @@ export default {
       // update IndexedDB
       fromOfflineDB.updateObject(rawObject, this.object_type, this.object_type.toLowerCase());
       fromOfflineDB.addObject(newImage, "Images", "images");
-      fromOfflineDB.addObject({ id: newImage.id, object: 'images' }, 'Changes', 'created');
+      fromOfflineDB.addObject({ id: newImage._id, object: 'images' }, 'Changes', 'created');
       return newImage;
     },
 
@@ -400,7 +400,7 @@ export default {
      * Clears relevant image VueProxy data for future image creation/editing
      */
     clearImgProxy() {
-      this.image.id = '';
+      this.image._id = '';
       //this.image.positionID = '';
       //this.image.placeID = '';
       this.image.title = '';
@@ -447,7 +447,7 @@ export default {
 
       var rawImage = toRaw(image);
       var rawObject = toRaw(this.object);
-      var index = rawObject.images.indexOf(rawImage.id.toString());
+      var index = rawObject.images.indexOf(rawImage._id.toString());
 
       // Remove the imageID from connected object
       if (index != -1) {

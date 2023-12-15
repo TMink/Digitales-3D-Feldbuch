@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 08.12.2023 14:23:56
+ * Last Modified: 15.12.2023 14:01:22
  * Modified By: Julian Hardtung
  * 
  * Description: module for listing all positions of a place
@@ -27,7 +27,7 @@
 
           <template v-slot:item="{ item, index }">
             <tr
-              v-on:click="moveToPosition(item.raw.id)" 
+              v-on:click="moveToPosition(item.raw._id)" 
               @mouseenter="setHoveredRow(index, true)"
               @mouseleave="setHoveredRow(index, false)">
 
@@ -164,8 +164,8 @@ export default {
     },
 
     async updatePositions() {
-      if (this.placeProp.id != undefined) {
-        this.positions = await fromOfflineDB.getAllObjectsWithID(this.placeProp.id, 'Place', 'Positions', 'positions');
+      if (this.placeProp._id != undefined) {
+        this.positions = await fromOfflineDB.getAllObjectsWithID(this.placeProp._id, 'Place', 'Positions', 'positions');
       }
     },
 

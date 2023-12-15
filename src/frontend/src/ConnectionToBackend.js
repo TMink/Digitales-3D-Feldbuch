@@ -1,3 +1,14 @@
+/*
+ * Created Date: 03.06.2023 10:25:57
+ * Author: Julian Hardtung
+ * 
+ * Last Modified: 15.12.2023 14:13:01
+ * Modified By: Julian Hardtung
+ * 
+ * Description: Helper API to the backend server
+ */
+
+
 /**
  * Function overview:
  *  getData    - Gets the data based on given parameters
@@ -25,7 +36,7 @@ class ConnectionToBackend {
           switch (dataCategory) {
             case "id":
               for (var i = 0; i < res.data.length; i++) {
-                if (res.data[i].id == identifier) {
+                if (res.data[i]._id == identifier) {
                   data.push(res.data[i]);
                 }
               }
@@ -62,7 +73,7 @@ class ConnectionToBackend {
           const preview = [];
 
           for (var i = 0; i < res.data.length; i++) {
-            preview.push({ id: res.data[i].id, title: res.data[i].title });
+            preview.push({ id: res.data[i]._id, title: res.data[i].title });
           }
           resolve(preview);
         });
@@ -83,7 +94,7 @@ class ConnectionToBackend {
     return new Promise((resolve, reject) => {
       axios({
         method: request,
-        url: "/" + subdomain.toLowerCase() + "/" + data.id,
+        url: "/" + subdomain.toLowerCase() + "/" + data._id,
         data: data,
         withCredentials: false,
       })
@@ -212,7 +223,7 @@ class ConnectionToBackend {
     return new Promise((resolve, reject) => {
       axios({
         method: request,
-        url: "/" + subdomain + "/" + data.id,
+        url: "/" + subdomain + "/" + data._id,
         headers: {
           "Content-Type": "multipart/form-data",
         },

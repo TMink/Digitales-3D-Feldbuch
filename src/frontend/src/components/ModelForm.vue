@@ -2,7 +2,7 @@
  * Created Date: 14.07.2023 17:06:51
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.12.2023 14:45:44
+ * Last Modified: 15.12.2023 14:01:00
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for 3d-models of places/positions
@@ -476,7 +476,7 @@ export default {
         this.glbLoader.parse( model.model, '', ( glb ) => {
           glb.scene.traverse( ( child ) => {
             if ( child instanceof THREE.Mesh ) {
-              child.name = model.id;
+              child.name = model._id;
             }
           } );
           resolve(glb.scene);
@@ -631,9 +631,9 @@ export default {
         newModel, 'Models', this.object_type.toLowerCase());
       await fromOfflineDB.addObject(
         {id: newModelID, object: 'models' }, 'Changes', 'created');
-      await this.updateModels(newModel.id);
+      await this.updateModels(newModel._id);
 
-      ctx.$emit('addModel', newModel.id);
+      ctx.$emit('addModel', newModel._id);
 
       /* Bob Ross */
       this.addToken = true
@@ -660,7 +660,7 @@ export default {
     async deleteModel(model) {
 
       // remove the modelID from connected place/position
-      var index = this.object.models.indexOf(model.id);
+      var index = this.object.models.indexOf(model._id);
       if (index != -1) {
         this.object.models.splice(index, 1);
         this.object.lastChanged = Date.now();
@@ -693,7 +693,7 @@ export default {
      * Clears relevant model VueProxy data for future model creation/editing
      */
     clearModelProxy() {
-      this.model.id = '';
+      this.model._id = '';
       this.model.positionID = '';
       this.model.placeID = '';
       this.model.title = '';

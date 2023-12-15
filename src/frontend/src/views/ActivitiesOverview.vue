@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 12.12.2023 16:04:58
+ * Last Modified: 15.12.2023 14:01:59
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -28,7 +28,7 @@
 
                 <v-col cols="10">
                   <v-list-item 
-                    class="pa-2 ma-2" v-on:click="setActivity(activity.id)">
+                    class="pa-2 ma-2" v-on:click="setActivity(activity._id)">
                     <v-list-item-title class="ma-4 text-center">
                       {{ activity.activityNumber }}
                     </v-list-item-title>
@@ -295,7 +295,7 @@ export default {
      */
     closeActivityEdit(activity) {
       // if the activity has not been saved, discard it
-      if (activity.id == undefined) {
+      if (activity._id == undefined) {
         var index = this.activities.indexOf(activity);
         if (index != -1) {
           this.activities.splice(index, 1);
@@ -366,7 +366,7 @@ export default {
 
         // Edit existing data
         if (Object.prototype.hasOwnProperty.call(rawActivity, "id")) {
-          newActivity.id = rawActivity.id;
+          newActivity._id = rawActivity._id;
           await fromOfflineDB.updateObject(newActivity, 'Activities', 'activities');
 
         } else {
@@ -461,7 +461,7 @@ export default {
 
       var activityIndex = this.activities.indexOf(activity);
       this.activities.splice(activityIndex);
-      await fromOfflineDB.deleteCascade(activity.id, 'activity', 'Activities', 'activities');
+      await fromOfflineDB.deleteCascade(activity._id, 'activity', 'Activities', 'activities');
     },
 
   }

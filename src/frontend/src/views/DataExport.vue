@@ -2,7 +2,7 @@
  * Created Date: 26.06.2023 15:10:20
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.12.2023 14:50:07
+ * Last Modified: 15.12.2023 14:02:09
  * Modified By: Julian Hardtung
  * 
  * Description: export all (or only specified) data to .pdf or .csv
@@ -471,7 +471,7 @@ export default {
      * @param {String} activity_id 
      */
     async setActivity(e, { item }) {
-      var activity_id = item.raw.id;
+      var activity_id = item.raw._id;
 
       // don't move to places list if there are none
       if (item.raw.places.length == 0) {
@@ -485,7 +485,7 @@ export default {
       var tempPositions = [];
       for (var i=0; i< this.places.length; i++) {
         var tempPos = await fromOfflineDB.getAllObjectsWithID(
-            this.places[i].id, 'Place', 'Positions', 'positions');
+            this.places[i]._id, 'Place', 'Positions', 'positions');
         tempPositions = tempPositions.concat(tempPos);   
       }
       this.positions = tempPositions;
@@ -508,7 +508,7 @@ export default {
         return;
       }
 
-      var place_id = item.raw.id;
+      var place_id = item.raw._id;
       this.positions = await fromOfflineDB.getAllObjectsWithID(
         place_id, 'Place', 'Positions', 'positions');
       this.place_open = true;
@@ -651,13 +651,13 @@ export default {
       
       const allActivityIDs = []
       allActivitys.forEach( elem => {
-        allActivityIDs.push( elem.id )
+        allActivityIDs.push( elem._id )
       })
       
       allActivityIDs.forEach( aIds => {
         const placeArr = []
         const activity = this.activities.filter( activity => {
-          return activity.id == aIds
+          return activity._id == aIds
         } )
         placeArr.push(toRaw(activity[0]))
         allPlaces.forEach( elem => {
@@ -676,13 +676,13 @@ export default {
       
       const allPlaceIds = []
       allPlaces.forEach( elem => {
-        allPlaceIds.push( elem.id )
+        allPlaceIds.push( elem._id )
       })
       
       allPlaceIds.forEach( pIds => {
         const positionArr = []
         const place = this.places.filter( place => {
-          return place.id == pIds
+          return place._id == pIds
         } )
         positionArr.push(toRaw(place[0]))
         allPositions.forEach( elem => {

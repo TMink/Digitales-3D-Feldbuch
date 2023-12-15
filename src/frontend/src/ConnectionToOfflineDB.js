@@ -1,3 +1,14 @@
+/*
+ * Created Date: 03.06.2023 10:25:57
+ * Author: Tobias Mink
+ * 
+ * Last Modified: 15.12.2023 14:12:29
+ * Modified By: Julian Hardtung
+ * 
+ * Description: Helper API for manipulating the IndexedDB
+ */
+
+
 /**
  * Function overview:
  *  syncLocalDBs            - Updates/Creates databases in IndexedDB and gets
@@ -232,7 +243,7 @@ export default class ConnectionToOfflineDB {
         if (cursor) {
           switch (property) {
             case "id":
-              data.push(cursor.value.id);
+              data.push(cursor.value._id);
               break;
             case "placeNumber":
               data.push(cursor.value.placeNumber);
@@ -290,7 +301,7 @@ export default class ConnectionToOfflineDB {
           if (conv === true) {
             switch (property) {
               case "id":
-                data.push(cursor.value.id);
+                data.push(cursor.value._id);
                 break;
               case "placeNumber":
                 data.push(cursor.value.placeNumber);
@@ -456,7 +467,7 @@ export default class ConnectionToOfflineDB {
       var lastAddedObj;
       store.openCursor().onsuccess = (e) => {
         let cursor = e.target.result;
-        if (cursor.value.id != inputID) {
+        if (cursor.value._id != inputID) {
           lastAddedObj = cursor.value;
           cursor.continue();
         }
@@ -533,7 +544,7 @@ export default class ConnectionToOfflineDB {
       };
 
       const store = trans.objectStore(storeName);
-      store.delete(object.id);
+      store.delete(object._id);
 
       // Make sure that no 'changes' get marked for synchronization
       // and don't mark objects, that never got uploaded before deletion
@@ -541,7 +552,7 @@ export default class ConnectionToOfflineDB {
         && localDBName != 'Lines' 
         && localDBName != 'ModulePresets') {
         if (object.lastSync.length > 0) {
-          this.addObject({ id: object.id, object: localDBName }, "Changes", "deleted");
+          this.addObject({ id: object._id, object: localDBName }, "Changes", "deleted");
         }
         this.deleteObject(object, "Changes", "created");
       }

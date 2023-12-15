@@ -2,8 +2,8 @@
  * Created Date: 10.12.2023 15:49:23
  * Author: Tobias Mink
  * 
- * Last Modified: 11.12.2023 14:45:56
- * Modified By: Tobias Mink
+ * Last Modified: 15.12.2023 14:01:16
+ * Modified By: Julian Hardtung
  * 
  * Description: 
  */
@@ -26,7 +26,7 @@ export class UpdateLocalVariables {
     switch ( objectType ) {
       case 'places':
         entry["placeID"] = objectData.placeID
-        entry["modelID"] = objectData.id
+        entry["modelID"] = objectData._id
         entry["modelTitle"] = objectData.title
 
         this.updateObjectMaterial( loadedObject, objectData )
@@ -35,7 +35,7 @@ export class UpdateLocalVariables {
 
       case 'positions':
         entry["positionID"] = objectData.positionID
-        entry["modelID"] = objectData.id
+        entry["modelID"] = objectData._id
         entry["modelTitle"] = objectData.title
 
         this.updateObjectMaterial( loadedObject, objectData )
@@ -76,7 +76,7 @@ export class UpdateLocalVariables {
         child.material.transparent = true;
         child.material.opacity = objectData.opacity;
         child.material.color = new THREE.Color( objectData.color );
-        child.name = objectData.id;
+        child.name = objectData._id;
       }
     } )
   }

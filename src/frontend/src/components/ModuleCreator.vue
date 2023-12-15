@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.12.2023 14:44:56
+ * Last Modified: 15.12.2023 14:01:08
  * Modified By: Julian Hardtung
  * 
  * Description: component to create, edit, set input module presets 
@@ -358,7 +358,7 @@ export default {
       var presetExists = await this.presetAlreadyExists(rawPreset);
 
       if (!presetExists) {
-        rawPreset.id = String(Date.now());
+        rawPreset._id = String(Date.now());
         
         await fromOfflineDB.addObject(rawPreset, 'ModulePresets', this.objectTypeProp);
         await this.updateModulePresets();
@@ -429,9 +429,9 @@ export default {
       this.selectedPreset = rawPreset;
 
       if (this.objectTypeProp == 'places') {
-        this.$cookies.set('placeModulesPreset', rawPreset.id);
+        this.$cookies.set('placeModulesPreset', rawPreset._id);
       } else if (this.objectTypeProp == 'positions') {
-        this.$cookies.set('posModulesPreset', rawPreset.id);
+        this.$cookies.set('posModulesPreset', rawPreset._id);
       }
       this.$emit('updateModulePresets');
     },
@@ -466,15 +466,15 @@ export default {
     async deletePreset(object) {
       let rawObject = toRaw(object);
 
-      if (rawObject.id == this.$cookies.get('placeModulesPreset')) {
+      if (rawObject._id == this.$cookies.get('placeModulesPreset')) {
         var placeDefaultPreset = await fromOfflineDB.getObjectByIndex(1, 'ModulePresets', this.objectTypeProp);
         this.selectedPreset = placeDefaultPreset;
-        this.$cookies.set('placeModulesPreset', placeDefaultPreset.id);
+        this.$cookies.set('placeModulesPreset', placeDefaultPreset._id);
 
-      } else if (rawObject.id == this.$cookies.get('posModulesPreset')) {
+      } else if (rawObject._id == this.$cookies.get('posModulesPreset')) {
         var posDefaultPreset = await fromOfflineDB.getObjectByIndex(0, 'ModulePresets', this.objectTypeProp);
         this.selectedPreset = posDefaultPreset;
-        this.$cookies.set('posModulesPreset', posDefaultPreset.id);
+        this.$cookies.set('posModulesPreset', posDefaultPreset._id);
       }
 
       await fromOfflineDB.deleteObject(rawObject, 'ModulePresets', this.objectTypeProp);

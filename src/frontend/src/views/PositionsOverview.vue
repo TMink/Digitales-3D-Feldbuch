@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.12.2023 14:53:24
+ * Last Modified: 15.12.2023 14:02:36
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -59,7 +59,7 @@
             max-height>
 
             <template v-slot:item="{ item, index }">
-              <tr v-on:click="handleRowClick(item.raw.id)"
+              <tr v-on:click="handleRowClick(item.raw._id)"
                   @mouseenter="setHoveredRow(index, true)"
                   @mouseleave="setHoveredRow(index, false)">
 
@@ -112,7 +112,7 @@
               :sort-by="[{ key: 'positionNumber', order: 'asc' }]">
 
               <template v-slot:item="{ item, index }">
-                <tr v-on:click="handleRowClick(item.raw.id)" 
+                <tr v-on:click="handleRowClick(item.raw._id)" 
                   @mouseenter="setHoveredRow(index, true)"
                   @mouseleave="setHoveredRow(index, false)">
 
@@ -504,7 +504,7 @@ export default {
       var newPosition = await fromOfflineDB.getObject(newPositionID, 'Positions', 'positions');
       var dupPosition = await fromOfflineDB.getObject(positionID, 'Positions', 'positions');
       
-      dupPosition.id = newPositionID;
+      dupPosition._id = newPositionID;
       dupPosition.positionNumber = newPosition.positionNumber;
       dupPosition.images = [];
       dupPosition.models = [];
@@ -686,7 +686,7 @@ export default {
     },
 
     saveModulePresetToCookies() {
-      this.$cookies.set('posModulesPreset', this.curModulePreset.id);
+      this.$cookies.set('posModulesPreset', this.curModulePreset._id);
     },
   }
 }

@@ -1,3 +1,13 @@
+/*
+ * Created Date: 17.07.2023 12:03:32
+ * Author: Methusshan Elankumaran
+ * 
+ * Last Modified: 15.12.2023 14:11:25
+ * Modified By: Julian Hardtung
+ * 
+ * Description: Unit tests for PlaceForm
+ */
+
 import { describe, it, test, expect, vi, beforeAll } from 'vitest';
 import { mount, shallowMount, flushPromises } from '@vue/test-utils';
 import ResizeObserver from 'resize-observer-polyfill'
@@ -88,7 +98,7 @@ describe('PlaceForm', () => {
         await wrapperActivity.vm.saveActivity(testActivity)
         expect(spyActivity).toHaveBeenCalled()
 
-        // await wrapperActivity.vm.setActivity(wrapperActivity.vm.activities[0].id)
+        // await wrapperActivity.vm.setActivity(wrapperActivity.vm.activities[0]._id)
         
         // const spy2 = vi.spyOn(wrapperPlace.vm, 'addPlace')
         // await fromOfflineDB.syncLocalDBs()
@@ -98,8 +108,8 @@ describe('PlaceForm', () => {
 
         // const spy = vi.spyOn(wrapperPlace.vm, 'moveToPlace')
         // await fromOfflineDB.syncLocalDBs()
-        // await wrapperPlace.vm.moveToPlace(wrapperPlace.vm.places[0].id)
-        // expect(spy).toHaveBeenCalledWith(wrapperPlace.vm.places[0].id)
+        // await wrapperPlace.vm.moveToPlace(wrapperPlace.vm.places[0]._id)
+        // expect(spy).toHaveBeenCalledWith(wrapperPlace.vm.places[0]._id)
 
         // const spy3 = vi.spyOn(wrapperPlaceForm.vm, 'savePlace')
         // await fromOfflineDB.syncLocalDBs()

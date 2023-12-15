@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.12.2023 14:52:13
+ * Last Modified: 15.12.2023 14:02:22
  * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
@@ -61,7 +61,7 @@
                   max-height>
 
                   <template v-slot:item="{ item, index }">
-                    <tr v-on:click="moveToPosition(item.raw.id)"
+                    <tr v-on:click="moveToPosition(item.raw._id)"
                         @mouseenter="setHoveredRow(index, true)"
                         @mouseleave="setHoveredRow(index, false)">
 
@@ -115,7 +115,7 @@
           <!-- Tab item 'pictures' -->
           <v-window-item value="three">
             <ImageForm 
-              :object_id="place.id"  
+              :object_id="place._id"  
               object_type="Places"
               @addImage="addImage($event)"/>
           </v-window-item>
@@ -123,7 +123,7 @@
           <!-- Tab item 'models' -->
           <v-window-item value="four">
             <ModelForm 
-              :object_id="place.id" 
+              :object_id="place._id" 
               object_type="Places"
               @addModel="addModel($event)">
             </ModelForm>
@@ -418,7 +418,7 @@ export default {
      * Update reactive Vue.js positions data
      */
     async updatePositions() {
-      this.positions = await fromOfflineDB.getAllObjectsWithID(this.place.id, 'Place', 'Positions', 'positions');
+      this.positions = await fromOfflineDB.getAllObjectsWithID(this.place._id, 'Place', 'Positions', 'positions');
       this.$refs.moduleViewerRef.passRefFunctionCall();
     },
 
@@ -453,11 +453,11 @@ export default {
           }
         })
         if ( !hasItem && item != '' ) {
-          newEditor.id = String(Date.now())
+          newEditor._id = String(Date.now())
           newEditor.item = toRaw(item)
         }
       } else if ( item != '' ) {
-        newEditor.id = String(Date.now())
+        newEditor._id = String(Date.now())
         newEditor.item = toRaw(item)
       }
       if ( !!Object.keys(newEditor).length ) {
@@ -519,13 +519,13 @@ export default {
       // Remove the placeID from connected activity
       const acID = String(this.$cookies.get('currentActivity'))
       var activity = await fromOfflineDB.getObject(acID, 'Activities', 'activities')
-      var index = activity.places.indexOf(this.place.id.toString())
+      var index = activity.places.indexOf(this.place._id.toString())
 
       activity.places.splice(index, 1)
       await fromOfflineDB.updateObject(activity, 'Activities', 'activities');
 
       // Delete all data that is dependent on the place
-      await fromOfflineDB.deleteCascade(this.place.id, 'position', 'Positions', 'positions');
+      await fromOfflineDB.deleteCascade(this.place._id, 'position', 'Positions', 'positions');
       this.$cookies.remove('currentPosition');
 
       // Delete the place itself

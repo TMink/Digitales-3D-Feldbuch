@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.12.2023 14:52:29
+ * Last Modified: 15.12.2023 14:02:32
  * Modified By: Julian Hardtung
  * 
  * Description: input page for positions data 
@@ -57,7 +57,7 @@
           <v-window-item value="two">
             <ImageForm 
               object_type="Positions" 
-              :object_id="position.id" 
+              :object_id="position._id" 
               @addImage="addImage($event)"/>
           </v-window-item>
 
@@ -65,7 +65,7 @@
           <v-window-item value="four">
             <ModelForm 
               object_type="Positions" 
-              :object_id="position.id" 
+              :object_id="position._id" 
               @addModel="addModel($event)"/>
           </v-window-item>
         </v-window>
@@ -324,7 +324,7 @@ export default {
       rawPosition.positionNumber = Number(rawPosition.positionNumber);
       rawPosition.lastChanged = Date.now();
       
-      var test = await fromOfflineDB.getObjectBefore(rawPosition.id, 'Positions', 'positions');
+      var test = await fromOfflineDB.getObjectBefore(rawPosition._id, 'Positions', 'positions');
       
       if (rawPosition.hasSubNumber) {
         var newSubNumber = this.calcSubNumber(rawPosition, test);
@@ -354,12 +354,12 @@ export default {
           }
         })
         if ( !hasItem && item != '' ) {
-          newEditor.id = String(Date.now())
+          newEditor._id = String(Date.now())
           newEditor.item = toRaw(item)
         }
       } else if ( item != '' ) {
         console.log( item )
-        newEditor.id = String(Date.now())
+        newEditor._id = String(Date.now())
         newEditor.item = toRaw(item)
       }
       if ( !!Object.keys(newEditor).length ) {
@@ -420,7 +420,7 @@ export default {
       const placeID = String(this.$cookies.get('currentPlace'));
       var place = await fromOfflineDB.getObject(placeID, 'Places', 'places');
       var rawPosition = toRaw(this.position);
-      var index = place.positions.indexOf(rawPosition.id.toString())
+      var index = place.positions.indexOf(rawPosition._id.toString())
 
       if (index != -1) {
         place.positions.splice(index, 1);

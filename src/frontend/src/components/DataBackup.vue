@@ -2,7 +2,7 @@
  * Created Date: 17.07.2023 11:31:35
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.12.2023 14:39:50
+ * Last Modified: 15.12.2023 14:00:48
  * Modified By: Julian Hardtung
  * 
  * Description: vue-component for downloading data backups and importing those
@@ -220,12 +220,12 @@ export default {
         var blob = new Blob([model.model], { type: "text/plain;charset=utf-8" });
         modelFiles.push(blob);
 
-        zip.file("place." + model.id + ".glb", blob);
+        zip.file("place." + model._id + ".glb", blob);
       });
       rawPositionModels.forEach(model => {
         var blob = new Blob([model.model], { type: "text/plain;charset=utf-8" });
         modelFiles.push(blob);
-        zip.file("position." + model.id + ".glb", blob);
+        zip.file("position." + model._id + ".glb", blob);
       });
 
       // combine all IndexedDB stores to one JSON-object
@@ -287,7 +287,7 @@ export default {
             
             var modelObject = {};
             modelObject.type = fileEnd[0];
-            modelObject.id = fileEnd[1];
+            modelObject._id = fileEnd[1];
             modelObject.data = fileData;
 
             modelFiles.push(modelObject);
@@ -301,7 +301,7 @@ export default {
         if (model.type == "place") {
 
           for (var i = 0; i < dbData.placeModels.length; i++) {
-            if (model.id == dbData.placeModels[i].id) {
+            if (model._id == dbData.placeModels[i]._id) {
               dbData.placeModels[i].model = model.data;
             }
           }
@@ -309,7 +309,7 @@ export default {
         } else if (model.type == "position") {
 
           for (var j = 0; j < dbData.positionModels.length; j++) {
-            if (model.id == dbData.positionModels[j].id) {
+            if (model._id == dbData.positionModels[j]._id) {
               dbData.positionModels[j].model = model.data;
             }
           }

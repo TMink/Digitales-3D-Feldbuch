@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.12.2023 14:50:53
+ * Last Modified: 15.12.2023 14:02:14
  * Modified By: Julian Hardtung
  * 
  * Description: `DEPRECATED AND BROKEN`synchronizes local data with online data
@@ -151,7 +151,7 @@
                             hide-details="true">
                         </v-checkbox>
                         <v-card-title class="justify-center">
-                            {{ change.id }}
+                            {{ change._id }}
                         </v-card-title>
 
                         <div id="chips-container">
@@ -394,8 +394,8 @@ export default {
         async deleteChangeEntry(change) {
             //check if it is an object that was just created
             // -> then we need to `post` it to backend
-            var changeCreated = await fromOfflineDB.getObject(change.id, 'Changes', 'created')
-            var changeDeleted = await fromOfflineDB.getObject(change.id, 'Changes', 'deleted')
+            var changeCreated = await fromOfflineDB.getObject(change._id, 'Changes', 'created')
+            var changeDeleted = await fromOfflineDB.getObject(change._id, 'Changes', 'deleted')
 
             if (changeCreated != undefined) {
                 fromOfflineDB.deleteObject(change, 'Changes', 'created');
@@ -409,8 +409,8 @@ export default {
          */
         async getRequestType(inputChange) {
             var request = 'put';
-            var changeCreated = await fromOfflineDB.getObject(inputChange.id, 'Changes', 'created')
-            var changeDeleted = await fromOfflineDB.getObject(inputChange.id, 'Changes', 'deleted')
+            var changeCreated = await fromOfflineDB.getObject(inputChange._id, 'Changes', 'created')
+            var changeDeleted = await fromOfflineDB.getObject(inputChange._id, 'Changes', 'deleted')
 
             if (changeCreated != undefined) {
                 request = 'post';
