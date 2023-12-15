@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:01:59
+ * Last Modified: 15.12.2023 14:22:45
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -347,7 +347,7 @@ export default {
 
         // new Activity data
         const newActivity = {
-          id: String(Date.now()),
+          _id: String(Date.now()),
           activityNumber: rawActivity.branchOffice
             + " " + rawActivity.year
             + "/" + rawActivity.number,

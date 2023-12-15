@@ -21,7 +21,7 @@ const Place = require("../model/Place");
  */
 function getPlaceJson(doc) {
   return {
-    _id: doc.id,
+    _id: doc._id,
     placeNumber: doc.placeNumber,
     date: doc.date,
     address: doc.adress,

@@ -21,7 +21,7 @@ const Position = require("../model/Position");
  */
 function getPositionJson(doc) {
   return {
-    _id: doc.id,
+    _id: doc._id,
     placeID: doc.placeID,
     positionNumber: doc.positionNumber,
     date: doc.date,

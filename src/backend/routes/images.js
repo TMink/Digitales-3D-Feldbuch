@@ -1,10 +1,11 @@
-/**
- * @ Author: Julian Hardtung
- * @ Create Time: 10.05.2023 12:58:23
- * @ Modified by: Julian Hardtung
- * @ Modified time: 05.12.2023 11:08:44
+/*
+ * Created Date: 10.05.2023 12:58:23
+ * Author: Julian Hardtung
  * 
- * Backend CRUD API routes for images
+ * Last Modified: 15.12.2023 14:24:43
+ * Modified By: Julian Hardtung
+ * 
+ * Description: Backend CRUD API routes for images
  */
 
 const express = require("express");
@@ -20,7 +21,7 @@ const storage = multer.diskStorage({
     cb(null, "./public/uploads");
   },
   filename: function (req, file, cb) {
-    cb(null, file.fieldname + "-" + req.body.id);
+    cb(null, file.fieldname + "-" + req.body._id);
   },
 });
 
@@ -37,7 +38,7 @@ const upload = multer({ storage: storage });
  */
 function getImageJson(doc, filename, mimetype) {
   return {
-    _id: doc.id,
+    _id: doc._id,
     imageNumber: doc.imageNumber,
     positionID: doc.positionID,
     title: doc.title,

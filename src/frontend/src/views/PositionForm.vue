@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:02:32
+ * Last Modified: 15.12.2023 14:22:41
  * Modified By: Julian Hardtung
  * 
  * Description: input page for positions data 
@@ -123,7 +123,7 @@ export default {
   data() {
     return {
       position: {
-        id: '',
+        _id: '',
         placeID: '',
         dating: '',
         isSeparate: false,

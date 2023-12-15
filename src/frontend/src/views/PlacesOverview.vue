@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:02:26
+ * Last Modified: 15.12.2023 14:22:39
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -537,7 +537,7 @@ export default {
 
       // new place data
       const newPlace = {
-        id: newPlaceID,
+        _id: newPlaceID,
         activityID: acID,
         placeNumber: '',
 
@@ -585,7 +585,7 @@ export default {
       // update IndexedDB
       await fromOfflineDB.updateObject(activity, 'Activities', 'activities');
       await fromOfflineDB.addObject(newPlace, 'Places', 'places');
-      await fromOfflineDB.addObject({ id: newPlaceID, object: 'places' }, 'Changes', 'created');
+      await fromOfflineDB.addObject({ _id: newPlaceID, object: 'places' }, 'Changes', 'created');
       await this.updatePlaces(newPlace._id);
       return newPlaceID;
     },

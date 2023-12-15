@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:02:36
+ * Last Modified: 15.12.2023 14:22:43
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -570,7 +570,7 @@ export default {
       curPlace.lastChanged = Date.now();
 
       const newPosition = {
-        id: newPositionID,
+        _id: newPositionID,
         placeID: curPlaceID,
         positionNumber: '',
         subNumber: '',
@@ -606,7 +606,7 @@ export default {
       await fromOfflineDB.updateObject(curPlace, 'Places', 'places');
       await fromOfflineDB.addObject(newPosition, "Positions", "positions");
       await fromOfflineDB.addObject(
-            { id: newPositionID, object: 'positions' }, 'Changes', 'created');
+            { _id: newPositionID, object: 'positions' }, 'Changes', 'created');
       
       return newPositionID;
     },

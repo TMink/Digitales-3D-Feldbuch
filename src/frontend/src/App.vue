@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.12.2023 14:54:50
+ * Last Modified: 15.12.2023 14:17:54
  * Modified By: Julian Hardtung
  * 
  * Description: main entry point for the fieldbook + 
@@ -150,7 +150,7 @@ export default {
     async initIndexedDB() {
 
       var technicalPlace = {
-        id: String(Date.now()),
+        _id: String(Date.now()),
         title: 'Technical Place',
 
         technical: true,
@@ -174,7 +174,7 @@ export default {
       await fromOfflineDB.addObject(technicalPlace, 'ModulePresets', 'places');
 
       var allPlaceModules = {
-        id: String(Date.now()),
+        _id: String(Date.now()),
         title: 'ALL Place Modules',
 
         technical: false,
@@ -200,7 +200,7 @@ export default {
       this.$cookies.set('placeModulesPreset', placePresetID);
 
       var allPosModules = {
-        id: String(Date.now()),
+        _id: String(Date.now()),
         title: 'ALL Pos. Modules',
 
         technical: false,
@@ -263,7 +263,7 @@ export default {
     },
 
     async getInfo(selection) {
-      const id = this.$cookies.get('current' + selection);
+      const _id = this.$cookies.get('current' + selection);
 
       let db = null;
       let st = null;

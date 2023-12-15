@@ -1,10 +1,11 @@
-/**
- * @ Author: Julian Hardtung
- * @ Create Time: 13.06.2023 13:54:24
- * @ Modified by: Julian Hardtung
- * @ Modified time: 05.12.2023 11:07:58
+/*
+ * Created Date: 13.06.2023 13:54:24
+ * Author: Julian Hardtung
  * 
- * Backend CRUD API routes for models
+ * Last Modified: 15.12.2023 14:24:17
+ * Modified By: Julian Hardtung
+ * 
+ * Description: Backend CRUD API routes for models
  */
 
 const express = require("express");
@@ -20,7 +21,7 @@ const storage = multer.diskStorage({
     cb(null, FILE_PATH);
   },
   filename: function (req, file, cb) {
-    cb(null, file.fieldname + "-" + req.body.id);
+    cb(null, file.fieldname + "-" + req.body._id);
   },
 });
 
@@ -37,7 +38,7 @@ const upload = multer({ storage: storage });
  */
 function getModelJson(doc, modelFilename) {
   return {
-    _id: doc.id,
+    _id: doc._id,
     modelNumber: doc.modelNumber,
     placeID: doc.placeID,
     title: doc.title,

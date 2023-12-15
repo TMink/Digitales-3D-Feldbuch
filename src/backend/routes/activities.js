@@ -1,10 +1,11 @@
-/**
- * @ Author: Julian Hardtung
- * @ Create Time: 09.06.2023 12:43:13
- * @ Modified by: Julian Hardtung
- * @ Modified time: 05.12.2023 11:06:22
+/*
+ * Created Date: 09.06.2023 12:43:13
+ * Author: Julian Hardtung
  * 
- * Backend CRUD API routes for activities
+ * Last Modified: 15.12.2023 14:25:07
+ * Modified By: Julian Hardtung
+ * 
+ * Description: Backend CRUD API routes for activities
  */
 
 const express = require("express");
@@ -21,7 +22,7 @@ const Activity = require("../model/Activity");
  */
 function getActivityJson(doc) {
   return {
-    _id: doc.id,
+    _id: doc._id,
     activityNumber: doc.activityNumber,
     branchOffice: doc.branchOffice,
     year: doc.year,
