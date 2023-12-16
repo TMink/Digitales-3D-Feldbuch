@@ -2,7 +2,7 @@
  * Created Date: 17.07.2023 11:31:35
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:00:48
+ * Last Modified: 16.12.2023 16:34:02
  * Modified By: Julian Hardtung
  * 
  * Description: vue-component for downloading data backups and importing those
@@ -344,8 +344,18 @@ export default {
         for (var i = 0; i < data.length; i++) {
           var allPreset = '';
 
-          if (dbName == 'Places') {
+          // LEGACY DATA FIX
+          data[i]['_id'] = data[i]['id'];
+          delete data[i]['id'];
 
+          // LEGACY DATA FIX
+          // add the editor object to activities, if they don't have it yet
+          if (dbName == 'Activities') {  
+            if (data[i].editor == undefined) {
+              data[i].editor = '';
+            }       
+          } else if (dbName == 'Places') {
+            // LEGACY DATA FIX
             // join old title that consisted of multiple titles in an array
             // to one continuous string
             if (Array.isArray(data[i].title)){
