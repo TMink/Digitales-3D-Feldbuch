@@ -5,6 +5,30 @@ const User = require("../model/User");
 var mongoose = require("mongoose");
 const { ObjectId } = require("mongodb");
 
+
+/**
+ * Verifies a jsonWebToken
+ * 
+ * @param {String} cookie 
+ * @returns 
+ */
+function checkAuthentication(cookie) {
+  try {
+    const claims = jwt.verify(cookie, "secret");
+
+    if (!claims) {
+      return {authResult: false};
+    }
+
+    return {authResult: true, claims: claims};
+
+  } catch (error) {
+    console.log("unauthenticated: " + error)
+    return {authResult: false};
+  }
+}
+
+
 router.post("/register", async (req, res) => {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(req.body.password, salt);
@@ -57,33 +81,35 @@ router.post("/login", async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
-  try {
-    const cookie = req.cookies["jwt"];
+  const { authResult, claims } = checkAuthentication(req.cookies["jwt"]);
 
-    const claims = jwt.verify(cookie, "secret");
+  if (authResult) {
 
-    if (!claims) {
+    try {
+      
+      const user = await User.findOne({ _id: claims._id });
+      
+      const { password, ...data } = user.toJSON();
+      
+      res.send(data);
+
+    } catch (error) {
       return res.status(401).send({
-        message: "unauthenticated",
+        message: "No user found: " + error,
       });
     }
-
-    const user = await User.findOne({ _id: claims._id });
-
-    const { password, ...data } = user.toJSON();
-
-    res.send(data);
-  } catch (e) {
+  } else {
     return res.status(401).send({
       message: "unauthenticated",
     });
   }
-});
-
+  });
+  
 router.get("/name/:username", async (req, res) => {
   try {
     const user = await User.findOne({username: req.params.username});
 
+    console.log(user)
     res.status(200).send({user})
   } catch (error) {
     res.status(404).send("Failed: " + error);
@@ -110,15 +136,45 @@ router.get("/id/:user_ids", async function (req, res, next) {
     }
 });
 
-router.put("/:user_id", async (req, res) => {
-  try {
-    const result = await User.findByIdAndUpdate(req.params.user_id, req.body);
+/**
+ * Edit logged in user
+ */
+router.put("/", async (req, res) => {
 
-    res.status(200).send("Edited User: " + result);
-  } catch (error) {
-    res.status(500).send("Couldn't edit User: " + error.message);
+  console.log("update backend user")
+
+  const {authResult, claims} = checkAuthentication(req.cookies["jwt"]);
+  if (authResult){
+    try {
+      console.log(req.body)
+      const result = await User.findByIdAndUpdate(claims._id, req.body);
+
+      res.status(200).send("Edited User: " + result);
+    } catch (error) {
+      res.status(500).send("Couldn't edit User: " + error.message);
+    }
+  } else {
+    return res.status(401).send({
+      message: "unauthenticated",
+    });
   }
 })
+
+/**
+ * Edit other user
+ */
+router.put("/:user_id", async (req, res) => {
+
+    try {
+      console.log(req.body)
+      const result = await User.findByIdAndUpdate(req.params.user_id, req.body);
+
+      res.status(200).send("Edited User: " + result);
+    } catch (error) {
+      res.status(500).send("Couldn't edit User: " + error.message);
+    }
+})
+
 
 router.post("/logout", (req, res) => {
   res.cookie("jwt", "", { maxAge: 0 });

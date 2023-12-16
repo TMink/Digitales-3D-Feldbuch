@@ -1,10 +1,11 @@
-/**
- * @ Author: Julian Hardtung
- * @ Create Time: 30.11.2023 15:04:12
- * @ Modified by: Julian Hardtung
- * @ Modified time: 05.12.2023 11:04:56
+/*
+ * Created Date: 30.11.2023 15:04:12
+ * Author: Julian Hardtung
  * 
- * A mongoose Schema for Users, which maps to a MongoDb collection.
+ * Last Modified: 15.12.2023 14:25:38
+ * Modified By: Julian Hardtung
+ * 
+ * Description: A mongoose Schema for Users, which maps to a MongoDb collection
  */
 
 const mongoose = require("mongoose");
@@ -26,7 +27,7 @@ const userSchema = new Schema({
     required: true,
   },
   activities: {
-    type: Array,
+    type: [String],
   }
 });
 

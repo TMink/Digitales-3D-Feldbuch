@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.12.2023 14:34:14
+ * Last Modified: 14.12.2023 13:04:11
  * Modified By: Julian Hardtung
  * 
  * Description: Vue.js project initialization
@@ -36,12 +36,12 @@ const pinia = createPinia();
 
 const app = createApp(App)
 
+app.use(pinia);
 app.use(router)
 app.use(vuetify)
 app.use(i18n)
 app.use(VueCookies, {
   //expires: "7d",
 });
-app.use(pinia);
 
 app.mount('#app')
