@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 15:12:45
+ * Last Modified: 16.12.2023 16:50:59
  * Modified By: Julian Hardtung
  * 
  * Description: Vue component with navigation-bar and extendable side-bar
@@ -229,11 +229,8 @@ export default {
     }
   },
   async created() {
-    //console.log("is online?: " + await isOnline());
     await fromOfflineDB.syncLocalDBs();
-    if (this.$route.name != 'PositionCreation') {
-      this.$cookies.remove('currentPosition');
-    }
+
     await this.updatePathbar();
     this.active_tab = this.active_tab_prop; //this.$cookies.get('active_tab_prop') //this.active_tab_prop;
 
