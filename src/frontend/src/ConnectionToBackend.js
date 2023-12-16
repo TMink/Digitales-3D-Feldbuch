@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:39:41
+ * Last Modified: 16.12.2023 12:29:00
  * Modified By: Julian Hardtung
  * 
  * Description: Helper API to the backend server
@@ -109,21 +109,22 @@ class ConnectionToBackend {
   }
 
   /**
-   * Retrieves data from the backend based on an id
+   * Retrieves data from the backend based on a parameter
+   * This parameter can be an id, a name or something similar
    *
    * @param {String} subdomain
-   * @param {String} id
+   * @param {String} param
    * @returns
    */
-  async getData(subdomain, id) {
+  async getDataWithParam(subdomain, param) {
     return new Promise((resolve, reject) => {
       axios({
         method: "get",
-        url: "/" + subdomain + "/" + id,
+        url: "/" + subdomain + "/" + param,
       })
         .then(function (res) {
           //TODO: Delete the uploaded change from the Changes localDB
-          resolve(res);
+          resolve(res.data);
         })
         .catch(function (error) {
           console.log(error);
@@ -155,10 +156,10 @@ class ConnectionToBackend {
 
   /**
    * Updates existing data in the backend
-   * 
-   * @param {String} subdomain 
-   * @param {Object} data 
-   * @returns 
+   *
+   * @param {String} subdomain
+   * @param {Object} data
+   * @returns
    */
   async putData(subdomain, data) {
     return new Promise((resolve, reject) => {

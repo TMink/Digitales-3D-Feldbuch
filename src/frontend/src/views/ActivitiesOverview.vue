@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:22:45
+ * Last Modified: 16.12.2023 13:02:26
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -32,6 +32,9 @@
                     <v-list-item-title class="ma-4 text-center">
                       {{ activity.activityNumber }}
                     </v-list-item-title>
+                    <v-list-item-subtitle v-if="activity.lastSync != ''">
+                      Last sync: {{ new Date(activity.lastSync).toLocaleString() }}
+                    </v-list-item-subtitle>
                   </v-list-item>
                 </v-col>
 
@@ -242,10 +245,62 @@ export default {
   },
   methods: {
     /**
-     * Get all activities from IndexedDb
+     * Get all activities from IndexedDb and Backend
      */
     async updateActivities() {
-      this.activities = await fromOfflineDB.getAllObjects('Activities', 'activities');
+
+      var offlineActivities = await fromOfflineDB.getAllObjects('Activities', 'activities');
+
+      // if user isn't logged in, just show the local stuff
+      if (!this.userStore.authenticated) {
+        console.log("Not logged in, so only show local activities")
+        this.activities = offlineActivities;
+        return;
+      }
+
+      const onlineActivities = await fromBackend.getDataWithParam('activities/user', this.userStore.user._id)
+      
+      // if there are not offlineActivities, don't check for duplicates
+      if (offlineActivities.length == 0) {
+        console.log("No local activities, so only show online")
+        this.activities = onlineActivities;
+        return;
+      }
+
+
+      // if user is logged in and local + online Activities exist, 
+      // check for duplicates and which is newer
+      // and combine all activities to the array for display
+      var newActivityList = [];
+      var sameIdFound = false;
+
+      console.log("online and offline activities have to be combined")
+      offlineActivities.forEach((offActivity) => {
+          for (var i=0; i<onlineActivities.length; i++) {
+
+          if (offActivity._id == onlineActivities[i]._id) {
+            sameIdFound = true;
+
+            if (onlineActivities[i].lastChanged >= offActivity.lastChanged) {
+              var tempActivity = onlineActivities[i];
+              onlineActivities.splice(i, 1)
+              newActivityList.push(tempActivity);
+            } else {
+              newActivityList.push(offActivity);
+            }
+          }
+        }
+
+        if (!sameIdFound) {
+          newActivityList.push(offActivity);
+        } else {
+          sameIdFound = false;
+        }
+      });
+
+      // add remaining online activities to the whole list
+      newActivityList.concat(onlineActivities);
+      this.activities = newActivityList;
     },
     
     /**
@@ -360,19 +415,23 @@ export default {
           editor: rawActivity.editor,
         }
 
+        // add new activity to current authenticated user
         if (this.userStore.authenticated) {
           newActivity.editor.push(this.userStore.user.username);
+          this.userStore.user.activities.push(newActivity._id)
+          this.userStore.updateUser();
         }
 
         // Edit existing data
-        if (Object.prototype.hasOwnProperty.call(rawActivity, "id")) {
+        if (Object.prototype.hasOwnProperty.call(rawActivity, "_id")) {
           newActivity._id = rawActivity._id;
           await fromOfflineDB.updateObject(newActivity, 'Activities', 'activities');
 
         } else {
           // Add new data to store 
           var activityID = await fromOfflineDB.addObject(newActivity, 'Activities', 'activities');
-          await fromOfflineDB.addObject({ id: activityID, object: 'activities' }, 'Changes', 'created');
+          //TODO: rework the onlineSync workflow
+          //await fromOfflineDB.addObject({ _id: activityID, object: 'activities' }, 'Changes', 'created');
         }
       }
       await this.updateActivities();
@@ -423,14 +482,21 @@ export default {
       await fromOfflineDB.updateObject(updatedActivity, 'Activities', 'activities');
       //await fromBackend.putData('activities', activity);
 
-      //update the user
-      const response = await fromBackend.getData('user/name', username)
-      const user = response.data.user;
+      //update other user
+      if (username != this.userStore.user.username) {
+        const response = await fromBackend.getDataWithParam('user/name', username)
+        const user = response.user;
+  
+        user.activities.push(activity._id);
+        await fromBackend.putData('user', user);
 
-      user.activities.push(activity.id);
+        // update logged in user
+      } else{
+        this.userStore.user.activities.push(activity._id)
+        this.userStore.updateUser()
+      }
 
-      await fromBackend.putData('user', user);
-
+      await this.updateActivities();
     },
 
     /**

@@ -489,6 +489,12 @@ export default class ConnectionToOfflineDB {
    */
   async addObject(data, localDBName, storeName) {
     const localDB = this.getLocalDBFromName(localDBName);
+    const userStore = useUserStore();
+
+    //if logged in and online, sync new object to backend
+    if (userStore.authenticated && await isOnline()) {
+      fromBackend.postData(storeName, data)
+    }
 
     return new Promise((resolve, reject) => {
       const trans = localDB.transaction([storeName], "readwrite");
@@ -517,6 +523,16 @@ export default class ConnectionToOfflineDB {
    */
   async updateObject(data, localDBName, storeName) {
     var localDB = this.getLocalDBFromName(localDBName);
+    const userStore = useUserStore();
+    
+    //if logged in and online, sync new object to backend
+    if (userStore.authenticated && (await isOnline())) {
+      if (data.lastSync == '') {
+        await fromBackend.postData(storeName, data);
+      } else {
+        await fromBackend.putData(storeName, data);
+      }
+    }
 
     return new Promise((resolve, _reject) => {
       const trans = localDB.transaction([storeName], "readwrite");

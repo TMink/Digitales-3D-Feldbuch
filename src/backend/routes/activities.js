@@ -2,7 +2,7 @@
  * Created Date: 09.06.2023 12:43:13
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:25:07
+ * Last Modified: 16.12.2023 12:59:10
  * Modified By: Julian Hardtung
  * 
  * Description: Backend CRUD API routes for activities
@@ -11,6 +11,7 @@
 const express = require("express");
 const router = express.Router();
 const Activity = require("../model/Activity");
+const User = require("../model/User");
 
 /**
  * Takes the retrieved data from DB and builds a JSON-object
@@ -26,7 +27,11 @@ function getActivityJson(doc) {
     activityNumber: doc.activityNumber,
     branchOffice: doc.branchOffice,
     year: doc.year,
+    number: doc.number,
     places: doc.places,
+    lastChanged: doc.lastChanged,
+    lastSync: doc.lastSync,
+    editor: doc.editor,
   };
 }
 
@@ -42,6 +47,26 @@ router.get("/", async function (req, res, next) {
 
   res.status(200).send(activitiesArray);
 });
+
+/**
+ * GET all activities of a user from MongoDB
+ */
+router.get("/user/:user_id", async function (req, res, next) {
+  try {
+    var user = await User.findById(req.params.user_id);
+  } catch (error) {
+    return res.status(404).send("No user found: " + error);
+  }
+
+  try {
+    var activitiesArray = await Activity.find({
+      '_id': { $in: user.activities}
+    });
+    return res.status(200).send(activitiesArray);
+  } catch (error) {
+    return res.status(404).send("No activities found");
+  }  
+}); 
 
 /**
  * GET one activity from MongoDB by activity_id
@@ -60,6 +85,10 @@ router.get("/:activity_id", async function (req, res, next) {
  */
 router.post("/:activity_id", async function (req, res, next) {
   var newActivity = getActivityJson(req.body);
+
+  var curTime = Date.now()
+  newActivity.lastSync = curTime;
+  newActivity.lastChanged = curTime;
   try {
     const result = await Activity.create(newActivity);
 
@@ -78,6 +107,9 @@ router.put("/:activity_id", async function (req, res, next) {
   try {
     const result = await Activity.findByIdAndUpdate(req.params.activity_id, updatedActivity);
 
+    if (result == null) {
+      return res.status(404).send("No activity found to update")
+    }
     res.status(200).send("Edited Activity: " + result);
   } catch (error) {
     res.status(500).send("Couldn't edit Activity: " + error.message);
