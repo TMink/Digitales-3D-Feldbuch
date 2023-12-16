@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Tobias Mink
  * 
- * Last Modified: 15.12.2023 14:12:29
+ * Last Modified: 15.12.2023 15:58:03
  * Modified By: Julian Hardtung
  * 
  * Description: Helper API for manipulating the IndexedDB
@@ -33,6 +33,9 @@
  *                            place
  */
 export { fromOfflineDB };
+import isOnline from "is-online";
+import { fromBackend } from "./ConnectionToBackend.js";
+import { useUserStore } from "./Authentication.js";
 
 export default class ConnectionToOfflineDB {
   constructor(offlineDB) {
@@ -81,7 +84,7 @@ export default class ConnectionToOfflineDB {
       request.onupgradeneeded = (e) => {
         const db = e.target.result;
         storeNames.forEach((storeName) => {
-          const store = db.createObjectStore(storeName, { keyPath: "id" });
+          const store = db.createObjectStore(storeName, { keyPath: "_id" });
           store.createIndex("lastChangedIDX", "lastChanged", { unique: false });
         });
       };
@@ -109,7 +112,7 @@ export default class ConnectionToOfflineDB {
   }
 
   /**
-   * @param {String} id
+   * @param {String} _id
    *    Key for identifying the value which will be deleted
    * @param {String} localDBname
    *    Database object, which contains the object store
@@ -118,7 +121,7 @@ export default class ConnectionToOfflineDB {
    * @returns
    *    an object, as Promise.
    */
-  async getObject(id, localDBName, storeName) {
+  async getObject(_id, localDBName, storeName) {
     const localDB = this.getLocalDBFromName(localDBName);
 
     return new Promise((resolve, _reject) => {
@@ -128,7 +131,7 @@ export default class ConnectionToOfflineDB {
       };
 
       const store = trans.objectStore(storeName);
-      let data = store.get(id);
+      let data = store.get(_id);
     });
   }
 
@@ -242,7 +245,7 @@ export default class ConnectionToOfflineDB {
         let cursor = e.target.result;
         if (cursor) {
           switch (property) {
-            case "id":
+            case "_id":
               data.push(cursor.value._id);
               break;
             case "placeNumber":
@@ -266,7 +269,7 @@ export default class ConnectionToOfflineDB {
    *    the value of an specific property, dependent on a given id, of all
    *    objects in store, as Promise.
    */
-  async getPropertiesWithID(id, selection, property, localDBName, storeName) {
+  async getPropertiesWithID(_id, selection, property, localDBName, storeName) {
     const localDB = this.getLocalDBFromName(localDBName);
 
     return new Promise((resolve, _reject) => {
@@ -285,12 +288,12 @@ export default class ConnectionToOfflineDB {
 
           switch (selection) {
             case "place":
-              if (cursor.value.activityID === id) {
+              if (cursor.value.activityID === _id) {
                 conv = true;
               }
               break;
             case "position":
-              if (cursor.value.placeID === id) {
+              if (cursor.value.placeID === _id) {
                 conv = true;
               }
               break;
@@ -300,7 +303,7 @@ export default class ConnectionToOfflineDB {
 
           if (conv === true) {
             switch (property) {
-              case "id":
+              case "_id":
                 data.push(cursor.value._id);
                 break;
               case "placeNumber":
@@ -318,19 +321,19 @@ export default class ConnectionToOfflineDB {
   }
 
   /**
-   * @param {String} id
+   * @param {String} _id
    *    ID of the currently selected object
    * @param {String} selection
-   *    Selection of which object the id is from
+   *    Selection of which object the _id is from
    * @param {String} localDBName
    *    Database name
    * @param {String} storeName
    *    IndexedDB store name
    * @returns
-   *    an array containing objects with same id 
+   *    an array containing objects with same _id 
    *    (activityID, placeID, positionsID) as Promise.
    */
-  async getAllObjectsWithID(id, selection, localDBName, storeName) {
+  async getAllObjectsWithID(_id, selection, localDBName, storeName) {
     const localDB = this.getLocalDBFromName(localDBName);
 
     return new Promise((resolve, _reject) => {
@@ -347,17 +350,17 @@ export default class ConnectionToOfflineDB {
         if (cursor) {
           switch (selection) {
             case "Activity":
-              if (cursor.value.activityID === id) {
+              if (cursor.value.activityID === _id) {
                 data.push(cursor.value);
               }
               break;
             case "Place":
-              if (cursor.value.placeID === id) {
+              if (cursor.value.placeID === _id) {
                 data.push(cursor.value);
               }
               break;
             case "Position":
-              if (cursor.value.positionID === id) {
+              if (cursor.value.positionID === _id) {
                 data.push(cursor.value);
               }
           }
@@ -552,7 +555,7 @@ export default class ConnectionToOfflineDB {
         && localDBName != 'Lines' 
         && localDBName != 'ModulePresets') {
         if (object.lastSync.length > 0) {
-          this.addObject({ id: object._id, object: localDBName }, "Changes", "deleted");
+          this.addObject({ _id: object._id, object: localDBName }, "Changes", "deleted");
         }
         this.deleteObject(object, "Changes", "created");
       }
@@ -585,11 +588,11 @@ export default class ConnectionToOfflineDB {
    * @param {String} storeName
    *    Store name
    */
-  async deleteCascade(id, selection, localDBName, storeName) {
+  async deleteCascade(_id, selection, localDBName, storeName) {
     const localDB = this.getLocalDBFromName(localDBName);
 
     const context = this;
-    var object = await this.getObject(id, localDBName, storeName);
+    var object = await this.getObject(_id, localDBName, storeName);
 
    await new Promise(async function(resolve, _reject) {
       const trans = localDB.transaction(storeName, "readwrite");

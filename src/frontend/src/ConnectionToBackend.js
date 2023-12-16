@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:13:01
+ * Last Modified: 15.12.2023 14:39:41
  * Modified By: Julian Hardtung
  * 
  * Description: Helper API to the backend server
@@ -34,7 +34,7 @@ class ConnectionToBackend {
         axios.get(url).then((res) => {
           const data = [];
           switch (dataCategory) {
-            case "id":
+            case "_id":
               for (var i = 0; i < res.data.length; i++) {
                 if (res.data[i]._id == identifier) {
                   data.push(res.data[i]);
@@ -73,7 +73,7 @@ class ConnectionToBackend {
           const preview = [];
 
           for (var i = 0; i < res.data.length; i++) {
-            preview.push({ id: res.data[i]._id, title: res.data[i].title });
+            preview.push({ _id: res.data[i]._id, title: res.data[i].title });
           }
           resolve(preview);
         });

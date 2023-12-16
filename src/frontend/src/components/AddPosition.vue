@@ -2,7 +2,7 @@
  * Created Date: 01.07.2023 14:01:06
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.12.2023 14:25:13
+ * Last Modified: 15.12.2023 14:39:35
  * Modified By: Julian Hardtung
  * 
  * Description: vue component for adding a position
@@ -66,7 +66,7 @@ export default {
       curPlace.lastChanged = Date.now();
 
       const newPosition = {
-        id: newPositionID,
+        _id: newPositionID,
         placeID: curPlaceID,
         positionNumber: '',
         subNumber: '',
@@ -103,7 +103,7 @@ export default {
       await fromOfflineDB.updateObject(curPlace, 'Places', 'places');
       await fromOfflineDB.addObject(newPosition, "Positions", "positions");
       await fromOfflineDB.addObject(
-            { id: newPositionID, object: 'positions' }, 'Changes', 'created');
+            { _id: newPositionID, object: 'positions' }, 'Changes', 'created');
       this.closeDiag();
     },
   }

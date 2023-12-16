@@ -2,7 +2,7 @@
  * Created Date: 06.07.2023 13:22:10
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:00:54
+ * Last Modified: 15.12.2023 14:39:37
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for images of places/positions
@@ -212,7 +212,7 @@ export default {
     return {
       object: '',
       image: {
-        id: '',
+        _id: '',
         positionID: '',
         placeID: '',
         title: '',
@@ -346,7 +346,7 @@ export default {
       // update IndexedDB
       fromOfflineDB.updateObject(rawObject, this.object_type, this.object_type.toLowerCase());
       fromOfflineDB.addObject(newImage, "Images", "images");
-      fromOfflineDB.addObject({ id: newImage._id, object: 'images' }, 'Changes', 'created');
+      fromOfflineDB.addObject({ _id: newImage._id, object: 'images' }, 'Changes', 'created');
       return newImage;
     },
 
@@ -360,7 +360,7 @@ export default {
 
       // new image data
       var filledImg = {
-        id: newImageID,
+        _id: newImageID,
         imageNumber: imageNumber,
         title: rawImage.title,
         image: await this.textureToBase64([imageFile]),

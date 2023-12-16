@@ -2,7 +2,7 @@
  * Created Date: 06.09.2023 17:19:12
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:01:12
+ * Last Modified: 15.12.2023 14:39:40
  * Modified By: Julian Hardtung
  * 
  * Description: input module viewer that shows all modules that are 
@@ -115,7 +115,7 @@ export default {
           dating: false,
           findTypes: false,
           general: false,
-          id: false,
+          _id: false,
           objectDescribers: false,
           plane: false,
           positionslist: false,
@@ -125,7 +125,7 @@ export default {
         }
       },
       pathNames: null,
-      id: null,
+      _id: null,
     }
   },
 

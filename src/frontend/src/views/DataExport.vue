@@ -2,7 +2,7 @@
  * Created Date: 26.06.2023 15:10:20
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:02:09
+ * Last Modified: 15.12.2023 14:39:34
  * Modified By: Julian Hardtung
  * 
  * Description: export all (or only specified) data to .pdf or .csv
@@ -563,7 +563,7 @@ export default {
       header.splice(index, 1);
       index = header.indexOf("lastChanged");
       header.splice(index, 1);
-      index = header.indexOf("id");
+      index = header.indexOf("_id");
       header.splice(index, 1);
 
       // TODO: reformat the export output of fields 

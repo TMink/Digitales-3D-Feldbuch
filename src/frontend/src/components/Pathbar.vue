@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.12.2023 14:42:29
+ * Last Modified: 15.12.2023 14:39:43
  * Modified By: Julian Hardtung
  * 
  * Description: `DEPRECATED` pathbar to show what activity, place, position 
@@ -60,7 +60,7 @@ export default {
     },
     
     async getInfo(selection) { 
-      const id = this.$cookies.get('current' + selection);
+      const _id = this.$cookies.get('current' + selection);
       
       let db = null;
       let st = null;
@@ -71,7 +71,7 @@ export default {
         db = selection + "s"
         st = selection.toLowerCase() + "s"
       }
-      const name = await fromOfflineDB.getObject( id, db, st);
+      const name = await fromOfflineDB.getObject( _id, db, st);
     
       switch(selection) {
         case "Activity":

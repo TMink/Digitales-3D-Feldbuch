@@ -2,7 +2,7 @@
  * Created Date: 14.07.2023 17:06:51
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:01:00
+ * Last Modified: 15.12.2023 14:39:38
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for 3d-models of places/positions
@@ -252,7 +252,7 @@ export default {
     return {
       object: '',
       model: {
-        id: '',
+        _id: '',
         positionID: '',
         placeID: '',
         title: '',
@@ -596,7 +596,7 @@ export default {
 
       // new model data
       const newModel = {
-        id: newModelID,
+        _id: newModelID,
         placeID: String(this.$cookies.get('currentPlace')),
         positionID: String(this.$cookies.get('currentPosition')),
         title: this.model.title,
