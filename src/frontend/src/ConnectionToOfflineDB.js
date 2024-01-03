@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Tobias Mink
  * 
- * Last Modified: 15.12.2023 15:58:03
+ * Last Modified: 03.01.2024 16:38:30
  * Modified By: Julian Hardtung
  * 
  * Description: Helper API for manipulating the IndexedDB
@@ -491,8 +491,8 @@ export default class ConnectionToOfflineDB {
     const localDB = this.getLocalDBFromName(localDBName);
     const userStore = useUserStore();
 
-    //if logged in and online, sync new object to backend
-    if (userStore.authenticated && await isOnline()) {
+    //if logged in, online, and not synced yet, sync new object to backend
+    if (userStore.authenticated && await isOnline() && data.lastSync < data.lastChanged) {
       fromBackend.postData(storeName, data)
     }
 
@@ -527,11 +527,7 @@ export default class ConnectionToOfflineDB {
     
     //if logged in and online, sync new object to backend
     if (userStore.authenticated && (await isOnline())) {
-      if (data.lastSync == '') {
-        await fromBackend.postData(storeName, data);
-      } else {
-        await fromBackend.putData(storeName, data);
-      }
+        await this.uploadObjectCascade(storeName, data);
     }
 
     return new Promise((resolve, _reject) => {
@@ -544,13 +540,57 @@ export default class ConnectionToOfflineDB {
     });
   }
 
+  
+  async uploadObjectCascade(subdomain, data) {
+
+    // upload data
+    if (data.lastSync == 0) {
+      await fromBackend.postData(subdomain, data);
+    } else {
+      await fromBackend.putData(subdomain, data);
+      return;
+    }
+
+    // check which cascading data has to be uploaded next
+    switch (subdomain) {
+      case "activities":
         console.log("just uploaded activity, check PLACES");
+        if (data.places) {
           console.log("PLACES FOUND");
+          for (const place_id of data.places) {
+            var curPlace = await fromOfflineDB.getObject(place_id, "Places", "places");
+            await this.uploadObjectCascade("places", curPlace);
+          }
+        }
+        break;
+      case "places":
         console.log("just uploaded place, check POSITIONS/IMAGES/MODELS");
+        if (data.positions) {
           console.log("POSITIONS FOUND");
+          for (const position_id of data.positions) {
+            var curPosition = await fromOfflineDB.getObject(position_id, "Positions", "positions");
+            await this.uploadObjectCascade("positions", curPosition);
+          }
+        }
+        break;
+      case "positions":
         console.log("just uploaded position, check IMAGES/MODELS");
+        //TODO: positions upload and recursive progressing
+        break;
+      case "images":
         console.log("just uploaded image");
+        //TODO: image upload
+        break;
+      case "models":
         console.log("just uploaded model");
+        //TODO: model upload
+        break;
+      default:
+        console.error(subdomain + " is not a vaid subdomain");
+    }
+
+  }
+
   /**
    * Deletes an object from IndexedDB
    * @param {Int} object
@@ -577,7 +617,7 @@ export default class ConnectionToOfflineDB {
       if (localDBName != "Changes" 
         && localDBName != 'Lines' 
         && localDBName != 'ModulePresets') {
-        if (object.lastSync.length > 0) {
+        if (object.lastSync > 0) {
           this.addObject({ _id: object._id, object: localDBName }, "Changes", "deleted");
         }
         this.deleteObject(object, "Changes", "created");

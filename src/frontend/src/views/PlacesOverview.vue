@@ -528,7 +528,10 @@ export default {
 
       // if there are no offlinePlaces, don't check for duplicates
       if (offlinePlaces.length == 0) {
-        console.log("No local places, so only show online")
+        console.log("No local places, so only show online");
+        onlinePlaces.forEach(async (onPlace) => {
+          await fromOfflineDB.addObject(onPlace, 'Places', 'places');
+        });
         this.places = onlinePlaces;
         return;
       }
@@ -541,7 +544,7 @@ export default {
       var sameIdFound = false;
 
       console.log("online and offline places have to be combined")
-      offlinePlaces.forEach((offPlace) => {
+      offlinePlaces.forEach(async (offPlace) => {
         for (var i = 0; i < onlinePlaces.length; i++) {
 
           if (offPlace._id == onlinePlaces[i]._id) {
@@ -551,6 +554,7 @@ export default {
               var tempPlace = onlinePlaces[i];
               onlinePlaces.splice(i, 1)
               newPlacesList.push(tempPlace);
+              await fromOfflineDB.addObject(tempPlace, 'Places', 'places');
             } else {
               newPlacesList.push(offPlace);
             }

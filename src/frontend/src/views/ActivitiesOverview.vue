@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 03.01.2024 15:35:38
+ * Last Modified: 03.01.2024 16:17:37
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -263,7 +263,11 @@ export default {
       // if there are not offlineActivities, don't check for duplicates
       if (offlineActivities.length == 0) {
         console.log("No local activities, so only show online")
+        onlineActivities.forEach(async (onActivity) => {
+          await fromOfflineDB.addObject(onActivity, 'Activities', 'activities');
+        });
         this.activities = onlineActivities;
+
         return;
       }
 
@@ -275,7 +279,7 @@ export default {
       var sameIdFound = false;
 
       console.log("online and offline activities have to be combined")
-      offlineActivities.forEach((offActivity) => {
+      offlineActivities.forEach(async (offActivity) => {
           for (var i=0; i<onlineActivities.length; i++) {
 
           if (offActivity._id == onlineActivities[i]._id) {
@@ -285,6 +289,8 @@ export default {
               var tempActivity = onlineActivities[i];
               onlineActivities.splice(i, 1)
               newActivityList.push(tempActivity);
+              //save this onlineActivity to IndexedDB
+              await fromOfflineDB.addObject(tempActivity, 'Activities', 'activities');
             } else {
               newActivityList.push(offActivity);
             }
