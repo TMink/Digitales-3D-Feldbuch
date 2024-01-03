@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 08.12.2023 14:21:45
+ * Last Modified: 03.01.2024 13:16:46
  * Modified By: Julian Hardtung
  * 
  * Description: `coordinates` input module for places/positions
@@ -175,7 +175,7 @@ export default {
         handler: function() {
           if ( this.object.rightTo != null ) {
             /* Send data back to ModuleViewer.vue */
-            this.$emit("dataToModuleViewer", [ 'rightTo', this.rightTo ]);
+            this.$emit("dataToModuleViewer", [ 'rightTo', this.object.rightTo ]);
           }
         }
       },

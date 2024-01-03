@@ -2,7 +2,7 @@
  * Created Date: 06.09.2023 17:19:12
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:39:40
+ * Last Modified: 03.01.2024 13:30:53
  * Modified By: Julian Hardtung
  * 
  * Description: input module viewer that shows all modules that are 
@@ -34,6 +34,7 @@
           @dataToModuleViewer="sendData($event)"/>
           
         <ModulePlane v-if='object.modulePreset.plane'
+          :planeProp="object.plane"
           @dataToModuleViewer="sendData($event)"/>
 
         <ModuleVisibility v-if='object.modulePreset.visibility'
