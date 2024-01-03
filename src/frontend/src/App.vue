@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:17:54
+ * Last Modified: 03.01.2024 12:32:09
  * Modified By: Julian Hardtung
  * 
  * Description: main entry point for the fieldbook + 
@@ -274,7 +274,7 @@ export default {
         db = selection + "s"
         st = selection.toLowerCase() + "s"
       }
-      const name = await fromOfflineDB.getObject(id, db, st);
+      const name = await fromOfflineDB.getObject(_id, db, st);
 
       switch (selection) {
         case "Activity":
