@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:22:39
+ * Last Modified: 03.01.2024 15:11:41
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -90,6 +90,10 @@
                       style="color:#C4A484;">
                       {{ $t('technical') }}
                     </v-list-item-title>
+                    
+                    <v-list-item-subtitle class="d-flex flex-row-reverse" v-if="item.raw.lastSync != ''">
+                      Last sync: {{ new Date(item.raw.lastSync).toLocaleString() }}
+                    </v-list-item-subtitle>
 
                   </td>
 
@@ -366,8 +370,10 @@ import Navigation from '../components/Navigation.vue';
 import AddButton from '../components/AddButton.vue';
 import ModuleCreator from '../components/ModuleCreator.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
+import { fromBackend } from '../ConnectionToBackend.js'
 import { useWindowSize } from 'vue-window-size';
 import { toRaw } from 'vue';
+import { useUserStore } from '../Authentication';
 
 export default {
   name: 'PlacesOverview',
@@ -379,9 +385,12 @@ export default {
   emits: ['view'],
   setup() {
     const { width, height } = useWindowSize();
+    const userStore = useUserStore();
+
     return {
       windowWidth: width,
       windowHeight: height,
+      userStore
     };
   },
 
@@ -504,9 +513,60 @@ export default {
     async updatePlaces() {
       var curActivityID = String(this.$cookies.get('currentActivity'));
 
-      this.places = await fromOfflineDB.getAllObjectsWithID(
+      var offlinePlaces = await fromOfflineDB.getAllObjectsWithID(
         curActivityID, 'Activity', 'Places', 'places');
-      this.places.sort((a, b) => (a.placeNumber > b.placeNumber) ? 1 : -1);
+      offlinePlaces.sort((a, b) => (a.placeNumber > b.placeNumber) ? 1 : -1);
+
+      // if user isn't logged in, just show the local stuff
+      if (!this.userStore.authenticated) {
+        console.log("Not logged in, so only show local places")
+        this.places = offlinePlaces;
+        return;
+      }
+
+      const onlinePlaces = await fromBackend.getDataWithParam('places/activity', curActivityID)
+
+      // if there are no offlinePlaces, don't check for duplicates
+      if (offlinePlaces.length == 0) {
+        console.log("No local places, so only show online")
+        this.places = onlinePlaces;
+        return;
+      }
+
+
+      // if user is logged in and local + online Places exist, 
+      // check for duplicates and which is newer
+      // and combine all places to the array for display
+      var newPlacesList = [];
+      var sameIdFound = false;
+
+      console.log("online and offline places have to be combined")
+      offlinePlaces.forEach((offPlace) => {
+        for (var i = 0; i < onlinePlaces.length; i++) {
+
+          if (offPlace._id == onlinePlaces[i]._id) {
+            sameIdFound = true;
+
+            if (onlinePlaces[i].lastChanged >= offPlace.lastChanged) {
+              var tempPlace = onlinePlaces[i];
+              onlinePlaces.splice(i, 1)
+              newPlacesList.push(tempPlace);
+            } else {
+              newPlacesList.push(offPlace);
+            }
+          }
+        }
+
+        if (!sameIdFound) {
+          newPlacesList.push(offPlace);
+        } else {
+          sameIdFound = false;
+        }
+      });
+
+      // add remaining online places to the whole list
+      newPlacesList.concat(onlinePlaces);
+      this.places = newPlacesList;
     },
 
     /**

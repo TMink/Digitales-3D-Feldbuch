@@ -10,6 +10,7 @@
 const express = require("express");
 const router = express.Router();
 const Place = require("../model/Place");
+const Activity = require("../model/Activity");
 
 /**
  * Takes the retrieved data from DB and builds a JSON-object
@@ -20,13 +21,38 @@ const Place = require("../model/Place");
  * @returns place Json-Object with all required fields
  */
 function getPlaceJson(doc) {
+  const curTime = Date.now();
   return {
     _id: doc._id,
+    activityID: doc.activityID,
     placeNumber: doc.placeNumber,
+    title: doc.title,
+    dating: doc.dating,
+    noFinding: doc.noFinding,
+    restFinding: doc.restFinding,
+    right: doc.right,
+    rightTo: doc.rightTo,
+    up: doc.up,
+    upTo: doc.upTo,
+    depthBot: doc.depthBot,
+    depthTop: doc.depthTop,
+    plane: doc.plane,
+    profile: doc.profile,
+    visibility: doc.visibility,
+    drawing: doc.drawing,
+    description: doc.description,
+    editor: doc.editor,
     date: doc.date,
-    address: doc.adress,
+    technical: doc.technical,
+
+    positions: doc.positions,
+    images: doc.images,
     models: doc.models,
-    positions: doc.positions
+    lines: doc.lines,
+    modulePreset: doc.modulePreset,
+
+    lastChanged: curTime,
+    lastSync: curTime,
   };
 }
 
@@ -44,6 +70,26 @@ router.get("/", async function (req, res, next) {
 });
 
 /**
+ * GET all places of an activity from MongoDB
+ */
+router.get("/activity/:activity_id", async function (req, res, next) {
+  try {
+    var activity = await Activity.findById(req.params.activity_id);
+  } catch (error) {
+    return res.status(404).send("No activity found: " + error);
+  }
+
+  try {
+    var placesArray = await Place.find({
+      '_id': { $in: activity.places}
+    });
+    return res.status(200).send(placesArray);
+  } catch (error) {
+    return res.status(404).send("No places found");
+  }  
+}); 
+
+/**
  * GET one place from MongoDB by place_id
  */
 router.get("/:place_id", async function (req, res, next) {
@@ -59,7 +105,9 @@ router.get("/:place_id", async function (req, res, next) {
  * POST new place to MongoDB
  */
 router.post("/:place_id", async function (req, res, next) {
+  console.log(req.body)
   var newPlace = getPlaceJson(req.body);
+  console.log(newPlace)
   try {
     const result = await Place.create(newPlace);
 
