@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 08.12.2023 14:23:50
+ * Last Modified: 03.01.2024 13:36:48
  * Modified By: Julian Hardtung
  * 
  * Description: `visibility` input module for places
@@ -36,7 +36,7 @@
   export default {
 		
 		props: {
-			visibilityProp: String,
+			visibilityProp: Number,
 		},
 
     emits: ['dataToModuleViewer'],
