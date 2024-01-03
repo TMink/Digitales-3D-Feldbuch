@@ -2,7 +2,7 @@
  * Created Date: 01.07.2023 14:01:06
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:39:35
+ * Last Modified: 03.01.2024 16:17:13
  * Modified By: Julian Hardtung
  * 
  * Description: vue component for adding a position
@@ -87,7 +87,7 @@ export default {
         images: [],
         models: [],
         lastChanged: Date.now(),
-        lastSync: ''
+        lastSync: 0
       };
 
       newPosition.modulePreset = toRaw(this.curModulePreset);

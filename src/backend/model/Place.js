@@ -12,7 +12,7 @@ const Schema = mongoose.Schema;
 
 const placeSchema = new Schema({
   _id: {
-    type: Number,
+    type: String,
     required: true,
   },
   activityID: String,

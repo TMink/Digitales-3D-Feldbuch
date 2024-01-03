@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:22:38
+ * Last Modified: 03.01.2024 16:31:34
  * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
@@ -191,7 +191,7 @@ export default {
         models: [],
         lines: [],    
         lastChanged: '',
-        lastSync: '',
+        lastSync: 0,
         
         /* Coordinates */
         right: '',

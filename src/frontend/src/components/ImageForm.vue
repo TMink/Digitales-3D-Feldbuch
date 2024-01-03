@@ -2,7 +2,7 @@
  * Created Date: 06.07.2023 13:22:10
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:39:37
+ * Last Modified: 03.01.2024 16:17:16
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for images of places/positions
@@ -365,7 +365,7 @@ export default {
         title: rawImage.title,
         image: await this.textureToBase64([imageFile]),
         lastChanged: Date.now(),
-        lastSync: ''
+        lastSync: 0
       };
 
       // automatically name the image title

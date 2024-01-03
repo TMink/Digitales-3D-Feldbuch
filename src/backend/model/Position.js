@@ -12,7 +12,7 @@ const Schema = mongoose.Schema;
 
 const positionsSchema = new Schema({
   _id: {
-    type: Number,
+    type: String,
     required: true,
   },
   placeID: Number,

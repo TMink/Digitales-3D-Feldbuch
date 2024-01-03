@@ -2,7 +2,7 @@
  * Created Date: 14.07.2023 17:06:51
  * Author: Julian Hardtung
  * 
- * Last Modified: 03.01.2024 12:21:38
+ * Last Modified: 03.01.2024 16:17:20
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for 3d-models of places/positions
@@ -607,7 +607,7 @@ export default {
         scale: null,
         rotation: null,
         lastChanged: Date.now(),
-        lastSync: '',
+        lastSync: 0,
         loaderType: this.model.model[0].name.split('.')[1]
       }
 

@@ -32,7 +32,7 @@
                     <v-list-item-title class="ma-4 text-center">
                       {{ activity.activityNumber }}
                     </v-list-item-title>
-                    <v-list-item-subtitle v-if="activity.lastSync != ''">
+                    <v-list-item-subtitle v-if="activity.lastSync > 0">
                       Last sync: {{ new Date(activity.lastSync).toLocaleString() }}
                     </v-list-item-subtitle>
                   </v-list-item>
@@ -411,7 +411,7 @@ export default {
           number: rawActivity.number,
           places: rawActivity.places,
           lastChanged: Date.now(),
-          lastSync: '',
+          lastSync: 0,
           editor: rawActivity.editor,
         }
 
