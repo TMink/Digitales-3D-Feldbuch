@@ -1,10 +1,11 @@
-/**
- * @ Author: Julian Hardtung
- * @ Create Time: 12.06.2023 11:17:28
- * @ Modified by: Julian Hardtung
- * @ Modified time: 05.12.2023 11:08:13
+/*
+ * Created Date: 12.06.2023 11:17:28
+ * Author: Julian Hardtung
  * 
- * Backend CRUD API routes for positions
+ * Last Modified: 03.01.2024 15:36:09
+ * Modified By: Julian Hardtung
+ * 
+ * Description: Backend CRUD API routes for positions
  */
 
 const express = require("express");
@@ -20,6 +21,7 @@ const Position = require("../model/Position");
  * @returns position Json-Object with all required fields
  */
 function getPositionJson(doc) {
+  const curTime = Date.now();
   return {
     _id: doc._id,
     placeID: doc.placeID,
@@ -27,6 +29,9 @@ function getPositionJson(doc) {
     date: doc.date,
     description: doc.description,
     images: doc.images,
+
+    lastChanged: curTime,
+    lastSync: curTime,
   };
 }
 

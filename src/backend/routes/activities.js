@@ -2,7 +2,7 @@
  * Created Date: 09.06.2023 12:43:13
  * Author: Julian Hardtung
  * 
- * Last Modified: 16.12.2023 12:59:10
+ * Last Modified: 03.01.2024 14:41:09
  * Modified By: Julian Hardtung
  * 
  * Description: Backend CRUD API routes for activities
@@ -22,6 +22,7 @@ const User = require("../model/User");
  * @returns activity Json-Object with all required fields
  */
 function getActivityJson(doc) {
+  const curTime = Date.now();
   return {
     _id: doc._id,
     activityNumber: doc.activityNumber,
@@ -29,8 +30,8 @@ function getActivityJson(doc) {
     year: doc.year,
     number: doc.number,
     places: doc.places,
-    lastChanged: doc.lastChanged,
-    lastSync: doc.lastSync,
+    lastChanged: curTime,
+    lastSync: curTime,
     editor: doc.editor,
   };
 }

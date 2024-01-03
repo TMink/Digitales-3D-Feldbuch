@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 16.12.2023 13:02:26
+ * Last Modified: 03.01.2024 15:35:38
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -480,20 +480,19 @@ export default {
       updatedActivity.editor.push(username);
 
       await fromOfflineDB.updateObject(updatedActivity, 'Activities', 'activities');
-      //await fromBackend.putData('activities', activity);
 
-      //update other user
+      // update other user
       if (username != this.userStore.user.username) {
-        const response = await fromBackend.getDataWithParam('user/name', username)
+        const response = await fromBackend.getDataWithParam('user/name', username);
         const user = response.user;
   
         user.activities.push(activity._id);
         await fromBackend.putData('user', user);
 
-        // update logged in user
       } else{
-        this.userStore.user.activities.push(activity._id)
-        this.userStore.updateUser()
+        // update logged in user
+        this.userStore.user.activities.push(activity._id);
+        this.userStore.updateUser();
       }
 
       await this.updateActivities();

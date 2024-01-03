@@ -544,6 +544,13 @@ export default class ConnectionToOfflineDB {
     });
   }
 
+        console.log("just uploaded activity, check PLACES");
+          console.log("PLACES FOUND");
+        console.log("just uploaded place, check POSITIONS/IMAGES/MODELS");
+          console.log("POSITIONS FOUND");
+        console.log("just uploaded position, check IMAGES/MODELS");
+        console.log("just uploaded image");
+        console.log("just uploaded model");
   /**
    * Deletes an object from IndexedDB
    * @param {Int} object
