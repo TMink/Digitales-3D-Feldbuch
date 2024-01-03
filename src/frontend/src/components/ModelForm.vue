@@ -2,7 +2,7 @@
  * Created Date: 14.07.2023 17:06:51
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:39:38
+ * Last Modified: 03.01.2024 12:21:38
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for 3d-models of places/positions
@@ -630,7 +630,7 @@ export default {
       await fromOfflineDB.addObject(
         newModel, 'Models', this.object_type.toLowerCase());
       await fromOfflineDB.addObject(
-        {id: newModelID, object: 'models' }, 'Changes', 'created');
+        {_id: newModelID, object: 'models' }, 'Changes', 'created');
       await this.updateModels(newModel._id);
 
       ctx.$emit('addModel', newModel._id);
