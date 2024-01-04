@@ -2,7 +2,7 @@
  * Created Date: 12.06.2023 11:17:28
  * Author: Julian Hardtung
  * 
- * Last Modified: 03.01.2024 15:36:09
+ * Last Modified: 04.01.2024 16:00:39
  * Modified By: Julian Hardtung
  * 
  * Description: Backend CRUD API routes for positions
@@ -26,9 +26,23 @@ function getPositionJson(doc) {
     _id: doc._id,
     placeID: doc.placeID,
     positionNumber: doc.positionNumber,
-    date: doc.date,
+    subNumber: doc.subNumber,
+    right: doc.right,
+    up: doc.up,
+    height: doc.height,
+    count: doc.count,
+    weight: doc.weight,
+    material: doc.material,
+    title: doc.title,
     description: doc.description,
+    dating: doc.dating,
+    editor: doc.editor,
+    date: doc.date,
+    hasSubNumber: doc.hasSubNumber,
+    isSeparate: doc.isSeparate,
+
     images: doc.images,
+    places: doc.places,
 
     lastChanged: curTime,
     lastSync: curTime,
