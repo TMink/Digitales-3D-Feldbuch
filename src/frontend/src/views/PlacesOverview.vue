@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 03.01.2024 16:13:55
+ * Last Modified: 04.01.2024 15:11:14
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -269,11 +269,11 @@
                 <!-- VISIBILITY -->
                 <td :style="getRowStyle(index)">
                   <v-list-item-title 
-                    v-if="item.raw.visibility != ''">
+                    v-if="item.raw.visibility != null">
                     {{ $tc('visibilities', item.raw.visibility) }}
                   </v-list-item-title>
                   <v-list-item-title 
-                    v-if="item.raw.visibility == ''" style="color:dimgrey;">
+                    v-if="item.raw.visibility == null" style="color:dimgrey;">
                     -
                   </v-list-item-title>
                 </td>
@@ -617,7 +617,7 @@ export default {
         depthBot: '',
         plane: '',
         profile: '',
-        visibility: '',
+        visibility: null,
         drawing: '',
         description: '',
         editor: '',
