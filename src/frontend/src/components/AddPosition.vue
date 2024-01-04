@@ -2,7 +2,7 @@
  * Created Date: 01.07.2023 14:01:06
  * Author: Julian Hardtung
  * 
- * Last Modified: 03.01.2024 16:17:13
+ * Last Modified: 04.01.2024 15:28:57
  * Modified By: Julian Hardtung
  * 
  * Description: vue component for adding a position
@@ -68,8 +68,8 @@ export default {
       const newPosition = {
         _id: newPositionID,
         placeID: curPlaceID,
-        positionNumber: '',
-        subNumber: '',
+        positionNumber: null,
+        subNumber: null,
         right: '',
         up: '',
         height: '',
@@ -79,7 +79,7 @@ export default {
         title: '',
         description: '',
         dating: '',
-        addressOf: '',
+        editor: '',
         date: new Date().toLocaleDateString("de-DE"),
         hasSubNumber: false,
         isSeparate: false,

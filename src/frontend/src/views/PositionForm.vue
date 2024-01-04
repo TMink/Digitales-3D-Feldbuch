@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 03.01.2024 16:18:06
+ * Last Modified: 04.01.2024 15:31:45
  * Modified By: Julian Hardtung
  * 
  * Description: input page for positions data 
@@ -135,7 +135,7 @@ export default {
         
         /* General */
         description: '',
-        addressOf: '',
+        editor: '',
         date: '',
         title: '',
         positionNumber: '',
@@ -259,8 +259,8 @@ export default {
         case 'description':             
           this.position.description = data[1];
           break;
-        case 'addressOf':
-          this.position.addressOf = data[1];
+        case 'editor':
+          this.position.editor = data[1];
           break;
         case 'date':
           this.position.date = data[1];
@@ -338,7 +338,7 @@ export default {
       this.updateAutoFillList( 'datings', this.position.dating, this.datingsList )
       this.updateAutoFillList( 'titles', this.position.title, this.titlesList )
       this.updateAutoFillList( 'materials', this.position.material, this.materialsList )
-      this.updateAutoFillList( 'editors', this.position.addressOf, this.editorsList )
+      this.updateAutoFillList( 'editors', this.position.editor, this.editorsList )
     },
 
     async updateAutoFillList( storeName, item, itemList) {

@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 03.01.2024 16:18:10
+ * Last Modified: 04.01.2024 15:31:25
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -245,11 +245,11 @@
                   <!-- EDITOR -->
                   <td :style="getRowStyle(index)">
                     <v-list-item-title
-                      v-if="item.raw.addressOf != ''">
-                      {{ item.raw.addressOf }}
+                      v-if="item.raw.editor != ''">
+                      {{ item.raw.editor }}
                     </v-list-item-title>
                     <v-list-item-title 
-                      v-if="item.raw.addressOf == ''" style="color:dimgrey;">
+                      v-if="item.raw.editor == ''" style="color:dimgrey;">
                       -
                     </v-list-item-title>
                   </td>
@@ -583,7 +583,7 @@ export default {
         title: '',
         description: '',
         dating: '',
-        addressOf: '',
+        editor: '',
         date: new Date().toLocaleDateString("de-DE"),
         hasSubNumber: false,
         isSeparate: false,

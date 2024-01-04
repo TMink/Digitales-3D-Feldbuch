@@ -2,7 +2,7 @@
  * Created Date: 26.06.2023 15:10:20
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:39:34
+ * Last Modified: 04.01.2024 15:30:45
  * Modified By: Julian Hardtung
  * 
  * Description: export all (or only specified) data to .pdf or .csv
@@ -829,7 +829,7 @@ export default {
                 { header: 'PositionsNr', dataKey: 'positionNumber' },
                 { header: 'Datum', dataKey: 'date' },
                 { header: 'Ansprache', dataKey: 'title' },
-                { header: 'Bearbeiter', dataKey: 'addressOf' },
+                { header: 'Bearbeiter', dataKey: 'editor' },
                 { header: 'Beschreibung', dataKey: 'description' },
                 { header: 'Rechts', dataKey: 'right' },
                 { header: 'Hoch', dataKey: 'up' },
@@ -935,7 +935,7 @@ export default {
           { header: 'Ansprache', dataKey: 'title' },
           { header: 'Kommentar', dataKey: 'description' },
           { header: 'Datierung', dataKey: 'dating' },
-          { header: 'Ansprache von', dataKey: 'addressOf' },
+          { header: 'Ansprache von', dataKey: 'editor' },
           { header: 'Datum', dataKey: 'date' },
           { header: 'Getrennt', dataKey: 'isSeparate' },
         ],
