@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.01.2024 12:15:04
+ * Last Modified: 09.01.2024 12:25:52
  * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
@@ -114,7 +114,7 @@
 
           <!-- Tab item 'pictures' -->
           <v-window-item value="three">
-            <ImageForm 
+            <ImageOverview
               :object_id="place._id"  
               object_type="Places"
               @addImage="addImage($event)"/>
@@ -147,7 +147,7 @@
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import ConfirmDialog from '../components/ConfirmDialog.vue';
 import AddPosition from '../components/AddPosition.vue';
-import ImageForm from '../components/ImageForm.vue';
+import ImageOverview from '../components/ImageOverview.vue';
 import ModuleViewer from '../components/ModuleViewer.vue';
 import ModelForm from '../components/ModelForm.vue';
 import { toRaw } from 'vue';
@@ -161,7 +161,7 @@ export default {
     Navigation,
     ConfirmDialog,
     AddPosition,
-    ImageForm,
+    ImageOverview,
     ModuleViewer,
     ModelForm
   },
