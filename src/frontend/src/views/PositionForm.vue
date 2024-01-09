@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.01.2024 12:14:40
+ * Last Modified: 09.01.2024 16:04:28
  * Modified By: Julian Hardtung
  * 
  * Description: input page for positions data 
@@ -56,8 +56,7 @@
           <!-- TAB ITEM 'IMAGES' -->
           <v-window-item value="two">
             <ImageForm 
-              object_type="Positions" 
-              :object_id="position._id" 
+              :position_prop="position" 
               @addImage="addImage($event)"/>
           </v-window-item>
 

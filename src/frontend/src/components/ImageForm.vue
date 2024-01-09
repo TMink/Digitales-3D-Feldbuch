@@ -2,7 +2,7 @@
  * Created Date: 06.07.2023 13:22:10
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.01.2024 12:15:23
+ * Last Modified: 09.01.2024 16:12:42
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for images of places/positions
@@ -193,7 +193,7 @@ import { useWindowSize } from 'vue-window-size';
 import { toRaw } from 'vue';
 
 export default {
-  name: "AddPosition",
+  name: "ImageForm",
   components: {
     AddButton
   },
@@ -201,8 +201,7 @@ export default {
    * Props from PlaceForm/PositionForm
    */
   props: {
-    object_id: String,
-    object_type: String,
+    position_prop: Object,
   },
   emits: ['addImage'],
   /**
@@ -210,7 +209,7 @@ export default {
    */
   data() {
     return {
-      object: '',
+      position: '',
       image: {
         _id: '',
         positionID: '',
@@ -243,42 +242,18 @@ export default {
    */
   async created() {
     await fromOfflineDB.syncLocalDBs();
-    await this.updateObject();
+    this.position = this.position_prop;
     await this.updateImages();
 
     this.curPath = await this.getAutoImgTitle();
   },
   methods: {
     /**
-     * Update reactive Vue.js object data
-     */
-    async updateObject() {
-      this.object = await fromOfflineDB.getObject(this.object_id, 
-                        this.object_type, this.object_type.toLowerCase());
-    },
-
-    /**
      * Update reactive Vue.js images data
      */
     async updateImages() {
-      var objectType = this.object_type.substring(0, this.object_type.length - 1);
-
-      if (this.$route.name == 'PlaceCreation') {
-        var allPositions = await fromOfflineDB.getAllObjectsFromArray(this.object.positions, 'Positions', 'positions');
-        var allImages = [];
-
-        allPositions.forEach(curPos => {
-          if (curPos.images.length > 0 ) {
-            curPos.images.forEach(imagesID => {
-              allImages.push(imagesID);
-            });
-          }
-        });
-        this.images = await fromOfflineDB.getAllObjectsFromArray(allImages, 'Images', 'images');
-      } else {
         this.images = await fromOfflineDB.getAllObjectsWithID(
-                        this.object_id, objectType, 'Images', 'images');
-      }
+                        this.position._id, 'Position', 'Images', 'images');
     },
 
     /**
@@ -331,19 +306,18 @@ export default {
       // get all data for the new image
       var newImage = await this.fillNewImgData(imageFile, imageNumber);
 
-      // add imageID to the object array of all images
-      var rawObject = toRaw(this.object);
+      // add imageID to the position array of all images
+      var rawPosition = toRaw(this.position);
 
-      // update lastChanged date of object
-      rawObject.images.push(newImage._id);
-      rawObject.lastChanged = Date.now();
+      // update lastChanged date of position
+      rawPosition.images.push(newImage._id);
+      rawPosition.lastChanged = Date.now();
 
       // hide image creation dialog
       this.create_dialog = false;
 
-
       // update IndexedDB
-      fromOfflineDB.updateObject(rawObject, this.object_type, this.object_type.toLowerCase());
+      fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions');
       fromOfflineDB.addObject(newImage, "Images", "images");
       fromOfflineDB.addObject({ _id: newImage._id, object: 'images' }, 'Changes', 'created');
       return newImage;
@@ -374,11 +348,7 @@ export default {
       }
 
       // set the image parentID
-      if (this.object_type == "Positions") {
-        filledImg.positionID = this.object_id;
-      } else {
-        filledImg.placeID = this.object_id;
-      }
+      filledImg.positionID = this.position._id;
 
       return filledImg;
     },
@@ -400,8 +370,6 @@ export default {
      */
     clearImgProxy() {
       this.image._id = '';
-      //this.image.positionID = '';
-      //this.image.placeID = '';
       this.image.title = '';
       this.image.image = [];
       this.temp_editing_img = [];
@@ -439,21 +407,20 @@ export default {
     },
 
     /**
-     * Removes an image from IndexedDB and the connected object
+     * Removes an image from IndexedDB and the connected position
      * @param {ProxyObject} image 
      */
     async deleteImage(image) {
 
       var rawImage = toRaw(image);
-      var rawObject = toRaw(this.object);
-      var index = rawObject.images.indexOf(rawImage._id.toString());
+      var rawPosition = toRaw(this.position);
+      var index = rawPosition.images.indexOf(rawImage._id.toString());
 
-      // Remove the imageID from connected object
+      // Remove the imageID from connected position
       if (index != -1) {
-        rawObject.images.splice(index, 1);
-        rawObject.lastChanged = Date.now();
-        await fromOfflineDB.updateObject(
-              rawObject, this.object_type, this.object_type.toLowerCase());
+        rawPosition.images.splice(index, 1);
+        rawPosition.lastChanged = Date.now();
+        await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions');
       }
 
       // Delete the image itself
@@ -481,7 +448,7 @@ export default {
 
     /**
      * Creates and returns the title beginning of an image for 
-     * the current `place`/`position`.
+     * the current `position`.
      * 
      * To create a full image title the `imageNumber` has to be 
      * appended to this return `String`.
