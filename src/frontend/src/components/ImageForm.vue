@@ -75,7 +75,7 @@
         <v-col cols="9">
           <v-text-field v-if="automaticNaming"
             :disabled="automaticNaming">
-            {{ curPath }}*imgNumber*
+            {{ curPath }}
           </v-text-field>
           <v-text-field 
             v-if="!automaticNaming"
@@ -140,7 +140,7 @@
                 no-hints
                 v-if="automaticNaming"
                 :disabled="automaticNaming">
-                {{ curPath + String(image.imageNumber).padStart(4, '0') }}
+                {{ curPath }}
               </v-text-field>
 
               <v-text-field 
@@ -343,8 +343,7 @@ export default {
 
       // automatically name the image title
       if (this.automaticNaming) {
-        var imgNumber = String(imageNumber).padStart(4, '0');
-        filledImg.title = this.curPath + imgNumber;
+        filledImg.title = await this.getAutoImgTitle();
       }
 
       // set the image parentID
@@ -462,20 +461,12 @@ export default {
       const curPlace = await fromOfflineDB.getObject(curPlaceID, 'Places', 'places');
       const placeNumber = curPlace.placeNumber.toString().padStart(4, '0');
 
+      const posNumber = this.position.positionNumber.toString().padStart(4, '0');
+
       var autoTitle = curActivity.activityNumber
         + '_' + placeNumber
-        + '_';
+        + '_' + posNumber;
 
-      if (this.object_type == 'positions') {
-        const curPosID = this.$cookies.get('currentPosition');
-        const curPos = await fromOfflineDB.getObject(curPosID, 'Positions', 'positions');
-        const posNumber = curPos.positionNumber.toString().padStart(4, '0');
-
-        autoTitle = curActivity.activityNumber
-          + '_' + placeNumber
-          + '_' + posNumber
-          + '_';
-      }
 
       return autoTitle;
     },
