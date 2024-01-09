@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 03.01.2024 16:31:34
+ * Last Modified: 09.01.2024 12:15:04
  * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
@@ -247,7 +247,6 @@ export default {
       positions: null,
       titles: [],
       datings: [],
-      is_required: [v => !!v || 'Pflichtfeld'],
       tickLabels: {
         3: this.$t('veryGood'),
         2: this.$t('good'),

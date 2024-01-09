@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 03.01.2024 13:16:46
+ * Last Modified: 09.01.2024 12:15:49
  * Modified By: Julian Hardtung
  * 
  * Description: `coordinates` input module for places/positions
@@ -96,8 +96,7 @@
           <v-text-field 
             color="primary" 
             hide-details 
-            :label="$t('right') + ' *'" 
-            :rules="is_required"
+            :label="$t('right')" 
             v-model="object.right" 
             @keypress="filterNonNumeric(event)"
             :hint="$tc('please_input', 2, { msg: 'Rechtswert' })">
@@ -110,8 +109,7 @@
           <v-text-field 
             hide-details 
             color="primary" 
-            :label="$t('up') + ' *'" 
-            :rules="is_required" 
+            :label="$t('up')" 
             v-model="object.up"
             @keypress="filterNonNumeric(event)" 
             :hint="$tc('please_input', 2, { msg: 'Hochwert' })">
@@ -123,9 +121,8 @@
         <v-col lg="4">
           <v-text-field 
             hide-details 
-            :label="$t('height') + ' *'" 
+            :label="$t('height')" 
             color="primary" 
-            :rules="is_required"
             v-model="object.height" 
             @keypress="filterNonNumeric(event)" 
             :hint="$tc('please_input', 2, { msg: 'Höhe' })">
@@ -157,7 +154,6 @@ export default {
           right: null,
 
           height: null,
-          is_required: [v => !!v || 'Pflichtfeld'],
         },
 			}
 		},

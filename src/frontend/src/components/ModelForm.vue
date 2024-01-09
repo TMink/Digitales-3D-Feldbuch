@@ -2,7 +2,7 @@
  * Created Date: 14.07.2023 17:06:51
  * Author: Julian Hardtung
  * 
- * Last Modified: 03.01.2024 16:17:20
+ * Last Modified: 09.01.2024 12:15:11
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for 3d-models of places/positions
@@ -263,7 +263,6 @@ export default {
       models: [],
       create_dialog: false,
       edit_dialog: false,
-      is_required: [v => !!v || 'Pflichtfeld'],
       canvases: [],
       contexts: [],
       scenes: [],

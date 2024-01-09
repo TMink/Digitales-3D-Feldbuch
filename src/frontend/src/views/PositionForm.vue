@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 04.01.2024 15:31:45
+ * Last Modified: 09.01.2024 12:14:40
  * Modified By: Julian Hardtung
  * 
  * Description: input page for positions data 
@@ -158,7 +158,6 @@ export default {
       datings: [],
       error_dialog: false,
       error_message: '',
-      is_required: [v => !!v || 'Pflichtfeld'],
       tab: null,
       hasUnsavedChanges: false,
       componentHasLoaded: false,

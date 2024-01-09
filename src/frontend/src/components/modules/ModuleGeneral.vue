@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 04.01.2024 15:38:15
+ * Last Modified: 09.01.2024 12:16:07
  * Modified By: Julian Hardtung
  * 
  * Description: `general information` input module for places/positions
@@ -23,7 +23,6 @@
             :label="$tc('posNumber', 2) + ' *'" 
             maxlength="6" 
             hide-details 
-            :rules="is_required"
             v-model="object.positionNumber" 
             @keypress="filterAllNonNumeric(event)">
           </v-text-field>
@@ -128,7 +127,6 @@
             :items="editorItemsSecondProp" 
             :label="$t('editor') + ' *'" 
             :hide-no-data="false" 
-            :rules="is_required"
             v-model="object.editor"
             :hint="$tc('please_input', 2, { msg: 'Ansprache von' })">
 
@@ -199,7 +197,6 @@
             :items="editorItemsSecondProp" 
             :label="$t('editor')" 
             :hide-no-data="false" 
-            :rules="is_required"
             v-model="object.editor">
 
             <template v-slot:no-data>
@@ -252,7 +249,6 @@ export default {
         subNumber: null,
         editor: null,
       },
-      is_required: [v => !!v || 'Pflichtfeld'],
       titleItems: [],
       editorItems: [],
     }

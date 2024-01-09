@@ -2,7 +2,7 @@
  * Created Date: 06.07.2023 13:22:10
  * Author: Julian Hardtung
  * 
- * Last Modified: 03.01.2024 16:17:16
+ * Last Modified: 09.01.2024 12:15:23
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for images of places/positions
@@ -229,7 +229,6 @@ export default {
       curPath: '',
       edit_dialog: false,
       img_carousel_dialog: false,
-      is_required: [v => !!v || 'Pflichtfeld'],
     }
   },
   setup() {
