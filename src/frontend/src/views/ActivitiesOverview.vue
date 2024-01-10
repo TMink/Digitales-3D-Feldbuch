@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 03.01.2024 16:17:37
+ * Last Modified: 10.01.2024 17:50:57
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -279,30 +279,30 @@ export default {
       var sameIdFound = false;
 
       console.log("online and offline activities have to be combined")
-      offlineActivities.forEach(async (offActivity) => {
-          for (var i=0; i<onlineActivities.length; i++) {
+        offlineActivities.forEach(async (offActivity) => {
+            for (var i=0; i<onlineActivities.length; i++) {
 
-          if (offActivity._id == onlineActivities[i]._id) {
-            sameIdFound = true;
+            if (offActivity._id == onlineActivities[i]._id) {
+              sameIdFound = true;
 
-            if (onlineActivities[i].lastChanged >= offActivity.lastChanged) {
-              var tempActivity = onlineActivities[i];
-              onlineActivities.splice(i, 1)
-              newActivityList.push(tempActivity);
-              //save this onlineActivity to IndexedDB
-              await fromOfflineDB.addObject(tempActivity, 'Activities', 'activities');
-            } else {
-              newActivityList.push(offActivity);
+              if (onlineActivities[i].lastChanged >= offActivity.lastChanged) {
+                var tempActivity = onlineActivities[i];
+                onlineActivities.splice(i, 1)
+                newActivityList.push(tempActivity);
+                //save this onlineActivity to IndexedDB
+                await fromOfflineDB.addObject(tempActivity, 'Activities', 'activities');
+              } else {
+                newActivityList.push(offActivity);
+              }
             }
           }
-        }
 
-        if (!sameIdFound) {
-          newActivityList.push(offActivity);
-        } else {
-          sameIdFound = false;
-        }
-      });
+          if (!sameIdFound) {
+            newActivityList.push(offActivity);
+          } else {
+            sameIdFound = false;
+          }
+        });
 
       // add remaining online activities to the whole list
       newActivityList.concat(onlineActivities);
@@ -531,7 +531,11 @@ export default {
       this.$cookies.remove('currentActivity');
 
       var activityIndex = this.activities.indexOf(activity);
-      this.activities.splice(activityIndex);
+
+      if (activityIndex != -1) {
+        this.activities.splice(activityIndex, 1);
+      }
+      
       await fromOfflineDB.deleteCascade(activity._id, 'activity', 'Activities', 'activities');
     },
 
