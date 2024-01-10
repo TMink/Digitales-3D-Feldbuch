@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 16.12.2023 12:29:00
+ * Last Modified: 11.01.2024 00:18:20
  * Modified By: Julian Hardtung
  * 
  * Description: Helper API to the backend server
@@ -16,8 +16,6 @@
  */
 
 import axios from 'axios';
-import { fromOfflineDB } from "./ConnectionToOfflineDB";
-import VueCookies from 'vue-cookies';
 export { fromBackend }
 
 class ConnectionToBackend {
@@ -192,6 +190,27 @@ class ConnectionToBackend {
         .catch(function (error) {
           console.log(error);
         });
+    });
+  }
+
+/**
+ * This sends a delete request to the backend with `subdomain` and `id`
+ * @param {String} subdomain 
+ * @param {String} id 
+ * @returns 
+ */
+  async deleteData(subdomain, id) {
+    return new Promise((resolve, reject) => {
+      axios({
+        method: "delete",
+        url: "/" + subdomain + "/" + id,
+      })
+      .then(function (res) {
+        resolve(res);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
     });
   }
 
