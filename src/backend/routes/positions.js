@@ -2,7 +2,7 @@
  * Created Date: 12.06.2023 11:17:28
  * Author: Julian Hardtung
  * 
- * Last Modified: 04.01.2024 16:00:39
+ * Last Modified: 11.01.2024 00:15:12
  * Modified By: Julian Hardtung
  * 
  * Description: Backend CRUD API routes for positions
@@ -11,6 +11,7 @@
 const express = require("express");
 const router = express.Router();
 const Position = require("../model/Position");
+const Place = require("../model/Place");
 
 /**
  * Takes the retrieved data from DB and builds a JSON-object
@@ -40,6 +41,7 @@ function getPositionJson(doc) {
     date: doc.date,
     hasSubNumber: doc.hasSubNumber,
     isSeparate: doc.isSeparate,
+    modulePreset: doc.modulePreset,
 
     images: doc.images,
     places: doc.places,
@@ -61,6 +63,26 @@ router.get("/", async function (req, res, next) {
 
   res.status(200).send(positionsArray);
 });
+
+/**
+ * GET all positions of a place from MongoDB
+ */
+router.get("/place/:place_id", async function (req, res, next) {
+  try {
+    var place = await Place.findById(req.params.place_id);
+  } catch (error) {
+    return res.status(404).send("No place found: " + error);
+  }
+
+  try {
+    var positionsArray = await Position.find({
+      '_id': { $in: place.positions}
+    });
+    return res.status(200).send(positionsArray);
+  } catch (error) {
+    return res.status(404).send("No positions found");
+  }  
+}); 
 
 /**
  * GET one position from MongoDB by position_id
