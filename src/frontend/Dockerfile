@@ -2,7 +2,7 @@
 # Created Date: 29.11.2023 18:39:43
 # Author: Oliver Mertens
 # 
-# Last Modified: 10.01.2024 22:13:24
+# Last Modified: 11.01.2024 10:53:53
 # Modified By: Julian Hardtung
 # 
 # Description: Dockerfile for creation of a fieldbook_frontend Dockerimage
@@ -36,4 +36,4 @@ USER node
 # Expose the port that the app listens on
 EXPOSE 5173
 
-CMD npm run dev
+CMD npm run dev -- --host

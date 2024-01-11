@@ -6,7 +6,7 @@
   "private": true,
   "main": "./electron-main.js",
   "scripts": {
-    "dev": "vite --host",
+    "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest",
