@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 11.01.2024 00:18:20
+ * Last Modified: 11.01.2024 12:11:14
  * Modified By: Julian Hardtung
  * 
  * Description: Helper API to the backend server
@@ -19,46 +19,7 @@ import axios from 'axios';
 export { fromBackend }
 
 class ConnectionToBackend {
-  /**
-   *
-   * @param {String} url
-   * @param {String} dataCategory  - Category that is searched for
-   * @param {String} identifier    - Term that is searched for
-   * @returns -> Promise(object)
-   */
-  /*async getData(url, dataCategory, identifier) {
-     return new Promise((resolve, reject) => {
-      try {
-        axios.get(url).then((res) => {
-          const data = [];
-          switch (dataCategory) {
-            case "_id":
-              for (var i = 0; i < res.data.length; i++) {
-                if (res.data[i]._id == identifier) {
-                  data.push(res.data[i]);
-                }
-              }
-              break;
 
-            case "title":
-              for (var i = 0; i < res.data.length; i++) {
-                if (res.data[i].title == identifier) {
-                  data.push(res.data[i]);
-                }
-              }
-              break;
-
-            default:
-              break;
-          }
-
-          resolve(data);
-        });
-      } catch (error) {
-        console.log(error);
-      }
-    });
-  } */
 
   /**
    * @param {String} url
@@ -144,7 +105,7 @@ class ConnectionToBackend {
       })
         .then(function (res) {
           //TODO: Delete the uploaded change from the Changes localDB
-          resolve(res);
+          resolve(res.data);
         })
         .catch(function (error) {
           console.log(error);
