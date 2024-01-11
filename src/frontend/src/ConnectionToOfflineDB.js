@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Tobias Mink
  * 
- * Last Modified: 04.01.2024 15:15:50
+ * Last Modified: 04.01.2024 15:31:40
  * Modified By: Julian Hardtung
  * 
  * Description: Helper API for manipulating the IndexedDB
@@ -554,6 +554,7 @@ export default class ConnectionToOfflineDB {
 
     // check which cascading data has to be uploaded next
     switch (subdomain) {
+
       case "activities":
         console.log("just uploaded activity, check PLACES");
         if (data.places) {
@@ -564,6 +565,7 @@ export default class ConnectionToOfflineDB {
           }
         }
         break;
+
       case "places":
         console.log("just uploaded place, check POSITIONS/IMAGES/MODELS");
         if (data.positions) {
@@ -574,14 +576,17 @@ export default class ConnectionToOfflineDB {
           }
         }
         break;
+
       case "positions":
         console.log("just uploaded position, check IMAGES/MODELS");
         //TODO: positions upload and recursive progressing
         break;
+
       case "images":
         console.log("just uploaded image");
         //TODO: image upload
         break;
+
       case "models":
         console.log("just uploaded model");
         //TODO: model upload
@@ -789,7 +794,7 @@ const offlineDBModulePresets = {
 const offlineDBAutoFillLists = {
   name: "AutoFillLists",
   version: 1,
-  storeNames: ["editors", "addressOf", "materials", "titles", "datings"],
+  storeNames: ["editors", "editor", "materials", "titles", "datings"],
 }
 
 const fromOfflineDB = new ConnectionToOfflineDB([

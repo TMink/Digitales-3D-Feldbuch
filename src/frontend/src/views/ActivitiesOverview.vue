@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 10.01.2024 17:50:57
+ * Last Modified: 11.01.2024 14:36:50
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -11,6 +11,9 @@
 <template>
   <div id="wrapper">
     <Navigation active_tab_prop="0" />
+
+    <OnlineImport />
+
     <v-row class="pt-4">
       <v-spacer></v-spacer>
       <v-form class="w-75 pa-2">
@@ -203,6 +206,7 @@ import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
 import { fromBackend } from '../ConnectionToBackend.js'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 import AddButton from '../components/AddButton.vue'
+import OnlineImport from '../components/OnlineImport.vue'
 import { toRaw } from 'vue'
 import { useUserStore } from '../Authentication.js';
 
@@ -212,7 +216,8 @@ export default {
   components: {
     Navigation,
     ConfirmDialog,
-    AddButton
+    AddButton,
+    OnlineImport
   },
   setup() {
     const userStore = useUserStore();
@@ -248,6 +253,13 @@ export default {
      * Get all activities from IndexedDb and Backend
      */
     async updateActivities() {
+      this.activities = await fromOfflineDB.getAllObjects('Activities', 'activities');
+    },
+
+    /**
+     * @deprecated
+     */
+    async updateActivitiesFull() {
 
       var offlineActivities = await fromOfflineDB.getAllObjects('Activities', 'activities');
 

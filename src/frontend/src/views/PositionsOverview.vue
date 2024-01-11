@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 04.01.2024 15:31:25
+ * Last Modified: 11.01.2024 14:35:40
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -90,6 +90,10 @@
                       v-if="item.raw.title.length == 0" style="color:dimgrey;">
                       -
                     </v-list-item-title>
+
+                    <v-list-item-subtitle class="d-flex flex-row-reverse" v-if="item.raw.lastSync != ''">
+                        Last sync: {{ new Date(item.raw.lastSync).toLocaleString() }}
+                      </v-list-item-subtitle>
                   </td>
 
                   <!-- DATE -->
@@ -333,8 +337,10 @@ import Navigation from '../components/Navigation.vue';
 import { toRaw } from 'vue';
 import ModuleCreator from '../components/ModuleCreator.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
+import { fromBackend } from '../ConnectionToBackend.js'
 import AddPosition from '../components/AddPosition.vue';
 import { useWindowSize } from 'vue-window-size';
+import { useUserStore } from '../Authentication';
 
 export default {
   name: 'PositionsOverview',
@@ -348,9 +354,11 @@ export default {
 
   setup() {
     const { width, height } = useWindowSize();
+    const userStore = useUserStore();
     return {
       windowWidth: width,
       windowHeight: height,
+      userStore
     };
   },
 
@@ -482,6 +490,71 @@ export default {
 
       this.positions = await fromOfflineDB.getAllObjectsWithID(
         curPlaceID, 'Place', 'Positions', 'positions');
+    },
+
+    /**
+     * @deprecated
+     */
+    async updatePositionsFull() {
+      var curPlaceID = String(this.$cookies.get('currentPlace'));
+
+      var offlinePositions = await fromOfflineDB.getAllObjectsWithID(
+        curPlaceID, 'Place', 'Positions', 'positions');
+
+      // if user isn't logged in, just show the local stuff
+      if (!this.userStore.authenticated) {
+        console.log("Not logged in, so only show local positions")
+        this.positions = offlinePositions;
+        return;
+      }
+
+      const onlinePositions = await fromBackend.getDataWithParam('positions/place', curPlaceID)
+
+      // if there are no offlinePositions, don't check for duplicates
+      if (offlinePositions.length == 0) {
+        console.log("No local positions, so only show online");
+        onlinePositions.forEach(async (onPosition) => {
+          await fromOfflineDB.addObject(onPosition, 'Positions', 'positions');
+        });
+        this.places = onlinePositions;
+        return;
+      }
+
+
+      // if user is logged in and local + online Places exist, 
+      // check for duplicates and which is newer
+      // and combine all places to the array for display
+      var newPositionsList = [];
+      var sameIdFound = false;
+
+      console.log("online and offline positions have to be combined")
+      offlinePositions.forEach(async (offPosition) => {
+        for (var i = 0; i < onlinePositions.length; i++) {
+
+          if (offPosition._id == onlinePositions[i]._id) {
+            sameIdFound = true;
+
+            if (onlinePositions[i].lastChanged >= offPosition.lastChanged) {
+              var tempPosition = onlinePositions[i];
+              onlinePositions.splice(i, 1)
+              newPositionsList.push(tempPosition);
+              await fromOfflineDB.addObject(tempPosition, 'Positions', 'positions');
+            } else {
+              newPositionsList.push(offPosition);
+            }
+          }
+        }
+
+        if (!sameIdFound) {
+          newPositionsList.push(offPosition);
+        } else {
+          sameIdFound = false;
+        }
+      });
+
+      // add remaining online places to the whole list
+      newPositionsList.concat(onlinePositions);
+      this.positions = newPositionsList;
     },
 
     async updateModulePresets() {
