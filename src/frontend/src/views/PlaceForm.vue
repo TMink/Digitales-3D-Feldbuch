@@ -2,14 +2,14 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.01.2024 12:25:52
- * Modified By: Julian Hardtung
+ * Last Modified: 11.01.2024 15:03:24
+ * Modified By: Methusshan Elankumaran
  * 
  * Description: input page for places data 
  *              (shows input modules according to module preset)
  -->
 
-<template>
+ <template>
   <Navigation active_tab_prop="1" />
   <v-container fluid>
     <v-row no-gutters>
@@ -19,7 +19,8 @@
             <v-tab value="one" rounded="0"> {{ $t('general') }} </v-tab>
             <v-tab class="hideable" value="two" rounded="0"> {{ $t('position') }} </v-tab>
             <v-tab value="three" rounded="0"> {{ $tc('image', 2) }} </v-tab>
-            <v-tab class="hideable" value="four" rounded="0"> {{ $tc('model', 2) }} </v-tab>
+            <v-tab class="hideable" value="four" rounded="0"> {{ $tc('technicalDrawing', 2) }} </v-tab>
+            <v-tab class="hideable" value="five" rounded="0"> {{ $tc('model', 2) }} </v-tab>
             <v-btn rounded="0" v-on:click="savePlace()" color="primary">
               {{ $t('save') }}
             </v-btn>
@@ -114,14 +115,42 @@
 
           <!-- Tab item 'pictures' -->
           <v-window-item value="three">
-            <ImageOverview
+            <ImageForm 
               :object_id="place._id"  
               object_type="Places"
               @addImage="addImage($event)"/>
           </v-window-item>
 
-          <!-- Tab item 'models' -->
+          <!-- Tab item 'technical drawing' -->
           <v-window-item value="four">
+            <v-toolbar :height="50" color="surface" density="default">
+              <v-btn-toggle>
+                <v-btn @click="canvasSettings.eraser = false" :background-color="primary" icon="mdi-pencil"></v-btn>
+                <v-btn @click="canvasSettings.eraser = true" :background-color="primary" icon="mdi-eraser"></v-btn>
+              </v-btn-toggle>
+              <v-btn @click="canvasSettings.colorPicker = !canvasSettings.colorPicker" :background-color="primary" icon="mdi-palette"></v-btn>
+              <v-btn :background-color="primary" icon="mdi-shape"></v-btn>
+              <v-btn :background-color="primary" icon="mdi-undo"></v-btn>
+              <v-btn :background-color="primary" icon="mdi-redo"></v-btn>
+              <v-btn :background-color="primary" icon="mdi-star"></v-btn>
+            </v-toolbar>
+            <div style="positon:relative">
+              <v-expand-transition>
+                <v-color-picker class="mt-3" style="position:absolute" v-show="canvasSettings.colorPicker" v-model="canvasSettings.color"></v-color-picker>
+              </v-expand-transition>
+              <vue-drawing-canvas ref="VueCanvasDrawing" class="mt-3" :width="1200" :height="600" :eraser="canvasSettings.eraser" :line-width="canvasSettings.lineWidth" :background-color="canvasSettings.backgroundColor"
+                                    :color="canvasSettings.color"/>
+            </div>
+            <v-row justify="end">
+              <v-col class="text-left" >
+                <v-btn color="primary" class="mr-2"><v-icon>mdi-content-save-all</v-icon></v-btn>
+                <v-btn color="primary"><v-icon>mdi-download</v-icon></v-btn>
+              </v-col>
+            </v-row>
+          </v-window-item>
+
+          <!-- Tab item 'models' -->
+          <v-window-item value="five">
             <ModelForm 
               :object_id="place._id" 
               object_type="Places"
@@ -147,12 +176,13 @@
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import ConfirmDialog from '../components/ConfirmDialog.vue';
 import AddPosition from '../components/AddPosition.vue';
-import ImageOverview from '../components/ImageOverview.vue';
+import ImageForm from '../components/ImageForm.vue';
 import ModuleViewer from '../components/ModuleViewer.vue';
 import ModelForm from '../components/ModelForm.vue';
 import { toRaw } from 'vue';
 import { useWindowSize } from 'vue-window-size';
 import Navigation from '../components/Navigation.vue';
+import VueDrawingCanvas from "vue-drawing-canvas";
 
 export default {
 
@@ -161,9 +191,10 @@ export default {
     Navigation,
     ConfirmDialog,
     AddPosition,
-    ImageOverview,
+    ImageForm,
     ModuleViewer,
-    ModelForm
+    ModelForm,
+    VueDrawingCanvas,
   },
   emits: ['view'],
   setup() {
@@ -180,6 +211,13 @@ export default {
 
     return {
       tab: null,
+      canvasSettings: {
+        backgroundColor: "#fff",
+        colorPicker: false,
+        color: "#000",
+        eraser: false,
+        lineWidth: 5,
+      },
       place: {
         _id: '',
         activityID: '',
@@ -247,6 +285,7 @@ export default {
       positions: null,
       titles: [],
       datings: [],
+      is_required: [v => !!v || 'Pflichtfeld'],
       tickLabels: {
         3: this.$t('veryGood'),
         2: this.$t('good'),

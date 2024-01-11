@@ -105,6 +105,7 @@ export default {
   data_import: "Data Import",
   technical: "Technical Place",
   home: "Home",
+  technicalDrawing: "Technical Drawing",
 
   // Phrases
   add: "Add {msg}",
