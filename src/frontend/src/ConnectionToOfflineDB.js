@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Tobias Mink
  * 
- * Last Modified: 04.01.2024 15:31:40
+ * Last Modified: 11.01.2024 15:03:59
  * Modified By: Julian Hardtung
  * 
  * Description: Helper API for manipulating the IndexedDB
@@ -599,7 +599,7 @@ export default class ConnectionToOfflineDB {
 
   /**
    * Deletes an object from IndexedDB
-   * @param {Int} object
+   * @param {String} object
    *    The object, which will be deleted
    * @param {String} localDBName
    *    Database name
@@ -608,6 +608,20 @@ export default class ConnectionToOfflineDB {
    */
   async deleteObject(object, localDBName, storeName) {
     var localDB = this.getLocalDBFromName(localDBName);
+    const userStore = useUserStore();
+
+    //if logged in and online, sync new object to backend
+    if (userStore.authenticated && (await isOnline()) && storeName != 'created') {
+      await fromBackend.deleteData(storeName, object._id);
+
+      if (storeName == 'activities') {
+        var index = userStore.user.activities.indexOf(object._id);
+        if (index != -1) {
+          userStore.user.activities.splice(index, 1);
+          userStore.updateUser()
+        }
+      }
+    }
 
     return new Promise((resolve, _reject) => {
       const trans = localDB.transaction([storeName], "readwrite");
@@ -620,9 +634,7 @@ export default class ConnectionToOfflineDB {
 
       // Make sure that no 'changes' get marked for synchronization
       // and don't mark objects, that never got uploaded before deletion
-      if (localDBName != "Changes" 
-        && localDBName != 'Lines' 
-        && localDBName != 'ModulePresets') {
+      if (localDBName != "Changes" && localDBName != "Lines" && localDBName != "ModulePresets") {
         if (object.lastSync > 0) {
           this.addObject({ _id: object._id, object: localDBName }, "Changes", "deleted");
         }
