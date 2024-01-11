@@ -138,8 +138,8 @@
               <v-expand-transition>
                 <v-color-picker class="mt-3" style="position:absolute" v-show="canvasSettings.colorPicker" v-model="canvasSettings.color"></v-color-picker>
               </v-expand-transition>
-              <vue-drawing-canvas ref="VueCanvasDrawing" class="mt-3" :width="1200" :height="600" :eraser="canvasSettings.eraser" :line-width="canvasSettings.lineWidth" :background-color="canvasSettings.backgroundColor"
-                                    :color="canvasSettings.color"/>
+              <vue-drawing-canvas ref="VueCanvasDrawing" :width="1200" :height="600" :eraser="canvasSettings.eraser" :line-width="canvasSettings.lineWidth" :background-color="canvasSettings.backgroundColor"
+                                    :color="canvasSettings.color" :line-cap="canvasSettings.lineCap" :line-join="canvasSettings.lineJoin" :stroke-type="canvasSettings.strokeType"/>
             </div>
             <v-row justify="end">
               <v-col class="text-left" >
@@ -217,6 +217,9 @@ export default {
         color: "#000",
         eraser: false,
         lineWidth: 5,
+        lineJoin: "round",
+        lineCap: "butt",
+        strokeType: "dash"
       },
       place: {
         _id: '',
