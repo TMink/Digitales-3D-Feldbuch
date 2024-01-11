@@ -105,6 +105,7 @@ export default {
   data_import: "Data Import",
   technical: "Technische Stelle",
   home: "Startseite",
+  technicalDrawing: "Technische Zeichnung",
 
   // Phrases
   add: "{msg} hinzufügen",
