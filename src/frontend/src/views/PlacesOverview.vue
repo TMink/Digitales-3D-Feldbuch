@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 11.01.2024 14:48:49
+ * Last Modified: 11.01.2024 15:06:07
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -515,7 +515,7 @@ export default {
 
       this.places = await fromOfflineDB.getAllObjectsWithID(
         curActivityID, 'Activity', 'Places', 'places');
-      offlinePlaces.sort((a, b) => (a.placeNumber > b.placeNumber) ? 1 : -1);
+      this.places.sort((a, b) => (a.placeNumber > b.placeNumber) ? 1 : -1);
     },
 
     /**
