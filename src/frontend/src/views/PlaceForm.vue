@@ -115,7 +115,7 @@
 
           <!-- Tab item 'pictures' -->
           <v-window-item value="three">
-            <ImageForm 
+            <ImageOverview
               :object_id="place._id"  
               object_type="Places"
               @addImage="addImage($event)"/>
@@ -176,7 +176,7 @@
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import ConfirmDialog from '../components/ConfirmDialog.vue';
 import AddPosition from '../components/AddPosition.vue';
-import ImageForm from '../components/ImageForm.vue';
+import ImageOverview from '../components/ImageOverview.vue';
 import ModuleViewer from '../components/ModuleViewer.vue';
 import ModelForm from '../components/ModelForm.vue';
 import { toRaw } from 'vue';
@@ -191,7 +191,7 @@ export default {
     Navigation,
     ConfirmDialog,
     AddPosition,
-    ImageForm,
+    ImageOverview,
     ModuleViewer,
     ModelForm,
     VueDrawingCanvas,
