@@ -133,6 +133,7 @@
               <v-btn icon="mdi-shape" rounded="0"></v-btn>
               <v-btn @click.prevent="$refs.VueCanvasDrawing.undo()" icon="mdi-undo" rounded="0"></v-btn>
               <v-btn @click.prevent="$refs.VueCanvasDrawing.redo()" icon="mdi-redo" rounded="0"></v-btn>
+              <v-btn @click.prevent="onToolbarClick('text')" icon="mdi-alpha-t" rounded="0"></v-btn>
               <v-btn @click.prevent="onToolbarClick('clear')" icon="mdi-trash-can-outline" rounded="0"></v-btn>
             </v-toolbar>
             <div style="positon:relative">
@@ -245,6 +246,7 @@ export default {
           9: "9",
           10: "10",
         },
+        writeMode: false,
         lock: false,
         initialImage: [],
         additionalImages: []
@@ -753,6 +755,15 @@ export default {
         this.canvasSettings.colorPickerChosen = false;
         this.canvasSettings.lineWidthChosen = !this.canvasSettings.lineWidthChosen;
       }
+      if (toolType == "text") {
+        this.canvasSettings.writeMode = !this.canvasSettings.writeMode;
+        if (this.canvasSettings.writeMode) {
+          this.canvasSettings.lock = true;
+        }
+        else {
+          this.canvasSettings.lock = false;
+        }
+      }
       if(toolType == "clear"){
         this.$refs.VueCanvasDrawing.reset(); 
         this.canvasSettings.additionalImages = [];
@@ -796,6 +807,91 @@ export default {
       }
       return new Blob([ab], { type: mimeString });
     },
+
+    /**
+     * Gets the Position of the Mouseclick an uses the addInput-Function to add a Inputfield
+     * 
+     * @param {*} event Event-Data of the mouseclick
+     * */
+    onCanvasclick(event) {
+      if (this.canvasSettings.writeMode) {
+        var ctx = this.$refs.VueCanvasDrawing.context;
+        ctx.font = "20px Roboto"
+        ctx.fillStyle = this.canvasSettings.color;
+        var pos = this.$refs.VueCanvasDrawing.getCoordinates(event);
+        this.addInput(pos.x, pos.y, event.clientX, event.clientY);
+      }
+    },
+
+    /**
+     * Creates an Inputfield on the given position
+     * 
+     * @param {Number} canvasX x-coordinate of the mouseclick in canvas-space
+     * @param {Number} canvasY y-coordinate of the mouseclick in canvas-space
+     * @param {Number} windowX x-coordinate of the mouseclick in window-space
+     * @param {Number} windowY y-coordinate of the mouseclick in window-space
+     * */
+    addInput(canvasX, canvasY, windowX, windowY) {
+      var input = document.createElement('input');
+      var thisInstance = this;
+
+      input.type = "text";
+      input.style.position = 'fixed';
+      input.style.left = windowX + 'px';
+      input.style.top = windowY + 'px';
+      input.style.color = "#000"
+
+      document.body.appendChild(input);
+
+      input.addEventListener('keypress', (event) => {
+        if(event.key === 'Enter'){
+          drawText(input, thisInstance)
+        }
+      });
+
+      /**
+       * Prints the value of the inputfield on the cancas and deletes the input-fields
+       * 
+       * @param {*} Input Inputfield containing the string to be printed
+       * @param {*} thisInstance this-Instance of the PlaceForm-Component 
+       * */
+      function drawText(input, thisInstance) {
+
+          var elements = document.querySelectorAll('input');
+          elements.forEach((element) => element.remove());
+
+          var obj = thisInstance.createTextObject(input.value, canvasX, canvasY)
+          thisInstance.canvasSettings.additionalImages.push(obj);
+          thisInstance.onToolbarClick('text');
+          thisInstance.$refs.VueCanvasDrawing.redraw();
+          
+      }
+    },
+
+    /**
+     * Returns text-object which is required by VueDrawingCanvas-Library to add text
+     * 
+     * @param {String} text Text to be added on canvas
+     * @param {Number} x x-coordinate of the text
+     * @param {Number} y y-coordinate of the text
+     * @return {JSON} JSON-Data for additionalImages-Array
+     * */
+    createTextObject(text, x, y){
+      return {
+        type : "Text",
+        source: text,
+        x: x,
+        y: y,
+        fontStyle: {
+          color: this.canvasSettings.color,
+          font: '16px Roboto',
+          drawType: 'fill',
+          textAlign: 'left',
+          textBaseline: 'top',
+        }
+      }
+    }
+
   }
 };
 
