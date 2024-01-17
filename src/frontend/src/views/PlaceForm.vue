@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 11.01.2024 15:03:24
+ * Last Modified: 17.01.2024 17:47:34
  * Modified By: Methusshan Elankumaran
  * 
  * Description: input page for places data 
@@ -116,45 +116,57 @@
           <!-- Tab item 'pictures' -->
           <v-window-item value="three">
             <ImageOverview
-              :object_id="place._id"  
+              :object_id="place._id"
               object_type="Places"
-              @addImage="addImage($event)"/>
+              @addImage="addImage($event)" />
           </v-window-item>
 
           <!-- Tab item 'technical drawing' -->
           <v-window-item value="four">
             <v-toolbar :height="50" color="surface" density="default">
               <v-btn-toggle>
-                <v-btn @click="canvasSettings.eraser = false" :background-color="primary" icon="mdi-pencil"></v-btn>
-                <v-btn @click="canvasSettings.eraser = true" :background-color="primary" icon="mdi-eraser"></v-btn>
+                <v-btn @click="onToolbarClick('pen')" icon="mdi-pencil" rounded="1"></v-btn>
+                <v-btn @click="onToolbarClick('eraser')" icon="mdi-eraser" rounded="1"></v-btn>
               </v-btn-toggle>
-              <v-btn @click="canvasSettings.colorPicker = !canvasSettings.colorPicker" :background-color="primary" icon="mdi-palette"></v-btn>
-              <v-btn :background-color="primary" icon="mdi-shape"></v-btn>
-              <v-btn :background-color="primary" icon="mdi-undo"></v-btn>
-              <v-btn :background-color="primary" icon="mdi-redo"></v-btn>
-              <v-btn :background-color="primary" icon="mdi-star"></v-btn>
+              <v-btn @click="onToolbarClick('colorPicker')" icon="mdi-palette" rounded="0"></v-btn>
+              <v-btn @click="onToolbarClick('lineWidth')" icon="mdi-minus" rounded="0"></v-btn>
+              <v-btn icon="mdi-shape" rounded="0"></v-btn>
+              <v-btn @click.prevent="$refs.VueCanvasDrawing.undo()" icon="mdi-undo" rounded="0"></v-btn>
+              <v-btn @click.prevent="$refs.VueCanvasDrawing.redo()" icon="mdi-redo" rounded="0"></v-btn>
+              <v-btn @click.prevent="onToolbarClick('clear')" icon="mdi-trash-can-outline" rounded="0"></v-btn>
             </v-toolbar>
             <div style="positon:relative">
               <v-expand-transition>
-                <v-color-picker class="mt-3" style="position:absolute" v-show="canvasSettings.colorPicker" v-model="canvasSettings.color"></v-color-picker>
+                <v-color-picker class="mt-4" style="position:absolute" v-show="canvasSettings.colorPickerChosen"
+                  v-model="canvasSettings.color"></v-color-picker>
               </v-expand-transition>
-              <vue-drawing-canvas ref="VueCanvasDrawing" :width="1200" :height="600" :eraser="canvasSettings.eraser" :line-width="canvasSettings.lineWidth" :background-color="canvasSettings.backgroundColor"
-                                    :color="canvasSettings.color" :line-cap="canvasSettings.lineCap" :line-join="canvasSettings.lineJoin" :stroke-type="canvasSettings.strokeType"/>
+
+              <v-card class="mt-4" style="position:absolute" :width="600">
+                <v-expand-transition>
+                  <v-slider v-model="canvasSettings.lineWidth" :min="1" :max="10" :step="1"
+                    v-show="canvasSettings.lineWidthChosen" show-ticks="always"
+                    :ticks="canvasSettings.lineTicks"></v-slider>
+                </v-expand-transition>
+              </v-card>
+
+              <vue-drawing-canvas @click="onCanvasclick($event)" class="mt-4" ref="VueCanvasDrawing" :width="1200"
+                :height="600" :eraser="canvasSettings.eraser" :line-width="canvasSettings.lineWidth"
+                :background-color="canvasSettings.backgroundColor" :color="canvasSettings.color"
+                :line-cap="canvasSettings.lineCap" :line-join="canvasSettings.lineJoin"
+                :stroke-type="canvasSettings.strokeType" save-as="png" :lock="canvasSettings.lock"
+                :initial-image="canvasSettings.initialImage" :additional-images="canvasSettings.additionalImages" />
             </div>
             <v-row justify="end">
-              <v-col class="text-left" >
+              <v-col class="text-left">
                 <v-btn color="primary" class="mr-2"><v-icon>mdi-content-save-all</v-icon></v-btn>
-                <v-btn color="primary"><v-icon>mdi-download</v-icon></v-btn>
+                <v-btn @click="downloadImage()" color="primary"><v-icon>mdi-download</v-icon></v-btn>
               </v-col>
             </v-row>
           </v-window-item>
 
           <!-- Tab item 'models' -->
           <v-window-item value="five">
-            <ModelForm 
-              :object_id="place._id" 
-              object_type="Places"
-              @addModel="addModel($event)">
+            <ModelForm :object_id="place._id" object_type="Places" @addModel="addModel($event)">
             </ModelForm>
           </v-window-item>
         </v-window>
@@ -213,13 +225,30 @@ export default {
       tab: null,
       canvasSettings: {
         backgroundColor: "#fff",
-        colorPicker: false,
+        colorPickerChosen: false,
+        lineWidthChosen: false,
         color: "#000",
         eraser: false,
-        lineWidth: 5,
+        lineWidth: 3,
         lineJoin: "round",
         lineCap: "butt",
-        strokeType: "dash"
+        strokeType: "dash",
+        lineTicks: {
+          1: "1",
+          2: "2",
+          3: "3",
+          4: "4",
+          5: "5",
+          6: "6",
+          7: "7",
+          8: "8",
+          9: "9",
+          10: "10",
+        },
+        lock: false,
+        initialImage: [],
+        additionalImages: []
+
       },
       place: {
         _id: '',
@@ -230,10 +259,10 @@ export default {
         positions: [],
         images: [],
         models: [],
-        lines: [],    
+        lines: [],
         lastChanged: '',
         lastSync: 0,
-        
+
         /* Coordinates */
         right: '',
         rightTo: '',
@@ -241,14 +270,14 @@ export default {
         upTo: '',
         depthTop: '',
         depthBot: '',
-        
+
         /* Dating */
         dating: '',
-        
+
         /* FindTypes */
         noFinding: false,
         restFinding: false,
-        
+
         /* General */
         description: '',
         editor: '',
@@ -260,10 +289,10 @@ export default {
 
         /* PositionsList */
         testBool: false,
-        
+
         /* Technical */
         technical: '',
-        
+
         /* Visibility */
         visibility: '',
       },
@@ -325,27 +354,27 @@ export default {
   /**
    * Initialize data from localDB to the reactive Vue.js data
    */
-  async created() {    
+  async created() {
     this.titles = JSON.parse(import.meta.env.VITE_TITLES);
     this.datings = JSON.parse(import.meta.env.VITE_DATINGS);
-    
+
     await fromOfflineDB.syncLocalDBs();
     await this.updatePlace();
     await this.updatePositions();
 
     const datingFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', 'datings');
     datingFromDB.forEach(element => {
-      this.datingsList.push( element.item )
+      this.datingsList.push(element.item)
     });
 
     const editorsFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', 'editors');
     editorsFromDB.forEach(element => {
-      this.editorsList.push( element.item )
+      this.editorsList.push(element.item)
     });
 
     const titlesFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', 'titles');
     titlesFromDB.forEach(element => {
-      this.titlesList.push( element.item )
+      this.titlesList.push(element.item)
     });
 
     await this.setAppBarTitle();
@@ -440,9 +469,9 @@ export default {
         case 'visibility':
           this.place.visibility = data[1];
           break;
-        
+
         default:
-          console.log( 'Cant specify emitted data: ' + data[0] )
+          console.log('Cant specify emitted data: ' + data[0])
       }
     },
 
@@ -474,50 +503,50 @@ export default {
 
       await fromOfflineDB.updateObject(inputPlace, 'Places', 'places');
       this.hasUnsavedChanges = false;
-      this.$root.vtoast.show({ message: this.$t('saveSuccess')});
-      
-      this.updateAutoFillList( 'datings', this.place.dating, this.datingsList );
-      this.updateAutoFillList( 'editors', this.place.editor, this.editorsList );
-      this.updateAutoFillList( 'titles', this.place.title, this.titlesList );      
+      this.$root.vtoast.show({ message: this.$t('saveSuccess') });
+
+      this.updateAutoFillList('datings', this.place.dating, this.datingsList);
+      this.updateAutoFillList('editors', this.place.editor, this.editorsList);
+      this.updateAutoFillList('titles', this.place.title, this.titlesList);
     },
 
-    async updateAutoFillList( storeName, item, itemList) {
+    async updateAutoFillList(storeName, item, itemList) {
       const newEditor = {};
 
       const editorsFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', storeName);
-      if ( editorsFromDB.length > 0 ) {
+      if (editorsFromDB.length > 0) {
         let hasItem = false;
-        
-        editorsFromDB.forEach( element => {
-          if ( element.item == item ) {
+
+        editorsFromDB.forEach(element => {
+          if (element.item == item) {
             hasItem = true;
           }
         })
-        if ( !hasItem && item != '' ) {
+        if (!hasItem && item != '') {
           newEditor._id = String(Date.now())
           newEditor.item = toRaw(item)
         }
-      } else if ( item != '' ) {
+      } else if (item != '') {
         newEditor._id = String(Date.now())
         newEditor.item = toRaw(item)
       }
-      if ( !!Object.keys(newEditor).length ) {
+      if (!!Object.keys(newEditor).length) {
         await fromOfflineDB.addObject(newEditor, 'AutoFillLists', storeName)
       }
-      
-      if ( itemList.length > 0 ) {
+
+      if (itemList.length > 0) {
         let notKnown = true
-        itemList.forEach( element => {
-          if ( element == item ) {
+        itemList.forEach(element => {
+          if (element == item) {
             notKnown = false
           }
         })
-        if ( notKnown ) {
-          itemList.push( item )
+        if (notKnown) {
+          itemList.push(item)
         }
       } else {
-        if ( item != '' ) {
-          itemList.push( item )
+        if (item != '') {
+          itemList.push(item)
         }
       }
     },
@@ -543,9 +572,9 @@ export default {
     /**
      * Opens the confirmation dialog for leaving the form
      */
-     async confirmRouteChange() {
+    async confirmRouteChange() {
       if (await this.$refs.confirm.open(this.$t('confirm'),
-          this.$t('wantToLeave'))) {
+        this.$t('wantToLeave'))) {
         return true;
       } else {
         return false;
@@ -625,7 +654,7 @@ export default {
       if (this.place.placeNumber == 1) {
         // Get all elements with the class "hideable"
         const hideableElements = document.querySelectorAll('.hideable');
-        
+
         // Hide all hideable elements
         hideableElements.forEach(element => {
           element.style.display = 'none';
@@ -642,7 +671,7 @@ export default {
 
       const plID = String(this.$cookies.get('currentPlace'))
       var place = await fromOfflineDB.getObject(plID, 'Places', 'places')
-    
+
       this.$emit("view", activity.activityNumber + ' ' + place.placeNumber);
     },
 
@@ -703,6 +732,69 @@ export default {
       } else if (this.hoveredRow === index) {
         this.hoveredRow = -1;
       }
+    },
+
+
+    /**
+     * Changes the status of variables related to the toolbar, if clicked.
+     * 
+     * @param {string} toolType - Defines the pressed button of the toolbar
+     * */
+    onToolbarClick(toolType) {
+      if (toolType == "pen")
+        this.canvasSettings.eraser = false
+      if (toolType == "eraser")
+        this.canvasSettings.eraser = true
+      if (toolType == "colorPicker") {
+        this.canvasSettings.colorPickerChosen = !this.canvasSettings.colorPickerChosen;
+        this.canvasSettings.lineWidthChosen = false;
+      }
+      if (toolType == "lineWidth") {
+        this.canvasSettings.colorPickerChosen = false;
+        this.canvasSettings.lineWidthChosen = !this.canvasSettings.lineWidthChosen;
+      }
+      if(toolType == "clear"){
+        this.$refs.VueCanvasDrawing.reset(); 
+        this.canvasSettings.additionalImages = [];
+      }
+    },
+
+
+    /**
+     * Converts the base64-output of the Vue-Drawing-Canvas to an Imagefile, which can be downloaded.
+     * */
+    downloadImage() {
+      var imgCanvas = this.$refs.VueCanvasDrawing.save();
+      const imgOutput = new Image();
+      imgOutput.src = imgCanvas;
+      var imgUrl = window.URL.createObjectURL(this.base64ToBlob(imgCanvas))
+      const link = document.createElement('a');
+      link.href = imgUrl;
+      link.target = '_blank';
+      //TODO: Add proper naming convention
+      link.download = "placeholder.png"
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+    },
+
+
+    /**
+     * Converts a base64-File into an Blob
+     * 
+     * @param {*} base64 Base64-File, which will be converted
+     * */
+    base64ToBlob(base64) {
+      const byteString = atob(base64.split(',')[1]);
+      const mimeString = base64.split(',')[0].split(':')[1].split(';')[0];
+      const ab = new ArrayBuffer(byteString.length);
+      const ia = new Uint8Array(ab);
+      for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+      }
+      return new Blob([ab], { type: mimeString });
     },
   }
 };
