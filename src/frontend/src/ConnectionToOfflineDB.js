@@ -686,6 +686,7 @@ export default class ConnectionToOfflineDB {
           if (object.places.length > 0) {
             for (var i=0; i<object.places.length; i++) {
               context.deleteCascade(object.places[i], "place", "Places", "places");
+              await context.deleteCascade(object.places[i], "place", "Places", "places");
             }
           }
           break;
@@ -693,6 +694,7 @@ export default class ConnectionToOfflineDB {
           if (object.positions.length > 0) {
             for (var j=0; j<object.positions.length; j++) {
               context.deleteCascade(object.positions[j], "position", "Positions", "positions");
+              await context.deleteCascade(object.positions[j], "position", "Positions", "positions");
             }
           }
           if (object.images.length > 0) {
