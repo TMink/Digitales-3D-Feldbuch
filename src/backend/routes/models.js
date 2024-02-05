@@ -2,7 +2,7 @@
  * Created Date: 13.06.2023 13:54:24
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:24:17
+ * Last Modified: 05.02.2024 15:27:34
  * Modified By: Julian Hardtung
  * 
  * Description: Backend CRUD API routes for models
@@ -70,7 +70,7 @@ router.post("/:model_id", upload.single("model"), async function (req, res, next
   try {
     const result = await Model.create(newModel);
 
-    res.status(200).send("Saved Model: " + result);
+    res.status(200).send(result);
   } catch (error) {
     res.status(500).send("Couldn't save Model: " + error.message);
   }
@@ -86,7 +86,7 @@ router.delete("/:model_id", async function (req, res, next) {
     // delete model file
     fs.unlinkSync(FILE_PATH + result.model);
 
-    res.status(200).send("Deleted Model: " + result);
+    res.status(200).send(result);
   } catch (error) {
     res.status(500).send("Couldn't delete Model: " + error.message);
   }

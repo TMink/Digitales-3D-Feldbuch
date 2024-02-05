@@ -2,7 +2,7 @@
  * Created Date: 10.05.2023 12:58:23
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:24:43
+ * Last Modified: 05.02.2024 15:27:15
  * Modified By: Julian Hardtung
  * 
  * Description: Backend CRUD API routes for images
@@ -70,7 +70,7 @@ router.post("/:position_id", upload.single("image"), async function (req, res, n
   try {
     const result = await Image.create(newImage);
 
-    res.status(200).send("Saved Image: " + result);
+    res.status(200).send(result);
   } catch (error) {
     res.status(500).send("Couldn't save Image: " + error.message);
   }
@@ -86,7 +86,7 @@ router.delete("/:image_id", async function (req, res, next) {
     // delete model and texture files
     fs.unlinkSync(FILE_PATH + result.image);
 
-    res.status(200).send("Deleted Image: " + result);
+    res.status(200).send(result);
   } catch (error) {
     res.status(500).send("Couldn't delete Image: " + error.message);
   }

@@ -111,7 +111,7 @@ router.post("/:place_id", async function (req, res, next) {
   try {
     const result = await Place.create(newPlace);
 
-    res.status(200).send("Created Place: " + result);
+    res.status(200).send(result);
   } catch (error) {
     res.status(500).send("Couldn't create Place: " + error.message);
   }
@@ -126,7 +126,7 @@ router.put("/:place_id", async function (req, res, next) {
   try {
     const result = await Place.findByIdAndUpdate(req.params.place_id, updatedPlace);
 
-    res.status(200).send("Edited Place: " + result);
+    res.status(200).send(result);
   } catch (error) {
     res.status(500).send("Couldn't edit Place: " + error.message);
   }
@@ -139,7 +139,7 @@ router.delete("/:place_id", async function (req, res, next) {
   try {
     const result = await Place.findByIdAndDelete(req.params.place_id);
 
-    res.status(200).send("Edited Place: " + result);
+    res.status(200).send(result);
   } catch (error) {
     res.status(500).send("Couldn't edit Place: " + error.message);
   }

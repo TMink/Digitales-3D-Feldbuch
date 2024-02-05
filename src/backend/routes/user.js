@@ -149,7 +149,7 @@ router.put("/", async (req, res) => {
       console.log(req.body)
       const result = await User.findByIdAndUpdate(claims._id, req.body);
 
-      res.status(200).send("Edited User: " + result);
+      res.status(200).send(result);
     } catch (error) {
       res.status(500).send("Couldn't edit User: " + error.message);
     }
@@ -169,7 +169,7 @@ router.put("/:user_id", async (req, res) => {
       console.log(req.body)
       const result = await User.findByIdAndUpdate(req.params.user_id, req.body);
 
-      res.status(200).send("Edited User: " + result);
+      res.status(200).send(result);
     } catch (error) {
       res.status(500).send("Couldn't edit User: " + error.message);
     }
