@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 11.01.2024 12:11:14
+ * Last Modified: 05.02.2024 15:31:39
  * Modified By: Julian Hardtung
  * 
  * Description: Helper API to the backend server
@@ -129,7 +129,7 @@ class ConnectionToBackend {
       })
         .then(function (res) {
           //TODO: Delete the uploaded change from the Changes localDB
-          resolve(res);
+          resolve(res.data);
         })
         .catch(function (error) {
           console.log(error);
@@ -146,7 +146,7 @@ class ConnectionToBackend {
       })
         .then(function (res) {
           //TODO: Delete the uploaded change from the Changes localDB
-          resolve(res);
+          resolve(res.data);
         })
         .catch(function (error) {
           console.log(error);
