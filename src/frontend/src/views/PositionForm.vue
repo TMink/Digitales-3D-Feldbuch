@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.01.2024 16:04:28
+ * Last Modified: 05.02.2024 17:26:08
  * Modified By: Julian Hardtung
  * 
  * Description: input page for positions data 
@@ -331,12 +331,13 @@ export default {
 
       await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions');
       this.hasUnsavedChanges = false;
-      this.$root.vtoast.show({ message: this.$t('saveSuccess')});
-
+      
       this.updateAutoFillList( 'datings', this.position.dating, this.datingsList )
       this.updateAutoFillList( 'titles', this.position.title, this.titlesList )
       this.updateAutoFillList( 'materials', this.position.material, this.materialsList )
       this.updateAutoFillList( 'editors', this.position.editor, this.editorsList )
+      
+      this.$root.vtoast.show({ message: this.$t('saveSuccess')});
     },
 
     async updateAutoFillList( storeName, item, itemList) {

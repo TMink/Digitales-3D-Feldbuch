@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 05.02.2024 10:03:21
+ * Last Modified: 05.02.2024 15:34:10
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -455,6 +455,7 @@ export default {
         }
       }
       await this.updateActivities();
+      this.$root.vtoast.show({ message: this.$t('saveSuccess') });
     },
 
     /**
@@ -509,7 +510,7 @@ export default {
         user.activities.push(activity._id);
         await fromBackend.putData('user', user);
 
-      } else{
+      } else {
         // update logged in user
         this.userStore.user.activities.push(activity._id);
         this.userStore.updateUser();

@@ -2,8 +2,8 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 17.01.2024 17:47:34
- * Modified By: Methusshan Elankumaran
+ * Last Modified: 05.02.2024 10:09:25
+ * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
  *              (shows input modules according to module preset)
@@ -505,11 +505,12 @@ export default {
 
       await fromOfflineDB.updateObject(inputPlace, 'Places', 'places');
       this.hasUnsavedChanges = false;
-      this.$root.vtoast.show({ message: this.$t('saveSuccess') });
-
+      
       this.updateAutoFillList('datings', this.place.dating, this.datingsList);
       this.updateAutoFillList('editors', this.place.editor, this.editorsList);
       this.updateAutoFillList('titles', this.place.title, this.titlesList);
+      
+      this.$root.vtoast.show({ message: this.$t('saveSuccess') });
     },
 
     async updateAutoFillList(storeName, item, itemList) {
