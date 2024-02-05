@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 11.01.2024 14:36:50
+ * Last Modified: 05.02.2024 10:03:21
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -133,8 +133,9 @@
                         :label="$t('year')"  
                         maxlength="4" 
                         color="primary" 
-                        v-model="activity.year" 
-                        :rules="[rules.required]">
+                        v-model="activity.year"
+                        :rules="[rules.required]"
+                        @keypress="filterNonNumeric(event)">
                       </v-text-field>
                     </v-col>
 
@@ -145,7 +146,8 @@
                         :label="$t('number')" 
                         color="primary" 
                         v-model="activity.number"
-                        :rules="[rules.required]">
+                        :rules="[rules.required]"
+                        @keypress="filterNonNumeric(event)">
                       </v-text-field>
                     </v-col>
                   </v-row>
@@ -549,6 +551,21 @@ export default {
       }
       
       await fromOfflineDB.deleteCascade(activity._id, 'activity', 'Activities', 'activities');
+    },
+
+    /**
+      * Prevents the input of non numeric values 
+      * @param {*} evt 
+      */
+    filterNonNumeric(evt) {
+      evt = (evt) ? evt : window.event;
+      let expect = evt.target.value.toString() + evt.key.toString();
+
+      if (!/^[0-9]*$/.test(expect)) {
+        evt.preventDefault();
+      } else {
+        return true;
+      }
     },
 
   }
