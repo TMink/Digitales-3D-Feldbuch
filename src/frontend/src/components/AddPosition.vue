@@ -2,7 +2,7 @@
  * Created Date: 01.07.2023 14:01:06
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.02.2024 17:25:03
+ * Last Modified: 06.02.2024 17:26:40
  * Modified By: Julian Hardtung
  * 
  * Description: vue component for adding a position
@@ -95,11 +95,7 @@ export default {
         newPosition.positionNumber = this.positions_prop.length + 1;
       }
       
-      await fromOfflineDB.updateObject(curPlace, 'Places', 'places');
       await fromOfflineDB.addObject(newPosition, "Positions", "positions");
-      await fromOfflineDB.addObject(
-            { _id: newPositionID, object: 'positions' }, 'Changes', 'created');
-
       this.$emit('updatePositions');
     },
   }
