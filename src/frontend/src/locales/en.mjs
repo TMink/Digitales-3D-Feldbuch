@@ -2,8 +2,8 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.02.2024 13:57:12
- * Modified By: Julian Hardtung
+ * Last Modified: 06.02.2024 14:29:40
+ * Modified By: Oliver Mertens
  * 
  * Description: english translations
  */
@@ -153,4 +153,6 @@ export default {
   addToYourAccount: "Add to your account",
   addOtherEditor: "Add other editor",
   addEditorToActivity: "Add new editor to this activity",
+  notLoggedIn: "You are not logged in!",
+  onlyLocal: "This activity is only local and not yet assigned to an account"
 };

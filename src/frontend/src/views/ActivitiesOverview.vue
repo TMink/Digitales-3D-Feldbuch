@@ -2,8 +2,8 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.02.2024 13:58:45
- * Modified By: Julian Hardtung
+ * Last Modified: 06.02.2024 14:30:14
+ * Modified By: Oliver Mertens
  * 
  * Description: lists all activities + add/edit/delete functionality for them
  -->
@@ -57,7 +57,7 @@
                             <v-tooltip 
                               activator="parent"
                               location="bottom">
-                              This activity is only local and not yet assigned to an account
+                              {{ $t('onlyLocal') }}
                             </v-tooltip>
                             {{ this.$t('options') }}
                             <v-icon>mdi-arrow-down-bold-box</v-icon>

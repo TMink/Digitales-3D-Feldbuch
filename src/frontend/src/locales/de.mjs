@@ -2,8 +2,8 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.02.2024 13:57:30
- * Modified By: Julian Hardtung
+ * Last Modified: 06.02.2024 14:31:55
+ * Modified By: Oliver Mertens
  * 
  * Description: german translations
  */
@@ -106,7 +106,7 @@ export default {
   technical: "Technische Stelle",
   home: "Startseite",
   technicalDrawing: "Technische Zeichnung",
-  registration: "Registration",
+  registration: "Anmeldung",
   lastSync: "Zuletzt Synchronisiert: ",
   login: "Login",
   username: "Username",
@@ -154,4 +154,6 @@ export default {
   addToYourAccount: "Zu deinem Account hinzufügen",
   addOtherEditor: "Einen anderen Bearbeiter hinzufügen",
   addEditorToActivity: "Einen anderen Bearbeiter zu dieser Aktivität hinzufügen",
+  notLoggedIn: "Sie sind nicht eingeloggt!",
+  onlyLocal: "Diese Aktivität ist nur lokal und noch keinem Konto zugeordnet"
 };
