@@ -20,6 +20,8 @@ const modelsSchema = new Schema({
   title: String,
   model: String,
   texture: String,
+  lastChanged: Number,
+  lastSync: Number
 });
 
 module.exports = mongoose.model("Model", modelsSchema);

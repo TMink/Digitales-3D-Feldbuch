@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Tobias Mink
  * 
- * Last Modified: 11.01.2024 15:03:59
+ * Last Modified: 06.02.2024 16:58:33
  * Modified By: Julian Hardtung
  * 
  * Description: Helper API for manipulating the IndexedDB
@@ -170,9 +170,9 @@ export default class ConnectionToOfflineDB {
 
   /**
    * Gets the first entry of the specified localDBName and storeName
-   * 
-   * @param {String} localDBName 
-   * @param {String} storeName 
+   *
+   * @param {String} localDBName
+   * @param {String} storeName
    * @returns the first entry of the specified localDB + store
    */
   async getFirstEntry(localDBName, storeName) {
@@ -331,7 +331,7 @@ export default class ConnectionToOfflineDB {
    * @param {String} storeName
    *    IndexedDB store name
    * @returns
-   *    an array containing objects with same _id 
+   *    an array containing objects with same _id
    *    (activityID, placeID, positionsID) as Promise.
    */
   async getAllObjectsWithID(_id, selection, localDBName, storeName) {
@@ -444,9 +444,9 @@ export default class ConnectionToOfflineDB {
    */
   async getLastAddedPosition() {
     var curPlaceID = VueCookies.get("currentPlace");
-    var curPlace = await this.getObject(curPlaceID, 'Places', 'places');
-    var lastPosID = curPlace.positions[curPlace.positions.length-1];
-    var lastAddedPos = await this.getObject(lastPosID, 'Positions', 'positions');
+    var curPlace = await this.getObject(curPlaceID, "Places", "places");
+    var lastPosID = curPlace.positions[curPlace.positions.length - 1];
+    var lastAddedPos = await this.getObject(lastPosID, "Positions", "positions");
 
     return lastAddedPos.positionNumber;
   }
@@ -480,7 +480,7 @@ export default class ConnectionToOfflineDB {
   }
 
   /**
-   * Adds an Object to IndexedDB
+   * Adds an Object to IndexedDB and post to backend
    * @param {Object} data
    *    Data to be added to Object Store
    * @param {String} localDBName
@@ -489,32 +489,19 @@ export default class ConnectionToOfflineDB {
    *    Store name
    */
   async addObject(data, localDBName, storeName) {
-    const localDB = this.getLocalDBFromName(localDBName);
     const userStore = useUserStore();
 
     //if logged in, online, and not synced yet, sync new object to backend
-    if (userStore.authenticated && await isOnline() && data.lastSync < data.lastChanged) {
-      fromBackend.postData(storeName, data)
+    if (userStore.authenticated && (await isOnline()) && data.lastSync < data.lastChanged) {
+      data = await fromBackend.postData(storeName, data);
     }
 
-    return new Promise((resolve, reject) => {
-      const trans = localDB.transaction([storeName], "readwrite");
-      /* trans.oncomplete = (_e) => {
-      }; */
-      trans.onerror = (_e) => {
-        reject("Error");
-      };
-
-      const store = trans.objectStore(storeName);
-      var res = store.add(data);
-      res.onsuccess = function (_e) {
-        resolve(_e.target.result);
-      };
-    });
+    await this.updateIndexedDBObject(data, localDBName);
   }
 
   /**
-   * Updates an object from IndexedDB
+   * Updates an object from IndexedDB 
+   * and uploads changes to backend (if logged in and online)
    * @param {Int} data
    *    Data object, which will be updated
    * @param {String} localDBName
@@ -523,78 +510,100 @@ export default class ConnectionToOfflineDB {
    *    Object store name
    */
   async updateObject(data, localDBName, storeName) {
-    var localDB = this.getLocalDBFromName(localDBName);
     const userStore = useUserStore();
-    
+
     //if logged in and online, sync new object to backend
-    if (userStore.authenticated && (await isOnline())) {
-        await this.uploadObjectCascade(storeName, data);
+    if (userStore.authenticated && (await isOnline()) 
+        && data.lastChanged > data.lastSync) {
+      data = await fromBackend.uploadObject(storeName, data);
     }
+    await this.updateIndexedDBObject(data, localDBName);
+  }
+
+  /**
+   * Temporary function for only updating an object without uploading it to backend
+   * @param {Object} data 
+   * @param {String} localDBName
+   * @returns 
+   */
+  async updateIndexedDBObject(data, localDBName) {
+    var localDB = this.getLocalDBFromName(localDBName);
 
     return new Promise((resolve, _reject) => {
-      const trans = localDB.transaction([storeName], "readwrite");
+      const trans = localDB.transaction([localDBName.toLowerCase()], "readwrite");
       trans.oncomplete = (_e) => {
         resolve();
       };
-      const store = trans.objectStore(storeName);
+
+      trans.onerror = (_e) => {
+        console.log(_e)
+      };
+      const store = trans.objectStore(localDBName.toLowerCase());
       store.put(data);
     });
   }
 
-  
-  async uploadObjectCascade(subdomain, data) {
 
+  /**
+   * Post all subsequent data ob an object to the backend
+   * @param {String} subdomain 
+   * @param {Object} data 
+   */
+  async postObjectCascade(subdomain, data) {
     // upload data
-    if (data.lastSync == 0) {
-      await fromBackend.postData(subdomain, data);
-    } else {
-      await fromBackend.putData(subdomain, data);
-      return;
-    }
+    var uploadedData = await fromBackend.uploadObject(subdomain, data);
+
+    var localDBName = subdomain.charAt(0).toUpperCase() + subdomain.slice(1);
+    // update indexedDB
+    await this.updateIndexedDBObject(uploadedData, localDBName);
 
     // check which cascading data has to be uploaded next
     switch (subdomain) {
-
+      //upload data that is within a position (places)
       case "activities":
-        console.log("just uploaded activity, check PLACES");
         if (data.places) {
-          console.log("PLACES FOUND");
           for (const place_id of data.places) {
             var curPlace = await fromOfflineDB.getObject(place_id, "Places", "places");
-            await this.uploadObjectCascade("places", curPlace);
+            await this.postObjectCascade("places", curPlace);
           }
         }
         break;
 
+      //upload data that is within a place (positions)
       case "places":
-        console.log("just uploaded place, check POSITIONS/IMAGES/MODELS");
         if (data.positions) {
-          console.log("POSITIONS FOUND");
           for (const position_id of data.positions) {
             var curPosition = await fromOfflineDB.getObject(position_id, "Positions", "positions");
-            await this.uploadObjectCascade("positions", curPosition);
+            await this.postObjectCascade("positions", curPosition);
           }
         }
         break;
 
+      //upload data that is within a position (images, models)
       case "positions":
-        console.log("just uploaded position, check IMAGES/MODELS");
-        //TODO: positions upload and recursive progressing
-        break;
-
-      case "images":
-        console.log("just uploaded image");
-        //TODO: image upload
-        break;
-
-      case "models":
-        console.log("just uploaded model");
-        //TODO: model upload
+        if (data.images) {
+          for (const image_id of data.images) {
+            var curImage = await fromOfflineDB.getObject(image_id, "Images", "images");
+            if (curImage.lastSync == 0) {
+              var uploadedImage = await fromBackend.uploadFormData(curImage, "post", "images");
+              uploadedImage.image = uploadedImage.image;
+              await this.updateIndexedDBObject(uploadedImage, "Images");
+            }
+          }
+        }
+        if (data.models) {
+          for (const model_id of data.models) {
+            var curModel = await fromOfflineDB.getObject(model_id, "Models", "positions");
+            var uploadedModel = await fromBackend.uploadFormData("models", curModel, post);
+            uploadedModel.model = curModel.model;
+            uploadedModel.texture = curModel.texture;
+            await this.updateIndexedDBObject(uploadedModel, "Models", "positions");
+          }
+        }
         break;
       default:
         console.error(subdomain + " is not a vaid subdomain");
     }
-
   }
 
   /**
@@ -611,14 +620,14 @@ export default class ConnectionToOfflineDB {
     const userStore = useUserStore();
 
     //if logged in and online, sync new object to backend
-    if (userStore.authenticated && (await isOnline()) && storeName != 'created') {
+    if (userStore.authenticated && (await isOnline()) && storeName != "created") {
       await fromBackend.deleteData(storeName, object._id);
 
-      if (storeName == 'activities') {
+      if (storeName == "activities") {
         var index = userStore.user.activities.indexOf(object._id);
         if (index != -1) {
           userStore.user.activities.splice(index, 1);
-          userStore.updateUser()
+          userStore.updateUser();
         }
       }
     }
@@ -675,52 +684,56 @@ export default class ConnectionToOfflineDB {
     const context = this;
     var object = await this.getObject(_id, localDBName, storeName);
 
-   await new Promise(async function(resolve, _reject) {
+    await new Promise(async function (resolve, _reject) {
       const trans = localDB.transaction(storeName, "readwrite");
       trans.oncomplete = (_e) => {
         resolve();
-      };      
+      };
 
       switch (selection) {
         case "activity":
           if (object.places.length > 0) {
-            for (var i=0; i<object.places.length; i++) {
-              context.deleteCascade(object.places[i], "place", "Places", "places");
+            for (var i = 0; i < object.places.length; i++) {
               await context.deleteCascade(object.places[i], "place", "Places", "places");
             }
           }
           break;
         case "place":
           if (object.positions.length > 0) {
-            for (var j=0; j<object.positions.length; j++) {
-              context.deleteCascade(object.positions[j], "position", "Positions", "positions");
-              await context.deleteCascade(object.positions[j], "position", "Positions", "positions");
+            for (var j = 0; j < object.positions.length; j++) {
+              await context.deleteCascade(
+                object.positions[j],
+                "position",
+                "Positions",
+                "positions"
+              );
             }
           }
           if (object.images.length > 0) {
-            for (var k=0; k<object.images.length; k++) {
-              var image = await context.getObject(object.images[k], 'Images', 'images');
-              await fromOfflineDB.deleteObject(image, 'Images', 'images');
+            for (var k = 0; k < object.images.length; k++) {
+              var image = await context.getObject(object.images[k], "Images", "images");
+              await fromOfflineDB.deleteObject(image, "Images", "images");
             }
           }
           if (object.models.length != 0) {
-            for (var l=0; l<object.models.length; l++) {
-              var model = await context.getObject(object.models[l], 'Models', 'places');
-              await fromOfflineDB.deleteObject(model, 'Models', 'places');
+            for (var l = 0; l < object.models.length; l++) {
+              var model = await context.getObject(object.models[l], "Models", "places");
+              await fromOfflineDB.deleteObject(model, "Models", "places");
             }
           }
           break;
         case "position":
           if (object.images.length != 0) {
-            for (var m=0; m<object.images.length; m++) {
-              var image = await context.getObject(object.images[m], 'Images', 'images');
-              await fromOfflineDB.deleteObject(image, 'Images', 'images');
+            for (var m = 0; m < object.images.length; m++) {
+              var image = await context.getObject(object.images[m], "Images", "images");
+              await fromOfflineDB.deleteObject(image, "Images", "images");
             }
           }
           if (object.models.length != 0) {
-            for (var n=0; n<object.models.length; n++) {
-              var model = await context.getObject(object.models[n], 'Models', 'positions');
-              await fromOfflineDB.deleteObject(model, 'Models', 'positions');            }
+            for (var n = 0; n < object.models.length; n++) {
+              var model = await context.getObject(object.models[n], "Models", "positions");
+              await fromOfflineDB.deleteObject(model, "Models", "positions");
+            }
           }
           break;
         default:

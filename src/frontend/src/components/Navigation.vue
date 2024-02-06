@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.02.2024 17:33:53
+ * Last Modified: 06.02.2024 17:35:06
  * Modified By: Oliver Mertens
  * 
  * Description: Vue component with navigation-bar and extendable side-bar
@@ -129,7 +129,6 @@
     <!-- Navigation Drawer -->
     <v-navigation-drawer 
       color="surface" 
-      style="z-index: 1;" 
       v-model="navdrawer" 
       location="right">
       <v-card 

@@ -2,7 +2,7 @@
  * Created Date: 01.07.2023 14:01:06
  * Author: Julian Hardtung
  * 
- * Last Modified: 04.01.2024 15:28:57
+ * Last Modified: 06.02.2024 17:26:40
  * Modified By: Julian Hardtung
  * 
  * Description: vue component for adding a position
@@ -38,9 +38,6 @@ export default {
     await this.updateModulePresets();
   },
   methods: {
-    closeDiag() {
-      this.$emit('updatePositions');
-    },
 
     /**
      * Get all ModulePresets from IndexedDB
@@ -95,16 +92,11 @@ export default {
       if (this.positions_prop.length == 0) {
         newPosition.positionNumber = 1;
       } else {
-        var lastPosNumber = await fromOfflineDB.getLastAddedPosition();
-
-        newPosition.positionNumber = lastPosNumber + 1;
+        newPosition.positionNumber = this.positions_prop.length + 1;
       }
       
-      await fromOfflineDB.updateObject(curPlace, 'Places', 'places');
       await fromOfflineDB.addObject(newPosition, "Positions", "positions");
-      await fromOfflineDB.addObject(
-            { _id: newPositionID, object: 'positions' }, 'Changes', 'created');
-      this.closeDiag();
+      this.$emit('updatePositions');
     },
   }
 }

@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.02.2024 17:05:40
+ * Last Modified: 06.02.2024 17:35:21
  * Modified By: Oliver Mertens
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -143,19 +143,6 @@
                           :block="true"
                           v-on:click="addEditor(activity, this.userStore.user.username)">
                           {{ this.$t('addToYourAccount') }}
-                        </v-list-item>
-                        <v-list-item v-else
-                          rounded="0" 
-                          :block="true"
-                          class="wrap-text">
-                          {{ this.$tc('editor', 2) }}:
-                          <v-list class="pa-0" v-if="activity.editor">
-                            <v-list-item
-                            v-for="editor in activity.editor"
-                            :key="editor">
-                            {{ editor }}
-                          </v-list-item>
-                          </v-list>
                         </v-list-item>
                         <v-list-item v-if="this.userStore.authenticated"
                           color="error"
@@ -308,18 +295,20 @@ export default {
   async created() {
     this.$emit("view", this.$t('overview', { msg: this.$tc('activity', 2) }));
     await fromOfflineDB.syncLocalDBs();
-    await this.updateActivities();
+    await this.updateActivitiesFull();
   },
   methods: {
     /**
      * Get all activities from IndexedDb and Backend
+     * @deprecated (for now)
      */
     async updateActivities() {
       this.activities = await fromOfflineDB.getAllObjects('Activities', 'activities');
     },
 
     /**
-     * @deprecated
+     * Downloads all online available activities (if the user is logged in) and 
+     * combines them with locally saved activities.
      */
     async updateActivitiesFull() {
 
@@ -353,30 +342,34 @@ export default {
       var sameIdFound = false;
 
       console.log("online and offline activities have to be combined")
-        offlineActivities.forEach(async (offActivity) => {
-            for (var i=0; i<onlineActivities.length; i++) {
+        for (var i=0; i<offlineActivities.length; i++) {
 
-            if (offActivity._id == onlineActivities[i]._id) {
+          for (var j=0; j<onlineActivities.length; j++) {
+
+            if (offlineActivities[i]._id == onlineActivities[j]._id
+            && offlineActivities[i].lastSync < onlineActivities[j].lastSync) {
               sameIdFound = true;
 
-              if (onlineActivities[i].lastChanged >= offActivity.lastChanged) {
-                var tempActivity = onlineActivities[i];
-                onlineActivities.splice(i, 1)
+              if (onlineActivities[j].lastChanged >= offlineActivities[i].lastChanged) {
+                var tempActivity = onlineActivities[j];
+                onlineActivities.splice(j, 1)
                 newActivityList.push(tempActivity);
                 //save this onlineActivity to IndexedDB
-                await fromOfflineDB.addObject(tempActivity, 'Activities', 'activities');
+                await fromOfflineDB.updateIndexedDBObject(tempActivity, 'Activities');
               } else {
-                newActivityList.push(offActivity);
+                newActivityList.push(offlineActivities[i]);
               }
+              
+              sameIdFound = false;
             }
           }
 
           if (!sameIdFound) {
-            newActivityList.push(offActivity);
+            newActivityList.push(offlineActivities[i]);
           } else {
             sameIdFound = false;
           }
-        });
+        }
 
       // add remaining online activities to the whole list
       newActivityList.concat(onlineActivities);
@@ -452,6 +445,8 @@ export default {
         number: '0001',
         places: [],
         editor: [],
+        lastChanged: Date.now(),
+        lastSync: 0,
         edit: true,
       }
 
@@ -492,12 +487,14 @@ export default {
           number: rawActivity.number,
           places: rawActivity.places,
           lastChanged: Date.now(),
-          lastSync: 0,
+          lastSync: rawActivity.lastSync,
           editor: rawActivity.editor,
         }
 
-        // add new activity to current authenticated user
-        if (this.userStore.authenticated) {
+        // add new activity to current authenticated user 
+        // and add editor to the activity, if it isn't already in the list
+        if (this.userStore.authenticated 
+            && !newActivity.editor.includes(this.userStore.user.username)) {
           newActivity.editor.push(this.userStore.user.username);
           this.userStore.user.activities.push(newActivity._id)
           this.userStore.updateUser();
@@ -561,7 +558,7 @@ export default {
       
       updatedActivity.editor.push(username);
 
-      await fromOfflineDB.updateObject(updatedActivity, 'Activities', 'activities');
+      await fromOfflineDB.postObjectCascade("activities", updatedActivity);
 
       // update other user
       if (username != this.userStore.user.username) {

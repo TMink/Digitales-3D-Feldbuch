@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 05.02.2024 15:31:39
+ * Last Modified: 06.02.2024 16:56:30
  * Modified By: Julian Hardtung
  * 
  * Description: Helper API to the backend server
@@ -19,8 +19,6 @@ import axios from 'axios';
 export { fromBackend }
 
 class ConnectionToBackend {
-
-
   /**
    * @param {String} url
    * @returns -> Promise(object)
@@ -114,6 +112,23 @@ class ConnectionToBackend {
   }
 
   /**
+   * Uploads a data object to the backend using a post or put request
+   * @param {String} subdomain
+   * @param {Object} data
+   * @returns
+   */
+  async uploadObject(subdomain, data) {
+    var data;
+    if (data.lastSync == 0) {
+      data = await this.postData(subdomain, data);
+    } else {
+      data = await this.putData(subdomain, data);
+    }
+
+    return data;
+  }
+
+  /**
    * Updates existing data in the backend
    *
    * @param {String} subdomain
@@ -128,7 +143,6 @@ class ConnectionToBackend {
         data: data,
       })
         .then(function (res) {
-          //TODO: Delete the uploaded change from the Changes localDB
           resolve(res.data);
         })
         .catch(function (error) {
@@ -145,7 +159,6 @@ class ConnectionToBackend {
         data: data,
       })
         .then(function (res) {
-          //TODO: Delete the uploaded change from the Changes localDB
           resolve(res.data);
         })
         .catch(function (error) {
@@ -154,24 +167,24 @@ class ConnectionToBackend {
     });
   }
 
-/**
- * This sends a delete request to the backend with `subdomain` and `id`
- * @param {String} subdomain 
- * @param {String} id 
- * @returns 
- */
+  /**
+   * This sends a delete request to the backend with `subdomain` and `id`
+   * @param {String} subdomain
+   * @param {String} id
+   * @returns
+   */
   async deleteData(subdomain, id) {
     return new Promise((resolve, reject) => {
       axios({
         method: "delete",
         url: "/" + subdomain + "/" + id,
       })
-      .then(function (res) {
-        resolve(res);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+        .then(function (res) {
+          resolve(res);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     });
   }
 
@@ -211,7 +224,7 @@ class ConnectionToBackend {
         data: data,
       })
         .then(function (res) {
-          resolve(res);
+          resolve(res.data);
         })
         .catch(function (error) {
           console.log(error);
