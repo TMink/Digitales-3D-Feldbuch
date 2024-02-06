@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.02.2024 13:58:45
+ * Last Modified: 06.02.2024 16:46:07
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -250,18 +250,20 @@ export default {
   async created() {
     this.$emit("view", this.$t('overview', { msg: this.$tc('activity', 2) }));
     await fromOfflineDB.syncLocalDBs();
-    await this.updateActivities();
+    await this.updateActivitiesFull();
   },
   methods: {
     /**
      * Get all activities from IndexedDb and Backend
+     * @deprecated (for now)
      */
     async updateActivities() {
       this.activities = await fromOfflineDB.getAllObjects('Activities', 'activities');
     },
 
     /**
-     * @deprecated
+     * Downloads all online available activities (if the user is logged in) and 
+     * combines them with locally saved activities.
      */
     async updateActivitiesFull() {
 
@@ -295,30 +297,34 @@ export default {
       var sameIdFound = false;
 
       console.log("online and offline activities have to be combined")
-        offlineActivities.forEach(async (offActivity) => {
-            for (var i=0; i<onlineActivities.length; i++) {
+        for (var i=0; i<offlineActivities.length; i++) {
 
-            if (offActivity._id == onlineActivities[i]._id) {
+          for (var j=0; j<onlineActivities.length; j++) {
+
+            if (offlineActivities[i]._id == onlineActivities[j]._id
+            && offlineActivities[i].lastSync < onlineActivities[j].lastSync) {
               sameIdFound = true;
 
-              if (onlineActivities[i].lastChanged >= offActivity.lastChanged) {
-                var tempActivity = onlineActivities[i];
-                onlineActivities.splice(i, 1)
+              if (onlineActivities[j].lastChanged >= offlineActivities[i].lastChanged) {
+                var tempActivity = onlineActivities[j];
+                onlineActivities.splice(j, 1)
                 newActivityList.push(tempActivity);
                 //save this onlineActivity to IndexedDB
-                await fromOfflineDB.addObject(tempActivity, 'Activities', 'activities');
+                await fromOfflineDB.updateIndexedDBObject(tempActivity, 'Activities');
               } else {
-                newActivityList.push(offActivity);
+                newActivityList.push(offlineActivities[i]);
               }
+              
+              sameIdFound = false;
             }
           }
 
           if (!sameIdFound) {
-            newActivityList.push(offActivity);
+            newActivityList.push(offlineActivities[i]);
           } else {
             sameIdFound = false;
           }
-        });
+        }
 
       // add remaining online activities to the whole list
       newActivityList.concat(onlineActivities);
@@ -394,6 +400,8 @@ export default {
         number: '0001',
         places: [],
         editor: [],
+        lastChanged: Date.now(),
+        lastSync: 0,
         edit: true,
       }
 
@@ -434,12 +442,14 @@ export default {
           number: rawActivity.number,
           places: rawActivity.places,
           lastChanged: Date.now(),
-          lastSync: 0,
+          lastSync: rawActivity.lastSync,
           editor: rawActivity.editor,
         }
 
-        // add new activity to current authenticated user
-        if (this.userStore.authenticated) {
+        // add new activity to current authenticated user 
+        // and add editor to the activity, if it isn't already in the list
+        if (this.userStore.authenticated 
+            && !newActivity.editor.includes(this.userStore.user.username)) {
           newActivity.editor.push(this.userStore.user.username);
           this.userStore.user.activities.push(newActivity._id)
           this.userStore.updateUser();
@@ -503,7 +513,7 @@ export default {
       
       updatedActivity.editor.push(username);
 
-      await fromOfflineDB.updateObject(updatedActivity, 'Activities', 'activities');
+      await fromOfflineDB.postObjectCascade("activities", updatedActivity);
 
       // update other user
       if (username != this.userStore.user.username) {
