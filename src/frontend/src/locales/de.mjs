@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.02.2024 14:38:22
+ * Last Modified: 06.02.2024 14:39:16
  * Modified By: Oliver Mertens
  * 
  * Description: german translations
@@ -160,7 +160,7 @@ export default {
   addOtherEditor: "Einen anderen Bearbeiter hinzufügen",
   addEditorToActivity: "Einen anderen Bearbeiter zu dieser Aktivität hinzufügen",
   notLoggedIn: "Sie sind nicht eingeloggt!",
-  onlyLocal: "Diese Aktivität ist nur lokal und noch keinem Konto zugeordnet"
+  onlyLocal: "Diese Aktivität ist nur lokal und noch keinem Konto zugeordnet",
   downloadOnlineData: "Online verfügbare Daten herunterladen",
   downloadOnlineDataInfo:
 "Wähle die Aktivitäten aus, von denen du die Daten (Stellen, Positionen etc.) herunterladen möchtest. Beachte, dass der Download eine Weile dauern kann, wenn du Aktivitäten mit vielen Daten herutnerladen möchtest.",
