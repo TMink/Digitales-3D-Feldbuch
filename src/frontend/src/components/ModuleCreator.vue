@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:01:08
+ * Last Modified: 06.02.2024 14:25:12
  * Modified By: Julian Hardtung
  * 
  * Description: component to create, edit, set input module presets 
@@ -20,7 +20,7 @@
         <!-- NEW PRESET -->
         <v-col cols="6" v-show="!editPresetForm">
           <v-card-subtitle>
-            Add new Preset
+            {{ $t('addNewPreset') }}
           </v-card-subtitle>
           <v-window class="ma-2">
             <v-text-field 
@@ -108,7 +108,7 @@
         <!-- EDIT PRESET -->
         <v-col cols="6" v-show="editPresetForm">
           <v-card-subtitle>
-            Edit Module
+            {{ $t('editModule') }}
           </v-card-subtitle>
           <v-window class="ma-2">
             <v-text-field 
@@ -206,7 +206,7 @@
 
         <v-col cols="6">
           <v-card-subtitle>
-            Existing Presets
+            {{ $t('existingPresets') }}
           </v-card-subtitle>
 
             <v-data-table-virtual :items="modulePresets" class="pt-2" hide-headers height="400px">
@@ -221,13 +221,6 @@
                         {{ item.raw.title || '-' }}
                       </v-list-item-title>
                     </td>  
-                      <!-- <v-btn 
-                        class="mx-2 " 
-                        color="primary" 
-                        density="compact" 
-                        v-on:click="editPreset(item.raw)">
-                        <v-icon>mdi-pencil</v-icon>
-                      </v-btn> -->
                       <v-btn 
                         v-if="item.raw.canEdit"
                         class="mr-2"
@@ -261,7 +254,7 @@
         <v-divider vertical></v-divider>
         <v-col cols="6">
           <v-card-subtitle class="pt-2">
-            Selected Preset
+            {{ $t('selectedPreset') }}
           </v-card-subtitle>
           <v-card-title class="pa-0">
             {{ selectedPreset.title || '-'}}

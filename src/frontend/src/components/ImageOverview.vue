@@ -2,7 +2,7 @@
  * Created Date: 09.01.2024 11:33:59
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.01.2024 13:19:51
+ * Last Modified: 06.02.2024 14:26:22
  * Modified By: Julian Hardtung
  * 
  * Description: lists all images of a place
@@ -27,7 +27,12 @@
         <v-card-title> Nr. {{ item.imageNumber }} </v-card-title>
         <v-card-subtitle> {{ item.title }} </v-card-subtitle>
 
-        <v-img cover height="200" class="ma-2 my-4" :src="item.image" style="cursor: zoom-in" v-on:click="openImage(i)">
+        <v-img 
+          cover height="200" 
+          class="ma-2 my-4" 
+          :src="item.image" 
+          style="cursor: zoom-in" 
+          v-on:click="openImage(i)">
         </v-img>
 
         <v-row no-gutters>
@@ -48,7 +53,11 @@
   <!-- IMAGE CAROUSEL DIALOG -->
   <v-dialog v-model="img_carousel_dialog">
     <v-carousel hide-delimiters :model-value="carouselIndex" height="100vh">
-      <v-carousel-item @click="closeImgDialog" v-for="(item, i) in images" :key="i" :src="item.image">
+      <v-carousel-item 
+        @click="closeImgDialog" 
+        v-for="(item, i) in images" 
+        :key="i" 
+        :src="item.image">
       </v-carousel-item>
     </v-carousel>
   </v-dialog>

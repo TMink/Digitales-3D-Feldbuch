@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 09.01.2024 12:16:07
+ * Last Modified: 06.02.2024 13:50:43
  * Modified By: Julian Hardtung
  * 
  * Description: `general information` input module for places/positions
@@ -125,7 +125,7 @@
             color="primary" 
             persistent-hint
             :items="editorItemsSecondProp" 
-            :label="$t('editor') + ' *'" 
+            :label="$tc('editor', 1) + ' *'" 
             :hide-no-data="false" 
             v-model="object.editor"
             :hint="$tc('please_input', 2, { msg: 'Ansprache von' })">
@@ -195,7 +195,7 @@
             color="primary" 
             persistent-hint
             :items="editorItemsSecondProp" 
-            :label="$t('editor')" 
+            :label="$tc('editor', 1)" 
             :hide-no-data="false" 
             v-model="object.editor">
 

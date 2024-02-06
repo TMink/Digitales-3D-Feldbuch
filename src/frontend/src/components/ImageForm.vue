@@ -2,7 +2,7 @@
  * Created Date: 06.07.2023 13:22:10
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.01.2024 16:12:42
+ * Last Modified: 06.02.2024 13:49:39
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for images of places/positions
@@ -111,7 +111,7 @@
     <v-dialog v-model="edit_dialog" max-width="800" persistent>
       <v-card class="px-4 pt-2">
         <v-card-title>
-          {{ $t('edit', { msg: $t('image') }) }}
+          {{ $t('editPhrase', { msg: $t('image') }) }}
         </v-card-title>
 
           <v-row no-gutters>

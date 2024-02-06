@@ -2,27 +2,27 @@
  * Created Date: 11.01.2024 11:48:37
  * Author: Julian Hardtung
  * 
- * Last Modified: 11.01.2024 14:32:11
+ * Last Modified: 06.02.2024 14:08:50
  * Modified By: Julian Hardtung
  * 
- * Description: 
+ * Description: Selection to download online available data of activities.
+                You can select activities, for which you want to download all data.
  -->
 
 <template>
   <v-row v-if="this.userStore.authenticated" no-gutters class="pt-4 justify-center">
 
-    <v-btn link v-on:click="backupDialog = true; getOnlineActivities()">
-         Download online data
+    <v-btn link v-on:click="downloadDialog = true; getOnlineActivities()">
+         {{ $t('downloadOnlineData') }}
     </v-btn>
   </v-row>
   <!-- BACKUP DIALOG -->
-  <v-dialog :width="windowWidth * 0.6" v-model="backupDialog">
+  <v-dialog :width="windowWidth * 0.6" v-model="downloadDialog">
     <v-card class="pa-2">
-      <v-card-title> Download online Data </v-card-title>
+      <v-card-title> {{ $t('downloadOnlineData') }} </v-card-title>
 
       <v-card-text>
-        Check the boxes for which activity data you want to download so you can use it even offline. <br>
-        But the download can take a while for activities with a lot of data.
+        {{ $t('downloadOnlineDataInfo') }}
       </v-card-text>
          
       <v-checkbox hide-details
@@ -74,7 +74,6 @@ export default {
   },
   data() {
     return {
-      backupDialog: false,
       downloadDialog: false,
       importedData: '',
       activities: [],

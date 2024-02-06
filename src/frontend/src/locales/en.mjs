@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.02.2024 14:29:40
+ * Last Modified: 06.02.2024 14:39:09
  * Modified By: Oliver Mertens
  * 
  * Description: english translations
@@ -109,6 +109,7 @@ export default {
   registration: "Sign Up",
   lastSync: "Last Sync: ",
   login: "Sign In",
+  logout: "Sign Out",
   username: "Username",
   password: "Password",
   mail: "E-Mail",
@@ -134,6 +135,10 @@ export default {
   current_selection: "Current Selection",
   confirm_del: "Do you really want to delete {object} Nr. {object_nr}?",
   overview: "{msg} Overview",
+  addNewPreset: "Add new Preset",
+  existingPresets: "Existing Presets",
+  selectedPreset: "Selected Preset",
+  editModule: "Edit Module",
   visibilities: "Bad | Moderate | Good | Very Good",
   addMax5: "Add max. 5 tags which describe the place",
   noResults: "No attributes matching your search. Press `enter` to create a new one",
@@ -154,5 +159,8 @@ export default {
   addOtherEditor: "Add other editor",
   addEditorToActivity: "Add new editor to this activity",
   notLoggedIn: "You are not logged in!",
-  onlyLocal: "This activity is only local and not yet assigned to an account"
+  onlyLocal: "This activity is only local and not yet assigned to an account",
+  downloadOnlineData: "Download online available data",
+  downloadOnlineDataInfo:
+    "Check the boxes for which activity data you want to download so you can use it even offline. <br> But the download can take a while for activities with a lot of data.",
 };
