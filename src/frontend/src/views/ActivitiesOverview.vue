@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.02.2024 17:02:46
+ * Last Modified: 06.02.2024 17:12:21
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -146,19 +146,6 @@
                           :block="true"
                           v-on:click="addEditor(activity, this.userStore.user.username)">
                           {{ this.$t('addToYourAccount') }}
-                        </v-list-item>
-                        <v-list-item v-else
-                          rounded="0" 
-                          :block="true"
-                          class="wrap-text">
-                          {{ this.$tc('editor', 2) }}:
-                          <v-list class="pa-0" v-if="activity.editor">
-                            <v-list-item
-                            v-for="editor in activity.editor"
-                            :key="editor">
-                            {{ editor }}
-                          </v-list-item>
-                          </v-list>
                         </v-list-item>
                         <v-list-item v-if="this.userStore.authenticated"
                           color="error"
