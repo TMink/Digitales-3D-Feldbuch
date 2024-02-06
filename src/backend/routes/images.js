@@ -2,7 +2,7 @@
  * Created Date: 10.05.2023 12:58:23
  * Author: Julian Hardtung
  * 
- * Last Modified: 05.02.2024 15:27:15
+ * Last Modified: 06.02.2024 16:26:19
  * Modified By: Julian Hardtung
  * 
  * Description: Backend CRUD API routes for images
@@ -37,12 +37,15 @@ const upload = multer({ storage: storage });
  * @returns image Json-Object with all required fields
  */
 function getImageJson(doc, filename, mimetype) {
+  const curTime = Date.now();
   return {
     _id: doc._id,
     imageNumber: doc.imageNumber,
     positionID: doc.positionID,
     title: doc.title,
     image: filename,
+    lastChanged: curTime,
+    lastSync: curTime,
   };
 }
 
