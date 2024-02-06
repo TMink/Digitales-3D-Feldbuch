@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 16.12.2023 16:50:59
+ * Last Modified: 06.02.2024 14:11:09
  * Modified By: Julian Hardtung
  * 
  * Description: Vue component with navigation-bar and extendable side-bar
@@ -119,14 +119,14 @@
 
         <v-row class="d-flex justify-center ma-3">
             <v-btn v-if="userStore.user != null" @click="logout()">
-              Logout
+              {{ $t('logout') }}
             </v-btn>
           <span v-else>
             <v-btn class="ma-2" @click="changePage('Registration')">
-              Registration
+              {{ $t('registration') }}
             </v-btn>
             <v-btn class="ma-2" @click="changePage('Login')">
-              Login
+              {{ $t('login') }}
             </v-btn>
           </span>
         </v-row>
@@ -147,14 +147,14 @@
             link 
             v-on:click="deleteCookies()">
             <v-list-item-title>
-              {{ $t('delete', { msg: 'Cookies' }) }}
+              {{ $t('deletePhrase', { msg: 'Cookies' }) }}
             </v-list-item-title>
           </v-list-item>
           <v-list-item 
             link 
             v-on:click="clearIndexedDB()">
             <v-list-item-title>
-              {{ $t('delete', { msg: 'IndexedDB' }) }}
+              {{ $t('deletePhrase', { msg: 'IndexedDB' }) }}
             </v-list-item-title>
           </v-list-item>
         </v-card>

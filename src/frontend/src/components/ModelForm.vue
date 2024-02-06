@@ -2,7 +2,7 @@
  * Created Date: 14.07.2023 17:06:51
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.01.2024 12:15:11
+ * Last Modified: 06.02.2024 13:49:44
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for 3d-models of places/positions
@@ -134,7 +134,7 @@
     <v-dialog v-model="edit_dialog" max-width="800" persistent>
       <v-card class="pa-2">
         <v-card-title>
-          {{ $t('edit', { msg: $t('model') }) }}
+          {{ $t('editPhrase', { msg: $t('model') }) }}
         </v-card-title>
 
           <v-row v-if='object.placeNumber > 0'>

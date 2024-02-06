@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.02.2024 13:57:30
+ * Last Modified: 06.02.2024 14:24:25
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -106,9 +106,10 @@ export default {
   technical: "Technische Stelle",
   home: "Startseite",
   technicalDrawing: "Technische Zeichnung",
-  registration: "Registration",
+  registration: "Account erstellen",
   lastSync: "Zuletzt Synchronisiert: ",
-  login: "Login",
+  login: "Einloggen",
+  logout: "Ausloggen",
   username: "Username",
   password: "Passwort",
   mail: "E-Mail",
@@ -134,6 +135,10 @@ export default {
   current_selection: "Aktuelle Auswahl",
   confirm_del: "Möchten Sie wirklich die {object} {object_nr} löschen?",
   overview: "{msg} Übersicht",
+  addNewPreset: "Neues Preset hinzufügen",
+  existingPresets: "Bestehende Presets",
+  selectedPreset: "Ausgewähltes Preset",
+  editModule: "Modul editieren",
   visibilities: "Schlecht | Mäßig | Gut | Sehr gut",
   addMax5: "Füge max. 5 beschreibende Attribute hinzu",
   noResults: "Keine passenden Attribute gefunden. Drücke `enter`, um ein neues zu erstellen.",
@@ -154,4 +159,7 @@ export default {
   addToYourAccount: "Zu deinem Account hinzufügen",
   addOtherEditor: "Einen anderen Bearbeiter hinzufügen",
   addEditorToActivity: "Einen anderen Bearbeiter zu dieser Aktivität hinzufügen",
+  downloadOnlineData: "Online verfügbare Daten herunterladen",
+  downloadOnlineDataInfo:
+    "Wähle die Aktivitäten aus, von denen du die Daten (Stellen, Positionen etc.) herunterladen möchtest. Beachte, dass der Download eine Weile dauern kann, wenn du Aktivitäten mit vielen Daten herutnerladen möchtest.",
 };
