@@ -2,7 +2,7 @@
  * Created Date: 26.06.2023 15:10:20
  * Author: Julian Hardtung
  * 
- * Last Modified: 04.01.2024 15:30:45
+ * Last Modified: 06.02.2024 13:40:57
  * Modified By: Julian Hardtung
  * 
  * Description: export all (or only specified) data to .pdf or .csv
@@ -315,31 +315,31 @@ export default {
       allPositionsCount: '',
       activityHeaders: [
         [
-          { title: 'Außenstelle', align: 'start', key: 'branchOffice' },
-          { title: 'Jahr', align: 'start', key: 'year' },
-          { title: 'Nr.', align: 'start', key: 'number' },
-          { title: 'Places', align: 'start', key: 'places.length' },
+          { title: this.$t('branchOffice'), align: 'start', key: 'branchOffice' },
+          { title: this.$t('year'), align: 'start', key: 'year' },
+          { title: this.$tc('number', 2), align: 'start', key: 'number' },
+          { title: this.$tc('place', 2), align: 'start', key: 'places.length' },
         ],
       ],
       placeHeaders: [
         [
-          { title: 'Nr.', align: 'start', key: 'placeNumber'},
-          { title: 'Ansprache', align: 'start', key: 'title' },
-          { title: 'Datum', align: 'start', key: 'date' },
-          { title: 'Images', align: 'start', key: 'images.length' },
-          { title: 'Models', align: 'start', key: 'models.length' },
-          { title: 'Positions', align: 'start', key: 'positions.length' },
+          { title: this.$tc('number', 2), align: 'start', key: 'placeNumber'},
+          { title: this.$tc('title', 2), align: 'start', key: 'title' },
+          { title: this.$t('date'), align: 'start', key: 'date' },
+          { title: this.$tc('image', 2), align: 'start', key: 'images.length' },
+          { title: this.$tc('model', 2), align: 'start', key: 'models.length' },
+          { title: this.$tc('position', 2), align: 'start', key: 'positions.length' },
         ],
       ],
       positionHeaders: [
         [
-          { title: 'Nr.', align: 'start', key: 'positionNumber' },
-          { title: 'SubNr.', align: 'start', key: 'subNumber' },
-          { title: 'Ansprache', align: 'start', key: 'title' },
-          { title: 'Datierung', align: 'start', key: 'dating' },
-          { title: 'Datum', align: 'start', key: 'date' },
-          { title: 'Images', align: 'start', key: 'images.length' },
-          { title: 'Models', align: 'start', key: 'models.length' },
+          { title: this.$tc('number', 2), align: 'start', key: 'positionNumber' },
+          { title: this.$tc('subNumber', 2), align: 'start', key: 'subNumber' },
+          { title: this.$tc('title', 2), align: 'start', key: 'title' },
+          { title: this.$t('dating'), align: 'start', key: 'dating' },
+          { title: this.$t('date'), align: 'start', key: 'date' },
+          { title: this.$tc('image', 2), align: 'start', key: 'images.length' },
+          { title: this.$tc('model', 2), align: 'start', key: 'models.length' },
         ],
       ],
     };

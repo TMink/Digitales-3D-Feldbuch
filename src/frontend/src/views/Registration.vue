@@ -2,7 +2,7 @@
  * Created Date: 29.11.2023 01:45:44
  * Author: Julian Hardtung
  * 
- * Last Modified: 12.12.2023 14:48:52
+ * Last Modified: 06.02.2024 13:28:01
  * Modified By: Julian Hardtung
  * 
  * Description: Vue component for user registration
@@ -23,26 +23,40 @@
             {{ toolbar_title }}
           </h1>
           <h4 class="subheading">
-            Registration
+            {{ this.$t('registration') }}
           </h4>
           <v-row no-gutters>
             <v-spacer></v-spacer>
-            <v-text-field v-model="form.username" variant="outlined" label="Username"></v-text-field>
+            <v-text-field 
+              v-model="form.username" 
+              variant="outlined" 
+              :label="this.$t('username')">
+            </v-text-field>
             <v-spacer></v-spacer>
           </v-row>
           <v-row no-gutters>
             <v-spacer></v-spacer>
-            <v-text-field v-model="form.mail" variant="outlined" type="email" label="E-Mail"></v-text-field>
+            <v-text-field 
+              v-model="form.mail" 
+              variant="outlined" 
+              type="email" 
+              :label="this.$t('mail')">
+            </v-text-field>
             <v-spacer></v-spacer>
           </v-row>
           <v-row no-gutters>
             <v-spacer></v-spacer>
-            <v-text-field v-model="form.password" variant="outlined" type="input" label="Password"></v-text-field>
+            <v-text-field 
+              v-model="form.password" 
+              variant="outlined" 
+              type="input" 
+              :label="this.$t('password')">
+            </v-text-field>
             <v-spacer></v-spacer>
           </v-row>
           
           <v-btn v-on:click="registration()" color="secondary" class="ma-2"
-            prepend-icon="mdi-account-plus-outline">Registration</v-btn>
+            prepend-icon="mdi-account-plus-outline">{{ this.$t('registration') }}</v-btn>
         </v-col>
       </v-row>
     </v-img>

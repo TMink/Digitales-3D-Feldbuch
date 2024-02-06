@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 11.01.2024 14:35:40
+ * Last Modified: 06.02.2024 13:51:18
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -91,8 +91,10 @@
                       -
                     </v-list-item-title>
 
-                    <v-list-item-subtitle class="d-flex flex-row-reverse" v-if="item.raw.lastSync != ''">
-                        Last sync: {{ new Date(item.raw.lastSync).toLocaleString() }}
+                    <v-list-item-subtitle 
+                      class="d-flex flex-row-reverse" 
+                      v-if="item.raw.lastSync != ''">
+                      {{ this.$t('lastSync') + new Date(item.raw.lastSync).toLocaleString() }}
                       </v-list-item-subtitle>
                   </td>
 
@@ -418,7 +420,7 @@ export default {
         { title: this.$t('weight'), align: 'start', key: 'weight' },
         { title: this.$t('material'), align: 'start', key: 'material' },
         { title: this.$t('description'), align: 'start', key: 'description' },
-        { title: this.$t('editor'), align: 'start', key: 'editor' },
+        { title: this.$tc('editor', 1), align: 'start', key: 'editor' },
         { title: this.$t('date'), align: 'start', key: 'date' },
         { title: this.$t('isSeparate'), align: 'start', key: 'isSeparate' },
       ],

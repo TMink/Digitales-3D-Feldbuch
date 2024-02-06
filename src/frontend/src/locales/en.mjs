@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.12.2023 14:47:15
+ * Last Modified: 06.02.2024 13:57:12
  * Modified By: Julian Hardtung
  * 
  * Description: english translations
@@ -54,7 +54,7 @@ export default {
   profile: "Profile",
   visibility: "Visibility",
   drawing: "Drawing | Drawings",
-  editor: "Editor",
+  editor: "Editor | Editors",
   adressOf: "Adress Of",
   veryGood: "Very Good",
   good: "Good",
@@ -106,11 +106,22 @@ export default {
   technical: "Technical Place",
   home: "Home",
   technicalDrawing: "Technical Drawing",
+  registration: "Sign Up",
+  lastSync: "Last Sync: ",
+  login: "Sign In",
+  username: "Username",
+  password: "Password",
+  mail: "E-Mail",
+  download: "Download",
+  desktopClient: "Desktop Client",
+  options: "Options",
+  delete: "Delete",
+  edit: "Edit",
 
   // Phrases
   add: "Add {msg}",
-  edit: "Edit {msg}",
-  delete: "Delete {msg}",
+  editPhrase: "Edit {msg}",
+  deletePhrase: "Delete {msg}",
   moveObj: "Move {obj}",
   measureDist: "Measure Distance",
   newIdentifier: "New Identifier",
@@ -135,5 +146,11 @@ export default {
   saveSuccess: "Saving successful",
   duplicationMode: "Duplicationmode activated",
   getBackup: "Getting your files",
-  createBackup: "Collecting your files"
+  createBackup: "Collecting your files",
+  forgotPassword: "Forgot password",
+  downloadInfoText:
+    "If you are planning on using this fieldbook without an active internet connection, you should download the desktop client.",
+  addToYourAccount: "Add to your account",
+  addOtherEditor: "Add other editor",
+  addEditorToActivity: "Add new editor to this activity",
 };

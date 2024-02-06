@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.12.2023 14:47:05
+ * Last Modified: 06.02.2024 13:57:30
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -106,11 +106,22 @@ export default {
   technical: "Technische Stelle",
   home: "Startseite",
   technicalDrawing: "Technische Zeichnung",
+  registration: "Registration",
+  lastSync: "Zuletzt Synchronisiert: ",
+  login: "Login",
+  username: "Username",
+  password: "Passwort",
+  mail: "E-Mail",
+  download: "Herunterladen",
+  desktopClient: "Desktop Programm",
+  options: "Optionen",
+  delete: "Löschen",
+  edit: "Bearbeiten",
 
   // Phrases
   add: "{msg} hinzufügen",
-  edit: "{msg} bearbeiten",
-  delete: "{msg} löschen",
+  editPhrase: "{msg} bearbeiten",
+  deletePhrase: "{msg} löschen",
   moveObj: "{obj} bewegen",
   measureDist: "Abstand messen",
   newIdentifier: "Neuer Bezeichner",
@@ -137,4 +148,10 @@ export default {
   duplicationMode: "Duplikationsmodus aktiviert",
   getBackup: "Ihre Daten werden geladen",
   createBackup: "Ihre Daten werden gesammelt",
+  forgotPassword: "Passwort vergessen",
+  downloadInfoText:
+    "Wenn du planst das Feldbuch ohne eine aktive Internetverbindung zu nutzen, solltest du das Desktop Programm herunterladen.",
+  addToYourAccount: "Zu deinem Account hinzufügen",
+  addOtherEditor: "Einen anderen Bearbeiter hinzufügen",
+  addEditorToActivity: "Einen anderen Bearbeiter zu dieser Aktivität hinzufügen",
 };

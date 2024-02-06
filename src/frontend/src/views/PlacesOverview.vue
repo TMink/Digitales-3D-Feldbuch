@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 11.01.2024 15:06:07
+ * Last Modified: 06.02.2024 13:51:05
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -69,33 +69,34 @@
                 </td>
 
                 <!-- TITLE -->
-                  <td class="py-2" :style="getRowStyle(index)">
-                     <div v-if="item.raw.placeNumber > 1">
-                      <v-list-item-title
-                        v-if="item.raw.title.length > 0"
-                        style="min-width:200px" 
-                        class="text-wrap">
-                        {{ item.raw.title }}
-                      </v-list-item-title>
-                      
-                      <v-list-item-title 
-                        v-if="item.raw.title.length == 0" 
-                        style="color:dimgrey;">
-                        -
-                      </v-list-item-title>
-                    </div>
-
-                     <v-list-item-title 
-                      v-if="item.raw.placeNumber == 1" 
-                      style="color:#C4A484;">
-                      {{ $t('technical') }}
+                <td class="py-2" :style="getRowStyle(index)">
+                  <div v-if="item.raw.placeNumber > 1">
+                    <v-list-item-title
+                      v-if="item.raw.title.length > 0"
+                      style="min-width:200px" 
+                      class="text-wrap">
+                      {{ item.raw.title }}
                     </v-list-item-title>
-                    
-                    <v-list-item-subtitle class="d-flex flex-row-reverse" v-if="item.raw.lastSync != ''">
-                      Last sync: {{ new Date(item.raw.lastSync).toLocaleString() }}
-                    </v-list-item-subtitle>
+                      
+                    <v-list-item-title 
+                      v-if="item.raw.title.length == 0" 
+                      style="color:dimgrey;">
+                      -
+                    </v-list-item-title>
+                  </div>
 
-                  </td>
+                  <v-list-item-title 
+                    v-if="item.raw.placeNumber == 1" 
+                    style="color:#C4A484;">
+                    {{ $t('technical') }}
+                  </v-list-item-title>
+                  
+                  <v-list-item-subtitle 
+                    class="d-flex flex-row-reverse" 
+                    v-if="item.raw.lastSync != ''">
+                    {{ this.$t('lastSync') + new Date(item.raw.lastSync).toLocaleString() }}
+                  </v-list-item-subtitle>
+                </td>
 
                 <!-- DATE -->
                 <td :style="getRowStyle(index)">
@@ -432,7 +433,7 @@ export default {
         { title: this.$t('plane'), align: 'start', key: 'plane', width: "150px" },
         { title: this.$t('visibility'), align: 'start', key: 'visibility', width: "50px" },
         { title: this.$t('description'), align: 'start', key: 'description', width: "150px" },
-        { title: this.$t('editor'), align: 'start', key: 'editor', width: "50px" },
+        { title: this.$tc('editor', 1), align: 'start', key: 'editor', width: "50px" },
         { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
       ],
       curModulePreset: {

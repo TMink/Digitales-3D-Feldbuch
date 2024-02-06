@@ -2,7 +2,7 @@
  * Created Date: 29.11.2023 13:29:27
  * Author: Oliver Mertens
  * 
- * Last Modified: 16.12.2023 13:58:10
+ * Last Modified: 06.02.2024 13:32:54
  * Modified By: Julian Hardtung
  * 
  * Description: LandingPage as the first entry point for new users
@@ -30,23 +30,28 @@
                   <v-col>
                     <v-btn v-on:click="routeLogin()" color="primary" class="ma-2" 
                     prepend-icon="mdi-login">Login</v-btn>
-                    <v-btn v-on:click="routeRegistration()" color="secondary" class="ma-2"
-                    
-                    prepend-icon="mdi-account-plus-outline">Registration</v-btn>
+                    <v-btn 
+                      v-on:click="routeRegistration()" 
+                      color="secondary" class="ma-2"
+                      prepend-icon="mdi-account-plus-outline">
+                      {{ this.$t('registration') }}
+                    </v-btn>
                     <v-card variant="plain" height="25vh"></v-card>
                     <v-icon size="x-large">mdi-arrow-down-circle</v-icon>
                     <v-card variant="plain" height="10vh"></v-card>
-                    <v-card v-if="!isElectron()" variant="outlined" class="pa-4">
 
+                    <!-- CLIENT DOWNLOAD -->
+                    <v-card v-if="!isElectron()" variant="outlined" class="pa-4">
                       <v-card-title class="text-h4 font-weight-light mb-4">
-                        Desktop Client
+                        {{ this.$t('desktopClient') }}
                       </v-card-title>
                       <v-card-text>
-                        If you are planning on using this fieldbook without an active internet connection, you should download the desktop client.
+                        {{ this.$t('downloadInfoText') }}
                       </v-card-text>
                       <v-btn href="https://github.com/TMink/Digitales-3D-Feldbuch-Projekt-3-/releases/latest/download/fieldbook-client-win32-x64.7z" 
-                      color="secondary" class="ma-2">Download Client</v-btn>
+                      color="secondary" class="ma-2">{{ this.$t('download') }}</v-btn>
                     </v-card>
+                    
                     <v-card variant="plain" height="20vh"></v-card>
                   </v-col>
                 </v-row>

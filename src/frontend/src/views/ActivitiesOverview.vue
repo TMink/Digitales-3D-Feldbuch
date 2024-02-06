@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 05.02.2024 15:34:10
+ * Last Modified: 06.02.2024 13:58:45
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -36,7 +36,7 @@
                       {{ activity.activityNumber }}
                     </v-list-item-title>
                     <v-list-item-subtitle v-if="activity.lastSync > 0">
-                      Last sync: {{ new Date(activity.lastSync).toLocaleString() }}
+                      {{ this.$t('lastSync') + new Date(activity.lastSync).toLocaleString() }}
                     </v-list-item-subtitle>
                   </v-list-item>
                 </v-col>
@@ -48,7 +48,7 @@
                         <v-btn v-if="activity.editor.length>0"
                           color="primary"
                           v-bind="props">
-                          Options
+                          {{ this.$t('options') }}
                           <v-icon>mdi-arrow-down-bold-box</v-icon>
                         </v-btn>
                         <v-btn v-else
@@ -59,7 +59,7 @@
                               location="bottom">
                               This activity is only local and not yet assigned to an account
                             </v-tooltip>
-                            Options
+                            {{ this.$t('options') }}
                             <v-icon>mdi-arrow-down-bold-box</v-icon>
                           </v-btn>
                       </template>
@@ -70,13 +70,13 @@
                           rounded="0"
                           :block="true"
                           v-on:click="activity.edit = !activity.edit">
-                          Edit
+                          {{ this.$t('edit') }}
                           <v-icon>mdi-pencil</v-icon>
                         </v-list-item>
                         <v-list-item 
                           color="error"
                           v-on:click="confirmDeletion(activity)">
-                          Delete
+                          {{ this.$t('delete') }}
                           <v-icon>mdi-delete</v-icon>
                         </v-list-item>
                         <v-list-item 
@@ -84,13 +84,13 @@
                           rounded="0" 
                           :block="true"
                           v-on:click="addEditor(activity, this.userStore.user.username)">
-                          Add this your account
+                          {{ this.$t('addToYourAccount') }}
                         </v-list-item>
                         <v-list-item v-else
                           rounded="0" 
                           :block="true"
                           class="wrap-text">
-                          Editors: 
+                          {{ this.$tc('editor', 2) }}:
                           <v-list class="pa-0" v-if="activity.editor">
                             <v-list-item
                             v-for="editor in activity.editor"
@@ -102,7 +102,7 @@
                         <v-list-item v-if="this.userStore.authenticated"
                           color="error"
                           v-on:click="openAddEditorDialog(activity)">
-                          Add other editor
+                          {{ this.$t('addOtherEditor') }}
                           <v-icon>mdi-account-plus-outline</v-icon>
                         </v-list-item> 
                       </v-list>
@@ -159,7 +159,7 @@
                     class="ma-1" 
                     color="primary" 
                     v-on:click="saveActivity(activity)">
-                    Save
+                    {{ this.$t('save') }}
                     <v-icon>mdi-content-save-all</v-icon>
                   </v-btn>
                   <v-btn
@@ -167,7 +167,7 @@
                     class="ma-1"
                     color="error" 
                     v-on:click="closeActivityEdit(activity)">
-                    Cancel
+                    {{ this.$t('cancel') }}
                     <v-icon>mdi-close-circle</v-icon>
                   </v-btn>
                 </v-col>
@@ -185,10 +185,12 @@
 
     <AddButton v-on:click="addActivity()" />
 
-    <v-dialog v-model="addEditorDialog" :max-width="290" style="z-index: 3;" @keydown.esc="cancelAddEditor()">
+    <v-dialog v-model="addEditorDialog" :max-width="550" style="z-index: 3;" @keydown.esc="cancelAddEditor()">
           <v-card>
               <v-toolbar dark color="success" dense flat>
-                  <v-toolbar-title>Add new Editor to activity</v-toolbar-title>
+                  <v-toolbar-title>
+                    {{ $t('addEditorToActivity') }}
+                  </v-toolbar-title>
               </v-toolbar>
               <v-text-field label="Username" v-model="newEditorName"></v-text-field>
               <v-card-actions class="pt-0">
@@ -274,7 +276,7 @@ export default {
 
       const onlineActivities = await fromBackend.getDataWithParam('activities/user', this.userStore.user._id)
       
-      // if there are not offlineActivities, don't check for duplicates
+      // if there are no offlineActivities, don't check for duplicates
       if (offlineActivities.length == 0) {
         console.log("No local activities, so only show online")
         onlineActivities.forEach(async (onActivity) => {
@@ -322,6 +324,7 @@ export default {
       newActivityList.concat(onlineActivities);
       this.activities = newActivityList;
     },
+    
     
     /**
      * Sets the currently selected activity into the cookies
