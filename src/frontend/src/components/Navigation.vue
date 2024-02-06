@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.02.2024 17:35:06
+ * Last Modified: 06.02.2024 17:48:18
  * Modified By: Oliver Mertens
  * 
  * Description: Vue component with navigation-bar and extendable side-bar
@@ -80,11 +80,6 @@
                 variant="text"
                 v-bind="props"
                 v-if="userStore.authenticated">
-                <v-tooltip 
-                  activator="parent"
-                  location="bottom">
-                  {{ message }}
-                </v-tooltip>
                 <v-icon>mdi-account-circle</v-icon>
               </v-btn>
               <v-btn 
@@ -92,12 +87,7 @@
                 variant="text"
                 v-bind="props"
                 v-else>
-                <v-tooltip 
-                  activator="parent"
-                  location="bottom">
-                  {{ message }}
-                </v-tooltip>
-                <v-icon>mdi-account-circle-outline</v-icon>
+                <v-icon>mdi-account-off-outline</v-icon>
               </v-btn>
           </template>
             <v-list v-if="userStore.authenticated">
@@ -117,8 +107,8 @@
                 </v-list-item>
             </v-list>
         </v-menu>
+        {{ message }}
     </div>
-      {{ message }}
       <v-btn 
         icon 
         @click.stop="navdrawer = !navdrawer">
@@ -231,7 +221,7 @@ export default {
   setup() {
     const theme = useTheme()
     const { t } = useI18n() // use as global scope
-    const message = ref('You are not logged in!');
+    const message = ref('');
     const userStore = useUserStore();
 
     if (userStore.authenticated) {
