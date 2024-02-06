@@ -2,8 +2,8 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.02.2024 14:11:09
- * Modified By: Julian Hardtung
+ * Last Modified: 06.02.2024 17:33:53
+ * Modified By: Oliver Mertens
  * 
  * Description: Vue component with navigation-bar and extendable side-bar
  -->
@@ -71,6 +71,53 @@
 
       </v-tabs>
       <v-spacer></v-spacer>
+
+      <div class="AccountButton">
+        <v-menu>
+            <template v-slot:activator="{ props }">
+              <v-btn 
+                icon 
+                variant="text"
+                v-bind="props"
+                v-if="userStore.authenticated">
+                <v-tooltip 
+                  activator="parent"
+                  location="bottom">
+                  {{ message }}
+                </v-tooltip>
+                <v-icon>mdi-account-circle</v-icon>
+              </v-btn>
+              <v-btn 
+                icon 
+                variant="text"
+                v-bind="props"
+                v-else>
+                <v-tooltip 
+                  activator="parent"
+                  location="bottom">
+                  {{ message }}
+                </v-tooltip>
+                <v-icon>mdi-account-circle-outline</v-icon>
+              </v-btn>
+          </template>
+            <v-list v-if="userStore.authenticated">
+                <v-list-item 
+                  @click="logout()">
+                  {{ $t('logout') }}
+                </v-list-item>
+            </v-list>
+            <v-list v-else>
+                <v-list-item 
+                  @click="changePage('Registration')">
+                  {{ $t('registration') }}
+                </v-list-item>
+                <v-list-item 
+                  @click="changePage('Login')">
+                  {{ $t('login') }}
+                </v-list-item>
+            </v-list>
+        </v-menu>
+    </div>
       {{ message }}
       <v-btn 
         icon 
