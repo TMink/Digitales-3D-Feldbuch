@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.02.2024 16:46:07
+ * Last Modified: 06.02.2024 17:02:46
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -29,19 +29,21 @@
             displayed in list form or in edit form-->
               <v-row no-gutters v-if="!activity.edit" class="align-center">
 
-                <v-col cols="10">
+                <v-col cols="9">
                   <v-list-item 
                     class="pa-2 ma-2" v-on:click="setActivity(activity._id)">
                     <v-list-item-title class="ma-4 text-center">
                       {{ activity.activityNumber }}
                     </v-list-item-title>
+                    <!--
                     <v-list-item-subtitle v-if="activity.lastSync > 0">
                       {{ this.$t('lastSync') + new Date(activity.lastSync).toLocaleString() }}
                     </v-list-item-subtitle>
+                    -->
                   </v-list-item>
                 </v-col>
 
-                <v-col cols="2" class="pa-4">
+                <v-col cols="3" class="pa-4">
 
                     <v-menu location="bottom">
                       <template v-slot:activator="{ props }">
@@ -51,17 +53,76 @@
                           {{ this.$t('options') }}
                           <v-icon>mdi-arrow-down-bold-box</v-icon>
                         </v-btn>
+                        <v-icon v-if="activity.editor.length>0">mdi-account-check</v-icon>
+
                         <v-btn v-else
                             color="error"
                             v-bind="props">
+                            {{ this.$t('options') }}
+                            <v-icon>mdi-arrow-down-bold-box</v-icon>
+                        </v-btn>
+                        
+                          <v-btn 
+                              icon 
+                              variant="text"      
+                              v-if="activity.editor.length > 0">
+                              <v-tooltip 
+                                activator="parent"
+                                location="bottom">
+                                <v-list-item 
+                                  rounded="0" 
+                                  :block="true"
+                                  class="wrap-text">
+                                  {{ this.$tc('editor', 2) }}:
+                                  <v-list class="pa-0" v-if="activity.editor">
+                                    <v-list-item
+                                      v-for="editor in activity.editor"
+                                      :key="editor">
+                                      {{ editor }}
+                                    </v-list-item>
+                                  </v-list>
+                                </v-list-item>
+                                
+                              </v-tooltip>
+                              <v-icon>mdi-account-check</v-icon>
+                            </v-btn>
+                            <v-btn 
+                              icon 
+                              variant="text"      
+                              v-else>
+                              <v-tooltip 
+                                activator="parent"
+                                location="bottom">
+                                {{ $t('noAccount') }}
+                              </v-tooltip>
+                              <v-icon>mdi-account-off-outline</v-icon>
+                            </v-btn>
+
+                            
+                        
+                          <v-btn 
+                            icon 
+                            variant="text"      
+                            v-if="activity.lastSync > 0">
                             <v-tooltip 
                               activator="parent"
                               location="bottom">
-                              This activity is only local and not yet assigned to an account
+                              {{ this.$t('lastSync') + new Date(activity.lastSync).toLocaleString() }}
                             </v-tooltip>
-                            {{ this.$t('options') }}
-                            <v-icon>mdi-arrow-down-bold-box</v-icon>
+                            <v-icon>mdi-cloud-check</v-icon>
                           </v-btn>
+                          <v-btn 
+                            icon 
+                            variant="text"      
+                            v-else>
+                            <v-tooltip 
+                              activator="parent"
+                              location="bottom">
+                              {{ $t('onlyLocal') }}
+                            </v-tooltip>
+                            <v-icon>mdi-cloud-off-outline</v-icon>
+                          </v-btn>
+                          
                       </template>
 
                       <v-list>
