@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.02.2024 17:48:18
+ * Last Modified: 06.02.2024 17:51:53
  * Modified By: Oliver Mertens
  * 
  * Description: Vue component with navigation-bar and extendable side-bar
@@ -151,20 +151,6 @@
             class="ma-2">
             <v-icon>mdi-theme-light-dark</v-icon>
           </v-btn>
-        </v-row>
-
-        <v-row class="d-flex justify-center ma-3">
-            <v-btn v-if="userStore.user != null" @click="logout()">
-              {{ $t('logout') }}
-            </v-btn>
-          <span v-else>
-            <v-btn class="ma-2" @click="changePage('Registration')">
-              {{ $t('registration') }}
-            </v-btn>
-            <v-btn class="ma-2" @click="changePage('Login')">
-              {{ $t('login') }}
-            </v-btn>
-          </span>
         </v-row>
 
         <v-spacer></v-spacer>
