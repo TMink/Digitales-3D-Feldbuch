@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.02.2024 16:19:07
+ * Last Modified: 06.02.2024 17:05:40
  * Modified By: Oliver Mertens
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -53,8 +53,7 @@
                           {{ this.$t('options') }}
                           <v-icon>mdi-arrow-down-bold-box</v-icon>
                         </v-btn>
-                        <v-icon v-if="activity.editor.length>0">mdi-account-check</v-icon>
-
+                      
                         <v-btn v-else
                             color="error"
                             v-bind="props">
@@ -97,8 +96,6 @@
                               </v-tooltip>
                               <v-icon>mdi-account-off-outline</v-icon>
                             </v-btn>
-
-                            
                         
                           <v-btn 
                             icon 
