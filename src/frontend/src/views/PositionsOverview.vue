@@ -2,8 +2,8 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.02.2024 13:51:18
- * Modified By: Julian Hardtung
+ * Last Modified: 07.02.2024 11:57:29
+ * Modified By: Oliver Mertens
  * 
  * Description: lists all positions
  -->
@@ -103,6 +103,34 @@
                     <v-list-item-title>
                       {{ item.raw.date || '-' }}
                     </v-list-item-title>
+                  </td>
+
+                  <!-- SYNC STATUS -->
+                  <td :style="getRowStyle(index)">
+                    <v-list-item>
+                      <v-btn 
+                        icon 
+                        variant="text"
+                        v-if="item.raw.lastSync > 0">
+                          <v-tooltip 
+                            activator="parent"
+                            location="bottom">
+                            {{ this.$t('lastSync') + new Date(item.raw.lastSync).toLocaleString() }}
+                          </v-tooltip>
+                          <v-icon>mdi-cloud-check</v-icon>
+                      </v-btn>
+                      <v-btn 
+                        icon 
+                        variant="text"      
+                        v-else>
+                          <v-tooltip 
+                            activator="parent"
+                            location="bottom">
+                              {{ $t('onlyLocal') }}
+                          </v-tooltip>
+                          <v-icon>mdi-cloud-off-outline</v-icon>
+                      </v-btn>
+                    </v-list-item>
                   </td>
               </tr>
             </template>
@@ -279,6 +307,34 @@
                       -
                     </v-list-item-title>
                   </td>
+
+                  <!-- SYNC STATUS -->
+                  <td :style="getRowStyle(index)">
+                    <v-list-item>
+                      <v-btn 
+                        icon 
+                        variant="text"
+                        v-if="item.raw.lastSync > 0">
+                          <v-tooltip 
+                            activator="parent"
+                            location="bottom">
+                            {{ this.$t('lastSync') + new Date(item.raw.lastSync).toLocaleString() }}
+                          </v-tooltip>
+                          <v-icon>mdi-cloud-check</v-icon>
+                      </v-btn>
+                      <v-btn 
+                        icon 
+                        variant="text"      
+                        v-else>
+                          <v-tooltip 
+                            activator="parent"
+                            location="bottom">
+                              {{ $t('onlyLocal') }}
+                          </v-tooltip>
+                          <v-icon>mdi-cloud-off-outline</v-icon>
+                      </v-btn>
+                    </v-list-item>
+                  </td>
                   <v-divider></v-divider>
                 </tr>
               </template>
@@ -397,6 +453,7 @@ export default {
         },
         { title: this.$tc('title', 2), align: 'start', key: 'title' },
         { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
+        { title: this.$t('syncStatus'), align: 'start', key: 'status', width: "100px"}
       ],
       fullHeaders: [
         {
@@ -423,6 +480,7 @@ export default {
         { title: this.$tc('editor', 1), align: 'start', key: 'editor' },
         { title: this.$t('date'), align: 'start', key: 'date' },
         { title: this.$t('isSeparate'), align: 'start', key: 'isSeparate' },
+        { title: this.$t('syncStatus'), align: 'start', key: 'status', width: "100px"}
       ],
       curModulePreset: {
         title: '-',
