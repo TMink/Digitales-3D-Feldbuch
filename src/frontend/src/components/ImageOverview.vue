@@ -2,7 +2,7 @@
  * Created Date: 09.01.2024 11:33:59
  * Author: Julian Hardtung
  * 
- * Last Modified: 07.02.2024 10:48:13
+ * Last Modified: 07.02.2024 11:04:33
  * Modified By: Julian Hardtung
  * 
  * Description: lists all images of a place
@@ -14,7 +14,7 @@
 
       <!-- IMAGES LIST -->
       <v-list-subheader>
-        {{ $t('not_created_yet', { object: $tc('image', 1) }) }}
+        {{ $t('not_created_yet', { object: $tc('image', 2) }) }}
       </v-list-subheader>
 
     </v-list>
@@ -130,18 +130,31 @@ export default {
       var curPlaceID = this.$cookies.get('currentPlace');
       var curPlace = await fromOfflineDB.getObject(curPlaceID, 'Places', 'places');
       var rawImage = toRaw(image);
-     
-      // Remove the posID from place
-      var index = curPlace.positions.indexOf(rawImage.positionID.toString());
-      if (index != -1) {
-        curPlace.positions.splice(index, 1);
-        curPlace.lastChanged = Date.now();
-        await fromOfflineDB.updateObject(curPlace, 'Places', 'places');
-      }
-      
-      // Delete position
       var curPos = await fromOfflineDB.getObject(rawImage.positionID, 'Positions', 'positions');
-      await fromOfflineDB.deleteObject(curPos, 'Positions', 'positions');
+      
+     
+      
+      // Delete position only if the image is the only one in this position
+      if (curPos.images.length == 1) {
+        
+        // Remove the posID from place
+        var index = curPlace.positions.indexOf(rawImage.positionID.toString());
+        if (index != -1) {
+          curPlace.positions.splice(index, 1);
+          curPlace.lastChanged = Date.now();
+          await fromOfflineDB.updateObject(curPlace, 'Places', 'places');
+        }
+
+        // delete position
+        await fromOfflineDB.deleteObject(curPos, 'Positions', 'positions');
+
+      } else {
+        //just remove the image id fromt he position
+        var index = curPos.images.indexOf(rawImage._id);
+        if (index != -1) {
+          curPos.images.splice(index, 1);
+        }
+      }
 
       // Delete the image itself
       await fromOfflineDB.deleteObject(rawImage, 'Images', 'images');

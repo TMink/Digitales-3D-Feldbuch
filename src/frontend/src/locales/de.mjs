@@ -2,8 +2,8 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.02.2024 15:54:19
- * Modified By: Oliver Mertens
+ * Last Modified: 07.02.2024 10:52:24
+ * Modified By: Julian Hardtung
  * 
  * Description: german translations
  */
@@ -24,6 +24,7 @@ export default {
   position_id: "Positions ID",
   texture: "Textur",
   image: "Bild | Bilder",
+  imageOverview: "Bildübersicht",
   picture: "Bild | Bilder",
   model: "Modell | Modelle",
   camera: "Kamera | Kameras",

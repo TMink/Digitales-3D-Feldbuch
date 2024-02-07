@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 07.02.2024 10:49:40
+ * Last Modified: 07.02.2024 10:52:05
  * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
@@ -18,7 +18,7 @@
           <v-tabs v-model="tab" direction="vertical" color="primary">
             <v-tab value="one" rounded="0"> {{ $t('general') }} </v-tab>
             <v-tab class="hideable" value="two" rounded="0"> {{ $t('position') }} </v-tab>
-            <v-tab value="three" rounded="0"> {{ $tc('image', 2) }} </v-tab>
+            <v-tab value="three" rounded="0"> {{ $t('imageOverview') }} </v-tab>
             <v-tab class="hideable" value="four" rounded="0"> {{ $tc('technicalDrawing', 2) }} </v-tab>
             <v-tab class="hideable" value="five" rounded="0"> {{ $tc('model', 2) }} </v-tab>
             <v-btn rounded="0" v-on:click="savePlace()" color="primary">
