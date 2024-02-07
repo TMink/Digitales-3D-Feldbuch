@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Tobias Mink
  * 
- * Last Modified: 06.02.2024 16:58:33
+ * Last Modified: 07.02.2024 10:56:49
  * Modified By: Julian Hardtung
  * 
  * Description: Helper API for manipulating the IndexedDB
@@ -496,7 +496,8 @@ export default class ConnectionToOfflineDB {
       data = await fromBackend.postData(storeName, data);
     }
 
-    await this.updateIndexedDBObject(data, localDBName);
+    var res = await this.updateIndexedDBObject(data, localDBName, storeName);
+    return res;
   }
 
   /**
@@ -517,7 +518,7 @@ export default class ConnectionToOfflineDB {
         && data.lastChanged > data.lastSync) {
       data = await fromBackend.uploadObject(storeName, data);
     }
-    await this.updateIndexedDBObject(data, localDBName);
+    await this.updateIndexedDBObject(data, localDBName, storeName);
   }
 
   /**
@@ -526,19 +527,19 @@ export default class ConnectionToOfflineDB {
    * @param {String} localDBName
    * @returns 
    */
-  async updateIndexedDBObject(data, localDBName) {
+  async updateIndexedDBObject(data, localDBName, storeName) {
     var localDB = this.getLocalDBFromName(localDBName);
 
     return new Promise((resolve, _reject) => {
-      const trans = localDB.transaction([localDBName.toLowerCase()], "readwrite");
+      const trans = localDB.transaction([storeName], "readwrite");
       trans.oncomplete = (_e) => {
-        resolve();
+        resolve(data._id);
       };
 
       trans.onerror = (_e) => {
         console.log(_e)
       };
-      const store = trans.objectStore(localDBName.toLowerCase());
+      const store = trans.objectStore(storeName);
       store.put(data);
     });
   }
@@ -555,7 +556,7 @@ export default class ConnectionToOfflineDB {
 
     var localDBName = subdomain.charAt(0).toUpperCase() + subdomain.slice(1);
     // update indexedDB
-    await this.updateIndexedDBObject(uploadedData, localDBName);
+    await this.updateIndexedDBObject(uploadedData, localDBName, subdomain);
 
     // check which cascading data has to be uploaded next
     switch (subdomain) {
@@ -587,7 +588,7 @@ export default class ConnectionToOfflineDB {
             if (curImage.lastSync == 0) {
               var uploadedImage = await fromBackend.uploadFormData(curImage, "post", "images");
               uploadedImage.image = uploadedImage.image;
-              await this.updateIndexedDBObject(uploadedImage, "Images");
+              await this.updateIndexedDBObject(uploadedImage, "Images", "images");
             }
           }
         }
