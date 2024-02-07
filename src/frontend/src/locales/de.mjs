@@ -2,8 +2,8 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 07.02.2024 11:12:13
- * Modified By: Julian Hardtung
+ * Last Modified: 07.02.2024 11:48:27
+ * Modified By: Oliver Mertens
  * 
  * Description: german translations
  */
@@ -119,6 +119,7 @@ export default {
   options: "Optionen",
   delete: "Löschen",
   edit: "Bearbeiten",
+  syncStatus: "Status",
 
   // Phrases
   add: "{msg} hinzufügen",
@@ -162,8 +163,8 @@ export default {
   addOtherEditor: "Einen anderen Bearbeiter hinzufügen",
   addEditorToActivity: "Einen anderen Bearbeiter zu dieser Aktivität hinzufügen",
   notLoggedIn: "Sie sind nicht eingeloggt!",
-  onlyLocal: "Diese Aktivität ist nur lokal verfügbar",
-  noAccount: "Diese Aktivität ist noch keinem Konto zugeordnet",
+  onlyLocal: "Dieser Eintrag ist nur lokal verfügbar",
+  noAccount: "Dieser Eintrag ist noch keinem Konto zugeordnet",
   downloadOnlineData: "Online verfügbare Daten herunterladen",
   downloadOnlineDataInfo:
     "Wähle die Aktivitäten aus, von denen du die Daten (Stellen, Positionen etc.) herunterladen möchtest. Beachte, dass der Download eine Weile dauern kann, wenn du Aktivitäten mit vielen Daten herutnerladen möchtest.",

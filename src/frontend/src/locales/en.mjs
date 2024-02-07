@@ -2,8 +2,8 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 07.02.2024 11:11:41
- * Modified By: Julian Hardtung
+ * Last Modified: 07.02.2024 11:48:45
+ * Modified By: Oliver Mertens
  * 
  * Description: english translations
  */
@@ -119,6 +119,7 @@ export default {
   options: "Options",
   delete: "Delete",
   edit: "Edit",
+  syncStatus: "status",
 
   // Phrases
   add: "Add {msg}",
@@ -161,8 +162,8 @@ export default {
   addOtherEditor: "Add other editor",
   addEditorToActivity: "Add new editor to this activity",
   notLoggedIn: "You are not logged in!",
-  onlyLocal: "This activity is only local and not yet assigned to an account",
-  noAccount: "This activity is not yet assigned to an account",
+  onlyLocal: "This entry is only available locally",
+  noAccount: "This entry is not yet assigned to an account",
   downloadOnlineData: "Download online available data",
   downloadOnlineDataInfo:
     "Check the boxes for which activity data you want to download so you can use it even offline. <br> But the download can take a while for activities with a lot of data.",

@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.02.2024 18:21:55
+ * Last Modified: 07.02.2024 13:00:40
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -90,12 +90,6 @@
                     style="color:#C4A484;">
                     {{ $t('technical') }}
                   </v-list-item-title>
-                  
-                  <v-list-item-subtitle 
-                    class="d-flex flex-row-reverse" 
-                    v-if="item.raw.lastSync != ''">
-                    {{ this.$t('lastSync') + new Date(item.raw.lastSync).toLocaleString() }}
-                  </v-list-item-subtitle>
                 </td>
 
                 <!-- DATE -->
@@ -103,6 +97,34 @@
                   <v-list-item-title>
                     {{ item.raw.date || '-' }}
                   </v-list-item-title>
+                </td>
+
+                <!-- SYNC STATUS -->
+                <td :style="getRowStyle(index)">
+                  <v-list-item>
+                    <v-btn 
+                      icon 
+                      variant="text"
+                      v-if="item.raw.lastSync > 0">
+                        <v-tooltip 
+                          activator="parent"
+                          location="bottom">
+                          {{ this.$t('lastSync') + new Date(item.raw.lastSync).toLocaleString() }}
+                        </v-tooltip>
+                        <v-icon>mdi-cloud-check</v-icon>
+                    </v-btn>
+                    <v-btn 
+                      icon 
+                      variant="text"      
+                      v-else>
+                        <v-tooltip 
+                          activator="parent"
+                          location="bottom">
+                            {{ $t('onlyLocal') }}
+                        </v-tooltip>
+                        <v-icon>mdi-cloud-off-outline</v-icon>
+                    </v-btn>
+                  </v-list-item>
                 </td>
               </tr>
             </template>
@@ -308,6 +330,33 @@
                     {{ item.raw.date || '-' }}
                   </v-list-item-title>
                 </td>
+                <!-- SYNC STATUS -->
+                <td :style="getRowStyle(index)">
+                  <v-list-item>
+                    <v-btn 
+                      icon 
+                      variant="text"
+                      v-if="item.raw.lastSync > 0">
+                        <v-tooltip 
+                          activator="parent"
+                          location="bottom">
+                          {{ this.$t('lastSync') + new Date(item.raw.lastSync).toLocaleString() }}
+                        </v-tooltip>
+                        <v-icon>mdi-cloud-check</v-icon>
+                    </v-btn>
+                    <v-btn 
+                      icon 
+                      variant="text"      
+                      v-else>
+                        <v-tooltip 
+                          activator="parent"
+                          location="bottom">
+                            {{ $t('onlyLocal') }}
+                        </v-tooltip>
+                        <v-icon>mdi-cloud-off-outline</v-icon>
+                    </v-btn>
+                  </v-list-item>
+                </td>
                 <v-divider></v-divider>
               </tr>
             </template>
@@ -415,6 +464,7 @@ export default {
         },
         { title: this.$tc('title',2), align: 'start', key: 'title' },
         { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
+        { title: this.$t('syncStatus'), align: 'start', key: 'status', width: "100px"}
       ],
       fullHeaders: [
         {
@@ -435,6 +485,7 @@ export default {
         { title: this.$t('description'), align: 'start', key: 'description', width: "150px" },
         { title: this.$tc('editor', 1), align: 'start', key: 'editor', width: "50px" },
         { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
+        { title: this.$t('syncStatus'), align: 'start', key: 'status', width: "100px"}
       ],
       curModulePreset: {
         title: '-',
