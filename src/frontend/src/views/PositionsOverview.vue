@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 07.02.2024 11:57:29
+ * Last Modified: 07.02.2024 11:58:47
  * Modified By: Oliver Mertens
  * 
  * Description: lists all positions
@@ -90,12 +90,6 @@
                       v-if="item.raw.title.length == 0" style="color:dimgrey;">
                       -
                     </v-list-item-title>
-
-                    <v-list-item-subtitle 
-                      class="d-flex flex-row-reverse" 
-                      v-if="item.raw.lastSync != ''">
-                      {{ this.$t('lastSync') + new Date(item.raw.lastSync).toLocaleString() }}
-                      </v-list-item-subtitle>
                   </td>
 
                   <!-- DATE -->
