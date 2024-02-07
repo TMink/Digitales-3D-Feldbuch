@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 07.02.2024 11:35:41
+ * Last Modified: 07.02.2024 11:48:45
  * Modified By: Oliver Mertens
  * 
  * Description: english translations
@@ -119,6 +119,7 @@ export default {
   options: "Options",
   delete: "Delete",
   edit: "Edit",
+  syncStatus: "status",
 
   // Phrases
   add: "Add {msg}",
