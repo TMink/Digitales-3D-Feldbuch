@@ -2,8 +2,8 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.02.2024 17:35:21
- * Modified By: Oliver Mertens
+ * Last Modified: 07.02.2024 11:10:51
+ * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
  -->
@@ -355,7 +355,7 @@ export default {
                 onlineActivities.splice(j, 1)
                 newActivityList.push(tempActivity);
                 //save this onlineActivity to IndexedDB
-                await fromOfflineDB.updateIndexedDBObject(tempActivity, 'Activities');
+                await fromOfflineDB.updateIndexedDBObject(tempActivity, 'Activities', 'activities');
               } else {
                 newActivityList.push(offlineActivities[i]);
               }
@@ -575,6 +575,7 @@ export default {
       }
 
       await this.updateActivities();
+      this.$root.vtoast.show({ message: this.$t('syncSuccess') });
     },
 
     /**

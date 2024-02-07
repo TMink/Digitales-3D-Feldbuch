@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 07.02.2024 10:52:36
+ * Last Modified: 07.02.2024 11:11:41
  * Modified By: Julian Hardtung
  * 
  * Description: english translations
@@ -150,6 +150,7 @@ export default {
   thisExports: "Export: {count} {object}",
   wantToLeave: "Do you really want to leave? You have unsaved changes.",
   saveSuccess: "Saving successful",
+  syncSuccess: "Data upload successful",
   duplicationMode: "Duplicationmode activated",
   getBackup: "Getting your files",
   createBackup: "Collecting your files",
