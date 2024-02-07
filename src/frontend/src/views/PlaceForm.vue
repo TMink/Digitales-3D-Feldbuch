@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 05.02.2024 10:09:25
+ * Last Modified: 07.02.2024 10:49:40
  * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
@@ -116,9 +116,7 @@
           <!-- Tab item 'pictures' -->
           <v-window-item value="three">
             <ImageOverview
-              :object_id="place._id"
-              object_type="Places"
-              @addImage="addImage($event)" />
+              :object_id="place._id"/>
           </v-window-item>
 
           <!-- Tab item 'technical drawing' -->

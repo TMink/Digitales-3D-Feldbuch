@@ -2,7 +2,7 @@
  * Created Date: 09.01.2024 11:33:59
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.02.2024 14:26:22
+ * Last Modified: 07.02.2024 10:48:13
  * Modified By: Julian Hardtung
  * 
  * Description: lists all images of a place
@@ -74,7 +74,6 @@ export default {
    */
   props: {
     object_id: String,
-    object_type: String,
   },
   /**
    * Reactive Vue.js data
