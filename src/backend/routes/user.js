@@ -141,12 +141,10 @@ router.get("/id/:user_ids", async function (req, res, next) {
  */
 router.put("/", async (req, res) => {
 
-  console.log("update backend user")
 
   const {authResult, claims} = checkAuthentication(req.cookies["jwt"]);
   if (authResult){
     try {
-      console.log(req.body)
       const result = await User.findByIdAndUpdate(claims._id, req.body);
 
       res.status(200).send(result);
@@ -166,7 +164,6 @@ router.put("/", async (req, res) => {
 router.put("/:user_id", async (req, res) => {
 
     try {
-      console.log(req.body)
       const result = await User.findByIdAndUpdate(req.params.user_id, req.body);
 
       res.status(200).send(result);

@@ -2,7 +2,7 @@
  * Created Date: 12.06.2023 11:17:28
  * Author: Julian Hardtung
  * 
- * Last Modified: 05.02.2024 15:28:12
+ * Last Modified: 06.02.2024 17:15:29
  * Modified By: Julian Hardtung
  * 
  * Description: Backend CRUD API routes for positions
@@ -120,7 +120,7 @@ router.put("/:position_id", async function (req, res, next) {
   try {
     const result = await Position.findByIdAndUpdate(req.params.position_id, updatedPosition);
 
-    res.status(200).send(result);
+    res.status(200).send(updatedPosition);
   } catch (error) {
     res.status(500).send("Couldn't edit Position: " + error.message);
   }
