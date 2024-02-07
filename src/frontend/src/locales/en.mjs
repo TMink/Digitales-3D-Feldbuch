@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 07.02.2024 11:28:17
+ * Last Modified: 07.02.2024 11:35:41
  * Modified By: Oliver Mertens
  * 
  * Description: english translations
@@ -24,6 +24,7 @@ export default {
   position_id: "Position ID",
   texture: "Texture",
   image: "Image | Images",
+  imageOverview: "Image Overview",
   picture: "Picture | Pictures",
   model: "Model | Models",
   camera: "Camera | Cameras",
@@ -149,6 +150,7 @@ export default {
   thisExports: "Export: {count} {object}",
   wantToLeave: "Do you really want to leave? You have unsaved changes.",
   saveSuccess: "Saving successful",
+  syncSuccess: "Data upload successful",
   duplicationMode: "Duplicationmode activated",
   getBackup: "Getting your files",
   createBackup: "Collecting your files",

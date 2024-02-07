@@ -2,8 +2,8 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.02.2024 17:51:53
- * Modified By: Oliver Mertens
+ * Last Modified: 07.02.2024 10:42:27
+ * Modified By: Julian Hardtung
  * 
  * Description: Vue component with navigation-bar and extendable side-bar
  -->
@@ -439,7 +439,7 @@ export default {
           if (curPlaceID.length > 0) {
             curPlace = await fromOfflineDB.getObject(curPlaceID, 'Places', 'places');
           }
-          if (curPlace.placeNumber != '1') {
+          if (curPlace.placeNumber != '1' && name != undefined) {
             this.currentPosition = name.positionNumber;
           } else {
             this.currentPosition = '-';

@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 07.02.2024 11:28:31
+ * Last Modified: 07.02.2024 11:35:29
  * Modified By: Oliver Mertens
  * 
  * Description: german translations
@@ -24,6 +24,7 @@ export default {
   position_id: "Positions ID",
   texture: "Textur",
   image: "Bild | Bilder",
+  imageOverview: "Bildübersicht",
   picture: "Bild | Bilder",
   model: "Modell | Modelle",
   camera: "Kamera | Kameras",
@@ -150,6 +151,7 @@ export default {
   wantToLeave:
     "Möchten Sie diese Seite wirklich verlassen? Sie haben noch ungespeicherte Änderungen.",
   saveSuccess: "Speichern erfolgreich",
+  syncSuccess: "Hochladen der Daten erfolgreich",
   duplicationMode: "Duplikationsmodus aktiviert",
   getBackup: "Ihre Daten werden geladen",
   createBackup: "Ihre Daten werden gesammelt",
@@ -164,5 +166,5 @@ export default {
   noAccount: "Dieser Eintrag ist noch keinem Konto zugeordnet",
   downloadOnlineData: "Online verfügbare Daten herunterladen",
   downloadOnlineDataInfo:
-"Wähle die Aktivitäten aus, von denen du die Daten (Stellen, Positionen etc.) herunterladen möchtest. Beachte, dass der Download eine Weile dauern kann, wenn du Aktivitäten mit vielen Daten herutnerladen möchtest.",
+    "Wähle die Aktivitäten aus, von denen du die Daten (Stellen, Positionen etc.) herunterladen möchtest. Beachte, dass der Download eine Weile dauern kann, wenn du Aktivitäten mit vielen Daten herutnerladen möchtest.",
 };
