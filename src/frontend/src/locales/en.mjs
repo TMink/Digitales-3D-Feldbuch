@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 07.02.2024 11:48:45
+ * Last Modified: 07.02.2024 22:20:27
  * Modified By: Oliver Mertens
  * 
  * Description: english translations
@@ -18,6 +18,7 @@ export default {
   coordinates: "Coordinates",
   fieldbook: "Digital 3D-Fieldbook",
   activity: "Activity | Activities",
+  activiy_id: "Activity ID",
   place: "Place | Places",
   place_id: "Place ID",
   position: "Position | Positions",
@@ -167,4 +168,10 @@ export default {
   downloadOnlineData: "Download online available data",
   downloadOnlineDataInfo:
     "Check the boxes for which activity data you want to download so you can use it even offline. <br> But the download can take a while for activities with a lot of data.",
+  lpDescription: 
+    "This project is the digital 3D field book, which is intended to enable the digital documentation of archaeological excavations. The system was developed in collaboration with the archaeological institute at the University of Cologne.",
+  lpWhatIsThis: "What is this?",
+  lpHowToDocument: "How do we document?",
+  lpDescriptionStellenkartensystem: 
+    "The Stellenkartensystem is divided into activities, places and positions. Using this form of notation, it is possible to precisely describe found artifacts and to be able to reference them. Since this is a standardized notation method, it simplifies the exchange of data between experts and the interpretation of the respective findings.",
 };

@@ -2,8 +2,8 @@
  * Created Date: 29.11.2023 13:29:27
  * Author: Oliver Mertens
  * 
- * Last Modified: 06.02.2024 13:32:54
- * Modified By: Julian Hardtung
+ * Last Modified: 07.02.2024 22:40:26
+ * Modified By: Oliver Mertens
  * 
  * Description: LandingPage as the first entry point for new users
  -->
@@ -12,19 +12,24 @@
     <div id="wrapper">
         <Navigation active_tab_prop="" />
 
-        <v-parallax
-            src="https://cdn.discordapp.com/attachments/537612240409329714/1179100383516299326/Background.png?ex=65788dce&is=656618ce&hm=1293c8ed1ee66a8d3707737d52fa50fc96a5e0ef73b21f9a0a392ee9e8d56f56&"
-            height="">
+        <v-parallax   
+            src="src/assets/background/Background_Landingpage.jpg"
+            height="100vh">
+
             <div class="d-flex flex-column justify-center align-center text-white">
               <v-card height="40vh"></v-card>
-                <v-icon><v-img src="src/assets/logos/3DDF_Icon.png"></v-img></v-icon>
+                <img 
+                  src="src/assets/logos/3DDF_Icon.png" 
+                  alt=""
+                  height="100"
+                  class="mb-4"/>
 
                 <h1 class="text-h4 font-weight-thin mb-4">
                     {{ toolbar_title }}
                 </h1>
-                <h4 class="subheading">
-                    richtig fancy das Teil
-                </h4>
+                <h3 class="subheading mb-4">
+                    Eine ganz wunderbare Software. Komplett kostenfrei
+                </h3>
 
                 <v-row wrap text-xs-center class="text-center">
                   <v-col>
@@ -36,29 +41,107 @@
                       prepend-icon="mdi-account-plus-outline">
                       {{ this.$t('registration') }}
                     </v-btn>
-                    <v-card variant="plain" height="25vh"></v-card>
-                    <v-icon size="x-large">mdi-arrow-down-circle</v-icon>
-                    <v-card variant="plain" height="10vh"></v-card>
 
-                    <!-- CLIENT DOWNLOAD -->
-                    <v-card v-if="!isElectron()" variant="outlined" class="pa-4">
-                      <v-card-title class="text-h4 font-weight-light mb-4">
-                        {{ this.$t('desktopClient') }}
-                      </v-card-title>
-                      <v-card-text>
-                        {{ this.$t('downloadInfoText') }}
-                      </v-card-text>
-                      <v-btn href="https://github.com/TMink/Digitales-3D-Feldbuch-Projekt-3-/releases/latest/download/fieldbook-client-win32-x64.7z" 
-                      color="secondary" class="ma-2">{{ this.$t('download') }}</v-btn>
-                    </v-card>
-                    
-                    <v-card variant="plain" height="20vh"></v-card>
+                    <v-card variant="plain" height="10vh"></v-card>
+                    <v-icon size="x-large">mdi-arrow-down-circle</v-icon>
                   </v-col>
                 </v-row>
-              </div>
+            </div>
         </v-parallax>
 
+        <!-- 'What is this?' -->
+        <div class="d-flex flex-column justify-center align-center text-center">
+          <v-row class="mt-12">
+            <v-col cols="3"></v-col>
+            <v-col cols="6">
+            
+            <h1 class="font-weight-thin">{{ $t('lpWhatIsThis') }}</h1>
+              <p class="text-h6 mt-4 font-weight-thin">
+                {{ $t('lpDescription') }}
+              </p>          
+            </v-col>
+          </v-row>
+        </div>
+
+        <div class="d-flex flex-column justify-center align-center mt-6">
+          <v-img 
+            src="src/assets/background/hero-image.png" 
+            alt=""
+            width="1500">
+          </v-img>  
+        </div>
+
+        <!-- 'How do we document?' -->
+        <div class="d-flex flex-column justify-center align-center text-center">
+          <v-row class="mt-12">
+            <v-col cols="3"></v-col>
+            <v-col cols="6">
+            
+            <h1 class="font-weight-thin">{{ $t('lpHowToDocument') }}</h1>
+              <p class="text-h6 mt-4 font-weight-thin">
+                {{ $t('lpDescriptionStellenkartensystem') }}
+              </p>          
+            </v-col>
+          </v-row>
+        </div>
+
+        <div class="d-flex flex-column justify-center align-center mt-6">
+          <v-img 
+            src="src/assets/background/stellenkartensystem.png" 
+            alt=""
+            width="1000">
+          </v-img>  
+        </div>
+
+        <div class="d-flex flex-column justify-center align-center text-center"> 
+        <v-table class="mt-6">
+          <thead>
+            <tr>
+              <th class="text-left">
+                {{ this.$t('title') }}
+              </th>
+              <th class="text-left">
+                {{ this.$t('description') }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="text-left"
+              v-for="item in descriptions"
+              :key="item.name">
+              <td>{{ item.name }}</td>
+              <td>{{ item.description }}</td>
+            </tr>
+          </tbody>
+        </v-table>
+        </div>
+             
+        <!-- CLIENT DOWNLOAD -->
+        <div class="d-flex flex-column justify-center align-center text-center mt-6">
+          <v-row class="mt-12">
+            <v-col cols="2"></v-col>
+            <v-col cols="8">
+              <v-card v-if="!isElectron()"  class="pa-4" variant="outlined">
+                <v-card-title class="mb-4">
+                  <h1 class="font-weight-thin">
+                    {{ this.$t('desktopClient') }}
+                  </h1>
+                </v-card-title>
+                <v-card-text>
+                  <p class="text-h6 mt-4 font-weight-thin">
+                    {{ this.$t('downloadInfoText') }}
+                  </p>
+                </v-card-text>
+                <v-btn href="https://github.com/TMink/Digitales-3D-Feldbuch-Projekt-3-/releases/latest/download/fieldbook-client-win32-x64.7z" 
+                  color="secondary" 
+                  class="ma-2">{{ this.$t('download') }}</v-btn>
+              </v-card>
+            </v-col>
+          </v-row>
+      </div>
+      <v-card variant="plain" height="10vh"></v-card>
     </div>
+        
 </template>
     
 <script>
@@ -72,6 +155,32 @@ export default {
   data() {
       return {
           toolbar_title: this.$t('fieldbook'),
+          descriptions: [
+            {
+              name: this.$t('activity') ,
+              description: 'Eine archäologische Maßnahme. Wird identifiziert durch eine Aktivitätsnummer.',
+            },
+            {
+              name: this.$t('activity_id') ,
+              description: 'Ein einzigartiger Index, um Aktivitäten eindeutig identifizierbar zu machen. Diese folgt folgender Struktur: Zweistelliges Kürzel für das Außenstellengebiet + Leerzeichen + vierstellige Jahreszahl + / + vierstellige Ziffernfolge',
+            },
+            {
+              name: this.$t('place') ,
+              description: 'Neutrale Ansprache für alle Befunde, Verfärbungen oder auch Arbeitsbereiche einer Aktivität. Wird eindeutig identifiziert durch eine Stellennummer.',
+            },
+            {
+              name: this.$t('place_id') ,
+              description: 'Fortlaufende Nummerierung aller Stellen einer Aktivität',
+            },
+            {
+              name: this.$t('position') ,
+              description: 'Neutrale Ansprache für alle Arbeitsschritte und Erkenntnisse einer Stelle. Wird durch eine Positionsnummer identifiziert.',
+            },
+            {
+              name: this.$t('position_id') ,
+              description: 'Fortlaufende Nummerierung aller Positionen einer Stelle. Durch Kombination aus Aktivitäts-, Stellen- und Positionsnummer werden Positionen eindeutig identifizierbar.',
+            },
+          ]
       };
   },
 
@@ -107,7 +216,7 @@ export default {
       }
 
       return false;
-    }
+    },
   }
 }
 </script>

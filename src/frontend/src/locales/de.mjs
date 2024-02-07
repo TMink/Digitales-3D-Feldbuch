@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 07.02.2024 11:48:27
+ * Last Modified: 07.02.2024 22:20:57
  * Modified By: Oliver Mertens
  * 
  * Description: german translations
@@ -18,6 +18,7 @@ export default {
   coordinates: "Koordinaten",
   fieldbook: "Digitales 3D-Feldbuch",
   activity: "Aktivität | Aktivitäten",
+  activity_id: "Aktivitäten ID",
   place: "Stelle | Stellen",
   place_id: "Stellen ID",
   position: "Position | Positionen",
@@ -168,4 +169,10 @@ export default {
   downloadOnlineData: "Online verfügbare Daten herunterladen",
   downloadOnlineDataInfo:
     "Wähle die Aktivitäten aus, von denen du die Daten (Stellen, Positionen etc.) herunterladen möchtest. Beachte, dass der Download eine Weile dauern kann, wenn du Aktivitäten mit vielen Daten herutnerladen möchtest.",
+  lpDescription: 
+    "Bei diesem Projekt handelt es sich um das digitale 3D-Feldbuch, das die digitale Dokumentation archäologischer Ausgrabungen ermöglichen soll. Das System wurde in Zusammenarbeit mit dem Archäologischen Institut der Universität zu Köln entwickelt.",
+  lpWhatIsThis: "Was ist das hier?",
+  lpHowToDocument: "Wie wird Dokumentiert?",
+  lpDescriptionStellenkartensystem: 
+    "Beim Stellenkartensystem wird in Aktivitäten, Stellen und Positionen unterteilt.  Mithilfe dieser Notationsform ist es möglich, gefundene Artefakte präzise zu beschreiben und diese referenzieren zu können. Da es sich hierbei um eine standardisierte Notationsmethode handelt, wird hierdurch der Datenaustausch zwischen Experten und die Interpretation der jeweiligen Erkenntnisse vereinfacht."
 };
