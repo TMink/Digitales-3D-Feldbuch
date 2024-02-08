@@ -121,6 +121,15 @@
 
           <!-- Tab item 'technical drawing' -->
           <v-window-item value="four">
+            <v-dialog persistent overlay-color="black" overlay-opacity="1" v-model="backgroundDialog">
+                <v-card class="pa-4">
+                  <v-card-title>Set Background Image</v-card-title>
+                  <v-file-input @change="setBackgroundImage($event)" prepend-icon="mdi-image" accept="image/png"></v-file-input> 
+                  <v-btn @click.prevent="saveBackground()">Save</v-btn>
+                  <v-btn @click.prevent="revertBackground()">Cancel</v-btn>
+                </v-card>
+            </v-dialog>
+
             <v-toolbar :height="50" color="surface" density="default">
               <v-btn-toggle>
                 <v-btn @click="onToolbarClick('pen')" icon="mdi-pencil" rounded="1"></v-btn>
@@ -133,6 +142,8 @@
               <v-btn @click.prevent="$refs.VueCanvasDrawing.redo()" icon="mdi-redo" rounded="0"></v-btn>
               <v-btn @click.prevent="onToolbarClick('text')" icon="mdi-alpha-t" rounded="0"></v-btn>
               <v-btn @click.prevent="onToolbarClick('clear')" icon="mdi-trash-can-outline" rounded="0"></v-btn>
+              <v-btn @click.prevent="backgroundDialog = true" icon="mdi-image" rounded="0"></v-btn>
+              <v-btn @click.prevent="onToolbarClick('refresh')" icon="mdi-reload" rounded="0"></v-btn>
             </v-toolbar>
             <div style="positon:relative">
               <v-expand-transition>
@@ -148,9 +159,9 @@
                 </v-expand-transition>
               </v-card>
 
-              <vue-drawing-canvas @click="onCanvasclick($event)" class="mt-4" ref="VueCanvasDrawing" :width="1200"
-                :height="600" :eraser="canvasSettings.eraser" :line-width="canvasSettings.lineWidth"
-                :background-color="canvasSettings.backgroundColor" :color="canvasSettings.color"
+              <vue-drawing-canvas @click="onCanvasclick($event)" class="mt-4" ref="VueCanvasDrawing" :width="canvasSettings.width"
+                :height="canvasSettings.height" :eraser="canvasSettings.eraser" :line-width="canvasSettings.lineWidth"
+                :background-color="canvasSettings.backgroundColor" :background-image="canvasSettings.backgroundImage.file" :color="canvasSettings.color"
                 :line-cap="canvasSettings.lineCap" :line-join="canvasSettings.lineJoin"
                 :stroke-type="canvasSettings.strokeType" save-as="png" :lock="canvasSettings.lock"
                 :initial-image="canvasSettings.initialImage" :additional-images="canvasSettings.additionalImages" />
@@ -222,7 +233,10 @@ export default {
 
     return {
       tab: null,
+      backgroundDialog : false,
       canvasSettings: {
+        width: 1200,
+        height: 800,
         backgroundColor: "#fff",
         colorPickerChosen: false,
         lineWidthChosen: false,
@@ -247,7 +261,17 @@ export default {
         writeMode: false,
         lock: false,
         initialImage: [],
-        additionalImages: []
+        additionalImages: [],
+        backgroundImage: {
+          file: null,
+          width: 1200,
+          height: 800,
+        },
+        oldBackgroundImage: {
+          file: null,
+          width: 1200,
+          height: 800,
+        },
 
       },
       place: {
@@ -741,7 +765,7 @@ export default {
      * 
      * @param {string} toolType - Defines the pressed button of the toolbar
      * */
-    onToolbarClick(toolType) {
+     onToolbarClick(toolType) {
       if (toolType == "pen")
         this.canvasSettings.eraser = false
       if (toolType == "eraser")
@@ -766,6 +790,12 @@ export default {
       if(toolType == "clear"){
         this.$refs.VueCanvasDrawing.reset(); 
         this.canvasSettings.additionalImages = [];
+      }
+      if(toolType == "refresh"){
+        this.$refs.VueCanvasDrawing.redraw(); 
+      }
+      if(toolType == "deleteBackground"){
+        this.revertBackground();
       }
     },
 
@@ -889,6 +919,57 @@ export default {
           textBaseline: 'top',
         }
       }
+    },
+
+    async setBackgroundImage(event){
+      let URL = window.URL;
+      this.canvasSettings.backgroundImage.file = URL.createObjectURL(event.target.files[0]);
+      this.setCanvasSize(event.target.files[0])
+      await this.$refs.VueCanvasDrawing.redraw();
+    },
+
+    saveBackground(){
+      this.backgroundDialog = false;
+      this.onToolbarClick("refresh");
+    },
+
+    setCanvasSize(file){
+      var fr = new FileReader;
+      var thisInstance = this;
+      fr.onload = function(){
+        var img = new Image;
+        img.onload = function(){
+          if(img.width > 1200){
+            const compression = img.width / 1200;
+            img.width = img.width / compression;
+            img.height = img.height / compression;
+          }
+          thisInstance.canvasSettings.width = img.width;
+          thisInstance.canvasSettings.height = img.height;
+          thisInstance.canvasSettings.backgroundImage.width = img.width;
+          thisInstance.canvasSettings.backgroundImage.height = img.height;
+          if(thisInstance.canvasSettings.oldBackgroundImage.file === null){
+            thisInstance.canvasSettings.oldBackgroundImage = {...thisInstance.canvasSettings.backgroundImage};
+            console.log("Went in");
+          }
+          console.log(thisInstance.canvasSettings.oldBackgroundImage)
+          console.log(thisInstance.canvasSettings.backgroundImage)
+        }
+        img.src = fr.result;
+      }
+      fr.readAsDataURL(file);
+    },
+
+    revertBackground(){
+      this.canvasSettings.backgroundImage = {...this.canvasSettings.oldBackgroundImage};
+      this.backgroundDialog = false;
+      this.canvasSettings.oldBackgroundImage.file = null;
+      this.canvasSettings.oldBackgroundImage.width = 1200;
+      this.canvasSettings.oldBackgroundImage.height = 800;
+      this.canvasSettings.width = this.canvasSettings.backgroundImage.width;
+      this.canvasSettings.height = this.canvasSettings.backgroundImage.height;
+      console.log(this.canvasSettings.oldBackgroundImage);
+      this.$refs.VueCanvasDrawing.redraw();
     }
 
   }
