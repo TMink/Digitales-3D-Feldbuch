@@ -2,7 +2,7 @@
  * Created Date: 17.07.2023 11:31:35
  * Author: Julian Hardtung
  * 
- * Last Modified: 18.12.2023 11:38:09
+ * Last Modified: 08.02.2024 21:31:09
  * Modified By: Julian Hardtung
  * 
  * Description: vue-component for downloading data backups and importing those
@@ -345,8 +345,10 @@ export default {
           var allPreset = '';
 
           // LEGACY DATA FIX
-          data[i]['_id'] = data[i]['id'];
-          delete data[i]['id'];
+          if (data[i]['_id'] == undefined) {
+            data[i]['_id'] = data[i]['id'];
+            delete data[i]['id'];
+          }
 
           // LEGACY DATA FIX
           // add the editor object to activities, if they don't have it yet
