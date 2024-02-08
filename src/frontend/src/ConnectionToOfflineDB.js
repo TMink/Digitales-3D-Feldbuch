@@ -493,7 +493,11 @@ export default class ConnectionToOfflineDB {
 
     //if logged in, online, and not synced yet, sync new object to backend
     if (userStore.authenticated && (await isOnline()) && data.lastSync < data.lastChanged) {
-      data = await fromBackend.postData(storeName, data);
+      if (localDBName == 'Images' || localDBName == 'Models') {
+        data = await fromBackend.uploadFormData(data, 'post', storeName);
+      } else {
+        data = await fromBackend.postData(storeName, data);
+      }
     }
 
     var res = await this.updateIndexedDBObject(data, localDBName, storeName);
