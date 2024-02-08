@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 07.02.2024 10:52:05
+ * Last Modified: 08.02.2024 18:03:11
  * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
@@ -619,12 +619,9 @@ export default {
       activity.places.splice(index, 1)
       await fromOfflineDB.updateObject(activity, 'Activities', 'activities');
 
-      // Delete all data that is dependent on the place
-      await fromOfflineDB.deleteCascade(this.place._id, 'position', 'Positions', 'positions');
+      // Delete the place and all data that is dependent on it
+      await fromOfflineDB.deleteCascade(this.place._id, 'place', 'Places', 'places');
       this.$cookies.remove('currentPosition');
-
-      // Delete the place itself
-      await fromOfflineDB.deleteObject(toRaw(this.place), 'Places', 'places');
       this.$cookies.remove('currentPlace');
       this.hasUnsavedChanges = false;
       this.$router.push({ name: "PlacesOverview" });

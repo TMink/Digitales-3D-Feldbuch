@@ -31,7 +31,7 @@ const positionsSchema = new Schema({
   date: String,
   hasSubNumber: Boolean,
   isSeparate: Boolean,
-
+  modulePreset: Object,
   images: [Number],
   models: [Number],
   lastChanged: Number,
