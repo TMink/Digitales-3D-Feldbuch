@@ -2,8 +2,8 @@
  * Created Date: 29.11.2023 13:29:27
  * Author: Oliver Mertens
  * 
- * Last Modified: 09.02.2024 21:10:18
- * Modified By: Oliver Mertens
+ * Last Modified: 09.02.2024 22:54:48
+ * Modified By: Julian Hardtung
  * 
  * Description: LandingPage as the first entry point for new users
  -->
@@ -155,11 +155,19 @@
     
 <script>
 import Navigation from '../components/Navigation.vue'
+import { useWindowSize } from 'vue-window-size';
 
 export default {
   name: 'Landingpage',
   components: {
       Navigation
+  },
+  setup() {
+    const { width, height } = useWindowSize();
+    return {
+      windowWidth: width,
+      windowHeight: height,
+    };
   },
   data() {
       return {
