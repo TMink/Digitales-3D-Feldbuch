@@ -2,7 +2,7 @@
  * Created Date: 29.11.2023 13:29:27
  * Author: Oliver Mertens
  * 
- * Last Modified: 09.02.2024 13:35:03
+ * Last Modified: 09.02.2024 13:55:54
  * Modified By: Oliver Mertens
  * 
  * Description: LandingPage as the first entry point for new users
@@ -14,7 +14,7 @@
 
         <v-parallax   
             src="src/assets/background/Background_Landingpage.jpg"
-            height="100vh">
+            :height="getHeight()">
 
             <div class="d-flex flex-column justify-center align-center text-white">
               <v-card height="40vh"></v-card>
@@ -231,6 +231,13 @@ export default {
       }
 
       return false;
+    },
+    getHeight() {
+      if(this.windowHeight > 600){
+        return this.windowHeight - 112;
+      } else {
+        return this.windowHeight + 112;
+      } 
     },
   }
 }
