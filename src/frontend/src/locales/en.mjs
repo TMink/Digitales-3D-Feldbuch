@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 07.02.2024 22:20:27
+ * Last Modified: 09.02.2024 13:28:38
  * Modified By: Oliver Mertens
  * 
  * Description: english translations
@@ -174,4 +174,11 @@ export default {
   lpHowToDocument: "How do we document?",
   lpDescriptionStellenkartensystem: 
     "The Stellenkartensystem is divided into activities, places and positions. Using this form of notation, it is possible to precisely describe found artifacts and to be able to reference them. Since this is a standardized notation method, it simplifies the exchange of data between experts and the interpretation of the respective findings.",
+  lpDescriptionActivity: "An archaeological execution. Identified by an activity ID.",
+  lpDescriptionActivity_ID: 
+    "A unique index to make activities clearly identifiable. This follows the following structure: Two-digit abbreviation for the branch area + space + four-digit year + / + four-digit number sequence",
+  lpDescriptionPlace: "Neutral address for all findings, discolorations or work areas of an activity. Is clearly identified by an place ID.",
+  lpDescriptionPlace_ID: "Consecutive numbering of all positions in an activity",
+  lpDescriptionPosition: "Neutral approach for all work steps and findings of a position. Identified by an position ID.",
+  lpDescriptionPosition_ID: "Consecutive numbering of all positions in a position. Positions can be clearly identified through a combination of activity, job and position IDs."
 };

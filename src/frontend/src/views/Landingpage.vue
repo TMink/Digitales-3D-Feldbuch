@@ -2,7 +2,7 @@
  * Created Date: 29.11.2023 13:29:27
  * Author: Oliver Mertens
  * 
- * Last Modified: 07.02.2024 22:40:26
+ * Last Modified: 09.02.2024 13:21:27
  * Modified By: Oliver Mertens
  * 
  * Description: LandingPage as the first entry point for new users
@@ -93,27 +93,36 @@
           </v-img>  
         </div>
 
-        <div class="d-flex flex-column justify-center align-center text-center"> 
-        <v-table class="mt-6">
-          <thead>
-            <tr>
-              <th class="text-left">
-                {{ this.$t('title') }}
-              </th>
-              <th class="text-left">
-                {{ this.$t('description') }}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="text-left"
-              v-for="item in descriptions"
-              :key="item.name">
-              <td>{{ item.name }}</td>
-              <td>{{ item.description }}</td>
-            </tr>
-          </tbody>
-        </v-table>
+        <div class="d-flex flex-column justify-center align-center text-center">
+          <v-row class="mt-12">
+            <v-col cols="2"></v-col>
+            <v-col cols="8"> 
+          <v-table class="mt-6">
+            <thead>
+              <tr>
+                <th class="text-left">
+                  Index
+                </th>
+                <th class="text-left">
+                  {{ this.$t('title') }}
+                </th>
+                <th class="text-left">
+                  {{ this.$t('description') }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="text-left"
+                v-for="item in descriptions"
+                :key="item.name">
+                <td>{{ item.index }}</td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.description }}</td>
+              </tr>
+            </tbody>
+          </v-table>
+        </v-col>
+          </v-row>
         </div>
              
         <!-- CLIENT DOWNLOAD -->
@@ -157,28 +166,34 @@ export default {
           toolbar_title: this.$t('fieldbook'),
           descriptions: [
             {
+              index: '01',
               name: this.$t('activity') ,
-              description: 'Eine archäologische Maßnahme. Wird identifiziert durch eine Aktivitätsnummer.',
+              description: this.$t('lpDescriptionActivity'),
             },
             {
+              index: '01',
               name: this.$t('activity_id') ,
-              description: 'Ein einzigartiger Index, um Aktivitäten eindeutig identifizierbar zu machen. Diese folgt folgender Struktur: Zweistelliges Kürzel für das Außenstellengebiet + Leerzeichen + vierstellige Jahreszahl + / + vierstellige Ziffernfolge',
+              description: this.$t('lpDescriptionActivity_ID'),
             },
             {
+              index: '02',
               name: this.$t('place') ,
-              description: 'Neutrale Ansprache für alle Befunde, Verfärbungen oder auch Arbeitsbereiche einer Aktivität. Wird eindeutig identifiziert durch eine Stellennummer.',
+              description: this.$t('lpDescriptionPlace'),
             },
             {
+              index: '02',
               name: this.$t('place_id') ,
-              description: 'Fortlaufende Nummerierung aller Stellen einer Aktivität',
+              description: this.$t('lpDescriptionPlace_ID')
             },
             {
+              index: '03',
               name: this.$t('position') ,
-              description: 'Neutrale Ansprache für alle Arbeitsschritte und Erkenntnisse einer Stelle. Wird durch eine Positionsnummer identifiziert.',
+              description: this.$t('lpDescriptionPosition'),
             },
             {
+              index: '03',
               name: this.$t('position_id') ,
-              description: 'Fortlaufende Nummerierung aller Positionen einer Stelle. Durch Kombination aus Aktivitäts-, Stellen- und Positionsnummer werden Positionen eindeutig identifizierbar.',
+              description: this.$t('lpDescriptionPosition_ID'),
             },
           ]
       };

@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 07.02.2024 22:20:57
+ * Last Modified: 09.02.2024 13:21:46
  * Modified By: Oliver Mertens
  * 
  * Description: german translations
@@ -174,5 +174,12 @@ export default {
   lpWhatIsThis: "Was ist das hier?",
   lpHowToDocument: "Wie wird Dokumentiert?",
   lpDescriptionStellenkartensystem: 
-    "Beim Stellenkartensystem wird in Aktivitäten, Stellen und Positionen unterteilt.  Mithilfe dieser Notationsform ist es möglich, gefundene Artefakte präzise zu beschreiben und diese referenzieren zu können. Da es sich hierbei um eine standardisierte Notationsmethode handelt, wird hierdurch der Datenaustausch zwischen Experten und die Interpretation der jeweiligen Erkenntnisse vereinfacht."
+    "Beim Stellenkartensystem wird in Aktivitäten, Stellen und Positionen unterteilt.  Mithilfe dieser Notationsform ist es möglich, gefundene Artefakte präzise zu beschreiben und diese referenzieren zu können. Da es sich hierbei um eine standardisierte Notationsmethode handelt, wird hierdurch der Datenaustausch zwischen Experten und die Interpretation der jeweiligen Erkenntnisse vereinfacht.",
+  lpDescriptionActivity: "Eine archäologische Maßnahme. Wird identifiziert durch eine Aktivitätsnummer.",
+  lpDescriptionActivity_ID: 
+    "Ein einzigartiger Index, um Aktivitäten eindeutig identifizierbar zu machen. Diese folgt folgender Struktur: Zweistelliges Kürzel für das Außenstellengebiet + Leerzeichen + vierstellige Jahreszahl + / + vierstellige Ziffernfolge",
+  lpDescriptionPlace: "Neutrale Ansprache für alle Befunde, Verfärbungen oder auch Arbeitsbereiche einer Aktivität. Wird eindeutig identifiziert durch eine Stellennummer.",
+  lpDescriptionPlace_ID: "Fortlaufende Nummerierung aller Stellen einer Aktivität",
+  lpDescriptionPosition: "Neutrale Ansprache für alle Arbeitsschritte und Erkenntnisse einer Stelle. Wird durch eine Positionsnummer identifiziert.",
+  lpDescriptionPosition_ID: "Fortlaufende Nummerierung aller Positionen einer Stelle. Durch Kombination aus Aktivitäts-, Stellen- und Positionsnummer werden Positionen eindeutig identifizierbar."
 };
