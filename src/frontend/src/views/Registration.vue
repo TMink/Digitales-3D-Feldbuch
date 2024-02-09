@@ -2,7 +2,7 @@
  * Created Date: 29.11.2023 01:45:44
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.02.2024 21:11:39
+ * Last Modified: 09.02.2024 21:20:37
  * Modified By: Oliver Mertens
  * 
  * Description: Vue component for user registration
@@ -61,7 +61,6 @@
                 :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
                 :type="visible ? 'text' : 'password'"
                 density="compact"
-                placeholder="Enter your password"
                 @click:append-inner="visible = !visible">
               </v-text-field>
 
