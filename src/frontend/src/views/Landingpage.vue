@@ -2,7 +2,7 @@
  * Created Date: 29.11.2023 13:29:27
  * Author: Oliver Mertens
  * 
- * Last Modified: 09.02.2024 13:21:27
+ * Last Modified: 09.02.2024 13:35:03
  * Modified By: Oliver Mertens
  * 
  * Description: LandingPage as the first entry point for new users
@@ -85,7 +85,7 @@
           </v-row>
         </div>
 
-        <div class="d-flex flex-column justify-center align-center mt-6">
+        <div class="d-flex flex-column justify-center align-center mt-15">
           <v-img 
             src="src/assets/background/stellenkartensystem.png" 
             alt=""
@@ -94,7 +94,7 @@
         </div>
 
         <div class="d-flex flex-column justify-center align-center text-center">
-          <v-row class="mt-12">
+          <v-row class="">
             <v-col cols="2"></v-col>
             <v-col cols="8"> 
           <v-table class="mt-6">
