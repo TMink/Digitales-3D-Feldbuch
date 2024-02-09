@@ -2,8 +2,8 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.02.2024 13:28:38
- * Modified By: Oliver Mertens
+ * Last Modified: 09.02.2024 23:01:38
+ * Modified By: Julian Hardtung
  * 
  * Description: english translations
  */
@@ -180,5 +180,7 @@ export default {
   lpDescriptionPlace: "Neutral address for all findings, discolorations or work areas of an activity. Is clearly identified by an place ID.",
   lpDescriptionPlace_ID: "Consecutive numbering of all positions in an activity",
   lpDescriptionPosition: "Neutral approach for all work steps and findings of a position. Identified by an position ID.",
-  lpDescriptionPosition_ID: "Consecutive numbering of all positions in a position. Positions can be clearly identified through a combination of activity, job and position IDs."
+  lpDescriptionPosition_ID: "Consecutive numbering of all positions in a position. Positions can be clearly identified through a combination of activity, job and position IDs.",
+  lpFieldbookDescriptionShort: "A more efficient way to document and visualize archaeological excavations.",
+
 };

@@ -2,8 +2,8 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.02.2024 19:35:11
- * Modified By: Oliver Mertens
+ * Last Modified: 09.02.2024 23:02:05
+ * Modified By: Julian Hardtung
  * 
  * Description: german translations
  */
@@ -181,5 +181,6 @@ export default {
   lpDescriptionPlace: "Neutrale Ansprache für alle Befunde, Verfärbungen oder auch Arbeitsbereiche einer Aktivität. Wird eindeutig identifiziert durch eine Stellennummer.",
   lpDescriptionPlace_ID: "Fortlaufende Nummerierung aller Stellen einer Aktivität",
   lpDescriptionPosition: "Neutrale Ansprache für alle Arbeitsschritte und Erkenntnisse einer Stelle. Wird durch eine Positionsnummer identifiziert.",
-  lpDescriptionPosition_ID: "Fortlaufende Nummerierung aller Positionen einer Stelle. Durch Kombination aus Aktivitäts-, Stellen- und Positionsnummer werden Positionen eindeutig identifizierbar."
+  lpDescriptionPosition_ID: "Fortlaufende Nummerierung aller Positionen einer Stelle. Durch Kombination aus Aktivitäts-, Stellen- und Positionsnummer werden Positionen eindeutig identifizierbar.",
+  lpFieldbookDescriptionShort: "Ein effizienterer Weg, um archäologische Ausgrabungen zu dokumentieren und visualisieren."
 };

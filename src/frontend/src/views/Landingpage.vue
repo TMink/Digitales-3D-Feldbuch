@@ -2,7 +2,7 @@
  * Created Date: 29.11.2023 13:29:27
  * Author: Oliver Mertens
  * 
- * Last Modified: 09.02.2024 22:54:48
+ * Last Modified: 09.02.2024 23:01:15
  * Modified By: Julian Hardtung
  * 
  * Description: LandingPage as the first entry point for new users
@@ -28,7 +28,7 @@
                     {{ toolbar_title }}
                 </h1>
                 <h3 class="subheading mb-4">
-                    Eine ganz wunderbare Software. Komplett kostenfrei
+                    {{ $t('lpFieldbookDescriptionShort') }}
                 </h3>
 
                 <v-row wrap text-xs-center class="text-center">
