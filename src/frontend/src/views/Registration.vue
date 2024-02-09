@@ -2,7 +2,7 @@
  * Created Date: 29.11.2023 01:45:44
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.02.2024 20:24:05
+ * Last Modified: 09.02.2024 20:29:28
  * Modified By: Oliver Mertens
  * 
  * Description: Vue component for user registration
@@ -83,14 +83,6 @@
       </v-row>
     </v-img>
   </div>
-  
-
-          
-          
-          
-          
-         
-
 </template>
     
 <script>
