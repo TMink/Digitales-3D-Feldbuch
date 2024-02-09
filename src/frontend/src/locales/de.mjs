@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.02.2024 13:21:46
+ * Last Modified: 09.02.2024 19:35:11
  * Modified By: Oliver Mertens
  * 
  * Description: german translations
@@ -112,7 +112,7 @@ export default {
   lastSync: "Zuletzt Synchronisiert: ",
   login: "Einloggen",
   logout: "Ausloggen",
-  username: "Username",
+  username: "Benutzername",
   password: "Passwort",
   mail: "E-Mail",
   download: "Herunterladen",
