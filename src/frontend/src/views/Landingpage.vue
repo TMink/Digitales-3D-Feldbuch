@@ -2,7 +2,7 @@
  * Created Date: 29.11.2023 13:29:27
  * Author: Oliver Mertens
  * 
- * Last Modified: 09.02.2024 13:55:54
+ * Last Modified: 09.02.2024 21:10:18
  * Modified By: Oliver Mertens
  * 
  * Description: LandingPage as the first entry point for new users
@@ -34,7 +34,7 @@
                 <v-row wrap text-xs-center class="text-center">
                   <v-col>
                     <v-btn v-on:click="routeLogin()" color="primary" class="ma-2" 
-                    prepend-icon="mdi-login">Login</v-btn>
+                    prepend-icon="mdi-login-variant">Login</v-btn>
                     <v-btn 
                       v-on:click="routeRegistration()" 
                       color="secondary" class="ma-2"

@@ -2,7 +2,7 @@
  * Created Date: 29.11.2023 01:45:44
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.02.2024 20:29:28
+ * Last Modified: 09.02.2024 21:11:39
  * Modified By: Oliver Mertens
  * 
  * Description: Vue component for user registration
@@ -34,6 +34,7 @@
               rounded="lg">
 
               <v-text-field
+                color="primary"
                 density="compact"
                 prepend-inner-icon="mdi-account-circle"
                 variant="outlined"
@@ -42,6 +43,7 @@
               </v-text-field>
 
               <v-text-field 
+                color="primary"
                 prepend-inner-icon="mdi-email"
                 v-model="form.mail" 
                 density="compact"
@@ -51,6 +53,7 @@
               </v-text-field>
           
               <v-text-field
+                color="primary"
                 prepend-inner-icon="mdi-lock"
                 v-model="form.password" 
                 variant="outlined"    

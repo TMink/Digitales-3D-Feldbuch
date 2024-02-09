@@ -2,7 +2,7 @@
  * Created Date: 29.11.2023 01:45:54
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.02.2024 20:25:05
+ * Last Modified: 09.02.2024 21:12:38
  * Modified By: Oliver Mertens
  * 
  * Description: Vue component for user login
@@ -35,6 +35,7 @@
               rounded="lg">
 
               <v-text-field
+                color="primary"
                 density="compact"
                 prepend-inner-icon="mdi-account-circle"
                 variant="outlined"
@@ -52,6 +53,7 @@
               </div>
           
               <v-text-field
+                color="primary"
                 prepend-inner-icon="mdi-lock"
                 v-model="form.password" 
                 variant="outlined"    
@@ -73,7 +75,7 @@
                 v-on:click="login()"
                 block
                 class="mb-8"
-                color="secondary"
+                color="primary"
                 size="large"
                 prepend-icon="mdi-login-variant">        
                 {{ this.$t('login') }}
