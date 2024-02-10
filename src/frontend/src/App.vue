@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 03.01.2024 12:32:09
+ * Last Modified: 10.02.2024 12:22:50
  * Modified By: Julian Hardtung
  * 
  * Description: main entry point for the fieldbook + 
@@ -34,7 +34,6 @@
 import AppFooter from './components/AppFooter.vue';
 import Pathbar from './components/Pathbar.vue';
 import VToast from './components/VToast.vue';
-import { useTheme } from 'vuetify/lib/framework.mjs';
 import LocaleChanger from './components/LocaleChanger.vue';
 import DataBackup from './components/DataBackup.vue';
 import { fromOfflineDB } from './ConnectionToOfflineDB.js';
@@ -50,16 +49,9 @@ export default {
     VToast
   },
   setup() {
-    const theme = useTheme()
     const { t } = useI18n() // use as global scope
-
     return {
       t,
-      theme,
-      toggleTheme() {
-        theme.global.name.value = theme.global.current.value.dark ? 'fieldbook_light' : 'fieldbook_dark'
-        this.$cookies.set('currentTheme', theme.global.name.value)
-      }
     }
   },
   props: {
