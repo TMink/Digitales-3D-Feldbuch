@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 07.02.2024 10:42:27
+ * Last Modified: 10.02.2024 12:07:37
  * Modified By: Julian Hardtung
  * 
  * Description: Vue component with navigation-bar and extendable side-bar
@@ -188,6 +188,7 @@
 <script>
 import { useI18n } from 'vue-i18n'
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
+import { generalDataStore } from '../ConnectionToLocalStorage.js';
 import { useTheme } from 'vuetify/lib/framework.mjs';
 import LocaleChanger from './LocaleChanger.vue';
 import DataBackup from './DataBackup.vue';
@@ -209,6 +210,7 @@ export default {
     const { t } = useI18n() // use as global scope
     const message = ref('');
     const userStore = useUserStore();
+    const generalStore = generalDataStore();
 
     if (userStore.authenticated) {
       message.value = toRaw(userStore.user.username);
@@ -220,8 +222,9 @@ export default {
       message,
       userStore,
       toggleTheme() {
-        theme.global.name.value = theme.global.current.value.dark ? 'fieldbook_light' : 'fieldbook_dark'
-        this.$cookies.set('currentTheme', theme.global.name.value)
+        generalStore.toggleTheme()
+
+        theme.global.name.value = generalStore.getTheme();
       }
     }
   },
