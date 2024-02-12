@@ -167,16 +167,9 @@
           <v-divider></v-divider>
           <v-list-item 
             link 
-            v-on:click="deleteCookies()">
+            v-on:click="clearLocalData()">
             <v-list-item-title>
-              {{ $t('deletePhrase', { msg: 'Cookies' }) }}
-            </v-list-item-title>
-          </v-list-item>
-          <v-list-item 
-            link 
-            v-on:click="clearIndexedDB()">
-            <v-list-item-title>
-              {{ $t('deletePhrase', { msg: 'IndexedDB' }) }}
+              {{ $t('deletePhrase', { msg: 'All local data' }) }}
             </v-list-item-title>
           </v-list-item>
         </v-card>
@@ -193,7 +186,6 @@ import { useTheme } from 'vuetify/lib/framework.mjs';
 import LocaleChanger from './LocaleChanger.vue';
 import DataBackup from './DataBackup.vue';
 import Pathbar from './Pathbar.vue';
-import isOnline from 'is-online';
 import { ref } from 'vue'
 import { useUserStore } from '../Authentication.js';
 import { toRaw } from "vue";
@@ -221,6 +213,7 @@ export default {
       theme,
       message,
       userStore,
+      generalStore,
       toggleTheme() {
         generalStore.toggleTheme()
 
@@ -291,19 +284,25 @@ export default {
 
     async clearLocalData() {
       this.deleteCookies();
+      this.clearLocalStorage();
       await this.clearIndexedDB();
+      this.$router.go();
     },
 
     deleteCookies() {
       this.$cookies.keys().forEach(cookie => this.$cookies.remove(cookie));
-      this.$router.go();
     },
 
     async clearIndexedDB() {
       const dbs = await window.indexedDB.databases()
       dbs.forEach(db => { window.indexedDB.deleteDatabase(db.name) })
-      this.deleteCookies();
-      this.$router.go();
+    },
+
+    /**
+     * Deletes all data in localStorage
+     */
+    async clearLocalStorage() {
+      this.generalStore.clearLocalStorage();
     },
 
     changePage: function (routeName) {
