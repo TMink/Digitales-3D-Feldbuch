@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 10.02.2024 12:22:50
+ * Last Modified: 12.02.2024 13:23:39
  * Modified By: Julian Hardtung
  * 
  * Description: main entry point for the fieldbook + 
@@ -37,6 +37,7 @@ import VToast from './components/VToast.vue';
 import LocaleChanger from './components/LocaleChanger.vue';
 import DataBackup from './components/DataBackup.vue';
 import { fromOfflineDB } from './ConnectionToOfflineDB.js';
+import { generalDataStore } from './ConnectionToLocalStorage.js';
 import { useI18n } from 'vue-i18n'
 
 export default {
@@ -50,8 +51,10 @@ export default {
   },
   setup() {
     const { t } = useI18n() // use as global scope
+    const generalStore = generalDataStore();
     return {
       t,
+      generalStore
     }
   },
   props: {
@@ -78,7 +81,6 @@ export default {
         { link: "/3dview", title: this.$t('threeD_view') },
         /* { link: "/onlineSync", title: this.$t('online_sync') }, */
       ],
-      initDone: false,
 
     }
   },
@@ -88,14 +90,14 @@ export default {
   },
 
   async created() {
-    var isInitDone = this.$cookies.get('initDone');
+    var isInitDone = this.generalStore.getInitDone();
 
     // only initialize Cookies and IndexedDB data once
     if (!isInitDone) {
       await fromOfflineDB.syncLocalDBs();
       this.initCookies();
       await this.initIndexedDB();
-      this.$cookies.set('initDone', true);
+      this.generalStore.setInitDone(true);
     }
 
     await fromOfflineDB.syncLocalDBs();

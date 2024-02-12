@@ -2,7 +2,7 @@
  * Created Date: 09.02.2024 21:08:30
  * Author: Julian Hardtung
  * 
- * Last Modified: 10.02.2024 12:19:51
+ * Last Modified: 12.02.2024 13:22:53
  * Modified By: Julian Hardtung
  * 
  * Description: A persistent way to store fieldbook settings in 
@@ -65,6 +65,33 @@ export const generalDataStore = defineStore("generalData", {
 
       localStorage.setItem('theme', theme);
     },
+
+    /**
+     * @returns the initialization boolean
+     */
+    getInitDone() {
+      const isInitDone = localStorage.getItem('initDone');
+      if (isInitDone == null) {
+        return false;
+      }
+      return isInitDone;
+    },
+
+    /**
+     * Sets the initialization boolean
+     * @param {Boolean} isInitDone 
+     */
+    setInitDone(isInitDone) {
+      localStorage.setItem("initDone", isInitDone);
+    },
+
+    /**
+     * Deletes all data in localStorage
+     */
+    clearLocalStorage() {
+      localStorage.clear()
+    },
+    
   },
 });
 
