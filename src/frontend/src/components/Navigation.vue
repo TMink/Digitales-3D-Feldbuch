@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 10.02.2024 12:07:37
+ * Last Modified: 12.02.2024 13:19:03
  * Modified By: Julian Hardtung
  * 
  * Description: Vue component with navigation-bar and extendable side-bar
@@ -292,88 +292,6 @@ export default {
     async clearLocalData() {
       this.deleteCookies();
       await this.clearIndexedDB();
-    },
-
-    /**
-     * Initializes required cookie entries
-     */
-    initCookies() {
-      this.$cookies.set('showAllPlaceInfo', false);
-      this.$cookies.set('showAllPosInfo', false);
-    },
-
-    /**
-     * Initializes required IndexedDB data
-     */
-    async initIndexedDB() {
-
-      var technicalPlace = {
-        _id: String(Date.now()),
-        title: 'Technical Place',
-
-        technical: true,
-        general: false,
-        coordinates: false,
-        dating: false,
-
-        //place specific
-        plane: false,
-        findTypes: false,
-        visibility: false,
-        positionslist: false,
-
-        //position specific
-        objectDescribers: false,
-      }
-
-      await fromOfflineDB.addObject(technicalPlace, 'ModulePresets', 'places');
-
-      var allPlaceModules = {
-        _id: String(Date.now()),
-        title: 'ALL Place Modules',
-
-        technical: false,
-        general: true,
-        coordinates: true,
-        dating: true,
-
-        //place specific
-        plane: true,
-        findTypes: true,
-        visibility: true,
-        positionslist: true,
-
-        //position specific
-        objectDescribers: false,
-      }
-
-      var placePresetID =
-        await fromOfflineDB.addObject(allPlaceModules, 'ModulePresets', 'places');
-      this.$cookies.set('placeModulesPreset', placePresetID);
-
-      var allPosModules = {
-        _id: String(Date.now()),
-        title: 'ALL Pos. Modules',
-
-        technical: false,
-
-        general: true,
-        coordinates: true,
-        dating: true,
-
-        //place specific
-        plane: false,
-        findTypes: false,
-        visibility: false,
-        positionslist: false,
-
-        //position specific
-        objectDescribers: true,
-      }
-
-      var posPresetID =
-        await fromOfflineDB.addObject(allPosModules, 'ModulePresets', 'positions');
-      this.$cookies.set('posModulesPreset', posPresetID);
     },
 
     deleteCookies() {
