@@ -2,8 +2,8 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.02.2024 23:01:38
- * Modified By: Julian Hardtung
+ * Last Modified: 12.02.2024 12:17:17
+ * Modified By: Oliver Mertens
  * 
  * Description: english translations
  */
@@ -120,7 +120,7 @@ export default {
   options: "Options",
   delete: "Delete",
   edit: "Edit",
-  syncStatus: "status",
+  syncStatus: "Status",
 
   // Phrases
   add: "Add {msg}",
