@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 07.02.2024 11:58:47
+ * Last Modified: 12.02.2024 12:19:25
  * Modified By: Oliver Mertens
  * 
  * Description: lists all positions
@@ -393,6 +393,7 @@ import { fromBackend } from '../ConnectionToBackend.js'
 import AddPosition from '../components/AddPosition.vue';
 import { useWindowSize } from 'vue-window-size';
 import { useUserStore } from '../Authentication';
+import { generalDataStore } from '../ConnectionToLocalStorage.js';
 
 export default {
   name: 'PositionsOverview',
@@ -407,10 +408,12 @@ export default {
   setup() {
     const { width, height } = useWindowSize();
     const userStore = useUserStore();
+    const generalStore = generalDataStore();
     return {
       windowWidth: width,
       windowHeight: height,
-      userStore
+      userStore,
+      generalStore
     };
   },
 
@@ -783,7 +786,7 @@ export default {
      * @returns {Object} An object containing row style properties
      */
      getRowStyle(index) {
-      var currentTheme = this.$cookies.get('currentTheme')
+      var currentTheme = this.generalStore.getTheme();
       if (currentTheme !== 'fieldbook_light') {
         return {
           cursor: 'pointer',
