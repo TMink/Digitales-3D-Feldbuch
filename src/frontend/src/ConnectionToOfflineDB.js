@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Tobias Mink
  * 
- * Last Modified: 08.02.2024 18:53:35
+ * Last Modified: 13.02.2024 13:07:02
  * Modified By: Julian Hardtung
  * 
  * Description: Helper API for manipulating the IndexedDB
@@ -52,7 +52,7 @@ export default class ConnectionToOfflineDB {
         this.offlineDB[countDooku].name,
         this.offlineDB[countDooku].version,
         this.offlineDB[countDooku].storeNames
-      );
+      ).catch((err) => console.error(err));
 
       countDooku -= 1;
     }
@@ -444,9 +444,11 @@ export default class ConnectionToOfflineDB {
    */
   async getLastAddedPosition() {
     var curPlaceID = VueCookies.get("currentPlace");
-    var curPlace = await this.getObject(curPlaceID, "Places", "places");
+    var curPlace = await this.getObject(curPlaceID, "Places", "places")
+      .catch((err) => console.error(err));
     var lastPosID = curPlace.positions[curPlace.positions.length - 1];
-    var lastAddedPos = await this.getObject(lastPosID, "Positions", "positions");
+    var lastAddedPos = await this.getObject(lastPosID, "Positions", "positions")
+      .catch((err) => console.error(err));
 
     return lastAddedPos.positionNumber;
   }
@@ -494,13 +496,17 @@ export default class ConnectionToOfflineDB {
     //if logged in, online, and not synced yet, sync new object to backend
     if (userStore.authenticated && (await isOnline()) && data.lastSync < data.lastChanged) {
       if (localDBName == 'Images' || localDBName == 'Models') {
-        data = await fromBackend.uploadFormData(data, 'post', storeName);
+        data = await fromBackend
+          .uploadFormData(data, "post", storeName)
+          .catch((err) => console.error(err));
       } else {
-        data = await fromBackend.postData(storeName, data);
+        data = await fromBackend.postData(storeName, data)
+        .catch((err) => console.error(err));
       }
     }
 
-    var res = await this.updateIndexedDBObject(data, localDBName, storeName);
+    var res = await this.updateIndexedDBObject(data, localDBName, storeName)
+      .catch((err) => console.error(err));
     return res;
   }
 
@@ -520,9 +526,11 @@ export default class ConnectionToOfflineDB {
     //if logged in and online, sync new object to backend
     if (userStore.authenticated && (await isOnline()) 
         && data.lastChanged > data.lastSync) {
-      data = await fromBackend.uploadObject(storeName, data);
+      data = await fromBackend.uploadObject(storeName, data)
+        .catch((err) => console.error(err));
     }
-    await this.updateIndexedDBObject(data, localDBName, storeName);
+    await this.updateIndexedDBObject(data, localDBName, storeName)
+      .catch((err) => console.error(err));
   }
 
   /**
@@ -556,11 +564,14 @@ export default class ConnectionToOfflineDB {
    */
   async postObjectCascade(subdomain, data) {
     // upload data
-    var uploadedData = await fromBackend.uploadObject(subdomain, data);
+    var uploadedData = await fromBackend
+      .uploadObject(subdomain, data)
+      .catch((err) => console.error(err));
 
     var localDBName = subdomain.charAt(0).toUpperCase() + subdomain.slice(1);
     // update indexedDB
-    await this.updateIndexedDBObject(uploadedData, localDBName, subdomain);
+    await this.updateIndexedDBObject(uploadedData, localDBName, subdomain)
+      .catch((err) => console.error(err));
 
     // check which cascading data has to be uploaded next
     switch (subdomain) {
@@ -568,8 +579,12 @@ export default class ConnectionToOfflineDB {
       case "activities":
         if (data.places) {
           for (const place_id of data.places) {
-            var curPlace = await fromOfflineDB.getObject(place_id, "Places", "places");
-            await this.postObjectCascade("places", curPlace);
+            var curPlace = await fromOfflineDB
+              .getObject(place_id, "Places", "places")
+              .catch((err) => console.error(err));
+              
+            await this.postObjectCascade("places", curPlace)
+              .catch((err) => console.error(err));
           }
         }
         break;
@@ -578,8 +593,12 @@ export default class ConnectionToOfflineDB {
       case "places":
         if (data.positions) {
           for (const position_id of data.positions) {
-            var curPosition = await fromOfflineDB.getObject(position_id, "Positions", "positions");
-            await this.postObjectCascade("positions", curPosition);
+            var curPosition = await fromOfflineDB
+              .getObject(position_id, "Positions", "positions")
+              .catch((err) => console.error(err));
+
+            await this.postObjectCascade("positions", curPosition)
+              .catch((err) => console.error(err));
           }
         }
         break;
@@ -588,21 +607,36 @@ export default class ConnectionToOfflineDB {
       case "positions":
         if (data.images) {
           for (const image_id of data.images) {
-            var curImage = await fromOfflineDB.getObject(image_id, "Images", "images");
+            var curImage = await fromOfflineDB
+              .getObject(image_id, "Images", "images")
+              .catch((err) => console.error(err));
+
             if (curImage.lastSync == 0) {
-              var uploadedImage = await fromBackend.uploadFormData(curImage, "post", "images");
+              var uploadedImage = await fromBackend
+                .uploadFormData(curImage, "post", "images")
+                .catch((err) => console.error(err));
               uploadedImage.image = uploadedImage.image;
-              await this.updateIndexedDBObject(uploadedImage, "Images", "images");
+              
+              await this.updateIndexedDBObject(uploadedImage, "Images", "images")
+                .catch((err) => console.error(err));
             }
           }
         }
         if (data.models) {
           for (const model_id of data.models) {
-            var curModel = await fromOfflineDB.getObject(model_id, "Models", "positions");
-            var uploadedModel = await fromBackend.uploadFormData("models", curModel, post);
+            var curModel = await fromOfflineDB
+              .getObject(model_id, "Models", "positions")
+              .catch((err) => console.error(err));
+              
+            var uploadedModel = await fromBackend
+              .uploadFormData("models", curModel, post)
+              .catch((err) => console.error(err));
+
             uploadedModel.model = curModel.model;
             uploadedModel.texture = curModel.texture;
-            await this.updateIndexedDBObject(uploadedModel, "Models", "positions");
+
+            await this.updateIndexedDBObject(uploadedModel, "Models", "positions")
+              .catch((err) => console.error(err));
           }
         }
         break;
@@ -627,7 +661,8 @@ export default class ConnectionToOfflineDB {
 
     //if logged in and online, sync new object to backend
     if (userStore.authenticated && (await isOnline()) && storeName != "created") {
-      await fromBackend.deleteData(storeName, object._id);
+      await fromBackend.deleteData(storeName, object._id)
+        .catch((err) => console.error(err));
 
       if (storeName == "activities") {
         var index = userStore.user.activities.indexOf(object._id);
@@ -688,7 +723,8 @@ export default class ConnectionToOfflineDB {
     const localDB = this.getLocalDBFromName(localDBName);
 
     const context = this;
-    var object = await this.getObject(_id.toString(), localDBName, storeName);
+    var object = await this.getObject(_id.toString(), localDBName, storeName)
+      .catch((err) => console.error(err));
 
     await new Promise(async function (resolve, _reject) {
       const trans = localDB.transaction(storeName, "readwrite");
@@ -700,14 +736,18 @@ export default class ConnectionToOfflineDB {
         case "activity":
           if (object.places.length > 0) {
             for (var i = 0; i < object.places.length; i++) {
-              await context.deleteCascade(object.places[i], "place", "Places", "places");
+              await context
+                .deleteCascade(object.places[i], "place", "Places", "places")
+                .catch((err) => console.error(err));
             }
           }
           break;
         case "place":
           if (object.positions.length > 0) {
             for (var j = 0; j < object.positions.length; j++) {
-              await context.deleteCascade(object.positions[j], "position", "Positions", "positions");
+              await context
+                .deleteCascade(object.positions[j], "position", "Positions", "positions")
+                .catch((err) => console.error(err));
             }
           }
           // there can be no images in a place, they always have to be within a position
@@ -720,23 +760,37 @@ export default class ConnectionToOfflineDB {
           } */
           if (object.models.length != 0) {
             for (var l = 0; l < object.models.length; l++) {
-              var model = await context.getObject(object.models[l], "Models", "places");
-              await fromOfflineDB.deleteObject(model, "Models", "places");
+              var model = await context
+                .getObject(object.models[l], "Models", "places")
+                .catch((err) => console.error(err));
+                
+              await fromOfflineDB
+                .deleteObject(model, "Models", "places")
+                .catch((err) => console.error(err));
             }
           }
           break;
         case "position":
           if (object.images.length != 0) {
             for (var m = 0; m < object.images.length; m++) {
-              var image = await context.getObject(object.images[m].toString(), "Images", "images");
-              await fromOfflineDB.deleteObject(image, "Images", "images");
+              var image = await context
+                .getObject(object.images[m].toString(), "Images", "images")
+                .catch((err) => console.error(err));
+
+              await fromOfflineDB
+                .deleteObject(image, "Images", "images")
+                .catch((err) => console.error(err));
             }
           }
           if (object.models.length != 0) {
             for (var n = 0; n < object.models.length; n++) {
-              var model = await context.getObject(object.models[n].toString(), "Models", "positions"
-              );
-              await fromOfflineDB.deleteObject(model, "Models", "positions");
+              var model = await context
+                .getObject(object.models[n].toString(), "Models", "positions")
+                .catch((err) => console.error(err));
+
+              await fromOfflineDB
+                .deleteObject(model, "Models", "positions")
+                .catch((err) => console.error(err));
             }
           }
           break;
@@ -744,7 +798,9 @@ export default class ConnectionToOfflineDB {
           console.log("Error");
       }
 
-      await fromOfflineDB.deleteObject(object, localDBName, storeName);
+      await fromOfflineDB
+        .deleteObject(object, localDBName, storeName)
+        .catch((err) => console.error(err));
     });
   }
 

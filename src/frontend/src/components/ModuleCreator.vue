@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.02.2024 14:25:12
+ * Last Modified: 13.02.2024 13:22:46
  * Modified By: Julian Hardtung
  * 
  * Description: component to create, edit, set input module presets 
@@ -314,8 +314,10 @@ export default {
   }),
 
   async created() {
-    await fromOfflineDB.syncLocalDBs();
-    await this.updateModulePresets();
+    await fromOfflineDB.syncLocalDBs()
+      .catch(err => console.error(err));
+    await this.updateModulePresets()
+      .catch(err => console.error(err));
 
     var curPresetID = null;
     if (this.objectTypeProp == 'places') {
@@ -326,7 +328,9 @@ export default {
 
     if (curPresetID != null) {
 
-      var curPreset = await fromOfflineDB.getObject(curPresetID, 'ModulePresets', this.objectTypeProp);
+      var curPreset = await fromOfflineDB
+        .getObject(curPresetID, 'ModulePresets', this.objectTypeProp)
+        .catch(err => console.error(err));
       this.selectedPreset = curPreset;
       this.editPresetForm = true;
     }
@@ -337,7 +341,9 @@ export default {
      * Get all module presets from IndexedDB
      */
     async updateModulePresets() {
-      this.modulePresets = await fromOfflineDB.getAllObjects('ModulePresets', this.objectTypeProp);
+      this.modulePresets = await fromOfflineDB
+        .getAllObjects('ModulePresets', this.objectTypeProp)
+        .catch(err => console.error(err));
     },
 
     /**
@@ -348,13 +354,17 @@ export default {
       var rawPreset = toRaw(this.newPreset);
 
       //only save the preset if it doesn't already exist
-      var presetExists = await this.presetAlreadyExists(rawPreset);
+      var presetExists = await this.presetAlreadyExists(rawPreset)
+        .catch(err => console.error(err));
 
       if (!presetExists) {
         rawPreset._id = String(Date.now());
         
-        await fromOfflineDB.addObject(rawPreset, 'ModulePresets', this.objectTypeProp);
-        await this.updateModulePresets();
+        await fromOfflineDB
+          .addObject(rawPreset, 'ModulePresets', this.objectTypeProp)
+          .catch(err => console.error(err));
+        await this.updateModulePresets()
+          .catch(err => console.error(err));
         this.$root.vtoast.show({ message: 'Successfully added the preset'})
         this.$emit('updateModulePresets');
         this.clearPresetInputs();
@@ -371,11 +381,15 @@ export default {
       var rawPreset = toRaw(this.selectedPreset);
 
       //only save the preset if it doesn't already exist
-      var presetExists = await this.presetAlreadyExists(rawPreset);
+      var presetExists = await this.presetAlreadyExists(rawPreset)
+        .catch(err => console.error(err));
 
       if (!presetExists) {
-        await fromOfflineDB.updateObject(rawPreset, 'ModulePresets', this.objectTypeProp);
-        await this.updateModulePresets();
+        await fromOfflineDB
+          .updateObject(rawPreset, 'ModulePresets', this.objectTypeProp)
+          .catch(err => console.error(err));
+        await this.updateModulePresets()
+          .catch(err => console.error(err));
         this.$root.vtoast.show({ message: 'Successfully saved the preset'})
         this.$emit('updateModulePresets');
       } else {
@@ -389,7 +403,9 @@ export default {
      */
     async presetAlreadyExists(newPreset) {
       const excludedFields = ['id', 'title','canEdit'];
-      var allPresets = await fromOfflineDB.getAllObjects('ModulePresets', this.objectTypeProp);
+      var allPresets = await fromOfflineDB
+        .getAllObjects('ModulePresets', this.objectTypeProp)
+        .catch(err => console.error(err));
 
       // exclude certain keys from the checks
       const keys1 = Object.keys(newPreset).filter(key => !excludedFields.includes(key));
@@ -460,18 +476,25 @@ export default {
       let rawObject = toRaw(object);
 
       if (rawObject._id == this.$cookies.get('placeModulesPreset')) {
-        var placeDefaultPreset = await fromOfflineDB.getObjectByIndex(1, 'ModulePresets', this.objectTypeProp);
+        var placeDefaultPreset = await fromOfflineDB
+          .getObjectByIndex(1, 'ModulePresets', this.objectTypeProp)
+          .catch(err => console.error(err));
         this.selectedPreset = placeDefaultPreset;
         this.$cookies.set('placeModulesPreset', placeDefaultPreset._id);
 
       } else if (rawObject._id == this.$cookies.get('posModulesPreset')) {
-        var posDefaultPreset = await fromOfflineDB.getObjectByIndex(0, 'ModulePresets', this.objectTypeProp);
+        var posDefaultPreset = await fromOfflineDB
+          .getObjectByIndex(0, 'ModulePresets', this.objectTypeProp)
+          .catch(err => console.error(err));
         this.selectedPreset = posDefaultPreset;
         this.$cookies.set('posModulesPreset', posDefaultPreset._id);
       }
 
-      await fromOfflineDB.deleteObject(rawObject, 'ModulePresets', this.objectTypeProp);
-      await this.updateModulePresets();
+      await fromOfflineDB
+        .deleteObject(rawObject, 'ModulePresets', this.objectTypeProp)
+        .catch(err => console.error(err));
+      await this.updateModulePresets()
+        .catch(err => console.error(err));
       this.$emit('updateModulePresets');
     },
 
@@ -484,7 +507,7 @@ export default {
         await this.$refs.confirm.open(
           this.$t('confirm'),
           "Do you really want to delete this preset?"
-        )
+        ).catch(err => console.error(err))
       ) {
         this.deletePreset(object);
       }

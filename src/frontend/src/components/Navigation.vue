@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 12.02.2024 13:19:03
+ * Last Modified: 13.02.2024 13:24:43
  * Modified By: Julian Hardtung
  * 
  * Description: Vue component with navigation-bar and extendable side-bar
@@ -247,9 +247,11 @@ export default {
     }
   },
   async created() {
-    await fromOfflineDB.syncLocalDBs();
+    await fromOfflineDB.syncLocalDBs()
+      .catch(err => console.error(err));
 
-    await this.updatePathbar();
+    await this.updatePathbar()
+      .catch(err => console.error(err));
     this.active_tab = this.active_tab_prop; //this.$cookies.get('active_tab_prop') //this.active_tab_prop;
 
     var activityID = this.$cookies.get('currentActivity')
@@ -259,11 +261,7 @@ export default {
 
     var placeID = this.$cookies.get('currentPlace');
     if (placeID !== null) {
-
-      var curPlace = await fromOfflineDB.getObject(placeID, 'Places', 'places');
-      //if (curPlace.placeNumber > 1) {
       this.placeIsSet = true
-      //}
     }
 
     var positionID = this.$cookies.get('currentPosition')
@@ -285,7 +283,8 @@ export default {
     async clearLocalData() {
       this.deleteCookies();
       this.clearLocalStorage();
-      await this.clearIndexedDB();
+      await this.clearIndexedDB()
+        .catch(err => console.error(err));
       this.$router.go();
     },
 
@@ -295,7 +294,8 @@ export default {
 
     async clearIndexedDB() {
       const dbs = await window.indexedDB.databases()
-      dbs.forEach(db => { window.indexedDB.deleteDatabase(db.name) })
+        .catch(err => console.error(err));
+      dbs.forEach(db => { window.indexedDB.deleteDatabase(db.name) });
     },
 
     /**
@@ -319,14 +319,17 @@ export default {
     async updatePathbar() {
       if (this.$cookies.get('currentActivity')) {
         await this.getInfo("Activity")
+          .catch(err => console.error(err));
       }
       if (this.$cookies.get('currentPlace')) {
         await this.getInfo("Place")
+          .catch(err => console.error(err));
       }
 
       var test = this.$cookies.get('currentPosition');
       if (test) {
         await this.getInfo("Position")
+          .catch(err => console.error(err));
       } else {
         this.currentPosition = '-';
       }
@@ -344,7 +347,8 @@ export default {
         db = selection + "s"
         st = selection.toLowerCase() + "s"
       }
-      const name = await fromOfflineDB.getObject(_id, db, st);
+      const name = await fromOfflineDB.getObject(_id, db, st)
+        .catch(err => console.error(err));
 
       switch (selection) {
         case "Activity":
@@ -357,7 +361,9 @@ export default {
           var curPlaceID = this.$cookies.get('currentPlace');
           var curPlace = '';
           if (curPlaceID.length > 0) {
-            curPlace = await fromOfflineDB.getObject(curPlaceID, 'Places', 'places');
+            curPlace = await fromOfflineDB
+              .getObject(curPlaceID, 'Places', 'places')
+              .catch(err => console.error(err));
           }
           if (curPlace.placeNumber != '1' && name != undefined) {
             this.currentPosition = name.positionNumber;

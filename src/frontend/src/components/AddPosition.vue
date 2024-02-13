@@ -2,7 +2,7 @@
  * Created Date: 01.07.2023 14:01:06
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.02.2024 18:23:08
+ * Last Modified: 13.02.2024 13:46:29
  * Modified By: Julian Hardtung
  * 
  * Description: vue component for adding a position
@@ -34,8 +34,8 @@ export default {
     }
   },
   async created() {
-    await fromOfflineDB.syncLocalDBs();
-    await this.updateModulePresets();
+    await fromOfflineDB.syncLocalDBs().catch(err => console.error(err));
+    await this.updateModulePresets().catch(err => console.error(err));
   },
   methods: {
 
@@ -46,8 +46,9 @@ export default {
       let presetFromCookies = this.$cookies.get('posModulesPreset');
 
       if (presetFromCookies.length > 0) {
-        this.curModulePreset = await fromOfflineDB.getObject(
-          presetFromCookies, 'ModulePresets', 'positions');
+        this.curModulePreset = await fromOfflineDB
+          .getObject(presetFromCookies, 'ModulePresets', 'positions')
+          .catch(err => console.error(err));
         }
     },
 
@@ -56,7 +57,9 @@ export default {
      */
     async addPosition() {
       var curPlaceID = this.$cookies.get('currentPlace');
-      var curPlace = await fromOfflineDB.getObject(curPlaceID, "Places", "places");
+      var curPlace = await fromOfflineDB
+        .getObject(curPlaceID, "Places", "places")
+        .catch(err => console.error(err));
       var newPositionID = String(Date.now());
 
       curPlace.positions.push(newPositionID);
@@ -94,8 +97,10 @@ export default {
       } else {
         newPosition.positionNumber = this.positions_prop.length + 1;
       }
-      await fromOfflineDB.updateObject(curPlace, 'Places', 'places');
-      await fromOfflineDB.addObject(newPosition, "Positions", "positions");
+      await fromOfflineDB.updateObject(curPlace, 'Places', 'places')
+        .catch(err => console.error(err));
+      await fromOfflineDB.addObject(newPosition, "Positions", "positions")
+        .catch(err => console.error(err));
       this.$emit('updatePositions');
     },
   }

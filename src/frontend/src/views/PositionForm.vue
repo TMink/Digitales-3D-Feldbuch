@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 05.02.2024 17:26:08
+ * Last Modified: 13.02.2024 13:42:13
  * Modified By: Julian Hardtung
  * 
  * Description: input page for positions data 
@@ -183,7 +183,8 @@ export default {
   async beforeRouteLeave(to, from, next) {
         var confirmation = false;
         if (this.hasUnsavedChanges) {
-          confirmation = await this.confirmRouteChange();
+          confirmation = await this.confirmRouteChange()
+            .catch(err => console.error(err));
           if (confirmation) {
             next();
           }
@@ -195,14 +196,20 @@ export default {
    * Initialize data from localDB and .env to the reactive Vue.js data
    */
   async created() {
-    const acID = String(this.$cookies.get('currentActivity'))
-    var activity = await fromOfflineDB.getObject(acID, 'Activities', 'activities')
+    const acID = String(this.$cookies.get('currentActivity'));
+    var activity = await fromOfflineDB
+      .getObject(acID, 'Activities', 'activities')
+      .catch(err => console.error(err));
     
-    const plID = String(this.$cookies.get('currentPlace'))
-    var place = await fromOfflineDB.getObject(plID, 'Places', 'places')
+    const plID = String(this.$cookies.get('currentPlace'));
+    var place = await fromOfflineDB
+      .getObject(plID, 'Places', 'places')
+      .catch(err => console.error(err));
     
-    const poID = String(this.$cookies.get('currentPosition'))
-    var position = await fromOfflineDB.getObject(poID, 'Positions', 'positions')
+    const poID = String(this.$cookies.get('currentPosition'));
+    var position = await fromOfflineDB
+      .getObject(poID, 'Positions', 'positions')
+      .catch(err => console.error(err));
     
     this.$emit("view", activity.activityNumber + ' ' + place.placeNumber + ' ' + position.positionNumber);
 
@@ -210,25 +217,35 @@ export default {
     this.titles = JSON.parse(import.meta.env.VITE_TITLES);
     this.datings = JSON.parse(import.meta.env.VITE_DATINGS);
 
-    await fromOfflineDB.syncLocalDBs();
-    await this.updatePosition();
+    await fromOfflineDB.syncLocalDBs()
+      .catch(err => console.error(err));
+    await this.updatePosition()
+      .catch(err => console.error(err));
 
-    const datingFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', 'datings');
+    const datingFromDB = await fromOfflineDB
+      .getAllObjects('AutoFillLists', 'datings')
+      .catch(err => console.error(err));
     datingFromDB.forEach(element => {
       this.datingsList.push( element.item )
     });
 
-    const editorsFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', 'editors');
+    const editorsFromDB = await fromOfflineDB
+      .getAllObjects('AutoFillLists', 'editors')
+      .catch(err => console.error(err));
     editorsFromDB.forEach(element => {
       this.editorsList.push( element.item )
     });
     
-    const materialsFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', 'materials');
+    const materialsFromDB = await fromOfflineDB
+      .getAllObjects('AutoFillLists', 'materials')
+      .catch(err => console.error(err));
     materialsFromDB.forEach(element => {
       this.materialsList.push( element.item )
     });
 
-    const titlesFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', 'titles');
+    const titlesFromDB = await fromOfflineDB
+      .getAllObjects('AutoFillLists', 'titles')
+      .catch(err => console.error(err));
     titlesFromDB.forEach(element => {
       this.titlesList.push( element.item )
     });
@@ -290,7 +307,7 @@ export default {
           this.position.dating = data[1];
           break;
         default:
-          console.log( 'Cant specify emitted data: ' + data[0] )
+          console.log( 'Cant specify emitted data: ' + data[0] );
       }
     },
     /**
@@ -298,52 +315,52 @@ export default {
      */
     async updatePosition() {
       /* Get id of selected place */
-      const currentPosition = this.$cookies.get("currentPosition")
+      const currentPosition = this.$cookies.get("currentPosition");
 
       /* Get all data of selected place */
       if (this.$route.params.positionID != 'new') {
-        const data = await fromOfflineDB.getObject(
-          currentPosition, 'Positions', 'positions');
-        this.position = data
+        const data = await fromOfflineDB
+          .getObject(currentPosition, 'Positions', 'positions')
+          .catch(err => console.error(err));
+        this.position = data;
       }
     },
     /**
      * Save a Position to local storage for the current place
      */
     async savePosition() {
-      /* if (!this.$refs.form.validate()) {
-        this.error_message = "Bitte alle Pflichtfelder vor dem Speichern ausfüllen";
-        this.error_dialog = true;
-        return;
-      } */
-
       //convert from vue proxy to JSON object
       const rawPosition = toRaw(this.position);
       rawPosition.positionNumber = Number(rawPosition.positionNumber);
       rawPosition.lastChanged = Date.now();
       
-      var test = await fromOfflineDB.getObjectBefore(rawPosition._id, 'Positions', 'positions');
+      var lastAddedPos = await fromOfflineDB
+        .getObjectBefore(rawPosition._id, 'Positions', 'positions')
+        .catch(err => console.error(err));
       
       if (rawPosition.hasSubNumber) {
-        var newSubNumber = this.calcSubNumber(rawPosition, test);
+        var newSubNumber = this.calcSubNumber(rawPosition, lastAddedPos);
         rawPosition.subNumber = newSubNumber;
       }
 
-      await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions');
+      await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions')
+        .catch(err => console.error(err));
       this.hasUnsavedChanges = false;
       
-      this.updateAutoFillList( 'datings', this.position.dating, this.datingsList )
-      this.updateAutoFillList( 'titles', this.position.title, this.titlesList )
-      this.updateAutoFillList( 'materials', this.position.material, this.materialsList )
-      this.updateAutoFillList( 'editors', this.position.editor, this.editorsList )
+      this.updateAutoFillList( 'datings', this.position.dating, this.datingsList );
+      this.updateAutoFillList( 'titles', this.position.title, this.titlesList );
+      this.updateAutoFillList( 'materials', this.position.material, this.materialsList );
+      this.updateAutoFillList( 'editors', this.position.editor, this.editorsList );
       
       this.$root.vtoast.show({ message: this.$t('saveSuccess')});
     },
 
     async updateAutoFillList( storeName, item, itemList) {
-      const newEditor = {}
+      const newEditor = {};
 
-      const editorsFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', storeName);
+      const editorsFromDB = await fromOfflineDB
+        .getAllObjects('AutoFillLists', storeName)
+        .catch(err => console.error(err));
       if ( editorsFromDB.length > 0 ) {
         let hasItem = false;
         
@@ -353,31 +370,32 @@ export default {
           }
         })
         if ( !hasItem && item != '' ) {
-          newEditor._id = String(Date.now())
-          newEditor.item = toRaw(item)
+          newEditor._id = String(Date.now());
+          newEditor.item = toRaw(item);
         }
       } else if ( item != '' ) {
-        console.log( item )
-        newEditor._id = String(Date.now())
-        newEditor.item = toRaw(item)
+        console.log( item );
+        newEditor._id = String(Date.now());
+        newEditor.item = toRaw(item);
       }
       if ( !!Object.keys(newEditor).length ) {
         await fromOfflineDB.addObject(newEditor, 'AutoFillLists', storeName)
+          .catch(err => console.error(err));
       }
 
       if ( itemList.length > 0 ) {
-        let notKnown = true
+        let notKnown = true;
         itemList.forEach( element => {
           if ( element == item ) {
-            notKnown = false
+            notKnown = false;
           }
         })
         if ( notKnown ) {
-          itemList.push( item )
+          itemList.push( item );
         }
       } else {
         if ( item != '' ) {
-          itemList.push( item )
+          itemList.push( item );
         }
       }
     },
@@ -417,18 +435,21 @@ export default {
 
       // Remove the positionID from connected place
       const placeID = String(this.$cookies.get('currentPlace'));
-      var place = await fromOfflineDB.getObject(placeID, 'Places', 'places');
+      var place = await fromOfflineDB.getObject(placeID, 'Places', 'places')
+        .catch(err => console.error(err));
       var rawPosition = toRaw(this.position);
       var index = place.positions.indexOf(rawPosition._id.toString())
 
       if (index != -1) {
         place.positions.splice(index, 1);
         place.lastChanged = Date.now();
-        await fromOfflineDB.updateObject(place, 'Places', 'places');
+        await fromOfflineDB.updateObject(place, 'Places', 'places')
+          .catch(err => console.error(err));
       }
 
       // Delete the position itself
       await fromOfflineDB.deleteObject(rawPosition, 'Positions', 'positions')
+        .catch(err => console.error(err));
       this.$cookies.remove('currentPosition');
       this.hasUnsavedChanges = false;
       this.$router.push({ name: "PositionsOverview" });

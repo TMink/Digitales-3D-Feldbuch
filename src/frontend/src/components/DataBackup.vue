@@ -2,7 +2,7 @@
  * Created Date: 17.07.2023 11:31:35
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.02.2024 21:31:09
+ * Last Modified: 13.02.2024 13:54:20
  * Modified By: Julian Hardtung
  * 
  * Description: vue-component for downloading data backups and importing those
@@ -189,17 +189,36 @@ export default {
   },
   methods: {
     async updateDBData() {
-      await fromOfflineDB.syncLocalDBs();
+      await fromOfflineDB.syncLocalDBs()
+        .catch(err => console.error(err));
 
-      this.activities = await fromOfflineDB.getAllObjects('Activities', 'activities');
-      this.places = await fromOfflineDB.getAllObjects('Places', 'places');
-      this.positions = await fromOfflineDB.getAllObjects('Positions', 'positions');
-      this.images = await fromOfflineDB.getAllObjects('Images', 'images');
-      this.placeModels = await fromOfflineDB.getAllObjects('Models', 'places');
-      this.positionModels = await fromOfflineDB.getAllObjects('Models', 'positions');
-      this.cameras = await fromOfflineDB.getAllObjects('Cameras', 'cameras');
-      this.createdChanges = await fromOfflineDB.getAllObjects('Changes', 'created');
-      this.deletedChanges = await fromOfflineDB.getAllObjects('Changes', 'deleted');
+      this.activities = await fromOfflineDB
+        .getAllObjects('Activities', 'activities')
+        .catch(err => console.error(err));
+      this.places = await fromOfflineDB
+        .getAllObjects('Places', 'places')
+        .catch(err => console.error(err));
+      this.positions = await fromOfflineDB
+        .getAllObjects('Positions', 'positions')
+        .catch(err => console.error(err));
+      this.images = await fromOfflineDB
+        .getAllObjects('Images', 'images')
+        .catch(err => console.error(err));
+      this.placeModels = await fromOfflineDB
+        .getAllObjects('Models', 'places')
+        .catch(err => console.error(err));
+      this.positionModels = await fromOfflineDB
+        .getAllObjects('Models', 'positions')
+        .catch(err => console.error(err));
+      this.cameras = await fromOfflineDB
+        .getAllObjects('Cameras', 'cameras')
+        .catch(err => console.error(err));
+      this.createdChanges = await fromOfflineDB
+        .getAllObjects('Changes', 'created')
+        .catch(err => console.error(err));
+      this.deletedChanges = await fromOfflineDB
+        .getAllObjects('Changes', 'deleted')
+        .catch(err => console.error(err));
     },
     /**
      * Consolidates all data of the IndexedDB to 
@@ -207,7 +226,8 @@ export default {
      */
     async backupData() {
       this.isLoading = true
-      await this.updateDBData();
+      await this.updateDBData()
+        .catch(err => console.error(err));
       var filename = "fieldbook_" + new Date().toLocaleDateString('DE-de');
       var rawPlaceModels = toRaw(this.placeModels);
       var rawPositionModels = toRaw(this.positionModels);
@@ -247,11 +267,12 @@ export default {
       // add the data .txt to the zip
       zip.file(filename + ".txt", blob);
 
-      await zip.generateAsync({ type: "blob" }).then(function (content) {
+      await zip.generateAsync({ type: "blob" })
+        .then(function (content) {
         var fileName = "fieldbookBackup_" + new Date().toLocaleDateString("en-EN") + ".zip" 
         // see FileSaver.js
         saveAs(content, fileName);
-      });
+      }).catch(err => console.error(err));
 
       // close the import dialog
       this.importDialog = false;
@@ -271,7 +292,8 @@ export default {
       var dbData = {};
       // add all the data back to their corresponding IndexedDB stores
       
-      var zipData = await JSZip.loadAsync(rawFile[0]);
+      var zipData = await JSZip.loadAsync(rawFile[0])
+        .catch(err => console.error(err));
       var fileKeys = Object.keys(zipData.files);
       
       // retrieve data from the backup.zip and write it to dbData + modelFiles
@@ -279,19 +301,24 @@ export default {
         var fileEnd = fileKeys[i].split(".");
         
         if (fileEnd[fileEnd.length - 1] == "txt") {
-          await zipData.files[fileKeys[i]].async('string').then(function (fileData) {
+          await zipData.files[fileKeys[i]]
+            .async('string')
+            .then(function (fileData) {
             dbData = JSON.parse(fileData);
-          })
+            })
+            .catch(err => console.error(err))
         } else if (fileEnd[fileEnd.length - 1] == "glb") {
-          await zipData.files[fileKeys[i]].async('arraybuffer').then(function (fileData) {
-            
-            var modelObject = {};
-            modelObject.type = fileEnd[0];
-            modelObject._id = fileEnd[1];
-            modelObject.data = fileData;
+          await zipData.files[fileKeys[i]]
+            .async('arraybuffer')
+            .then(function (fileData) {
+              var modelObject = {};
+              modelObject.type = fileEnd[0];
+              modelObject._id = fileEnd[1];
+              modelObject.data = fileData;
 
-            modelFiles.push(modelObject);
-          })
+              modelFiles.push(modelObject);
+            })
+            .catch(err => console.error(err))
         }
       }
 
@@ -317,15 +344,24 @@ export default {
       });
 
       // add the data back to IndexedDB
-      await context.addData(dbData.activities, 'Activities', 'activities');
-      await context.addData(dbData.places, 'Places', 'places');
-      await context.addData(dbData.positions, 'Positions', 'positions');
-      await context.addData(dbData.images, 'Images', 'images');
-      await context.addData(dbData.placeModels, 'Models', 'places');
-      await context.addData(dbData.positionModels, 'Models', 'positions');
-      await context.addData(dbData.cameras, 'Cameras', 'cameras');
-      await context.addData(dbData.createdChanges, 'Changes', 'created');
-      await context.addData(dbData.deletedChanges, 'Changes', 'deleted');
+      await context.addData(dbData.activities, 'Activities', 'activities')
+        .catch(err => console.error(err));
+      await context.addData(dbData.places, 'Places', 'places')
+        .catch(err => console.error(err));
+      await context.addData(dbData.positions, 'Positions', 'positions')
+        .catch(err => console.error(err));
+      await context.addData(dbData.images, 'Images', 'images')
+        .catch(err => console.error(err));
+      await context.addData(dbData.placeModels, 'Models', 'places')
+        .catch(err => console.error(err));
+      await context.addData(dbData.positionModels, 'Models', 'positions')
+        .catch(err => console.error(err));
+      await context.addData(dbData.cameras, 'Cameras', 'cameras')
+        .catch(err => console.error(err));
+      await context.addData(dbData.createdChanges, 'Changes', 'created')
+        .catch(err => console.error(err));
+      await context.addData(dbData.deletedChanges, 'Changes', 'deleted')
+        .catch(err => console.error(err));
 
       // close the import dialog
       this.importDialog = false;
@@ -366,14 +402,20 @@ export default {
 
             // technical place for first place
              if (i == 0) {
-              allPreset = await fromOfflineDB.getObjectByIndex(0, 'ModulePresets', 'places');
+              allPreset = await fromOfflineDB
+                .getObjectByIndex(0, 'ModulePresets', 'places')
+                .catch(err => console.error(err));
             // otherwise use ALL preset
             } else {
-              allPreset = await fromOfflineDB.getObjectByIndex(1, 'ModulePresets', 'places');
+              allPreset = await fromOfflineDB
+                .getObjectByIndex(1, 'ModulePresets', 'places')
+                .catch(err => console.error(err));
             }
             
           } else if (dbName == 'Positions') {
-            allPreset = await fromOfflineDB.getObjectByIndex(0, 'ModulePresets', 'positions');
+            allPreset = await fromOfflineDB
+              .getObjectByIndex(0, 'ModulePresets', 'positions')
+              .catch(err => console.error(err));
           }
 
           if (data[i].modulePreset == undefined) {
@@ -381,7 +423,9 @@ export default {
           }
         
           // encode the model file, if the data is for a model
-          await fromOfflineDB.addObject(data[i], dbName, storeName);
+          await fromOfflineDB
+            .addObject(data[i], dbName, storeName)
+            .catch(err => console.error(err));
         }
       }
     },

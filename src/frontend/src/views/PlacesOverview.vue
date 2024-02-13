@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 13.02.2024 12:27:58
+ * Last Modified: 13.02.2024 13:42:19
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -510,9 +510,12 @@ export default {
    */
   async created() {
     this.$emit("view", this.$t('overview', { msg: this.$tc('place', 2) }));
-    await fromOfflineDB.syncLocalDBs();
-    await this.updatePlaces();
-    await this.updateModulePresets(); 
+    await fromOfflineDB.syncLocalDBs()
+      .catch(err => console.error(err));
+    await this.updatePlaces()
+      .catch(err => console.error(err));
+    await this.updateModulePresets()
+      .catch(err => console.error(err));
     this.setShowAllInfoSwitch();
     
     // Init first place as technical place
@@ -570,8 +573,9 @@ export default {
     async updatePlaces() {
       var curActivityID = String(this.$cookies.get('currentActivity'));
 
-      this.places = await fromOfflineDB.getAllObjectsWithID(
-        curActivityID, 'Activity', 'Places', 'places');
+      this.places = await fromOfflineDB
+        .getAllObjectsWithID(curActivityID, 'Activity', 'Places', 'places')
+        .catch(err => console.error(err));
       this.places.sort((a, b) => (a.placeNumber > b.placeNumber) ? 1 : -1);
     },
 
@@ -581,8 +585,9 @@ export default {
     async updatePlacesFull() {
       var curActivityID = String(this.$cookies.get('currentActivity'));
 
-      var offlinePlaces = await fromOfflineDB.getAllObjectsWithID(
-        curActivityID, 'Activity', 'Places', 'places');
+      var offlinePlaces = await fromOfflineDB
+        .getAllObjectsWithID(curActivityID, 'Activity', 'Places', 'places')
+        .catch(err => console.error(err));
       offlinePlaces.sort((a, b) => (a.placeNumber > b.placeNumber) ? 1 : -1);
 
       // if user isn't logged in, just show the local stuff
@@ -592,13 +597,16 @@ export default {
         return;
       }
 
-      const onlinePlaces = await fromBackend.getDataWithParam('places/activity', curActivityID)
+      const onlinePlaces = await fromBackend
+        .getDataWithParam('places/activity', curActivityID)
+        .catch(err => console.error(err));
 
       // if there are no offlinePlaces, don't check for duplicates
       if (offlinePlaces.length == 0) {
         console.log("No local places, so only show online");
         onlinePlaces.forEach(async (onPlace) => {
-          await fromOfflineDB.addObject(onPlace, 'Places', 'places');
+          await fromOfflineDB.addObject(onPlace, 'Places', 'places')
+          .catch(err => console.error(err));
         });
         this.places = onlinePlaces;
         return;
@@ -622,7 +630,8 @@ export default {
               var tempPlace = onlinePlaces[i];
               onlinePlaces.splice(i, 1)
               newPlacesList.push(tempPlace);
-              await fromOfflineDB.addObject(tempPlace, 'Places', 'places');
+              await fromOfflineDB.addObject(tempPlace, 'Places', 'places')
+                .catch(err => console.error(err));
             } else {
               newPlacesList.push(offPlace);
             }
@@ -648,8 +657,9 @@ export default {
       let presetFromCookies = this.$cookies.get('placeModulesPreset');
 
       if (presetFromCookies.length > 0) {
-        this.curModulePreset = await fromOfflineDB.getObject(
-          presetFromCookies, 'ModulePresets', 'places');
+        this.curModulePreset = await fromOfflineDB
+          .getObject(presetFromCookies, 'ModulePresets', 'places')
+          .catch(err => console.error(err));
         }
     },
 
@@ -659,7 +669,9 @@ export default {
     async addPlace() {
       const acID = String(this.$cookies.get('currentActivity'));
       var newPlaceID = String(Date.now());
-      var activity = await fromOfflineDB.getObject(acID, 'Activities', 'activities');
+      var activity = await fromOfflineDB
+        .getObject(acID, 'Activities', 'activities')
+        .catch(err => console.error(err));
 
       // add placeID to the activity array of all places
       activity.places.push(newPlaceID);
@@ -706,19 +718,26 @@ export default {
         newPlace.placeNumber = 1;
 
         //set place to technical place if it is the 1. place
-        newPlace.modulePreset = await fromOfflineDB.getFirstEntry('ModulePresets', 'places');
+        newPlace.modulePreset = await fromOfflineDB
+          .getFirstEntry('ModulePresets', 'places')
+          .catch(err => console.error(err));
       } else {
-        const placeNumbers = await fromOfflineDB.getPropertiesWithID(acID, 'place', 'placeNumber', 'Places', 'places')
+        const placeNumbers = await fromOfflineDB
+          .getPropertiesWithID(acID, 'place', 'placeNumber', 'Places', 'places')
+          .catch(err => console.error(err));
         const newPlaceNumber = Math.max(...placeNumbers) + 1;
         newPlace.placeNumber = newPlaceNumber;
         newPlace.modulePreset = toRaw(this.curModulePreset);
       }
 
       // update IndexedDB
-      await fromOfflineDB.updateObject(activity, 'Activities', 'activities');
-      await fromOfflineDB.addObject(newPlace, 'Places', 'places');
+      await fromOfflineDB.updateObject(activity, 'Activities', 'activities')
+        .catch(err => console.error(err));
+      await fromOfflineDB.addObject(newPlace, 'Places', 'places')
+        .catch(err => console.error(err));
       //await fromOfflineDB.addObject({ _id: newPlaceID, object: 'places' }, 'Changes', 'created');
-      await this.updatePlaces(newPlace._id);
+      await this.updatePlaces(newPlace._id)
+        .catch(err => console.error(err));
       return newPlaceID;
     },
 
@@ -728,16 +747,20 @@ export default {
      * @param {Int} count 
      */
     async duplicatePlace(placeID) {
-      var newPlaceID = await this.addPlace();
-      var newPlace = await fromOfflineDB.getObject(newPlaceID, 'Places', 'places');
-      var dupPlace = await fromOfflineDB.getObject(placeID, 'Places', 'places');
+      var newPlaceID = await this.addPlace()
+        .catch(err => console.error(err));
+      var newPlace = await fromOfflineDB.getObject(newPlaceID, 'Places', 'places')
+        .catch(err => console.error(err));
+      var dupPlace = await fromOfflineDB.getObject(placeID, 'Places', 'places')
+        .catch(err => console.error(err));
       
       dupPlace._id = newPlaceID;
       dupPlace.placeNumber = newPlace.placeNumber;
       dupPlace.positions = [];
       dupPlace.lastChanged = Date.now();
 
-      await fromOfflineDB.updateObject(dupPlace, 'Places', 'places');
+      await fromOfflineDB.updateObject(dupPlace, 'Places', 'places')
+        .catch(err => console.error(err));
       this.updatePlaces();
     },
 

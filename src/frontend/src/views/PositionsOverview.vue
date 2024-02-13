@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 13.02.2024 12:37:24
+ * Last Modified: 13.02.2024 13:44:12
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -492,9 +492,12 @@ export default {
    */
   async created() {
     this.$emit("view", this.$t('overview', { msg: this.$tc('position', 2) }));
-    await fromOfflineDB.syncLocalDBs();
-    await this.updatePositions();
-    await this.updateModulePresets();
+    await fromOfflineDB.syncLocalDBs()
+      .catch(err => console.error(err));
+    await this.updatePositions()
+      .catch(err => console.error(err));
+    await this.updateModulePresets()
+      .catch(err => console.error(err));
     this.setShowAllInfoSwitch();
   },
 
@@ -545,8 +548,9 @@ export default {
     async updatePositions() {
       var curPlaceID = String(this.$cookies.get('currentPlace'));
 
-      this.positions = await fromOfflineDB.getAllObjectsWithID(
-        curPlaceID, 'Place', 'Positions', 'positions');
+      this.positions = await fromOfflineDB
+        .getAllObjectsWithID(curPlaceID, 'Place', 'Positions', 'positions')
+        .catch(err => console.error(err));
     },
 
     /**
@@ -555,8 +559,9 @@ export default {
     async updatePositionsFull() {
       var curPlaceID = String(this.$cookies.get('currentPlace'));
 
-      var offlinePositions = await fromOfflineDB.getAllObjectsWithID(
-        curPlaceID, 'Place', 'Positions', 'positions');
+      var offlinePositions = await fromOfflineDB
+        .getAllObjectsWithID(curPlaceID, 'Place', 'Positions', 'positions')
+        .catch(err => console.error(err));
 
       // if user isn't logged in, just show the local stuff
       if (!this.userStore.authenticated) {
@@ -565,13 +570,16 @@ export default {
         return;
       }
 
-      const onlinePositions = await fromBackend.getDataWithParam('positions/place', curPlaceID)
+      const onlinePositions = await fromBackend
+        .getDataWithParam('positions/place', curPlaceID)
+        .catch(err => console.error(err));
 
       // if there are no offlinePositions, don't check for duplicates
       if (offlinePositions.length == 0) {
         console.log("No local positions, so only show online");
         onlinePositions.forEach(async (onPosition) => {
-          await fromOfflineDB.addObject(onPosition, 'Positions', 'positions');
+          await fromOfflineDB.addObject(onPosition, 'Positions', 'positions')
+            .catch(err => console.error(err));
         });
         this.places = onlinePositions;
         return;
@@ -595,7 +603,8 @@ export default {
               var tempPosition = onlinePositions[i];
               onlinePositions.splice(i, 1)
               newPositionsList.push(tempPosition);
-              await fromOfflineDB.addObject(tempPosition, 'Positions', 'positions');
+              await fromOfflineDB.addObject(tempPosition, 'Positions', 'positions')
+                .catch(err => console.error(err));
             } else {
               newPositionsList.push(offPosition);
             }
@@ -618,8 +627,9 @@ export default {
       let curPresetID = this.$cookies.get('posModulesPreset');
 
       if (curPresetID) {
-        this.curModulePreset = await fromOfflineDB.getObject(
-          curPresetID, 'ModulePresets', 'positions');
+        this.curModulePreset = await fromOfflineDB
+          .getObject(curPresetID, 'ModulePresets', 'positions')
+          .catch(err => console.error(err));
         }
     },
 
@@ -629,10 +639,15 @@ export default {
      * @param {Int} count 
      */
      async duplicatePosition(positionID) {
-      var newPositionID = await this.addPosition();
+      var newPositionID = await this.addPosition()
+        .catch(err => console.error(err));
       
-      var newPosition = await fromOfflineDB.getObject(newPositionID, 'Positions', 'positions');
-      var dupPosition = await fromOfflineDB.getObject(positionID, 'Positions', 'positions');
+      var newPosition = await fromOfflineDB
+        .getObject(newPositionID, 'Positions', 'positions')
+        .catch(err => console.error(err));
+      var dupPosition = await fromOfflineDB
+        .getObject(positionID, 'Positions', 'positions')
+        .catch(err => console.error(err));
       
       dupPosition._id = newPositionID;
       dupPosition.positionNumber = newPosition.positionNumber;
@@ -640,7 +655,8 @@ export default {
       dupPosition.models = [];
       dupPosition.lastChanged = Date.now();
 
-      await fromOfflineDB.updateObject(dupPosition, 'Positions', 'positions');
+      await fromOfflineDB.updateObject(dupPosition, 'Positions', 'positions')
+        .catch(err => console.error(err));
       this.updatePositions();
     },
 
@@ -680,7 +696,9 @@ export default {
      */
     async addPosition() {
       var curPlaceID = this.$cookies.get('currentPlace');
-      var curPlace = await fromOfflineDB.getObject(curPlaceID, "Places", "places");
+      var curPlace = await fromOfflineDB
+        .getObject(curPlaceID, "Places", "places")
+        .catch(err => console.error(err));
       var newPositionID = String(Date.now());
 
       curPlace.positions.push(newPositionID);
@@ -716,14 +734,16 @@ export default {
       if (this.positions.length == 0) {
         newPosition.positionNumber = 1;
       } else {
-        var lastPosNumber = await fromOfflineDB.getLastAddedPosition();
+        var lastPosNumber = await fromOfflineDB.getLastAddedPosition()
+          .catch(err => console.error(err));
         newPosition.positionNumber = lastPosNumber + 1;
       }
       
-      await fromOfflineDB.updateObject(curPlace, 'Places', 'places');
-      await fromOfflineDB.addObject(newPosition, "Positions", "positions");
-      await fromOfflineDB.addObject(
-            { _id: newPositionID, object: 'positions' }, 'Changes', 'created');
+      await fromOfflineDB.updateObject(curPlace, 'Places', 'places')
+        .catch(err => console.error(err));
+      await fromOfflineDB.addObject(newPosition, "Positions", "positions")
+        .catch(err => console.error(err));
+      //await fromOfflineDB.addObject({ _id: newPositionID, object: 'positions' }, 'Changes', 'created');
       
       return newPositionID;
     },

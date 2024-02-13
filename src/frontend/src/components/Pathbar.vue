@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:39:43
+ * Last Modified: 13.02.2024 13:26:02
  * Modified By: Julian Hardtung
  * 
  * Description: `DEPRECATED` pathbar to show what activity, place, position 
@@ -42,20 +42,25 @@ export default {
     }
   },
   async created() {
-    await fromOfflineDB.syncLocalDBs();
-    await this.updatePathbar();
+    await fromOfflineDB.syncLocalDBs()
+      .catch(err => console.error(err));
+    await this.updatePathbar()
+      .catch(err => console.error(err));
   },
   methods: {
 
     async updatePathbar() {
       if( this.$cookies.get('currentActivity') ) {
         await this.getInfo("Activity")
+          .catch(err => console.error(err));
       } 
       if( this.$cookies.get('currentPlace') ) {
         await this.getInfo("Place")
+          .catch(err => console.error(err));
       }
       if( this.$cookies.get('currentPosition') ) {
         await this.getInfo("Position")
+          .catch(err => console.error(err));
       }
     },
     
@@ -71,7 +76,8 @@ export default {
         db = selection + "s"
         st = selection.toLowerCase() + "s"
       }
-      const name = await fromOfflineDB.getObject( _id, db, st);
+      const name = await fromOfflineDB.getObject( _id, db, st)
+        .catch(err => console.error(err));
     
       switch(selection) {
         case "Activity":

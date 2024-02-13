@@ -2,7 +2,7 @@
  * Created Date: 09.01.2024 11:33:59
  * Author: Julian Hardtung
  * 
- * Last Modified: 07.02.2024 11:04:33
+ * Last Modified: 13.02.2024 13:17:46
  * Modified By: Julian Hardtung
  * 
  * Description: lists all images of a place
@@ -88,8 +88,8 @@ export default {
    * Initialize data from IndexedDB to the reactive Vue.js data
    */
   async created() {
-    await fromOfflineDB.syncLocalDBs();
-    await this.updateImages();
+    await fromOfflineDB.syncLocalDBs().catch(err => console.error(err));
+    await this.updateImages().catch(err => console.error(err));
 
   },
   methods: {
@@ -97,9 +97,13 @@ export default {
      * Update reactive Vue.js images data
      */
     async updateImages() {
-      var curPlace = await fromOfflineDB.getObject(this.object_id, 'Places', 'places');
+      var curPlace = await fromOfflineDB
+        .getObject(this.object_id, 'Places', 'places')
+        .catch(err => console.error(err));
 
-      var allPositions = await fromOfflineDB.getAllObjectsFromArray(curPlace.positions, 'Positions', 'positions');
+      var allPositions = await fromOfflineDB
+        .getAllObjectsFromArray(curPlace.positions, 'Positions', 'positions')
+        .catch(err => console.error(err));
       var allImages = [];
 
       allPositions.forEach(curPos => {
@@ -109,7 +113,9 @@ export default {
           });
         }
       });
-      this.images = await fromOfflineDB.getAllObjectsFromArray(allImages, 'Images', 'images');
+      this.images = await fromOfflineDB
+        .getAllObjectsFromArray(allImages, 'Images', 'images')
+        .catch(err => console.error(err));
     },
 
     /**
@@ -128,9 +134,13 @@ export default {
     async deleteImage(image) {
 
       var curPlaceID = this.$cookies.get('currentPlace');
-      var curPlace = await fromOfflineDB.getObject(curPlaceID, 'Places', 'places');
+      var curPlace = await fromOfflineDB
+        .getObject(curPlaceID, 'Places', 'places')
+        .catch(err => console.error(err));
       var rawImage = toRaw(image);
-      var curPos = await fromOfflineDB.getObject(rawImage.positionID, 'Positions', 'positions');
+      var curPos = await fromOfflineDB
+        .getObject(rawImage.positionID, 'Positions', 'positions')
+        .catch(err => console.error(err));
       
      
       
@@ -142,11 +152,13 @@ export default {
         if (index != -1) {
           curPlace.positions.splice(index, 1);
           curPlace.lastChanged = Date.now();
-          await fromOfflineDB.updateObject(curPlace, 'Places', 'places');
+          await fromOfflineDB.updateObject(curPlace, 'Places', 'places')
+            .catch(err => console.error(err));
         }
 
         // delete position
-        await fromOfflineDB.deleteObject(curPos, 'Positions', 'positions');
+        await fromOfflineDB.deleteObject(curPos, 'Positions', 'positions')
+          .catch(err => console.error(err));
 
       } else {
         //just remove the image id fromt he position
@@ -157,7 +169,8 @@ export default {
       }
 
       // Delete the image itself
-      await fromOfflineDB.deleteObject(rawImage, 'Images', 'images');
+      await fromOfflineDB.deleteObject(rawImage, 'Images', 'images')
+        .catch(err => console.error(err));
       this.$cookies.remove('currentImage');
 
 

@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 07.02.2024 11:10:51
+ * Last Modified: 13.02.2024 13:28:33
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -294,8 +294,10 @@ export default {
    */
   async created() {
     this.$emit("view", this.$t('overview', { msg: this.$tc('activity', 2) }));
-    await fromOfflineDB.syncLocalDBs();
-    await this.updateActivitiesFull();
+    await fromOfflineDB.syncLocalDBs()
+      .catch(err => console.error(err));
+    await this.updateActivitiesFull()
+      .catch(err => console.error(err));
   },
   methods: {
     /**
@@ -303,7 +305,9 @@ export default {
      * @deprecated (for now)
      */
     async updateActivities() {
-      this.activities = await fromOfflineDB.getAllObjects('Activities', 'activities');
+      this.activities = await fromOfflineDB
+        .getAllObjects('Activities', 'activities')
+        .catch(err => console.error(err));
     },
 
     /**
@@ -312,7 +316,9 @@ export default {
      */
     async updateActivitiesFull() {
 
-      var offlineActivities = await fromOfflineDB.getAllObjects('Activities', 'activities');
+      var offlineActivities = await fromOfflineDB
+        .getAllObjects('Activities', 'activities')
+        .catch(err => console.error(err));
 
       // if user isn't logged in, just show the local stuff
       if (!this.userStore.authenticated) {
@@ -321,13 +327,17 @@ export default {
         return;
       }
 
-      const onlineActivities = await fromBackend.getDataWithParam('activities/user', this.userStore.user._id)
+      const onlineActivities = await fromBackend
+        .getDataWithParam('activities/user', this.userStore.user._id)
+        .catch(err => console.error(err));
       
       // if there are no offlineActivities, don't check for duplicates
       if (offlineActivities.length == 0) {
         console.log("No local activities, so only show online")
         onlineActivities.forEach(async (onActivity) => {
-          await fromOfflineDB.addObject(onActivity, 'Activities', 'activities');
+          await fromOfflineDB
+            .addObject(onActivity, 'Activities', 'activities')
+            .catch(err => console.error(err));
         });
         this.activities = onlineActivities;
 
@@ -355,7 +365,9 @@ export default {
                 onlineActivities.splice(j, 1)
                 newActivityList.push(tempActivity);
                 //save this onlineActivity to IndexedDB
-                await fromOfflineDB.updateIndexedDBObject(tempActivity, 'Activities', 'activities');
+                await fromOfflineDB
+                  .updateIndexedDBObject(tempActivity, 'Activities', 'activities')
+                  .catch(err => console.error(err));
               } else {
                 newActivityList.push(offlineActivities[i]);
               }
@@ -503,16 +515,21 @@ export default {
         // Edit existing data
         if (Object.prototype.hasOwnProperty.call(rawActivity, "_id")) {
           newActivity._id = rawActivity._id;
-          await fromOfflineDB.updateObject(newActivity, 'Activities', 'activities');
+          await fromOfflineDB
+            .updateObject(newActivity, 'Activities', 'activities')
+            .catch(err => console.error(err));
 
         } else {
           // Add new data to store 
-          var activityID = await fromOfflineDB.addObject(newActivity, 'Activities', 'activities');
+          var activityID = await fromOfflineDB
+            .addObject(newActivity, 'Activities', 'activities')
+            .catch(err => console.error(err));
           //TODO: rework the onlineSync workflow
           //await fromOfflineDB.addObject({ _id: activityID, object: 'activities' }, 'Changes', 'created');
         }
       }
-      await this.updateActivities();
+      await this.updateActivities()
+        .catch(err => console.error(err));
       this.$root.vtoast.show({ message: this.$t('saveSuccess') });
     },
 
@@ -558,15 +575,19 @@ export default {
       
       updatedActivity.editor.push(username);
 
-      await fromOfflineDB.postObjectCascade("activities", updatedActivity);
+      await fromOfflineDB.postObjectCascade("activities", updatedActivity)
+        .catch(err => console.error(err));
 
       // update other user
       if (username != this.userStore.user.username) {
-        const response = await fromBackend.getDataWithParam('user/name', username);
+        const response = await fromBackend
+          .getDataWithParam('user/name', username)
+          .catch(err => console.error(err));
         const user = response.user;
   
         user.activities.push(activity._id);
-        await fromBackend.putData('user', user);
+        await fromBackend.putData('user', user)
+          .catch(err => console.error(err));
 
       } else {
         // update logged in user
@@ -574,7 +595,8 @@ export default {
         this.userStore.updateUser();
       }
 
-      await this.updateActivities();
+      await this.updateActivities()
+        .catch(err => console.error(err));
       this.$root.vtoast.show({ message: this.$t('syncSuccess') });
     },
 
@@ -589,7 +611,7 @@ export default {
           this.$t('confirm_del', {
               object: this.$tc('activity', 1), 
               object_nr: activity.activityNumber }),
-        )
+        ).catch(err => console.error(err))
       ) {
         this.deleteActivity(activity);
       }
@@ -610,7 +632,9 @@ export default {
         this.activities.splice(activityIndex, 1);
       }
       
-      await fromOfflineDB.deleteCascade(activity._id, 'activity', 'Activities', 'activities');
+      await fromOfflineDB
+        .deleteCascade(activity._id, 'activity', 'Activities', 'activities')
+        .catch(err => console.error(err));
     },
 
     /**

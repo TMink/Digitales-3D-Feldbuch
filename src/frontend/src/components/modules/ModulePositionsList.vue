@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 15.12.2023 14:01:22
+ * Last Modified: 13.02.2024 13:26:31
  * Modified By: Julian Hardtung
  * 
  * Description: module for listing all positions of a place
@@ -151,21 +151,27 @@ export default {
   },
 
   async created() {
-    await fromOfflineDB.syncLocalDBs();
-    await this.updatePositions();
+    await fromOfflineDB.syncLocalDBs()
+      .catch(err => console.error(err));
+    await this.updatePositions()
+      .catch(err => console.error(err));
   },
 
   methods: {
 
     async updatePlace() {
       const currentPlace = this.$cookies.get('currentPlace');
-      const data = await fromOfflineDB.getObject(currentPlace, 'Places', 'places');
+      const data = await fromOfflineDB
+        .getObject(currentPlace, 'Places', 'places')
+        .catch(err => console.error(err));
       this.place = data;
     },
 
     async updatePositions() {
       if (this.placeProp._id != undefined) {
-        this.positions = await fromOfflineDB.getAllObjectsWithID(this.placeProp._id, 'Place', 'Positions', 'positions');
+        this.positions = await fromOfflineDB
+          .getAllObjectsWithID(this.placeProp._id, 'Place', 'Positions', 'positions')
+          .catch(err => console.error(err));
       }
     },
 

@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 12.02.2024 13:23:39
+ * Last Modified: 13.02.2024 13:53:06
  * Modified By: Julian Hardtung
  * 
  * Description: main entry point for the fieldbook + 
@@ -94,15 +94,19 @@ export default {
 
     // only initialize Cookies and IndexedDB data once
     if (!isInitDone) {
-      await fromOfflineDB.syncLocalDBs();
+      await fromOfflineDB.syncLocalDBs()
+        .catch(err => console.error(err));
       this.initCookies();
-      await this.initIndexedDB();
+      await this.initIndexedDB()
+        .catch(err => console.error(err));
       this.generalStore.setInitDone(true);
     }
 
-    await fromOfflineDB.syncLocalDBs();
-    await this.updatePathbar();
-    this.active_tab = this.active_tab_prop; //this.$cookies.get('active_tab_prop') //this.active_tab_prop;
+    await fromOfflineDB.syncLocalDBs()
+      .catch(err => console.error(err));
+    await this.updatePathbar()
+      .catch(err => console.error(err));
+    this.active_tab = this.active_tab_prop;
     this.placeID = this.$cookies.get('currentPlace')
     if (this.placeID !== null) {
       this.placeIsSet = true
@@ -127,7 +131,8 @@ export default {
 
     async clearLocalData() {
       this.deleteCookies();
-      await this.clearIndexedDB();
+      await this.clearIndexedDB()
+        .catch(err => console.error(err));
     },
 
     /**
@@ -165,7 +170,8 @@ export default {
         canEdit: false
       }
 
-      await fromOfflineDB.addObject(technicalPlace, 'ModulePresets', 'places');
+      await fromOfflineDB.addObject(technicalPlace, 'ModulePresets', 'places')
+        .catch(err => console.error(err));
 
       var allPlaceModules = {
         _id: String(Date.now()),
@@ -190,7 +196,8 @@ export default {
       }
 
       var placePresetID =
-        await fromOfflineDB.addObject(allPlaceModules, 'ModulePresets', 'places');
+        await fromOfflineDB.addObject(allPlaceModules, 'ModulePresets', 'places')
+        .catch(err => console.error(err));
       this.$cookies.set('placeModulesPreset', placePresetID);
 
       var allPosModules = {
@@ -217,7 +224,8 @@ export default {
       }
 
       var posPresetID =
-        await fromOfflineDB.addObject(allPosModules, 'ModulePresets', 'positions');
+        await fromOfflineDB.addObject(allPosModules, 'ModulePresets', 'positions')
+        .catch(err => console.error(err));
       this.$cookies.set('posModulesPreset', posPresetID);
     },
 
@@ -228,6 +236,7 @@ export default {
 
     async clearIndexedDB() {
       const dbs = await window.indexedDB.databases()
+        .catch(err => console.error(err));
       dbs.forEach(db => { window.indexedDB.deleteDatabase(db.name) })
       this.deleteCookies();
       this.$router.go();
@@ -247,12 +256,15 @@ export default {
     async updatePathbar() {
       if (this.$cookies.get('currentActivity')) {
         await this.getInfo("Activity")
+          .catch(err => console.error(err));
       }
       if (this.$cookies.get('currentPlace')) {
         await this.getInfo("Place")
+          .catch(err => console.error(err));
       }
       if (this.$cookies.get('currentPosition')) {
         await this.getInfo("Position")
+          .catch(err => console.error(err));
       }
     },
 
@@ -268,7 +280,8 @@ export default {
         db = selection + "s"
         st = selection.toLowerCase() + "s"
       }
-      const name = await fromOfflineDB.getObject(_id, db, st);
+      const name = await fromOfflineDB.getObject(_id, db, st)
+        .catch(err => console.error(err));
 
       switch (selection) {
         case "Activity":

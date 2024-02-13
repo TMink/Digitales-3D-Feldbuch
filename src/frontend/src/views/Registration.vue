@@ -2,8 +2,8 @@
  * Created Date: 29.11.2023 01:45:44
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.02.2024 21:20:37
- * Modified By: Oliver Mertens
+ * Last Modified: 13.02.2024 13:45:13
+ * Modified By: Julian Hardtung
  * 
  * Description: Vue component for user registration
  -->
@@ -126,11 +126,13 @@ export default {
    * Retrieve data from IndexedDB
    */
   async created() {
-    await fromOfflineDB.syncLocalDBs();
+    await fromOfflineDB.syncLocalDBs()
+      .catch(err => console.error(err));
   },
   methods: {
     async registration() {
-      await this.userStore.register(this.form);
+      await this.userStore.register(this.form)
+        .catch(err => console.error(err));
       this.$router.push({ name: "Login" });
     },
     getHeight() {

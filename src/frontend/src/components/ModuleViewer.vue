@@ -2,7 +2,7 @@
  * Created Date: 06.09.2023 17:19:12
  * Author: Julian Hardtung
  * 
- * Last Modified: 03.01.2024 13:30:53
+ * Last Modified: 13.02.2024 13:23:29
  * Modified By: Julian Hardtung
  * 
  * Description: input module viewer that shows all modules that are 
@@ -131,16 +131,21 @@ export default {
   },
 
   async beforeCreate() {
-    await fromOfflineDB.syncLocalDBs();
+    await fromOfflineDB.syncLocalDBs()
+      .catch(err => console.error(err));
     const path = this.$route.path;
     this.getPathNamesAndID(path);
-    this.object = await fromOfflineDB.getObject(this._id, this.pathNames.db, this.pathNames.os);
+    this.object = await fromOfflineDB
+      .getObject(this._id, this.pathNames.db, this.pathNames.os)
+      .catch(err => console.error(err));
   },
   
   methods: {
 
     async updateObject() {
-      this.object = await fromOfflineDB.getObject(this._id, this.pathNames.db, this.pathNames.os);
+      this.object = await fromOfflineDB
+        .getObject(this._id, this.pathNames.db, this.pathNames.os)
+        .catch(err => console.error(err));
     },
 
     getPathNamesAndID(path) {

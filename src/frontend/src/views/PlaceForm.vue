@@ -2,8 +2,8 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.02.2024 19:21:46
- * Modified By: Methusshan Elankumaran
+ * Last Modified: 13.02.2024 13:35:05
+ * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
  *              (shows input modules according to module preset)
@@ -367,7 +367,8 @@ export default {
   async beforeRouteLeave(to, from, next) {
     var confirmation = false;
     if (this.hasUnsavedChanges) {
-      confirmation = await this.confirmRouteChange();
+      confirmation = await this.confirmRouteChange()
+        .catch(err => console.error(err));
       if (confirmation) {
         next();
       }
@@ -382,26 +383,36 @@ export default {
     this.titles = JSON.parse(import.meta.env.VITE_TITLES);
     this.datings = JSON.parse(import.meta.env.VITE_DATINGS);
 
-    await fromOfflineDB.syncLocalDBs();
-    await this.updatePlace();
-    await this.updatePositions();
+    await fromOfflineDB.syncLocalDBs()
+      .catch(err => console.error(err));
+    await this.updatePlace()
+      .catch(err => console.error(err));
+    await this.updatePositions()
+      .catch(err => console.error(err));
 
-    const datingFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', 'datings');
+    const datingFromDB = await fromOfflineDB
+      .getAllObjects('AutoFillLists', 'datings')
+      .catch(err => console.error(err));
     datingFromDB.forEach(element => {
       this.datingsList.push(element.item)
     });
 
-    const editorsFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', 'editors');
+    const editorsFromDB = await fromOfflineDB
+      .getAllObjects('AutoFillLists', 'editors')
+      .catch(err => console.error(err));
     editorsFromDB.forEach(element => {
       this.editorsList.push(element.item)
     });
 
-    const titlesFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', 'titles');
+    const titlesFromDB = await fromOfflineDB
+      .getAllObjects('AutoFillLists', 'titles')
+      .catch(err => console.error(err));
     titlesFromDB.forEach(element => {
       this.titlesList.push(element.item)
     });
 
-    await this.setAppBarTitle();
+    await this.setAppBarTitle()
+      .catch(err => console.error(err));
     this.hideNonTechnicalTabs();
     this.componentHasLoaded = true;
     this.hasUnsavedChanges = false;
@@ -504,7 +515,9 @@ export default {
      */
     async updatePlace() {
       const currentPlace = this.$cookies.get('currentPlace');
-      const data = await fromOfflineDB.getObject(currentPlace, 'Places', 'places');
+      const data = await fromOfflineDB
+        .getObject(currentPlace, 'Places', 'places')
+        .catch(err => console.error(err));
       this.place = data;
     },
 
@@ -512,7 +525,9 @@ export default {
      * Update reactive Vue.js positions data
      */
     async updatePositions() {
-      this.positions = await fromOfflineDB.getAllObjectsWithID(this.place._id, 'Place', 'Positions', 'positions');
+      this.positions = await fromOfflineDB
+        .getAllObjectsWithID(this.place._id, 'Place', 'Positions', 'positions')
+        .catch(err => console.error(err));
       this.$refs.moduleViewerRef.passRefFunctionCall();
     },
 
@@ -525,7 +540,8 @@ export default {
       //inputPlace.date = new Date().toLocaleDateString("de-DE");
       inputPlace.lastChanged = Date.now();
 
-      await fromOfflineDB.updateObject(inputPlace, 'Places', 'places');
+      await fromOfflineDB.updateObject(inputPlace, 'Places', 'places')
+        .catch(err => console.error(err));
       this.hasUnsavedChanges = false;
       
       this.updateAutoFillList('datings', this.place.dating, this.datingsList);
@@ -538,7 +554,10 @@ export default {
     async updateAutoFillList(storeName, item, itemList) {
       const newEditor = {};
 
-      const editorsFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', storeName);
+      const editorsFromDB = await fromOfflineDB
+        .getAllObjects('AutoFillLists', storeName)
+        .catch(err => console.error(err));
+        
       if (editorsFromDB.length > 0) {
         let hasItem = false;
 
@@ -557,6 +576,7 @@ export default {
       }
       if (!!Object.keys(newEditor).length) {
         await fromOfflineDB.addObject(newEditor, 'AutoFillLists', storeName)
+          .catch(err => console.error(err));
       }
 
       if (itemList.length > 0) {
@@ -588,7 +608,7 @@ export default {
             object: this.$tc('place', 1),
             object_nr: place.placeNumber
           })
-        )
+        ).catch(err => console.error(err))
       ) {
         this.deletePlace();
       }
@@ -612,15 +632,20 @@ export default {
     async deletePlace() {
 
       // Remove the placeID from connected activity
-      const acID = String(this.$cookies.get('currentActivity'))
-      var activity = await fromOfflineDB.getObject(acID, 'Activities', 'activities')
-      var index = activity.places.indexOf(this.place._id.toString())
+      const acID = String(this.$cookies.get('currentActivity'));
+      var activity = await fromOfflineDB
+        .getObject(acID, 'Activities', 'activities')
+        .catch(err => console.error(err));
+      var index = activity.places.indexOf(this.place._id.toString());
 
       activity.places.splice(index, 1)
-      await fromOfflineDB.updateObject(activity, 'Activities', 'activities');
+      await fromOfflineDB.updateObject(activity, 'Activities', 'activities')
+        .catch(err => console.error(err));
 
       // Delete the place and all data that is dependent on it
-      await fromOfflineDB.deleteCascade(this.place._id, 'place', 'Places', 'places');
+      await fromOfflineDB
+        .deleteCascade(this.place._id, 'place', 'Places', 'places')
+        .catch(err => console.error(err));
       this.$cookies.remove('currentPosition');
       this.$cookies.remove('currentPlace');
       this.hasUnsavedChanges = false;
@@ -689,10 +714,14 @@ export default {
      */
     async setAppBarTitle() {
       const acID = String(this.$cookies.get('currentActivity'));
-      var activity = await fromOfflineDB.getObject(acID, 'Activities', 'activities');
+      var activity = await fromOfflineDB
+        .getObject(acID, 'Activities', 'activities')
+        .catch(err => console.error(err));
 
       const plID = String(this.$cookies.get('currentPlace'))
-      var place = await fromOfflineDB.getObject(plID, 'Places', 'places')
+      var place = await fromOfflineDB
+        .getObject(plID, 'Places', 'places')
+        .catch(err => console.error(err));
 
       this.$emit("view", activity.activityNumber + ' ' + place.placeNumber);
     },
@@ -922,7 +951,8 @@ export default {
       let URL = window.URL;
       this.canvasSettings.backgroundImage.file = URL.createObjectURL(event.target.files[0]);
       this.setCanvasSize(event.target.files[0])
-      await this.$refs.VueCanvasDrawing.redraw();
+      await this.$refs.VueCanvasDrawing.redraw()
+        .catch(err => console.error(err));
     },
 
     saveBackground(){
