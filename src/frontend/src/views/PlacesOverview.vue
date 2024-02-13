@@ -2,8 +2,8 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 12.02.2024 12:16:28
- * Modified By: Oliver Mertens
+ * Last Modified: 13.02.2024 12:27:58
+ * Modified By: Julian Hardtung
  * 
  * Description: lists all places
  -->
@@ -775,23 +775,17 @@ export default {
     },
 
     /**
-     * Set the toggleAllInfo switch state depending on VueCookies
+     * Set the toggleAllInfo switch state depending on localStorage
      */
-    setShowAllInfoSwitch() {
-      var showAllCookie = this.$cookies.get('showAllPlaceInfo');
-
-      if (showAllCookie == "true") {
-        this.showAllInfo = true;
-      } else {
-        this.showAllInfo = false;
-      }
+    async setShowAllInfoSwitch() {
+      this.showAllInfo = this.generalStore.getShowAllPlaceInfo();
     },
 
     /**
-     * Save the change toggle all info state to cookies
+     * Save the change toggle all info state to localStorage
      */
     toggleAllInfo() {
-      this.$cookies.set('showAllPlaceInfo', this.showAllInfo);
+      this.generalStore.toggleShowAllPlaceInfo(this.showAllInfo);
     },
 
     /**

@@ -2,8 +2,8 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 12.02.2024 12:19:25
- * Modified By: Oliver Mertens
+ * Last Modified: 13.02.2024 12:37:24
+ * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
  -->
@@ -673,19 +673,6 @@ export default {
     },
 
     /**
-     * Set the toggleAllInfo switch state depending on VueCookies
-     */
-     setShowAllInfoSwitch() {
-      var showAllCookie = this.$cookies.get('showAllPosInfo');
-
-      if (showAllCookie == "true") {
-        this.showAllInfo = true;
-      } else {
-        this.showAllInfo = false;
-      }
-    },
-
-    /**
      * DUPLICATE FUNCTION FROM ADDPOSITION.VUE
      * TODO: REMOVE UND JUST USE THE EXISTING FUNCTION
      *       MAYBE OVER PROPS 
@@ -741,11 +728,19 @@ export default {
       return newPositionID;
     },
 
+
+    /**
+     * Set the toggleAllInfo switch state depending on VueCookies
+     */
+    setShowAllInfoSwitch() {
+      this.showAllInfo = this.generalStore.getShowAllPosInfo();
+    },
+
     /**
      * Save the change toogle all info state to cookies
      */
     toggleAllInfo() {
-      this.$cookies.set('showAllPosInfo', this.showAllInfo);
+      this.generalStore.toggleShowAllPosInfo(this.showAllInfo);
     },
 
     /**
