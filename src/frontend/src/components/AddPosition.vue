@@ -45,7 +45,7 @@ export default {
      async updateModulePresets() {
       let presetFromCookies = this.$cookies.get('posModulesPreset');
 
-      if (presetFromCookies.length > 0) {
+      if (presetFromCookies != null) {
         this.curModulePreset = await fromOfflineDB
           .getObject(presetFromCookies, 'ModulePresets', 'positions')
           .catch(err => console.error(err));
