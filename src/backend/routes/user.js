@@ -30,8 +30,10 @@ function checkAuthentication(cookie) {
 
 
 router.post("/register", async (req, res) => {
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(req.body.password, salt);
+  const salt = await bcrypt.genSalt(10).catch(err => console.error(err));
+
+  const hashedPassword = await bcrypt.hash(req.body.password, salt)
+    .catch((err) => console.error(err));
 
   const user = new User({
     username: req.body.username,
@@ -40,7 +42,7 @@ router.post("/register", async (req, res) => {
     activities: req.body.activities
   });
 
-  const result = await user.save();
+  const result = await user.save().catch((err) => console.error(err));
 
   const { password, ...data } = result.toJSON();
 
@@ -49,7 +51,8 @@ router.post("/register", async (req, res) => {
 
 router.post("/login", async (req, res) => {
 
-  const user = await User.findOne({ username: req.body.username });
+  const user = await User.findOne({ username: req.body.username })
+    .catch((err) => console.error(err));
 
   if (!user) {
     return res.status(404).send({
