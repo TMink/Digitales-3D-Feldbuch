@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 17.02.2024 16:43:43
+ * Last Modified: 17.02.2024 19:24:10
  * Modified By: Julian Hardtung
  * 
  * Description: main entry point for the fieldbook + 
@@ -32,7 +32,6 @@
 
 <script>
 import AppFooter from './components/AppFooter.vue';
-import Pathbar from './components/Pathbar.vue';
 import VToast from './components/VToast.vue';
 import LocaleChanger from './components/LocaleChanger.vue';
 import DataBackup from './components/DataBackup.vue';
@@ -45,7 +44,6 @@ export default {
   name: 'App',
   components: {
     AppFooter,
-    Pathbar,
     LocaleChanger,
     DataBackup,
     VToast
@@ -72,9 +70,6 @@ export default {
       activityID: '',
       positionIsSet: false,
       positionID: '',
-      currentActivity: '-',
-      currentPlace: '-',
-      currentPosition: '-',
       backbutton_link: '',
       navdrawer: false,
       toolbar_title: this.$t('fieldbook'),
@@ -110,8 +105,6 @@ export default {
     }
 
     await fromOfflineDB.syncLocalDBs()
-      .catch(err => console.error(err));
-    await this.updatePathbar()
       .catch(err => console.error(err));
     this.active_tab = this.active_tab_prop;
     this.placeID = this.generalStore.getCurrentObject("place");
@@ -261,51 +254,6 @@ export default {
           }
         })
     },
-    async updatePathbar() {
-      if (this.$cookies.get('currentActivity')) {
-        await this.getInfo("Activity")
-          .catch(err => console.error(err));
-      }
-      if (this.$cookies.get('currentPlace')) {
-        await this.getInfo("Place")
-          .catch(err => console.error(err));
-      }
-      if (this.$cookies.get('currentPosition')) {
-        await this.getInfo("Position")
-          .catch(err => console.error(err));
-      }
-    },
-
-    async getInfo(selection) {
-      const _id = this.$cookies.get('current' + selection);
-
-      let db = null;
-      let st = null;
-      if (selection === "Activity") {
-        db = "Activities"
-        st = "activities"
-      } else {
-        db = selection + "s"
-        st = selection.toLowerCase() + "s"
-      }
-      const name = await fromOfflineDB.getObject(_id, db, st)
-        .catch(err => console.error(err));
-
-      switch (selection) {
-        case "Activity":
-          this.currentActivity = name.activityNumber;
-          break;
-        case "Place":
-          this.currentPlace = name.placeNumber;
-          break;
-        case "Position":
-          this.currentPosition = name.positionNumber;
-          break;
-        default:
-          console.log("Error");
-      }
-
-    }
   }
 }
 
