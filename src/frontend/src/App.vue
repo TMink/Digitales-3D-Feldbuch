@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 13.02.2024 13:53:06
+ * Last Modified: 17.02.2024 16:43:43
  * Modified By: Julian Hardtung
  * 
  * Description: main entry point for the fieldbook + 
@@ -37,6 +37,7 @@ import VToast from './components/VToast.vue';
 import LocaleChanger from './components/LocaleChanger.vue';
 import DataBackup from './components/DataBackup.vue';
 import { fromOfflineDB } from './ConnectionToOfflineDB.js';
+import { useUserStore } from './Authentication.js';
 import { generalDataStore } from './ConnectionToLocalStorage.js';
 import { useI18n } from 'vue-i18n'
 
@@ -51,9 +52,11 @@ export default {
   },
   setup() {
     const { t } = useI18n() // use as global scope
+    const userStore =  useUserStore();
     const generalStore = generalDataStore();
     return {
       t,
+      userStore,
       generalStore
     }
   },
@@ -83,6 +86,10 @@ export default {
       ],
 
     }
+  },
+
+  async beforeCreate() {
+    await this.userStore.getUser();
   },
 
   async mounted() {
@@ -116,8 +123,9 @@ export default {
       this.activityIsSet = true
     }
     this.positionID = this.$cookies.get('currentPosition')
-    if (this.positionID !== null)
+    if (this.positionID !== null) {
       this.positionIsSet = true
+    }
   },
 
   methods: {

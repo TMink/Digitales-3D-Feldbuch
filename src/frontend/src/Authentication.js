@@ -2,7 +2,7 @@
  * Created Date: 30.11.2023 12:25:16
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:59:37
+ * Last Modified: 17.02.2024 16:48:37
  * Modified By: Julian Hardtung
  * 
  * Description: Authentication actions and user state storage
@@ -30,10 +30,11 @@ export const useUserStore = defineStore("user", {
       try {
         const data = await axios({
           method: "get",
-          url: "/user/user",
+          url: "/user",
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
+        this.authenticated = true;
         this.user = data.data;
       } catch (error) {
         console.log(error)
@@ -87,9 +88,7 @@ export const useUserStore = defineStore("user", {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         });
-  
-        //this.user = toRaw(response.data.user);
-        
+          
       } catch (error) {
         console.log("Account update failed: " + error);
       }
