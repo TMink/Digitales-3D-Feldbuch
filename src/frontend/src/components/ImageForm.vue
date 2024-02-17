@@ -2,7 +2,7 @@
  * Created Date: 06.07.2023 13:22:10
  * Author: Julian Hardtung
  * 
- * Last Modified: 17.02.2024 19:27:09
+ * Last Modified: 17.02.2024 19:53:31
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for images of places/positions
@@ -446,7 +446,6 @@ export default {
       // Delete the image itself
       await fromOfflineDB.deleteObject(image, 'Images', 'images')
         .catch(err => console.error(err));
-      this.$cookies.remove('currentImage');
 
       this.images.splice(index, 1);
     },

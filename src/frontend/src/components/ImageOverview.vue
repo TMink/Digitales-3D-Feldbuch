@@ -2,7 +2,7 @@
  * Created Date: 09.01.2024 11:33:59
  * Author: Julian Hardtung
  * 
- * Last Modified: 17.02.2024 19:40:42
+ * Last Modified: 17.02.2024 19:53:34
  * Modified By: Julian Hardtung
  * 
  * Description: lists all images of a place
@@ -179,8 +179,6 @@ export default {
       // Delete the image itself
       await fromOfflineDB.deleteObject(rawImage, 'Images', 'images')
         .catch(err => console.error(err));
-      this.$cookies.remove('currentImage');
-
 
       // update local images list, without additional IndexedDB access
       var imgIndex = this.images.indexOf(rawImage);

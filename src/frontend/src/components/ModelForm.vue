@@ -2,7 +2,7 @@
  * Created Date: 14.07.2023 17:06:51
  * Author: Julian Hardtung
  * 
- * Last Modified: 17.02.2024 19:29:30
+ * Last Modified: 17.02.2024 19:53:43
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for 3d-models of places/positions
@@ -699,7 +699,6 @@ export default {
       await fromOfflineDB
         .deleteObject(model, 'Models', this.object_type.toLowerCase())
         .catch(err => console.error(err));
-      this.$cookies.remove('currentModel');
       await this.updateModels()
         .catch(err => console.error(err));
 

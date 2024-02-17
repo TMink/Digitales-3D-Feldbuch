@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 17.02.2024 19:05:47
+ * Last Modified: 17.02.2024 19:52:59
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -389,35 +389,8 @@ export default {
         this.generalStore.setCurrentObject(null, "position");
       }
 
-      //this.$cookies.set('currentActivity', activityID);
       this.generalStore.setCurrentObject(activityID, "activity");
       this.$router.push({ name: 'PlacesOverview' });
-    },
-
-    setCookie(data, name) {
-      var expiration = new Date();
-      var hour = expiration.getHours();
-      hour = hour + 6;
-      expiration.setHours(hour);
-      this.$cookies.set({
-        url: "", //the url of the cookie.
-        name: name, // a name to identify it.
-        value: data, // the value that you want to save
-        expirationDate: expiration.getTime()
-      }, function (error) {
-        console.log(error);
-      });
-    },
-
-    getCookie(callback) {
-      var self = this;
-
-      self.window.webContents.session.cookies.get({}, function (error, cookies) {
-        if (error) throw error;
-        self.cookies = cookies;
-
-        callback(null, cookies);
-      });
     },
 
     /**
