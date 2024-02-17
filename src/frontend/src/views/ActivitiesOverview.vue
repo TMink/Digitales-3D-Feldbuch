@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 13.02.2024 13:28:33
+ * Last Modified: 17.02.2024 15:39:24
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -16,155 +16,35 @@
 
     <v-row class="pt-4">
       <v-spacer></v-spacer>
-      <v-form class="w-75 pa-2">
+      <v-form class="w-75 pa-4">
         <v-card>
-          <v-list>
+          <v-list class="pa-0">
+            <!-- v v v v v EMPTY ACTIVITY LIST v v v v v -->
             <v-list-subheader v-if="activities.length === 0">
               {{ $t('not_created_yet', { object: $tc('activity', 2) }) }}
             </v-list-subheader>
 
-            <!--Lists all locally saved activities-->
             <template v-for="(activity, i) in activities" :key="activity">
-              <!--Boolean 'activity.edit' decides whether an element is 
-            displayed in list form or in edit form-->
-              <v-row no-gutters v-if="!activity.edit" class="align-center">
+              <v-row no-gutters class="align-center" justify="end">
 
-                <v-col cols="9">
+                <!-- v v v v v ACTIVITY LIST v v v v v -->
+                <v-col v-if="!activity.edit" >
                   <v-list-item 
                     class="pa-2 ma-2" v-on:click="setActivity(activity._id)">
                     <v-list-item-title class="ma-4 text-center">
                       {{ activity.activityNumber }}
                     </v-list-item-title>
-                    <!--
-                    <v-list-item-subtitle v-if="activity.lastSync > 0">
-                      {{ this.$t('lastSync') + new Date(activity.lastSync).toLocaleString() }}
-                    </v-list-item-subtitle>
-                    -->
                   </v-list-item>
                 </v-col>
 
-                <v-col cols="3" class="pa-4">
-
-                    <v-menu location="bottom">
-                      <template v-slot:activator="{ props }">
-                        <v-btn v-if="activity.editor.length>0"
-                          color="primary"
-                          v-bind="props">
-                          {{ this.$t('options') }}
-                          <v-icon>mdi-arrow-down-bold-box</v-icon>
-                        </v-btn>
-                      
-                        <v-btn v-else
-                            color="error"
-                            v-bind="props">
-                            {{ this.$t('options') }}
-                            <v-icon>mdi-arrow-down-bold-box</v-icon>
-                        </v-btn>
-                        
-                          <v-btn 
-                              icon 
-                              variant="text"      
-                              v-if="activity.editor.length > 0">
-                              <v-tooltip 
-                                activator="parent"
-                                location="bottom">
-                                <v-list-item 
-                                  rounded="0" 
-                                  :block="true"
-                                  class="wrap-text">
-                                  {{ this.$tc('editor', 2) }}:
-                                  <v-list class="pa-0" v-if="activity.editor">
-                                    <v-list-item
-                                      v-for="editor in activity.editor"
-                                      :key="editor">
-                                      {{ editor }}
-                                    </v-list-item>
-                                  </v-list>
-                                </v-list-item>
-                                
-                              </v-tooltip>
-                              <v-icon>mdi-account-check</v-icon>
-                            </v-btn>
-                            <v-btn 
-                              icon 
-                              variant="text"      
-                              v-else>
-                              <v-tooltip 
-                                activator="parent"
-                                location="bottom">
-                                {{ $t('noAccount') }}
-                              </v-tooltip>
-                              <v-icon>mdi-account-off-outline</v-icon>
-                            </v-btn>
-                        
-                          <v-btn 
-                            icon 
-                            variant="text"      
-                            v-if="activity.lastSync > 0">
-                            <v-tooltip 
-                              activator="parent"
-                              location="bottom">
-                              {{ this.$t('lastSync') + new Date(activity.lastSync).toLocaleString() }}
-                            </v-tooltip>
-                            <v-icon>mdi-cloud-check</v-icon>
-                          </v-btn>
-                          <v-btn 
-                            icon 
-                            variant="text"      
-                            v-else>
-                            <v-tooltip 
-                              activator="parent"
-                              location="bottom">
-                              {{ $t('onlyLocal') }}
-                            </v-tooltip>
-                            <v-icon>mdi-cloud-off-outline</v-icon>
-                          </v-btn>
-                          
-                      </template>
-
-                      <v-list>
-                        <v-list-item 
-                          color="primary"
-                          rounded="0"
-                          :block="true"
-                          v-on:click="activity.edit = !activity.edit">
-                          {{ this.$t('edit') }}
-                          <v-icon>mdi-pencil</v-icon>
-                        </v-list-item>
-                        <v-list-item 
-                          color="error"
-                          v-on:click="confirmDeletion(activity)">
-                          {{ this.$t('delete') }}
-                          <v-icon>mdi-delete</v-icon>
-                        </v-list-item>
-                        <v-list-item 
-                          v-if="this.userStore.authenticated && activity.editor.length==0"
-                          rounded="0" 
-                          :block="true"
-                          v-on:click="addEditor(activity, this.userStore.user.username)">
-                          {{ this.$t('addToYourAccount') }}
-                        </v-list-item>
-                        <v-list-item v-if="this.userStore.authenticated"
-                          color="error"
-                          v-on:click="openAddEditorDialog(activity)">
-                          {{ this.$t('addOtherEditor') }}
-                          <v-icon>mdi-account-plus-outline</v-icon>
-                        </v-list-item> 
-                      </v-list>
-                    </v-menu>
-                </v-col>
-              </v-row> 
-
-              <!--This is where the edit mask will be triggered-->
-              <v-row id="editActivity" no-gutters v-if="activity.edit" class="align-center">
-
-                <v-col cols="10">
+                <!-- v v v v v ACTIVITY EDIT v v v v v -->
+                <v-col id="editActivity" v-else class="align-center">
                   <v-row no-gutters class="justify-center">
 
-                    <v-col id="activityBranchOffice" cols="4" class="pt-2 px-2">
+                    <v-col id="activityBranchOffice" cols="4" class="px-2 py-4">
                       <v-text-field 
-                        counter 
-                         
+                        counter
+                        hide-details
                         color="primary" 
                         :label="$t('branchOffice')" 
                         :rules="[rules.required]"
@@ -172,9 +52,10 @@
                       </v-text-field>
                     </v-col>
 
-                    <v-col id="activityYear" min-width="300px" cols="3" class="pt-2 px-2">
+                    <v-col id="activityYear" min-width="300px" cols="3" class="px-2 py-4">
                       <v-text-field 
-                        counter 
+                        counter
+                        hide-details
                         :label="$t('year')"  
                         maxlength="4" 
                         color="primary" 
@@ -184,9 +65,10 @@
                       </v-text-field>
                     </v-col>
 
-                    <v-col id="activityNumber" cols="3" class="pt-2 px-2">
+                    <v-col id="activityNumber" cols="3" class="px-2 py-4">
                       <v-text-field 
                         counter 
+                        hide-details
                         maxlength="4" 
                         :label="$t('number')" 
                         color="primary" 
@@ -198,26 +80,130 @@
                   </v-row>
                 </v-col>
 
-                <v-col cols="2" class="pa-4">
-                  <v-btn 
-                    :block="true"
-                    class="ma-1" 
-                    color="primary" 
+                <!-- v v v v v ACTIVITY OPTIONS v v v v v -->
+                <v-menu v-if="!activity.edit" location="bottom">
+                  <template v-slot:activator="{ props }">
+                    <v-btn 
+                      v-if="activity.editor.length>0"
+                      color="primary"
+                      v-bind="props">
+                      {{ this.$t('options') }}
+                      <v-icon>mdi-arrow-down-bold-box</v-icon>
+                    </v-btn>
+                  
+                    <v-btn v-else
+                      color="error"
+                      v-bind="props">
+                      {{ this.$t('options') }}
+                      <v-icon>mdi-arrow-down-bold-box</v-icon>
+                    </v-btn>
+                  </template>
+
+                  <v-list>
+                    <!-- EDIT -->
+                    <v-list-item 
+                      color="primary"
+                      rounded="0"
+                      :block="true"
+                      v-on:click="activity.edit = !activity.edit">
+                      {{ this.$t('edit') }}
+                      <v-icon>mdi-pencil</v-icon>
+                    </v-list-item>
+                    <!-- DELETE -->
+                    <v-list-item 
+                      color="error"
+                      v-on:click="confirmDeletion(activity)">
+                      {{ this.$t('delete') }}
+                      <v-icon>mdi-delete</v-icon>
+                    </v-list-item>
+                    <!-- ADD TO YOUR ACCOUNT -->
+                    <v-list-item 
+                      v-if="this.userStore.authenticated && activity.editor.length==0"
+                      rounded="0" 
+                      :block="true"
+                      v-on:click="addEditor(activity, this.userStore.user.username)">
+                      {{ this.$t('addToYourAccount') }}
+                    </v-list-item>
+                    <!-- ADD OTHER EDITOR -->
+                    <v-list-item v-if="this.userStore.authenticated"
+                      color="error"
+                      v-on:click="openAddEditorDialog(activity)">
+                      {{ this.$t('addOtherEditor') }}
+                      <v-icon>mdi-account-plus-outline</v-icon>
+                    </v-list-item> 
+                  </v-list>
+                </v-menu>
+
+                <!-- v v v v v ACTIVITY EDIT SAVE/CANCEL v v v v v -->
+                <div v-else>
+                  <!-- SAVE -->
+                  <v-btn
+                    class="mx-1" 
+                    color="primary"
                     v-on:click="saveActivity(activity)">
-                    {{ this.$t('save') }}
                     <v-icon>mdi-content-save-all</v-icon>
                   </v-btn>
+                  <!-- CANCEL -->
                   <v-btn
-                    :block="true"
-                    class="ma-1"
+                    class="ml-1"
                     color="error" 
                     v-on:click="closeActivityEdit(activity)">
-                    {{ this.$t('cancel') }}
                     <v-icon>mdi-close-circle</v-icon>
                   </v-btn>
-                </v-col>
+                </div>
 
+                <!-- v v v v v ACTIVITY EDITORS/CLOUD SYNC STATUS v v v v v -->
+                <v-btn icon class="ml-2" variant="text"
+                  v-if="activity.editor.length > 0">
+                  <v-tooltip 
+                    activator="parent"
+                    location="bottom">
+
+                    <v-list 
+                      class="mx-n3">
+                      <v-list-subheader>
+                        {{ this.$tc('editor', 2) }}:
+                      </v-list-subheader>
+                      <v-list-item
+                        class="d-flex justify-center"
+                        density="compact"
+                        v-for="editor in activity.editor"
+                        :key="editor">
+                        {{ editor }}
+                      </v-list-item>
+                    </v-list>
+                  </v-tooltip>
+                  <v-icon>mdi-account-check</v-icon>
+                </v-btn>
+
+                <v-btn icon class="ml-2" variant="text" v-else>
+                  <v-tooltip 
+                    activator="parent"
+                    location="bottom">
+                    {{ $t('noAccount') }}
+                  </v-tooltip>
+                  <v-icon>mdi-account-off-outline</v-icon>
+                </v-btn>
+                
+                <v-btn icon class="mr-2" variant="text"
+                  v-if="activity.lastSync > 0">
+                  <v-tooltip 
+                    activator="parent"
+                    location="bottom">
+                    {{ this.$t('lastSync') + new Date(activity.lastSync).toLocaleString() }}
+                  </v-tooltip>
+                  <v-icon>mdi-cloud-check</v-icon>
+                </v-btn>
+                <v-btn icon class="mr-2" variant="text" v-else>
+                  <v-tooltip 
+                    activator="parent"
+                    location="bottom">
+                    {{ $t('onlyLocal') }}
+                  </v-tooltip>
+                  <v-icon>mdi-cloud-off-outline</v-icon>
+                </v-btn>
               </v-row>
+
               <v-divider v-if="i !== activities.length - 1"></v-divider>
             </template>
             <ConfirmDialog ref="confirm" />
@@ -230,20 +216,21 @@
 
     <AddButton v-on:click="addActivity()" />
 
+    <!-- ADD EDITOR DIALOG -->
     <v-dialog v-model="addEditorDialog" :max-width="550" style="z-index: 3;" @keydown.esc="cancelAddEditor()">
-          <v-card>
-              <v-toolbar dark color="success" dense flat>
-                  <v-toolbar-title>
-                    {{ $t('addEditorToActivity') }}
-                  </v-toolbar-title>
-              </v-toolbar>
-              <v-text-field label="Username" v-model="newEditorName"></v-text-field>
-              <v-card-actions class="pt-0">
-                  <v-spacer></v-spacer>
-                  <v-btn icon color="success"  @click="confirmAddEditor()"><v-icon>mdi-check-circle</v-icon></v-btn>
-                  <v-btn icon color="error" @click="cancelAddEditor()"><v-icon>mdi-close-circle</v-icon></v-btn>
-              </v-card-actions>
-          </v-card>
+      <v-card>
+        <v-toolbar dark color="success" dense flat>
+          <v-toolbar-title>
+            {{ $t('addEditorToActivity') }}
+          </v-toolbar-title>
+          </v-toolbar>
+          <v-text-field label="Username" v-model="newEditorName"></v-text-field>
+          <v-card-actions class="pt-0">
+            <v-spacer></v-spacer>
+            <v-btn icon color="success"  @click="confirmAddEditor()"><v-icon>mdi-check-circle</v-icon></v-btn>
+            <v-btn icon color="error" @click="cancelAddEditor()"><v-icon>mdi-close-circle</v-icon></v-btn>
+          </v-card-actions>
+        </v-card>
       </v-dialog>
 
   </div>
