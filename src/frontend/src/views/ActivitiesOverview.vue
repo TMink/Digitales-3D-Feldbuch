@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 17.02.2024 15:39:24
+ * Last Modified: 17.02.2024 19:05:47
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -240,6 +240,7 @@
 import Navigation from '../components/Navigation.vue'
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
 import { fromBackend } from '../ConnectionToBackend.js'
+import { generalDataStore } from '../ConnectionToLocalStorage'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 import AddButton from '../components/AddButton.vue'
 import OnlineImport from '../components/OnlineImport.vue'
@@ -257,9 +258,11 @@ export default {
   },
   setup() {
     const userStore = useUserStore();
+    const generalStore = generalDataStore();
 
     return {
-      userStore
+      userStore,
+      generalStore
     }
   },
   emits: ['view'],
@@ -381,12 +384,13 @@ export default {
      * @param {String} activityID 
      */
     async setActivity(activityID) {
-      if (this.$cookies.get('currentActivity') !== activityID) {
-        this.$cookies.remove('currentPlace');
-        this.$cookies.remove('currentPosition');
+      if (this.generalStore.getCurrentObject('activity') !== activityID) {
+        this.generalStore.setCurrentObject(null, "place");
+        this.generalStore.setCurrentObject(null, "position");
       }
 
-      this.$cookies.set('currentActivity', activityID);
+      //this.$cookies.set('currentActivity', activityID);
+      this.generalStore.setCurrentObject(activityID, "activity");
       this.$router.push({ name: 'PlacesOverview' });
     },
 
@@ -609,9 +613,9 @@ export default {
      * @param {Object} activity 
      */
     async deleteActivity(activity) {
-      this.$cookies.remove('currentPosition');
-      this.$cookies.remove('currentPlace');
-      this.$cookies.remove('currentActivity');
+      this.generalStore.setCurrentObject(null, "activity");
+      this.generalStore.setCurrentObject(null, "place");
+      this.generalStore.setCurrentObject(null, "position");
 
       var activityIndex = this.activities.indexOf(activity);
 

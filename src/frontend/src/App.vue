@@ -114,15 +114,15 @@ export default {
     await this.updatePathbar()
       .catch(err => console.error(err));
     this.active_tab = this.active_tab_prop;
-    this.placeID = this.$cookies.get('currentPlace')
+    this.placeID = this.generalStore.getCurrentObject("place");
     if (this.placeID !== null) {
       this.placeIsSet = true
     }
-    this.activityID = this.$cookies.get('currentActivity')
+    this.activityID = this.generalStore.getCurrentObject("activity");
     if (this.activityID !== null) {
       this.activityIsSet = true
     }
-    this.positionID = this.$cookies.get('currentPosition')
+    this.positionID = this.generalStore.getCurrentObject("position");
     if (this.positionID !== null) {
       this.positionIsSet = true
     }

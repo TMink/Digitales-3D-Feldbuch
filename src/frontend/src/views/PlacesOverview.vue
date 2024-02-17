@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 13.02.2024 13:42:19
+ * Last Modified: 17.02.2024 19:21:45
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -571,7 +571,7 @@ export default {
      * Get all places from IndexedDB
      */
     async updatePlaces() {
-      var curActivityID = String(this.$cookies.get('currentActivity'));
+      var curActivityID = this.generalStore.getCurrentObject('activity');
 
       this.places = await fromOfflineDB
         .getAllObjectsWithID(curActivityID, 'Activity', 'Places', 'places')
@@ -583,7 +583,7 @@ export default {
     * @deprecated
     */
     async updatePlacesFull() {
-      var curActivityID = String(this.$cookies.get('currentActivity'));
+      var curActivityID = this.generalStore.get('activity');
 
       var offlinePlaces = await fromOfflineDB
         .getAllObjectsWithID(curActivityID, 'Activity', 'Places', 'places')
@@ -667,7 +667,7 @@ export default {
      * Adds a new place to IndexedDB for the current activity
      */
     async addPlace() {
-      const acID = String(this.$cookies.get('currentActivity'));
+      const acID = this.generalStore.getCurrentObject('activity');
       var newPlaceID = String(Date.now());
       var activity = await fromOfflineDB
         .getObject(acID, 'Activities', 'activities')
@@ -792,7 +792,7 @@ export default {
      */
     moveToPlace(placeID) {
       if (placeID !== 'new') {
-        this.$cookies.set('currentPlace', placeID)
+        this.generalStore.setCurrentObject(placeID, 'place');
       }
       this.$router.push({ name: 'PlaceCreation', params: { placeID: placeID } })
     },

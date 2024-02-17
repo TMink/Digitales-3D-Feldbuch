@@ -2,7 +2,7 @@
  * Created Date: 09.02.2024 21:08:30
  * Author: Julian Hardtung
  * 
- * Last Modified: 13.02.2024 12:35:38
+ * Last Modified: 17.02.2024 19:34:07
  * Modified By: Julian Hardtung
  * 
  * Description: A persistent way to store fieldbook settings in 
@@ -121,6 +121,66 @@ export const generalDataStore = defineStore("generalData", {
      */
     toggleShowAllPosInfo(showAllPosInfo) {
       localStorage.setItem("showAllPosInfo", showAllPosInfo);
+    },
+
+    /**
+     * Retrieves the id of a currently opened object (`activity`, `place`, `position`)
+     * @param {String} objectType 
+     * @returns 
+     */
+    getCurrentObject(objectType) {
+      var object = null;
+      switch(objectType){
+        case "activity":
+          object = localStorage.getItem("curActivity");
+          break;
+        case "place":
+          object = localStorage.getItem("curPlace");
+          break;
+        case "position":
+          object = localStorage.getItem("curPosition");
+          break;
+      }
+
+      return object;
+    },
+
+    /**
+     * Sets the currently opened object (`activity`, `place`, `position`)
+     * @param {String} objectId 
+     * @param {String} objectType 
+     */
+    setCurrentObject(objectId, objectType) {
+      switch(objectType){
+        case "activity":
+          localStorage.setItem("curActivity", objectId);
+          break;
+        case "place":
+          localStorage.setItem("curPlace", objectId);
+          break;
+        case "position":
+          localStorage.setItem("curPosition", objectId);
+          break;
+      }
+    },
+
+    /**
+     * Removes the currently opened object (`activity`, `place`, `position`)
+     * from localStorage
+     * @param {String} objectType 
+     */
+    removeCurrentObject(objectType) {
+      switch(objectType){
+        case "activity":
+          localStorage.removeItem("curActivity");
+          break;
+        case "place":
+          localStorage.removeItem("curPlace");
+          break;
+        case "position":
+          localStorage.removeItem("curPosition");
+          break;
+      }
     },
 
     /**

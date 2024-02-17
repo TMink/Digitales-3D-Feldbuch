@@ -2,7 +2,7 @@
  * Created Date: 01.07.2023 14:01:06
  * Author: Julian Hardtung
  * 
- * Last Modified: 13.02.2024 13:46:29
+ * Last Modified: 17.02.2024 19:26:48
  * Modified By: Julian Hardtung
  * 
  * Description: vue component for adding a position
@@ -15,6 +15,7 @@
 <script>
 import AddButton from '../components/AddButton.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
+import { generalDataStore } from '../ConnectionToLocalStorage';
 import { toRaw } from 'vue';
 
 export default {
@@ -26,6 +27,12 @@ export default {
     positions_prop: Array,
   },
   emits: ['updatePositions', 'updatePlace'],
+  setup() {
+    const generalStore = generalDataStore();
+    return {
+      generalStore,
+    }
+  },
   data() {
     return {
       curModulePreset: {
@@ -56,7 +63,7 @@ export default {
      * Adds a new position to the local storage for the current place
      */
     async addPosition() {
-      var curPlaceID = this.$cookies.get('currentPlace');
+      var curPlaceID = this.generalStore.getCurrentObject('place');
       var curPlace = await fromOfflineDB
         .getObject(curPlaceID, "Places", "places")
         .catch(err => console.error(err));

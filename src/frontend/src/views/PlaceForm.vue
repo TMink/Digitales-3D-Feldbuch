@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 13.02.2024 13:35:05
+ * Last Modified: 17.02.2024 19:42:48
  * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
@@ -196,6 +196,7 @@
  *  cancelPlace     - Cancels all not already saved actions
  */
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
+import { generalDataStore } from '../ConnectionToLocalStorage.js';
 import ConfirmDialog from '../components/ConfirmDialog.vue';
 import AddPosition from '../components/AddPosition.vue';
 import ImageOverview from '../components/ImageOverview.vue';
@@ -221,9 +222,11 @@ export default {
   emits: ['view'],
   setup() {
     const { width, height } = useWindowSize();
+    const generalStore = generalDataStore();
     return {
       windowWidth: width,
       windowHeight: height,
+      generalStore,
     };
   },
   /**
@@ -514,7 +517,7 @@ export default {
      * Update reactive Vue.js place data
      */
     async updatePlace() {
-      const currentPlace = this.$cookies.get('currentPlace');
+      const currentPlace = this.generalStore.getCurrentObject('place');
       const data = await fromOfflineDB
         .getObject(currentPlace, 'Places', 'places')
         .catch(err => console.error(err));
@@ -632,7 +635,7 @@ export default {
     async deletePlace() {
 
       // Remove the placeID from connected activity
-      const acID = String(this.$cookies.get('currentActivity'));
+      const acID = this.generalStore.getCurrentObject('activity');
       var activity = await fromOfflineDB
         .getObject(acID, 'Activities', 'activities')
         .catch(err => console.error(err));
@@ -646,8 +649,9 @@ export default {
       await fromOfflineDB
         .deleteCascade(this.place._id, 'place', 'Places', 'places')
         .catch(err => console.error(err));
-      this.$cookies.remove('currentPosition');
-      this.$cookies.remove('currentPlace');
+      this.generalStore.removeCurrentObject('place');
+      this.generalStore.removeCurrentObject('position');
+
       this.hasUnsavedChanges = false;
       this.$router.push({ name: "PlacesOverview" });
     },
@@ -682,7 +686,7 @@ export default {
      */
     moveToPosition(positionID) {
       if (positionID !== 'new') {
-        this.$cookies.set('currentPosition', positionID);
+        this.generalStore.setCurrentObject(positionID, 'position');
       }
       this.$router.push({ name: 'PositionCreation', params: { positionID: positionID } });
     },
@@ -713,12 +717,12 @@ export default {
      * Sets the AppBarTitle to the current ActivityNumber + PlaceNumber
      */
     async setAppBarTitle() {
-      const acID = String(this.$cookies.get('currentActivity'));
+      const acID = this.generalStore.getCurrentObject('activity');
       var activity = await fromOfflineDB
         .getObject(acID, 'Activities', 'activities')
         .catch(err => console.error(err));
 
-      const plID = String(this.$cookies.get('currentPlace'))
+      const plID = this.generalStore.getCurrentObject('place');
       var place = await fromOfflineDB
         .getObject(plID, 'Places', 'places')
         .catch(err => console.error(err));

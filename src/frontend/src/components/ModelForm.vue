@@ -2,7 +2,7 @@
  * Created Date: 14.07.2023 17:06:51
  * Author: Julian Hardtung
  * 
- * Last Modified: 13.02.2024 13:21:09
+ * Last Modified: 17.02.2024 19:29:30
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for 3d-models of places/positions
@@ -224,6 +224,7 @@
 <script>
 import AddButton from '../components/AddButton.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
+import { generalDataStore } from '../ConnectionToLocalStorage';
 import { toRaw } from 'vue';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
@@ -243,6 +244,13 @@ export default {
   props: {
     object_id: String,
     object_type: String,
+  },
+  setup() {
+    const generalStore = generalDataStore();
+
+    return {
+      generalStore,
+    }
   },
   emits: ['addModel'],
   /**
@@ -600,8 +608,8 @@ export default {
       // new model data
       const newModel = {
         _id: newModelID,
-        placeID: String(this.$cookies.get('currentPlace')),
-        positionID: String(this.$cookies.get('currentPosition')),
+        placeID: this.generalStore.getCurrentObject('place'),
+        positionID: this.generalStore.getCurrentObject('position'),
         title: this.model.title,
         model: await this.modelToArrayBuffer(toRaw(this.model.model)),
         color: '#ffffff',

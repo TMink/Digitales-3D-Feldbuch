@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 13.02.2024 13:44:12
+ * Last Modified: 17.02.2024 19:42:21
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -546,7 +546,7 @@ export default {
      * Update reactive Vue.js position data
      */
     async updatePositions() {
-      var curPlaceID = String(this.$cookies.get('currentPlace'));
+      var curPlaceID = this.generalStore.getCurrentObject('place');
 
       this.positions = await fromOfflineDB
         .getAllObjectsWithID(curPlaceID, 'Place', 'Positions', 'positions')
@@ -557,7 +557,7 @@ export default {
      * @deprecated
      */
     async updatePositionsFull() {
-      var curPlaceID = String(this.$cookies.get('currentPlace'));
+      var curPlaceID = this.generalStore.getCurrentObject('place');
 
       var offlinePositions = await fromOfflineDB
         .getAllObjectsWithID(curPlaceID, 'Place', 'Positions', 'positions')
@@ -682,7 +682,7 @@ export default {
      */
     moveToPosition(positionID) {
       if (positionID !== 'new') {
-        this.$cookies.set('currentPosition', positionID);
+        this.generalStore.setCurrentObject(positionID, 'position');
       }
 
       this.$router.push({ name: 'PositionCreation', params: { positionID: positionID } })
@@ -695,7 +695,7 @@ export default {
      *                --> CAN YOU CALL FUNCTIONS OVER PROPS???
      */
     async addPosition() {
-      var curPlaceID = this.$cookies.get('currentPlace');
+      var curPlaceID = this.generalStore.getCurrentObject('place');
       var curPlace = await fromOfflineDB
         .getObject(curPlaceID, "Places", "places")
         .catch(err => console.error(err));

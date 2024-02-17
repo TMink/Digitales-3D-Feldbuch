@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 13.02.2024 13:26:31
+ * Last Modified: 17.02.2024 19:41:35
  * Modified By: Julian Hardtung
  * 
  * Description: module for listing all positions of a place
@@ -79,6 +79,7 @@
   
 <script>
 import { fromOfflineDB } from '../../ConnectionToOfflineDB';
+import { generalDataStore } from '../../ConnectionToLocalStorage';
 import AddPosition from '../../components/AddPosition.vue';
 import { useWindowSize } from 'vue-window-size';
 
@@ -102,9 +103,12 @@ export default {
 
   setup() {
     const { width, height } = useWindowSize();
+    const generalStore = generalDataStore();
+
     return {
       windowWidth: width,
       windowHeight: height,
+      generalStore
     };
   },
 
@@ -160,7 +164,7 @@ export default {
   methods: {
 
     async updatePlace() {
-      const currentPlace = this.$cookies.get('currentPlace');
+      const currentPlace = this.generalStore.getCurrentObject('place');
       const data = await fromOfflineDB
         .getObject(currentPlace, 'Places', 'places')
         .catch(err => console.error(err));
@@ -210,7 +214,7 @@ export default {
     */
     moveToPosition(positionID) {
       if (positionID !== 'new') {
-        this.$cookies.set('currentPosition', positionID);
+        this.generalStore.setCurrentObject(positionID, 'position');
       }
       this.$router.push({ name: 'PositionCreation', params: { positionID: positionID } });
     },

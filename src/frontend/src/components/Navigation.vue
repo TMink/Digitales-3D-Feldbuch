@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 13.02.2024 13:24:43
+ * Last Modified: 17.02.2024 19:44:59
  * Modified By: Julian Hardtung
  * 
  * Description: Vue component with navigation-bar and extendable side-bar
@@ -185,7 +185,6 @@ import { generalDataStore } from '../ConnectionToLocalStorage.js';
 import { useTheme } from 'vuetify/lib/framework.mjs';
 import LocaleChanger from './LocaleChanger.vue';
 import DataBackup from './DataBackup.vue';
-import Pathbar from './Pathbar.vue';
 import { ref } from 'vue'
 import { useUserStore } from '../Authentication.js';
 import { toRaw } from "vue";
@@ -193,7 +192,6 @@ import { toRaw } from "vue";
 export default {
   name: 'Navigation',
   components: {
-    Pathbar,
     LocaleChanger,
     DataBackup
   },
@@ -252,19 +250,19 @@ export default {
 
     await this.updatePathbar()
       .catch(err => console.error(err));
-    this.active_tab = this.active_tab_prop; //this.$cookies.get('active_tab_prop') //this.active_tab_prop;
+    this.active_tab = this.active_tab_prop;
 
-    var activityID = this.$cookies.get('currentActivity')
+    var activityID = this.generalStore.getCurrentObject('activity');
     if (activityID !== null) {
       this.activityIsSet = true
     }
 
-    var placeID = this.$cookies.get('currentPlace');
+    var placeID = this.generalStore.getCurrentObject('place');
     if (placeID !== null) {
       this.placeIsSet = true
     }
 
-    var positionID = this.$cookies.get('currentPosition')
+    var positionID = this.generalStore.getCurrentObject('position');
     if (positionID !== null) {
       this.positionIsSet = true;
     } else {
@@ -317,48 +315,47 @@ export default {
         })
     },
     async updatePathbar() {
-      if (this.$cookies.get('currentActivity')) {
-        await this.getInfo("Activity")
-          .catch(err => console.error(err));
-      }
-      if (this.$cookies.get('currentPlace')) {
-        await this.getInfo("Place")
-          .catch(err => console.error(err));
-      }
+        await this.getInfo("activity").catch(err => console.error(err));
 
-      var test = this.$cookies.get('currentPosition');
-      if (test) {
-        await this.getInfo("Position")
-          .catch(err => console.error(err));
-      } else {
-        this.currentPosition = '-';
-      }
+        await this.getInfo("place").catch(err => console.error(err));
+
+        await this.getInfo("position").catch(err => console.error(err));
     },
 
     async getInfo(selection) {
-      const _id = this.$cookies.get('current' + selection);
+      const _id = this.generalStore.getCurrentObject(selection);
+
+      if (_id == null || _id == 'null') {
+        return;
+      }
 
       let db = null;
       let st = null;
-      if (selection === "Activity") {
+      let name = null;
+      if (selection == "activity") {
         db = "Activities"
         st = "activities"
+      } else if (selection == "place") {
+        db = "Places"
+        st = "places"
       } else {
-        db = selection + "s"
-        st = selection.toLowerCase() + "s"
+        db = "Positions"
+        st = "positions"
       }
-      const name = await fromOfflineDB.getObject(_id, db, st)
+      
+      name = await fromOfflineDB.getObject(_id, db, st)
         .catch(err => console.error(err));
+      
 
       switch (selection) {
-        case "Activity":
+        case "activity":
           this.currentActivity = name.activityNumber;
           break;
-        case "Place":
+        case "place":
           this.currentPlace = name.placeNumber;
           break;
-        case "Position":
-          var curPlaceID = this.$cookies.get('currentPlace');
+        case "position":
+          var curPlaceID = this.generalStore.getCurrentObject('place');
           var curPlace = '';
           if (curPlaceID.length > 0) {
             curPlace = await fromOfflineDB

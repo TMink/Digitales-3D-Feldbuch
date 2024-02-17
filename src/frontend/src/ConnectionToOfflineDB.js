@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Tobias Mink
  * 
- * Last Modified: 13.02.2024 13:07:02
+ * Last Modified: 17.02.2024 19:26:02
  * Modified By: Julian Hardtung
  * 
  * Description: Helper API for manipulating the IndexedDB
@@ -36,7 +36,7 @@ export { fromOfflineDB };
 import isOnline from "is-online";
 import { fromBackend } from "./ConnectionToBackend.js";
 import { useUserStore } from "./Authentication.js";
-import VueCookies from "vue-cookies";
+import { generalDataStore } from "./ConnectionToLocalStorage.js";
 
 export default class ConnectionToOfflineDB {
   constructor(offlineDB) {
@@ -443,7 +443,8 @@ export default class ConnectionToOfflineDB {
    * @returns the object that was added last to the IndexedDB
    */
   async getLastAddedPosition() {
-    var curPlaceID = VueCookies.get("currentPlace");
+    const generalStore = generalDataStore();
+    var curPlaceID = generalStore.getCurrentObject('place');
     var curPlace = await this.getObject(curPlaceID, "Places", "places")
       .catch((err) => console.error(err));
     var lastPosID = curPlace.positions[curPlace.positions.length - 1];

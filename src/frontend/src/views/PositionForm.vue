@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 13.02.2024 13:42:13
+ * Last Modified: 17.02.2024 19:42:05
  * Modified By: Julian Hardtung
  * 
  * Description: input page for positions data 
@@ -99,6 +99,7 @@
  *  goBack          - Goes back to PlaceForm
  */
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
+import { generalDataStore } from '../ConnectionToLocalStorage';
 import ConfirmDialog from '../components/ConfirmDialog.vue';
 import ImageForm from '../components/ImageForm.vue';
 import ModelForm from '../components/ModelForm.vue';
@@ -116,6 +117,13 @@ export default {
     Navigation
   },
   emits: ['view'],
+  setup() {
+    const generalStore = generalDataStore();
+    
+    return {
+      generalStore,
+    }
+  },
   /**
    * Reactive Vue.js data
    */
@@ -196,17 +204,17 @@ export default {
    * Initialize data from localDB and .env to the reactive Vue.js data
    */
   async created() {
-    const acID = String(this.$cookies.get('currentActivity'));
+    const acID = this.generalStore.getCurrentObject('activity');
     var activity = await fromOfflineDB
       .getObject(acID, 'Activities', 'activities')
       .catch(err => console.error(err));
     
-    const plID = String(this.$cookies.get('currentPlace'));
+    const plID = this.generalStore.getCurrentObject('place');
     var place = await fromOfflineDB
       .getObject(plID, 'Places', 'places')
       .catch(err => console.error(err));
     
-    const poID = String(this.$cookies.get('currentPosition'));
+    const poID = this.generalStore.getCurrentObject('position');
     var position = await fromOfflineDB
       .getObject(poID, 'Positions', 'positions')
       .catch(err => console.error(err));
@@ -315,7 +323,7 @@ export default {
      */
     async updatePosition() {
       /* Get id of selected place */
-      const currentPosition = this.$cookies.get("currentPosition");
+      const currentPosition = this.generalStore.getCurrentObject('position');
 
       /* Get all data of selected place */
       if (this.$route.params.positionID != 'new') {
@@ -434,7 +442,7 @@ export default {
     async deletePosition() {
 
       // Remove the positionID from connected place
-      const placeID = String(this.$cookies.get('currentPlace'));
+      const placeID = this.generalStore.getCurrentObject('place');
       var place = await fromOfflineDB.getObject(placeID, 'Places', 'places')
         .catch(err => console.error(err));
       var rawPosition = toRaw(this.position);
@@ -450,7 +458,7 @@ export default {
       // Delete the position itself
       await fromOfflineDB.deleteObject(rawPosition, 'Positions', 'positions')
         .catch(err => console.error(err));
-      this.$cookies.remove('currentPosition');
+      this.generalStore.removeCurrentObject('position');
       this.hasUnsavedChanges = false;
       this.$router.push({ name: "PositionsOverview" });
     },
