@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 17.02.2024 19:24:10
+ * Last Modified: 17.02.2024 20:13:34
  * Modified By: Julian Hardtung
  * 
  * Description: main entry point for the fieldbook + 
@@ -98,7 +98,6 @@ export default {
     if (!isInitDone) {
       await fromOfflineDB.syncLocalDBs()
         .catch(err => console.error(err));
-      this.initCookies();
       await this.initIndexedDB()
         .catch(err => console.error(err));
       this.generalStore.setInitDone(true);
@@ -134,14 +133,6 @@ export default {
       this.deleteCookies();
       await this.clearIndexedDB()
         .catch(err => console.error(err));
-    },
-
-    /**
-     * Initializes required cookie entries
-     */
-    initCookies() {
-      this.$cookies.set('showAllPlaceInfo', false);
-      this.$cookies.set('showAllPosInfo', false);
     },
 
     /**
@@ -199,7 +190,7 @@ export default {
       var placePresetID =
         await fromOfflineDB.addObject(allPlaceModules, 'ModulePresets', 'places')
         .catch(err => console.error(err));
-      this.$cookies.set('placeModulesPreset', placePresetID);
+      this.generalStore.setModulesPreset(placePresetID, 'place');
 
       var allPosModules = {
         _id: String(Date.now()),
@@ -227,7 +218,7 @@ export default {
       var posPresetID =
         await fromOfflineDB.addObject(allPosModules, 'ModulePresets', 'positions')
         .catch(err => console.error(err));
-      this.$cookies.set('posModulesPreset', posPresetID);
+      this.generalStore.setModulesPreset(posPresetID, 'position');
     },
 
     deleteCookies() {

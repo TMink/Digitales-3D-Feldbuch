@@ -2,7 +2,7 @@
  * Created Date: 01.07.2023 14:01:06
  * Author: Julian Hardtung
  * 
- * Last Modified: 17.02.2024 19:26:48
+ * Last Modified: 17.02.2024 20:04:57
  * Modified By: Julian Hardtung
  * 
  * Description: vue component for adding a position
@@ -50,7 +50,7 @@ export default {
      * Get all ModulePresets from IndexedDB
      */
      async updateModulePresets() {
-      let presetFromCookies = this.$cookies.get('posModulesPreset');
+      let presetFromCookies = this.generalStore.getModulesPreset('position');
 
       if (presetFromCookies != null) {
         this.curModulePreset = await fromOfflineDB

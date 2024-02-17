@@ -2,7 +2,7 @@
  * Created Date: 09.02.2024 21:08:30
  * Author: Julian Hardtung
  * 
- * Last Modified: 17.02.2024 19:34:07
+ * Last Modified: 17.02.2024 20:17:30
  * Modified By: Julian Hardtung
  * 
  * Description: A persistent way to store fieldbook settings in 
@@ -125,12 +125,12 @@ export const generalDataStore = defineStore("generalData", {
 
     /**
      * Retrieves the id of a currently opened object (`activity`, `place`, `position`)
-     * @param {String} objectType 
-     * @returns 
+     * @param {String} objectType
+     * @returns
      */
     getCurrentObject(objectType) {
       var object = null;
-      switch(objectType){
+      switch (objectType) {
         case "activity":
           object = localStorage.getItem("curActivity");
           break;
@@ -147,11 +147,11 @@ export const generalDataStore = defineStore("generalData", {
 
     /**
      * Sets the currently opened object (`activity`, `place`, `position`)
-     * @param {String} objectId 
-     * @param {String} objectType 
+     * @param {String} objectId
+     * @param {String} objectType
      */
     setCurrentObject(objectId, objectType) {
-      switch(objectType){
+      switch (objectType) {
         case "activity":
           localStorage.setItem("curActivity", objectId);
           break;
@@ -167,10 +167,10 @@ export const generalDataStore = defineStore("generalData", {
     /**
      * Removes the currently opened object (`activity`, `place`, `position`)
      * from localStorage
-     * @param {String} objectType 
+     * @param {String} objectType
      */
     removeCurrentObject(objectType) {
-      switch(objectType){
+      switch (objectType) {
         case "activity":
           localStorage.removeItem("curActivity");
           break;
@@ -179,6 +179,41 @@ export const generalDataStore = defineStore("generalData", {
           break;
         case "position":
           localStorage.removeItem("curPosition");
+          break;
+      }
+    },
+
+    /**
+     * Retrieves the id of the currently active modulePreset (for `place` or `position`)
+     * @param {String} objectType
+     * @returns
+     */
+    getModulesPreset(objectType) {
+      var presetID = null;
+      switch (objectType) {
+        case "place":
+          presetID = localStorage.getItem("placeModulesPreset");
+          break;
+        case "position":
+          presetID = localStorage.getItem("posModulesPreset");
+          break;
+      }
+
+      return presetID;
+    },
+
+    /**
+     * Sets the currently chosen modulesPreset (`place`, `position`)
+     * @param {String} objectId
+     * @param {String} objectType
+     */
+    setModulesPreset(presetID, objectType) {
+      switch (objectType) {
+        case "place":
+          localStorage.setItem("placeModulesPreset", presetID);
+          break;
+        case "position":
+          localStorage.setItem("posModulesPreset", presetID);
           break;
       }
     },

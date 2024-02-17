@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 17.02.2024 19:21:45
+ * Last Modified: 17.02.2024 20:17:14
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -654,11 +654,11 @@ export default {
      * Get all ModulePresets from IndexedDB
      */
     async updateModulePresets() {
-      let presetFromCookies = this.$cookies.get('placeModulesPreset');
+      let presetID = this.generalStore.getModulesPreset('place');
 
-      if (presetFromCookies.length > 0) {
+      if (presetID.length > 0) {
         this.curModulePreset = await fromOfflineDB
-          .getObject(presetFromCookies, 'ModulePresets', 'places')
+          .getObject(presetID, 'ModulePresets', 'places')
           .catch(err => console.error(err));
         }
     },

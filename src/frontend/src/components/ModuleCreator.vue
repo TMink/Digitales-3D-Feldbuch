@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Julian Hardtung
  * 
- * Last Modified: 13.02.2024 13:22:46
+ * Last Modified: 17.02.2024 20:23:15
  * Modified By: Julian Hardtung
  * 
  * Description: component to create, edit, set input module presets 
@@ -268,6 +268,7 @@
 <script>
 
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
+import { generalDataStore } from '../ConnectionToLocalStorage';
 import ConfirmDialog from '../components/ConfirmDialog.vue';
 import { toRaw } from 'vue';
 
@@ -281,6 +282,14 @@ export default {
     objectTypeProp: String
   },
   emits: ['updateModulePresets'],
+
+  setup() {
+    const generalStore = generalDataStore();
+
+    return {
+      generalStore,
+    }
+  },
 
   data: () => ({
     dialog: false,
@@ -321,9 +330,9 @@ export default {
 
     var curPresetID = null;
     if (this.objectTypeProp == 'places') {
-      curPresetID = this.$cookies.get('placeModulesPreset');
+      curPresetID = this.generalStore.getModulesPreset('place');
     } else if (this.objectTypeProp == 'positions') {
-      curPresetID = this.$cookies.get('posModulesPreset');
+      curPresetID = this.generalStore.getModulesPreset('position');
     }
 
     if (curPresetID != null) {
@@ -438,9 +447,9 @@ export default {
       this.selectedPreset = rawPreset;
 
       if (this.objectTypeProp == 'places') {
-        this.$cookies.set('placeModulesPreset', rawPreset._id);
+        this.generalStore.setModulesPreset(rawPreset._id, 'place');
       } else if (this.objectTypeProp == 'positions') {
-        this.$cookies.set('posModulesPreset', rawPreset._id);
+        this.generalStore.setModulesPreset(rawPreset._id, 'position');
       }
       this.$emit('updateModulePresets');
     },
@@ -475,19 +484,19 @@ export default {
     async deletePreset(object) {
       let rawObject = toRaw(object);
 
-      if (rawObject._id == this.$cookies.get('placeModulesPreset')) {
+      if (rawObject._id == this.generalStore.getModulesPreset('place')) {
         var placeDefaultPreset = await fromOfflineDB
           .getObjectByIndex(1, 'ModulePresets', this.objectTypeProp)
           .catch(err => console.error(err));
         this.selectedPreset = placeDefaultPreset;
-        this.$cookies.set('placeModulesPreset', placeDefaultPreset._id);
+        this.generalStore.setModulesPreset(placeDefaultPreset._id, 'place');
 
-      } else if (rawObject._id == this.$cookies.get('posModulesPreset')) {
+      } else if (rawObject._id == this.generalStore.getModulesPreset('position')) {
         var posDefaultPreset = await fromOfflineDB
           .getObjectByIndex(0, 'ModulePresets', this.objectTypeProp)
           .catch(err => console.error(err));
         this.selectedPreset = posDefaultPreset;
-        this.$cookies.set('posModulesPreset', posDefaultPreset._id);
+        this.generalStore.setModulesPreset(posDefaultPreset._id, 'position');
       }
 
       await fromOfflineDB

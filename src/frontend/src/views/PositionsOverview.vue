@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 17.02.2024 19:42:21
+ * Last Modified: 17.02.2024 20:08:41
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -624,7 +624,7 @@ export default {
     },
 
     async updateModulePresets() {
-      let curPresetID = this.$cookies.get('posModulesPreset');
+      let curPresetID = this.generalStore.getModulesPreset('position');
 
       if (curPresetID) {
         this.curModulePreset = await fromOfflineDB
@@ -831,7 +831,7 @@ export default {
     },
 
     saveModulePresetToCookies() {
-      this.$cookies.set('posModulesPreset', this.curModulePreset._id);
+      this.generalStore.setModulesPreset(this.curModulePreset._id, 'position');
     },
   }
 }
