@@ -26,4 +26,45 @@ export class CameraSettings {
     
     return perspectiveCamera;
   }
+
+  async updateCamera( barycenter, placeID, camera, cameraIDsInDB, cameraInDB,
+    cameraData, controls, arcballAnchor ) {
+    
+    if ( cameraIDsInDB.includes( placeID ) && !cameraInDB.newObjectsInScene ) {
+      console.log("Test")
+      const utilities = new Utilities();
+      const controlSettings = new ControlSettings();
+
+      /* Update current camera state with camera data from IndexedDB */
+      const cameraPosition = cameraInDB.cameraPosition;
+      cameraData.position = [ cameraPosition[ 0 ], cameraPosition[ 1 ],
+        cameraPosition[ 2 ] ];
+      cameraData.rotation = [ cameraPosition[ 3 ], cameraPosition[ 4 ],
+        cameraPosition[ 5 ] ];
+
+      /* Restore saved anchor position for the arcball target */
+      controlSettings.restoreArcballAnchor( cameraInDB.arcballAnchor, 
+        controls );
+      
+      /* Set new camera state */
+      utilities.setCamera( camera, cameraData );
+    } else {
+      const utilities = new Utilities()
+
+      /* Define an anchor point for the arcball */
+      arcballAnchor.push( barycenter.x );
+      arcballAnchor.push( barycenter.y );
+      arcballAnchor.push( barycenter.z );
+
+      /* Set center as the new arcball target */
+      controls.target.set( barycenter.x, barycenter.y, barycenter.z );
+
+      /* Move camera to the object */
+      camera.position.set( barycenter.x, barycenter.y - 15, barycenter.z );
+      cameraData = utilities.getCameraData( camera );
+
+      /* Save changes made to the arcball control settings */
+      controls.update();
+    }
+  }
 }
