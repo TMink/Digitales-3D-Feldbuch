@@ -55,4 +55,21 @@ export class GarbageCollection {
       } )
     }
   }
+
+  removeObjects( scene, objects ) {
+    /* Dispose models in sceneMain */
+    for ( let i = 0; i < objects.length; i++ ) {
+      const childrenToBeRemoved = [];
+      const nameTo = objects[ i ].name;
+      scene.traverse( ( child ) => {
+        if ( child.name == nameTo ) {
+          childrenToBeRemoved.push( child );
+        }
+      } );
+
+      childrenToBeRemoved.forEach( ( child ) => {
+        scene.remove( child );
+      } );
+    }
+  }
 }
