@@ -22,4 +22,18 @@ export class Utilities {
     
     return groupObject;
   }
+
+  getModelCenter( object ) {
+    var groupObject = object;
+    while ( !( groupObject instanceof THREE.Group ) ) {
+      groupObject = groupObject.parent;
+    }
+
+    const boundingBox = new THREE.Box3();
+    boundingBox.setFromObject( groupObject );
+    const center = new THREE.Vector3();
+    boundingBox.getCenter( center );
+
+    return center;
+  }
 }
