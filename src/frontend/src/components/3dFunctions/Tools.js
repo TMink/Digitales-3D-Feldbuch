@@ -209,4 +209,16 @@ export class LineTool {
 }
 
 export class ModelInteraktion {
+  
+  changeColor( color, modelGroup ) {
+    if ( color != null && modelGroup != null ) {
+
+      modelGroup.traverse( (child) => {
+        if ( child instanceof THREE.Mesh) {
+          child.material.color = new THREE.Color( color );
+        }
+      })
+    }
+  }
+  
 }
