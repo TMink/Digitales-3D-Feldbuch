@@ -231,6 +231,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from
   'three/examples/jsm/controls/OrbitControls.js';
 import { Box3 } from 'three';
+import { exParams } from './3dFunctions/Parameter';
 
 export default {
   name: "ModelForm",
@@ -258,6 +259,7 @@ export default {
    */
   data() {
     return {
+      exParams: exParams,
       object: '',
       model: {
         _id: '',
@@ -650,6 +652,32 @@ export default {
 
       /* Bob Ross */
       this.addToken = true
+
+      /* Add Notification for 3D-part camera changes */
+      switch (this.object_type.toLowerCase()) {
+        case 'places':
+          if ( exParams.main.objects.place._ids.length > 0 ) {
+            exParams.main.objects.token = true;
+          }
+          break;
+        case 'positions':
+          if ( exParams.main.objects.position._ids.length > 0 ) {
+            exParams.main.objects.token = true;
+          }
+          break;
+      }
+      const cameraInDB = await fromOfflineDB.getObject( 
+        this.$cookies.get( 'currentPlace' ), 'Cameras', 'cameras' );
+      if ( cameraInDB != undefined ) {
+        const newCamera = {
+          _id: cameraInDB._id,
+          cameraPosition: cameraInDB.cameraPosition,
+          arcballAnchor: cameraInDB.arcballAnchor,
+          newObjectsInScene: true
+        };
+
+        fromOfflineDB.updateObject( newCamera, 'Cameras', 'cameras' );
+      }
     },
 
     /**
@@ -671,6 +699,38 @@ export default {
      * @param {Object} model 
      */
     async deleteModel(model) {
+      var index = this.object.models.indexOf(model._id);
+      if ( exParams.main.objects.place._ids.length > 0 || 
+        exParams.main.objects.position._ids.length > 0 ) {
+          exParams.main.objects.token = true;
+        }
+      // console.log(this.object.models[index])
+      // if ( exParams.main.objects.allObjects.length > 0 ) {
+      //   exParams.main.objects.place._ids.forEach( (id, idx) => {
+      //     if ( id == this.object.models[index] ) {
+      //       exParams.main.objects.allObjects.splice( idx, 1 );
+      //       exParams.main.objects.place._ids.splice( idx, 1 );
+      //       exParams.main.objects.place.titles.splice( idx, 1 );
+      //       exParams.main.objects.place.groups.splice( idx, 1 );
+      //       exParams.main.objects.place.amount--;
+      //       exParams.main.objects.place.entry.splice( idx, 1 );
+      //       console.log(idx)
+      //       console.log(exParams.main.objects)
+      //     }
+      //   } )
+      //   exParams.main.objects.position._ids.forEach( (id, idx) => {
+      //     if ( id == this.object.models[index] ) {
+      //       exParams.main.objects.allObjects.splice( idx, 1 );
+      //       exParams.main.objects.position._ids.splice( idx, 1 );
+      //       exParams.main.objects.position.titles.splice( idx, 1 );
+      //       exParams.main.objects.position.groups.splice( idx, 1 );
+      //       exParams.main.objects.position.amount--;
+      //       exParams.main.objects.position.entry.splice( idx, 1 );
+      //       console.log(idx)
+      //       console.log(exParams.main.objects)
+      //     }
+      //   } )
+      // }
 
       // remove the modelID from connected place/position
       var index = this.object.models.indexOf(model._id);
@@ -704,6 +764,36 @@ export default {
 
       /* Bob Ross */
       this.deleteToken = true
+
+      /* Add Notification for 3D-part camera changes */
+      const cameraInDB = await fromOfflineDB.getObject( 
+        this.$cookies.get( 'currentPlace' ), 'Cameras', 'cameras' );
+      const placeObjects = await fromOfflineDB.getAllObjects( "Models", "places" )
+      const positionObjects = await fromOfflineDB.getAllObjects( "Models", "positions" )
+
+      if ( cameraInDB && placeObjects.length == 0 && positionObjects.length == 0 ) {
+        await fromOfflineDB.deleteObject( cameraInDB, 'Cameras', 'cameras' )
+        if( exParams.main.objects.allObjects.length > 0 ) {
+          exParams.main.objects.allObjects = []
+          exParams.main.objects.place._ids = []
+          exParams.main.objects.place.titles = []
+          exParams.main.objects.place.groups = []
+          exParams.main.objects.place.amount = 0
+          exParams.main.objects.place.entry = []
+          console.log("Cleaned remaining local data")
+        }
+      } else {
+        if ( cameraInDB != undefined ) {
+          const newCamera = {
+            _id: cameraInDB._id,
+            cameraPosition: cameraInDB.cameraPosition,
+            arcballAnchor: cameraInDB.arcballAnchor,
+            newObjectsInScene: true
+          };
+  
+          fromOfflineDB.updateObject( newCamera, 'Cameras', 'cameras' );
+        }
+      }
     },
 
     /**
