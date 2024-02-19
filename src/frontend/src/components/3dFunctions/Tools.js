@@ -186,6 +186,18 @@ export class LineTool {
     measureTool.title = null;
     this.updateLineMenue( measureTool );
   }
+
+  updateLineMenue( measureTool ) {
+    measureTool.allTitles = [];
+    measureTool.infoBlock.forEach( element => {
+      measureTool.allTitles.push( element.name );
+    })
+  }
+
+  updateLineInnerText( lineName, newLable, scene ) {
+    const lineToChange = scene.getObjectByName( lineName )
+    lineToChange.children[0].element.innerText = newLable
+  }
 }
 export class ModelInteraktion {
 }
