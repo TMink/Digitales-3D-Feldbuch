@@ -198,6 +198,15 @@ export class LineTool {
     const lineToChange = scene.getObjectByName( lineName )
     lineToChange.children[0].element.innerText = newLable
   }
+
+  findLineCenter( lineStart, lineEnd ) {
+    return { 
+      x: (lineEnd.x - lineStart.x) / 2 + lineStart.x, 
+      y: (lineEnd.y - lineStart.y) / 2 + lineStart.y,
+      z: (lineEnd.z - lineStart.z) / 2 + lineStart.z };
+  }
+  
 }
+
 export class ModelInteraktion {
 }
