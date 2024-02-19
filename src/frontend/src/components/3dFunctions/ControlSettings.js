@@ -40,4 +40,14 @@ export class ControlSettings {
     controls.reset();
     controls.update();
   }
+
+  restoreArcballAnchor( arcballAnchor, arcballControls ) {
+    /* Restore saved anchor position for the arcball target */
+    arcballControls.target.set( arcballAnchor[ 0 ], arcballAnchor[ 1 ],
+      arcballAnchor[ 2 ] );
+
+    /* Save changes made to the arcball control settings */
+    arcballControls.update();
+  }
+
 }
