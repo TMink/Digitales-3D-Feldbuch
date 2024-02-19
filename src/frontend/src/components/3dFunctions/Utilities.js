@@ -84,4 +84,30 @@ export class Utilities {
     camera.rotation.set( cameraData.rotation[ 0 ], cameraData.rotation[ 1 ],
       cameraData.rotation[ 2 ]);
   }
+
+  async updateAutoFillList( storeName, item ) {
+    const newEditor = {};
+
+      const editorsFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', 
+        storeName);
+      if ( editorsFromDB.length > 0 ) {
+        let hasItem = false;
+        
+        editorsFromDB.forEach( element => {
+          if ( element.item == item ) {
+            hasItem = true;
+          }
+        })
+        if ( !hasItem && item != '' ) {
+          newEditor._id = String(Date.now())
+          newEditor.item = toRaw(item)
+        }
+      } else if ( item != '' ) {
+        newEditor._id = String(Date.now())
+        newEditor.item = toRaw(item)
+      }
+      if ( !!Object.keys(newEditor).length ) {
+        await fromOfflineDB.addObject(newEditor, 'AutoFillLists', storeName)
+      }
+  }
 }
