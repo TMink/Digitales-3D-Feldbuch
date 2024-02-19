@@ -2,7 +2,7 @@
  Created Date: 17.11.2023 16:18:33
  Author: Tobias Mink
  
- Last Modified: 11.12.2023 14:53:33
+ Last Modified: 19.02.2024 17:02:08
  Modified By: Tobias Mink
  
  Description: 
@@ -54,7 +54,8 @@
                                 :label="$t('line')"
                                 color="primary"
                                 :items="measureTool.allTitles"
-                                :@update="updateTitle()"
+                                :@update="lineTool.updateTitle( 
+                                  measureTool )"
                               ></v-select>
                             </v-col>
                           </v-row>
@@ -74,7 +75,9 @@
 
                             <v-col cols="2">
                               <v-btn icon class="ma-1" color="primary"
-                                     v-on:click="saveLineTitle()">
+                                     v-on:click="lineTool.saveLineTitle(
+                                      this.$root, this.$t, measureTool, 
+                                      exParams.main.scene )">
                                 <v-icon>mdi-content-save-all</v-icon>
                               </v-btn>
                             </v-col>
@@ -83,7 +86,10 @@
                           <v-row no-gutters class="ps-4 pb-3">
                             <v-col cols="12">
                               <v-btn width="300" color="error"
-                                     v-on:click="deleteLine()">
+                                     v-on:click="lineTool.deleteLine(
+                                      this.placeInDB,
+                                      measureTool, 
+                                      exParams.main.scene )">
                                 <v-icon>mdi-delete</v-icon>
                               </v-btn>
                             </v-col>
@@ -131,22 +137,22 @@
                   <v-row no-gutters>
 
                     <v-col cols="3" class="pl-2 ">
-                      <v-combobox v-model="plaModel.number"
+                      <v-combobox v-model="placeObject.number"
                         :label="$tc('number', 2)"
                         item-title="modelNumber"
                         color="primary"
                         bgColor="opp_background"
-                        :items="plaModel.allNumbers"
+                        :items="placeObject.allNumbers"
                       ></v-combobox>
                     </v-col>
 
                     <v-col cols="6" class="pl-2 ">
-                      <v-combobox v-model="plaModel.title"
+                      <v-combobox v-model="placeObject.title"
                         :label="$t('title')"
                         item-title="modelTitel"
                         color="primary"
                         bgColor="opp_background"
-                        :items="plaModel.allTitles"
+                        :items="placeObject.allTitles"
                       ></v-combobox>
                     </v-col>
 
@@ -178,9 +184,9 @@
                             <!-- Opacity-->
                             <v-col cols="2" class="px-2 pt-4">
                               <v-slider 
-                              v-model="plaMods.opacitySliderValue" 
+                              v-model="placeMods.opacitySliderValue" 
                               :max="1"
-                              :disabled="plaMods.disabled" 
+                              :disabled="placeMods.disabled" 
                               track-color="primary" 
                               thumb-color="secondary" 
                               color="warning">
@@ -212,17 +218,17 @@
                         </v-row>
           
                       <v-card id="cpPlace" color="opp_background" class="pa-2">
-                          <v-color-picker v-model="plaMods.colorPicker.color"
+                          <v-color-picker v-model="placeMods.colorPicker.color"
                             hide-canvas
                             hide-sliders
                             hide-inputs
                             show-swatches
                             swatches-max-height="235px"
                             width="100%"
-                            :disabled="plaMods.disabled"
-                            :v-on:update="changeColor(
-                                            plaMods.colorPicker.color, 
-                                            plaMods.colorPicker.object)"
+                            :disabled="placeMods.disabled"
+                            :v-on:update="modelInteraktion.changeColor(
+                                            placeMods.colorPicker.color, 
+                                            placeMods.colorPicker.object)"
                           ></v-color-picker>
                         </v-card>
                       </v-card>
@@ -264,32 +270,32 @@
                   <v-row no-gutters>
 
                     <v-col cols="3" class="pl-2">
-                      <v-combobox v-model="posData.number"
+                      <v-combobox v-model="positionData.number"
                         :label="$tc('number', 2)"
                         item-title="positionNumber"
                         color="primary"
                         bgColor="opp_background"
-                        :items="posData.allNumbers"
+                        :items="positionData.allNumbers"
                       ></v-combobox>
                     </v-col>
 
                     <v-col cols="3" class="pl-2">
-                      <v-combobox v-model="posData.subNumber"
+                      <v-combobox v-model="positionData.subNumber"
                         :label="$t('subNumber')"
                         color="primary"
                         bgColor="opp_background"
                         item-title="positionSubnumber"
-                        :items="posData.allSubNumbers"
+                        :items="positionData.allSubNumbers"
                       ></v-combobox>
                     </v-col>
 
                     <v-col cols="6" class="pl-2 pr-2">
-                      <v-combobox v-model="posData.title"
+                      <v-combobox v-model="positionData.title"
                         :label="$t('title')"
                         item-title="positionTitle"
                         color="primary"
                         bgColor="opp_background"
-                        :items="posData.allTitles"
+                        :items="positionData.allTitles"
                       ></v-combobox>
                     </v-col>
 
@@ -303,24 +309,24 @@
                   <v-row no-gutters>
 
                     <v-col cols="3" class="pl-2 ">
-                      <v-combobox v-model="posModel.number"
+                      <v-combobox v-model="positionObject.number"
                         :label="$tc('number', 2)"
                         item-title="modelNumber"
                         color="primary"
                         bgColor="opp_background"
-                        :items="posModel.allNumbers"
-                        :disabled="!posModel.disableInput"
+                        :items="positionObject.allNumbers"
+                        :disabled="!positionObject.disableInput"
                       ></v-combobox>
                     </v-col>
 
                     <v-col cols="6" class="pl-2 ">
-                      <v-combobox v-model="posModel.title"
+                      <v-combobox v-model="positionObject.title"
                         :label="$tc('title', 2)"
                         item-title="modelTitel"
                         color="primary"
                         bgColor="opp_background"
-                        :items="posModel.allTitles"
-                        :disabled="!posModel.disableInput"
+                        :items="positionObject.allTitles"
+                        :disabled="!positionObject.disableInput"
                       ></v-combobox>
                     </v-col>
 
@@ -351,13 +357,14 @@
                             <!-- Attach position-->
                             <v-col cols="2" class="px-3 pt-5">
                               <v-checkbox 
-                                :v-model="posMods.attachTransformControls"
-                                :disabled="posMods.disabled"
-                                :true-value="posMods.attachTransformControls"
-                                :false-value="!posMods.attachTransformControls"
+                                :v-model="positionMods.attachTransformControls"
+                                :disabled="positionMods.disabled"
+                                :true-value="positionMods.attachTransformControls"
+                                :false-value="!positionMods.attachTransformControls"
                                 color="primary"
-                                @Click="attachTransformControls(
-                                  posMods.attachTransformControls)">
+                                @Click="controlSettings.attachTransformControls(
+                                  positionMods, positionObject, 
+                                  exParams.main.transformControls )">
                               </v-checkbox>
                             </v-col>
 
@@ -376,8 +383,8 @@
                             <!-- Opacity-->
                             <v-col cols="2" class="px-2 pt-4">
                               <v-slider 
-                              :disabled="posMods.disabled"
-                              v-model="posMods.opacitySliderValue"
+                              :disabled="positionMods.disabled"
+                              v-model="positionMods.opacitySliderValue"
                               :max="1"
                               track-color="primary" 
                               thumb-color="secondary" 
@@ -410,16 +417,17 @@
                         </v-row>
           
                       <v-card id="cpPosition" color="opp_background" class="pa-2">
-                          <v-color-picker v-model="posMods.colorPicker.color"
+                          <v-color-picker v-model="positionMods.colorPicker.color"
                             hide-canvas
                             hide-sliders
                             hide-inputs
                             show-swatches
                             swatches-max-height="235px"
                             width="100%"
-                            :disabled="posMods.disabled"
-                            :v-on:update="changeColor(posMods.colorPicker.color, 
-                                                      posMods.colorPicker.object)"
+                            :disabled="positionMods.disabled"
+                            :v-on:update="modelInteraktion.changeColor(
+                              positionMods.colorPicker.color, 
+                              positionMods.colorPicker.object)"
                           ></v-color-picker>
                         </v-card>
                       </v-card>
@@ -444,7 +452,8 @@
                             leftDrawer.showDrawers[1] = false;
                             leftDrawer.showDrawers[2] = false;
                             leftDrawer.showDrawers[3] = false;
-                            updateBtnColor(leftDrawer.btnNames[0]);"
+                            utilities.updateBtnColor(
+                              leftDrawer.btnNames[0], leftDrawer);"
         ></v-btn>
         <!-- Place -->
         <v-btn v-model="leftDrawer.btnNames[1]" rounded="0" icon="mdi-radar" width="50" 
@@ -453,7 +462,8 @@
                             leftDrawer.showDrawers[1] = !leftDrawer.showDrawers[1];
                             leftDrawer.showDrawers[2] = false;
                             leftDrawer.showDrawers[3] = false;
-                            updateBtnColor(leftDrawer.btnNames[1]);"
+                            utilities.updateBtnColor(
+                              leftDrawer.btnNames[1], leftDrawer);"
         ></v-btn>
         <!-- Positions -->
         <v-btn v-model="leftDrawer.btnNames[2]" rounded="0" width="50" height="50"
@@ -463,7 +473,8 @@
                             leftDrawer.showDrawers[1] = false;
                             leftDrawer.showDrawers[2] = !leftDrawer.showDrawers[2]; 
                             leftDrawer.showDrawers[3] = false;
-                            updateBtnColor(leftDrawer.btnNames[2]);"
+                            utilities.updateBtnColor(
+                              leftDrawer.btnNames[2], leftDrawer);"
         ></v-btn>
       </v-card>
     </div>
@@ -510,7 +521,8 @@
           </v-col>
           <v-divider vertical></v-divider>
           <v-col cols="1" class="pa-1">
-            <v-btn v-on:click="savePosition()" color="primary">
+            <v-btn v-on:click="utilities.savePosition(
+              this.$root, this.$t, this.posInfo)" color="primary">
               Speichern
             </v-btn>
           </v-col>
@@ -596,6 +608,7 @@
 
 <script>
 import * as THREE from 'three';
+
 import Navigation from '../components/Navigation.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { ArcballControls } from
