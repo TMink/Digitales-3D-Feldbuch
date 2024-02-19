@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 03.01.2024 16:18:10
+ * Last Modified: 17.02.2024 20:08:41
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -97,6 +97,34 @@
                     <v-list-item-title>
                       {{ item.raw.date || '-' }}
                     </v-list-item-title>
+                  </td>
+
+                  <!-- SYNC STATUS -->
+                  <td :style="getRowStyle(index)">
+                    <v-list-item>
+                      <v-btn 
+                        icon 
+                        variant="text"
+                        v-if="item.raw.lastSync > 0">
+                          <v-tooltip 
+                            activator="parent"
+                            location="bottom">
+                            {{ this.$t('lastSync') + new Date(item.raw.lastSync).toLocaleString() }}
+                          </v-tooltip>
+                          <v-icon>mdi-cloud-check</v-icon>
+                      </v-btn>
+                      <v-btn 
+                        icon 
+                        variant="text"      
+                        v-else>
+                          <v-tooltip 
+                            activator="parent"
+                            location="bottom">
+                              {{ $t('onlyLocal') }}
+                          </v-tooltip>
+                          <v-icon>mdi-cloud-off-outline</v-icon>
+                      </v-btn>
+                    </v-list-item>
                   </td>
               </tr>
             </template>
@@ -245,11 +273,11 @@
                   <!-- EDITOR -->
                   <td :style="getRowStyle(index)">
                     <v-list-item-title
-                      v-if="item.raw.addressOf != ''">
-                      {{ item.raw.addressOf }}
+                      v-if="item.raw.editor != ''">
+                      {{ item.raw.editor }}
                     </v-list-item-title>
                     <v-list-item-title 
-                      v-if="item.raw.addressOf == ''" style="color:dimgrey;">
+                      v-if="item.raw.editor == ''" style="color:dimgrey;">
                       -
                     </v-list-item-title>
                   </td>
@@ -272,6 +300,34 @@
                       v-if="!item.raw.isSeparate" style="color:dimgrey;">
                       -
                     </v-list-item-title>
+                  </td>
+
+                  <!-- SYNC STATUS -->
+                  <td :style="getRowStyle(index)">
+                    <v-list-item>
+                      <v-btn 
+                        icon 
+                        variant="text"
+                        v-if="item.raw.lastSync > 0">
+                          <v-tooltip 
+                            activator="parent"
+                            location="bottom">
+                            {{ this.$t('lastSync') + new Date(item.raw.lastSync).toLocaleString() }}
+                          </v-tooltip>
+                          <v-icon>mdi-cloud-check</v-icon>
+                      </v-btn>
+                      <v-btn 
+                        icon 
+                        variant="text"      
+                        v-else>
+                          <v-tooltip 
+                            activator="parent"
+                            location="bottom">
+                              {{ $t('onlyLocal') }}
+                          </v-tooltip>
+                          <v-icon>mdi-cloud-off-outline</v-icon>
+                      </v-btn>
+                    </v-list-item>
                   </td>
                   <v-divider></v-divider>
                 </tr>
@@ -333,8 +389,11 @@ import Navigation from '../components/Navigation.vue';
 import { toRaw } from 'vue';
 import ModuleCreator from '../components/ModuleCreator.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
+import { fromBackend } from '../ConnectionToBackend.js'
 import AddPosition from '../components/AddPosition.vue';
 import { useWindowSize } from 'vue-window-size';
+import { useUserStore } from '../Authentication';
+import { generalDataStore } from '../ConnectionToLocalStorage.js';
 
 export default {
   name: 'PositionsOverview',
@@ -348,9 +407,13 @@ export default {
 
   setup() {
     const { width, height } = useWindowSize();
+    const userStore = useUserStore();
+    const generalStore = generalDataStore();
     return {
       windowWidth: width,
       windowHeight: height,
+      userStore,
+      generalStore
     };
   },
 
@@ -387,6 +450,7 @@ export default {
         },
         { title: this.$tc('title', 2), align: 'start', key: 'title' },
         { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
+        { title: this.$t('syncStatus'), align: 'start', key: 'status', width: "100px"}
       ],
       fullHeaders: [
         {
@@ -410,9 +474,10 @@ export default {
         { title: this.$t('weight'), align: 'start', key: 'weight' },
         { title: this.$t('material'), align: 'start', key: 'material' },
         { title: this.$t('description'), align: 'start', key: 'description' },
-        { title: this.$t('editor'), align: 'start', key: 'editor' },
+        { title: this.$tc('editor', 1), align: 'start', key: 'editor' },
         { title: this.$t('date'), align: 'start', key: 'date' },
         { title: this.$t('isSeparate'), align: 'start', key: 'isSeparate' },
+        { title: this.$t('syncStatus'), align: 'start', key: 'status', width: "100px"}
       ],
       curModulePreset: {
         title: '-',
@@ -427,9 +492,12 @@ export default {
    */
   async created() {
     this.$emit("view", this.$t('overview', { msg: this.$tc('position', 2) }));
-    await fromOfflineDB.syncLocalDBs();
-    await this.updatePositions();
-    await this.updateModulePresets();
+    await fromOfflineDB.syncLocalDBs()
+      .catch(err => console.error(err));
+    await this.updatePositions()
+      .catch(err => console.error(err));
+    await this.updateModulePresets()
+      .catch(err => console.error(err));
     this.setShowAllInfoSwitch();
   },
 
@@ -478,18 +546,90 @@ export default {
      * Update reactive Vue.js position data
      */
     async updatePositions() {
-      var curPlaceID = String(this.$cookies.get('currentPlace'));
+      var curPlaceID = this.generalStore.getCurrentObject('place');
 
-      this.positions = await fromOfflineDB.getAllObjectsWithID(
-        curPlaceID, 'Place', 'Positions', 'positions');
+      this.positions = await fromOfflineDB
+        .getAllObjectsWithID(curPlaceID, 'Place', 'Positions', 'positions')
+        .catch(err => console.error(err));
+    },
+
+    /**
+     * @deprecated
+     */
+    async updatePositionsFull() {
+      var curPlaceID = this.generalStore.getCurrentObject('place');
+
+      var offlinePositions = await fromOfflineDB
+        .getAllObjectsWithID(curPlaceID, 'Place', 'Positions', 'positions')
+        .catch(err => console.error(err));
+
+      // if user isn't logged in, just show the local stuff
+      if (!this.userStore.authenticated) {
+        console.log("Not logged in, so only show local positions")
+        this.positions = offlinePositions;
+        return;
+      }
+
+      const onlinePositions = await fromBackend
+        .getDataWithParam('positions/place', curPlaceID)
+        .catch(err => console.error(err));
+
+      // if there are no offlinePositions, don't check for duplicates
+      if (offlinePositions.length == 0) {
+        console.log("No local positions, so only show online");
+        onlinePositions.forEach(async (onPosition) => {
+          await fromOfflineDB.addObject(onPosition, 'Positions', 'positions')
+            .catch(err => console.error(err));
+        });
+        this.places = onlinePositions;
+        return;
+      }
+
+
+      // if user is logged in and local + online Places exist, 
+      // check for duplicates and which is newer
+      // and combine all places to the array for display
+      var newPositionsList = [];
+      var sameIdFound = false;
+
+      console.log("online and offline positions have to be combined")
+      offlinePositions.forEach(async (offPosition) => {
+        for (var i = 0; i < onlinePositions.length; i++) {
+
+          if (offPosition._id == onlinePositions[i]._id) {
+            sameIdFound = true;
+
+            if (onlinePositions[i].lastChanged >= offPosition.lastChanged) {
+              var tempPosition = onlinePositions[i];
+              onlinePositions.splice(i, 1)
+              newPositionsList.push(tempPosition);
+              await fromOfflineDB.addObject(tempPosition, 'Positions', 'positions')
+                .catch(err => console.error(err));
+            } else {
+              newPositionsList.push(offPosition);
+            }
+          }
+        }
+
+        if (!sameIdFound) {
+          newPositionsList.push(offPosition);
+        } else {
+          sameIdFound = false;
+        }
+      });
+
+      // add remaining online places to the whole list
+      newPositionsList.concat(onlinePositions);
+      this.positions = newPositionsList;
     },
 
     async updateModulePresets() {
-      let curPresetID = this.$cookies.get('posModulesPreset');
+      let curPresetID = this.generalStore.getModulesPreset('position');
 
       if (curPresetID) {
-        this.curModulePreset = await fromOfflineDB.getObject(
-          curPresetID, 'ModulePresets', 'positions');
+        this.curModulePreset = await fromOfflineDB
+          .getObject(curPresetID, 'ModulePresets', 'positions')
+          .catch(err => console.error(err));
         }
     },
 
@@ -499,10 +639,15 @@ export default {
      * @param {Int} count 
      */
      async duplicatePosition(positionID) {
-      var newPositionID = await this.addPosition();
+      var newPositionID = await this.addPosition()
+        .catch(err => console.error(err));
       
-      var newPosition = await fromOfflineDB.getObject(newPositionID, 'Positions', 'positions');
-      var dupPosition = await fromOfflineDB.getObject(positionID, 'Positions', 'positions');
+      var newPosition = await fromOfflineDB
+        .getObject(newPositionID, 'Positions', 'positions')
+        .catch(err => console.error(err));
+      var dupPosition = await fromOfflineDB
+        .getObject(positionID, 'Positions', 'positions')
+        .catch(err => console.error(err));
       
       dupPosition._id = newPositionID;
       dupPosition.positionNumber = newPosition.positionNumber;
@@ -510,7 +655,8 @@ export default {
       dupPosition.models = [];
       dupPosition.lastChanged = Date.now();
 
-      await fromOfflineDB.updateObject(dupPosition, 'Positions', 'positions');
+      await fromOfflineDB.updateObject(dupPosition, 'Positions', 'positions')
+        .catch(err => console.error(err));
       this.updatePositions();
     },
 
@@ -536,23 +682,10 @@ export default {
      */
     moveToPosition(positionID) {
       if (positionID !== 'new') {
-        this.$cookies.set('currentPosition', positionID);
+        this.generalStore.setCurrentObject(positionID, 'position');
       }
 
       this.$router.push({ name: 'PositionCreation', params: { positionID: positionID } })
-    },
-
-    /**
-     * Set the toggleAllInfo switch state depending on VueCookies
-     */
-     setShowAllInfoSwitch() {
-      var showAllCookie = this.$cookies.get('showAllPosInfo');
-
-      if (showAllCookie == "true") {
-        this.showAllInfo = true;
-      } else {
-        this.showAllInfo = false;
-      }
     },
 
     /**
@@ -562,8 +695,10 @@ export default {
      *                --> CAN YOU CALL FUNCTIONS OVER PROPS???
      */
     async addPosition() {
-      var curPlaceID = this.$cookies.get('currentPlace');
-      var curPlace = await fromOfflineDB.getObject(curPlaceID, "Places", "places");
+      var curPlaceID = this.generalStore.getCurrentObject('place');
+      var curPlace = await fromOfflineDB
+        .getObject(curPlaceID, "Places", "places")
+        .catch(err => console.error(err));
       var newPositionID = String(Date.now());
 
       curPlace.positions.push(newPositionID);
@@ -583,7 +718,7 @@ export default {
         title: '',
         description: '',
         dating: '',
-        addressOf: '',
+        editor: '',
         date: new Date().toLocaleDateString("de-DE"),
         hasSubNumber: false,
         isSeparate: false,
@@ -599,23 +734,33 @@ export default {
       if (this.positions.length == 0) {
         newPosition.positionNumber = 1;
       } else {
-        var lastPosNumber = await fromOfflineDB.getLastAddedPosition();
+        var lastPosNumber = await fromOfflineDB.getLastAddedPosition()
+          .catch(err => console.error(err));
         newPosition.positionNumber = lastPosNumber + 1;
       }
       
-      await fromOfflineDB.updateObject(curPlace, 'Places', 'places');
-      await fromOfflineDB.addObject(newPosition, "Positions", "positions");
-      await fromOfflineDB.addObject(
-            { _id: newPositionID, object: 'positions' }, 'Changes', 'created');
+      await fromOfflineDB.updateObject(curPlace, 'Places', 'places')
+        .catch(err => console.error(err));
+      await fromOfflineDB.addObject(newPosition, "Positions", "positions")
+        .catch(err => console.error(err));
+      //await fromOfflineDB.addObject({ _id: newPositionID, object: 'positions' }, 'Changes', 'created');
       
       return newPositionID;
+    },
+
+
+    /**
+     * Set the toggleAllInfo switch state depending on VueCookies
+     */
+    setShowAllInfoSwitch() {
+      this.showAllInfo = this.generalStore.getShowAllPosInfo();
     },
 
     /**
      * Save the change toogle all info state to cookies
      */
     toggleAllInfo() {
-      this.$cookies.set('showAllPosInfo', this.showAllInfo);
+      this.generalStore.toggleShowAllPosInfo(this.showAllInfo);
     },
 
     /**
@@ -656,7 +801,7 @@ export default {
      * @returns {Object} An object containing row style properties
      */
      getRowStyle(index) {
-      var currentTheme = this.$cookies.get('currentTheme')
+      var currentTheme = this.generalStore.getTheme();
       if (currentTheme !== 'fieldbook_light') {
         return {
           cursor: 'pointer',
@@ -686,7 +831,7 @@ export default {
     },
 
     saveModulePresetToCookies() {
-      this.$cookies.set('posModulesPreset', this.curModulePreset._id);
+      this.generalStore.setModulesPreset(this.curModulePreset._id, 'position');
     },
   }
 }

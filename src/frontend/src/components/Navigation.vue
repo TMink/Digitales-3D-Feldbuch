@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 16.12.2023 16:50:59
+ * Last Modified: 17.02.2024 19:44:59
  * Modified By: Julian Hardtung
  * 
  * Description: Vue component with navigation-bar and extendable side-bar
@@ -71,7 +71,44 @@
 
       </v-tabs>
       <v-spacer></v-spacer>
-      {{ message }}
+
+      <div class="AccountButton">
+        <v-menu>
+            <template v-slot:activator="{ props }">
+              <v-btn 
+                icon 
+                variant="text"
+                v-bind="props"
+                v-if="userStore.authenticated">
+                <v-icon>mdi-account-circle</v-icon>
+              </v-btn>
+              <v-btn 
+                icon 
+                variant="text"
+                v-bind="props"
+                v-else>
+                <v-icon>mdi-account-off-outline</v-icon>
+              </v-btn>
+          </template>
+            <v-list v-if="userStore.authenticated">
+                <v-list-item 
+                  @click="logout()">
+                  {{ $t('logout') }}
+                </v-list-item>
+            </v-list>
+            <v-list v-else>
+                <v-list-item 
+                  @click="changePage('Registration')">
+                  {{ $t('registration') }}
+                </v-list-item>
+                <v-list-item 
+                  @click="changePage('Login')">
+                  {{ $t('login') }}
+                </v-list-item>
+            </v-list>
+        </v-menu>
+        {{ message }}
+    </div>
       <v-btn 
         icon 
         @click.stop="navdrawer = !navdrawer">
@@ -82,7 +119,6 @@
     <!-- Navigation Drawer -->
     <v-navigation-drawer 
       color="surface" 
-      style="z-index: 1;" 
       v-model="navdrawer" 
       location="right">
       <v-card 
@@ -117,20 +153,6 @@
           </v-btn>
         </v-row>
 
-        <v-row class="d-flex justify-center ma-3">
-            <v-btn v-if="userStore.user != null" @click="logout()">
-              Logout
-            </v-btn>
-          <span v-else>
-            <v-btn class="ma-2" @click="changePage('Registration')">
-              Registration
-            </v-btn>
-            <v-btn class="ma-2" @click="changePage('Login')">
-              Login
-            </v-btn>
-          </span>
-        </v-row>
-
         <v-spacer></v-spacer>
 
         <DataBackup />
@@ -145,16 +167,9 @@
           <v-divider></v-divider>
           <v-list-item 
             link 
-            v-on:click="deleteCookies()">
+            v-on:click="clearLocalData()">
             <v-list-item-title>
-              {{ $t('delete', { msg: 'Cookies' }) }}
-            </v-list-item-title>
-          </v-list-item>
-          <v-list-item 
-            link 
-            v-on:click="clearIndexedDB()">
-            <v-list-item-title>
-              {{ $t('delete', { msg: 'IndexedDB' }) }}
+              {{ $t('deletePhrase', { msg: 'All local data' }) }}
             </v-list-item-title>
           </v-list-item>
         </v-card>
@@ -166,11 +181,10 @@
 <script>
 import { useI18n } from 'vue-i18n'
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
+import { generalDataStore } from '../ConnectionToLocalStorage.js';
 import { useTheme } from 'vuetify/lib/framework.mjs';
 import LocaleChanger from './LocaleChanger.vue';
 import DataBackup from './DataBackup.vue';
-import Pathbar from './Pathbar.vue';
-import isOnline from 'is-online';
 import { ref } from 'vue'
 import { useUserStore } from '../Authentication.js';
 import { toRaw } from "vue";
@@ -178,15 +192,15 @@ import { toRaw } from "vue";
 export default {
   name: 'Navigation',
   components: {
-    Pathbar,
     LocaleChanger,
     DataBackup
   },
   setup() {
     const theme = useTheme()
     const { t } = useI18n() // use as global scope
-    const message = ref('You are not logged in!');
+    const message = ref('');
     const userStore = useUserStore();
+    const generalStore = generalDataStore();
 
     if (userStore.authenticated) {
       message.value = toRaw(userStore.user.username);
@@ -197,9 +211,11 @@ export default {
       theme,
       message,
       userStore,
+      generalStore,
       toggleTheme() {
-        theme.global.name.value = theme.global.current.value.dark ? 'fieldbook_light' : 'fieldbook_dark'
-        this.$cookies.set('currentTheme', theme.global.name.value)
+        generalStore.toggleTheme()
+
+        theme.global.name.value = generalStore.getTheme();
       }
     }
   },
@@ -229,26 +245,24 @@ export default {
     }
   },
   async created() {
-    await fromOfflineDB.syncLocalDBs();
+    await fromOfflineDB.syncLocalDBs()
+      .catch(err => console.error(err));
 
-    await this.updatePathbar();
-    this.active_tab = this.active_tab_prop; //this.$cookies.get('active_tab_prop') //this.active_tab_prop;
+    await this.updatePathbar()
+      .catch(err => console.error(err));
+    this.active_tab = this.active_tab_prop;
 
-    var activityID = this.$cookies.get('currentActivity')
+    var activityID = this.generalStore.getCurrentObject('activity');
     if (activityID !== null) {
       this.activityIsSet = true
     }
 
-    var placeID = this.$cookies.get('currentPlace');
+    var placeID = this.generalStore.getCurrentObject('place');
     if (placeID !== null) {
-
-      var curPlace = await fromOfflineDB.getObject(placeID, 'Places', 'places');
-      //if (curPlace.placeNumber > 1) {
       this.placeIsSet = true
-      //}
     }
 
-    var positionID = this.$cookies.get('currentPosition')
+    var positionID = this.generalStore.getCurrentObject('position');
     if (positionID !== null) {
       this.positionIsSet = true;
     } else {
@@ -266,101 +280,27 @@ export default {
 
     async clearLocalData() {
       this.deleteCookies();
-      await this.clearIndexedDB();
-    },
-
-    /**
-     * Initializes required cookie entries
-     */
-    initCookies() {
-      this.$cookies.set('showAllPlaceInfo', false);
-      this.$cookies.set('showAllPosInfo', false);
-    },
-
-    /**
-     * Initializes required IndexedDB data
-     */
-    async initIndexedDB() {
-
-      var technicalPlace = {
-        _id: String(Date.now()),
-        title: 'Technical Place',
-
-        technical: true,
-        general: false,
-        coordinates: false,
-        dating: false,
-
-        //place specific
-        plane: false,
-        findTypes: false,
-        visibility: false,
-        positionslist: false,
-
-        //position specific
-        objectDescribers: false,
-      }
-
-      await fromOfflineDB.addObject(technicalPlace, 'ModulePresets', 'places');
-
-      var allPlaceModules = {
-        _id: String(Date.now()),
-        title: 'ALL Place Modules',
-
-        technical: false,
-        general: true,
-        coordinates: true,
-        dating: true,
-
-        //place specific
-        plane: true,
-        findTypes: true,
-        visibility: true,
-        positionslist: true,
-
-        //position specific
-        objectDescribers: false,
-      }
-
-      var placePresetID =
-        await fromOfflineDB.addObject(allPlaceModules, 'ModulePresets', 'places');
-      this.$cookies.set('placeModulesPreset', placePresetID);
-
-      var allPosModules = {
-        _id: String(Date.now()),
-        title: 'ALL Pos. Modules',
-
-        technical: false,
-
-        general: true,
-        coordinates: true,
-        dating: true,
-
-        //place specific
-        plane: false,
-        findTypes: false,
-        visibility: false,
-        positionslist: false,
-
-        //position specific
-        objectDescribers: true,
-      }
-
-      var posPresetID =
-        await fromOfflineDB.addObject(allPosModules, 'ModulePresets', 'positions');
-      this.$cookies.set('posModulesPreset', posPresetID);
+      this.clearLocalStorage();
+      await this.clearIndexedDB()
+        .catch(err => console.error(err));
+      this.$router.go();
     },
 
     deleteCookies() {
       this.$cookies.keys().forEach(cookie => this.$cookies.remove(cookie));
-      this.$router.go();
     },
 
     async clearIndexedDB() {
       const dbs = await window.indexedDB.databases()
-      dbs.forEach(db => { window.indexedDB.deleteDatabase(db.name) })
-      this.deleteCookies();
-      this.$router.go();
+        .catch(err => console.error(err));
+      dbs.forEach(db => { window.indexedDB.deleteDatabase(db.name) });
+    },
+
+    /**
+     * Deletes all data in localStorage
+     */
+    async clearLocalStorage() {
+      this.generalStore.clearLocalStorage();
     },
 
     changePage: function (routeName) {
@@ -375,49 +315,54 @@ export default {
         })
     },
     async updatePathbar() {
-      if (this.$cookies.get('currentActivity')) {
-        await this.getInfo("Activity")
-      }
-      if (this.$cookies.get('currentPlace')) {
-        await this.getInfo("Place")
-      }
+        await this.getInfo("activity").catch(err => console.error(err));
 
-      var test = this.$cookies.get('currentPosition');
-      if (test) {
-        await this.getInfo("Position")
-      } else {
-        this.currentPosition = '-';
-      }
+        await this.getInfo("place").catch(err => console.error(err));
+
+        await this.getInfo("position").catch(err => console.error(err));
     },
 
     async getInfo(selection) {
-      const _id = this.$cookies.get('current' + selection);
+      const _id = this.generalStore.getCurrentObject(selection);
+
+      if (_id == null || _id == 'null') {
+        return;
+      }
 
       let db = null;
       let st = null;
-      if (selection === "Activity") {
+      let name = null;
+      if (selection == "activity") {
         db = "Activities"
         st = "activities"
+      } else if (selection == "place") {
+        db = "Places"
+        st = "places"
       } else {
-        db = selection + "s"
-        st = selection.toLowerCase() + "s"
+        db = "Positions"
+        st = "positions"
       }
-      const name = await fromOfflineDB.getObject(_id, db, st);
+      
+      name = await fromOfflineDB.getObject(_id, db, st)
+        .catch(err => console.error(err));
+      
 
       switch (selection) {
-        case "Activity":
+        case "activity":
           this.currentActivity = name.activityNumber;
           break;
-        case "Place":
+        case "place":
           this.currentPlace = name.placeNumber;
           break;
-        case "Position":
-          var curPlaceID = this.$cookies.get('currentPlace');
+        case "position":
+          var curPlaceID = this.generalStore.getCurrentObject('place');
           var curPlace = '';
           if (curPlaceID.length > 0) {
-            curPlace = await fromOfflineDB.getObject(curPlaceID, 'Places', 'places');
+            curPlace = await fromOfflineDB
+              .getObject(curPlaceID, 'Places', 'places')
+              .catch(err => console.error(err));
           }
-          if (curPlace.placeNumber != '1') {
+          if (curPlace.placeNumber != '1' && name != undefined) {
             this.currentPosition = name.positionNumber;
           } else {
             this.currentPosition = '-';

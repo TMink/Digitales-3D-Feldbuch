@@ -2,7 +2,7 @@
  * Created Date: 06.07.2023 13:22:10
  * Author: Julian Hardtung
  * 
- * Last Modified: 03.01.2024 16:17:16
+ * Last Modified: 17.02.2024 19:53:31
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for images of places/positions
@@ -75,7 +75,7 @@
         <v-col cols="9">
           <v-text-field v-if="automaticNaming"
             :disabled="automaticNaming">
-            {{ curPath }}*imgNumber*
+            {{ curPath }}
           </v-text-field>
           <v-text-field 
             v-if="!automaticNaming"
@@ -111,7 +111,7 @@
     <v-dialog v-model="edit_dialog" max-width="800" persistent>
       <v-card class="px-4 pt-2">
         <v-card-title>
-          {{ $t('edit', { msg: $t('image') }) }}
+          {{ $t('editPhrase', { msg: $t('image') }) }}
         </v-card-title>
 
           <v-row no-gutters>
@@ -140,7 +140,7 @@
                 no-hints
                 v-if="automaticNaming"
                 :disabled="automaticNaming">
-                {{ curPath + String(image.imageNumber).padStart(4, '0') }}
+                {{ curPath }}
               </v-text-field>
 
               <v-text-field 
@@ -189,11 +189,12 @@
 <script>
 import AddButton from '../components/AddButton.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
+import { generalDataStore } from '../ConnectionToLocalStorage.js';
 import { useWindowSize } from 'vue-window-size';
 import { toRaw } from 'vue';
 
 export default {
-  name: "AddPosition",
+  name: "ImageForm",
   components: {
     AddButton
   },
@@ -201,16 +202,21 @@ export default {
    * Props from PlaceForm/PositionForm
    */
   props: {
-    object_id: String,
-    object_type: String,
+    position_prop: Object,
   },
   emits: ['addImage'],
+  setup() {
+    const generalStore = generalDataStore();
+    return {
+      generalStore,
+    }
+  },
   /**
    * Reactive Vue.js data
    */
   data() {
     return {
-      object: '',
+      position: '',
       image: {
         _id: '',
         positionID: '',
@@ -229,7 +235,6 @@ export default {
       curPath: '',
       edit_dialog: false,
       img_carousel_dialog: false,
-      is_required: [v => !!v || 'Pflichtfeld'],
     }
   },
   setup() {
@@ -243,43 +248,23 @@ export default {
    * Initialize data from IndexedDB to the reactive Vue.js data
    */
   async created() {
-    await fromOfflineDB.syncLocalDBs();
-    await this.updateObject();
-    await this.updateImages();
+    await fromOfflineDB.syncLocalDBs()
+      .catch(err => console.error(err));
+    this.position = this.position_prop;
+    await this.updateImages()
+      .catch(err => console.error(err));
 
-    this.curPath = await this.getAutoImgTitle();
+    this.curPath = await this.getAutoImgTitle()
+      .catch(err => console.error(err));
   },
   methods: {
-    /**
-     * Update reactive Vue.js object data
-     */
-    async updateObject() {
-      this.object = await fromOfflineDB.getObject(this.object_id, 
-                        this.object_type, this.object_type.toLowerCase());
-    },
-
     /**
      * Update reactive Vue.js images data
      */
     async updateImages() {
-      var objectType = this.object_type.substring(0, this.object_type.length - 1);
-
-      if (this.$route.name == 'PlaceCreation') {
-        var allPositions = await fromOfflineDB.getAllObjectsFromArray(this.object.positions, 'Positions', 'positions');
-        var allImages = [];
-
-        allPositions.forEach(curPos => {
-          if (curPos.images.length > 0 ) {
-            curPos.images.forEach(imagesID => {
-              allImages.push(imagesID);
-            });
-          }
-        });
-        this.images = await fromOfflineDB.getAllObjectsFromArray(allImages, 'Images', 'images');
-      } else {
-        this.images = await fromOfflineDB.getAllObjectsWithID(
-                        this.object_id, objectType, 'Images', 'images');
-      }
+        this.images = await fromOfflineDB
+          .getAllObjectsWithID(this.position._id, 'Position', 'Images', 'images')
+          .catch(err => console.error(err));
     },
 
     /**
@@ -292,7 +277,8 @@ export default {
       if (this.temp_editing_img.length == 0) {
         rawImage.image = this.backup_image;
       } else {
-        rawImage.image = await this.textureToBase64(this.temp_editing_img);
+        rawImage.image = await this.textureToBase64(this.temp_editing_img)
+          .catch(err => console.error(err));
       }
 
       // automatically name the image title
@@ -301,9 +287,11 @@ export default {
         rawImage.title = this.curPath + imgNumber;
       }
 
-      await fromOfflineDB.updateObject(rawImage, 'Images', 'images');
+      await fromOfflineDB.updateObject(rawImage, 'Images', 'images')
+        .catch(err => console.error(err));
 
-      this.images[index] = await fromOfflineDB.getObject(rawImage._id, 'Images', 'images');
+      this.images[index] = await fromOfflineDB.getObject(rawImage._id, 'Images', 'images')
+        .catch(err => console.error(err));
       this.edit_dialog = false;
     },
 
@@ -320,6 +308,7 @@ export default {
 
         var imageNumber = initImageNumbers + 1 + i;
         var addedImg = await this.addImage(rawImageArray[i], imageNumber)
+          .catch(err => console.error(err));
         curImages.push(addedImg);
       }
       this.images = this.images.concat(curImages);
@@ -330,23 +319,25 @@ export default {
      */
     async addImage(imageFile, imageNumber) {
       // get all data for the new image
-      var newImage = await this.fillNewImgData(imageFile, imageNumber);
+      var newImage = await this.fillNewImgData(imageFile, imageNumber)
+        .catch(err => console.error(err));
 
-      // add imageID to the object array of all images
-      var rawObject = toRaw(this.object);
+      // add imageID to the position array of all images
+      var rawPosition = toRaw(this.position);
 
-      // update lastChanged date of object
-      rawObject.images.push(newImage._id);
-      rawObject.lastChanged = Date.now();
+      // update lastChanged date of position
+      rawPosition.images.push(newImage._id);
+      rawPosition.lastChanged = Date.now();
 
       // hide image creation dialog
       this.create_dialog = false;
 
-
       // update IndexedDB
-      fromOfflineDB.updateObject(rawObject, this.object_type, this.object_type.toLowerCase());
-      fromOfflineDB.addObject(newImage, "Images", "images");
-      fromOfflineDB.addObject({ _id: newImage._id, object: 'images' }, 'Changes', 'created');
+      await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions')
+        .catch(err => console.error(err));
+      await fromOfflineDB.addObject(newImage, "Images", "images")
+        .catch(err => console.error(err));
+      //await fromOfflineDB.addObject({ _id: newImage._id, object: 'images' }, 'Changes', 'created');
       return newImage;
     },
 
@@ -363,23 +354,20 @@ export default {
         _id: newImageID,
         imageNumber: imageNumber,
         title: rawImage.title,
-        image: await this.textureToBase64([imageFile]),
+        image: await this.textureToBase64([imageFile])
+          .catch(err => console.error(err)),
         lastChanged: Date.now(),
         lastSync: 0
       };
 
       // automatically name the image title
       if (this.automaticNaming) {
-        var imgNumber = String(imageNumber).padStart(4, '0');
-        filledImg.title = this.curPath + imgNumber;
+        filledImg.title = await this.getAutoImgTitle()
+          .catch(err => console.error(err));
       }
 
       // set the image parentID
-      if (this.object_type == "Positions") {
-        filledImg.positionID = this.object_id;
-      } else {
-        filledImg.placeID = this.object_id;
-      }
+      filledImg.positionID = this.position._id;
 
       return filledImg;
     },
@@ -401,8 +389,6 @@ export default {
      */
     clearImgProxy() {
       this.image._id = '';
-      //this.image.positionID = '';
-      //this.image.placeID = '';
       this.image.title = '';
       this.image.image = [];
       this.temp_editing_img = [];
@@ -440,26 +426,26 @@ export default {
     },
 
     /**
-     * Removes an image from IndexedDB and the connected object
+     * Removes an image from IndexedDB and the connected position
      * @param {ProxyObject} image 
      */
     async deleteImage(image) {
 
       var rawImage = toRaw(image);
-      var rawObject = toRaw(this.object);
-      var index = rawObject.images.indexOf(rawImage._id.toString());
+      var rawPosition = toRaw(this.position);
+      var index = rawPosition.images.indexOf(rawImage._id.toString());
 
-      // Remove the imageID from connected object
+      // Remove the imageID from connected position
       if (index != -1) {
-        rawObject.images.splice(index, 1);
-        rawObject.lastChanged = Date.now();
-        await fromOfflineDB.updateObject(
-              rawObject, this.object_type, this.object_type.toLowerCase());
+        rawPosition.images.splice(index, 1);
+        rawPosition.lastChanged = Date.now();
+        await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions')
+          .catch(err => console.error(err));
       }
 
       // Delete the image itself
-      await fromOfflineDB.deleteObject(image, 'Images', 'images');
-      this.$cookies.remove('currentImage');
+      await fromOfflineDB.deleteObject(image, 'Images', 'images')
+        .catch(err => console.error(err));
 
       this.images.splice(index, 1);
     },
@@ -482,34 +468,30 @@ export default {
 
     /**
      * Creates and returns the title beginning of an image for 
-     * the current `place`/`position`.
+     * the current `position`.
      * 
      * To create a full image title the `imageNumber` has to be 
      * appended to this return `String`.
      * @returns {String} image title 
      */
     async getAutoImgTitle() {
-      const curActivityID = this.$cookies.get('currentActivity');
-      const curActivity = await fromOfflineDB.getObject(curActivityID, 'Activities', 'activities');
+      const curActivityID = this.generalStore.getCurrentObject('activity');
+      const curActivity = await fromOfflineDB
+        .getObject(curActivityID, 'Activities', 'activities')
+        .catch(err => console.error(err));
 
-      const curPlaceID = this.$cookies.get('currentPlace');
-      const curPlace = await fromOfflineDB.getObject(curPlaceID, 'Places', 'places');
+      const curPlaceID = this.generalStore.getCurrentObject('place');
+      const curPlace = await fromOfflineDB
+        .getObject(curPlaceID, 'Places', 'places')
+        .catch(err => console.error(err));
       const placeNumber = curPlace.placeNumber.toString().padStart(4, '0');
+
+      const posNumber = this.position.positionNumber.toString().padStart(4, '0');
 
       var autoTitle = curActivity.activityNumber
         + '_' + placeNumber
-        + '_';
+        + '_' + posNumber;
 
-      if (this.object_type == 'positions') {
-        const curPosID = this.$cookies.get('currentPosition');
-        const curPos = await fromOfflineDB.getObject(curPosID, 'Positions', 'positions');
-        const posNumber = curPos.positionNumber.toString().padStart(4, '0');
-
-        autoTitle = curActivity.activityNumber
-          + '_' + placeNumber
-          + '_' + posNumber
-          + '_';
-      }
 
       return autoTitle;
     },

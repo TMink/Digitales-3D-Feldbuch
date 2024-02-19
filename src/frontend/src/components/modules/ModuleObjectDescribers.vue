@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 08.12.2023 14:23:24
+ * Last Modified: 09.01.2024 12:18:43
  * Modified By: Julian Hardtung
  * 
  * Description: `object descriptors` input module for positions
@@ -111,7 +111,7 @@ export default {
       handler: function () {
         if (this.object.count != null) {
           /* Send data back to ModuleViewer.vue */
-          this.$emit("dataToModuleViewerrr", ['count', this.object.count]);
+          this.$emit("dataToModuleViewer", ['count', this.object.count]);
         }
       }
     }

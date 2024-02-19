@@ -2,7 +2,7 @@
  Created Date: 17.11.2023 16:18:33
  Author: Tobias Mink
  
- Last Modified: 19.02.2024 17:02:08
+ Last Modified: 19.02.2024 18:38:35
  Modified By: Tobias Mink
  
  Description: 
@@ -548,7 +548,7 @@
             </v-text-field>
           </v-col>
           <v-col cols="4" align="center">
-            <v-text-field class="pt-4 pl-4 pr-4" :label="$t('editor')" v-model="posInfo.addressOf">
+            <v-text-field class="pt-4 pl-4 pr-4" :label="$t('editor')" v-model="posInfo.editor">
             </v-text-field>
           </v-col>
         </v-row>
@@ -652,7 +652,7 @@ export default {
         weight: null,
         description: null,
         dating: null,
-        addressOf: null,
+        editor: null,
         modelName: null,
       },
 

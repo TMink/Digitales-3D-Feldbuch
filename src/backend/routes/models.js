@@ -2,7 +2,7 @@
  * Created Date: 13.06.2023 13:54:24
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:24:17
+ * Last Modified: 06.02.2024 16:25:59
  * Modified By: Julian Hardtung
  * 
  * Description: Backend CRUD API routes for models
@@ -37,26 +37,29 @@ const upload = multer({ storage: storage });
  * @returns image Json-Object with all required fields
  */
 function getModelJson(doc, modelFilename) {
+  const curTime = Date.now();
   return {
     _id: doc._id,
     modelNumber: doc.modelNumber,
     placeID: doc.placeID,
     title: doc.title,
     model: modelFilename,
+    lastChanged: curTime,
+    lastSync: curTime,
   };
 }
 
 /**
  * GET images by id-array in params separated by ,
  */
-router.get("/list/:image_ids", async function (req, res, next) {});
+router.get("/list/:model_ids", async function (req, res, next) {});
 
 /* GET dates by id-array in params separated by ,*/
-router.get("/:image_id", async function (req, res, next) {
+router.get("/:model_id", async function (req, res, next) {
   try {
-    var image = await Image.findById(req.params.image_id).exec();
+    var model = await Model.findById(req.params.model_id).exec();
   } catch (error) {
-    res.status(404).send("No Image with ID: " + req.params.image_id + " found");
+    res.status(404).send("No Model with ID: " + req.params.model_id + " found");
   }
 
 
@@ -70,7 +73,7 @@ router.post("/:model_id", upload.single("model"), async function (req, res, next
   try {
     const result = await Model.create(newModel);
 
-    res.status(200).send("Saved Model: " + result);
+    res.status(200).send(result);
   } catch (error) {
     res.status(500).send("Couldn't save Model: " + error.message);
   }
@@ -86,7 +89,7 @@ router.delete("/:model_id", async function (req, res, next) {
     // delete model file
     fs.unlinkSync(FILE_PATH + result.model);
 
-    res.status(200).send("Deleted Model: " + result);
+    res.status(200).send(result);
   } catch (error) {
     res.status(500).send("Couldn't delete Model: " + error.message);
   }

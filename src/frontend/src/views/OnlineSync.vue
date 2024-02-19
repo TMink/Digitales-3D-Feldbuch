@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:02:14
+ * Last Modified: 13.02.2024 13:32:57
  * Modified By: Julian Hardtung
  * 
  * Description: `DEPRECATED AND BROKEN`synchronizes local data with online data
@@ -218,8 +218,10 @@ export default {
         };
     },
     async created() {
-        await fromOfflineDB.syncLocalDBs();
-        await this.getLocalStorageChanges();
+        await fromOfflineDB.syncLocalDBs()
+          .catch(err => console.error(err));
+        await this.getLocalStorageChanges()
+          .catch(err => console.error(err));
     },
     methods: {
         /**
@@ -227,21 +229,28 @@ export default {
          */
         async getLocalStorageChanges() {
             
-            this.updatedActivities = 
-                await fromOfflineDB.getAllUpdatedObjects('Activities', 'activities');
-            this.updatedPlaces =
-                await fromOfflineDB.getAllUpdatedObjects('Places', 'places');
-            this.updatedPositions =
-                await fromOfflineDB.getAllUpdatedObjects('Positions', 'positions');
-            this.updatedModels =
-                await fromOfflineDB.getAllUpdatedObjects('Models', 'places');
-            this.updatedModels.concat(
-                await fromOfflineDB.getAllUpdatedObjects('Models', 'positions'));
-            this.updatedImages =
-                await fromOfflineDB.getAllUpdatedObjects('Images', 'images');
+            this.updatedActivities =  await fromOfflineDB
+              .getAllUpdatedObjects('Activities', 'activities')
+              .catch(err => console.error(err));
+            this.updatedPlaces = await fromOfflineDB
+              .getAllUpdatedObjects('Places', 'places')
+              .catch(err => console.error(err));
+            this.updatedPositions = await fromOfflineDB
+              .getAllUpdatedObjects('Positions', 'positions')
+              .catch(err => console.error(err));
+            this.updatedModels = await fromOfflineDB
+              .getAllUpdatedObjects('Models', 'places')
+              .catch(err => console.error(err));
+            this.updatedModels.concat( await fromOfflineDB
+              .getAllUpdatedObjects('Models', 'positions'))
+              .catch(err => console.error(err));
+            this.updatedImages = await fromOfflineDB
+              .getAllUpdatedObjects('Images', 'images')
+              .catch(err => console.error(err));
 
-            this.deletedObjects =
-                await fromOfflineDB.getAllUpdatedObjects('Changes', 'deleted')
+            this.deletedObjects = await fromOfflineDB
+              .getAllUpdatedObjects('Changes', 'deleted'
+              .catch(err => console.error(err)))
         },
         /**
          * Synchronize a singular local change with the online DB
@@ -254,7 +263,8 @@ export default {
             const change = toRaw(proxyChange);
 
             // get request type of the change (post, put, delete)
-            var request = await this.getRequestType(proxyChange);
+            var request = await this.getRequestType(proxyChange)
+              .catch(err => console.error(err));
             
             // get subdomain through which this change is uploaded
             var subdomain = this.getSubdomainFromChange(proxyChange);
@@ -262,18 +272,24 @@ export default {
             // upload changed data to onlineDB
             var res;
             if (subdomain == 'images' || subdomain == 'models') {
-                res = await fromBackend.uploadFormData(change, request, subdomain);
+                res = await fromBackend
+                  .uploadFormData(change, request, subdomain)
+                  .catch(err => console.error(err));
             } else {
-                res = await fromBackend.uploadData(change, request, subdomain);
+                res = await fromBackend
+                  .uploadData(change, request, subdomain)
+                  .catch(err => console.error(err));
             }
             
 
             if (res.status == 200) {
                 // delete the change Entry from indexedDB 
-                await this.deleteChangeEntry(change);
+                await this.deleteChangeEntry(change)
+                  .catch(err => console.error(err));
             }
 
-            await this.updateLastSyncTime(proxyChange, subdomain);
+            await this.updateLastSyncTime(proxyChange, subdomain)
+              .catch(err => console.error(err));
             
             this.$root.vtoast.show({ message: 'Successfully synchronized with Database!' })
         },
@@ -319,44 +335,58 @@ export default {
             if (proxyChange.object == undefined) {
                 if (subdomain == 'activities') {
 
-                    await fromOfflineDB.updateObject(change, 'Activities', 'activities');
+                    await fromOfflineDB
+                      .updateObject(change, 'Activities', 'activities')
+                      .catch(err => console.error(err));
                     let index = this.updatedActivities.indexOf(proxyChange);
                     this.updatedActivities.splice(index, 1);
 
                 } else if (subdomain == 'places') {
 
-                    await fromOfflineDB.updateObject(change, 'Places', 'places');
+                    await fromOfflineDB
+                      .updateObject(change, 'Places', 'places')
+                      .catch(err => console.error(err));
                     let index = this.updatedPlaces.indexOf(proxyChange);
                     this.updatedPlaces.splice(index, 1);
 
                 } else if (subdomain == 'positions') {
 
-                    await fromOfflineDB.updateObject(change, 'Positions', 'positions');
+                    await fromOfflineDB
+                      .updateObject(change, 'Positions', 'positions')
+                      .catch(err => console.error(err));
                     let index = this.updatedPositions.indexOf(proxyChange);
                     this.updatedPositions.splice(index, 1);
 
                 } else if (subdomain == 'models') {
                     if (proxyChange.placeID != undefined) {
 
-                        await fromOfflineDB.updateObject(change, 'Models', 'places');
+                        await fromOfflineDB
+                          .updateObject(change, 'Models', 'places')
+                          .catch(err => console.error(err));
                         let index = this.updatedModels.indexOf(proxyChange);
                         this.updatedModels.splice(index, 1);
 
                     } else if (proxyChange.positionsID != undefined) {
 
-                        await fromOfflineDB.updateObject(change, 'Models', 'positions');
+                        await fromOfflineDB
+                          .updateObject(change, 'Models', 'positions')
+                          .catch(err => console.error(err));
                         let index = this.updatedModels.indexOf(proxyChange);
                         this.updatedModels.splice(index, 1);
                     }
                 } else if (subdomain == 'images') {
 
-                    await fromOfflineDB.updateObject(change, 'Images', 'images');
+                    await fromOfflineDB
+                      .updateObject(change, 'Images', 'images')
+                      .catch(err => console.error(err));
                     let index = this.updatedImages.indexOf(proxyChange);
                     this.updatedImages.splice(index, 1);
 
                 } else if (subdomain == 'tests') {
 
-                    await fromOfflineDB.updateObject(change, 'Tests', 'tests');
+                    await fromOfflineDB
+                      .updateObject(change, 'Tests', 'tests')
+                      .catch(err => console.error(err));
                     let index = this.updatedTexts.indexOf(proxyChange);
                     this.updatedTexts.splice(index, 1);
 
@@ -394,8 +424,12 @@ export default {
         async deleteChangeEntry(change) {
             //check if it is an object that was just created
             // -> then we need to `post` it to backend
-            var changeCreated = await fromOfflineDB.getObject(change._id, 'Changes', 'created')
-            var changeDeleted = await fromOfflineDB.getObject(change._id, 'Changes', 'deleted')
+            var changeCreated = await fromOfflineDB
+              .getObject(change._id, 'Changes', 'created')
+              .catch(err => console.error(err));
+            var changeDeleted = await fromOfflineDB
+              .getObject(change._id, 'Changes', 'deleted')
+              .catch(err => console.error(err));
 
             if (changeCreated != undefined) {
                 fromOfflineDB.deleteObject(change, 'Changes', 'created');
@@ -409,8 +443,12 @@ export default {
          */
         async getRequestType(inputChange) {
             var request = 'put';
-            var changeCreated = await fromOfflineDB.getObject(inputChange._id, 'Changes', 'created')
-            var changeDeleted = await fromOfflineDB.getObject(inputChange._id, 'Changes', 'deleted')
+            var changeCreated = await fromOfflineDB
+              .getObject(inputChange._id, 'Changes', 'created')
+              .catch(err => console.error(err));
+            var changeDeleted = await fromOfflineDB
+              .getObject(inputChange._id, 'Changes', 'deleted')
+              .catch(err => console.error(err));
 
             if (changeCreated != undefined) {
                 request = 'post';

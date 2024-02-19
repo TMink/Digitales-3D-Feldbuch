@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.12.2023 14:47:05
+ * Last Modified: 09.02.2024 23:02:05
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -18,12 +18,14 @@ export default {
   coordinates: "Koordinaten",
   fieldbook: "Digitales 3D-Feldbuch",
   activity: "Aktivität | Aktivitäten",
+  activity_id: "Aktivitäten ID",
   place: "Stelle | Stellen",
   place_id: "Stellen ID",
   position: "Position | Positionen",
   position_id: "Positions ID",
   texture: "Textur",
   image: "Bild | Bilder",
+  imageOverview: "Bildübersicht",
   picture: "Bild | Bilder",
   model: "Modell | Modelle",
   camera: "Kamera | Kameras",
@@ -105,11 +107,25 @@ export default {
   data_import: "Data Import",
   technical: "Technische Stelle",
   home: "Startseite",
+  technicalDrawing: "Technische Zeichnung",
+  registration: "Account erstellen",
+  lastSync: "Zuletzt Synchronisiert: ",
+  login: "Einloggen",
+  logout: "Ausloggen",
+  username: "Benutzername",
+  password: "Passwort",
+  mail: "E-Mail",
+  download: "Herunterladen",
+  desktopClient: "Desktop Programm",
+  options: "Optionen",
+  delete: "Löschen",
+  edit: "Bearbeiten",
+  syncStatus: "Status",
 
   // Phrases
   add: "{msg} hinzufügen",
-  edit: "{msg} bearbeiten",
-  delete: "{msg} löschen",
+  editPhrase: "{msg} bearbeiten",
+  deletePhrase: "{msg} löschen",
   moveObj: "{obj} bewegen",
   measureDist: "Abstand messen",
   newIdentifier: "Neuer Bezeichner",
@@ -122,6 +138,10 @@ export default {
   current_selection: "Aktuelle Auswahl",
   confirm_del: "Möchten Sie wirklich die {object} {object_nr} löschen?",
   overview: "{msg} Übersicht",
+  addNewPreset: "Neues Preset hinzufügen",
+  existingPresets: "Bestehende Presets",
+  selectedPreset: "Ausgewähltes Preset",
+  editModule: "Modul editieren",
   visibilities: "Schlecht | Mäßig | Gut | Sehr gut",
   addMax5: "Füge max. 5 beschreibende Attribute hinzu",
   noResults: "Keine passenden Attribute gefunden. Drücke `enter`, um ein neues zu erstellen.",
@@ -133,7 +153,34 @@ export default {
   wantToLeave:
     "Möchten Sie diese Seite wirklich verlassen? Sie haben noch ungespeicherte Änderungen.",
   saveSuccess: "Speichern erfolgreich",
+  syncSuccess: "Hochladen der Daten erfolgreich",
   duplicationMode: "Duplikationsmodus aktiviert",
   getBackup: "Ihre Daten werden geladen",
   createBackup: "Ihre Daten werden gesammelt",
+  forgotPassword: "Passwort vergessen",
+  downloadInfoText:
+    "Wenn du planst das Feldbuch ohne eine aktive Internetverbindung zu nutzen, solltest du das Desktop Programm herunterladen.",
+  addToYourAccount: "Zu deinem Account hinzufügen",
+  addOtherEditor: "Einen anderen Bearbeiter hinzufügen",
+  addEditorToActivity: "Einen anderen Bearbeiter zu dieser Aktivität hinzufügen",
+  notLoggedIn: "Sie sind nicht eingeloggt!",
+  onlyLocal: "Dieser Eintrag ist nur lokal verfügbar",
+  noAccount: "Dieser Eintrag ist noch keinem Konto zugeordnet",
+  downloadOnlineData: "Online verfügbare Daten herunterladen",
+  downloadOnlineDataInfo:
+    "Wähle die Aktivitäten aus, von denen du die Daten (Stellen, Positionen etc.) herunterladen möchtest. Beachte, dass der Download eine Weile dauern kann, wenn du Aktivitäten mit vielen Daten herutnerladen möchtest.",
+  lpDescription: 
+    "Bei diesem Projekt handelt es sich um das digitale 3D-Feldbuch, das die digitale Dokumentation archäologischer Ausgrabungen ermöglichen soll. Das System wurde in Zusammenarbeit mit dem Archäologischen Institut der Universität zu Köln entwickelt.",
+  lpWhatIsThis: "Was ist das hier?",
+  lpHowToDocument: "Wie wird Dokumentiert?",
+  lpDescriptionStellenkartensystem: 
+    "Beim Stellenkartensystem wird in Aktivitäten, Stellen und Positionen unterteilt.  Mithilfe dieser Notationsform ist es möglich, gefundene Artefakte präzise zu beschreiben und diese referenzieren zu können. Da es sich hierbei um eine standardisierte Notationsmethode handelt, wird hierdurch der Datenaustausch zwischen Experten und die Interpretation der jeweiligen Erkenntnisse vereinfacht.",
+  lpDescriptionActivity: "Eine archäologische Maßnahme. Wird identifiziert durch eine Aktivitätsnummer.",
+  lpDescriptionActivity_ID: 
+    "Ein einzigartiger Index, um Aktivitäten eindeutig identifizierbar zu machen. Diese folgt folgender Struktur: Zweistelliges Kürzel für das Außenstellengebiet + Leerzeichen + vierstellige Jahreszahl + / + vierstellige Ziffernfolge",
+  lpDescriptionPlace: "Neutrale Ansprache für alle Befunde, Verfärbungen oder auch Arbeitsbereiche einer Aktivität. Wird eindeutig identifiziert durch eine Stellennummer.",
+  lpDescriptionPlace_ID: "Fortlaufende Nummerierung aller Stellen einer Aktivität",
+  lpDescriptionPosition: "Neutrale Ansprache für alle Arbeitsschritte und Erkenntnisse einer Stelle. Wird durch eine Positionsnummer identifiziert.",
+  lpDescriptionPosition_ID: "Fortlaufende Nummerierung aller Positionen einer Stelle. Durch Kombination aus Aktivitäts-, Stellen- und Positionsnummer werden Positionen eindeutig identifizierbar.",
+  lpFieldbookDescriptionShort: "Ein effizienterer Weg, um archäologische Ausgrabungen zu dokumentieren und visualisieren."
 };

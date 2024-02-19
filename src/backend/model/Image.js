@@ -12,13 +12,15 @@ const Schema = mongoose.Schema;
 
 const imagesSchema = new Schema({
   _id: {
-    type: Number,
+    type: String,
     required: true,
   },
   positionID: Number,
   imageNumber: Number,
   title: String,
-  image: [String],
+  image: String,
+  lastChanged: Number,
+  lastSync: Number,
 });
 
 module.exports = mongoose.model("Image", imagesSchema);

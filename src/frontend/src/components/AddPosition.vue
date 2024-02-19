@@ -2,7 +2,7 @@
  * Created Date: 01.07.2023 14:01:06
  * Author: Julian Hardtung
  * 
- * Last Modified: 03.01.2024 16:17:13
+ * Last Modified: 17.02.2024 20:04:57
  * Modified By: Julian Hardtung
  * 
  * Description: vue component for adding a position
@@ -15,6 +15,7 @@
 <script>
 import AddButton from '../components/AddButton.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
+import { generalDataStore } from '../ConnectionToLocalStorage';
 import { toRaw } from 'vue';
 
 export default {
@@ -26,6 +27,12 @@ export default {
     positions_prop: Array,
   },
   emits: ['updatePositions', 'updatePlace'],
+  setup() {
+    const generalStore = generalDataStore();
+    return {
+      generalStore,
+    }
+  },
   data() {
     return {
       curModulePreset: {
@@ -34,23 +41,21 @@ export default {
     }
   },
   async created() {
-    await fromOfflineDB.syncLocalDBs();
-    await this.updateModulePresets();
+    await fromOfflineDB.syncLocalDBs().catch(err => console.error(err));
+    await this.updateModulePresets().catch(err => console.error(err));
   },
   methods: {
-    closeDiag() {
-      this.$emit('updatePositions');
-    },
 
     /**
      * Get all ModulePresets from IndexedDB
      */
      async updateModulePresets() {
-      let presetFromCookies = this.$cookies.get('posModulesPreset');
+      let presetFromCookies = this.generalStore.getModulesPreset('position');
 
-      if (presetFromCookies.length > 0) {
-        this.curModulePreset = await fromOfflineDB.getObject(
-          presetFromCookies, 'ModulePresets', 'positions');
+      if (presetFromCookies != null) {
+        this.curModulePreset = await fromOfflineDB
+          .getObject(presetFromCookies, 'ModulePresets', 'positions')
+          .catch(err => console.error(err));
         }
     },
 
@@ -58,8 +63,10 @@ export default {
      * Adds a new position to the local storage for the current place
      */
     async addPosition() {
-      var curPlaceID = this.$cookies.get('currentPlace');
-      var curPlace = await fromOfflineDB.getObject(curPlaceID, "Places", "places");
+      var curPlaceID = this.generalStore.getCurrentObject('place');
+      var curPlace = await fromOfflineDB
+        .getObject(curPlaceID, "Places", "places")
+        .catch(err => console.error(err));
       var newPositionID = String(Date.now());
 
       curPlace.positions.push(newPositionID);
@@ -68,8 +75,8 @@ export default {
       const newPosition = {
         _id: newPositionID,
         placeID: curPlaceID,
-        positionNumber: '',
-        subNumber: '',
+        positionNumber: null,
+        subNumber: null,
         right: '',
         up: '',
         height: '',
@@ -79,7 +86,7 @@ export default {
         title: '',
         description: '',
         dating: '',
-        addressOf: '',
+        editor: '',
         date: new Date().toLocaleDateString("de-DE"),
         hasSubNumber: false,
         isSeparate: false,
@@ -95,16 +102,13 @@ export default {
       if (this.positions_prop.length == 0) {
         newPosition.positionNumber = 1;
       } else {
-        var lastPosNumber = await fromOfflineDB.getLastAddedPosition();
-
-        newPosition.positionNumber = lastPosNumber + 1;
+        newPosition.positionNumber = this.positions_prop.length + 1;
       }
-      
-      await fromOfflineDB.updateObject(curPlace, 'Places', 'places');
-      await fromOfflineDB.addObject(newPosition, "Positions", "positions");
-      await fromOfflineDB.addObject(
-            { _id: newPositionID, object: 'positions' }, 'Changes', 'created');
-      this.closeDiag();
+      await fromOfflineDB.updateObject(curPlace, 'Places', 'places')
+        .catch(err => console.error(err));
+      await fromOfflineDB.addObject(newPosition, "Positions", "positions")
+        .catch(err => console.error(err));
+      this.$emit('updatePositions');
     },
   }
 }

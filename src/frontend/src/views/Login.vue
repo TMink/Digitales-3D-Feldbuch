@@ -2,8 +2,8 @@
  * Created Date: 29.11.2023 01:45:54
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.12.2023 14:32:08
- * Modified By: Julian Hardtung
+ * Last Modified: 09.02.2024 21:20:21
+ * Modified By: Oliver Mertens
  * 
  * Description: Vue component for user login
  -->
@@ -14,36 +14,83 @@
     <Navigation active_tab_prop="" />
 
     <v-img cover :height="getHeight()"
-      src="https://cdn.discordapp.com/attachments/537612240409329714/1179100383516299326/Background.png?ex=65788dce&is=656618ce&hm=1293c8ed1ee66a8d3707737d52fa50fc96a5e0ef73b21f9a0a392ee9e8d56f56&">
+      src="src/assets/background/Background_Landingpage.jpg">
       <v-row class="align-center text-center justify-center pt-16 mt-16">
         <v-col>
-          <v-icon><v-img src="src/assets/logos/3DDF_Icon.png"></v-img></v-icon>
+          <img 
+            src="src/assets/logos/3DDF_Icon.png" 
+            alt=""
+            height="100"
+            class="mb-4"/>
 
-          <h1 class="text-h4 font-weight-thin mb-4">
+          <h1 class="text-h4 font-weight-thin mb-14">
             {{ toolbar_title }}
           </h1>
-          <h4 class="subheading">
-            LOGIN
-          </h4>
-          <v-row no-gutters>
-            <v-spacer></v-spacer>
-            <v-text-field v-model="form.username" variant="outlined" label="Username"></v-text-field>
-            <v-spacer></v-spacer>
-          </v-row>
-          <v-row no-gutters>
-            <v-spacer></v-spacer>
-            <v-text-field v-model="form.password" variant="outlined" type="input" label="Password"></v-text-field>
-            <v-spacer></v-spacer>
-          </v-row>
 
-          <v-btn v-on:click="login()" color="secondary" class="ma-2" 
-          prepend-icon="mdi-account-plus-outline">Login</v-btn>
-          <v-row no-gutters text-xs-center>
-            <v-spacer></v-spacer>
-            <a href="url" class="pa-2">Forgot password</a>
-            <a v-on:click="routeRegistration()" class="pa-2">Sign-up</a>
-            <v-spacer></v-spacer>
-          </v-row>
+          <div>
+            <v-card
+              class="mx-auto pa-12 pb-8"
+              elevation="8"
+              max-width="448"
+              rounded="lg">
+
+              <v-text-field
+                color="primary"
+                density="compact"
+                prepend-inner-icon="mdi-account-circle"
+                variant="outlined"
+                v-model="form.username" 
+                :label="this.$t('username')">
+              </v-text-field>
+
+              <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
+                <a></a>
+                <a
+                  class="text-caption text-decoration-none text-blue"
+                  href="url">
+                  {{ this.$t('forgotPassword') }}
+                </a>
+              </div>
+          
+              <v-text-field
+                color="primary"
+                prepend-inner-icon="mdi-lock"
+                v-model="form.password" 
+                variant="outlined"    
+                :label="this.$t('password')"
+                :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
+                :type="visible ? 'text' : 'password'"
+                density="compact"
+                @click:append-inner="visible = !visible">
+              </v-text-field>
+
+              <v-card
+                class="mb-12"
+                color="surface-variant"
+                variant="tonal">
+              </v-card>
+          
+              <v-btn
+                v-on:click="login()"
+                block
+                class="mb-8"
+                color="primary"
+                size="large"
+                prepend-icon="mdi-login-variant">        
+                {{ this.$t('login') }}
+              </v-btn>
+
+              <v-card-text class="text-center">
+                <a
+                  v-on:click="routeRegistration()"
+                  href="/#/registration"
+                  class="text-blue text-decoration-none">
+                    {{ this.$t('registration') }} 
+                    <v-icon icon="mdi-chevron-right"></v-icon>
+                </a>
+              </v-card-text>
+            </v-card>
+          </div>
         </v-col>
       </v-row>
     </v-img>
@@ -74,6 +121,7 @@ export default {
   emits: ['view'],
   data() {
     return {
+      visible: false,
       activities: [],
       toolbar_title: this.$t('fieldbook'),
       form: {
@@ -99,11 +147,10 @@ export default {
     },
     getHeight() {
       if(this.windowHeight > 600){
-        return this.windowHeight - 115;
+        return this.windowHeight - 112;
       } else {
-        return this.windowHeight + 115;
-      }
-        
+        return this.windowHeight + 112;
+      } 
     },
   }
 }

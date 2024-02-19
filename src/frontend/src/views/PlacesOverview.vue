@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 04.01.2024 15:11:14
+ * Last Modified: 17.02.2024 20:17:14
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -69,39 +69,62 @@
                 </td>
 
                 <!-- TITLE -->
-                  <td class="py-2" :style="getRowStyle(index)">
-                     <div v-if="item.raw.placeNumber > 1">
-                      <v-list-item-title
-                        v-if="item.raw.title.length > 0"
-                        style="min-width:200px" 
-                        class="text-wrap">
-                        {{ item.raw.title }}
-                      </v-list-item-title>
-                      
-                      <v-list-item-title 
-                        v-if="item.raw.title.length == 0" 
-                        style="color:dimgrey;">
-                        -
-                      </v-list-item-title>
-                    </div>
-
-                     <v-list-item-title 
-                      v-if="item.raw.placeNumber == 1" 
-                      style="color:#C4A484;">
-                      {{ $t('technical') }}
+                <td class="py-2" :style="getRowStyle(index)">
+                  <div v-if="item.raw.placeNumber > 1">
+                    <v-list-item-title
+                      v-if="item.raw.title.length > 0"
+                      style="min-width:200px" 
+                      class="text-wrap">
+                      {{ item.raw.title }}
                     </v-list-item-title>
-                    
-                    <v-list-item-subtitle class="d-flex flex-row-reverse" v-if="item.raw.lastSync != ''">
-                      Last sync: {{ new Date(item.raw.lastSync).toLocaleString() }}
-                    </v-list-item-subtitle>
+                      
+                    <v-list-item-title 
+                      v-if="item.raw.title.length == 0" 
+                      style="color:dimgrey;">
+                      -
+                    </v-list-item-title>
+                  </div>
 
-                  </td>
+                  <v-list-item-title 
+                    v-if="item.raw.placeNumber == 1" 
+                    style="color:#C4A484;">
+                    {{ $t('technical') }}
+                  </v-list-item-title>
+                </td>
 
                 <!-- DATE -->
                 <td :style="getRowStyle(index)">
                   <v-list-item-title>
                     {{ item.raw.date || '-' }}
                   </v-list-item-title>
+                </td>
+
+                <!-- SYNC STATUS -->
+                <td :style="getRowStyle(index)">
+                  <v-list-item>
+                    <v-btn 
+                      icon 
+                      variant="text"
+                      v-if="item.raw.lastSync > 0">
+                        <v-tooltip 
+                          activator="parent"
+                          location="bottom">
+                          {{ this.$t('lastSync') + new Date(item.raw.lastSync).toLocaleString() }}
+                        </v-tooltip>
+                        <v-icon>mdi-cloud-check</v-icon>
+                    </v-btn>
+                    <v-btn 
+                      icon 
+                      variant="text"      
+                      v-else>
+                        <v-tooltip 
+                          activator="parent"
+                          location="bottom">
+                            {{ $t('onlyLocal') }}
+                        </v-tooltip>
+                        <v-icon>mdi-cloud-off-outline</v-icon>
+                    </v-btn>
+                  </v-list-item>
                 </td>
               </tr>
             </template>
@@ -307,6 +330,34 @@
                     {{ item.raw.date || '-' }}
                   </v-list-item-title>
                 </td>
+                
+                <!-- SYNC STATUS -->
+                <td :style="getRowStyle(index)">
+                  <v-list-item>
+                    <v-btn 
+                      icon 
+                      variant="text"
+                      v-if="item.raw.lastSync > 0">
+                        <v-tooltip 
+                          activator="parent"
+                          location="bottom">
+                          {{ this.$t('lastSync') + new Date(item.raw.lastSync).toLocaleString() }}
+                        </v-tooltip>
+                        <v-icon>mdi-cloud-check</v-icon>
+                    </v-btn>
+                    <v-btn 
+                      icon 
+                      variant="text"      
+                      v-else>
+                        <v-tooltip 
+                          activator="parent"
+                          location="bottom">
+                            {{ $t('onlyLocal') }}
+                        </v-tooltip>
+                        <v-icon>mdi-cloud-off-outline</v-icon>
+                    </v-btn>
+                  </v-list-item>
+                </td>
                 <v-divider></v-divider>
               </tr>
             </template>
@@ -374,6 +425,8 @@ import { fromBackend } from '../ConnectionToBackend.js'
 import { useWindowSize } from 'vue-window-size';
 import { toRaw } from 'vue';
 import { useUserStore } from '../Authentication';
+import { generalDataStore } from '../ConnectionToLocalStorage.js';
+
 
 export default {
   name: 'PlacesOverview',
@@ -386,11 +439,13 @@ export default {
   setup() {
     const { width, height } = useWindowSize();
     const userStore = useUserStore();
+    const generalStore = generalDataStore();
 
     return {
       windowWidth: width,
       windowHeight: height,
-      userStore
+      userStore,
+      generalStore
     };
   },
 
@@ -414,6 +469,7 @@ export default {
         },
         { title: this.$tc('title',2), align: 'start', key: 'title' },
         { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
+        { title: this.$t('syncStatus'), align: 'start', key: 'status', width: "100px"}
       ],
       fullHeaders: [
         {
@@ -432,8 +488,9 @@ export default {
         { title: this.$t('plane'), align: 'start', key: 'plane', width: "150px" },
         { title: this.$t('visibility'), align: 'start', key: 'visibility', width: "50px" },
         { title: this.$t('description'), align: 'start', key: 'description', width: "150px" },
-        { title: this.$t('editor'), align: 'start', key: 'editor', width: "50px" },
+        { title: this.$tc('editor', 1), align: 'start', key: 'editor', width: "50px" },
         { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
+        { title: this.$t('syncStatus'), align: 'start', key: 'status', width: "100px"}
       ],
       curModulePreset: {
         title: '-',
@@ -453,9 +510,12 @@ export default {
    */
   async created() {
     this.$emit("view", this.$t('overview', { msg: this.$tc('place', 2) }));
-    await fromOfflineDB.syncLocalDBs();
-    await this.updatePlaces();
-    await this.updateModulePresets(); 
+    await fromOfflineDB.syncLocalDBs()
+      .catch(err => console.error(err));
+    await this.updatePlaces()
+      .catch(err => console.error(err));
+    await this.updateModulePresets()
+      .catch(err => console.error(err));
     this.setShowAllInfoSwitch();
     
     // Init first place as technical place
@@ -511,10 +571,23 @@ export default {
      * Get all places from IndexedDB
      */
     async updatePlaces() {
-      var curActivityID = String(this.$cookies.get('currentActivity'));
+      var curActivityID = this.generalStore.getCurrentObject('activity');
 
-      var offlinePlaces = await fromOfflineDB.getAllObjectsWithID(
-        curActivityID, 'Activity', 'Places', 'places');
+      this.places = await fromOfflineDB
+        .getAllObjectsWithID(curActivityID, 'Activity', 'Places', 'places')
+        .catch(err => console.error(err));
+      this.places.sort((a, b) => (a.placeNumber > b.placeNumber) ? 1 : -1);
+    },
+
+    /**
+    * @deprecated
+    */
+    async updatePlacesFull() {
+      var curActivityID = this.generalStore.get('activity');
+
+      var offlinePlaces = await fromOfflineDB
+        .getAllObjectsWithID(curActivityID, 'Activity', 'Places', 'places')
+        .catch(err => console.error(err));
       offlinePlaces.sort((a, b) => (a.placeNumber > b.placeNumber) ? 1 : -1);
 
       // if user isn't logged in, just show the local stuff
@@ -524,13 +597,16 @@ export default {
         return;
       }
 
-      const onlinePlaces = await fromBackend.getDataWithParam('places/activity', curActivityID)
+      const onlinePlaces = await fromBackend
+        .getDataWithParam('places/activity', curActivityID)
+        .catch(err => console.error(err));
 
       // if there are no offlinePlaces, don't check for duplicates
       if (offlinePlaces.length == 0) {
         console.log("No local places, so only show online");
         onlinePlaces.forEach(async (onPlace) => {
-          await fromOfflineDB.addObject(onPlace, 'Places', 'places');
+          await fromOfflineDB.addObject(onPlace, 'Places', 'places')
+          .catch(err => console.error(err));
         });
         this.places = onlinePlaces;
         return;
@@ -554,7 +630,8 @@ export default {
               var tempPlace = onlinePlaces[i];
               onlinePlaces.splice(i, 1)
               newPlacesList.push(tempPlace);
-              await fromOfflineDB.addObject(tempPlace, 'Places', 'places');
+              await fromOfflineDB.addObject(tempPlace, 'Places', 'places')
+                .catch(err => console.error(err));
             } else {
               newPlacesList.push(offPlace);
             }
@@ -577,11 +654,12 @@ export default {
      * Get all ModulePresets from IndexedDB
      */
     async updateModulePresets() {
-      let presetFromCookies = this.$cookies.get('placeModulesPreset');
+      let presetID = this.generalStore.getModulesPreset('place');
 
-      if (presetFromCookies.length > 0) {
-        this.curModulePreset = await fromOfflineDB.getObject(
-          presetFromCookies, 'ModulePresets', 'places');
+      if (presetID.length > 0) {
+        this.curModulePreset = await fromOfflineDB
+          .getObject(presetID, 'ModulePresets', 'places')
+          .catch(err => console.error(err));
         }
     },
 
@@ -589,9 +667,11 @@ export default {
      * Adds a new place to IndexedDB for the current activity
      */
     async addPlace() {
-      const acID = String(this.$cookies.get('currentActivity'));
+      const acID = this.generalStore.getCurrentObject('activity');
       var newPlaceID = String(Date.now());
-      var activity = await fromOfflineDB.getObject(acID, 'Activities', 'activities');
+      var activity = await fromOfflineDB
+        .getObject(acID, 'Activities', 'activities')
+        .catch(err => console.error(err));
 
       // add placeID to the activity array of all places
       activity.places.push(newPlaceID);
@@ -638,19 +718,26 @@ export default {
         newPlace.placeNumber = 1;
 
         //set place to technical place if it is the 1. place
-        newPlace.modulePreset = await fromOfflineDB.getFirstEntry('ModulePresets', 'places');
+        newPlace.modulePreset = await fromOfflineDB
+          .getFirstEntry('ModulePresets', 'places')
+          .catch(err => console.error(err));
       } else {
-        const placeNumbers = await fromOfflineDB.getPropertiesWithID(acID, 'place', 'placeNumber', 'Places', 'places')
+        const placeNumbers = await fromOfflineDB
+          .getPropertiesWithID(acID, 'place', 'placeNumber', 'Places', 'places')
+          .catch(err => console.error(err));
         const newPlaceNumber = Math.max(...placeNumbers) + 1;
         newPlace.placeNumber = newPlaceNumber;
         newPlace.modulePreset = toRaw(this.curModulePreset);
       }
 
       // update IndexedDB
-      await fromOfflineDB.updateObject(activity, 'Activities', 'activities');
-      await fromOfflineDB.addObject(newPlace, 'Places', 'places');
-      await fromOfflineDB.addObject({ _id: newPlaceID, object: 'places' }, 'Changes', 'created');
-      await this.updatePlaces(newPlace._id);
+      await fromOfflineDB.updateObject(activity, 'Activities', 'activities')
+        .catch(err => console.error(err));
+      await fromOfflineDB.addObject(newPlace, 'Places', 'places')
+        .catch(err => console.error(err));
+      //await fromOfflineDB.addObject({ _id: newPlaceID, object: 'places' }, 'Changes', 'created');
+      await this.updatePlaces(newPlace._id)
+        .catch(err => console.error(err));
       return newPlaceID;
     },
 
@@ -660,16 +747,20 @@ export default {
      * @param {Int} count 
      */
     async duplicatePlace(placeID) {
-      var newPlaceID = await this.addPlace();
-      var newPlace = await fromOfflineDB.getObject(newPlaceID, 'Places', 'places');
-      var dupPlace = await fromOfflineDB.getObject(placeID, 'Places', 'places');
+      var newPlaceID = await this.addPlace()
+        .catch(err => console.error(err));
+      var newPlace = await fromOfflineDB.getObject(newPlaceID, 'Places', 'places')
+        .catch(err => console.error(err));
+      var dupPlace = await fromOfflineDB.getObject(placeID, 'Places', 'places')
+        .catch(err => console.error(err));
       
       dupPlace._id = newPlaceID;
       dupPlace.placeNumber = newPlace.placeNumber;
       dupPlace.positions = [];
       dupPlace.lastChanged = Date.now();
 
-      await fromOfflineDB.updateObject(dupPlace, 'Places', 'places');
+      await fromOfflineDB.updateObject(dupPlace, 'Places', 'places')
+        .catch(err => console.error(err));
       this.updatePlaces();
     },
 
@@ -701,29 +792,23 @@ export default {
      */
     moveToPlace(placeID) {
       if (placeID !== 'new') {
-        this.$cookies.set('currentPlace', placeID)
+        this.generalStore.setCurrentObject(placeID, 'place');
       }
       this.$router.push({ name: 'PlaceCreation', params: { placeID: placeID } })
     },
 
     /**
-     * Set the toggleAllInfo switch state depending on VueCookies
+     * Set the toggleAllInfo switch state depending on localStorage
      */
-    setShowAllInfoSwitch() {
-      var showAllCookie = this.$cookies.get('showAllPlaceInfo');
-
-      if (showAllCookie == "true") {
-        this.showAllInfo = true;
-      } else {
-        this.showAllInfo = false;
-      }
+    async setShowAllInfoSwitch() {
+      this.showAllInfo = this.generalStore.getShowAllPlaceInfo();
     },
 
     /**
-     * Save the change toggle all info state to cookies
+     * Save the change toggle all info state to localStorage
      */
     toggleAllInfo() {
-      this.$cookies.set('showAllPlaceInfo', this.showAllInfo);
+      this.generalStore.toggleShowAllPlaceInfo(this.showAllInfo);
     },
 
     /**
@@ -773,8 +858,9 @@ export default {
      * @returns {Object} An object containing row style properties
      */
     getRowStyle(index) {
-      var currentTheme = this.$cookies.get('currentTheme')
+      var currentTheme = this.generalStore.getTheme()
       if (currentTheme !== 'fieldbook_light') {
+        
         return {
           cursor: 'pointer',
           padding: '8px 16px',

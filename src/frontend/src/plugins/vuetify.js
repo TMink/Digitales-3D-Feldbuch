@@ -2,17 +2,17 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.12.2023 14:46:45
+ * Last Modified: 10.02.2024 12:24:42
  * Modified By: Julian Hardtung
  * 
- * Description: vuetify and dark/light theme setup
+ * Description: @deprecated
+ *              vuetify and dark/light theme setup
  */
 
 import "vuetify/styles";
 import { createVuetify } from "vuetify";
 import * as labsComponents from "vuetify/labs/components";
 
-//TODO: proper color values
 export default createVuetify({
   components: {
     ...labsComponents,

@@ -2,7 +2,7 @@
  * Created Date: 14.07.2023 17:06:51
  * Author: Julian Hardtung
  * 
- * Last Modified: 03.01.2024 16:17:20
+ * Last Modified: 17.02.2024 19:53:43
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for 3d-models of places/positions
@@ -134,7 +134,7 @@
     <v-dialog v-model="edit_dialog" max-width="800" persistent>
       <v-card class="pa-2">
         <v-card-title>
-          {{ $t('edit', { msg: $t('model') }) }}
+          {{ $t('editPhrase', { msg: $t('model') }) }}
         </v-card-title>
 
           <v-row v-if='object.placeNumber > 0'>
@@ -224,6 +224,7 @@
 <script>
 import AddButton from '../components/AddButton.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
+import { generalDataStore } from '../ConnectionToLocalStorage';
 import { toRaw } from 'vue';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
@@ -244,6 +245,13 @@ export default {
     object_id: String,
     object_type: String,
   },
+  setup() {
+    const generalStore = generalDataStore();
+
+    return {
+      generalStore,
+    }
+  },
   emits: ['addModel'],
   /**
    * Reactive Vue.js data
@@ -263,7 +271,6 @@ export default {
       models: [],
       create_dialog: false,
       edit_dialog: false,
-      is_required: [v => !!v || 'Pflichtfeld'],
       canvases: [],
       contexts: [],
       scenes: [],
@@ -343,9 +350,9 @@ export default {
    * Initialize data from IndexedDB to the reactive Vue.js data
    */
   async created() {
-    await fromOfflineDB.syncLocalDBs();
-    await this.updateObject();
-    await this.updateModels();
+    await fromOfflineDB.syncLocalDBs().catch(err => console.error(err));
+    await this.updateObject().catch(err => console.error(err));
+    await this.updateModels().catch(err => console.error(err));
   },
 
   /**
@@ -574,11 +581,15 @@ export default {
       if (this.temp_editing_model.length == 0) {
         rawModel.model = this.backup_model;
       } else {
-        rawModel.model = await this.modelToArrayBuffer(this.temp_editing_model);
+        rawModel.model = await this.modelToArrayBuffer(this.temp_editing_model)
+          .catch(err => console.error(err));
       }
 
-      await fromOfflineDB.updateObject(rawModel, 'Models', this.object_type.toLowerCase());
-      await this.updateModels();
+      await fromOfflineDB
+        .updateObject(rawModel, 'Models', this.object_type.toLowerCase())
+        .catch(err => console.error(err));
+      await this.updateModels()
+        .catch(err => console.error(err));
 
       this.clearModelProxy();
       this.edit_dialog = false;
@@ -597,8 +608,8 @@ export default {
       // new model data
       const newModel = {
         _id: newModelID,
-        placeID: String(this.$cookies.get('currentPlace')),
-        positionID: String(this.$cookies.get('currentPosition')),
+        placeID: this.generalStore.getCurrentObject('place'),
+        positionID: this.generalStore.getCurrentObject('position'),
         title: this.model.title,
         model: await this.modelToArrayBuffer(toRaw(this.model.model)),
         color: '#ffffff',
@@ -625,13 +636,15 @@ export default {
       this.create_dialog = false;
 
       // update IndexedDB
-      await fromOfflineDB.updateObject(
-        toRaw(this.object), this.object_type, this.object_type.toLowerCase());
-      await fromOfflineDB.addObject(
-        newModel, 'Models', this.object_type.toLowerCase());
-      await fromOfflineDB.addObject(
-        {_id: newModelID, object: 'models' }, 'Changes', 'created');
-      await this.updateModels(newModel._id);
+      await fromOfflineDB
+        .updateObject(toRaw(this.object), this.object_type, this.object_type.toLowerCase())
+        .catch(err => console.error(err));
+      await fromOfflineDB
+        .addObject(newModel, 'Models', this.object_type.toLowerCase())
+        .catch(err => console.error(err));
+      //await fromOfflineDB.addObject({_id: newModelID, object: 'models' }, 'Changes', 'created');
+      await this.updateModels(newModel._id)
+        .catch(err => console.error(err));
 
       ctx.$emit('addModel', newModel._id);
 
@@ -667,23 +680,27 @@ export default {
         if ( this.object_type === 'Places') {
           if ( this.object.lines.length > 0 ) {
             for ( const line of this.object.lines ) {
-              const lineToBeDeleted = await fromOfflineDB.getObject(line, 
-                'Lines', 'lines');
-              await fromOfflineDB.deleteObject(lineToBeDeleted, 'Lines', 
-                'lines')
+              const lineToBeDeleted = await fromOfflineDB
+                .getObject(line, 'Lines', 'lines')
+                .catch(err => console.error(err));
+              await fromOfflineDB
+                .deleteObject(lineToBeDeleted, 'Lines', 'lines')
+                .catch(err => console.error(err));
             }
             this.object.lines = []
           }
         }
-        await fromOfflineDB.updateObject(
-          toRaw(this.object), this.object_type, this.object_type.toLowerCase());
+        await fromOfflineDB
+          .updateObject(toRaw(this.object), this.object_type, this.object_type.toLowerCase()
+          .catch(err => console.error(err)));
       }
 
       // delete the model itself
-      await fromOfflineDB.deleteObject(
-        model, 'Models', this.object_type.toLowerCase());
-      this.$cookies.remove('currentModel');
-      await this.updateModels();
+      await fromOfflineDB
+        .deleteObject(model, 'Models', this.object_type.toLowerCase())
+        .catch(err => console.error(err));
+      await this.updateModels()
+        .catch(err => console.error(err));
 
       /* Bob Ross */
       this.deleteToken = true

@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 16.12.2023 12:29:00
+ * Last Modified: 13.02.2024 13:02:09
  * Modified By: Julian Hardtung
  * 
  * Description: Helper API to the backend server
@@ -16,52 +16,9 @@
  */
 
 import axios from 'axios';
-import { fromOfflineDB } from "./ConnectionToOfflineDB";
-import VueCookies from 'vue-cookies';
 export { fromBackend }
 
 class ConnectionToBackend {
-  /**
-   *
-   * @param {String} url
-   * @param {String} dataCategory  - Category that is searched for
-   * @param {String} identifier    - Term that is searched for
-   * @returns -> Promise(object)
-   */
-  /*async getData(url, dataCategory, identifier) {
-     return new Promise((resolve, reject) => {
-      try {
-        axios.get(url).then((res) => {
-          const data = [];
-          switch (dataCategory) {
-            case "_id":
-              for (var i = 0; i < res.data.length; i++) {
-                if (res.data[i]._id == identifier) {
-                  data.push(res.data[i]);
-                }
-              }
-              break;
-
-            case "title":
-              for (var i = 0; i < res.data.length; i++) {
-                if (res.data[i].title == identifier) {
-                  data.push(res.data[i]);
-                }
-              }
-              break;
-
-            default:
-              break;
-          }
-
-          resolve(data);
-        });
-      } catch (error) {
-        console.log(error);
-      }
-    });
-  } */
-
   /**
    * @param {String} url
    * @returns -> Promise(object)
@@ -146,12 +103,29 @@ class ConnectionToBackend {
       })
         .then(function (res) {
           //TODO: Delete the uploaded change from the Changes localDB
-          resolve(res);
+          resolve(res.data);
         })
         .catch(function (error) {
           console.log(error);
         });
     });
+  }
+
+  /**
+   * Uploads a data object to the backend using a post or put request
+   * @param {String} subdomain
+   * @param {Object} data
+   * @returns
+   */
+  async uploadObject(subdomain, data) {
+    var data;
+    if (data.lastSync == 0) {
+      data = await this.postData(subdomain, data).catch((err) => console.error(err));
+    } else {
+      data = await this.putData(subdomain, data).catch((err) => console.error(err));
+    }
+
+    return data;
   }
 
   /**
@@ -169,8 +143,7 @@ class ConnectionToBackend {
         data: data,
       })
         .then(function (res) {
-          //TODO: Delete the uploaded change from the Changes localDB
-          resolve(res);
+          resolve(res.data);
         })
         .catch(function (error) {
           console.log(error);
@@ -186,7 +159,27 @@ class ConnectionToBackend {
         data: data,
       })
         .then(function (res) {
-          //TODO: Delete the uploaded change from the Changes localDB
+          resolve(res.data);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    });
+  }
+
+  /**
+   * This sends a delete request to the backend with `subdomain` and `id`
+   * @param {String} subdomain
+   * @param {String} id
+   * @returns
+   */
+  async deleteData(subdomain, id) {
+    return new Promise((resolve, reject) => {
+      axios({
+        method: "delete",
+        url: "/" + subdomain + "/" + id,
+      })
+        .then(function (res) {
           resolve(res);
         })
         .catch(function (error) {
@@ -231,7 +224,7 @@ class ConnectionToBackend {
         data: data,
       })
         .then(function (res) {
-          resolve(res);
+          resolve(res.data);
         })
         .catch(function (error) {
           console.log(error);

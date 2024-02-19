@@ -2,8 +2,8 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.12.2023 14:47:15
- * Modified By: Julian Hardtung
+ * Last Modified: 12.02.2024 12:17:17
+ * Modified By: Oliver Mertens
  * 
  * Description: english translations
  */
@@ -18,12 +18,14 @@ export default {
   coordinates: "Coordinates",
   fieldbook: "Digital 3D-Fieldbook",
   activity: "Activity | Activities",
+  activiy_id: "Activity ID",
   place: "Place | Places",
   place_id: "Place ID",
   position: "Position | Positions",
   position_id: "Position ID",
   texture: "Texture",
   image: "Image | Images",
+  imageOverview: "Image Overview",
   picture: "Picture | Pictures",
   model: "Model | Models",
   camera: "Camera | Cameras",
@@ -54,7 +56,7 @@ export default {
   profile: "Profile",
   visibility: "Visibility",
   drawing: "Drawing | Drawings",
-  editor: "Editor",
+  editor: "Editor | Editors",
   adressOf: "Adress Of",
   veryGood: "Very Good",
   good: "Good",
@@ -105,11 +107,25 @@ export default {
   data_import: "Data Import",
   technical: "Technical Place",
   home: "Home",
+  technicalDrawing: "Technical Drawing",
+  registration: "Sign Up",
+  lastSync: "Last Sync: ",
+  login: "Sign In",
+  logout: "Sign Out",
+  username: "Username",
+  password: "Password",
+  mail: "E-Mail",
+  download: "Download",
+  desktopClient: "Desktop Client",
+  options: "Options",
+  delete: "Delete",
+  edit: "Edit",
+  syncStatus: "Status",
 
   // Phrases
   add: "Add {msg}",
-  edit: "Edit {msg}",
-  delete: "Delete {msg}",
+  editPhrase: "Edit {msg}",
+  deletePhrase: "Delete {msg}",
   moveObj: "Move {obj}",
   measureDist: "Measure Distance",
   newIdentifier: "New Identifier",
@@ -122,6 +138,10 @@ export default {
   current_selection: "Current Selection",
   confirm_del: "Do you really want to delete {object} Nr. {object_nr}?",
   overview: "{msg} Overview",
+  addNewPreset: "Add new Preset",
+  existingPresets: "Existing Presets",
+  selectedPreset: "Selected Preset",
+  editModule: "Edit Module",
   visibilities: "Bad | Moderate | Good | Very Good",
   addMax5: "Add max. 5 tags which describe the place",
   noResults: "No attributes matching your search. Press `enter` to create a new one",
@@ -132,7 +152,35 @@ export default {
   thisExports: "Export: {count} {object}",
   wantToLeave: "Do you really want to leave? You have unsaved changes.",
   saveSuccess: "Saving successful",
+  syncSuccess: "Data upload successful",
   duplicationMode: "Duplicationmode activated",
   getBackup: "Getting your files",
-  createBackup: "Collecting your files"
+  createBackup: "Collecting your files",
+  forgotPassword: "Forgot password",
+  downloadInfoText:
+    "If you are planning on using this fieldbook without an active internet connection, you should download the desktop client.",
+  addToYourAccount: "Add to your account",
+  addOtherEditor: "Add other editor",
+  addEditorToActivity: "Add new editor to this activity",
+  notLoggedIn: "You are not logged in!",
+  onlyLocal: "This entry is only available locally",
+  noAccount: "This entry is not yet assigned to an account",
+  downloadOnlineData: "Download online available data",
+  downloadOnlineDataInfo:
+    "Check the boxes for which activity data you want to download so you can use it even offline. <br> But the download can take a while for activities with a lot of data.",
+  lpDescription: 
+    "This project is the digital 3D field book, which is intended to enable the digital documentation of archaeological excavations. The system was developed in collaboration with the archaeological institute at the University of Cologne.",
+  lpWhatIsThis: "What is this?",
+  lpHowToDocument: "How do we document?",
+  lpDescriptionStellenkartensystem: 
+    "The Stellenkartensystem is divided into activities, places and positions. Using this form of notation, it is possible to precisely describe found artifacts and to be able to reference them. Since this is a standardized notation method, it simplifies the exchange of data between experts and the interpretation of the respective findings.",
+  lpDescriptionActivity: "An archaeological execution. Identified by an activity ID.",
+  lpDescriptionActivity_ID: 
+    "A unique index to make activities clearly identifiable. This follows the following structure: Two-digit abbreviation for the branch area + space + four-digit year + / + four-digit number sequence",
+  lpDescriptionPlace: "Neutral address for all findings, discolorations or work areas of an activity. Is clearly identified by an place ID.",
+  lpDescriptionPlace_ID: "Consecutive numbering of all positions in an activity",
+  lpDescriptionPosition: "Neutral approach for all work steps and findings of a position. Identified by an position ID.",
+  lpDescriptionPosition_ID: "Consecutive numbering of all positions in a position. Positions can be clearly identified through a combination of activity, job and position IDs.",
+  lpFieldbookDescriptionShort: "A more efficient way to document and visualize archaeological excavations.",
+
 };

@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 03.01.2024 12:32:09
+ * Last Modified: 17.02.2024 20:13:34
  * Modified By: Julian Hardtung
  * 
  * Description: main entry point for the fieldbook + 
@@ -32,34 +32,30 @@
 
 <script>
 import AppFooter from './components/AppFooter.vue';
-import Pathbar from './components/Pathbar.vue';
 import VToast from './components/VToast.vue';
-import { useTheme } from 'vuetify/lib/framework.mjs';
 import LocaleChanger from './components/LocaleChanger.vue';
 import DataBackup from './components/DataBackup.vue';
 import { fromOfflineDB } from './ConnectionToOfflineDB.js';
+import { useUserStore } from './Authentication.js';
+import { generalDataStore } from './ConnectionToLocalStorage.js';
 import { useI18n } from 'vue-i18n'
 
 export default {
   name: 'App',
   components: {
     AppFooter,
-    Pathbar,
     LocaleChanger,
     DataBackup,
     VToast
   },
   setup() {
-    const theme = useTheme()
     const { t } = useI18n() // use as global scope
-
+    const userStore =  useUserStore();
+    const generalStore = generalDataStore();
     return {
       t,
-      theme,
-      toggleTheme() {
-        theme.global.name.value = theme.global.current.value.dark ? 'fieldbook_light' : 'fieldbook_dark'
-        this.$cookies.set('currentTheme', theme.global.name.value)
-      }
+      userStore,
+      generalStore
     }
   },
   props: {
@@ -74,9 +70,6 @@ export default {
       activityID: '',
       positionIsSet: false,
       positionID: '',
-      currentActivity: '-',
-      currentPlace: '-',
-      currentPosition: '-',
       backbutton_link: '',
       navdrawer: false,
       toolbar_title: this.$t('fieldbook'),
@@ -86,9 +79,12 @@ export default {
         { link: "/3dview", title: this.$t('threeD_view') },
         /* { link: "/onlineSync", title: this.$t('online_sync') }, */
       ],
-      initDone: false,
 
     }
+  },
+
+  async beforeCreate() {
+    await this.userStore.getUser();
   },
 
   async mounted() {
@@ -96,30 +92,32 @@ export default {
   },
 
   async created() {
-    var isInitDone = this.$cookies.get('initDone');
+    var isInitDone = this.generalStore.getInitDone();
 
     // only initialize Cookies and IndexedDB data once
     if (!isInitDone) {
-      await fromOfflineDB.syncLocalDBs();
-      this.initCookies();
-      await this.initIndexedDB();
-      this.$cookies.set('initDone', true);
+      await fromOfflineDB.syncLocalDBs()
+        .catch(err => console.error(err));
+      await this.initIndexedDB()
+        .catch(err => console.error(err));
+      this.generalStore.setInitDone(true);
     }
 
-    await fromOfflineDB.syncLocalDBs();
-    await this.updatePathbar();
-    this.active_tab = this.active_tab_prop; //this.$cookies.get('active_tab_prop') //this.active_tab_prop;
-    this.placeID = this.$cookies.get('currentPlace')
+    await fromOfflineDB.syncLocalDBs()
+      .catch(err => console.error(err));
+    this.active_tab = this.active_tab_prop;
+    this.placeID = this.generalStore.getCurrentObject("place");
     if (this.placeID !== null) {
       this.placeIsSet = true
     }
-    this.activityID = this.$cookies.get('currentActivity')
+    this.activityID = this.generalStore.getCurrentObject("activity");
     if (this.activityID !== null) {
       this.activityIsSet = true
     }
-    this.positionID = this.$cookies.get('currentPosition')
-    if (this.positionID !== null)
+    this.positionID = this.generalStore.getCurrentObject("position");
+    if (this.positionID !== null) {
       this.positionIsSet = true
+    }
   },
 
   methods: {
@@ -133,15 +131,8 @@ export default {
 
     async clearLocalData() {
       this.deleteCookies();
-      await this.clearIndexedDB();
-    },
-
-    /**
-     * Initializes required cookie entries
-     */
-    initCookies() {
-      this.$cookies.set('showAllPlaceInfo', false);
-      this.$cookies.set('showAllPosInfo', false);
+      await this.clearIndexedDB()
+        .catch(err => console.error(err));
     },
 
     /**
@@ -171,7 +162,8 @@ export default {
         canEdit: false
       }
 
-      await fromOfflineDB.addObject(technicalPlace, 'ModulePresets', 'places');
+      await fromOfflineDB.addObject(technicalPlace, 'ModulePresets', 'places')
+        .catch(err => console.error(err));
 
       var allPlaceModules = {
         _id: String(Date.now()),
@@ -196,8 +188,9 @@ export default {
       }
 
       var placePresetID =
-        await fromOfflineDB.addObject(allPlaceModules, 'ModulePresets', 'places');
-      this.$cookies.set('placeModulesPreset', placePresetID);
+        await fromOfflineDB.addObject(allPlaceModules, 'ModulePresets', 'places')
+        .catch(err => console.error(err));
+      this.generalStore.setModulesPreset(placePresetID, 'place');
 
       var allPosModules = {
         _id: String(Date.now()),
@@ -223,8 +216,9 @@ export default {
       }
 
       var posPresetID =
-        await fromOfflineDB.addObject(allPosModules, 'ModulePresets', 'positions');
-      this.$cookies.set('posModulesPreset', posPresetID);
+        await fromOfflineDB.addObject(allPosModules, 'ModulePresets', 'positions')
+        .catch(err => console.error(err));
+      this.generalStore.setModulesPreset(posPresetID, 'position');
     },
 
     deleteCookies() {
@@ -234,6 +228,7 @@ export default {
 
     async clearIndexedDB() {
       const dbs = await window.indexedDB.databases()
+        .catch(err => console.error(err));
       dbs.forEach(db => { window.indexedDB.deleteDatabase(db.name) })
       this.deleteCookies();
       this.$router.go();
@@ -250,47 +245,6 @@ export default {
           }
         })
     },
-    async updatePathbar() {
-      if (this.$cookies.get('currentActivity')) {
-        await this.getInfo("Activity")
-      }
-      if (this.$cookies.get('currentPlace')) {
-        await this.getInfo("Place")
-      }
-      if (this.$cookies.get('currentPosition')) {
-        await this.getInfo("Position")
-      }
-    },
-
-    async getInfo(selection) {
-      const _id = this.$cookies.get('current' + selection);
-
-      let db = null;
-      let st = null;
-      if (selection === "Activity") {
-        db = "Activities"
-        st = "activities"
-      } else {
-        db = selection + "s"
-        st = selection.toLowerCase() + "s"
-      }
-      const name = await fromOfflineDB.getObject(_id, db, st);
-
-      switch (selection) {
-        case "Activity":
-          this.currentActivity = name.activityNumber;
-          break;
-        case "Place":
-          this.currentPlace = name.placeNumber;
-          break;
-        case "Position":
-          this.currentPosition = name.positionNumber;
-          break;
-        default:
-          console.log("Error");
-      }
-
-    }
   }
 }
 

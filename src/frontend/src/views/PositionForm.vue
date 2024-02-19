@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 03.01.2024 16:18:06
+ * Last Modified: 17.02.2024 19:42:05
  * Modified By: Julian Hardtung
  * 
  * Description: input page for positions data 
@@ -56,8 +56,7 @@
           <!-- TAB ITEM 'IMAGES' -->
           <v-window-item value="two">
             <ImageForm 
-              object_type="Positions" 
-              :object_id="position._id" 
+              :position_prop="position" 
               @addImage="addImage($event)"/>
           </v-window-item>
 
@@ -100,6 +99,7 @@
  *  goBack          - Goes back to PlaceForm
  */
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
+import { generalDataStore } from '../ConnectionToLocalStorage';
 import ConfirmDialog from '../components/ConfirmDialog.vue';
 import ImageForm from '../components/ImageForm.vue';
 import ModelForm from '../components/ModelForm.vue';
@@ -117,6 +117,13 @@ export default {
     Navigation
   },
   emits: ['view'],
+  setup() {
+    const generalStore = generalDataStore();
+    
+    return {
+      generalStore,
+    }
+  },
   /**
    * Reactive Vue.js data
    */
@@ -135,7 +142,7 @@ export default {
         
         /* General */
         description: '',
-        addressOf: '',
+        editor: '',
         date: '',
         title: '',
         positionNumber: '',
@@ -158,7 +165,6 @@ export default {
       datings: [],
       error_dialog: false,
       error_message: '',
-      is_required: [v => !!v || 'Pflichtfeld'],
       tab: null,
       hasUnsavedChanges: false,
       componentHasLoaded: false,
@@ -185,7 +191,8 @@ export default {
   async beforeRouteLeave(to, from, next) {
         var confirmation = false;
         if (this.hasUnsavedChanges) {
-          confirmation = await this.confirmRouteChange();
+          confirmation = await this.confirmRouteChange()
+            .catch(err => console.error(err));
           if (confirmation) {
             next();
           }
@@ -197,14 +204,20 @@ export default {
    * Initialize data from localDB and .env to the reactive Vue.js data
    */
   async created() {
-    const acID = String(this.$cookies.get('currentActivity'))
-    var activity = await fromOfflineDB.getObject(acID, 'Activities', 'activities')
+    const acID = this.generalStore.getCurrentObject('activity');
+    var activity = await fromOfflineDB
+      .getObject(acID, 'Activities', 'activities')
+      .catch(err => console.error(err));
     
-    const plID = String(this.$cookies.get('currentPlace'))
-    var place = await fromOfflineDB.getObject(plID, 'Places', 'places')
+    const plID = this.generalStore.getCurrentObject('place');
+    var place = await fromOfflineDB
+      .getObject(plID, 'Places', 'places')
+      .catch(err => console.error(err));
     
-    const poID = String(this.$cookies.get('currentPosition'))
-    var position = await fromOfflineDB.getObject(poID, 'Positions', 'positions')
+    const poID = this.generalStore.getCurrentObject('position');
+    var position = await fromOfflineDB
+      .getObject(poID, 'Positions', 'positions')
+      .catch(err => console.error(err));
     
     this.$emit("view", activity.activityNumber + ' ' + place.placeNumber + ' ' + position.positionNumber);
 
@@ -212,25 +225,35 @@ export default {
     this.titles = JSON.parse(import.meta.env.VITE_TITLES);
     this.datings = JSON.parse(import.meta.env.VITE_DATINGS);
 
-    await fromOfflineDB.syncLocalDBs();
-    await this.updatePosition();
+    await fromOfflineDB.syncLocalDBs()
+      .catch(err => console.error(err));
+    await this.updatePosition()
+      .catch(err => console.error(err));
 
-    const datingFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', 'datings');
+    const datingFromDB = await fromOfflineDB
+      .getAllObjects('AutoFillLists', 'datings')
+      .catch(err => console.error(err));
     datingFromDB.forEach(element => {
       this.datingsList.push( element.item )
     });
 
-    const editorsFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', 'editors');
+    const editorsFromDB = await fromOfflineDB
+      .getAllObjects('AutoFillLists', 'editors')
+      .catch(err => console.error(err));
     editorsFromDB.forEach(element => {
       this.editorsList.push( element.item )
     });
     
-    const materialsFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', 'materials');
+    const materialsFromDB = await fromOfflineDB
+      .getAllObjects('AutoFillLists', 'materials')
+      .catch(err => console.error(err));
     materialsFromDB.forEach(element => {
       this.materialsList.push( element.item )
     });
 
-    const titlesFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', 'titles');
+    const titlesFromDB = await fromOfflineDB
+      .getAllObjects('AutoFillLists', 'titles')
+      .catch(err => console.error(err));
     titlesFromDB.forEach(element => {
       this.titlesList.push( element.item )
     });
@@ -259,8 +282,8 @@ export default {
         case 'description':             
           this.position.description = data[1];
           break;
-        case 'addressOf':
-          this.position.addressOf = data[1];
+        case 'editor':
+          this.position.editor = data[1];
           break;
         case 'date':
           this.position.date = data[1];
@@ -292,7 +315,7 @@ export default {
           this.position.dating = data[1];
           break;
         default:
-          console.log( 'Cant specify emitted data: ' + data[0] )
+          console.log( 'Cant specify emitted data: ' + data[0] );
       }
     },
     /**
@@ -300,51 +323,52 @@ export default {
      */
     async updatePosition() {
       /* Get id of selected place */
-      const currentPosition = this.$cookies.get("currentPosition")
+      const currentPosition = this.generalStore.getCurrentObject('position');
 
       /* Get all data of selected place */
       if (this.$route.params.positionID != 'new') {
-        const data = await fromOfflineDB.getObject(
-          currentPosition, 'Positions', 'positions');
-        this.position = data
+        const data = await fromOfflineDB
+          .getObject(currentPosition, 'Positions', 'positions')
+          .catch(err => console.error(err));
+        this.position = data;
       }
     },
     /**
      * Save a Position to local storage for the current place
      */
     async savePosition() {
-      /* if (!this.$refs.form.validate()) {
-        this.error_message = "Bitte alle Pflichtfelder vor dem Speichern ausfüllen";
-        this.error_dialog = true;
-        return;
-      } */
-
       //convert from vue proxy to JSON object
       const rawPosition = toRaw(this.position);
       rawPosition.positionNumber = Number(rawPosition.positionNumber);
       rawPosition.lastChanged = Date.now();
       
-      var test = await fromOfflineDB.getObjectBefore(rawPosition._id, 'Positions', 'positions');
+      var lastAddedPos = await fromOfflineDB
+        .getObjectBefore(rawPosition._id, 'Positions', 'positions')
+        .catch(err => console.error(err));
       
       if (rawPosition.hasSubNumber) {
-        var newSubNumber = this.calcSubNumber(rawPosition, test);
+        var newSubNumber = this.calcSubNumber(rawPosition, lastAddedPos);
         rawPosition.subNumber = newSubNumber;
       }
 
-      await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions');
+      await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions')
+        .catch(err => console.error(err));
       this.hasUnsavedChanges = false;
+      
+      this.updateAutoFillList( 'datings', this.position.dating, this.datingsList );
+      this.updateAutoFillList( 'titles', this.position.title, this.titlesList );
+      this.updateAutoFillList( 'materials', this.position.material, this.materialsList );
+      this.updateAutoFillList( 'editors', this.position.editor, this.editorsList );
+      
       this.$root.vtoast.show({ message: this.$t('saveSuccess')});
-
-      this.updateAutoFillList( 'datings', this.position.dating, this.datingsList )
-      this.updateAutoFillList( 'titles', this.position.title, this.titlesList )
-      this.updateAutoFillList( 'materials', this.position.material, this.materialsList )
-      this.updateAutoFillList( 'editors', this.position.addressOf, this.editorsList )
     },
 
     async updateAutoFillList( storeName, item, itemList) {
-      const newEditor = {}
+      const newEditor = {};
 
-      const editorsFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', storeName);
+      const editorsFromDB = await fromOfflineDB
+        .getAllObjects('AutoFillLists', storeName)
+        .catch(err => console.error(err));
       if ( editorsFromDB.length > 0 ) {
         let hasItem = false;
         
@@ -354,31 +378,32 @@ export default {
           }
         })
         if ( !hasItem && item != '' ) {
-          newEditor._id = String(Date.now())
-          newEditor.item = toRaw(item)
+          newEditor._id = String(Date.now());
+          newEditor.item = toRaw(item);
         }
       } else if ( item != '' ) {
-        console.log( item )
-        newEditor._id = String(Date.now())
-        newEditor.item = toRaw(item)
+        console.log( item );
+        newEditor._id = String(Date.now());
+        newEditor.item = toRaw(item);
       }
       if ( !!Object.keys(newEditor).length ) {
         await fromOfflineDB.addObject(newEditor, 'AutoFillLists', storeName)
+          .catch(err => console.error(err));
       }
 
       if ( itemList.length > 0 ) {
-        let notKnown = true
+        let notKnown = true;
         itemList.forEach( element => {
           if ( element == item ) {
-            notKnown = false
+            notKnown = false;
           }
         })
         if ( notKnown ) {
-          itemList.push( item )
+          itemList.push( item );
         }
       } else {
         if ( item != '' ) {
-          itemList.push( item )
+          itemList.push( item );
         }
       }
     },
@@ -417,20 +442,23 @@ export default {
     async deletePosition() {
 
       // Remove the positionID from connected place
-      const placeID = String(this.$cookies.get('currentPlace'));
-      var place = await fromOfflineDB.getObject(placeID, 'Places', 'places');
+      const placeID = this.generalStore.getCurrentObject('place');
+      var place = await fromOfflineDB.getObject(placeID, 'Places', 'places')
+        .catch(err => console.error(err));
       var rawPosition = toRaw(this.position);
       var index = place.positions.indexOf(rawPosition._id.toString())
 
       if (index != -1) {
         place.positions.splice(index, 1);
         place.lastChanged = Date.now();
-        await fromOfflineDB.updateObject(place, 'Places', 'places');
+        await fromOfflineDB.updateObject(place, 'Places', 'places')
+          .catch(err => console.error(err));
       }
 
       // Delete the position itself
       await fromOfflineDB.deleteObject(rawPosition, 'Positions', 'positions')
-      this.$cookies.remove('currentPosition');
+        .catch(err => console.error(err));
+      this.generalStore.removeCurrentObject('position');
       this.hasUnsavedChanges = false;
       this.$router.push({ name: "PositionsOverview" });
     },

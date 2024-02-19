@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 15.12.2023 14:01:22
+ * Last Modified: 17.02.2024 19:41:35
  * Modified By: Julian Hardtung
  * 
  * Description: module for listing all positions of a place
@@ -79,6 +79,7 @@
   
 <script>
 import { fromOfflineDB } from '../../ConnectionToOfflineDB';
+import { generalDataStore } from '../../ConnectionToLocalStorage';
 import AddPosition from '../../components/AddPosition.vue';
 import { useWindowSize } from 'vue-window-size';
 
@@ -102,9 +103,12 @@ export default {
 
   setup() {
     const { width, height } = useWindowSize();
+    const generalStore = generalDataStore();
+
     return {
       windowWidth: width,
       windowHeight: height,
+      generalStore
     };
   },
 
@@ -151,21 +155,27 @@ export default {
   },
 
   async created() {
-    await fromOfflineDB.syncLocalDBs();
-    await this.updatePositions();
+    await fromOfflineDB.syncLocalDBs()
+      .catch(err => console.error(err));
+    await this.updatePositions()
+      .catch(err => console.error(err));
   },
 
   methods: {
 
     async updatePlace() {
-      const currentPlace = this.$cookies.get('currentPlace');
-      const data = await fromOfflineDB.getObject(currentPlace, 'Places', 'places');
+      const currentPlace = this.generalStore.getCurrentObject('place');
+      const data = await fromOfflineDB
+        .getObject(currentPlace, 'Places', 'places')
+        .catch(err => console.error(err));
       this.place = data;
     },
 
     async updatePositions() {
       if (this.placeProp._id != undefined) {
-        this.positions = await fromOfflineDB.getAllObjectsWithID(this.placeProp._id, 'Place', 'Positions', 'positions');
+        this.positions = await fromOfflineDB
+          .getAllObjectsWithID(this.placeProp._id, 'Place', 'Positions', 'positions')
+          .catch(err => console.error(err));
       }
     },
 
@@ -204,7 +214,7 @@ export default {
     */
     moveToPosition(positionID) {
       if (positionID !== 'new') {
-        this.$cookies.set('currentPosition', positionID);
+        this.generalStore.setCurrentObject(positionID, 'position');
       }
       this.$router.push({ name: 'PositionCreation', params: { positionID: positionID } });
     },

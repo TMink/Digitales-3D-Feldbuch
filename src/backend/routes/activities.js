@@ -2,7 +2,7 @@
  * Created Date: 09.06.2023 12:43:13
  * Author: Julian Hardtung
  * 
- * Last Modified: 03.01.2024 14:41:09
+ * Last Modified: 05.02.2024 15:20:03
  * Modified By: Julian Hardtung
  * 
  * Description: Backend CRUD API routes for activities
@@ -93,7 +93,7 @@ router.post("/:activity_id", async function (req, res, next) {
   try {
     const result = await Activity.create(newActivity);
 
-    res.status(200).send("Created Activity: " + result);
+    res.status(200).send(result);
   } catch (error) {
     res.status(500).send("Couldn't create Activity: " + error.message);
   }
@@ -111,7 +111,7 @@ router.put("/:activity_id", async function (req, res, next) {
     if (result == null) {
       return res.status(404).send("No activity found to update")
     }
-    res.status(200).send("Edited Activity: " + result);
+    res.status(200).send(updatedActivity);
   } catch (error) {
     res.status(500).send("Couldn't edit Activity: " + error.message);
   }
@@ -124,7 +124,7 @@ router.delete("/:activity_id", async function (req, res, next) {
   try {
     const result = await Activity.findByIdAndDelete(req.params.activity_id);
 
-    res.status(200).send("Edited Activity: " + result);
+    res.status(200).send(result);
   } catch (error) {
     res.status(500).send("Couldn't edit Activity: " + error.message);
   }

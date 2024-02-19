@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 08.12.2023 14:19:59
+ * Last Modified: 06.02.2024 13:50:43
  * Modified By: Julian Hardtung
  * 
  * Description: `general information` input module for places/positions
@@ -23,7 +23,6 @@
             :label="$tc('posNumber', 2) + ' *'" 
             maxlength="6" 
             hide-details 
-            :rules="is_required"
             v-model="object.positionNumber" 
             @keypress="filterAllNonNumeric(event)">
           </v-text-field>
@@ -126,10 +125,9 @@
             color="primary" 
             persistent-hint
             :items="editorItemsSecondProp" 
-            :label="$t('editor') + ' *'" 
+            :label="$tc('editor', 1) + ' *'" 
             :hide-no-data="false" 
-            :rules="is_required"
-            v-model="object.addressOf"
+            v-model="object.editor"
             :hint="$tc('please_input', 2, { msg: 'Ansprache von' })">
 
             <template v-slot:no-data>
@@ -197,9 +195,8 @@
             color="primary" 
             persistent-hint
             :items="editorItemsSecondProp" 
-            :label="$t('editor')" 
+            :label="$tc('editor', 1)" 
             :hide-no-data="false" 
-            :rules="is_required"
             v-model="object.editor">
 
             <template v-slot:no-data>
@@ -250,9 +247,8 @@ export default {
         positionNumber: null,
         hasSubNumber: null,
         subNumber: null,
-        addressOf: null,
+        editor: null,
       },
-      is_required: [v => !!v || 'Pflichtfeld'],
       titleItems: [],
       editorItems: [],
     }
@@ -269,10 +265,10 @@ export default {
     },
     "object.editor": {
       handler: function () {
-        if ( this.object.editor != null && this.type == 'places' ) {
+        if ( this.object.editor != null ) {
           /* Send data back to ModuleViewer.vue */
           this.$emit("dataToModuleViewer", ['editor', this.object.editor]);
-        } else if ( this.object.editor == null && this.type == 'places' ) {
+        } else if ( this.object.editor == null ) {
           this.$emit("dataToModuleViewer", ['editor', '']);
         }
       }
@@ -321,16 +317,6 @@ export default {
         }
       }
     },
-    "object.addressOf": {
-      handler: function () {
-        if ( this.object.addressOf != null && this.type == 'positions' ) {
-          /* Send data back to ModuleViewer.vue */
-          this.$emit("dataToModuleViewer", ['addressOf', this.object.addressOf]);
-        } else if ( this.object.addressOf == null && this.type == 'positions' ) {
-          this.$emit("dataToModuleViewer", ['addressOf', '']);
-        }
-      }
-    }
   },
 
   created() {

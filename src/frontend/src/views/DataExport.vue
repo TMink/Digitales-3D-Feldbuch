@@ -2,7 +2,7 @@
  * Created Date: 26.06.2023 15:10:20
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:39:34
+ * Last Modified: 13.02.2024 13:42:15
  * Modified By: Julian Hardtung
  * 
  * Description: export all (or only specified) data to .pdf or .csv
@@ -315,46 +315,56 @@ export default {
       allPositionsCount: '',
       activityHeaders: [
         [
-          { title: 'Außenstelle', align: 'start', key: 'branchOffice' },
-          { title: 'Jahr', align: 'start', key: 'year' },
-          { title: 'Nr.', align: 'start', key: 'number' },
-          { title: 'Places', align: 'start', key: 'places.length' },
+          { title: this.$t('branchOffice'), align: 'start', key: 'branchOffice' },
+          { title: this.$t('year'), align: 'start', key: 'year' },
+          { title: this.$tc('number', 2), align: 'start', key: 'number' },
+          { title: this.$tc('place', 2), align: 'start', key: 'places.length' },
         ],
       ],
       placeHeaders: [
         [
-          { title: 'Nr.', align: 'start', key: 'placeNumber'},
-          { title: 'Ansprache', align: 'start', key: 'title' },
-          { title: 'Datum', align: 'start', key: 'date' },
-          { title: 'Images', align: 'start', key: 'images.length' },
-          { title: 'Models', align: 'start', key: 'models.length' },
-          { title: 'Positions', align: 'start', key: 'positions.length' },
+          { title: this.$tc('number', 2), align: 'start', key: 'placeNumber'},
+          { title: this.$tc('title', 2), align: 'start', key: 'title' },
+          { title: this.$t('date'), align: 'start', key: 'date' },
+          { title: this.$tc('image', 2), align: 'start', key: 'images.length' },
+          { title: this.$tc('model', 2), align: 'start', key: 'models.length' },
+          { title: this.$tc('position', 2), align: 'start', key: 'positions.length' },
         ],
       ],
       positionHeaders: [
         [
-          { title: 'Nr.', align: 'start', key: 'positionNumber' },
-          { title: 'SubNr.', align: 'start', key: 'subNumber' },
-          { title: 'Ansprache', align: 'start', key: 'title' },
-          { title: 'Datierung', align: 'start', key: 'dating' },
-          { title: 'Datum', align: 'start', key: 'date' },
-          { title: 'Images', align: 'start', key: 'images.length' },
-          { title: 'Models', align: 'start', key: 'models.length' },
+          { title: this.$tc('number', 2), align: 'start', key: 'positionNumber' },
+          { title: this.$tc('subNumber', 2), align: 'start', key: 'subNumber' },
+          { title: this.$tc('title', 2), align: 'start', key: 'title' },
+          { title: this.$t('dating'), align: 'start', key: 'dating' },
+          { title: this.$t('date'), align: 'start', key: 'date' },
+          { title: this.$tc('image', 2), align: 'start', key: 'images.length' },
+          { title: this.$tc('model', 2), align: 'start', key: 'models.length' },
         ],
       ],
     };
   },
   async created() {
     this.$emit("view", this.$t('pdf_export'));
-    await fromOfflineDB.syncLocalDBs();
+    await fromOfflineDB.syncLocalDBs()
+      .catch(err => console.error(err));
 
-    this.allActivitiesCount = await fromOfflineDB.getStoreCount('Activities', 'activities');
-    this.allPlacesCount = await fromOfflineDB.getStoreCount('Places', 'places');
-    this.allPositionsCount = await fromOfflineDB.getStoreCount('Positions', 'positions');
+    this.allActivitiesCount = await fromOfflineDB
+      .getStoreCount('Activities', 'activities')
+      .catch(err => console.error(err));
+    this.allPlacesCount = await fromOfflineDB
+      .getStoreCount('Places', 'places')
+      .catch(err => console.error(err));
+    this.allPositionsCount = await fromOfflineDB
+      .getStoreCount('Positions', 'positions')
+      .catch(err => console.error(err));
 
-    await this.updateActivities();
-    await this.updatePlaces();
-    await this.updatePositions();
+    await this.updateActivities()
+      .catch(err => console.error(err));
+    await this.updatePlaces()
+      .catch(err => console.error(err));
+    await this.updatePositions()
+      .catch(err => console.error(err));
     this.prepareTheStellenkarte();
   },
 
@@ -392,7 +402,9 @@ export default {
      */
     async updateActivities() {
       /* Receive all IDs in store */
-      this.activities = await fromOfflineDB.getAllObjects('Activities', 'activities')
+      this.activities = await fromOfflineDB
+        .getAllObjects('Activities', 'activities')
+        .catch(err => console.error(err));
       this.activities = this.activities.sort((a, b) => {
         return a.number - b.number;
       });
@@ -402,7 +414,8 @@ export default {
      */
     async updatePlaces() {
       /* Receive all IDs in store */
-      this.places = await fromOfflineDB.getAllObjects('Places', 'places');
+      this.places = await fromOfflineDB.getAllObjects('Places', 'places')
+        .catch(err => console.error(err));
       var activityId = '';
       var activityNumber = '';
 
@@ -410,7 +423,9 @@ export default {
 
         if (activityId != place.acivityID) {
           activityId = place.activityID
-          activityNumber = await fromOfflineDB.getObject(activityId, 'Activities', 'activities')
+          activityNumber = await fromOfflineDB
+            .getObject(activityId, 'Activities', 'activities')
+            .catch(err => console.error(err));
           activityNumber = activityNumber.activityNumber;
         }
         place.activity = activityNumber;
@@ -422,7 +437,9 @@ export default {
      */
     async updatePositions() {
       /* Receive all IDs in store */
-      this.positions = await fromOfflineDB.getAllObjects('Positions', 'positions');
+      this.positions = await fromOfflineDB
+        .getAllObjects('Positions', 'positions')
+        .catch(err => console.error(err));
 
       var activityId = '';
       var activityNumber = '';
@@ -433,7 +450,9 @@ export default {
         // get and set the placeNumber of the current Position
         if (placeId != position.placeID) {
           placeId = position.placeID;
-          var tempPlace = await fromOfflineDB.getObject(placeId, 'Places', 'places');
+          var tempPlace = await fromOfflineDB
+            .getObject(placeId, 'Places', 'places')
+            .catch(err => console.error(err));
           if ( tempPlace == undefined ) {
             continue
           }
@@ -443,7 +462,9 @@ export default {
           // get and set the activityNumber of the current Position
           if (activityId != tempPlace.activityID) {
             activityId = tempPlace.activityID;
-            var tempActivity = await fromOfflineDB.getObject(activityId, 'Activities', 'activities');
+            var tempActivity = await fromOfflineDB
+              .getObject(activityId, 'Activities', 'activities')
+              .catch(err => console.error(err));
             activityNumber = tempActivity.activityNumber;
           }
         }
@@ -461,7 +482,7 @@ export default {
           "Confirm",
           "Do you really want to export this activity to pdf? "
           + activity.activityNumber + "?"
-        )
+        ).catch(err => console.error(err))
       ) {
         this.exportActivity(activity);
       }
@@ -478,14 +499,16 @@ export default {
         return;
       }
 
-      this.places = await fromOfflineDB.getAllObjectsWithID(
-        activity_id, 'Activity', 'Places', 'places');
+      this.places = await fromOfflineDB
+        .getAllObjectsWithID(activity_id, 'Activity', 'Places', 'places')
+        .catch(err => console.error(err));
 
       // set positions to only include positions from the current activity
       var tempPositions = [];
       for (var i=0; i< this.places.length; i++) {
-        var tempPos = await fromOfflineDB.getAllObjectsWithID(
-            this.places[i]._id, 'Place', 'Positions', 'positions');
+        var tempPos = await fromOfflineDB
+          .getAllObjectsWithID(this.places[i]._id, 'Place', 'Positions', 'positions')
+          .catch(err => console.error(err));
         tempPositions = tempPositions.concat(tempPos);   
       }
       this.positions = tempPositions;
@@ -509,8 +532,9 @@ export default {
       }
 
       var place_id = item.raw._id;
-      this.positions = await fromOfflineDB.getAllObjectsWithID(
-        place_id, 'Place', 'Positions', 'positions');
+      this.positions = await fromOfflineDB
+        .getAllObjectsWithID(place_id, 'Place', 'Positions', 'positions')
+        .catch(err => console.error(err));
       this.place_open = true;
       this.selected_place = place_id;
 
@@ -829,7 +853,7 @@ export default {
                 { header: 'PositionsNr', dataKey: 'positionNumber' },
                 { header: 'Datum', dataKey: 'date' },
                 { header: 'Ansprache', dataKey: 'title' },
-                { header: 'Bearbeiter', dataKey: 'addressOf' },
+                { header: 'Bearbeiter', dataKey: 'editor' },
                 { header: 'Beschreibung', dataKey: 'description' },
                 { header: 'Rechts', dataKey: 'right' },
                 { header: 'Hoch', dataKey: 'up' },
@@ -935,7 +959,7 @@ export default {
           { header: 'Ansprache', dataKey: 'title' },
           { header: 'Kommentar', dataKey: 'description' },
           { header: 'Datierung', dataKey: 'dating' },
-          { header: 'Ansprache von', dataKey: 'addressOf' },
+          { header: 'Ansprache von', dataKey: 'editor' },
           { header: 'Datum', dataKey: 'date' },
           { header: 'Getrennt', dataKey: 'isSeparate' },
         ],
