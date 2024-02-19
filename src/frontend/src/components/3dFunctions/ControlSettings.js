@@ -24,4 +24,12 @@ export class ControlSettings {
       tControls.detach();
     }
   }
+
+  updateWithNewCamera( controls, camera ) {
+    controls.target.set( camera.arcballAnchor[ 0 ],
+      camera.arcballAnchor[ 1 ], camera.arcballAnchor[ 2 ]);
+
+    controls.reset();
+    controls.update();
+  }
 }
