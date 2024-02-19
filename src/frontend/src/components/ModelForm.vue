@@ -2,7 +2,7 @@
  * Created Date: 14.07.2023 17:06:51
  * Author: Julian Hardtung
  * 
- * Last Modified: 17.02.2024 19:53:43
+ * Last Modified: 19.02.2024 20:40:07
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for 3d-models of places/positions
@@ -666,8 +666,9 @@ export default {
           }
           break;
       }
+      const curPlace = this.generalStore.getCurrentObject('place');
       const cameraInDB = await fromOfflineDB.getObject( 
-        this.$cookies.get( 'currentPlace' ), 'Cameras', 'cameras' );
+        curPlace, 'Cameras', 'cameras' );
       if ( cameraInDB != undefined ) {
         const newCamera = {
           _id: cameraInDB._id,
@@ -766,8 +767,9 @@ export default {
       this.deleteToken = true
 
       /* Add Notification for 3D-part camera changes */
+      const curPlace = this.generalStore.getCurrentObject('place');
       const cameraInDB = await fromOfflineDB.getObject( 
-        this.$cookies.get( 'currentPlace' ), 'Cameras', 'cameras' );
+        curPlace, 'Cameras', 'cameras' );
       const placeObjects = await fromOfflineDB.getAllObjects( "Models", "places" )
       const positionObjects = await fromOfflineDB.getAllObjects( "Models", "positions" )
 
