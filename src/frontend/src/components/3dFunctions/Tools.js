@@ -38,6 +38,19 @@ export class LineTool {
 
       return line
   }
+
+  createLable( name, distance, position ) {
+    const lableDiv = document.createElement( "div" );
+    lableDiv.className = "lable";
+    lableDiv.innerText = distance
+    lableDiv.style.marginTop = "-1em";
+    const measurementLable = new CSS2DObject( lableDiv );
+    measurementLable.name = name;
+    const vec3 = new THREE.Vector3( position.x, position.y, position.z );
+    measurementLable.position.copy( vec3 );
+    
+    return measurementLable
+  }
 }
 export class ModelInteraktion {
 }
