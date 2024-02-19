@@ -100,4 +100,16 @@ export class ObjectFilter {
       list.push(blockItem);
     }
   }
+
+  resetFilter( infos, menues ) {
+    for ( let a = 0; a < infos.length; a++ ) {
+      for ( let b = 0; b < menues.length; b++ ) {
+        this.fillAll(menues[ b ], infos[ a ][ b ]);
+      }
+    }
+
+    for ( let c = 0; c < menues.length; c++ ) {
+      menues[c].sort();
+    }
+  }
 }
