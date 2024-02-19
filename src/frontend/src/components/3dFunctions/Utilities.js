@@ -36,4 +36,36 @@ export class Utilities {
 
     return center;
   }
+
+  getBarycenter( objects ) {
+    var groupObjects = objects;
+    const groupObjectsCenter = []
+    const center = new THREE.Vector3()
+    
+    groupObjects.forEach( groupObject => {
+      while ( !( groupObject instanceof THREE.Group ) ) {
+        groupObject = groupObject.parent;
+      }
+      
+      const boundingBox = new THREE.Box3();
+      boundingBox.setFromObject( groupObject );
+      const center = new THREE.Vector3();
+      boundingBox.getCenter( center );
+      
+      groupObjectsCenter.push( center );
+    } )
+
+    // Find barycenter of object centers
+    groupObjectsCenter.forEach( object => {
+      center.x += object.x;
+      center.y += object.y;
+      center.z += object.z;
+    } )
+
+    center.x = center.x / 3;
+    center.y = center.y / 3;
+    center.z = center.z / 3;
+
+    return center
+  }
 }
