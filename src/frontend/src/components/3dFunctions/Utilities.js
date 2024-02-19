@@ -211,4 +211,15 @@ export class Utilities {
       }
     }
   }
+
+  getNewObjects( alreadyLoadedIDs, objectsInDB, objectsToBeLoaded ) {
+    alreadyLoadedIDs.forEach( id => {
+      objectsInDB.forEach( object => {
+        if ( id != object._id ) {
+          objectsToBeLoaded.push( object )
+        } else {
+        }
+      } )
+    } )
+  }
 }
