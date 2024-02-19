@@ -16,3 +16,5 @@ import { toRaw } from 'vue';
 
 export class LineTool {
 }
+export class ModelInteraktion {
+}
