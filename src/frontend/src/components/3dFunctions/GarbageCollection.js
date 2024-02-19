@@ -72,4 +72,11 @@ export class GarbageCollection {
       } );
     }
   }
+
+  removeRenderer( renderer ) {
+    renderer.dispose();
+    renderer.forceContextLoss();
+    renderer.renderLists.dispose();
+  }
+  
 }
