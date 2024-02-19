@@ -32,4 +32,12 @@ export class ControlSettings {
     controls.reset();
     controls.update();
   }
+  
+  updateWithOldCamera( controls, arcballAnchor ) {
+    controls.target.set( arcballAnchor[ 0 ], arcballAnchor[ 1 ], 
+      arcballAnchor[ 2 ] );
+
+    controls.reset();
+    controls.update();
+  }
 }
