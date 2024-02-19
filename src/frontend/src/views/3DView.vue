@@ -610,28 +610,6 @@
 import * as THREE from 'three';
 
 import Navigation from '../components/Navigation.vue';
-import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
-import { ArcballControls } from
-  'three/examples/jsm/controls/ArcballControls.js';
-import { TransformControls } from
-  'three/examples/jsm/controls/TransformControls.js';
-import { OrbitControls } from
-  'three/examples/jsm/controls/OrbitControls.js';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader"
-import { EffectComposer } from 
-  'three/examples/jsm/postprocessing/EffectComposer';
-import { RenderPass } from 
-  'three/examples/jsm/postprocessing/RenderPass';
-import { OutlinePass } from 
-'three/examples/jsm/postprocessing/OutlinePass';
-import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
-import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader';
-import { GammaCorrectionShader } from
-  'three/examples/jsm/shaders/GammaCorrectionShader';
-import { CSS2DRenderer, CSS2DObject } from 
-  'three/examples/jsm/renderers/CSS2DRenderer'
-import { toRaw } from 'vue'
 
 import { ObjectLoaders } from '../components/3dFunctions/ObjectLoaders.js'
 import { UpdateLocalVariables } from '../components/3dFunctions/UpdateLocalVariables.js'
