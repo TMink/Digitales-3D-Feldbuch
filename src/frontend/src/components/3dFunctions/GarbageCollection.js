@@ -24,4 +24,35 @@ export class GarbageCollection {
     }
     
   }
+
+  removeLines( scene, infoBlock ) {
+    if( infoBlock.length > 0 ) {
+      /* Dispose lines in sceneMain */
+      infoBlock.forEach( elem => {
+        console.log(elem)
+        const lineInScene = scene.getObjectByName( elem.line )
+        const lableInScene = scene.getObjectByName( elem.lable )
+        const ballsInScene = [];
+        elem.balls.forEach( ball => {
+          ballsInScene.push( scene.getObjectByName( ball ) );
+        } )
+  
+        /* Remove line */
+        lineInScene.remove(lableInScene)
+        lineInScene.material.dispose()
+        lineInScene.geometry.dispose()
+        scene.remove(lineInScene)
+  
+        /* Remove Lable */
+        lableInScene.remove()
+  
+        /* Remove Balls */
+        ballsInScene.forEach( ball => {
+          ball.material.dispose();
+          ball.geometry.dispose();
+          scene.remove( ball );
+        } )
+      } )
+    }
+  }
 }
