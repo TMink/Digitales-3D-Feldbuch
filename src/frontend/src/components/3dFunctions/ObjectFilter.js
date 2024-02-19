@@ -273,4 +273,41 @@ export class ObjectFilter {
     placeMods.colorPicker.color = null;
     placeMods.opacitySliderValue = 0;
   }
+
+  /**
+    * -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+    * # DEBUGGING
+    * -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+    */
+
+  setCharAt( str, index, chr ) {
+    if ( index > str.length - 1 ) return str;
+    return str.substring( 0, index ) + chr + str.substring( index + 1 );
+  }
+
+  stringReplacer( typeSize, areNull ) {
+    let str = '';
+
+    for ( let a = 0; a < typeSize; a++ ) { 
+      
+      if ( areNull.includes(a) ) {
+        str += '_'
+      } else {
+        str += 'x';
+      }
+
+      if ( a+1 < typeSize ) {
+        str += ' , ';
+      }
+    }
+
+    if ( str.toLowerCase().indexOf("x") === 0) {
+      if ( str.toLowerCase().indexOf("_") === -1 ) {
+        console.log( "( " + str + " ) - done!")
+      } else {
+        console.log( "( " + str + " )" );
+      }
+    }
+  }
+  
 }
