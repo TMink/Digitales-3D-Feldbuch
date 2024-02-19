@@ -77,4 +77,11 @@ export class Utilities {
 
     return cameraData;
   }
+
+  setCamera( camera, cameraData ) {
+    camera.position.set( cameraData.position[ 0 ], cameraData.position[ 1 ],
+      cameraData.position[ 2 ] );
+    camera.rotation.set( cameraData.rotation[ 0 ], cameraData.rotation[ 1 ],
+      cameraData.rotation[ 2 ]);
+  }
 }
