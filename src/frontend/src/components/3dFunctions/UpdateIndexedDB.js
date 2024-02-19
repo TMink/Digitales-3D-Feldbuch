@@ -83,4 +83,18 @@ export class UpdateIndexedDB {
     }
 
   }
+
+  async updateObjectOpacityAndColor( modelID, storeName, scene ) {
+
+    const modelInScene = scene.getObjectByName( modelID );
+      const modelInDB = await fromOfflineDB.getObject( modelID, 'Models',
+      storeName );
+
+      modelInDB.color = "#" + modelInScene.material.color.getHexString();
+      modelInDB.opacity = modelInScene.material.opacity;
+
+      await fromOfflineDB.updateObject( modelInDB, 'Models', storeName );
+    
+  }
+
 }
