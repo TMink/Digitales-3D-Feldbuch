@@ -13,4 +13,13 @@ import { fromOfflineDB } from '../../ConnectionToOfflineDB.js'
 import { toRaw } from 'vue';
 
 export class Utilities {
+  
+  getGroup( object ) {
+    var groupObject = object;
+    while ( !( groupObject instanceof THREE.Group ) ) {
+      groupObject = groupObject.parent;
+    }
+    
+    return groupObject;
+  }
 }
