@@ -745,285 +745,295 @@ export default {
 
   watch: {
 
-    'posData.number': {
+    'positionData.number': {
       handler: function( value ) {
 
         /* Reset modifikations and save changes */
-        if ( this.posMods.token ) {
-          this.resetPositionMods();
+        if ( this.positionMods.token ) {
+          this.objectFilter.resetPositionMods( this.positionObject, this.positionMods,
+            exParams.main.scene );
         }
 
-        /* Reset posData & posModel menus content 
-         *       and posModel input */
-        this.resetPositionInfo2();
-        this.resetModelInfo2Input();
-        this.resetModelInfo2();
+        /* Reset positionData & positionObject menus content 
+         *       and positionObject input */
+        this.objectFilter.resetPositionInfo2( this.positionData );
+        this.objectFilter.resetObjectInfo2Input( this.positionObject );
+        this.objectFilter.resetObjectInfo2( this.positionObject );
 
-        /* Update posData menus */
-        this.fieldSearch( 3, this.posData.chosenPositionModels,
+        /* Update positionData menus */
+        this.objectFilter.fieldSearch( 3, this.positionData.chosenPositionModels,
                           [ value, 
-                            this.posData.subNumber, 
-                            this.posData.title ],
-                          [ this.posData.allNumbers, 
-                            this.posData.allSubNumbers, 
-                            this.posData.allTitles ],
-                          this.posData.infoBlock );
+                            this.positionData.subNumber, 
+                            this.positionData.title ],
+                          [ this.positionData.allNumbers, 
+                            this.positionData.allSubNumbers, 
+                            this.positionData.allTitles ],
+                          this.positionData.infoBlock );
 
-        /* Update posModel menus and dataBlock  */
-        this.getPositionModelInfo();
+        /* Update positionObject menus and dataBlock  */
+        this.objectFilter.getPositionObjectInfo( this.positionData,
+          this.positionObject );
       }
     },
 
-    'posData.subNumber': {
+    'positionData.subNumber': {
       handler: function( value ) {
 
         /* Reset modifikations and save changes */
-        if ( this.posMods.token ) {
-          this.resetPositionMods();
+        if ( this.positionMods.token ) {
+          this.objectFilter.resetPositionMods( this.positionObject, this.positionMods,
+          exParams.main.scene );
         }
 
-        /* Reset posData & posModel menus content
-         *       and posModel input */
-        this.resetPositionInfo2();
-        this.resetModelInfo2Input();
-        this.resetModelInfo2();
+        /* Reset positionData & positionObject menus content
+         *       and positionObject input */
+         this.objectFilter.resetPositionInfo2( this.positionData );
+         this.objectFilter.resetObjectInfo2Input( this.positionObject );
+        this.objectFilter.resetObjectInfo2( this.positionObject );
 
-        /* Update posData menus */
-        this.fieldSearch( 3, this.posData.chosenPositionModels,
-                          [ this.posData.number, 
+        /* Update positionData menus */
+        this.objectFilter.fieldSearch( 3, this.positionData.chosenPositionModels,
+                          [ this.positionData.number, 
                             value, 
-                            this.posData.title ],
-                          [ this.posData.allNumbers, 
-                            this.posData.allSubNumbers, 
-                            this.posData.allTitles ],
-                          this.posData.infoBlock );
+                            this.positionData.title ],
+                          [ this.positionData.allNumbers, 
+                            this.positionData.allSubNumbers, 
+                            this.positionData.allTitles ],
+                          this.positionData.infoBlock );
 
-        /* Update posModel menus and dataBlock  */
-        this.getPositionModelInfo();
+        /* Update positionObject menus and dataBlock  */
+        this.objectFilter.getPositionObjectInfo( this.positionData,
+          this.positionObject );
       }
     },
 
-    'posData.title': {
+    'positionData.title': {
       handler: function( value ) {
 
         /* Reset modifikations and save changes */
-        if ( this.posMods.token ) {
-          this.resetPositionMods();
+        if ( this.positionMods.token ) {
+          this.objectFilter.resetPositionMods( this.positionObject, this.positionMods,
+          exParams.main.scene );
         }
 
-        /* Reset posData & posModel menus content
-         *       and posModel input */
-        this.resetPositionInfo2();
-        this.resetModelInfo2Input();
-        this.resetModelInfo2();
+        /* Reset positionData & positionObject menus content
+         *       and positionObject input */
+        this.objectFilter.resetPositionInfo2( this.positionData );
+        this.objectFilter.resetObjectInfo2Input( this.positionObject );
+        this.objectFilter.resetObjectInfo2( this.positionObject );
 
-        /* Update posData menus */
-        this.fieldSearch( 3, this.posData.chosenPositionModels,
-                          [ this.posData.number,
-                            this.posData.subNumber,
+        /* Update positionData menus */
+        this.objectFilter.fieldSearch( 3, this.positionData.chosenPositionModels,
+                          [ this.positionData.number,
+                            this.positionData.subNumber,
                             value ],
-                          [ this.posData.allNumbers,
-                            this.posData.allSubNumbers,
-                            this.posData.allTitles ],
-                          this.posData.infoBlock);
+                          [ this.positionData.allNumbers,
+                            this.positionData.allSubNumbers,
+                            this.positionData.allTitles ],
+                          this.positionData.infoBlock);
 
-        /* Update posModel menus and dataBlock  */
-        this.getPositionModelInfo();
+        /* Update positionObject menus and dataBlock  */
+        this.objectFilter.getPositionObjectInfo( this.positionData,
+          this.positionObject );
 
       }
     },
 
-    'posData.chosenPositionModels': {
+    'positionData.chosenPositionModels': {
       handler: function(value) {
         if ( value.length > 0 ) {
-          this.posModel.disableInput = true;
+          this.positionObject.disableInput = true;
         } else {
-          this.posModel.disableInput = false;
+          this.positionObject.disableInput = false;
         }
       }
     },
 
-    'posModel.number': {
+    'positionObject.number': {
       handler: function( value ) {
 
         /* Reset modifikations and save changes to model */
-        if ( this.posMods.token ) {
-          this.resetPositionMods();
+        if ( this.positionMods.token ) {
+          this.objectFilter.resetPositionMods( this.positionObject, this.positionMods,
+          exParams.main.scene );
         }
 
-        /* Reset posModel menus content */
-        this.resetModelInfo2();
+        /* Reset positionObject menus content */
+        this.objectFilter.resetObjectInfo2( this.positionObject );
 
-        /* Update posModel menus */
-        this.fieldSearch( 2, this.posModel.chosenfinalModel,
+        /* Update positionObject menus */
+        this.objectFilter.fieldSearch( 2, this.positionObject.chosenfinalModel,
                           [ value, 
-                            this.posModel.title ],
-                          [ this.posModel.allNumbers, 
-                            this.posModel.allTitles ],
-                          this.posModel.infoBlock );
+                            this.positionObject.title ],
+                          [ this.positionObject.allNumbers, 
+                            this.positionObject.allTitles ],
+                          this.positionObject.infoBlock );
       }
     },
 
-    'posModel.title': {
+    'positionObject.title': {
       handler: function( value ) {
 
         /* Reset modifikations and save changes to model */
-        if ( this.posMods.token ) {
-          this.resetPositionMods();
+        if ( this.positionMods.token ) {
+          this.objectFilter.resetPositionMods( this.positionObject, this.positionMods,
+          exParams.main.scene );
         }
 
-        /* Reset posModel menus content */
-        this.resetModelInfo2();
+        /* Reset positionObject menus content */
+        this.objectFilter.resetObjectInfo2( this.positionObject );
 
-        /* Update posModel menus */
-        this.fieldSearch( 2, this.posModel.chosenfinalModel,
-                          [ this.posModel.number,
+        /* Update positionObject menus */
+        this.objectFilter.fieldSearch( 2, this.positionObject.chosenfinalModel,
+                          [ this.positionObject.number,
                             value],
-                          [ this.posModel.allNumbers,
-                            this.posModel.allTitles],
-                          this.posModel.infoBlock );
+                          [ this.positionObject.allNumbers,
+                            this.positionObject.allTitles],
+                          this.positionObject.infoBlock );
 
       }
     },
 
-    'posModel.chosenfinalModel': {
+    'positionObject.chosenfinalModel': {
       handler: async function(value) {
         if ( value.length > 0 ) {
-          this.posMods.token = true;
-          this.posMods.disabled = false;
+          this.positionMods.token = true;
+          this.positionMods.disabled = false;
 
           /* Update color picker and opacity slider if no model has been 
              modified yet */
-          if (this.posMods.colorPicker == null || 
-              this.posMods.colorPicker.object == null ) {
+          if (this.positionMods.colorPicker == null || 
+              this.positionMods.colorPicker.object == null ) {
 
-            const result = this.posModel.infoBlock.find( arr => 
+            const result = this.positionObject.infoBlock.find( arr => 
               value );
-            const modelInScene = this.sceneMain.getObjectByName( 
+            const modelInScene = exParams.main.scene.getObjectByName( 
               value[0] );
-            this.posModel.chosenfinalModelGroup = this.getGroup(
+            this.positionObject.chosenfinalModelGroup = this.utilities.getGroup(
               modelInScene );
             
             /* color picker */
-            this.posMods.colorPicker.color = result[3];
-            this.posMods.colorPicker.object = 
-              this.posModel.chosenfinalModelGroup;
+            this.positionMods.colorPicker.color = result[3];
+            this.positionMods.colorPicker.object = 
+              this.positionObject.chosenfinalModelGroup;
             
             /* opacity slider */
-            this.posMods.opacitySliderValue = result[4];
+            this.positionMods.opacitySliderValue = result[4];
           }
 
           /* Update color picker and opacity slider if a model has been 
              modified */
           else {
-            const modelInScene = this.sceneMain.getObjectByName( 
+            const modelInScene = exParams.main.scene.getObjectByName( 
               value[0] );
-            this.posModel.chosenfinalModelGroup = this.getGroup( 
+            this.positionObject.chosenfinalModelGroup = this.utilities.getGroup( 
               modelInScene );
             
             /* color picker */
-            this.posMods.colorPicker.color = "#" + 
+            this.positionMods.colorPicker.color = "#" + 
             modelInScene.material.color.getHexString();
-            this.posMods.colorPicker.object = this.posModel.chosenfinalModelGroup;
+            this.positionMods.colorPicker.object = this.positionObject.chosenfinalModelGroup;
             
             /* opacity slider */
-            this.posMods.opacitySliderValue = modelInScene.material.opacity;
+            this.positionMods.opacitySliderValue = modelInScene.material.opacity;
           }
 
         } else {
-          this.posMods.attachTransformControls = false;
-          this.tControlsMain.detach();
+          this.positionMods.attachTransformControls = false;
+          exParams.main.transformControls.detach();
         }
       }
     },
 
-    'plaModel.number': {
+    'placeObject.number': {
       handler: function(value) {
 
         /* Reset modifikations and save changes to model */
-        if (this.plaMods.token) {
-          this.resetPlaceMods();
+        if (this.placeMods.token) {
+          this.objectFilter.resetPlaceMods( this.placeObject, this.placeMods, 
+          exParams.main.scene );
         }
 
-        this.resetPlaceModelInfo();
+        this.objectFilter.resetPlaceObjectInfo( this.placeObject );
 
-        this.fieldSearch( 2, this.plaModel.chosenfinalModel,
+        this.objectFilter.fieldSearch( 2, this.placeObject.chosenfinalModel,
                             [ value, 
-                              this.plaModel.title ],
-                            [ this.plaModel.allNumbers, 
-                              this.plaModel.allTitles ],
-                            this.plaModel.infoBlock );
+                              this.placeObject.title ],
+                            [ this.placeObject.allNumbers, 
+                              this.placeObject.allTitles ],
+                            this.placeObject.infoBlock );
       }
     },
 
-    'plaModel.title': {
+    'placeObject.title': {
       handler: function(value) {
 
         /* Reset modifikations and save changes to model */
-        if (this.plaMods.token) {
-          this.resetPlaceMods();
+        if (this.placeMods.token) {
+          this.objectFilter.resetPlaceMods(this.placeObject, this.placeMods, 
+          exParams.main.scene );
         }
 
-        this.resetPlaceModelInfo();
+        this.objectFilter.resetPlaceObjectInfo( this.placeObject );
   
-        this.fieldSearch( 2, this.plaModel.chosenfinalModel,
-                            [ this.plaModel.number, 
+        this.objectFilter.fieldSearch( 2, this.placeObject.chosenfinalModel,
+                            [ this.placeObject.number, 
                               value ],
-                            [ this.plaModel.allNumbers, 
-                              this.plaModel.allTitles ],
-                            this.plaModel.infoBlock );
+                            [ this.placeObject.allNumbers, 
+                              this.placeObject.allTitles ],
+                            this.placeObject.infoBlock );
       }
     },
 
-    'plaModel.chosenfinalModel': {
+    'placeObject.chosenfinalModel': {
       handler: function(value) {
         if ( value.length > 0 ) {
-          this.plaMods.token = true;
-          this.plaMods.disabled = false;
+          this.placeMods.token = true;
+          this.placeMods.disabled = false;
 
           /* Update color picker and opacity slider if no model has been 
              modified yet */
-          if (this.plaMods.colorPicker == null || 
-              this.plaMods.colorPicker.object == null ) {
+          if (this.placeMods.colorPicker == null || 
+              this.placeMods.colorPicker.object == null ) {
 
-            const result = this.plaModel.infoBlock.find( arr => value );
-            const modelInScene = this.sceneMain.getObjectByName( value[0] );
-            this.plaModel.chosenfinalModelGroup = this.getGroup( 
+            const result = this.placeObject.infoBlock.find( arr => value );
+            const modelInScene = exParams.main.scene.getObjectByName( value[0] );
+            this.placeObject.chosenfinalModelGroup = this.utilities.getGroup( 
               modelInScene );
             
             /* color picker */
-            this.plaMods.colorPicker.color = result[3];
-            this.plaMods.colorPicker.object = 
-              this.plaModel.chosenfinalModelGroup;
+            this.placeMods.colorPicker.color = result[3];
+            this.placeMods.colorPicker.object = 
+              this.placeObject.chosenfinalModelGroup;
             
             /* opacity slider */
-            this.plaMods.opacitySliderValue = result[4];
+            this.placeMods.opacitySliderValue = result[4];
           }
 
           /* Update color picker and opacity slider if a model has been 
              modified */
           else {
-            const modelInScene = this.sceneMain.getObjectByName( value[0] );
-            this.plaModel.chosenfinalModelGroup = this.getGroup( 
+            const modelInScene = exParams.main.scene.getObjectByName( value[0] );
+            this.placeObject.chosenfinalModelGroup = this.utilities.getGroup( 
               modelInScene );
             
             /* color picker */
-            this.plaMods.colorPicker.color = "#" + 
+            this.placeMods.colorPicker.color = "#" + 
             modelInScene.material.color.getHexString();
-            this.plaMods.colorPicker.object = this.plaModel.chosenfinalModelGroup;
+            this.placeMods.colorPicker.object = this.placeObject.chosenfinalModelGroup;
             
             /* opacity slider */
-            this.plaMods.opacitySliderValue = modelInScene.material.opacity;
+            this.placeMods.opacitySliderValue = modelInScene.material.opacity;
           }
 
         }
       }
     },
 
-    'posMods.opacitySliderValue': {
+    'positionMods.opacitySliderValue': {
       handler: function(value) {
-        if( this.posModel.chosenfinalModelGroup != null ) {
-          this.posModel.chosenfinalModelGroup.traverse( ( child ) => {
+        if( this.positionObject.chosenfinalModelGroup != null ) {
+          this.positionObject.chosenfinalModelGroup.traverse( ( child ) => {
             if ( child instanceof THREE.Mesh ) {
               child.material.opacity = value;
             }
@@ -1032,10 +1042,10 @@ export default {
       }
     },
 
-    'plaMods.opacitySliderValue': {
+    'placeMods.opacitySliderValue': {
       handler: function(value) {
-        if( this.plaModel.chosenfinalModelGroup != null ) {
-          this.plaModel.chosenfinalModelGroup.traverse( ( child ) => {
+        if( this.placeObject.chosenfinalModelGroup != null ) {
+          this.placeObject.chosenfinalModelGroup.traverse( ( child ) => {
             if ( child instanceof THREE.Mesh ) {
               child.material.opacity = value;
             }
@@ -1044,7 +1054,7 @@ export default {
       }
     },
 
-    'posMods.disabled': {
+    'positionMods.disabled': {
       handler: function(value) {
         if ( value ) {
           document.getElementById("cpPosition").style.pointerEvents = 'none';
@@ -1054,7 +1064,7 @@ export default {
       }
     },
 
-    'plaMods.disabled': {
+    'placeMods.disabled': {
       handler: function(value) {
         if ( value ) {
           const elem = document.getElementById("cpPlace")
@@ -1069,8 +1079,8 @@ export default {
     'measureTool.title': {
       handler: function(value) {
         if (this.measureTool.textField != value && 
-            this.measureTool.textField != null) {
-          this.measureTool.textField = null
+          this.measureTool.textField != null) {
+            this.measureTool.textField = null
         }
       }
     },
