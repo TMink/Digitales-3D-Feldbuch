@@ -110,4 +110,29 @@ export class Utilities {
         await fromOfflineDB.addObject(newEditor, 'AutoFillLists', storeName)
       }
   }
+
+  async savePosition( root, t, posInfo ) {
+
+    //convert from vue proxy to JSON object
+    const rawPosition = toRaw(posInfo);
+    rawPosition.count = Number(rawPosition.count);
+    rawPosition.lastChanged = Date.now();
+    
+    var positionFromDb = await fromOfflineDB.getObject(rawPosition._id, 'Positions', 'positions');
+    if ( positionFromDb.hasSubNumber ) {
+      var newSubNumber = this.calcSubNumber(rawPosition, positionFromDb);
+      rawPosition.subNumber = newSubNumber;
+    } else {
+      rawPosition.subNumber = '';
+    }
+
+    await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions');
+
+    this.updateAutoFillList( 'datings', posInfo.dating )
+    this.updateAutoFillList( 'titles', posInfo.title )
+    this.updateAutoFillList( 'materials', posInfo.material )
+    this.updateAutoFillList( 'editors', posInfo.addressOf )
+
+    root.vtoast.show({ message: t('saveSuccess')});
+  }
 }
