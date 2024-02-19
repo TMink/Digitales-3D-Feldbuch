@@ -175,4 +175,31 @@ export class ObjectFilter {
       
     }
   }
+
+  async getPositionObjectInfo( positionData, positionObject ) {
+    for ( let i=0; i < positionData.chosenPositionModels.length; i++) {
+      const objectID = positionData.chosenPositionModels[ i ];
+      const objectInDB = await fromOfflineDB.getObject(objectID, 'Models', 'positions')
+
+      if ( !positionObject.allNumbers.includes(objectInDB.modelNumber) ) {
+        positionObject.allNumbers.push(objectInDB.modelNumber)
+      }
+
+      if ( !positionObject.allTitles.includes(objectInDB.title) ) {
+        positionObject.allTitles.push(objectInDB.title)
+      }
+
+      /* For the filter algorithm to work properly */
+      const objectIDArray = [objectInDB._id]
+      const newObject = [
+        objectInDB.modelNumber,
+        objectInDB.title,
+        objectIDArray,
+        objectInDB.color,
+        objectInDB.opacity
+      ]
+
+      positionObject.infoBlock.push(newObject)
+    }
+  }
 }
