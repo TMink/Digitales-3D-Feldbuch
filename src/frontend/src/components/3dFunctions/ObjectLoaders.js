@@ -235,6 +235,62 @@ export class ObjectLoaders {
       }     
     }
   }
+
+  deleteObjectsFromExParams( type, objectsToBeDeleted ) {
+
+    let objectType = null;
+    switch ( type ) {
+      case 'place':
+        objectType = exParams.main.objects.place
+        break;
+      case 'position':
+        objectType = exParams.main.objects.position
+        break;
+    }
+
+    objectsToBeDeleted.forEach( object => {
+      console.log(object)
+      /* allObjects */
+      const allObjectsIndex = exParams.main.objects.allObjects.findIndex(
+        x => x.uuid === object.group.uuid );
+      exParams.main.objects.allObjects.splice( allObjectsIndex, 1 )
+      
+      /* _ids */
+      const _idsIndex = objectType._ids.indexOf( object._id )
+      objectType._ids.splice( _idsIndex, 1 )
+      
+      /* titles */
+      const titlesIndex = objectType.titles.indexOf( object.title )
+      objectType.titles.splice( titlesIndex, 1 )
+      
+      /* groups */
+      const groupsIndex = objectType.groups.indexOf( object.group )
+      objectType.groups.splice( groupsIndex, 1 )
+      
+      /* amount */
+      objectType.amount--
+      
+      /* entry */
+      // const entryIndex = objectType.entry.indexOf( object.entry )
+      const entryIndex2 = objectType.entry.findIndex(
+        x => x._id === object._id );
+      // const entryIndex3 = objectType.entry.forEach( (entry, idx) => {
+      //   if ( entry.findIndex( x => x._id === object.entry._id ) ) {
+      //     return idx;
+      //   }
+      // } )
+      objectType.entry.splice( entryIndex2, 1 )
+
+      console.log( allObjectsIndex )
+      console.log( _idsIndex )
+      console.log( titlesIndex )
+      console.log( groupsIndex )
+      console.log( entryIndex2 )
+      
+    } )
+
+    
+  }
     }
 
   }
