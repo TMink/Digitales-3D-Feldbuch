@@ -78,4 +78,20 @@ export class ObjectFilter {
       }
     }
   }
+
+  layering( layer, all, infoBlockItem ) {
+    const layercount = layer.length;
+    let check = true;
+
+    for ( let i=0; i < layercount; i++ ) {
+      if( !( layer[i][0] == layer[i][1] ) ) {
+        check = false;
+        break;
+      }
+    }
+
+    if ( check ) {
+      this.fillAll( all, infoBlockItem );
+    }
+  }
 }
