@@ -223,4 +223,29 @@ export class ObjectFilter {
       }
     }
   }
+
+  resetObjectInfo2Input( positionObject ) {
+    positionObject.number = null;
+    positionObject.title = null;
+    positionObject.infoBlock = [];
+  }
+
+  resetObjectInfo2( positionObject ) {
+    positionObject.allNumbers = [];
+    positionObject.allTitles = [];
+    positionObject.chosenfinalModel = [];
+  }
+
+  resetPlaceObjectInfo( placeObject ) {
+    placeObject.allNumbers = [];
+    placeObject.allTitles = [];
+    placeObject.chosenfinalModel = [];
+  }
+
+  resetPositionInfo2( positionData ) {
+    positionData.allNumbers = [];
+    positionData.allSubNumbers = [];
+    positionData.allTitles = [];
+    positionData.chosenPositionModels = [];
+  }
 }
