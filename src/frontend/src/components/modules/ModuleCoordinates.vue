@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 09.01.2024 12:15:49
+ * Last Modified: 19.02.2024 11:47:17
  * Modified By: Julian Hardtung
  * 
  * Description: `coordinates` input module for places/positions
@@ -146,14 +146,14 @@ export default {
 			return {
         type: null,
         object: {
-          depthBot: null,
-          depthTop: null,
-          upTo: null,
-          up: null,
-          rightTo: null,
-          right: null,
+          depthBot: "",
+          depthTop: "",
+          upTo: "",
+          up: "",
+          rightTo: "",
+          right: "",
 
-          height: null,
+          height: "",
         },
 			}
 		},
