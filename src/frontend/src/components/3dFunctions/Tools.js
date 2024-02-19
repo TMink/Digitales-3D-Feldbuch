@@ -81,6 +81,13 @@ export class LineTool {
 
     return spheres
   }
+  
+  updateTitle( measureTool ) {
+    if ( measureTool.texttoken ) {
+      measureTool.title = measureTool.textField;
+      measureTool.texttoken = false;
+    }
+  }
 }
 export class ModelInteraktion {
 }
