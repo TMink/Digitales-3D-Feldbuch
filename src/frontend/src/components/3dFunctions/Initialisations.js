@@ -36,4 +36,23 @@ export class Initialisations {
   constructor() {
     this.cameraSettings = new CameraSettings();
   }
+
+  initMeasurementTool( document, canvas, params ) {
+    /* label Renderer */
+    params.css2DRenderer = new CSS2DRenderer()
+    params.css2DRenderer.setSize( canvas.clientWidth,
+      canvas.clientHeight );
+      params.css2DRenderer.domElement.style.position = 'absolute'
+      params.css2DRenderer.domElement.style.top = '35px'
+      params.css2DRenderer.domElement.style.color = "white"
+      params.css2DRenderer.domElement.style.pointerEvents = 'none'
+    document.body.appendChild( params.css2DRenderer.domElement)
+
+    // Raycaster measurementTool
+    params.raycaster = new THREE.Raycaster();
+    params.pointer = new THREE.Vector2();
+
+    // Variables
+    params.lineID = String(Date.now());
+  }
 }
