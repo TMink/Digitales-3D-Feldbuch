@@ -138,6 +138,54 @@ export class LineTool {
       measureTool.texttoken = true;
     }
   }
+
+  async deleteLine( placeInDB, measureTool, scene ) {
+    let idToBeDeleted = null
+    const linesInDB = await fromOfflineDB.getAllObjects(
+      'Lines', 'lines' );
+      
+    measureTool.infoBlock.forEach( element => {
+      if ( element.name === measureTool.title ) {
+        idToBeDeleted = element._id;
+        
+        const index = measureTool.infoBlock.indexOf(element)
+
+        /* Delte line from sceneMain */
+        const line = scene.getObjectByName(measureTool.infoBlock[index].line)
+        const lable = scene.getObjectByName(measureTool.infoBlock[index].lable)
+        const firstBall = scene.getObjectByName(measureTool.infoBlock[index].balls[0])
+        const secondBall = scene.getObjectByName(measureTool.infoBlock[index].balls[1])
+
+        line.remove( lable );
+        line.geometry.dispose();
+        line.material.dispose();
+        scene.remove( line );
+
+        firstBall.geometry.dispose();
+        firstBall.material.dispose();
+        scene.remove( firstBall );
+
+        secondBall.geometry.dispose();
+        secondBall.material.dispose();
+        scene.remove( secondBall );
+
+        /* Delete menue item */
+        measureTool.textField = null
+        measureTool.infoBlock.splice(index, 1)
+      }
+    })
+
+    /* Delete from IndexedDb */
+    const lineInDB = linesInDB.find( e => e._id === idToBeDeleted );
+    const index = placeInDB.lines.indexOf(lineInDB.name);
+    placeInDB.lines.splice( index, 1 );
+    await fromOfflineDB.deleteObject( lineInDB, 'Lines', 'lines' );
+    await fromOfflineDB.updateObject( structuredClone(toRaw(placeInDB)), 
+      'Places', 'places' )
+
+    measureTool.title = null;
+    this.updateLineMenue( measureTool );
+  }
 }
 export class ModelInteraktion {
 }
