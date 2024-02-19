@@ -291,7 +291,48 @@ export class ObjectLoaders {
 
     
   }
+
+  async loadObjectInSub( exParams, objectID ) {
+
+    const object = [];
+
+    // Check if object is already loaded
+    if ( exParams.sub.object.length = 0 ) {
+      console.log("New object")
+      object.push( await fromOfflineDB.getObject( objectID, 'Models',
+      'positions' ) ); 
+    } else {
+      console.log("Already Loaded")
+      object.push( exParams.sub.object[ 0 ] )
     }
 
+    const loadedObject = await this.load( object )
+
+    for ( var i in exParams.main.position.groups ) {
+      if ( exParams.main.position.entry[ i ]._id == objectID ) {
+        this.posInfo.modelName = "Model name: " + 
+        exParams.main.position.entry[ i ].modelTitle;
+        
+        loadedObject.position.set( 
+          -exParams.main.position.entry[ i ].position.x, 
+          -exParams.main.position.entry[ i ].position.y,
+          -exParams.main.position.entry[ i ].position.z )
+        const height = exParams.main.position.entry[ i ].bbox.max.y - 
+          exParams.main.position.entry[ i ].bbox.min.y;
+        const width = exParams.main.position.entry[ i ].bbox.max.x - 
+          exParams.main.position.entry[ i ].bbox.min.x;
+        const length = exParams.main.position.entry[ i ].bbox.max.z - 
+          exParams.main.position.entry[ i ].bbox.max.z;
+        const largest = Math.max(height, width, length)
+        exParams.sub.camera.position.z = largest * 2;
+
+      }
+    }
+
+    /* Add model to sub scene */
+    exParams.sub.scene.add( loadedObject );
+    exParams.sub.object.push( loadedObject );
+    
   }
+
 }
