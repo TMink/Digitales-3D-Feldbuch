@@ -51,6 +51,21 @@ export class LineTool {
     
     return measurementLable
   }
+
+  createBall( name, pos ) {
+    const geometry = new THREE.SphereGeometry( 0.03, 6, 4 );
+    const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+    const sphere = new THREE.Mesh( geometry, material );
+    sphere.name = name;
+    return {
+      sphere: sphere,
+      position: {
+        x: pos[0],
+        y: pos[1],
+        z: pos[2]
+      }
+    }
+  }
 }
 export class ModelInteraktion {
 }
