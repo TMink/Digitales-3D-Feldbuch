@@ -162,4 +162,53 @@ export class Utilities {
 
     return parseInt(subNumber) + 1;
   }
+
+  updateBtnColor( e, leftDrawer ) {
+    if(e) {
+      switch(e) {
+        case "btn1":
+          if (leftDrawer.btnColors[0] == "background") {
+            leftDrawer.btnColors[0] = "transparent"
+          } else {
+            leftDrawer.btnColors[0] = "background"
+          }
+          leftDrawer.btnColors[1] = "transparent"
+          leftDrawer.btnColors[2] = "transparent"
+          leftDrawer.btnColors[3] = "transparent"
+          break;
+        case "btn2":
+          leftDrawer.btnColors[0] = "transparent"
+          if (leftDrawer.btnColors[1] == "background") {
+            leftDrawer.btnColors[1] = "transparent"
+          } else {
+            leftDrawer.btnColors[1] = "background"
+          }
+          leftDrawer.btnColors[2] = "transparent"
+          leftDrawer.btnColors[3] = "transparent"
+          break;
+        case "btn3":
+          leftDrawer.btnColors[0] = "transparent"
+          leftDrawer.btnColors[1] = "transparent"
+          if (leftDrawer.btnColors[2] == "background") {
+            leftDrawer.btnColors[2] = "transparent"
+          } else {
+            leftDrawer.btnColors[2] = "background"
+          }
+          leftDrawer.btnColors[3] = "transparent"
+          break;
+        case "btn4":
+          leftDrawer.btnColors[0] = "transparent"
+          leftDrawer.btnColors[1] = "transparent"
+          leftDrawer.btnColors[2] = "transparent"
+          if (leftDrawer.btnColors[3] == "background") {
+            leftDrawer.btnColors[3] = "transparent"
+          } else {
+            leftDrawer.btnColors[3] = "background"
+          }
+          break;
+        default:
+          console.log("error")
+      }
+    }
+  }
 }
