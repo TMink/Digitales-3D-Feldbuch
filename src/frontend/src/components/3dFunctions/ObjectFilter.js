@@ -112,4 +112,33 @@ export class ObjectFilter {
       menues[c].sort();
     }
   }
+
+  async getPlaceObjectInfo( placeObject, placeObjectsInScene ) {
+    for ( let i=0; i < placeObjectsInScene.length; i++) {
+      // const objectID = placeObjectsInScene[ i ].modelID;
+      const objectID = placeObjectsInScene[ i ]._id;
+      const objectInDB = await fromOfflineDB.getObject(objectID, 'Models', 
+        'places');
+
+      if ( !placeObject.allNumbers.includes(objectInDB.modelNumber) ) {
+        placeObject.allNumbers.push(objectInDB.modelNumber);
+      }
+
+      if ( !placeObject.allTitles.includes(objectInDB.title) ) {
+        placeObject.allTitles.push(objectInDB.title);
+      }
+
+      /* For the filter algorithm to work properly */
+      const objectIDArray = [objectInDB._id]
+      const newObject = [
+        objectInDB.modelNumber,
+        objectInDB.title,
+        objectIDArray,
+        objectInDB.color,
+        objectInDB.opacity
+      ]
+
+      placeObject.infoBlock.push(newObject)
+    }
+  }
 }
