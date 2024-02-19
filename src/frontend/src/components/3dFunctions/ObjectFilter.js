@@ -141,4 +141,38 @@ export class ObjectFilter {
       placeObject.infoBlock.push(newObject)
     }
   }
+
+  async getPositionDataInfo( positionData, positionObjectsInScene ) {
+    const positionIDs = [];
+
+    for ( let i=0; i < positionObjectsInScene.length; i++) {
+      const positionID = positionObjectsInScene[i].positionID
+      const positionInDB = await fromOfflineDB.getObject(positionID, 'Positions', 'positions')
+
+      if ( !positionIDs.includes(positionID) ) {
+
+        if (!positionData.allNumbers.includes(positionInDB.positionNumber)) {
+          positionData.allNumbers.push(positionInDB.positionNumber)
+        }
+        if (!positionData.allSubNumbers.includes(positionInDB.subNumber)) {
+          positionData.allSubNumbers.push(positionInDB.subNumber)
+        }
+        if (!positionData.allTitles.includes(positionInDB.title)) {
+          positionData.allTitles.push(positionInDB.title)
+        }
+
+        const newPosition = [
+          positionInDB.positionNumber,
+          positionInDB.subNumber,
+          positionInDB.title,
+          positionInDB.models
+        ]
+
+        positionData.infoBlock.push(newPosition)
+
+        positionIDs.push(positionID)
+      }
+      
+    }
+  }
 }
