@@ -611,8 +611,18 @@ import * as THREE from 'three';
 
 import Navigation from '../components/Navigation.vue';
 
+import { exParams } from '../components/3dFunctions/Parameter.js'
+import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { ObjectLoaders } from '../components/3dFunctions/ObjectLoaders.js'
 import { UpdateLocalVariables } from '../components/3dFunctions/UpdateLocalVariables.js'
+import { UpdateIndexedDB } from '../components/3dFunctions/UpdateIndexedDB.js';
+import { LineTool, ModelInteraktion } from '../components/3dFunctions/Tools.js'
+import { ControlSettings } from '../components/3dFunctions/ControlSettings.js'
+import { CameraSettings } from '../components/3dFunctions/CameraSettings.js'
+import { Utilities } from '../components/3dFunctions/Utilities.js'
+import { ObjectFilter } from '../components/3dFunctions/ObjectFilter.js'
+import { GarbageCollection } from '../components/3dFunctions/GarbageCollection.js'
+import { Initialisations } from '../components/3dFunctions/Initialisations.js'
 
 export default {
   name: 'ModelViewer',
