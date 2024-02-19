@@ -135,4 +135,31 @@ export class Utilities {
 
     root.vtoast.show({ message: t('saveSuccess')});
   }
+
+  calcSubNumber(curPos, prevPos) {
+    if (prevPos == undefined) {
+      return 1;
+    }
+
+    if (prevPos.positionNumber < curPos.positionNumber) {
+      return 1;
+    }
+    
+    var subNumber = prevPos.subNumber;
+
+    if (/* curPos.activity == prevPos.activity && */
+      curPos.placeID == prevPos.placeID &&
+      curPos.positionNumber == prevPos.positionNumber &&
+      curPos.right == prevPos.right &&
+      curPos.up == prevPos.up &&
+      curPos.height == prevPos.height &&
+      curPos.dating == prevPos.dating &&
+      curPos.title == prevPos.title &&
+      curPos.date == prevPos.date &&
+      !curPos.isSeparate) {
+      return parseInt(subNumber);
+    }
+
+    return parseInt(subNumber) + 1;
+  }
 }
