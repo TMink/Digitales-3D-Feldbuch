@@ -222,4 +222,20 @@ export class Utilities {
       } )
     } )
   }
+
+  getOldObject( alreadyLoadedIDs, objectsInDB ) {
+    return alreadyLoadedIDs.filter( x => !objectsInDB.includes( x ) )
+  }
+
+  checkIDs( arrayToBeChecked, arrayToBeCheckedWith ) {
+    arrayToBeChecked.forEach( arrA => {
+      console.log(exParams.main.objects.place._ids)
+      console.log(object._id)
+      if ( !exParams.main.objects.place._ids.some( id => id === arrA._id ) ) {
+        objectsToBeLoaded.push( arrA )
+        console.log(arrA)
+      }
+    } );
+  }
+
 }
