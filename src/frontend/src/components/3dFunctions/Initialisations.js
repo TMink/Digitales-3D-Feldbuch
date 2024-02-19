@@ -131,4 +131,34 @@ export class Initialisations {
     params.gammaCorrectionShader = new ShaderPass( GammaCorrectionShader );
     params.composer.addPass( params.gammaCorrectionShader )
   }
+
+  subInit( params ) {
+    /* mesh in sub scene */
+    params.object = [];
+
+    /* Renderer */
+    params.renderer = new THREE.WebGLRenderer( { canvas: params.canvas } );
+    params.renderer.setPixelRatio( params.canvas.devicePixelRatio );
+    params.renderer.setSize( params.canvas.clientWidth,
+      params.canvas.clientHeight );
+    params.renderer.setClearColor( params.sceneParams.bgColor, 1 );
+    params.renderer.shadowMap.enabled = true;
+    params.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    /* Scene */
+    params.scene = new THREE.Scene();
+    params.scene.name = "SceneSub"
+
+    /* Camera */
+    const aspect = params.canvas.clientWidth / params.canvas.clientHeight;
+    params.camera = new THREE.PerspectiveCamera( 50, aspect, 1, 1000 );
+
+    /* Light */
+    params.light = new THREE.AmbientLight( params.sceneParams.lightColor );
+    params.scene.add( params.light );
+
+    /* Controls */
+    params.orbitControls = new OrbitControls( params.camera,
+      params.renderer.domElement );
+  }
 }
