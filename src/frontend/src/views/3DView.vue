@@ -632,6 +632,7 @@ export default {
 
   data() {
     return {
+      exParams: exParams,
       /**
        * Bottom drawer: Specific Position Info
        */
@@ -663,8 +664,11 @@ export default {
         btnColors: ["transparent", "transparent", "transparent", "transparent"],
         btnNames: ["btn1", "btn2", "btn3", "btn4"],
       },
-      /* Place filter and modifiaktion options */
-      plaModel: {
+      
+      /**
+       * Place filter and modifiaktion options
+       */
+      placeObject: {
         number: null,
         title: null,
         allNumbers: [],
@@ -673,7 +677,7 @@ export default {
         chosenfinalModelGroup: null,
         infoBlock: []
       },
-      plaMods: {
+      placeMods: {
         disabled: false,
         opacitySliderValue: 0,
         colorPicker: {
@@ -682,9 +686,11 @@ export default {
         },
         token: false,
       },
-      
-      /* Positions filter and modifiaktion options */
-      posData: { // position data
+  
+      /**
+       * Positions filter and modifiaktion options
+       */
+      positionData: { // position data
         number: null,
         subNumber: null,
         title: null,
@@ -694,7 +700,7 @@ export default {
         chosenPositionModels: [],
         infoBlock: []
       },
-      posModel: { // postion model
+      positionObject: { // postion model
         number: null,
         title: null,
         allNumbers: [],
@@ -704,7 +710,7 @@ export default {
         infoBlock: [],
         disableInput: null,
       },
-      posMods: { // position modifikations
+      positionMods: { // position modifikations
         disabled: false,
         opacitySliderValue: 0,
         attachTransformControls: false,
@@ -718,21 +724,14 @@ export default {
       /**
        * Tools
        */
-       measureTool: {
+      measureTool: {
         title: null,
         allTitles: [],
         infoBlock: [], // { lineName, lableName, [ firstBallName, secondBallName ] }
         textField: null,
         texttoken: false,
       },
-
-      /**
-       * Meshes in scene
-       */
-      placeModelsInScene: [], // { placeID, modelID, modelName }
-      positionModelsInScene: [], // { positionID, modelID, modelName }
-      positionModelsInSceneNames: [],
-      
+  
       /**
        * Camera and Controls
        */
@@ -741,18 +740,7 @@ export default {
         position: null,
         rotation: null
       },
-
-      /**
-       * Canvas
-       */
-      canvasMain: null,
-      canvasSub: null,
-      
-      /**
-       * Loader
-       */
-      glbLoader: null,
-    };
+    }
   },
 
   watch: {
