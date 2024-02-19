@@ -68,4 +68,13 @@ export class Utilities {
 
     return center
   }
+
+  getCameraData( camera ) {
+    const cameraData = {
+      position: [ camera.position.x, camera.position.y, camera.position.z ],
+      rotation: [ camera.rotation.x, camera.rotation.y, camera.rotation.z ]
+    }
+
+    return cameraData;
+  }
 }
