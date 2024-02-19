@@ -66,6 +66,21 @@ export class LineTool {
       }
     }
   }
+  
+  createBalls( names, position ) {
+    const pos = [ 
+      [ position[0], position[1], position[2] ],
+      [ position[3], position[4], position[5] ]
+    ]
+    
+    const spheres = []
+
+    names.forEach( (_, i) => {
+      spheres.push( this.createBall( names[ i ], pos[ i ] ))
+    } )
+
+    return spheres
+  }
 }
 export class ModelInteraktion {
 }
