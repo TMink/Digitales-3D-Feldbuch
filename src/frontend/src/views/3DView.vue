@@ -614,24 +614,6 @@ import Navigation from '../components/Navigation.vue';
 import { ObjectLoaders } from '../components/3dFunctions/ObjectLoaders.js'
 import { UpdateLocalVariables } from '../components/3dFunctions/UpdateLocalVariables.js'
 
-const params = {
-  sceneMain: {
-    bgColor: 0x263238,
-    lightColor: 0xffffff,
-    outline: {
-      color: '#FFFFFF',
-      pulsePeriod: 2,
-      edgeStrength: 4,
-      edgeThickness: 2,
-      edgeGlow: 0.5
-    }
-  },
-  sceneSub: {
-    bgColor: 0x263238,
-    lightColor: 0xffffff
-  }
-}
-
 export default {
   name: 'ModelViewer',
   components: {
