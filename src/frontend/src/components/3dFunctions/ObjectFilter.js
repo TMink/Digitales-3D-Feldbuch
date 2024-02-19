@@ -248,4 +248,29 @@ export class ObjectFilter {
     positionData.allTitles = [];
     positionData.chosenPositionModels = [];
   }
+
+  resetPositionMods( positionObject, positionMods, scene ) {
+    const updateIndexedDB = new UpdateIndexedDB()
+    
+    positionObject.chosenfinalModelGroup = null;
+    positionMods.disabled = true;
+    updateIndexedDB.updateObjectOpacityAndColor( 
+      positionObject.chosenfinalModel[ 0 ], 'positions', scene );
+    positionObject.chosenfinalModelGroup = null;
+    positionMods.colorPicker.color = null;
+    positionMods.opacitySliderValue = 0;
+    positionMods.token = false;
+  }
+
+  resetPlaceMods( placeObject, placeMods, scene ) {
+    const updateIndexedDB = new UpdateIndexedDB()
+    
+    placeMods.token = false;
+    placeMods.disabled = true;
+    updateIndexedDB.updateObjectOpacityAndColor(
+      placeObject.chosenfinalModel[ 0 ], 'places', scene);
+    placeMods.chosenfinalModelGroup = null;
+    placeMods.colorPicker.color = null;
+    placeMods.opacitySliderValue = 0;
+  }
 }
