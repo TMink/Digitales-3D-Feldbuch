@@ -94,4 +94,10 @@ export class ObjectFilter {
       this.fillAll( all, infoBlockItem );
     }
   }
+
+  fillAll( list, blockItem ) {
+    if (!list.includes(blockItem)) {
+      list.push(blockItem);
+    }
+  }
 }
