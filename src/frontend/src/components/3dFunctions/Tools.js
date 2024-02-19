@@ -15,6 +15,29 @@ import { fromOfflineDB } from '../../ConnectionToOfflineDB.js'
 import { toRaw } from 'vue';
 
 export class LineTool {
+  
+  createLine( name, position ) {  
+    const points = [];
+      points.push( new THREE.Vector3(position[0], position[1], position[2]),
+                   new THREE.Vector3(position[3], position[4], position[5]) );
+
+      const geometry = new THREE.BufferGeometry().setFromPoints(
+        points
+      )
+
+      /* Create line */
+      const line = new THREE.Line(
+        geometry,
+        new THREE.LineBasicMaterial({
+          color: 0x0000ff,
+        }),
+      )
+
+      line.name = name;
+      line.frustumCulled = false;
+
+      return line
+  }
 }
 export class ModelInteraktion {
 }
