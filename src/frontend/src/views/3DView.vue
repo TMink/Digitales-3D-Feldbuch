@@ -1087,213 +1087,702 @@ export default {
 
   },
 
+  created() {
+    this.initExternalImports();
+    console.log( exParams )
+  },
+
   async mounted() {
+    /**
+     *  ++++ Synchronise with IndexedDB ++++
+     */
     await fromOfflineDB.syncLocalDBs();
     
-    this.glbLoader = new GLTFLoader();
+    /**
+     *  ++++ Load specific data from IndexedDB ++++
+     */
+    await this.loadDataFromIndexedDB();
 
-    /* Setup */
+    /**
+     *  ++++ Link canvases to exParams and specify window width and height. ++++
+     */
     this.setupCanvases();
-    document.addEventListener("click", this.func, false);
-    this.posMods.disabled = true;
-    this.plaMods.disabled = true;
-
-    this.mainInit();
-    this.subInit();
-
-    // await this.loadPlaceModels();
-    await this.loadObjectsInScene( 'places' );
-
-    if ( this.placeModelsInScene.length > 0 ) {
-      this.updateCamera( this.placeModelsInScene[
-        this.placeModelsInScene.length - 1 ].modelID )
-
-      // await this.loadPositionModels();
-      await this.loadObjectsInScene( 'positions' );
-      await this.loadLines();
-
-      this.getPositionInfo();
-      this.getPlaceModelInfo();
-
-      this.animate();
-    } else {
-      console.log( "No Models found" )
+    
+    /**
+     *  ++++ Disable Modifikation Options for places and position. ++++
+     * (Needs to be done manualy, becaus of an internal vuetify bug)
+     */
+    this.positionMods.disabled = true;
+    this.placeMods.disabled = true;
+    
+    
+    /**
+     * Initialize the Measurement Tool
+     */
+    this.initialisations.initMeasurementTool( document, exParams.main.canvas, 
+      exParams.mmTool );
+      
+    /**
+     *  ++++ Initialize Main- and Sub-Scene ++++
+     * 
+     * Checks initTokens form exparams => 
+     *  false == Scene not initialized yet 
+     *  true == Scene already initialized
+     */
+    for ( const [ sceneName, tokenValue ] of 
+      Object.entries( exParams.initTokens ) ) {
+      if ( !tokenValue ) {
+        switch ( sceneName ) {
+          case "main":
+            /* Initialize main scene */
+            this.initialisations.mainInit( exParams.main );
+            /* Initialize main eventlistener */
+            this.initMainEventlisteners( window, exParams.main.canvas,
+              exParams.main.renderer, exParams.main.transformControls );
+            /* Set token to true */
+            this.tokenValue = true;
+            break;
+          case "sub":
+            /* Initialize sub scene */
+            this.initialisations.subInit( exParams.sub );
+            /* Initialize sub eventlistener */
+            this.initSubEventlisteners( exParams.sub.canvas );
+            /* Set token to true */
+            this.tokenValue = true;
+            break;
+        }
+      }
     }
+
+    /**
+     *  ++++ Load place and position objects into scene. ++++
+     * 
+     * Determines if:
+     *    1. No objects are present in IndexedDb
+     * or   
+     *    2. Only place objects are present in IndexedDB
+     * or
+     *    3. Only position objects are present in IndexedDB
+     * or
+     *    3. Place and position objects are present in IndexedDB
+     * 
+     * Based on these different cases the camera will be placed accordingly to
+     * the amount and size of the objects, present in the scene
+     */
+    /* 1. No Models found */
+    if ( this.placeObjects.length == 0 && this.positionObjects == 0 ) {
+      
+      console.log( "No Models found" )
+    
+    /* 2. Only place objects */
+    } else if ( this.placeObjects.length != 0 && this.positionObjects == 0 ) {
+      
+      /* Load objects in scene */
+      await this.objectLoaders.loadObjectsInScene( exParams, 'places', 
+        this.placeID );
+      /* Fill object Filter menue options with data based on currently loaded
+       * objects. */
+      this.objectFilter.getPlaceObjectInfo( this.placeObject, 
+        exParams.main.objects.place.entry );
+
+      /* Get object center for camera and control alignment if ... */
+      /* ... there is only one objects present or ... */
+      if ( exParams.main.objects.allObjects.length < 2 ) {
+        this.centerOfObjects = this.utilities.getModelCenter( 
+          exParams.main.objects.place.groups[ 0 ] )
+      /* ... there are multiple objects present. */
+      } else {
+        this.centerOfObjects = this.utilities.getBarycenter( 
+          exParams.main.objects.place.groups );
+      }
+
+      console.log("Only place objects")
+    
+    /* 3. Only position objects */
+    } else if ( this.placeObjects.length == 0 && this.positionObjects != 0 ) {
+      
+      /* Load objects in scene */
+      await this.objectLoaders.loadObjectsInScene( exParams, 'positions', 
+        this.placeID );
+      /* Fill object Filter menue options with data based on currently loaded
+       * objects. */
+      this.objectFilter.getPositionDataInfo( this.positionData, 
+        exParams.main.objects.position.entry );
+
+      /* Get object center for camera and control alignment if ... */
+      /* ... there is only one objects present or ... */
+      if ( exParams.main.objects.allObjects.length < 2 ) {
+        this.centerOfObjects = this.utilities.getModelCenter( 
+          exParams.main.objects.position.groups[ 0 ] )
+      /* ... there are multiple objects present. */
+      } else {
+        this.centerOfObjects = this.utilities.getBarycenter( 
+          exParams.main.objects.position.groups );
+      }
+
+      console.log("Only position objects")
+    
+    /* 4. Place and position objects */
+    } else if ( this.placeObjects.length != 0 && this.positionObjects != 0 ) {
+      /* Load objects in scene */
+      await this.objectLoaders.loadObjectsInScene( exParams, 'places', 
+      this.placeID );
+      await this.objectLoaders.loadObjectsInScene( exParams, 'positions', 
+      this.placeID );
+      /* Fill object Filter menue options with data based on currently loaded
+      * objects. */
+      this.objectFilter.getPlaceObjectInfo( this.placeObject, 
+      exParams.main.objects.place.entry );
+      this.objectFilter.getPositionDataInfo( this.positionData, 
+      exParams.main.objects.position.entry );
+     
+      /* Get object center for camera and control alignment if ... */
+      /* ... there is only one objects present or ... */
+      if ( exParams.main.objects.allObjects.length < 2 ) {
+        this.centerOfObjects = this.utilities.getModelCenter( 
+          exParams.main.objects.place.groups[ 0 ] );
+      /* ... there are multiple objects present. */
+      } else {
+        this.centerOfObjects = this.utilities.getBarycenter( 
+          exParams.main.objects.place.groups );
+      }
+      
+      console.log("Place and position objects")
+
+    }
+
+    /**
+     * Re-center Camera based on predetermine factors
+     */
+    await this.cameraSettings.updateCamera ( 
+      this.centerOfObjects, this.placeID, exParams.main.camera, 
+      this.cameraIDsInDB, this.cameraInDB, this.cameraData, 
+      exParams.main.arcBallControls, this.arcballAnchor
+    )
+
+    /**
+     * Load already drawn lines
+     */
+    await this.loadLines();
+
+    /**
+     * Animate the scene
+     */
+    this.animate();
+    
+    // await this.objectLoaders.loadObjectsInScene( exParams, 'places', this.placeID );
+
+    // if ( exParams.main.objects.allObjects.length > 0 ) {
+    //   /* Re-center Camera */
+    //   await this.cameraSettings.updateCamera( 
+    //     exParams.main.objects.place.entry[ exParams.main.objects.place.groups.length - 1 ]._id,
+    //     this.placeID, exParams.main.camera, this.cameraIDsInDB, this.cameraInDB,
+    //     this.cameraData, exParams.main.arcBallControls, exParams.main.scene, 
+    //     this.arcballAnchor
+    //    )
+
+    //   /* Position Objects */
+    //   await this.objectLoaders.loadObjectsInScene( exParams, 'positions', this.placeID );
+
+    //   console.log(exParams.main.objects.position)
+
+    //   /* Lines (Measurement Tool) */
+    //   await this.loadLines();
+
+    //   /* Fill Place and Position Filter */
+    //   this.objectFilter.getPositionDataInfo( this.positionData, 
+    //     exParams.main.objects.position.entry );
+    //   this.objectFilter.getPlaceObjectInfo( this.placeObject, 
+    //     exParams.main.objects.place.entry );
+      
+    //   /* Animate */
+    //   this.animate();
+    // } else {
+    //   console.log( "No Models found" )
+    // }
   },
 
   async unmounted() {
-    if ( this.placeModelsInScene.length > 0 ) {
-      await this.updateModelsInDB();
-      await this.updateCameraInDB();
+    
+    const updateDB = new UpdateIndexedDB()
+
+    if ( exParams.main.objects.allObjects.length > 0 ) {
+      updateDB.updateCamera( this.placeID, this.cameraIDsInDB,
+        this.cameraInDB, this.arcballAnchor, exParams.main.camera,
+        exParams.main.objects.allObjects )
+
+      updateDB.updateObjects( exParams.main.objects.place.entry,
+      exParams.main.objects.position.entry, exParams.main.scene )
     }
-    this.clearCanvases()
+
+    exParams.main.canvas.removeEventListener( 'click', this.updateArcball );
+    exParams.main.canvas.removeEventListener( 'click', this.onMouseDown );
+    window.removeEventListener( 'resize', this.onWindowResize, false );
+    exParams.main.canvas.removeEventListener( 'keydown', this.keyDown );
+    exParams.main.canvas.removeEventListener( 'keyup', this.keyUp );
+
+    exParams.main.renderer.domElement.removeEventListener( 'pointerdown', 
+      this.onClick, false );
+    exParams.main.canvas.removeEventListener( 'mousemove', 
+      this.onDocumentMouseMove, false);
+
+    this.garbageCollection.removeLines( exParams.main.scene,
+      this.measureTool.infoBlock );
+
   },
 
   methods: {
 
-    async updateAutoFillList( storeName, item) {
-      const newEditor = {};
+    /**
+     * -------------------------------------------------------------------------
+     * # Init parameters
+     * -------------------------------------------------------------------------
+     */
 
-      const editorsFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', storeName);
-      if ( editorsFromDB.length > 0 ) {
-        let hasItem = false;
-        
-        editorsFromDB.forEach( element => {
-          if ( element.item == item ) {
-            hasItem = true;
-          }
-        })
-        if ( !hasItem && item != '' ) {
-          newEditor.id = String(Date.now())
-          newEditor.item = toRaw(item)
-        }
-      } else if ( item != '' ) {
-        newEditor.id = String(Date.now())
-        newEditor.item = toRaw(item)
-      }
-      if ( !!Object.keys(newEditor).length ) {
-        await fromOfflineDB.addObject(newEditor, 'AutoFillLists', storeName)
-      }
+    async initExternalImports() {
+      this.utilities = new Utilities();
+      this.objectFilter = new ObjectFilter();
+      this.controlSettings = new ControlSettings();
+      this.cameraSettings = new CameraSettings();
+      this.garbageCollection = new GarbageCollection();
+      this.lineTool = new LineTool();
+      this.modelInteraktion = new ModelInteraktion();
+      this.initialisations = new Initialisations();
+      this.objectLoaders = new ObjectLoaders();
     },
 
-    async savePosition() {
+    async loadDataFromIndexedDB() {
+      this.placeID = this.$cookies.get( 'currentPlace' );
+      this.cameraIDsInDB = await fromOfflineDB.getProperties( '_id', 'Cameras',
+        'cameras' );
+      this.cameraInDB = await fromOfflineDB.getObject( this.placeID, 'Cameras',
+        'cameras' ); 
+      this.placeInDB = await fromOfflineDB.getObject( 
+        this.placeID, 'Places', 'places' );
+      this.placeObjects = await fromOfflineDB.getAllObjectsWithID( 
+        this.placeID, 'Place', 'Models', 'places' );
+      this.positionObjects = await fromOfflineDB.getAllObjectsWithID( 
+        this.placeID, 'Place', 'Models', 'positions' );
+    }, 
 
-      //convert from vue proxy to JSON object
-      const rawPosition = toRaw(this.posInfo);
-      rawPosition.count = Number(rawPosition.count);
-      rawPosition.lastChanged = Date.now();
-      
-      var positionFromDb = await fromOfflineDB.getObject(rawPosition.id, 'Positions', 'positions');
-      if ( positionFromDb.hasSubNumber ) {
-        var newSubNumber = this.calcSubNumber(rawPosition, positionFromDb);
-        rawPosition.subNumber = newSubNumber;
-      } else {
-        rawPosition.subNumber = '';
-      }
+    /**
+     * -------------------------------------------------------------------------
+     * # Setup vuetify/html components
+     * -------------------------------------------------------------------------
+     */
 
-      await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions');
+    setupCanvases: function() {
+      exParams.main.canvas = document.getElementById( 'mainCanvas' );
+      exParams.sub.canvas = document.getElementById( 'subCanvas' );
 
-      this.updateAutoFillList( 'datings', this.posInfo.dating )
-      this.updateAutoFillList( 'titles', this.posInfo.title )
-      this.updateAutoFillList( 'materials', this.posInfo.material )
-      this.updateAutoFillList( 'editors', this.posInfo.addressOf )
-
-      this.$root.vtoast.show({ message: this.$t('saveSuccess')});
+      /* Set canvasMain size */
+      exParams.main.canvas.width = window.innerWidth;
+      exParams.main.canvas.height = window.innerHeight - 110;
     },
+    
+    /**
+     * -------------------------------------------------------------------------
+     * # Loaders
+     * -------------------------------------------------------------------------
+     */
 
-    calcSubNumber(curPos, prevPos) {
-      if (prevPos == undefined) {
-        return 1;
-      }
+    loadObjectInSub: async function( objectID ) {
+      const object = await fromOfflineDB.getObject( objectID, 'Models',
+        'positions' );
 
-      if (prevPos.positionNumber < curPos.positionNumber) {
-        return 1;
-      }
-      
-      var subNumber = prevPos.subNumber;
+      const loader = new ObjectLoaders()
+      const loadedObject = await loader.load( object )
 
-      if (/* curPos.activity == prevPos.activity && */
-        curPos.placeID == prevPos.placeID &&
-        curPos.positionNumber == prevPos.positionNumber &&
-        curPos.right == prevPos.right &&
-        curPos.up == prevPos.up &&
-        curPos.height == prevPos.height &&
-        curPos.dating == prevPos.dating &&
-        curPos.title == prevPos.title &&
-        curPos.date == prevPos.date &&
-        !curPos.isSeparate) {
-        return parseInt(subNumber);
-      }
+      for ( var i in exParams.main.objects.position.groups ) {
+        if ( exParams.main.objects.position.entry[ i ]._id == objectID ) {
+          this.posInfo.modelName = "Model name: " + 
+          exParams.main.objects.position.entry[ i ].modelTitle;
 
-      return parseInt(subNumber) + 1;
-    },
-
-    updateTitle: function() {
-      if ( this.measureTool.texttoken ) {
-        this.measureTool.title = this.measureTool.textField
-        this.measureTool.texttoken = false;
-      }
-
-    },
-
-    saveLineTitle: async function() {
-
-      const linesInDB = await fromOfflineDB.getAllObjects(
-        'Lines', 'lines' );
-
-      let idToBeRenamed = null;
-
-      this.measureTool.infoBlock.forEach( element => {
-        if ( element.name === this.measureTool.title ) {
-          element.name = this.measureTool.textField;
-          idToBeRenamed = element.id;
-        }
-      } )
-
-      /* Rename line in IndexedDb */
-      const lineInDB = linesInDB.find( e => e.id === idToBeRenamed );
-      lineInDB.name = this.measureTool.textField;
-      await fromOfflineDB.updateObject( lineInDB, 'Lines', 'lines' );
-
-      this.updateLineMenue();
-      this.measureTool.texttoken = true;
-    },
-
-    deleteLine: async function() {
-
-      const placeInDB = await fromOfflineDB.getObject( 
-        this.$cookies.get('currentPlace'), 'Places', 'places' );
-      const linesInDB = await fromOfflineDB.getAllObjects(
-        'Lines', 'lines' );
-
-      let idToBeDeleted = null
-
-      this.measureTool.infoBlock.forEach( element => {
-        if ( element.name === this.measureTool.title ) {
-          idToBeDeleted = element.id;
-          const index = this.measureTool.infoBlock.indexOf(element)
-
-          /* Delte line from sceneMain */
-          const line = this.sceneMain.getObjectByName(this.measureTool.infoBlock[index].line)
-          const lable = this.sceneMain.getObjectByName(this.measureTool.infoBlock[index].lable)
-          const firstBall = this.sceneMain.getObjectByName(this.measureTool.infoBlock[index].balls[0])
-          const secondBall = this.sceneMain.getObjectByName(this.measureTool.infoBlock[index].balls[1])
+          console.log(exParams.main.objects.position.entry[ i ])
           
-          line.remove( lable );
-          line.geometry.dispose();
-          line.material.dispose();
-          this.sceneMain.remove( line );
+          loadedObject.position.set( 
+            -exParams.main.objects.position.entry[ i ].position.x, 
+            -exParams.main.objects.position.entry[ i ].position.y,
+            -exParams.main.objects.position.entry[ i ].position.z )
+          const height = exParams.main.objects.position.entry[ i ].bbox.max.y - 
+            exParams.main.objects.position.entry[ i ].bbox.min.y;
+          const width = exParams.main.objects.position.entry[ i ].bbox.max.x - 
+            exParams.main.objects.position.entry[ i ].bbox.min.x;
+          const length = exParams.main.objects.position.entry[ i ].bbox.max.z - 
+            exParams.main.objects.position.entry[ i ].bbox.max.z;
+          const largest = Math.max(height, width, length)
+          exParams.sub.camera.position.z = largest * 2;
 
-          firstBall.geometry.dispose();
-          firstBall.material.dispose();
-          this.sceneMain.remove( firstBall );
-
-          secondBall.geometry.dispose();
-          secondBall.material.dispose();
-          this.sceneMain.remove( secondBall );
-
-          /* Delete menue item */
-          this.measureTool.textField = null
-          this.measureTool.infoBlock.splice(index, 1)
         }
-      })
+      }
 
-      /* Delete from IndexedDb */
-      const lineInDB = linesInDB.find( e => e.id === idToBeDeleted );
-      const index = placeInDB.lines.indexOf(lineInDB.name);
-      placeInDB.lines.splice( index, 1 );
-      await fromOfflineDB.deleteObject( lineInDB, 'Lines', 'lines' );
-      await fromOfflineDB.updateObject( placeInDB, 'Places', 'places' )
-
-      this.measureTool.title = null;
-      this.updateLineMenue();
+      /* Add model to sub scene */
+      exParams.sub.scene.add( loadedObject );
+      exParams.sub.object.push( loadedObject );
+      
     },
 
-    updateLineMenue: function() {
-      this.measureTool.allTitles = [];
-      this.measureTool.infoBlock.forEach( element => {
-        this.measureTool.allTitles.push( element.name );
-      })
+    loadLines: async function() {
+      this.linesInDB = await fromOfflineDB.getAllObjects( 'Lines', 'lines' );
+
+      if ( this.linesInDB.length > 0 ) {
+        this.linesInDB.forEach( elem => {
+          exParams.mmTool.line = this.lineTool.createLine( 
+            elem.line.name, elem.line.geoPosition );
+          const balls = this.lineTool.createBalls( 
+            elem.balls, elem.line.geoPosition )
+
+          const lineCenter = this.lineTool.findLineCenter( 
+            balls[ 0 ].position,
+            balls[ 1 ].position )
+
+          console.log(elem.lable.distance)
+          exParams.mmTool.measurementLable = this.lineTool.createLable( 
+            elem.lable.name, elem.lable.distance, lineCenter );
+
+          balls.forEach( ball => {
+            exParams.main.scene.add( ball.sphere )
+            ball.sphere.position.set( ball.position.x, ball.position.y, 
+              ball.position.z )
+          })
+
+          /* Add lable to line */
+          exParams.mmTool.line.add( exParams.mmTool.measurementLable );
+          /* Add line to scene */
+          exParams.main.scene.add( exParams.mmTool.line );
+
+          const newLine = {
+              _id: elem._id,
+              name: elem.name,
+              line: exParams.mmTool.line.name,
+              lable: exParams.mmTool.measurementLable.name,
+              balls: elem.balls,
+          }
+          this.measureTool.infoBlock.push( newLine );
+          
+          this.measureTool.allTitles.push( elem.name );
+          exParams.mmTool.lineID++;
+          exParams.mmTool.line = null;
+          exParams.mmTool.measurementLable = null;
+
+        } )
+      }
+    },
+
+    /**
+     * -------------------------------------------------------------------------
+     * # Eventlistener functions
+     * -------------------------------------------------------------------------
+     */
+
+    initMainEventlisteners( window, canvas, renderer, transformControls ) {
+      // Eventlistener
+      document.addEventListener( 'click', this.func, false );
+      /* Auto Resize */
+      window.addEventListener( 'resize', this.onWindowResize, false )
+      canvas.addEventListener( 'click', this.updateArcball );
+      canvas.addEventListener( 'click', this.onMouseDown );
+      window.addEventListener( 'keydown', e => {
+        switch ( e.code ) {
+          case 'KeyW':
+            transformControls.mode = 'translate';
+            break;
+          case 'KeyE':
+            transformControls.mode = 'rotate';
+            break;
+          case 'KeyR':
+            transformControls.mode = 'scale';
+            break;
+        }
+      });
+
+      canvas.addEventListener( 'keydown', this.keyDown );
+      canvas.addEventListener( 'keyup', this.keyUp );
+
+      renderer.domElement.addEventListener( 'pointerdown', this.onClick, 
+        false );
+      canvas.addEventListener( 'mousemove', this.onDocumentMouseMove, 
+        false);
+    },
+
+    initSubEventlisteners( canvas ) {
+      /* Event listener */
+      canvas.addEventListener( 'mousemove', () => {
+        console.log( "Mouse moved" );
+      } );
+    },
+
+    updateArcball: async function( event ) {
+      if ( event.ctrlKey ) {
+        
+        this.cameraData = this.utilities.getCameraData( exParams.main.camera )
+
+        if ( this.cameraIDsInDB.includes( this.placeID ) ) {
+          const newCamera = await fromOfflineDB.getObject(
+            this.$cookies.get( 'currentPlace' ), 'Cameras', 'cameras' );
+            
+          this.controlSettings.updateWithNewCamera( exParams.main.arcBallControls,
+            newCamera );
+        } else {
+          this.controlSettings.updateWithOldCamera( exParams.main.arcBallControls,
+            this.arcballAnchor )
+        }
+
+        this.utilities.setCamera( exParams.main.camera, this.cameraData );
+      }
+    },
+
+    keyDown: function( event ) {
+      if (event.key === 'x') {
+          exParams.main.ctrlDown = true;
+          exParams.main.arcBallControls.enabled = false
+          document.body.style.cursor = 'crosshair';
+      }
+    },
+
+    keyUp: function( event ) {
+      if (event.key === 'x') {
+        exParams.main.ctrlDown = false;
+        exParams.main.arcBallControls.enabled = true
+        document.body.style.cursor = 'pointer'
+        if ( this.drawingLine ) {
+          exParams.mmTool.line.remove(this.measurementLable)
+          exParams.main.scene.remove( this.line );
+          exParams.mmTool.drawingLine = false;
+        }
+      }
+    },
+
+    onMouseDown: async function( event ) {
+      event.preventDefault();
+
+      const rect = exParams.main.renderer.domElement.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+
+      exParams.main.pointer.x = ( x / exParams.main.canvas.clientWidth ) * 2 - 1;
+      exParams.main.pointer.y = ( y / exParams.main.canvas.clientHeight ) * - 2 + 1;
+
+      exParams.main.raycaster.setFromCamera( exParams.main.pointer, exParams.main.camera );
+      const intersects = exParams.main.raycaster.intersectObjects( 
+        exParams.main.objects.position.groups,
+        true );
+
+      if ( intersects.length > 0 && event.altKey ) {
+        const objectName = intersects[ 0 ].object.name;
+
+        for ( let i = 0; i < exParams.main.objects.position.entry.length; i++ ) {
+          if (exParams.main.objects.position.entry[ i ]._id === objectName ) {
+            /* Trigger vuetify components */
+            this.bottomDrawer.showDrawer = true;
+            this.loadObjectInSub( intersects[ 0 ].object.name );
+
+            /* Draw outline */
+            const objectID = exParams.main.objects.position.entry[ i ]._id;
+            const objectFromScene = exParams.main.scene.getObjectByName( objectName );
+
+            if ( objectFromScene.parent != exParams.main.scene ) {
+              const groupObject = this.utilities.getGroup( objectFromScene );
+              const selectedObject = groupObject;
+              this.selectedObjects = []
+              this.selectedObjects.push( selectedObject )
+              // this.addSelectedObject( selectedObject );
+              exParams.main.outlinePass.selectedObjects = this.selectedObjects;
+            } else {
+              const selectedObject = objectFromScene;
+              exParams.main.outlinePass.selectedObjects = this.selectedObjects;
+            }
+
+            /* Fill drawer with position info */
+            const positionID = exParams.main.objects.position.entry[ i ].positionID;
+            const positionInDB = await fromOfflineDB.getObject( positionID,
+              'Positions', 'positions' );
+            this.posInfo = positionInDB;
+          }
+        }
+      }
+    },
+
+    onDocumentMouseMove: function ( event ) {
+      event.preventDefault();
+
+      const rect = exParams.main.renderer.domElement.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+
+      exParams.mmTool.pointer.x = ( x / exParams.main.canvas.clientWidth ) * 2 - 1;
+      exParams.mmTool.pointer.y = ( y / exParams.main.canvas.clientHeight ) * - 2 + 1;
+
+      if ( exParams.mmTool.drawingLine ) {
+        exParams.mmTool.raycaster.setFromCamera( exParams.mmTool.pointer, exParams.main.camera );
+        const intersects = exParams.mmTool.raycaster.intersectObjects( 
+          exParams.main.objects.allObjects,
+          true );
+
+        if ( intersects.length > 0 ) {
+          const positions = exParams.mmTool.line.geometry.attributes.position;
+
+          const v0 = new THREE.Vector3(
+            positions.array[0],
+            positions.array[1],
+            positions.array[2]
+          )
+          const v1 = new THREE.Vector3(
+            intersects[0].point.x,
+            intersects[0].point.y,
+            intersects[0].point.z
+          )
+          exParams.mmTool.line.geometry.attributes.position.needsUpdate = true
+          const distance = v0.distanceTo(v1)
+
+          v1.x += 0.0
+          v1.y -= 0.3
+
+          exParams.mmTool.measurementLable.element.innerText = "New line \n" + distance.toFixed(2) + 'm'
+          exParams.mmTool.measurementLable.position.lerpVectors(v0, v1, 0.5)
+        }
+      }
+    },
+
+    onClick: async function() {
+      if ( exParams.main.ctrlDown ) {
+        exParams.mmTool.raycaster.setFromCamera( exParams.mmTool.pointer, exParams.main.camera );
+        const intersects = exParams.mmTool.raycaster.intersectObjects( 
+          exParams.main.objects.allObjects,
+          true );
+        if ( intersects.length > 0 ) {
+          const nameLine = "Line - " + exParams.mmTool.lineID;
+          const nameLable = "Lable - " + exParams.mmTool.lineID;
+          if ( !exParams.mmTool.drawingLine ) {
+            const position = [
+              intersects[ 0 ].point.x,
+              intersects[ 0 ].point.y,
+              intersects[ 0 ].point.z,
+              intersects[ 0 ].point.clone.x,
+              intersects[ 0 ].point.clone.y,
+              intersects[ 0 ].point.clone.z,
+            ]
+            /* Create Line */
+            exParams.mmTool.line = this.lineTool.createLine( nameLine, position )
+
+            const lineCenter = { 
+              x: position.slice(0, 3)[0],
+              y: position.slice(0, 3)[1],
+              z: position.slice(0, 3)[2]
+             }
+
+            /* Create lable */
+            exParams.mmTool.measurementLable = this.lineTool.createLable( nameLable,
+              "New Line\n0.0m", lineCenter )
+            
+            /* Add line and lable to Main Scene */
+            exParams.mmTool.line.add(exParams.mmTool.measurementLable)
+            exParams.main.scene.add(exParams.mmTool.line);
+
+            exParams.mmTool.drawingLine = true;
+          } else {
+            const placeInDB = await fromOfflineDB.getObject( 
+              this.$cookies.get('currentPlace'), 'Places', 'places' )
+              
+            /* Generate names for line and balls */
+            // const nameOfLine = "New Line - " + this.lineID;
+            // const nameOfLine = "New Line - " + exParams.mmTool.measurementLable.element.innerText;
+            const nameOfLine = "New Line - " + 
+              exParams.mmTool.measurementLable.element.innerText.split('\n')[1];
+            const nameOfBalls = [ "firstBall - " + this.lineID, 
+                                  "secondBall - " + this.lineID ];
+            const positions = exParams.mmTool.line.geometry.attributes.position;
+            positions.array[3] = intersects[0].point.x;
+            positions.array[4] = intersects[0].point.y;
+            positions.array[5] = intersects[0].point.z;
+            exParams.mmTool.line.geometry.attributes.position.needsUpdate = true;
+            
+            const v0 = [positions.array[0], positions.array[1],
+            positions.array[2]];
+
+            const v1 = [positions.array[3], positions.array[4],
+            positions.array[5]];
+            
+            /* Create first and second ball and load them in main Scene */
+            const balls = {
+              firstBall: this.lineTool.createBall( nameOfBalls[ 0 ], v0 ),
+              secondBall: this.lineTool.createBall( nameOfBalls[ 1 ], v1 )
+            }
+            
+            Object.entries( balls ).forEach( ( [ key, value ] ) => {
+              exParams.main.scene.add( value.sphere )
+              value.sphere.position.set( value.position.x, value.position.y, 
+              value.position.z )
+            } )
+
+            const newLine = {
+              _id: String(exParams.mmTool.lineID),
+              name: nameOfLine,
+              line: exParams.mmTool.line.name,
+              lable: exParams.mmTool.measurementLable.name,
+              balls: nameOfBalls,
+            }
+
+            const lineAttr = {
+              name: exParams.mmTool.line.name,
+              geoPosition: [
+                exParams.mmTool.line.geometry.attributes.position.array[0],
+                exParams.mmTool.line.geometry.attributes.position.array[1],
+                exParams.mmTool.line.geometry.attributes.position.array[2],
+                exParams.mmTool.line.geometry.attributes.position.array[3],
+                exParams.mmTool.line.geometry.attributes.position.array[4],
+                exParams.mmTool.line.geometry.attributes.position.array[5] ],
+            }
+
+            /* Lable */
+            const lableAttr = {
+              name: exParams.mmTool.measurementLable.name,
+              distance: exParams.mmTool.measurementLable.element.innerText,
+              position: { 
+                x: exParams.mmTool.measurementLable.position.x,
+                y: exParams.mmTool.measurementLable.position.y,
+                z: exParams.mmTool.measurementLable.position.z
+              },
+            }
+
+            /* Create new entry */
+            const newLineEntry = {
+              _id: String(exParams.mmTool.lineID),
+              name: nameOfLine,
+              line: lineAttr,
+              lable: lableAttr,
+              balls: nameOfBalls
+            }
+
+            this.measureTool.infoBlock.push( newLine );
+            this.measureTool.allTitles.push( nameOfLine );
+
+            await fromOfflineDB.addObject( newLineEntry, 'Lines', 'lines' );
+            placeInDB.lines.push( exParams.mmTool.lineID );
+            await fromOfflineDB.updateObject( placeInDB, 'Places', 'places' );
+
+            exParams.mmTool.lineID = String( Date.now() );
+            exParams.mmTool.line = null;
+            exParams.mmTool.measurementLable = null;
+            exParams.mmTool.drawingLine = false;
+          }
+        }
+      }
+    },
+
+    onWindowResize: function () {
+      exParams.main.camera.aspect = exParams.main.canvas.clientWidth /
+        exParams.main.canvas.clientHeight;
+      exParams.main.camera.updateProjectionMatrix();
+
+      exParams.main.renderer.setSize( exParams.main.canvas.clientWidth,
+        exParams.main.canvas.clientHeight, false );
+
+      exParams.main.composer.setSize( exParams.main.canvas.clientWidth,
+        exParams.main.canvas.clientHeight );
+
+      exParams.main.effectFXAA.uniforms[ 'resolution' ].value.set(
+        1 / exParams.main.canvas.clientWidth, 1 / exParams.main.canvas.clientHeight );
     },
 
     func: function(e) {
@@ -1312,1274 +1801,6 @@ export default {
       }
     },
 
-    updateBtnColor: function(e) {
-      if(e) {
-        switch(e) {
-          case "btn1":
-            if (this.leftDrawer.btnColors[0] == "background") {
-              this.leftDrawer.btnColors[0] = "transparent"
-            } else {
-              this.leftDrawer.btnColors[0] = "background"
-            }
-            this.leftDrawer.btnColors[1] = "transparent"
-            this.leftDrawer.btnColors[2] = "transparent"
-            this.leftDrawer.btnColors[3] = "transparent"
-            break;
-          case "btn2":
-            this.leftDrawer.btnColors[0] = "transparent"
-            if (this.leftDrawer.btnColors[1] == "background") {
-              this.leftDrawer.btnColors[1] = "transparent"
-            } else {
-              this.leftDrawer.btnColors[1] = "background"
-            }
-            this.leftDrawer.btnColors[2] = "transparent"
-            this.leftDrawer.btnColors[3] = "transparent"
-            break;
-          case "btn3":
-            this.leftDrawer.btnColors[0] = "transparent"
-            this.leftDrawer.btnColors[1] = "transparent"
-            if (this.leftDrawer.btnColors[2] == "background") {
-              this.leftDrawer.btnColors[2] = "transparent"
-            } else {
-              this.leftDrawer.btnColors[2] = "background"
-            }
-            this.leftDrawer.btnColors[3] = "transparent"
-            break;
-          case "btn4":
-            this.leftDrawer.btnColors[0] = "transparent"
-            this.leftDrawer.btnColors[1] = "transparent"
-            this.leftDrawer.btnColors[2] = "transparent"
-            if (this.leftDrawer.btnColors[3] == "background") {
-              this.leftDrawer.btnColors[3] = "transparent"
-            } else {
-              this.leftDrawer.btnColors[3] = "background"
-            }
-            break;
-          default:
-            console.log("error")
-        }
-      }
-    },
-
-    /**
-     * -------------------------------------------------------------------------
-     * # Setup vuetify/html components
-     * -------------------------------------------------------------------------
-     */
-
-    setupCanvases: function() {
-      this.canvasMain = document.getElementById( 'mainCanvas' );
-      this.canvasSub = document.getElementById( 'subCanvas' );
-
-      /* Set canvasMain size */
-      this.canvasMain.width = window.innerWidth;
-      this.canvasMain.height = window.innerHeight - 110;
-
-      /* Auto Resize */
-      window.addEventListener( 'resize', this.onWindowResize, false )
-    },
-
-    onWindowResize: function () {
-      this.cameraMain.aspect = this.canvasMain.clientWidth /
-        this.canvasMain.clientHeight;
-      this.cameraMain.updateProjectionMatrix();
-
-      this.rendererMain.setSize( this.canvasMain.clientWidth,
-        this.canvasMain.clientHeight, false );
-
-      this.composer.setSize( this.canvasMain.clientWidth,
-        this.canvasMain.clientHeight );
-
-      this.effectFXAA.uniforms[ 'resolution' ].value.set(
-        1 / this.canvasMain.clientWidth, 1 / this.canvasMain.clientHeight );
-    },
-
-    /**
-     * -------------------------------------------------------------------------
-     * # Update IndexedDB
-     * -------------------------------------------------------------------------
-     */
-
-    updateCameraInDB: async function () { 
-      const placeID = this.$cookies.get( 'currentPlace' );
-      const cameraIDsInDB = await fromOfflineDB.getProperties( 'id', 'Cameras',
-        'cameras' );
-      const cameraInDB = await fromOfflineDB.getObject( placeID, 'Cameras',
-        'cameras' );
-      const anchor = [];
-
-      const cameraData = [
-        this.cameraMain.position.x,
-        this.cameraMain.position.y,
-        this.cameraMain.position.z,
-        this.cameraMain.rotation.x,
-        this.cameraMain.rotation.y,
-        this.cameraMain.rotation.z
-      ];
-
-      /* Create new Anchor for arcball controls or   */
-      if ( !cameraIDsInDB.includes( placeID ) ) {
-        anchor.push( this.arcballAnchor[ 0 ] );
-        anchor.push( this.arcballAnchor[ 1 ] );
-        anchor.push( this.arcballAnchor[ 2 ] );
-      } else {
-        anchor.push( cameraInDB.arcballAnchor[ 0 ] );
-        anchor.push( cameraInDB.arcballAnchor[ 1 ] );
-        anchor.push( cameraInDB.arcballAnchor[ 2 ] );
-      }
-
-      /* Create and save new camera settings  */
-      const newCamera = {
-        id: placeID,
-        cameraPosition: cameraData,
-        arcballAnchor: anchor
-      };
-      await fromOfflineDB.updateObject( newCamera, 'Cameras', 'cameras' );
-    },
-
-    updateModelsInDB: async function () {
-      /* Update place models */
-      for ( var i = 0; i < this.placeModelsInScene.length; i++ ) {
-        const modelID = this.placeModelsInScene[ i ].modelID;
-        this.updateModelOpacityAndColor(modelID, 'places');
-      }
-
-      /* Update position models */
-      for ( var u = 0; u < this.positionModelsInScene.length; u++ ) {
-        const modelID = this.positionModelsInScene[ u ].modelID;
-        const modelInScene = this.sceneMain.getObjectByName( modelID );
-        const modelInDB = await fromOfflineDB.getObject( modelID, 'Models',
-          'positions' );
-
-        var groupObject = this.getGroup( modelInScene );
-
-        /* Get local Rotion */
-        const euler = groupObject.rotation
-        const rotation = [ euler._x, euler._y, euler._z, euler._order ]
-        
-        /* Get world scale */
-        const worldScale = new THREE.Vector3();
-        groupObject.getWorldScale( worldScale );
-        const scale = [ worldScale.x, worldScale.y, worldScale.z ];
-
-        /* Get world position */
-        const worldPosition = new THREE.Vector3();
-        groupObject.getWorldPosition( worldPosition );
-        const coordinates = [ worldPosition.x, worldPosition.y,
-          worldPosition.z ];
-
-        modelInDB.color = "#" + modelInScene.material.color.getHexString();
-        modelInDB.opacity = modelInScene.material.opacity;
-        modelInDB.coordinates = coordinates;
-        modelInDB.scale = scale;
-        modelInDB.rotation = rotation;
-
-        await fromOfflineDB.updateObject( modelInDB, 'Models', 'positions' );
-      }
-    },
-
-    updateModelOpacityAndColor: async function(modelID, storeName) {
-      const modelInScene = this.sceneMain.getObjectByName( modelID );
-      const modelInDB = await fromOfflineDB.getObject( modelID, 'Models',
-      storeName );
-
-      modelInDB.color = "#" + modelInScene.material.color.getHexString();
-      modelInDB.opacity = modelInScene.material.opacity;
-
-      await fromOfflineDB.updateObject( modelInDB, 'Models', storeName );
-    },
-
-    /**
-     * -------------------------------------------------------------------------
-     * # CleanUp
-     * -------------------------------------------------------------------------
-     */
-
-    clearCanvases: function() {
-      /* Remove models */
-      this.removeModelsInScene( this.sceneMain, this.modelsInMain );
-      this.removeModelsInScene( this.sceneSub, this.modelInSub );
-
-      /* Remove lines */
-      this.removeLinesInScene( this.sceneMain, this.measureTool.infoBlock );
-
-      /* Dispose renderer */
-      this.rendererMain.dispose();
-      this.rendererMain.forceContextLoss();
-      this.rendererMain.renderLists.dispose();
-      this.rendererSub.dispose();
-      this.rendererSub.forceContextLoss();
-      this.rendererSub.renderLists.dispose();
-
-      /* Detach controls */
-      this.tControlsMain.detach()
-
-      /* Remove EventListener */
-      this.canvasMain.removeEventListener( 'click', this.updateArcball );
-      this.canvasMain.removeEventListener( 'click', this.onMouseDown );
-      window.removeEventListener( 'resize', this.onWindowResize, false );
-      this.canvasMain.removeEventListener( 'keydown', this.keyDown );
-      this.canvasMain.removeEventListener( 'keyup', this.keyUp );
-
-      this.rendererMain.domElement.removeEventListener( 'pointerdown', this.onClick, false );
-      this.canvasMain.removeEventListener( 'mousemove', this.onDocumentMouseMove, false);
-    },
-
-    removeModelsInScene: function( scene, models ) {
-      /* Dispose models in sceneMain */
-      for ( let i = 0; i < models.length; i++ ) {
-        const childrenToBeRemoved = [];
-        const nameTo = models[ i ].name;
-        scene.traverse( ( child ) => {
-          if ( child.name == nameTo ) {
-            childrenToBeRemoved.push( child );
-          }
-        } );
-
-        childrenToBeRemoved.forEach( ( child ) => {
-          scene.remove( child );
-        } );
-      }
-    },
-
-    removeLinesInScene: function( scene, infoBlock ) {
-      /* Dispose lines in sceneMain */
-      infoBlock.forEach( elem => {
-        const lineInScene = this.sceneMain.getObjectByName( elem.line )
-        const lableInScene = this.sceneMain.getObjectByName( elem.lable )
-        const ballsInScene = [];
-        elem.balls.forEach( ball => {
-          ballsInScene.push( this.sceneMain.getObjectByName( ball ) );
-        } )
-  
-        /* Remove line */
-        lineInScene.remove(lableInScene)
-        lineInScene.material.dispose()
-        lineInScene.geometry.dispose()
-        this.sceneMain.remove(lineInScene)
-
-        /* Remove Lable */
-        lableInScene.remove()
-
-        /* Remove Balls */
-        ballsInScene.forEach( ball => {
-          ball.material.dispose();
-          ball.geometry.dispose();
-          this.sceneMain.remove( ball );
-        } )
-      } )
-    },
-
-    /**
-     * -------------------------------------------------------------------------
-     * # Loaders
-     * -------------------------------------------------------------------------
-     */
-
-    loadObjectsInScene: async function( objectType ) {
-
-      /* DRACOLoader */
-      // const dLoader = new DRACOLoader();
-      // dLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
-      // dLoader.setDecoderConfig({type: 'js'});
-      // this.glbLoader.setDRACOLoader( dLoader )
-
-      // Init loader and updater
-      const loader = new ObjectLoaders()
-      const updater = new UpdateLocalVariables()
-
-      // Get all objects of chosen place
-      const placeID = this.$cookies.get( 'currentPlace' );
-      const objects = await fromOfflineDB.getAllObjectsWithID( placeID, 'Place',
-        'Models', objectType );
-
-      if ( objects ) {
-        for ( var i = 0; i < objects.length; i++ ) {
-          const loadedObject = await loader.load( objects[ i ] );
-          
-          const updated = updater.updateObjectsInScene
-          ( objectType, objects[ i ], loadedObject )
-          
-          if ( objectType === 'places') {
-            this.placeModelsInScene.push( updated.entry )
-          } else if ( objectType === 'positions' ) {
-            this.positionModelsInScene.push( updated.entry )
-          }
-          this.sceneMain.add( updated.object );
-          this.modelsInMain.push( updated.object );
-        }
-      }
-
-    },
-
-    loadModelInSub: async function( modelID ) {
-      const object = await fromOfflineDB.getObject( modelID, 'Models',
-        'positions' );
-      const model = object.model;
-      const opacity = object.opacity;
-      const id = object.id;
-
-      /* Load object */
-      const meshGroup = await new Promise( ( resolve ) => {
-        this.glbLoader.parse( model, '', ( glb ) => {
-          glb.scene.traverse( ( child ) => {
-            if ( child instanceof THREE.Mesh ) {
-              child.name = id;
-            }
-          } );
-          resolve(glb.scene);
-        } );
-      } );
-
-      this.posInfo.modelName = "Model name: " + object.title;
-      
-      /* Reposition camera according to model */
-      const bbox = new THREE.Box3().setFromObject( meshGroup );
-      const height = bbox.max.y - bbox.min.y;
-      this.cameraSub.position.z = height + 60;
-
-      /* Add model to sub scene */
-      this.sceneSub.add( meshGroup );
-      this.modelInSub.push( meshGroup );
-    },
-
-    loadLines: async function() {
-      const linesInDB = await fromOfflineDB.getAllObjects( 'Lines', 'lines' );
-
-      if ( linesInDB.length > 0 ) {
-        linesInDB.forEach( elem => {
-          this.createLine( elem.line.name, elem.line.geoPosition );
-          this.createLable( elem.lable.name, elem.lable.position );
-          this.createBalls( elem.balls, elem.line.geoPosition )
-
-          this.line.add( this.measurementLable );
-          this.sceneMain.add( this.line );
-
-          const newLine = {
-              id: elem.id,
-              name: elem.name,
-              line: this.line.name,
-              lable: this.measurementLable.name,
-              balls: elem.balls,
-          }
-          this.measureTool.infoBlock.push( newLine );
-          
-          this.measureTool.allTitles.push( elem.name );
-          this.lineID++;
-          this.line = null;
-          this.measurementLable = null;
-
-        } )
-      }
-    },
-
-    createLine: function(name, position) {
-
-      const points = [];
-      points.push( new THREE.Vector3(position[0], position[1], position[2]),
-                   new THREE.Vector3(position[3], position[4], position[5]) );
-
-      const geometry = new THREE.BufferGeometry().setFromPoints(
-        points
-      )
-
-      /* Create line */
-      this.line = new THREE.Line(
-        geometry,
-        new THREE.LineBasicMaterial({
-          color: 0x0000ff,
-        }),
-      )
-
-      this.line.name = name;
-      this.line.frustumCulled = false;
-    },
-
-    createLable: function( name, position ) {
-
-      this.measurementLable = new CSS2DObject();
-      this.measurementLable.name = name;
-      const vec3 = new THREE.Vector3( position[0], position[1], position[2] );
-      this.measurementLable.position.copy( vec3 );
-    },
-
-    createBalls: function( names, position ) {
-      const pos = [ 
-        [ position[0], position[1], position[2] ],
-        [ position[3], position[4], position[5] ]
-      ]
-      
-      names.forEach( (elem, i) => {
-        const geometry = new THREE.SphereGeometry( 0.03, 6, 4 );
-        const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
-        const sphere = new THREE.Mesh( geometry, material );
-        sphere.name = names[i];
-        this.sceneMain.add( sphere );
-        sphere.position.set( pos[i][0], pos[i][1], pos[i][2] );
-      } )
-
-    },
-
-    /**
-     * -------------------------------------------------------------------------
-     * # Model interaction
-     * -------------------------------------------------------------------------
-     */
-
-    changeColor: async function( color, modelGroup ) {
-      if ( color != null && modelGroup != null ) {
-
-        modelGroup.traverse( (child) => {
-          if ( child instanceof THREE.Mesh) {
-            child.material.color = new THREE.Color( color );
-          }
-        })
-      }
-    },
-
-    changeOpacity: async function( i ) {
-      const modelID = this.positionModelsInScene[ i ].modelID;
-      const model = this.sceneMain.getObjectByName( modelID );
-      const opacityValue = model.material.opacity;
-
-      if ( opacityValue == 1.0 ) {
-        this.sceneMain.getObjectByName( modelID ).material.opacity = 0.0;
-      } else {
-        this.sceneMain.getObjectByName( modelID ).material.opacity = 1.0;
-      }
-    },
-
-    onMouseDown: async function( event ) {
-      event.preventDefault();
-
-      const rect = this.rendererMain.domElement.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-
-      this.pointer.x = ( x / this.canvasMain.clientWidth ) * 2 - 1;
-      this.pointer.y = ( y / this.canvasMain.clientHeight ) * - 2 + 1;
-
-      this.raycaster.setFromCamera( this.pointer, this.cameraMain );
-      const intersects = this.raycaster.intersectObjects( this.modelsInMain,
-        true );
-
-      if ( intersects.length > 0 && event.altKey ) {
-        const objectName = intersects[ 0 ].object.name;
-
-        /* Check if clicked model is a position model */
-        for ( let i = 0; i < this.positionModelsInScene.length; i++ ) {
-          if ( this.positionModelsInScene[ i ].modelID === objectName ) {
-
-            /* Trigger vuetify components */
-            this.bottomDrawer.showDrawer = true;
-            this.loadModelInSub( intersects[ 0 ].object.name );
-
-            /* Draw outline */
-            const modelID = this.positionModelsInScene[ i ].modelID;
-            const modelFromScene = this.sceneMain.getObjectByName( modelID );
-            const groupObject = this.getGroup( modelFromScene );
-
-            const selectedObject = groupObject;
-            this.addSelectedObject( selectedObject );
-            this.outlinePass.selectedObjects = this.selectedObjects;
-
-            /* Fill drawer with position info */
-            const positionID = this.positionModelsInScene[ i ].positionID;
-            const positionInDB = await fromOfflineDB.getObject( positionID,
-              'Positions', 'positions' );
-            this.posInfo = positionInDB;
-          }
-        }
-      }
-    },
-
-    onDocumentMouseMove: function ( event ) {
-      event.preventDefault();
-
-      const rect = this.rendererMain.domElement.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-
-      this.pointer2.x = ( x / this.canvasMain.clientWidth ) * 2 - 1;
-      this.pointer2.y = ( y / this.canvasMain.clientHeight ) * - 2 + 1;
-
-      if ( this.drawingLine ) {
-        this.raycaster2.setFromCamera( this.pointer2, this.cameraMain );
-        const intersects = this.raycaster2.intersectObjects( this.modelsInMain,
-        true );
-
-        if ( intersects.length > 0 ) {
-          const positions = this.line.geometry.attributes.position;
-
-          const v0 = new THREE.Vector3(
-            positions.array[0],
-            positions.array[1],
-            positions.array[2]
-          )
-          const v1 = new THREE.Vector3(
-            intersects[0].point.x,
-            intersects[0].point.y,
-            intersects[0].point.z
-          )
-          this.line.geometry.attributes.position.needsUpdate = true
-          const distance = v0.distanceTo(v1)
-
-          v1.x += 0.0
-          v1.y -= 0.3
-
-          this.measurementLable.element.innerText = distance.toFixed(2) + 'm'
-          this.measurementLable.position.lerpVectors(v0, v1, 0.5)
-        }
-      }
-    },
-
-    onClick: async function() {
-      if ( this.ctrlDown ) {
-        this.raycaster2.setFromCamera( this.pointer2, this.cameraMain );
-        const intersects = this.raycaster2.intersectObjects( this.modelsInMain,
-          true );
-        if ( intersects.length > 0 ) {
-          if ( !this.drawingLine ) {
-            const points = [];
-            points.push( intersects[0].point );
-            points.push( intersects[0].point.clone() );
-            const geometry = new THREE.BufferGeometry().setFromPoints(
-              points,
-            )
-            
-            /* Create line */
-            this.line = new THREE.Line(
-              geometry,
-              new THREE.LineBasicMaterial({
-                color: 0x0000ff,
-              }),
-            )
-            this.line.name = "Line - " + this.lineID;
-            this.line.frustumCulled = false;
-
-            /* Create lable */
-            this.measurementLable = new CSS2DObject();
-            this.measurementLable.name = "Label - " + this.lineID
-            this.measurementLable.position.copy( intersects[0].point );
-            
-            /* Add line and lable to sceneMain */
-            this.line.add(this.measurementLable)
-            this.sceneMain.add(this.line);
-
-            this.drawingLine = true;
-          } else {
-            const placeInDB = await fromOfflineDB.getObject( 
-              this.$cookies.get('currentPlace'), 'Places', 'places' )
-
-            const positions = this.line.geometry.attributes.position;
-            positions.array[3] = intersects[0].point.x;
-            positions.array[4] = intersects[0].point.y;
-            positions.array[5] = intersects[0].point.z;
-            this.line.geometry.attributes.position.needsUpdate = true;
-            
-            const v0 = [positions.array[0], positions.array[1],
-            positions.array[2]];
-
-            const v1 = [positions.array[3], positions.array[4],
-            positions.array[5]];
-            
-            this.createRedBall(v0, "firstBall - " + this.lineID)
-            this.createRedBall(v1, "secondBall - " + this.lineID)
-
-            const nameOfLine = "New Line - " + this.lineID;
-            const nameOfBalls = [ "firstBall - " + this.lineID, 
-                                  "secondBall - " + this.lineID ];
-
-            const newLine = {
-              id: this.lineID,
-              name: nameOfLine,
-              line: this.line.name,
-              lable: this.measurementLable.name,
-              balls: nameOfBalls,
-            }
-
-            const lineAttr = {
-              name: this.line.name,
-              geoPosition: [
-                this.line.geometry.attributes.position.array[0],
-                this.line.geometry.attributes.position.array[1],
-                this.line.geometry.attributes.position.array[2],
-                this.line.geometry.attributes.position.array[3],
-                this.line.geometry.attributes.position.array[4],
-                this.line.geometry.attributes.position.array[5] ],
-            }
-
-            /* Lable */
-            const lableAttr = {
-              name: this.measurementLable.name,
-              position: [
-                this.measurementLable.position.x,
-                this.measurementLable.position.y,
-                this.measurementLable.position.z ],
-            }
-
-            /* Create new entry */
-            const newLineEntry = {
-              id: this.lineID,
-              name: nameOfLine,
-              line: lineAttr,
-              lable: lableAttr,
-              balls: nameOfBalls,
-            }
-
-            this.measureTool.infoBlock.push( newLine );
-            this.measureTool.allTitles.push( nameOfLine );
-
-            await fromOfflineDB.addObject( newLineEntry, 'Lines', 'lines' );
-            placeInDB.lines.push(this.lineID);
-            await fromOfflineDB.updateObject( placeInDB, 'Places', 'places' );
-
-            this.lineID = String(Date.now());
-            this.line = null;
-            this.measurementLable = null;
-            this.drawingLine = false;
-          }
-        }
-      }
-    },
-
-    createRedBall: function( cords, name) {
-      const geometry = new THREE.SphereGeometry( 0.03, 6, 4 );
-      const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
-      const sphere = new THREE.Mesh( geometry, material );
-      sphere.name = name;
-      this.sceneMain.add( sphere );
-      sphere.position.set( cords[0], cords[1], cords[2] );
-    },
-
-    /**
-     * -------------------------------------------------------------------------
-     * # Controls
-     * -------------------------------------------------------------------------
-     */
-
-    attachTransformControls: function() {
-      if ( !this.posMods.attachTransformControls ) {
-        this.posMods.attachTransformControls = true;
-        if ( this.posModel.chosenfinalModelGroup ) {
-          this.tControlsMain.detach();
-          this.tControlsMain.attach(this.posModel.chosenfinalModelGroup);
-        }
-      } else {
-        this.posMods.attachTransformControls = false;
-        this.tControlsMain.detach();
-      }
-    },
-
-    updateArcball: async function( event ) {
-      if ( event.ctrlKey ) {
-        const placeID = this.$cookies.get( 'currentPlace' );
-
-        this.getCamera( this.cameraMain, this.cameraData );
-        const cameraIDsFromDB = await fromOfflineDB.getProperties( 'id',
-          'Cameras', 'cameras' );
-
-        if ( cameraIDsFromDB.includes( placeID ) ) {
-          const newCamera = await fromOfflineDB.getObject(
-            this.$cookies.get( 'currentPlace' ), 'Cameras', 'cameras' );
-
-          this.abControlsMain.target.set( newCamera.arcballAnchor[ 0 ],
-            newCamera.arcballAnchor[ 1 ], newCamera.arcballAnchor[ 2 ]);
-
-          this.abControlsMain.reset();
-          this.abControlsMain.update();
-        } else {
-          this.abControlsMain.target.set( this.arcballAnchor[ 0 ],
-            this.arcballAnchor[ 1 ], this.arcballAnchor[ 2 ] );
-
-          this.abControlsMain.reset();
-          this.abControlsMain.update();
-        }
-
-        this.setCamera( this.cameraMain, this.cameraData );
-      }
-    },
-
-    restoreArcballAnchor: function( arcballAnchor, arcballControls ) {
-      /* Restore saved anchor position for the arcball target */
-      arcballControls.target.set( arcballAnchor[ 0 ], arcballAnchor[ 1 ],
-        arcballAnchor[ 2 ] );
-
-      /* Save changes made to the arcball control settings */
-      arcballControls.update();
-    },
-
-    /**
-     * -------------------------------------------------------------------------
-     * # Camera
-     * -------------------------------------------------------------------------
-     */
-    
-    updateCamera: async function( modelName ) {
-      const placeID = this.$cookies.get( 'currentPlace' );
-      const cameraIDsFromDB = await fromOfflineDB.getProperties( 'id',
-        'Cameras', 'cameras' );
-
-      if ( cameraIDsFromDB.includes( placeID ) ) {
-        /* Get camera data from IndexedDB */
-        const cameraFromDB = await fromOfflineDB.getObject(
-          this.$cookies.get( 'currentPlace' ), 'Cameras', 'cameras' );
-
-        /* Update current camera state with camera data from IndexedDB */
-        const cameraPosition = cameraFromDB.cameraPosition;
-        this.cameraData.position = [ cameraPosition[ 0 ], cameraPosition[ 1 ],
-        cameraPosition[ 2 ] ];
-        this.cameraData.rotation = [ cameraPosition[ 3 ], cameraPosition[ 4 ],
-        cameraPosition[ 5 ] ];
-
-        /* Restore saved anchor position for the arcball target */
-        this.restoreArcballAnchor( cameraFromDB.arcballAnchor,
-          this.abControlsMain );
-
-        /* Set new camera state */
-        this.setCamera( this.cameraMain, this.cameraData );
-      } else {
-        /* Get center of place model as Vec3 */
-        const model = this.sceneMain.getObjectByName( modelName );
-        const center = this.getModelCenter( model );
-
-        /* Define an anchor point for the arcball */
-        this.arcballAnchor.push( center.x );
-        this.arcballAnchor.push( center.y );
-        this.arcballAnchor.push( center.z );
-
-        /* Set center as the new arcball target */
-        this.abControlsMain.target.set( center.x, center.y, center.z );
-
-        /* Move camera to the object */
-        this.cameraMain.position.set( center.x, center.y - 15, center.z );
-        this.getCamera( this.cameraMain, this.cameraData );
-
-        /* Save changes made to the arcball control settings */
-        this.abControlsMain.update();
-      }
-    },
-
-    getCamera: function( camera, cameraData ) {
-      cameraData.position = [ camera.position.x, camera.position.y,
-      camera.position.z ];
-      cameraData.rotation = [ camera.rotation.x, camera.rotation.y,
-      camera.rotation.z ];
-    },
-
-    setCamera: function( camera, cameraData ) {
-      camera.position.set( cameraData.position[ 0 ], cameraData.position[ 1 ],
-        cameraData.position[ 2 ] );
-      camera.rotation.set( cameraData.rotation[ 0 ], cameraData.rotation[ 1 ],
-        cameraData.rotation[ 2 ]);
-    },
-
-    makePerspectiveCamera: function() {
-      const fov = 45;
-      const aspect = this.canvasMain.clientWidth / this.canvasMain.clientHeight;
-      const near = 0.01;
-      const far = 2000;
-      const newCamera = new THREE.PerspectiveCamera( fov, aspect, near, far );
-      return newCamera;
-    },
-
-    /**
-     * -------------------------------------------------------------------------
-     * # Utility
-     * -------------------------------------------------------------------------
-     */
-
-    getModelCenter: function( model ) {
-      var groupObject = model;
-      while ( !( groupObject instanceof THREE.Group ) ) {
-        groupObject = groupObject.parent;
-      }
-
-      const boundingBox = new THREE.Box3();
-      boundingBox.setFromObject( groupObject );
-      const center = new THREE.Vector3();
-      boundingBox.getCenter( center );
-
-      return center;
-    },
-
-    getAllModelCenter: function( models ) {
-      const modelsGroup = new THREE.Group();
-      models.forEach( element => {
-        modelsGroup.add( this.sceneMain.getObjectByName( element.modelID ) )
-      } )
-      let aabb = new THREE.Box3();
-      aabb.setFromObject( modelsGroup );
-      let size = new THREE.Vector3();
-      aabb.getCenter( size )
-      return size;
-    },
-
-    addSelectedObject: function( object ) {
-      this.selectedObjects = [];
-      this.selectedObjects.push( object );
-    },
-
-    getGroup: function( model ) {
-      var groupObject = model;
-      while ( !( groupObject instanceof THREE.Group ) ) {
-        groupObject = groupObject.parent;
-      }
-      return groupObject;
-    },
-
-    gizmoChange: function( event ) {
-      if ( event ) {
-        this.abControlsMain.setGizmosVisible( false );
-        this.gismoCB = false;
-      } else {
-        this.abControlsMain.setGizmosVisible( true );
-        this.gismoCB = true;
-      }
-    },
-
-    /**
-     * -------------------------------------------------------------------------
-     * # Filter Model
-     * -------------------------------------------------------------------------
-     */
-
-    fieldSearch: async function( typeSize, chosenModels, inputs, menues, infos ) {
-      const areNull = [];
-      const notNull = [];
-      var layers = [];
-
-      /* Determin which field is 'null' and which is not */
-      for ( let a = 0; a < typeSize; a++ ) {
-        if ( inputs[ a ] == null ) {
-          areNull.push( a );
-        } else {
-          notNull.push( a );
-        }
-      }
-
-      this.stringReplacer( typeSize, areNull );
-
-      /* No empty fields */
-      if ( notNull.length == typeSize ) {
-        this.choseModels( typeSize, chosenModels, inputs, infos )
-      }
-
-      /* Only empty fields */
-      else if ( areNull.length == typeSize ) {
-        this.resetFilter( infos, menues );
-      }
-
-      /* Only one given field */
-      else if ( notNull.length == 1 ) {
-        for ( let b = 0; b < infos.length; b++ ) {
-          this.fillAll( menues[ notNull[ 0 ] ], infos[ b ][ notNull[ 0 ] ] );
-          layers.push( [infos[ b ][ notNull[ 0 ] ], inputs[ notNull[ 0 ] ]] );
-          for( let c = 0; c < areNull.length; c++ ) {
-            this.layering( layers, menues[ areNull[ c ] ], 
-            infos[ b ][ areNull[ c ] ]);
-          }
-          layers = [];
-        }
-      }
-
-      /* Unkown number of given and empty fields */
-      else if ( notNull.length > 1 ) {
-        for ( let d = 0; d < infos.length; d++ ) {
-          for ( let e = 0; e < notNull.length; e++ ) {
-            for ( let f = 0; f < notNull.length; f++ ) {
-              if ( f != e ) {
-                layers.push( [ infos[ d ][ notNull[ f ] ], 
-                  inputs[ notNull[ f ] ] ] );
-              }
-            }
-            this.layering( layers, menues[ notNull[ e ] ], 
-              infos[ d ][ notNull[ e ] ]);
-            layers = [];
-          }
-          for ( let g = 0; g < areNull.length; g++ ) {
-            for ( let h = 0; h < notNull.length; h++ ) {
-              layers.push( [ infos[ d ][ notNull[ h ] ], 
-                             inputs[ notNull[ h ] ] ] );
-            }
-            this.layering( layers, menues[ areNull[ g ] ], 
-                           infos[ d ][ areNull[ g ] ] );
-            layers = [];
-          }
-        }
-      }
-    },
-
-    layering: function( layer, all, infoBlockItem ) {
-      const layercount = layer.length;
-      let check = true;
-
-      for ( let i=0; i < layercount; i++ ) {
-        if( !( layer[i][0] == layer[i][1] ) ) {
-          check = false;
-          break;
-        }
-      }
-
-      if ( check ) {
-        this.fillAll( all, infoBlockItem );
-      }
-    },
-
-    fillAll: function( list, blockItem ) {
-      if (!list.includes(blockItem)) {
-        list.push(blockItem);
-      }
-    },
-
-    resetFilter: function( infos, menues ) {
-      for ( let a = 0; a < infos.length; a++ ) {
-        for ( let b = 0; b < menues.length; b++ ) {
-          this.fillAll(menues[ b ], infos[ a ][ b ]);
-        }
-      }
-
-      for ( let c = 0; c < menues.length; c++ ) {
-        menues[c].sort();
-      }
-    },
-
-     getPlaceModelInfo: async function() {
-      for ( let i=0; i < this.placeModelsInScene.length; i++) {
-        const modelID = this.placeModelsInScene[ i ].modelID;
-        const modelInDB = await fromOfflineDB.getObject(modelID, 'Models', 
-          'places');
-
-        console.log(modelInDB)
-
-        if ( !this.plaModel.allNumbers.includes(modelInDB.modelNumber) ) {
-          this.plaModel.allNumbers.push(modelInDB.modelNumber);
-        }
-
-        if ( !this.plaModel.allTitles.includes(modelInDB.title) ) {
-          this.plaModel.allTitles.push(modelInDB.title);
-        }
-
-        /* For the filter algorithm to work properly */
-        const modelIDArray = [modelInDB.id]
-        const newModel = [
-          modelInDB.modelNumber,
-          modelInDB.title,
-          modelIDArray,
-          modelInDB.color,
-          modelInDB.opacity
-        ]
-
-        this.plaModel.infoBlock.push(newModel)
-      }
-    },
-
-    getPositionInfo: async function() {
-      const positionIDs = [];
-
-      for ( let i=0; i < this.positionModelsInScene.length; i++) {
-        const positionID = this.positionModelsInScene[i].positionID
-        const positionInDB = await fromOfflineDB.getObject(positionID, 'Positions', 'positions')
-
-        if ( !positionIDs.includes(positionID) ) {
-
-          if (!this.posData.allNumbers.includes(positionInDB.positionNumber)) {
-            this.posData.allNumbers.push(positionInDB.positionNumber)
-          }
-          if (!this.posData.allSubNumbers.includes(positionInDB.subNumber)) {
-            this.posData.allSubNumbers.push(positionInDB.subNumber)
-          }
-          if (!this.posData.allTitles.includes(positionInDB.title)) {
-            this.posData.allTitles.push(positionInDB.title)
-          }
-
-          const newPosition = [
-            positionInDB.positionNumber,
-            positionInDB.subNumber,
-            positionInDB.title,
-            positionInDB.models
-          ]
-
-          this.posData.infoBlock.push(newPosition)
-
-          positionIDs.push(positionID)
-        }
-        
-      }
-    },
-
-    getPositionModelInfo: async function() {
-      for ( let i=0; i < this.posData.chosenPositionModels.length; i++) {
-        const modelID = this.posData.chosenPositionModels[ i ];
-        const modelInDB = await fromOfflineDB.getObject(modelID, 'Models', 'positions')
-
-        if ( !this.posModel.allNumbers.includes(modelInDB.modelNumber) ) {
-          this.posModel.allNumbers.push(modelInDB.modelNumber)
-        }
-
-        if ( !this.posModel.allTitles.includes(modelInDB.title) ) {
-          this.posModel.allTitles.push(modelInDB.title)
-        }
-
-        /* For the filter algorithm to work properly */
-        const modelIDArray = [modelInDB.id]
-        const newModel = [
-          modelInDB.modelNumber,
-          modelInDB.title,
-          modelIDArray,
-          modelInDB.color,
-          modelInDB.opacity
-        ]
-
-        this.posModel.infoBlock.push(newModel)
-      }
-    },
-
-    choseModels: function( typeSize, chosenModels, inputs, infos ) {
-      let isChosen = true;
-
-      for ( let a = 0; a < infos.length; a++ ) {
-        isChosen = true;
-
-        for ( let b = 0; b < typeSize; b++ ) {
-          if( !( infos[a][b] == inputs[b] ) ) {
-            isChosen = false;
-            break;
-          }
-        }
-
-        if( isChosen ) {
-          infos[a][typeSize].forEach( ( elem ) => {
-            chosenModels.push( elem );
-          } );
-        }
-      }
-    },
-
-    resetModelInfo2Input: function() {
-      this.posModel.number = null;
-      this.posModel.title = null;
-      this.posModel.infoBlock = [];
-    },
-
-    resetModelInfo2: function() {
-      this.posModel.allNumbers = [];
-      this.posModel.allTitles = [];
-      this.posModel.chosenfinalModel = [];
-    },
-
-     resetPlaceModelInfo: function() {
-      this.plaModel.allNumbers = [];
-      this.plaModel.allTitles = [];
-      this.plaModel.chosenfinalModel = [];
-     },
-
-    resetPositionInfo2: function() {
-      this.posData.allNumbers = [];
-      this.posData.allSubNumbers = [];
-      this.posData.allTitles = [];
-      this.posData.chosenPositionModels = [];
-    },
-
-    resetPositionMods: function() {
-      this.posModel.chosenfinalModelGroup = null;
-          this.posMods.disabled = true;
-          this.updateModelOpacityAndColor(this.posModel.chosenfinalModel[0],
-          'positions');
-          this.posModel.chosenfinalModelGroup = null;
-          this.posMods.colorPicker.color = null;
-          this.posMods.opacitySliderValue = 0;
-          this.posMods.token = false;
-    },
-
-    resetPlaceMods: function() {
-      this.plaMods.token = false;
-      this.plaMods.disabled = true;
-      this.updateModelOpacityAndColor(this.plaModel.chosenfinalModel[0],
-        'places');
-      this.plaModel.chosenfinalModelGroup = null;
-      this.plaMods.colorPicker.color = null;
-      this.plaMods.opacitySliderValue = 0;
-    },
-
-    /**
-     * -------------------------------------------------------------------------
-     * # Init
-     * -------------------------------------------------------------------------
-     */
-
-    mainInit: function() {
-      /* All loaded meshes in main scene */
-      this.modelsInMain = [];
-
-      /* Renderer */
-      this.rendererMain = new THREE.WebGLRenderer( {
-        canvas: this.canvasMain,
-        antialias: true
-      } );
-      this.rendererMain.setSize( this.canvasMain.clientWidth,
-        this.canvasMain.clientHeight );
-      this.rendererMain.setClearColor( params.sceneMain.bgColor, 1 );
-      this.rendererMain.shadowMap.enabled = true;
-      this.rendererMain.shadowMap.type = THREE.PCFSoftShadowMap;
-      this.rendererMain.outputEncoding = THREE.SRGBColorSpace;
-
-      /* label Renderer */
-      this.labelRenderer = new CSS2DRenderer()
-      this.labelRenderer.setSize( this.canvasMain.clientWidth,
-        this.canvasMain.clientHeight );
-      this.labelRenderer.domElement.style.position = 'absolute'
-      this.labelRenderer.domElement.style.top = '35px'
-      this.labelRenderer.domElement.style.color = "white"
-      this.labelRenderer.domElement.style.pointerEvents = 'none'
-      document.body.appendChild( this.labelRenderer.domElement)
-
-      // Scene
-      this.sceneMain = new THREE.Scene();
-
-      // Camera
-      this.cameraMain = this.makePerspectiveCamera();
-
-      // Light
-      const ambientLight = new THREE.AmbientLight( params.sceneMain.lightColor );
-      this.sceneMain.add( ambientLight );
-
-      // Controls
-      this.abControlsMain = new ArcballControls( this.cameraMain,
-        this.rendererMain.domElement, this.sceneMain );
-      this.abControlsMain.setGizmosVisible( false );
-
-      this.tControlsMain = new TransformControls( this.cameraMain,
-        this.rendererMain.domElement );
-      this.tControlsMain.addEventListener( 'dragging-changed', e => {
-        this.abControlsMain.enabled = !e.value;
-      } );
-
-      this.sceneMain.add( this.tControlsMain );
-
-      // Raycaster
-      this.raycaster = new THREE.Raycaster();
-      this.pointer = new THREE.Vector2();
-      
-      this.raycaster2 = new THREE.Raycaster();
-      this.pointer2 = new THREE.Vector2();
-
-      // Post processing
-      this.composer = new EffectComposer( this.rendererMain );
-
-      this.renderPass = new RenderPass( this.sceneMain, this.cameraMain );
-      this.composer.addPass( this.renderPass );
-
-      this.outlinePass = new OutlinePass( new THREE.Vector2(
-        this.canvasMain.clientWidth, this.canvasMain.clientHeight ),
-        this.sceneMain, this.cameraMain );
-      this.outlinePass.hiddenEdgeColor.set( params.sceneMain.outline.color )
-      this.outlinePass.pulsePeriod = params.sceneMain.outline.pulsePeriod;
-      this.outlinePass.edgeStrength = params.sceneMain.outline.edgeStrength;
-      this.outlinePass.edgeThickness = params.sceneMain.outline.edgeThickness;
-      this.outlinePass.edgeGlow = params.sceneMain.outline.edgeGlow;
-      this.composer.addPass( this.outlinePass );
-
-      // Shader
-      this.effectFXAA = new ShaderPass( FXAAShader );
-      this.effectFXAA.uniforms[ 'resolution' ].value.set(
-        1 / this.canvasMain.clientWidth, 1 / this.canvasMain.clientHeight );
-      this.composer.addPass( this.effectFXAA );
-
-      this.gammaCorrectionShader = new ShaderPass( GammaCorrectionShader );
-      this.composer.addPass( this.gammaCorrectionShader )
-
-      // Eventlistener
-      this.canvasMain.addEventListener( 'click', this.updateArcball );
-      this.canvasMain.addEventListener( 'click', this.onMouseDown );
-      window.addEventListener( 'keydown', e => {
-        switch ( e.code ) {
-          case 'KeyW':
-            this.tControlsMain.mode = 'translate';
-            break;
-          case 'KeyE':
-            this.tControlsMain.mode = 'rotate';
-            break;
-          case 'KeyR':
-            this.tControlsMain.mode = 'scale';
-            break;
-        }
-      });
-
-      this.intersectsMeasurement = null
-
-      this.ctrlDown = false
-      this.lineID = String(Date.now());
-      this.line = null
-      this.measurementLable = null
-      this.drawingLine = false
-
-      this.linesArray = []
-
-      this.canvasMain.addEventListener( 'keydown', this.keyDown );
-      this.canvasMain.addEventListener( 'keyup', this.keyUp );
-
-      this.rendererMain.domElement.addEventListener( 'pointerdown', this.onClick, false );
-      this.canvasMain.addEventListener( 'mousemove', this.onDocumentMouseMove, false);
-
-    },
-
-    keyDown: function( event ) {
-      if (event.key === 'x') {
-          this.ctrlDown = true;
-          this.abControlsMain.enabled = false
-          document.body.style.cursor = 'crosshair';
-      }
-    },
-
-    keyUp: function(event) {
-      if (event.key === 'x') {
-        this.ctrlDown = false;
-        this.abControlsMain.enabled = true
-        document.body.style.cursor = 'pointer'
-        if ( this.drawingLine ) {
-          this.line.remove(this.measurementLable)
-          this.sceneMain.remove( this.line );
-          this.drawingLine = false;
-        }
-      }
-    },
-
-    subInit: function () {
-      /* mesh in sub scene */
-      this.modelInSub = [];
-
-      /* Renderer */
-      this.rendererSub = new THREE.WebGLRenderer( { canvas: this.canvasSub } );
-      this.rendererSub.setPixelRatio( this.canvasSub.devicePixelRatio );
-      this.rendererSub.setSize( this.canvasSub.clientWidth,
-        this.canvasSub.clientHeight );
-      this.rendererSub.setClearColor( params.sceneSub.bgColor, 1 );
-      this.rendererSub.shadowMap.enabled = true;
-      this.rendererSub.shadowMap.type = THREE.PCFSoftShadowMap;
-
-      /* Scene */
-      this.sceneSub = new THREE.Scene();
-
-      /* Camera */
-      const aspect = this.canvasSub.clientWidth / this.canvasSub.clientHeight;
-      this.cameraSub = new THREE.PerspectiveCamera( 45, aspect, 1, 1000 );
-
-      /* Light */
-      const ambientLight = new THREE.AmbientLight( params.sceneSub.lightColor );
-      this.sceneSub.add( ambientLight );
-
-      /* Controls */
-      this.controlsSub = new OrbitControls( this.cameraSub,
-        this.rendererSub.domElement );
-
-      /* Event listener */
-      this.canvasSub.addEventListener( 'mousemove', () => {
-        console.log( "Mouse moved" );
-      } );
-
-    },
-
     /**
      * -------------------------------------------------------------------------
      * # Animation
@@ -2590,70 +1811,35 @@ export default {
       /* Check interactions */
       this.render();
       
-      /* Render sceneMain and sceneSub */
-      this.rendererMain.render( this.sceneMain, this.cameraMain );
-      this.rendererSub.render( this.sceneSub, this.cameraSub );
-      this.labelRenderer.render( this.sceneMain, this.cameraMain )
+      /* Render Main and Sub Scene */
+      exParams.main.renderer.render( exParams.main.scene, exParams.main.camera );
+      exParams.sub.renderer.render( exParams.sub.scene, exParams.sub.camera );
+      exParams.mmTool.css2DRenderer.render( exParams.main.scene, exParams.main.camera )
 
       /* Render composer */
-      this.composer.render()
+      exParams.main.composer.render()
       
       /* Render-Loop */
       requestAnimationFrame( this.animate );
     },
 
     render: async function() {
-      /* Dispose Model from sceneSub */
-      if ( !this.bottomDrawer.showDrawer && this.sceneSub.children.length > 1 ) {
-        this.removeModelsInScene( this.sceneSub, this.modelInSub )
-        this.modelInSub = [];
-        this.controlsSub.reset();
-        this.outlinePass.selectedObjects = [];
+      /* Dispose Model from Sub Scene */
+      if ( !this.bottomDrawer.showDrawer && exParams.sub.scene.children.length > 1 ) {
+        // this.removeModelsInScene( this.sceneSub, this.objectInSub )
+        // this.garbageCollection.removeObjects( this.sceneSub, this.objectInSub )
+        exParams.sub.object = [];
+        exParams.sub.orbitControls.reset();
+        exParams.main.outlinePass.selectedObjects = [];
       }
 
-      /* Rotate model in sceneSub */
-      if ( this.modelInSub[ 0 ] ) {
-        this.modelInSub[ 0 ].rotation.y += 0.01;
+      /* Rotate model in Sub Scene */
+      if ( exParams.sub.object[ 0 ] ) {
+        exParams.sub.object[ 0 ].rotation.y += 0.01;
       }
 
       /* Reset arcball gizmo radius */
-      this.abControlsMain.setTbRadius( 0.67 );
-    },
-
-    /**
-     * -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
-     * # DEBUGGING
-     * -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
-     */
-
-    setCharAt: function( str, index, chr ) {
-      if ( index > str.length - 1 ) return str;
-      return str.substring( 0, index ) + chr + str.substring( index + 1 );
-    },
-
-    stringReplacer: function( typeSize, areNull ) {
-      let str = '';
-
-      for ( let a = 0; a < typeSize; a++ ) { 
-        
-        if ( areNull.includes(a) ) {
-          str += '_'
-        } else {
-          str += 'x';
-        }
-
-        if ( a+1 < typeSize ) {
-          str += ' , ';
-        }
-      }
-
-      if ( str.toLowerCase().indexOf("x") === 0) {
-        if ( str.toLowerCase().indexOf("_") === -1 ) {
-          console.log( "( " + str + " ) - done!")
-        } else {
-          console.log( "( " + str + " )" );
-        }
-      }
+      exParams.main.arcBallControls.setTbRadius( 0.67 );
     },
 
   }
