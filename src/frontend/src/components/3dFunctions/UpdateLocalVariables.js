@@ -2,8 +2,8 @@
  * Created Date: 10.12.2023 15:49:23
  * Author: Tobias Mink
  * 
- * Last Modified: 15.12.2023 14:01:16
- * Modified By: Julian Hardtung
+ * Last Modified: 24.01.2024 15:33:22
+ * Modified By: Tobias Mink
  * 
  * Description: 
  */
@@ -19,40 +19,56 @@ export class UpdateLocalVariables {
    * @param {*} loadedMesh 
    * @returns new entry with object params and adjusted object
    */
-  updateObjectsInScene( objectType, objectData, loadedObject ) {
+  updateLoadedObject( objectType, objectData, loadedObject ) {
 
     const entry = {}
 
     switch ( objectType ) {
       case 'places':
+        entry["_id"] = objectData._id
+        entry["title"] = objectData.title
         entry["placeID"] = objectData.placeID
-        entry["modelID"] = objectData._id
-        entry["modelTitle"] = objectData.title
 
         this.updateObjectMaterial( loadedObject, objectData )
 
         break;
 
       case 'positions':
-        entry["positionID"] = objectData.positionID
-        entry["modelID"] = objectData._id
-        entry["modelTitle"] = objectData.title
+        const bbox = new THREE.Box3().setFromObject( loadedObject );
+        const vec3 = new THREE.Vector3();
+        bbox.getCenter( vec3 )
 
+        console.log(vec3)
+        
+        entry["_id"] = objectData._id
+        entry["title"] = objectData.title
+        entry["positionID"] = objectData.positionID
+        entry["position"] = vec3
+        entry["bbox"] = bbox
+
+        /* Updated material */
         this.updateObjectMaterial( loadedObject, objectData )
 
-        /* Override coordinates (IndexedDB) */
+        /**
+         * If the object was already loaded in the past, the coordinates where
+         * saved in IndexedDB. Following three if-cases will be triggered, if
+         * the respective parameters are already given. If thats the case, the
+         * loaded object will be updated and respositioned.
+         */
+        
+        /* Coordinates */
         if ( objectData.coordinates != null ) {
           loadedObject.position.set( objectData.coordinates[ 0 ], 
             objectData.coordinates[ 1 ], objectData.coordinates[ 2 ] );
         }
 
-        /* Override scale (IndexedDB) */
+        /* Scale */
         if ( objectData.scale != null ) {
           loadedObject.scale.set( objectData.scale[ 0 ], objectData.scale[ 1 ], 
             objectData.scale[ 2 ] );
         }
 
-        /* Override rotation (IndexedDB) */
+        /* Rotation */
         if ( objectData.rotation != null ) {
           const eulerRotation = new THREE.Euler( objectData.rotation[ 0 ],
             objectData.rotation[ 1 ], objectData.rotation[ 2 ],
@@ -70,6 +86,11 @@ export class UpdateLocalVariables {
 
   }
 
+  /**
+   * Updates material parameters with data from IndexedDB.
+   * @param { THREE.group } loadedObject 
+   * @param { object } objectData 
+   */
   updateObjectMaterial( loadedObject, objectData ) {
     loadedObject.traverse( ( child ) => {
       if ( child instanceof THREE.Mesh ) {
