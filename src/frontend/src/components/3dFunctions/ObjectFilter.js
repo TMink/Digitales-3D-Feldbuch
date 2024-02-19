@@ -202,4 +202,25 @@ export class ObjectFilter {
       positionObject.infoBlock.push(newObject)
     }
   }
+
+  choseObjects( typeSize, choseObjects, inputs, infos ) {
+    let isChosen = true;
+
+    for ( let a = 0; a < infos.length; a++ ) {
+      isChosen = true;
+
+      for ( let b = 0; b < typeSize; b++ ) {
+        if( !( infos[a][b] == inputs[b] ) ) {
+          isChosen = false;
+          break;
+        }
+      }
+
+      if( isChosen ) {
+        infos[a][typeSize].forEach( ( elem ) => {
+          choseObjects.push( elem );
+        } );
+      }
+    }
+  }
 }
