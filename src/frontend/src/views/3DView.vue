@@ -1335,8 +1335,17 @@ export default {
     exParams.main.canvas.removeEventListener( 'mousemove', 
       this.onDocumentMouseMove, false);
 
-    this.garbageCollection.removeLines( exParams.main.scene,
-      this.measureTool.infoBlock );
+    // this.garbageCollection.removeLines( exParams.main.scene,
+    //   this.measureTool.infoBlock );
+
+    // if ( exParams.main.objects.allObjects.length > 0 ) {
+    //   console.log("Objects in Scene")
+    //   this.garbageCollection.removeObjects( exParams.main.scene, 
+    //     exParams.main.objects.allObjects )
+    // }
+
+    this.garbageCollection.clearCanvases( exParams.main, exParams.sub,
+      this.measureTool.infoBlock )
 
   },
 

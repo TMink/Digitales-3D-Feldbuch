@@ -10,18 +10,18 @@
 
 export class GarbageCollection {
   
-  async clearCanvas( scene, data ) {
+  async clearCanvases( main, sub, infoBlock ) {
 
-    if( scene.name == 'SceneMain' ) {
-      this.removeObjects( scene, data.objects );
-      this.removeLines( scene, data.infoBlock );
-      this.removeRenderer( data.renderer );
+      this.removeObjects( main.scene, main.objects );
+      this.removeLines( main.scene, infoBlock );
+      this.removeRenderer( main.renderer );
+      console.log(main.arcBallControls)
+      main.arcBallControls.dispose()
+      main.transformControls.detach()
 
-      data.controls.detach()  
-    } else if( scene.name == 'SceneSub' ) {
-      this.removeObjects( scene, data.objects );
-      this.removeRenderer( data.renderer );
-    }
+      this.removeObjects( sub.scene, sub.object );
+      this.removeRenderer( sub.renderer );
+    
     
   }
 
