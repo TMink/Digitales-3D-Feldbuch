@@ -2,7 +2,7 @@
  * Created Date: 06.07.2023 13:22:10
  * Author: Julian Hardtung
  * 
- * Last Modified: 17.02.2024 19:53:31
+ * Last Modified: 22.02.2024 14:26:45
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for images of places/positions
@@ -198,18 +198,12 @@ export default {
   components: {
     AddButton
   },
+  emits: ['addImage'],
   /**
    * Props from PlaceForm/PositionForm
    */
   props: {
     position_prop: Object,
-  },
-  emits: ['addImage'],
-  setup() {
-    const generalStore = generalDataStore();
-    return {
-      generalStore,
-    }
   },
   /**
    * Reactive Vue.js data
@@ -239,9 +233,12 @@ export default {
   },
   setup() {
     const { width, height } = useWindowSize();
+    const generalStore = generalDataStore();
+    
     return {
       windowWidth: width,
       windowHeight: height,
+      generalStore,
     };
   },
   /**
