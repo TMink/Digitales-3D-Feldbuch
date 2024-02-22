@@ -2,7 +2,7 @@
  * Created Date: 14.07.2023 17:06:51
  * Author: Julian Hardtung
  * 
- * Last Modified: 19.02.2024 20:40:07
+ * Last Modified: 22.02.2024 14:55:32
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for 3d-models of places/positions
@@ -17,17 +17,27 @@
       <!-- MODEL LIST -->
       <v-row no-gutters class="align-center">
         <v-col xl="3" md="4" sm="6" v-for="(model, i) in models" :key="model">
-          <v-card class="pa-2 ma-2" width="410" height="490" align="center">
-            <v-card-title> Nr. {{ model.modelNumber }} - {{ model.title }}</v-card-title>
-
+          <v-card class="pa-2 ma-2" width="410" height="480" align="center">
+            <v-row class="pb-2" no-gutters>
+              <v-col>
+                <v-card-title class="text-start ml-3"> Nr. {{ model.modelNumber }} - {{ model.title }}</v-card-title>
+              </v-col>
+              <v-col class="justify-end mr-4" cols="2">
+                <v-btn class="mt-2" variant="text" @click="routeTo3D()">
+                  <v-icon>
+                    mdi-open-in-new
+                  </v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
             <v-row no-gutters class="align-center">
               <v-col>
                 
-                    <canvas :id="'canvas' + i" v-show="true" width="370" 
-                            height="370"
-                            style="display: inline;
-                                   border: 1px solid rgb(255, 255, 255)">
-                    </canvas>
+                <canvas :id="'canvas' + i" v-show="true" width="360" 
+                        height="355"
+                        style="display: inline;
+                                border: 1px solid rgb(255, 255, 255)">
+                </canvas>
                 
               </v-col>
             </v-row>
@@ -828,6 +838,10 @@ export default {
         reader.readAsArrayBuffer(f);
       });
       return output;
+    },
+
+    routeTo3D() {
+      this.$router.push({ name: "3D-Ansicht" })
     },
   }
 }
