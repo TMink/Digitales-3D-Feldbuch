@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 17.02.2024 19:42:48
+ * Last Modified: 22.02.2024 14:15:07
  * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
@@ -531,7 +531,6 @@ export default {
       this.positions = await fromOfflineDB
         .getAllObjectsWithID(this.place._id, 'Place', 'Positions', 'positions')
         .catch(err => console.error(err));
-      this.$refs.moduleViewerRef.passRefFunctionCall();
     },
 
     /**

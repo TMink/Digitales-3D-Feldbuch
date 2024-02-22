@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Julian Hardtung
  * 
- * Last Modified: 17.02.2024 20:23:15
+ * Last Modified: 22.02.2024 14:01:51
  * Modified By: Julian Hardtung
  * 
  * Description: component to create, edit, set input module presets 
@@ -82,14 +82,6 @@
               :label="$t('visibility')"
               v-if="objectTypeProp == 'places'"
               v-model="newPreset.visibility"
-              color="secondary">
-            </v-checkbox>
-
-            <v-checkbox 
-              hide-details 
-              :label="$tc('position', 2)" 
-              v-if="objectTypeProp == 'places'" 
-              v-model="newPreset.positionslist"
               color="secondary">
             </v-checkbox>
 
@@ -178,15 +170,6 @@
               :disabled="!selectedPreset.canEdit"
               v-if="objectTypeProp == 'places'"
               v-model="selectedPreset.visibility"
-              color="secondary">
-            </v-checkbox>
-
-            <v-checkbox 
-              hide-details 
-              :label="$tc('position', 2)"
-              :disabled="!selectedPreset.canEdit"
-              v-if="objectTypeProp == 'places'" 
-              v-model="selectedPreset.positionslist"
               color="secondary">
             </v-checkbox>
 
@@ -305,7 +288,6 @@ export default {
       //place specific
       plane: false,
       findTypes: false,
-      positionslist: false,
       visibility: false,
 
       //position specific

@@ -2,7 +2,7 @@
  * Created Date: 06.09.2023 17:19:12
  * Author: Julian Hardtung
  * 
- * Last Modified: 13.02.2024 13:23:29
+ * Last Modified: 22.02.2024 14:00:50
  * Modified By: Julian Hardtung
  * 
  * Description: input module viewer that shows all modules that are 
@@ -17,12 +17,6 @@
           :objectProp="object"
           :titleItemsSecondProp="titleItemsFirstProp"
           :editorItemsSecondProp="editorItemsFirstProp"
-          @dataToModuleViewer="sendData($event)"/>
-
-        <ModulePositionsList 
-          ref="posListRef"
-          v-if='object.modulePreset.positionslist'
-          :placeProp="object"
           @dataToModuleViewer="sendData($event)"/>
 
         <ModuleCoordinates v-if='object.modulePreset.coordinates'
@@ -69,7 +63,6 @@ import ModuleVisibility from '../components/modules/ModuleVisibility.vue';
 import ModuleFindTypes from '../components/modules/ModuleFindTypes.vue';
 import ModulePlane from '../components/modules/ModulePlane.vue';
 import ModuleDating from '../components/modules/ModuleDating.vue';
-import ModulePositionsList from '../components/modules/ModulePositionsList.vue';
 import ModuleObjectDescribers from '../components/modules/ModuleObjectDescribers.vue';
 import ModuleTechnical from './modules/ModuleTechnical.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB';
@@ -84,7 +77,6 @@ export default {
     ModuleFindTypes,
     ModulePlane,
     ModuleDating,
-    ModulePositionsList,
     ModuleObjectDescribers,
     ModuleTechnical,
 },
@@ -119,7 +111,6 @@ export default {
           _id: false,
           objectDescribers: false,
           plane: false,
-          positionslist: false,
           title: false,
           visibility: false,
           technical: false,
@@ -161,15 +152,6 @@ export default {
     sendData(data) {
       /* Send data back to PlaceForm.vue */
       this.$emit("dataToPlaceForm", data);
-    },
-
-    /**
-     * Triggers the updatePositions function from ModulePositionsList
-     */
-    passRefFunctionCall() {
-      if (this.$refs.posListRef != undefined) {
-        this.$refs.posListRef.updatePositions();
-      }
     },
   }
 };
