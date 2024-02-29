@@ -2,7 +2,7 @@
  * Created Date: 14.07.2023 17:06:51
  * Author: Julian Hardtung
  * 
- * Last Modified: 29.02.2024 16:00:35
+ * Last Modified: 29.02.2024 16:36:06
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for 3d-models of places/positions
@@ -61,7 +61,7 @@
               <v-col class="pa-1 pr-2">
 
                 <v-btn width="172" color="error" 
-                       v-on:click="deleteModel(model)">
+                  v-on:click="confirmDeletion(model)">
                   <v-icon>mdi-delete</v-icon>
                 </v-btn>
 
@@ -236,10 +236,13 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    
+    <ConfirmDialog ref="confirm" />
 </template>
 
 <script>
 import AddButton from '../components/AddButton.vue';
+import ConfirmDialog from '../components/ConfirmDialog.vue'
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { generalDataStore } from '../ConnectionToLocalStorage';
 import { toRaw } from 'vue';
@@ -253,7 +256,8 @@ import { exParams } from './3dFunctions/Parameter';
 export default {
   name: "ModelForm",
   components: {
-    AddButton
+    AddButton,
+    ConfirmDialog,
   },
   
   /**
@@ -712,11 +716,31 @@ export default {
 
       this.edit_dialog = true;
     },
+
+    /**
+     * Opens the confirmation dialog for deletion
+     * @param {Object} model 
+     */
+    async confirmDeletion(model) {
+      if (
+        await this.$refs.confirm.open(
+          this.$t('confirm'),
+          this.$t('confirm_del', {
+            object: this.$tc('model', 1),
+            object_nr: model.modelNumber
+          }),
+        ).catch(err => console.error(err))
+      ) {
+        this.deleteModel(model);
+      }
+    },
+
     /**
      * Deletes a model from IndexedDB and the connected place
      * @param {Object} model 
      */
     async deleteModel(model) {
+      console.log(this.object_type)
       var index = this.object.models.indexOf(model._id);
       if ( exParams.main.objects.place._ids.length > 0 || 
         exParams.main.objects.position._ids.length > 0 ) {
@@ -769,8 +793,8 @@ export default {
           }
         }
         await fromOfflineDB
-          .updateObject(toRaw(this.object), this.object_type, this.object_type.toLowerCase()
-          .catch(err => console.error(err)));
+          .updateObject(toRaw(this.object), this.object_type, this.object_type.toLowerCase())
+          .catch(err => console.error(err));
       }
 
       // delete the model itself

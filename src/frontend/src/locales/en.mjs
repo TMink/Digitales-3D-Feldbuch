@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 29.02.2024 16:20:59
+ * Last Modified: 29.02.2024 16:38:09
  * Modified By: Julian Hardtung
  * 
  * Description: english translations
@@ -136,7 +136,7 @@ export default {
   showAll: "Show all info",
   not_created_yet: "No {object} has been created yet!",
   current_selection: "Current Selection",
-  confirm_del: "Do you really want to delete {object} Nr. {object_nr}?",
+  confirm_del: "Do you really want to delete {object} {object_nr}?",
   overview: "{msg} Overview",
   addNewPreset: "Add new Preset",
   existingPresets: "Existing Presets",
