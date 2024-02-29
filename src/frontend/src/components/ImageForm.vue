@@ -2,7 +2,7 @@
  * Created Date: 06.07.2023 13:22:10
  * Author: Julian Hardtung
  * 
- * Last Modified: 22.02.2024 14:26:45
+ * Last Modified: 29.02.2024 16:00:28
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for images of places/positions
@@ -55,7 +55,7 @@
         </v-col>
       </v-row>
 
-  <AddButton v-on:click="create_dialog = true" />
+  <AddButton v-on:click="create_dialog = true" prop_object="image"/>
 
   <!-- IMAGE CREATION DIALOG -->
   <v-dialog v-model="create_dialog" max-width="800" persistent>

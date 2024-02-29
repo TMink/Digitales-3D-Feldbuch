@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 17.02.2024 20:17:14
+ * Last Modified: 29.02.2024 16:00:45
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -368,7 +368,7 @@
     </v-form>
     <v-row class="align-center">
       <v-spacer></v-spacer>
-      <AddButton v-on:click="addPlace()"/>
+      <AddButton v-on:click="addPlace()" prop_object="place"/>
       <v-btn 
         @click="moduleCreatorOverlay = !moduleCreatorOverlay"
         color="primary">

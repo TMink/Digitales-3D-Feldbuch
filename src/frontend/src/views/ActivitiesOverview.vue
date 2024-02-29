@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 17.02.2024 19:52:59
+ * Last Modified: 29.02.2024 15:58:21
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -214,7 +214,7 @@
       <v-spacer></v-spacer>
     </v-row>
 
-    <AddButton v-on:click="addActivity()" />
+    <AddButton v-on:click="addActivity()" prop_object="activity" />
 
     <!-- ADD EDITOR DIALOG -->
     <v-dialog v-model="addEditorDialog" :max-width="550" style="z-index: 3;" @keydown.esc="cancelAddEditor()">
