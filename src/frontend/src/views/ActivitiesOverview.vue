@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 29.02.2024 15:58:21
+ * Last Modified: 29.02.2024 16:23:48
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -116,14 +116,6 @@
                       {{ this.$t('delete') }}
                       <v-icon>mdi-delete</v-icon>
                     </v-list-item>
-                    <!-- ADD TO YOUR ACCOUNT -->
-                    <v-list-item 
-                      v-if="this.userStore.authenticated && activity.editor.length==0"
-                      rounded="0" 
-                      :block="true"
-                      v-on:click="addEditor(activity, this.userStore.user.username)">
-                      {{ this.$t('addToYourAccount') }}
-                    </v-list-item>
                     <!-- ADD OTHER EDITOR -->
                     <v-list-item v-if="this.userStore.authenticated"
                       color="error"
@@ -176,12 +168,19 @@
                   <v-icon>mdi-account-check</v-icon>
                 </v-btn>
 
-                <v-btn icon class="ml-2" variant="text" v-else>
-                  <v-tooltip 
+                <v-btn icon class="ml-2" variant="text" v-else
+                v-on:click="addEditor(activity)">
+                  
+                  <v-tooltip v-if="userStore.authenticated"
                     activator="parent"
                     location="bottom">
-                    {{ $t('noAccount') }}
+                    {{ $t('clickToAddToYourAccount') }}
                   </v-tooltip>
+                  <v-tooltip v-else
+                      activator="parent"
+                      location="bottom">
+                      {{ $t('noAccount') }}
+                    </v-tooltip>
                   <v-icon>mdi-account-off-outline</v-icon>
                 </v-btn>
                 
@@ -531,11 +530,16 @@ export default {
     /**
      * Adds a new `username` as an editor to an activity
      * @param {Object} activity 
-     * @param {String} username 
      */
-    async addEditor(activity, username) {
+    async addEditor(activity) {
       // Update the activity
       var updatedActivity = toRaw(activity);
+
+      if (!this.userStore.authenticated) {
+        return;
+      }
+
+      var username = this.userStore.user.username;
       
       updatedActivity.editor.push(username);
 

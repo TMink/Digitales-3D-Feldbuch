@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 29.02.2024 15:48:57
+ * Last Modified: 29.02.2024 16:21:56
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -169,19 +169,25 @@ export default {
   downloadOnlineData: "Online verfügbare Daten herunterladen",
   downloadOnlineDataInfo:
     "Wähle die Aktivitäten aus, von denen du die Daten (Stellen, Positionen etc.) herunterladen möchtest. Beachte, dass der Download eine Weile dauern kann, wenn du Aktivitäten mit vielen Daten herutnerladen möchtest.",
-  lpDescription: 
+  lpDescription:
     "Bei diesem Projekt handelt es sich um das digitale 3D-Feldbuch, das die digitale Dokumentation archäologischer Ausgrabungen ermöglichen soll. Das System wurde in Zusammenarbeit mit dem Archäologischen Institut der Universität zu Köln entwickelt.",
   lpWhatIsThis: "Was ist das hier?",
   lpHowToDocument: "Wie wird Dokumentiert?",
-  lpDescriptionStellenkartensystem: 
+  lpDescriptionStellenkartensystem:
     "Beim Stellenkartensystem wird in Aktivitäten, Stellen und Positionen unterteilt.  Mithilfe dieser Notationsform ist es möglich, gefundene Artefakte präzise zu beschreiben und diese referenzieren zu können. Da es sich hierbei um eine standardisierte Notationsmethode handelt, wird hierdurch der Datenaustausch zwischen Experten und die Interpretation der jeweiligen Erkenntnisse vereinfacht.",
-  lpDescriptionActivity: "Eine archäologische Maßnahme. Wird identifiziert durch eine Aktivitätsnummer.",
-  lpDescriptionActivity_ID: 
+  lpDescriptionActivity:
+    "Eine archäologische Maßnahme. Wird identifiziert durch eine Aktivitätsnummer.",
+  lpDescriptionActivity_ID:
     "Ein einzigartiger Index, um Aktivitäten eindeutig identifizierbar zu machen. Diese folgt folgender Struktur: Zweistelliges Kürzel für das Außenstellengebiet + Leerzeichen + vierstellige Jahreszahl + / + vierstellige Ziffernfolge",
-  lpDescriptionPlace: "Neutrale Ansprache für alle Befunde, Verfärbungen oder auch Arbeitsbereiche einer Aktivität. Wird eindeutig identifiziert durch eine Stellennummer.",
+  lpDescriptionPlace:
+    "Neutrale Ansprache für alle Befunde, Verfärbungen oder auch Arbeitsbereiche einer Aktivität. Wird eindeutig identifiziert durch eine Stellennummer.",
   lpDescriptionPlace_ID: "Fortlaufende Nummerierung aller Stellen einer Aktivität",
-  lpDescriptionPosition: "Neutrale Ansprache für alle Arbeitsschritte und Erkenntnisse einer Stelle. Wird durch eine Positionsnummer identifiziert.",
-  lpDescriptionPosition_ID: "Fortlaufende Nummerierung aller Positionen einer Stelle. Durch Kombination aus Aktivitäts-, Stellen- und Positionsnummer werden Positionen eindeutig identifizierbar.",
-  lpFieldbookDescriptionShort: "Ein effizienterer Weg, um archäologische Ausgrabungen zu dokumentieren und visualisieren.",
+  lpDescriptionPosition:
+    "Neutrale Ansprache für alle Arbeitsschritte und Erkenntnisse einer Stelle. Wird durch eine Positionsnummer identifiziert.",
+  lpDescriptionPosition_ID:
+    "Fortlaufende Nummerierung aller Positionen einer Stelle. Durch Kombination aus Aktivitäts-, Stellen- und Positionsnummer werden Positionen eindeutig identifizierbar.",
+  lpFieldbookDescriptionShort:
+    "Ein effizienterer Weg, um archäologische Ausgrabungen zu dokumentieren und visualisieren.",
   openIn3D: "In 3D-Bereich öffnen",
+  clickToAddToYourAccount: "Klicken, um deinem Account hinzuzufügen",
 };

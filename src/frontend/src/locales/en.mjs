@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 29.02.2024 15:48:36
+ * Last Modified: 29.02.2024 16:20:59
  * Modified By: Julian Hardtung
  * 
  * Description: english translations
@@ -183,4 +183,5 @@ export default {
   lpDescriptionPosition_ID: "Consecutive numbering of all positions in a position. Positions can be clearly identified through a combination of activity, job and position IDs.",
   lpFieldbookDescriptionShort: "A more efficient way to document and visualize archaeological excavations.",
   openIn3D: "Open in 3D-Editor",
+  clickToAddToYourAccount: "Click to add this to your account",
 };
