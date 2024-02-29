@@ -2,7 +2,7 @@
  * Created Date: 14.07.2023 17:06:51
  * Author: Julian Hardtung
  * 
- * Last Modified: 22.02.2024 14:55:32
+ * Last Modified: 29.02.2024 16:00:35
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for 3d-models of places/positions
@@ -23,11 +23,18 @@
                 <v-card-title class="text-start ml-3"> Nr. {{ model.modelNumber }} - {{ model.title }}</v-card-title>
               </v-col>
               <v-col class="justify-end mr-4" cols="2">
-                <v-btn class="mt-2" variant="text" @click="routeTo3D()">
-                  <v-icon>
-                    mdi-open-in-new
-                  </v-icon>
-                </v-btn>
+                <v-tooltip 
+                :text="$t('openIn3D')"
+                location="bottom">
+                  <template v-slot:activator="{props}">
+
+                    <v-btn v-bind="props" class="mt-2" variant="text" @click="routeTo3D()">
+                      <v-icon>
+                        mdi-open-in-new
+                      </v-icon>
+                    </v-btn>
+                  </template>
+                </v-tooltip>
               </v-col>
             </v-row>
             <v-row no-gutters class="align-center">
@@ -65,7 +72,7 @@
       </v-row>
     
 
-  <AddButton v-on:click="create_dialog = true" />
+  <AddButton v-on:click="create_dialog = true" prop_object="model"/>
 
   <!-- MODEL CREATION DIALOG -->
   <v-dialog v-model="create_dialog" max-width="800" persistent>

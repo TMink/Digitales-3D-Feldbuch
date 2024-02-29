@@ -2,8 +2,8 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 12.02.2024 12:17:17
- * Modified By: Oliver Mertens
+ * Last Modified: 29.02.2024 15:48:36
+ * Modified By: Julian Hardtung
  * 
  * Description: english translations
  */
@@ -182,5 +182,5 @@ export default {
   lpDescriptionPosition: "Neutral approach for all work steps and findings of a position. Identified by an position ID.",
   lpDescriptionPosition_ID: "Consecutive numbering of all positions in a position. Positions can be clearly identified through a combination of activity, job and position IDs.",
   lpFieldbookDescriptionShort: "A more efficient way to document and visualize archaeological excavations.",
-
+  openIn3D: "Open in 3D-Editor",
 };
