@@ -2,14 +2,14 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 22.02.2024 14:15:07
- * Modified By: Julian Hardtung
+ * Last Modified: 06.03.2024 17:07:24
+ * Modified By: Methusshan Elankumaran
  * 
  * Description: input page for places data 
  *              (shows input modules according to module preset)
  -->
 
- <template>
+<template>
   <Navigation active_tab_prop="1" />
   <v-container fluid>
     <v-row no-gutters>
@@ -41,66 +41,59 @@
         <v-window v-model="tab">
           <!-- Tab item 'GENERAL' -->
           <v-window-item value="one">
-            <ModuleViewer
-              ref="moduleViewerRef"
-              :datingItemsFirstProp="datingsList"
+            <ModuleViewer ref="moduleViewerRef" 
+              :datingItemsFirstProp="datingsList" 
               :editorItemsFirstProp="editorsList"
-              :titleItemsFirstProp="titlesList"
-              @dataToPlaceForm="getEmitedData($event)"/>
+              :titleItemsFirstProp="titlesList" 
+              @dataToPlaceForm="getEmitedData($event)" />
           </v-window-item>
 
           <!-- Tab item 'positions' -->
           <v-window-item value="two">
             <v-form>
               <v-card class="pa-3" :min-width="windowWidth * 0.5">
-                <v-data-table-virtual
-                  :items="positions"
-                  fixed-header
-                  :height="getTableHeight"
+                <v-data-table-virtual 
+                  :items="positions" fixed-header 
+                  :height="getTableHeight" 
                   :headers="headers"
-                  :sort-by="[{ key: 'positionNumber', order: 'asc' }]"
-                  max-height>
+                  :sort-by="[{ key: 'positionNumber', order: 'asc' }]" max-height>
 
                   <template v-slot:item="{ item, index }">
-                    <tr v-on:click="moveToPosition(item.raw._id)"
-                        @mouseenter="setHoveredRow(index, true)"
-                        @mouseleave="setHoveredRow(index, false)">
+                    <tr v-on:click="moveToPosition(item.raw._id)" 
+                      @mouseenter="setHoveredRow(index, true)"
+                      @mouseleave="setHoveredRow(index, false)">
 
-                        <!-- POSITION NUMBER -->
-                        <td :style="getRowStyle(index)">
-                          <v-list-item-title>
-                            {{ item.raw.positionNumber }}
-                          </v-list-item-title>
-                        </td>
+                      <!-- POSITION NUMBER -->
+                      <td :style="getRowStyle(index)">
+                        <v-list-item-title>
+                          {{ item.raw.positionNumber }}
+                        </v-list-item-title>
+                      </td>
 
-                        <!-- SUB NUMBER -->
-                        <td :style="getRowStyle(index)">
-                          <v-list-item-title>
-                            {{ item.raw.subNumber }}
-                          </v-list-item-title>
-                        </td>
+                      <!-- SUB NUMBER -->
+                      <td :style="getRowStyle(index)">
+                        <v-list-item-title>
+                          {{ item.raw.subNumber }}
+                        </v-list-item-title>
+                      </td>
 
-                        <!-- TITLE -->
-                        <td class="py-6" :style="getRowStyle(index)">
-                          <v-list-item-title
-                            v-if="item.raw.title.length > 0"
-                            style="min-width:200px" 
-                            class="text-wrap">
-                            {{ item.raw.title }}
-                          </v-list-item-title>
+                      <!-- TITLE -->
+                      <td class="py-6" :style="getRowStyle(index)">
+                        <v-list-item-title v-if="item.raw.title.length > 0" style="min-width:200px" class="text-wrap">
+                          {{ item.raw.title }}
+                        </v-list-item-title>
 
-                          <v-list-item-title 
-                            v-if="item.raw.title.length == 0" style="color:dimgrey;">
-                            -
-                          </v-list-item-title>
-                        </td>
+                        <v-list-item-title v-if="item.raw.title.length == 0" style="color:dimgrey;">
+                          -
+                        </v-list-item-title>
+                      </td>
 
-                        <!-- DATE -->
-                        <td :style="getRowStyle(index)">
-                          <v-list-item-title>
-                            {{ item.raw.date || '-' }}
-                          </v-list-item-title>
-                        </td>
+                      <!-- DATE -->
+                      <td :style="getRowStyle(index)">
+                        <v-list-item-title>
+                          {{ item.raw.date || '-' }}
+                        </v-list-item-title>
+                      </td>
                     </tr>
                   </template>
                 </v-data-table-virtual>
@@ -122,36 +115,37 @@
           <!-- Tab item 'technical drawing' -->
           <v-window-item value="four">
             <v-dialog persistent overlay-color="black" overlay-opacity="1" v-model="backgroundDialog">
-                <v-card class="pa-4">
-                  <v-card-title>Set Background Image</v-card-title>
-                  <v-file-input @change="setBackgroundImage($event)" prepend-icon="mdi-image" accept="image/png"></v-file-input> 
-                  <v-btn @click.prevent="saveBackground()">Save</v-btn>
-                  <v-btn @click.prevent="revertBackground()">Cancel</v-btn>
-                </v-card>
+              <v-card class="pa-4">
+                <v-card-title>Set Background Image</v-card-title>
+                <v-file-input @change="setBackgroundImage($event)" prepend-icon="mdi-image"
+                  accept="image/png"></v-file-input>
+                <v-btn @click.prevent="saveBackground()">Save</v-btn>
+                <v-btn @click.prevent="revertBackground()">Cancel</v-btn>
+              </v-card>
             </v-dialog>
 
             <v-toolbar :height="50" color="surface" density="default">
               <v-btn-toggle>
                 <v-btn @click="onToolbarClick('pen')" icon="mdi-pencil" rounded="1"></v-btn>
                 <v-btn @click="onToolbarClick('eraser')" icon="mdi-eraser" rounded="1"></v-btn>
+                <v-btn @click.prevent="onToolbarClick('text')" icon="mdi-alpha-t" rounded="0"></v-btn>
               </v-btn-toggle>
               <v-btn @click="onToolbarClick('colorPicker')" icon="mdi-palette" rounded="0"></v-btn>
               <v-btn @click="onToolbarClick('lineWidth')" icon="mdi-minus" rounded="0"></v-btn>
               <v-btn icon="mdi-shape" rounded="0"></v-btn>
-              <v-btn @click.prevent="$refs.VueCanvasDrawing.undo()" icon="mdi-undo" rounded="0"></v-btn>
-              <v-btn @click.prevent="$refs.VueCanvasDrawing.redo()" icon="mdi-redo" rounded="0"></v-btn>
-              <v-btn @click.prevent="onToolbarClick('text')" icon="mdi-alpha-t" rounded="0"></v-btn>
+              <v-btn @click.prevent="$refs.FieldbookDrawingCanvas.undo()" icon="mdi-undo" rounded="0"></v-btn>
+              <v-btn @click.prevent="$refs.FieldbookDrawingCanvas.redo()" icon="mdi-redo" rounded="0"></v-btn>
               <v-btn @click.prevent="onToolbarClick('clear')" icon="mdi-trash-can-outline" rounded="0"></v-btn>
               <v-btn @click.prevent="backgroundDialog = true" icon="mdi-image" rounded="0"></v-btn>
               <v-btn @click.prevent="onToolbarClick('refresh')" icon="mdi-reload" rounded="0"></v-btn>
             </v-toolbar>
-            <div style="positon:relative">
+            <div style="position:relative">
               <v-expand-transition>
-                <v-color-picker class="mt-4" style="position:absolute" v-show="canvasSettings.colorPickerChosen"
-                  v-model="canvasSettings.color"></v-color-picker>
+                <v-color-picker class="mt-2" style="position:absolute; left:100px; z-index: 1;"
+                  v-show="canvasSettings.colorPickerChosen" v-model="canvasSettings.color"></v-color-picker>
               </v-expand-transition>
 
-              <v-card class="mt-4" style="position:absolute" :width="600">
+              <v-card class="mt-2" style="position:absolute; left: 150px; z-index: 1;"  :width="600">
                 <v-expand-transition>
                   <v-slider v-model="canvasSettings.lineWidth" :min="1" :max="10" :step="1"
                     v-show="canvasSettings.lineWidthChosen" show-ticks="always"
@@ -159,15 +153,23 @@
                 </v-expand-transition>
               </v-card>
 
-              <vue-drawing-canvas @click="onCanvasclick($event)" class="mt-4" ref="VueCanvasDrawing" :width="canvasSettings.width"
-                :height="canvasSettings.height" :eraser="canvasSettings.eraser" :line-width="canvasSettings.lineWidth"
-                :background-color="canvasSettings.backgroundColor" :background-image="canvasSettings.backgroundImage.file" :color="canvasSettings.color"
-                :line-cap="canvasSettings.lineCap" :line-join="canvasSettings.lineJoin"
-                :stroke-type="canvasSettings.strokeType" save-as="png" :lock="canvasSettings.lock"
-                :initial-image="canvasSettings.initialImage" :additional-images="canvasSettings.additionalImages" />
+              <v-expand-transition>
+              <v-card class="mt-2" row v-show="canvasSettings.textModeChosen" style="position: absolute; left: 90px; z-index: 1;">
+                <v-layout>
+                  <v-card :width="200" class="mx-2"><v-select label="Schriftart" v-model="canvasSettings.selectedFont" 
+                          :items="canvasSettings.fonts"></v-select></v-card>
+                  <v-card :width="200" class="mx-2"><v-select label="Schriftgröße" v-model="canvasSettings.selectedFontSize" 
+                          :items="canvasSettings.fontSizes"></v-select></v-card>
+                </v-layout>
+              </v-card>
+            </v-expand-transition>
+
+              <FieldbookDrawingCanvas ref="FieldbookDrawingCanvas" :canvasWidth="canvasSettings.width"
+                :canvasHeight="canvasSettings.height" :lineWidth="canvasSettings.lineWidth"
+                :color="canvasSettings.color" :mode="canvasSettings.mode" :fontStyle="fontStyle"></FieldbookDrawingCanvas>
             </div>
             <v-row justify="end">
-              <v-col class="text-left">
+              <v-col class="text-left mt-2">
                 <v-btn color="primary" class="mr-2"><v-icon>mdi-content-save-all</v-icon></v-btn>
                 <v-btn @click="downloadImage()" color="primary"><v-icon>mdi-download</v-icon></v-btn>
               </v-col>
@@ -205,7 +207,7 @@ import ModelForm from '../components/ModelForm.vue';
 import { toRaw } from 'vue';
 import { useWindowSize } from 'vue-window-size';
 import Navigation from '../components/Navigation.vue';
-import VueDrawingCanvas from "vue-drawing-canvas";
+import FieldbookDrawingCanvas from "../components/FieldbookDrawingCanvas.vue";
 
 export default {
 
@@ -217,7 +219,7 @@ export default {
     ImageOverview,
     ModuleViewer,
     ModelForm,
-    VueDrawingCanvas,
+    FieldbookDrawingCanvas,
   },
   emits: ['view'],
   setup() {
@@ -236,19 +238,18 @@ export default {
 
     return {
       tab: null,
-      backgroundDialog : false,
+      backgroundDialog: false,
+
       canvasSettings: {
         width: 1200,
         height: 800,
         backgroundColor: "#fff",
         colorPickerChosen: false,
         lineWidthChosen: false,
+        textModeChosen: false,
         color: "#000",
-        eraser: false,
+        mode: "none",
         lineWidth: 3,
-        lineJoin: "round",
-        lineCap: "butt",
-        strokeType: "dash",
         lineTicks: {
           1: "1",
           2: "2",
@@ -261,21 +262,13 @@ export default {
           9: "9",
           10: "10",
         },
+        fonts: ["Arial", "Serif", "Verdana", "Tahoma", "Georgia", "Courier New"],
+        fontSizes: [16, 20, 24, 28, 32, 40, 44, 52],
+        selectedFont: "Arial",
+        selectedFontSize: 20,
         writeMode: false,
-        lock: false,
-        initialImage: [],
-        additionalImages: [],
-        backgroundImage: {
-          file: null,
-          width: 1200,
-          height: 800,
-        },
-        oldBackgroundImage: {
-          file: null,
-          width: 1200,
-          height: 800,
-        },
-
+        backgroundImage: null,
+        oldBackgroundImage: null,
       },
       place: {
         _id: '',
@@ -422,6 +415,12 @@ export default {
   },
 
   computed: {
+    fontStyle: {
+      get: function() {
+        return this.canvasSettings.selectedFontSize + "px " + this.canvasSettings.selectedFont;
+      }
+    },
+    
     getTableHeight() {
       // Calculate the required table height based on the number of items
       const numberOfRows = this.positions.length > 0 ? this.positions.length : 1;
@@ -545,11 +544,11 @@ export default {
       await fromOfflineDB.updateObject(inputPlace, 'Places', 'places')
         .catch(err => console.error(err));
       this.hasUnsavedChanges = false;
-      
+
       this.updateAutoFillList('datings', this.place.dating, this.datingsList);
       this.updateAutoFillList('editors', this.place.editor, this.editorsList);
       this.updateAutoFillList('titles', this.place.title, this.titlesList);
-      
+
       this.$root.vtoast.show({ message: this.$t('saveSuccess') });
     },
 
@@ -559,7 +558,7 @@ export default {
       const editorsFromDB = await fromOfflineDB
         .getAllObjects('AutoFillLists', storeName)
         .catch(err => console.error(err));
-        
+
       if (editorsFromDB.length > 0) {
         let hasItem = false;
 
@@ -794,37 +793,38 @@ export default {
      * 
      * @param {string} toolType - Defines the pressed button of the toolbar
      * */
-     onToolbarClick(toolType) {
-      if (toolType == "pen")
-        this.canvasSettings.eraser = false
-      if (toolType == "eraser")
-        this.canvasSettings.eraser = true
-      if (toolType == "colorPicker") {
-        this.canvasSettings.colorPickerChosen = !this.canvasSettings.colorPickerChosen;
+    onToolbarClick(toolType) {
+      if (toolType == "pen" || toolType == "eraser") {
+
+        this.canvasSettings.mode = toolType == "eraser" ? "eraser" : "pen";
         this.canvasSettings.lineWidthChosen = false;
+        this.canvasSettings.textModeChosen = false;
+        this.canvasSettings.colorPickerChosen = false;
+      }
+      if (toolType == "colorPicker") {
+        this.canvasSettings.lineWidthChosen = false;
+        this.canvasSettings.textModeChosen = false;
+        this.canvasSettings.colorPickerChosen = !this.canvasSettings.colorPickerChosen;
       }
       if (toolType == "lineWidth") {
         this.canvasSettings.colorPickerChosen = false;
+        this.canvasSettings.textModeChosen = false;
         this.canvasSettings.lineWidthChosen = !this.canvasSettings.lineWidthChosen;
       }
       if (toolType == "text") {
-        this.canvasSettings.writeMode = !this.canvasSettings.writeMode;
-        if (this.canvasSettings.writeMode) {
-          this.canvasSettings.lock = true;
-        }
-        else {
-          this.canvasSettings.lock = false;
-        }
+        this.canvasSettings.mode = "text"
+        this.canvasSettings.lineWidthChosen = false;
+        this.canvasSettings.colorPickerChosen = false;
+        this.canvasSettings.textModeChosen = !this.canvasSettings.textModeChosen;
       }
-      if(toolType == "clear"){
-        this.$refs.VueCanvasDrawing.reset(); 
-        this.canvasSettings.additionalImages = [];
+      if (toolType == "clear") {
+        this.$refs.FieldbookDrawingCanvas.clearCanvas();
       }
-      if(toolType == "refresh"){
-        this.$refs.VueCanvasDrawing.redraw(); 
+      if (toolType == "refresh") {
+
       }
-      if(toolType == "deleteBackground"){
-        this.revertBackground();
+      if (toolType == "deleteBackground") {
+
       }
     },
 
@@ -833,173 +833,47 @@ export default {
      * Converts the base64-output of the Vue-Drawing-Canvas to an Imagefile, which can be downloaded.
      * */
     downloadImage() {
-      var imgCanvas = this.$refs.VueCanvasDrawing.save();
-      const imgOutput = new Image();
-      imgOutput.src = imgCanvas;
-      var imgUrl = window.URL.createObjectURL(this.base64ToBlob(imgCanvas))
       const link = document.createElement('a');
-      link.href = imgUrl;
+      link.href = this.$refs.FieldbookDrawingCanvas.getCanvas().toDataURL();
       link.target = '_blank';
-      //TODO: Add proper naming convention
-      link.download = "placeholder.png"
-
+      link.download = `${Date.now()}.png`
       document.body.appendChild(link);
       link.click();
       link.remove();
-
     },
 
-
-    /**
-     * Converts a base64-File into an Blob
-     * 
-     * @param {*} base64 Base64-File, which will be converted
-     * */
-    base64ToBlob(base64) {
-      const byteString = atob(base64.split(',')[1]);
-      const mimeString = base64.split(',')[0].split(':')[1].split(';')[0];
-      const ab = new ArrayBuffer(byteString.length);
-      const ia = new Uint8Array(ab);
-      for (let i = 0; i < byteString.length; i++) {
-        ia[i] = byteString.charCodeAt(i);
-      }
-      return new Blob([ab], { type: mimeString });
-    },
-
-    /**
-     * Gets the Position of the Mouseclick an uses the addInput-Function to add a Inputfield
-     * 
-     * @param {*} event Event-Data of the mouseclick
-     * */
-    onCanvasclick(event) {
-      if (this.canvasSettings.writeMode) {
-        var ctx = this.$refs.VueCanvasDrawing.context;
-        ctx.font = "20px Roboto"
-        ctx.fillStyle = this.canvasSettings.color;
-        var pos = this.$refs.VueCanvasDrawing.getCoordinates(event);
-        this.addInput(pos.x, pos.y, event.clientX, event.clientY);
-      }
-    },
-
-    /**
-     * Creates an Inputfield on the given position
-     * 
-     * @param {Number} canvasX x-coordinate of the mouseclick in canvas-space
-     * @param {Number} canvasY y-coordinate of the mouseclick in canvas-space
-     * @param {Number} windowX x-coordinate of the mouseclick in window-space
-     * @param {Number} windowY y-coordinate of the mouseclick in window-space
-     * */
-    addInput(canvasX, canvasY, windowX, windowY) {
-      var input = document.createElement('input');
-      var thisInstance = this;
-
-      input.type = "text";
-      input.style.position = 'fixed';
-      input.style.left = windowX + 'px';
-      input.style.top = windowY + 'px';
-      input.style.color = "#000"
-
-      document.body.appendChild(input);
-
-      input.addEventListener('keypress', (event) => {
-        if(event.key === 'Enter'){
-          drawText(input, thisInstance)
-        }
-      });
-
-      /**
-       * Prints the value of the inputfield on the cancas and deletes the input-fields
-       * 
-       * @param {*} Input Inputfield containing the string to be printed
-       * @param {*} thisInstance this-Instance of the PlaceForm-Component 
-       * */
-      function drawText(input, thisInstance) {
-
-          var elements = document.querySelectorAll('input');
-          elements.forEach((element) => element.remove());
-
-          var obj = thisInstance.createTextObject(input.value, canvasX, canvasY)
-          thisInstance.canvasSettings.additionalImages.push(obj);
-          thisInstance.onToolbarClick('text');
-          thisInstance.$refs.VueCanvasDrawing.redraw();
-          
-      }
-    },
-
-    /**
-     * Returns text-object which is required by VueDrawingCanvas-Library to add text
-     * 
-     * @param {String} text Text to be added on canvas
-     * @param {Number} x x-coordinate of the text
-     * @param {Number} y y-coordinate of the text
-     * @return {JSON} JSON-Data for additionalImages-Array
-     * */
-    createTextObject(text, x, y){
-      return {
-        type : "Text",
-        source: text,
-        x: x,
-        y: y,
-        fontStyle: {
-          color: this.canvasSettings.color,
-          font: '16px Roboto',
-          drawType: 'fill',
-          textAlign: 'left',
-          textBaseline: 'top',
-        }
-      }
-    },
-
-    async setBackgroundImage(event){
+    async setBackgroundImage(event) {
       let URL = window.URL;
-      this.canvasSettings.backgroundImage.file = URL.createObjectURL(event.target.files[0]);
-      this.setCanvasSize(event.target.files[0])
-      await this.$refs.VueCanvasDrawing.redraw()
-        .catch(err => console.error(err));
+      this.canvasSettings.backgroundImage = URL.createObjectURL(event.target.files[0]);
     },
 
-    saveBackground(){
+    async saveBackground() {
       this.backgroundDialog = false;
-      this.onToolbarClick("refresh");
+      await this.setCanvasSize(this.canvasSettings.backgroundImage)
+      await this.$refs.FieldbookDrawingCanvas.addBackgroundImage(this.canvasSettings.backgroundImage, this.canvasSettings.width, this.canvasSettings.height);
+      this.canvasSettings.oldBackgroundImage = { ...this.canvasSettings.backgroundImage };
     },
 
-    setCanvasSize(file){
-      var fr = new FileReader;
+    async setCanvasSize(url) {
       var thisInstance = this;
-      fr.onload = function(){
-        var img = new Image;
-        img.onload = function(){
-          if(img.width > 1200){
-            const compression = img.width / 1200;
-            img.width = img.width / compression;
-            img.height = img.height / compression;
-          }
-          thisInstance.canvasSettings.width = img.width;
-          thisInstance.canvasSettings.height = img.height;
-          thisInstance.canvasSettings.backgroundImage.width = img.width;
-          thisInstance.canvasSettings.backgroundImage.height = img.height;
-          if(thisInstance.canvasSettings.oldBackgroundImage.file === null){
-            thisInstance.canvasSettings.oldBackgroundImage = {...thisInstance.canvasSettings.backgroundImage};
-            console.log("Went in");
-          }
-          console.log(thisInstance.canvasSettings.oldBackgroundImage)
-          console.log(thisInstance.canvasSettings.backgroundImage)
+      var img = new Image();
+      img.src = url;
+      await img.decode().then(() => {
+        if (img.width > 1200) {
+          const compression = img.width / 1200;
+          img.width /= compression;
+          img.height /= compression;
         }
-        img.src = fr.result;
-      }
-      fr.readAsDataURL(file);
+        thisInstance.canvasSettings.width = img.width;
+        thisInstance.canvasSettings.height = img.height;
+      })
     },
 
-    revertBackground(){
-      this.canvasSettings.backgroundImage = {...this.canvasSettings.oldBackgroundImage};
+    async revertBackground() {
+      this.canvasSettings.backgroundImage = { ...this.canvasSettings.oldBackgroundImage };
+      await this.setCanvasSize(this.canvasSettings.backgroundImage);
+      this.$refs.FieldbookDrawingCanvas.addBackgroundImage(this.canvasSettings.backgroundImage, this.canvasSettings.width, this.canvasSettings.height);
       this.backgroundDialog = false;
-      this.canvasSettings.oldBackgroundImage.file = null;
-      this.canvasSettings.oldBackgroundImage.width = 1200;
-      this.canvasSettings.oldBackgroundImage.height = 800;
-      this.canvasSettings.width = this.canvasSettings.backgroundImage.width;
-      this.canvasSettings.height = this.canvasSettings.backgroundImage.height;
-      console.log(this.canvasSettings.oldBackgroundImage);
-      this.$refs.VueCanvasDrawing.redraw();
     }
 
   }
