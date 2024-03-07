@@ -4,7 +4,7 @@
 </template>
 
 <script>
-import { defineComponent, vModelDynamic } from 'vue'
+import { defineComponent} from 'vue'
 
 export default defineComponent({
     name: 'FieldbookDrawingCanvas',
@@ -29,9 +29,13 @@ export default defineComponent({
             type: String,
             default: "none"
         },
-        fontStyle: {
+        fontFamily: {
             type: String,
-            default: "20px Arial"
+            default: "Arial"
+        },
+        fontSize: {
+            type: Number,
+            default: 20
         }
     },
     data() {
@@ -48,6 +52,7 @@ export default defineComponent({
             height: this.canvasHeight,
             canvasStates: [],
             canvasIndex: -1,
+            textfieldCreated: false,
         }
     },
     mounted() {
@@ -98,9 +103,10 @@ export default defineComponent({
             this.fieldbookContext.lineCap = 'round';
             this.fieldbookContext.strokeStyle = this.color;
             this.fieldbookContext.fillStyle = this.color;
-            this.fieldbookContext.font = this.fontStyle;
-            if (this.mode === "text") {
+            this.fieldbookContext.font = this.getFontStyle();
+            if (this.mode === "text" && !this.textfieldCreated) {
                 this.addInput(e);
+                this.textfieldCreated = true;
             }
             else {
                 this.isDrawing = true;
@@ -153,9 +159,11 @@ export default defineComponent({
         },
 
         endDrawing() {
-            this.isDrawing = false;
-            this.fieldbookContext.closePath();
-            this.addState();
+            if(this.isDrawing){
+                this.isDrawing = false;
+                this.fieldbookContext.closePath();
+                this.addState();
+            }
         },
 
         addState() {
@@ -197,8 +205,13 @@ export default defineComponent({
 
         addInput(e) {
             var textarea = document.createElement('textarea');
+            var btn = document.createElement('button');
             var vm = this;
 
+            var textWidth = 350;
+            var textHeight = 150;
+
+            //Textarea creation
             textarea.style.position = 'fixed';
             textarea.style.left = e.clientX + 'px';
             textarea.style.top = e.clientY + 'px';
@@ -206,7 +219,10 @@ export default defineComponent({
             textarea.style.border = "4px solid #27303d";
             textarea.style.borderRadius = "15px";
             textarea.style.padding = "10px";
-            textarea.style.font = vm.fontStyle;
+            textarea.style.font = vm.getFontStyle();
+            textarea.style.resize = "both";
+            textarea.style.width = textWidth + "px";
+            textarea.style.height = textHeight + "px";
 
             textarea.addEventListener('focus', function () {
                 this.style.border = "4px solid #27303d"
@@ -215,11 +231,24 @@ export default defineComponent({
 
             document.body.appendChild(textarea);
 
-            textarea.addEventListener('keypress', (event) => {
-                if (event.key === 'Enter') {
-                    drawText(textarea, vm, e);
-                }
-            });
+            //Button creation
+            btn.style.position = 'fixed';
+            btn.style.left = e.clientX + textarea.clientWidth + 10 + 'px';
+            btn.style.top = e.clientY + textarea.clientHeight - 40 + 'px';
+            btn.style.width = "50px";
+            btn.style.height = "50px";
+            btn.style.color = "black";
+            btn.textContent = "Save"
+            btn.style.borderRadius = "10px"
+            btn.style.fontStyle = "bold"
+            btn.style.backgroundColor = "#FB9678";
+
+            document.body.appendChild(btn);
+
+            btn.addEventListener('click', (event) => {
+                drawText(textarea, btn, vm, e);
+            })
+
 
             /**
        * Prints the value of the inputfield on the cancas and deletes the input-fields
@@ -227,18 +256,36 @@ export default defineComponent({
        * @param {*} Input Inputfield containing the string to be printed
        * @param {*} vm this-Instance of the PlaceForm-Component 
        * */
-            async function drawText(input, vm, e) {
+            async function drawText(input, btn, vm, e) {
                 if (input.value != "") {
-                    await vm.fieldbookContext.fillText(input.value, e.offsetX + 13, e.offsetY + 30);
-                    vm.addState();
+                    var lineheight = vm.fontSize + 5;
+                    var lines = input.value.split('\n');
+
+                    for (var i = 0; i < lines.length; i++)
+                        await vm.fieldbookContext.fillText(lines[i], e.offsetX + 13, e.offsetY + 30 + (i * lineheight));
                 }
-                var elements = document.querySelectorAll('textarea');
-                elements.forEach((element) => element.remove());
+                input.remove();
+                btn.remove();
+                vm.textfieldCreated = false;
+                vm.addState();
             }
         },
 
-        getCanvas(){
-            return this.fieldbookCanvas;
+        addWhiteBackgroundToImage() {
+            var newCanvas = document.createElement('canvas')
+            var newContext = newCanvas.getContext('2d');
+            newCanvas.width = this.canvasWidth;
+            newCanvas.height = this.canvasHeight;
+            newContext.drawImage(this.fieldbookCanvas, 0, 0);
+            newContext.fillStyle = "#fff"
+            newContext.globalCompositeOperation = "destination-over";
+            newContext.rect(0, 0, this.canvasWidth, this.canvasHeight);
+            newContext.fill();
+            return newCanvas;
+        },
+
+        getFontStyle() {
+            return this.fontSize + "px " + this.fontFamily;
         }
     }
 })

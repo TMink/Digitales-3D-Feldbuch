@@ -10,7 +10,7 @@
  -->
 
 <template>
-  <Navigation active_tab_prop="1" />
+  <Navigation active_tab_prop="1"/>
   <v-container fluid>
     <v-row no-gutters>
       <v-col cols="2">
@@ -41,26 +41,19 @@
         <v-window v-model="tab">
           <!-- Tab item 'GENERAL' -->
           <v-window-item value="one">
-            <ModuleViewer ref="moduleViewerRef" 
-              :datingItemsFirstProp="datingsList" 
-              :editorItemsFirstProp="editorsList"
-              :titleItemsFirstProp="titlesList" 
-              @dataToPlaceForm="getEmitedData($event)" />
+            <ModuleViewer ref="moduleViewerRef" :datingItemsFirstProp="datingsList" :editorItemsFirstProp="editorsList"
+              :titleItemsFirstProp="titlesList" @dataToPlaceForm="getEmitedData($event)" />
           </v-window-item>
 
           <!-- Tab item 'positions' -->
           <v-window-item value="two">
             <v-form>
               <v-card class="pa-3" :min-width="windowWidth * 0.5">
-                <v-data-table-virtual 
-                  :items="positions" fixed-header 
-                  :height="getTableHeight" 
-                  :headers="headers"
+                <v-data-table-virtual :items="positions" fixed-header :height="getTableHeight" :headers="headers"
                   :sort-by="[{ key: 'positionNumber', order: 'asc' }]" max-height>
 
                   <template v-slot:item="{ item, index }">
-                    <tr v-on:click="moveToPosition(item.raw._id)" 
-                      @mouseenter="setHoveredRow(index, true)"
+                    <tr v-on:click="moveToPosition(item.raw._id)" @mouseenter="setHoveredRow(index, true)"
                       @mouseleave="setHoveredRow(index, false)">
 
                       <!-- POSITION NUMBER -->
@@ -99,17 +92,14 @@
                 </v-data-table-virtual>
               </v-card>
 
-              <AddPosition 
-                :positions_prop="positions" 
-                @updatePositions="updatePositions()" />
+              <AddPosition :positions_prop="positions" @updatePositions="updatePositions()" />
 
             </v-form>
           </v-window-item>
 
           <!-- Tab item 'pictures' -->
           <v-window-item value="three">
-            <ImageOverview
-              :object_id="place._id"/>
+            <ImageOverview :object_id="place._id" />
           </v-window-item>
 
           <!-- Tab item 'technical drawing' -->
@@ -128,11 +118,11 @@
               <v-btn-toggle>
                 <v-btn @click="onToolbarClick('pen')" icon="mdi-pencil" rounded="1"></v-btn>
                 <v-btn @click="onToolbarClick('eraser')" icon="mdi-eraser" rounded="1"></v-btn>
-                <v-btn @click.prevent="onToolbarClick('text')" icon="mdi-alpha-t" rounded="0"></v-btn>
+                <v-btn @click.prevent="onToolbarClick('text')" icon="mdi-format-text" rounded="0"></v-btn>
+                <v-btn @click="onToolbarClick('shape')" icon="mdi-shape" rounded="0"></v-btn>
               </v-btn-toggle>
               <v-btn @click="onToolbarClick('colorPicker')" icon="mdi-palette" rounded="0"></v-btn>
               <v-btn @click="onToolbarClick('lineWidth')" icon="mdi-minus" rounded="0"></v-btn>
-              <v-btn icon="mdi-shape" rounded="0"></v-btn>
               <v-btn @click.prevent="$refs.FieldbookDrawingCanvas.undo()" icon="mdi-undo" rounded="0"></v-btn>
               <v-btn @click.prevent="$refs.FieldbookDrawingCanvas.redo()" icon="mdi-redo" rounded="0"></v-btn>
               <v-btn @click.prevent="onToolbarClick('clear')" icon="mdi-trash-can-outline" rounded="0"></v-btn>
@@ -145,7 +135,7 @@
                   v-show="canvasSettings.colorPickerChosen" v-model="canvasSettings.color"></v-color-picker>
               </v-expand-transition>
 
-              <v-card class="mt-2" style="position:absolute; left: 150px; z-index: 1;"  :width="600">
+              <v-card class="mt-2" style="position:absolute; left: 150px; z-index: 1;" :width="600">
                 <v-expand-transition>
                   <v-slider v-model="canvasSettings.lineWidth" :min="1" :max="10" :step="1"
                     v-show="canvasSettings.lineWidthChosen" show-ticks="always"
@@ -154,19 +144,35 @@
               </v-card>
 
               <v-expand-transition>
-              <v-card class="mt-2" row v-show="canvasSettings.textModeChosen" style="position: absolute; left: 90px; z-index: 1;">
-                <v-layout>
-                  <v-card :width="200" class="mx-2"><v-select label="Schriftart" v-model="canvasSettings.selectedFont" 
-                          :items="canvasSettings.fonts"></v-select></v-card>
-                  <v-card :width="200" class="mx-2"><v-select label="Schriftgröße" v-model="canvasSettings.selectedFontSize" 
-                          :items="canvasSettings.fontSizes"></v-select></v-card>
-                </v-layout>
-              </v-card>
-            </v-expand-transition>
+                <v-card class="mt-2" row v-show="canvasSettings.textModeChosen"
+                  style="position: absolute; left: 90px; z-index: 1;">
+                  <v-layout>
+                    <v-card :width="200" class="mx-2"><v-select label="Schriftart" v-model="canvasSettings.selectedFont"
+                        :items="canvasSettings.fonts"></v-select></v-card>
+                    <v-card :width="200" class="mx-2"><v-select label="Schriftgröße"
+                        v-model="canvasSettings.selectedFontSize" :items="canvasSettings.fontSizes"></v-select></v-card>
+                  </v-layout>
+                </v-card>
+              </v-expand-transition>
+
+              <v-expand-transition>
+                <v-card class="mt-2" row v-show="canvasSettings.shapeModeChosen"
+                  style="position: absolute; left: 140px; z-index: 1;">
+                  <v-layout>
+                    <v-card class="mx-2"><v-btn @click="" icon="mdi-minus" rounded="0"></v-btn></v-card>
+                    <v-card class="mx-2"><v-btn @click="" icon="mdi-dots-horizontal" rounded="0"></v-btn></v-card>
+                    <v-card class="mx-2"><v-btn @click="" icon="mdi-circle-outline" rounded="0"></v-btn></v-card>
+                    <v-card class="mx-2"><v-btn @click="" icon="mdi-square-outline" rounded="0"></v-btn></v-card>
+                    <v-card class="mx-2"><v-btn @click="" icon="mdi-triangle-outline" rounded="0"></v-btn></v-card>
+                    <v-card class="mx-2"><v-btn @click="" icon="mdi-circle-outline" rounded="0"></v-btn></v-card>
+                  </v-layout>
+                </v-card>
+              </v-expand-transition>
 
               <FieldbookDrawingCanvas ref="FieldbookDrawingCanvas" :canvasWidth="canvasSettings.width"
                 :canvasHeight="canvasSettings.height" :lineWidth="canvasSettings.lineWidth"
-                :color="canvasSettings.color" :mode="canvasSettings.mode" :fontStyle="fontStyle"></FieldbookDrawingCanvas>
+                :color="canvasSettings.color" :mode="canvasSettings.mode" :fontFamily="canvasSettings.selectedFont" :fontSize="canvasSettings.selectedFontSize">
+              </FieldbookDrawingCanvas>
             </div>
             <v-row justify="end">
               <v-col class="text-left mt-2">
@@ -247,6 +253,7 @@ export default {
         colorPickerChosen: false,
         lineWidthChosen: false,
         textModeChosen: false,
+        shapeModeChosen: false,
         color: "#000",
         mode: "none",
         lineWidth: 3,
@@ -415,12 +422,6 @@ export default {
   },
 
   computed: {
-    fontStyle: {
-      get: function() {
-        return this.canvasSettings.selectedFontSize + "px " + this.canvasSettings.selectedFont;
-      }
-    },
-    
     getTableHeight() {
       // Calculate the required table height based on the number of items
       const numberOfRows = this.positions.length > 0 ? this.positions.length : 1;
@@ -800,28 +801,35 @@ export default {
         this.canvasSettings.lineWidthChosen = false;
         this.canvasSettings.textModeChosen = false;
         this.canvasSettings.colorPickerChosen = false;
+        this.canvasSettings.shapeModeChosen = false;
       }
       if (toolType == "colorPicker") {
         this.canvasSettings.lineWidthChosen = false;
         this.canvasSettings.textModeChosen = false;
+        this.canvasSettings.shapeModeChosen = false;
         this.canvasSettings.colorPickerChosen = !this.canvasSettings.colorPickerChosen;
       }
       if (toolType == "lineWidth") {
         this.canvasSettings.colorPickerChosen = false;
         this.canvasSettings.textModeChosen = false;
+        this.canvasSettings.shapeModeChosen = false;
         this.canvasSettings.lineWidthChosen = !this.canvasSettings.lineWidthChosen;
       }
       if (toolType == "text") {
         this.canvasSettings.mode = "text"
         this.canvasSettings.lineWidthChosen = false;
         this.canvasSettings.colorPickerChosen = false;
+        this.canvasSettings.shapeModeChosen = false;
         this.canvasSettings.textModeChosen = !this.canvasSettings.textModeChosen;
       }
       if (toolType == "clear") {
         this.$refs.FieldbookDrawingCanvas.clearCanvas();
       }
-      if (toolType == "refresh") {
-
+      if (toolType == "shape") {
+        this.canvasSettings.lineWidthChosen = false;
+        this.canvasSettings.textModeChosen = false;
+        this.canvasSettings.colorPickerChosen = false;
+        this.canvasSettings.shapeModeChosen = !this.canvasSettings.shapeModeChosen;
       }
       if (toolType == "deleteBackground") {
 
@@ -834,7 +842,7 @@ export default {
      * */
     downloadImage() {
       const link = document.createElement('a');
-      link.href = this.$refs.FieldbookDrawingCanvas.getCanvas().toDataURL();
+      link.href = this.$refs.FieldbookDrawingCanvas.addWhiteBackgroundToImage().toDataURL();
       link.target = '_blank';
       link.download = `${Date.now()}.png`
       document.body.appendChild(link);
@@ -851,7 +859,8 @@ export default {
       this.backgroundDialog = false;
       await this.setCanvasSize(this.canvasSettings.backgroundImage)
       await this.$refs.FieldbookDrawingCanvas.addBackgroundImage(this.canvasSettings.backgroundImage, this.canvasSettings.width, this.canvasSettings.height);
-      this.canvasSettings.oldBackgroundImage = { ...this.canvasSettings.backgroundImage };
+      this.canvasSettings.oldBackgroundImage = { ...this.canvasSettings.backgroundImage};
+      console.log(this.canvasSettings.backgroundImage)
     },
 
     async setCanvasSize(url) {
@@ -870,10 +879,11 @@ export default {
     },
 
     async revertBackground() {
-      this.canvasSettings.backgroundImage = { ...this.canvasSettings.oldBackgroundImage };
-      await this.setCanvasSize(this.canvasSettings.backgroundImage);
-      this.$refs.FieldbookDrawingCanvas.addBackgroundImage(this.canvasSettings.backgroundImage, this.canvasSettings.width, this.canvasSettings.height);
+      if (this.oldBackgroundImage) {
+        this.canvasSettings.backgroundImage = {...this.canvasSettings.oldBackgroundImage};
+      }
       this.backgroundDialog = false;
+      console.log(this.canvasSettings.backgroundImage)
     }
 
   }

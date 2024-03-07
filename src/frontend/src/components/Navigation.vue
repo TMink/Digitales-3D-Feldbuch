@@ -12,7 +12,7 @@
 <template>
   <!-- App Bar -->
   <v-app-bar 
-      style="z-index: 1;" 
+      style="z-index: 2;" 
       color="accent_dark">
       <v-btn icon v-on:click="goback">
         <v-icon>mdi-arrow-left</v-icon>
@@ -117,7 +117,7 @@
     </v-app-bar>
 
     <!-- Navigation Drawer -->
-    <v-navigation-drawer 
+    <v-navigation-drawer
       color="surface" 
       v-model="navdrawer" 
       location="right">
