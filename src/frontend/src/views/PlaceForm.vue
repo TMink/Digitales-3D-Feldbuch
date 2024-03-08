@@ -147,9 +147,9 @@
                 <v-card class="mt-2" row v-show="canvasSettings.textModeChosen"
                   style="position: absolute; left: 90px; z-index: 1;">
                   <v-layout>
-                    <v-card :width="200" class="mx-2"><v-select label="Schriftart" v-model="canvasSettings.selectedFont"
+                    <v-card :width="200" class="mx-2"><v-select :label="$t('fontFamily')" v-model="canvasSettings.selectedFont"
                         :items="canvasSettings.fonts"></v-select></v-card>
-                    <v-card :width="200" class="mx-2"><v-select label="Schriftgröße"
+                    <v-card :width="200" class="mx-2"><v-select :label="$t('fontSize')"
                         v-model="canvasSettings.selectedFontSize" :items="canvasSettings.fontSizes"></v-select></v-card>
                   </v-layout>
                 </v-card>
@@ -159,19 +159,20 @@
                 <v-card class="mt-2" row v-show="canvasSettings.shapeModeChosen"
                   style="position: absolute; left: 140px; z-index: 1;">
                   <v-layout>
-                    <v-card class="mx-2"><v-btn @click="" icon="mdi-minus" rounded="0"></v-btn></v-card>
-                    <v-card class="mx-2"><v-btn @click="" icon="mdi-dots-horizontal" rounded="0"></v-btn></v-card>
-                    <v-card class="mx-2"><v-btn @click="" icon="mdi-circle-outline" rounded="0"></v-btn></v-card>
-                    <v-card class="mx-2"><v-btn @click="" icon="mdi-square-outline" rounded="0"></v-btn></v-card>
-                    <v-card class="mx-2"><v-btn @click="" icon="mdi-triangle-outline" rounded="0"></v-btn></v-card>
-                    <v-card class="mx-2"><v-btn @click="" icon="mdi-circle-outline" rounded="0"></v-btn></v-card>
+                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'line'" icon="mdi-minus" rounded="0"></v-btn></v-card>
+                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'dotted-line'" icon="mdi-dots-horizontal" rounded="0"></v-btn></v-card>
+                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'circle'" icon="mdi-circle-outline" rounded="0"></v-btn></v-card>
+                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'rectangle'" icon="mdi-square-outline" rounded="0"></v-btn></v-card>
+                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'triangle'" icon="mdi-triangle-outline" rounded="0"></v-btn></v-card>
+                    <v-card class="mx-2" :height="50"><v-checkbox :label="$t('fill')" v-model="canvasSettings.filled" icon="mdi-triangle-outline" rounded="0"></v-checkbox></v-card>
                   </v-layout>
                 </v-card>
               </v-expand-transition>
 
               <FieldbookDrawingCanvas ref="FieldbookDrawingCanvas" :canvasWidth="canvasSettings.width"
                 :canvasHeight="canvasSettings.height" :lineWidth="canvasSettings.lineWidth"
-                :color="canvasSettings.color" :mode="canvasSettings.mode" :fontFamily="canvasSettings.selectedFont" :fontSize="canvasSettings.selectedFontSize">
+                :color="canvasSettings.color" :mode="canvasSettings.mode" :fontFamily="canvasSettings.selectedFont" 
+                :fontSize="canvasSettings.selectedFontSize" :filled="canvasSettings.filled">
               </FieldbookDrawingCanvas>
             </div>
             <v-row justify="end">
@@ -256,6 +257,7 @@ export default {
         shapeModeChosen: false,
         color: "#000",
         mode: "none",
+        filled: false,
         lineWidth: 3,
         lineTicks: {
           1: "1",

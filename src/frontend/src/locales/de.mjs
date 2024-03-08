@@ -121,6 +121,9 @@ export default {
   delete: "Löschen",
   edit: "Bearbeiten",
   syncStatus: "Status",
+  fill: "Gefüllt",
+  fontFamily: "Schriftart",
+  fontSize: "Schriftgröße",
 
   // Phrases
   add: "{msg} hinzufügen",
