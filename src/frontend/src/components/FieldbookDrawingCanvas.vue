@@ -2,7 +2,7 @@
  * Created Date: 06.03.2024 16:25:57
  * Author: Methusshan Elankumaran
  * 
- * Last Modified: 08.03.2024 15:22:34
+ * Last Modified: 17.03.2024 18:31:22
  * Modified By: Methusshan Elankumaran
  * 
  * Description: canvas component for technical drawings
@@ -125,6 +125,7 @@ export default defineComponent({
             this.fieldbookContext.fillStyle = this.color;
             this.fieldbookContext.font = this.getFontStyle();
             if (this.mode === "text" && !this.textfieldCreated) {
+                this.fieldbookContext.globalCompositeOperation = 'source-over';
                 this.addInput(e);
                 this.textfieldCreated = true;
             }
@@ -198,6 +199,7 @@ export default defineComponent({
         },
 
         drawRect(e) {
+            this.fieldbookContext.setLineDash([])
             if(!this.filled){
                 this.fieldbookContext.strokeRect(e.offsetX, e.offsetY, this.lastX - e.offsetX, this.lastY - e.offsetY);
             }
@@ -209,14 +211,15 @@ export default defineComponent({
 
         drawCircle(e){
             this.fieldbookContext.beginPath();
+            this.fieldbookContext.setLineDash([])
             let radius = Math.sqrt(Math.pow(this.lastX - e.offsetX, 2) + Math.pow(this.lastY - e.offsetY, 2))
             this.fieldbookContext.arc(this.lastX, this.lastY, radius, 0, 2 * Math.PI);
             this.filled ? this.fieldbookContext.fill() : this.fieldbookContext.stroke();
         },
 
         drawTriangle(e){
-            this.fieldbookContext.setLineDash([])
             this.fieldbookContext.beginPath();
+            this.fieldbookContext.setLineDash([])
             this.fieldbookContext.moveTo(this.lastX, this.lastY);
             this.fieldbookContext.lineTo(e.offsetX, e.offsetY);
             this.fieldbookContext.lineTo(this.lastX * 2 - e.offsetX, e.offsetY);
@@ -225,16 +228,16 @@ export default defineComponent({
         },
 
         drawLine(e){
-            this.fieldbookContext.setLineDash([])
             this.fieldbookContext.beginPath();
+            this.fieldbookContext.setLineDash([])
             this.fieldbookContext.moveTo(this.lastX, this.lastY);
             this.fieldbookContext.lineTo(e.offsetX, e.offsetY);
             this.fieldbookContext.stroke();
         },
 
         drawDottedLine(e){
-            this.fieldbookContext.setLineDash([10, 20])
             this.fieldbookContext.beginPath();
+            this.fieldbookContext.setLineDash([10, 20])
             this.fieldbookContext.moveTo(this.lastX, this.lastY);
             this.fieldbookContext.lineTo(e.offsetX, e.offsetY);
             this.fieldbookContext.stroke();
@@ -266,7 +269,7 @@ export default defineComponent({
 
         clearCanvas() {
             this.fieldbookContext.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-            this.canvasStates = [];
+            this.removeFromIndex(this.canvasStates, 0);
             this.canvasIndex = -1;
         },
 
