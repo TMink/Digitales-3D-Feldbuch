@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 29.02.2024 16:23:48
+ * Last Modified: 19.03.2024 17:12:07
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -25,12 +25,12 @@
             </v-list-subheader>
 
             <template v-for="(activity, i) in activities" :key="activity">
-              <v-row no-gutters class="align-center" justify="end">
+              <v-row no-gutters class="align-center">
 
                 <!-- v v v v v ACTIVITY LIST v v v v v -->
                 <v-col v-if="!activity.edit" >
                   <v-list-item 
-                    class="pa-2 ma-2" v-on:click="setActivity(activity._id)">
+                    class="pa-4 mr-2" v-on:click="setActivity(activity._id)">
                     <v-list-item-title class="ma-4 text-center">
                       {{ activity.activityNumber }}
                     </v-list-item-title>

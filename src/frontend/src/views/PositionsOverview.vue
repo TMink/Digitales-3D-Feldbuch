@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 17.02.2024 20:08:41
+ * Last Modified: 19.03.2024 17:16:57
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -11,9 +11,9 @@
 <template>
   <div id="wrapper">
     <Navigation active_tab_prop="2" />
-    <v-row no-gutters class="align-center pa-2">
+    <v-row class="pt-2">
         <v-spacer></v-spacer>
-        <v-card class="ma-2 w-50" variant="text">
+        <v-card class="pa-4" :min-width="windowWidth * 0.55" variant="text">
           <v-row no-gutters class="align-center pa-2">
 
             <!-- SHOW ALL SWITCH-->
@@ -42,21 +42,18 @@
         <v-spacer></v-spacer>
       </v-row>
 
-    <v-form class="px-6">
       <v-row>
         <v-spacer></v-spacer>
 
         <!-- POSITIONS LIST -->
-        <v-card class="pa-3" :min-width="windowWidth * 0.7">
-
+        <v-card class="pt-2" :min-width="windowWidth * 0.65">
           <v-data-table-virtual
             v-show="!showAllInfo"
             :items="filteredPositions"
             fixed-header
             :height="getTableHeight"
             :headers="headers"
-            :sort-by="[{ key: 'positionNumber', order: 'asc' }]"
-            max-height>
+            :sort-by="[{ key: 'positionNumber', order: 'asc' }]">
 
             <template v-slot:item="{ item, index }">
               <tr v-on:click="handleRowClick(item.raw._id)"
@@ -65,29 +62,27 @@
 
                   <!-- POSITION NUMBER -->
                   <td :style="getRowStyle(index)">
-                    <v-list-item-title>
+                    <v-list-item-title class="pl-4">
                       {{ item.raw.positionNumber }}
                     </v-list-item-title>
                   </td>
 
                   <!-- SUB NUMBER -->
                   <td :style="getRowStyle(index)">
-                    <v-list-item-title>
+                    <v-list-item-title class="pl-4">
                       {{ item.raw.subNumber }}
                     </v-list-item-title>
                   </td>
 
                   <!-- TITLE -->
-                  <td class="py-6" :style="getRowStyle(index)">
-                    <v-list-item-title
-                      v-if="item.raw.title.length > 0"
-                      style="min-width:200px" 
-                      class="text-wrap">
+                  <td :style="getRowStyle(index)">
+                    <v-list-item-title v-if="item.raw.title.length > 0"
+                      style="min-width:200px" class="text-wrap">
                       {{ item.raw.title }}
                     </v-list-item-title>
 
-                    <v-list-item-title 
-                      v-if="item.raw.title.length == 0" style="color:dimgrey;">
+                    <v-list-item-title v-if="item.raw.title.length == 0" 
+                      style="color:dimgrey;">
                       -
                     </v-list-item-title>
                   </td>
@@ -336,7 +331,6 @@
         </v-card>
         <v-spacer></v-spacer>
       </v-row>
-      </v-form>
 
       <v-row class="align-center">
       <v-spacer></v-spacer>
@@ -530,7 +524,7 @@ export default {
       // Calculate the required table height based on the number of items
       const numberOfRows = this.positions.length > 0 ? this.positions.length : 1;
       const headerHeight = 56;
-      const rowHeight = 73;
+      const rowHeight = 69;
       const totalTableHeight = numberOfRows * rowHeight + headerHeight;
 
       if (totalTableHeight > (this.windowHeight - 390)) {
@@ -854,4 +848,10 @@ td {
 th {
   padding: 6px !important;
 }
+
+table tr>td:last-child {
+  border-bottom: 5px solid #b82828;
+  background: lightgray
+}
+
 </style>
