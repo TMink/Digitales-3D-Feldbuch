@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 19.03.2024 16:27:38
+ * Last Modified: 19.03.2024 17:42:02
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -43,7 +43,8 @@
           fixed-header 
           :items="filteredPlaces" 
           :height="getTableHeight"
-          :headers="headers">
+          :headers="headers"
+          :sort-by="[{ key: 'placeNumber', order: 'asc' }]">
 
           <template v-slot:item="{ item, index }">
             <tr v-on:click="handleRowClick(item.raw._id)" 

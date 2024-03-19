@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 19.03.2024 17:12:07
+ * Last Modified: 19.03.2024 17:51:08
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -313,6 +313,7 @@ export default {
       if (!this.userStore.authenticated) {
         console.log("Not logged in, so only show local activities")
         this.activities = offlineActivities;
+        this.activities.sort((a, b) => (parseInt(a.number) > parseInt(b.number)) ? 1 : -1);
         return;
       }
 
@@ -329,6 +330,7 @@ export default {
             .catch(err => console.error(err));
         });
         this.activities = onlineActivities;
+        this.activities.sort((a, b) => (parseInt(a.number) > parseInt(b.number)) ? 1 : -1);
 
         return;
       }
