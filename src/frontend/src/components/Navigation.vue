@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 17.02.2024 19:44:59
+ * Last Modified: 19.03.2024 15:28:55
  * Modified By: Julian Hardtung
  * 
  * Description: Vue component with navigation-bar and extendable side-bar
@@ -34,10 +34,10 @@
           max-width="250px" 
           @click="changePage('ActivitiesOverview')">
           <v-window>
-            <v-card-subtitle>
-              {{ currentActivity }}
+            <v-card-subtitle class="mb-n2">
+              {{ $t('activity') }}
             </v-card-subtitle>
-            {{ $t('activity') }}
+            {{ currentActivity }}
           </v-window>
         </v-tab>
 
@@ -48,10 +48,10 @@
           @click="changePage('PlacesOverview')"
           :disabled="!activityIsSet">
           <v-window>
-            <v-card-subtitle>
-              {{ currentPlace }}
+            <v-card-subtitle class="mb-n2">
+              {{ $t('place') }}
             </v-card-subtitle>
-            {{ $t('place') }}
+            {{ currentPlace }}
           </v-window>
         </v-tab>
 
@@ -62,10 +62,10 @@
           @click="changePage('PositionsOverview')"
           :disabled="!placeIsSet">
           <v-window>
-            <v-card-subtitle>
-              {{ currentPosition }}
+            <v-card-subtitle class="mb-n2">
+              {{ $t('position') }}
             </v-card-subtitle>
-            {{ $t('position') }}
+            {{ currentPosition }}
           </v-window>
         </v-tab>
 
