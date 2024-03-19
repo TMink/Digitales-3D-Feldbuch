@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 29.02.2024 16:37:01
+ * Last Modified: 19.03.2024 15:32:37
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -135,7 +135,7 @@ export default {
   additional: "Zusätzliche {msg}",
   please_input: "Geben Sie einen {msg} an | Geben Sie eine kurze {msg} an",
   title_of: "Titel des {msg}",
-  input: "{msg} Eingabe",
+  input: "{msg}eingabe",
   showAll: "Alle Infos anzeigen",
   not_created_yet: "Bisher wurde keine {object} erstellt!",
   current_selection: "Aktuelle Auswahl",

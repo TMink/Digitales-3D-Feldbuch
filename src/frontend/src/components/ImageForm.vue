@@ -2,7 +2,7 @@
  * Created Date: 06.07.2023 13:22:10
  * Author: Julian Hardtung
  * 
- * Last Modified: 29.02.2024 16:00:28
+ * Last Modified: 19.03.2024 15:32:04
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for images of places/positions
@@ -93,7 +93,8 @@
         show-size 
         v-model="uploadImages" 
         prepend-icon="mdi-camera"
-        accept="image/png, image/jpeg, image/bmp">
+        accept="image/png, image/jpeg, image/bmp"
+        :label="$t('input', { msg: $t('image') })">
       </v-file-input>
 
       <v-card-actions class="justify-center">
