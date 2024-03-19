@@ -2,7 +2,7 @@
  * Created Date: 15.01.2024 13:52:27
  * Author: Tobias Mink
  * 
- * Last Modified: 24.01.2024 16:58:10
+ * Last Modified: 21.02.2024 23:58:24
  * Modified By: Tobias Mink
  * 
  * Description: 
@@ -31,7 +31,6 @@ export class CameraSettings {
     cameraData, controls, arcballAnchor ) {
     
     if ( cameraIDsInDB.includes( placeID ) && !cameraInDB.newObjectsInScene ) {
-      console.log("Test")
       const utilities = new Utilities();
       const controlSettings = new ControlSettings();
 

@@ -2,7 +2,7 @@
  Created Date: 17.11.2023 16:18:33
  Author: Tobias Mink
  
- Last Modified: 19.02.2024 18:38:35
+ Last Modified: 22.02.2024 00:01:11
  Modified By: Tobias Mink
  
  Description: 
@@ -1098,7 +1098,6 @@ export default {
 
   created() {
     this.initExternalImports();
-    console.log( exParams )
   },
 
   async mounted() {
@@ -1335,15 +1334,6 @@ export default {
     exParams.main.canvas.removeEventListener( 'mousemove', 
       this.onDocumentMouseMove, false);
 
-    // this.garbageCollection.removeLines( exParams.main.scene,
-    //   this.measureTool.infoBlock );
-
-    // if ( exParams.main.objects.allObjects.length > 0 ) {
-    //   console.log("Objects in Scene")
-    //   this.garbageCollection.removeObjects( exParams.main.scene, 
-    //     exParams.main.objects.allObjects )
-    // }
-
     this.garbageCollection.clearCanvases( exParams.main, exParams.sub,
       this.measureTool.infoBlock )
 
@@ -1415,13 +1405,12 @@ export default {
         if ( exParams.main.objects.position.entry[ i ]._id == objectID ) {
           this.posInfo.modelName = "Model name: " + 
           exParams.main.objects.position.entry[ i ].modelTitle;
-
-          console.log(exParams.main.objects.position.entry[ i ])
           
           loadedObject.position.set( 
             -exParams.main.objects.position.entry[ i ].position.x, 
             -exParams.main.objects.position.entry[ i ].position.y,
             -exParams.main.objects.position.entry[ i ].position.z )
+            
           const height = exParams.main.objects.position.entry[ i ].bbox.max.y - 
             exParams.main.objects.position.entry[ i ].bbox.min.y;
           const width = exParams.main.objects.position.entry[ i ].bbox.max.x - 
@@ -1454,7 +1443,6 @@ export default {
             balls[ 0 ].position,
             balls[ 1 ].position )
 
-          console.log(elem.lable.distance)
           exParams.mmTool.measurementLable = this.lineTool.createLable( 
             elem.lable.name, elem.lable.distance, lineCenter );
 
@@ -1524,10 +1512,6 @@ export default {
     },
 
     initSubEventlisteners( canvas ) {
-      /* Event listener */
-      canvas.addEventListener( 'mousemove', () => {
-        console.log( "Mouse moved" );
-      } );
     },
 
     updateArcball: async function( event ) {

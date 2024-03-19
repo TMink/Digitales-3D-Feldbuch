@@ -2,7 +2,7 @@
  * Created Date: 15.01.2024 17:29:22
  * Author: Tobias Mink
  * 
- * Last Modified: 22.01.2024 16:31:40
+ * Last Modified: 21.02.2024 23:58:43
  * Modified By: Tobias Mink
  * 
  * Description: 
@@ -15,7 +15,6 @@ export class GarbageCollection {
       this.removeObjects( main.scene, main.objects );
       this.removeLines( main.scene, infoBlock );
       this.removeRenderer( main.renderer );
-      console.log(main.arcBallControls)
       main.arcBallControls.dispose()
       main.transformControls.detach()
 
@@ -29,7 +28,6 @@ export class GarbageCollection {
     if( infoBlock.length > 0 ) {
       /* Dispose lines in sceneMain */
       infoBlock.forEach( elem => {
-        console.log(elem)
         const lineInScene = scene.getObjectByName( elem.line )
         const lableInScene = scene.getObjectByName( elem.lable )
         const ballsInScene = [];

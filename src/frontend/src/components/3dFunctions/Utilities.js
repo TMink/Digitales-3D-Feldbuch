@@ -2,7 +2,7 @@
  * Created Date: 08.01.2024 14:43:50
  * Author: Tobias Mink
  * 
- * Last Modified: 26.01.2024 11:56:59
+ * Last Modified: 21.02.2024 23:59:44
  * Modified By: Tobias Mink
  * 
  * Description: 
@@ -229,11 +229,8 @@ export class Utilities {
 
   checkIDs( arrayToBeChecked, arrayToBeCheckedWith ) {
     arrayToBeChecked.forEach( arrA => {
-      console.log(exParams.main.objects.place._ids)
-      console.log(object._id)
       if ( !exParams.main.objects.place._ids.some( id => id === arrA._id ) ) {
         objectsToBeLoaded.push( arrA )
-        console.log(arrA)
       }
     } );
   }

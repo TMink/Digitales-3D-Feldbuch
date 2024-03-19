@@ -2,7 +2,7 @@
  * Created Date: 10.12.2023 15:49:23
  * Author: Tobias Mink
  * 
- * Last Modified: 24.01.2024 15:33:22
+ * Last Modified: 21.02.2024 23:59:37
  * Modified By: Tobias Mink
  * 
  * Description: 
@@ -37,8 +37,6 @@ export class UpdateLocalVariables {
         const bbox = new THREE.Box3().setFromObject( loadedObject );
         const vec3 = new THREE.Vector3();
         bbox.getCenter( vec3 )
-
-        console.log(vec3)
         
         entry["_id"] = objectData._id
         entry["title"] = objectData.title

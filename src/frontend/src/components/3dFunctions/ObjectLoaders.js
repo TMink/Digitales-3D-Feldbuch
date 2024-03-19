@@ -2,7 +2,7 @@
  * Created Date: 10.12.2023 15:32:15
  * Author: Tobias Mink
  * 
- * Last Modified: 19.02.2024 14:16:50
+ * Last Modified: 21.02.2024 23:59:23
  * Modified By: Tobias Mink
  * 
  * Description: 
@@ -249,7 +249,6 @@ export class ObjectLoaders {
     }
 
     objectsToBeDeleted.forEach( object => {
-      console.log(object)
       /* allObjects */
       const allObjectsIndex = exParams.main.objects.allObjects.findIndex(
         x => x.uuid === object.group.uuid );
@@ -280,12 +279,6 @@ export class ObjectLoaders {
       //   }
       // } )
       objectType.entry.splice( entryIndex2, 1 )
-
-      console.log( allObjectsIndex )
-      console.log( _idsIndex )
-      console.log( titlesIndex )
-      console.log( groupsIndex )
-      console.log( entryIndex2 )
       
     } )
 
