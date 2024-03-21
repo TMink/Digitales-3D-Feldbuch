@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 13:29:01
+ * Last Modified: 21.03.2024 14:38:53
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -38,7 +38,7 @@
                 </v-col>
 
                 <!-- v v v v v ACTIVITY EDIT v v v v v -->
-                <v-col id="editActivity" v-else class="align-center">
+                <v-col id="editActivity" v-else>
                   <v-row no-gutters class="justify-center">
 
                     <v-col id="activityBranchOffice" cols="4" class="px-2 py-4">
@@ -52,7 +52,7 @@
                       </v-text-field>
                     </v-col>
 
-                    <v-col id="activityYear" min-width="300px" cols="3" class="px-2 py-4">
+                    <v-col id="activityYear" min-width="300px" cols="2" class="px-2 py-4">
                       <v-text-field 
                         counter
                         hide-details
@@ -65,7 +65,7 @@
                       </v-text-field>
                     </v-col>
 
-                    <v-col id="activityNumber" cols="3" class="px-2 py-4">
+                    <v-col id="activityNumber" cols="2" class="px-2 py-4">
                       <v-text-field 
                         counter 
                         hide-details
@@ -81,7 +81,22 @@
                 </v-col>
 
                 <!-- v v v v v ACTIVITY OPTIONS v v v v v -->
-                <v-menu v-if="!activity.edit" location="bottom">
+                <div v-if="!activity.edit">
+                  <v-btn 
+                    class="ma-1" 
+                    color="primary" 
+                    v-on:click="activity.edit = !activity.edit">
+                    <v-icon>mdi-pencil</v-icon>
+                  </v-btn>
+
+                  <v-btn 
+                    color="error" 
+                    class="ma-1" 
+                    v-on:click="confirmDeletion(activity)">
+                    <v-icon>mdi-delete</v-icon>
+                  </v-btn>
+                </div>
+                <!-- <v-menu v-if="!activity.edit" location="bottom">
                   <template v-slot:activator="{ props }">
                     <v-btn 
                       v-if="activity.editor.length>0"
@@ -100,7 +115,6 @@
                   </template>
 
                   <v-list>
-                    <!-- EDIT -->
                     <v-list-item 
                       color="primary"
                       rounded="0"
@@ -109,14 +123,12 @@
                       {{ this.$t('edit') }}
                       <v-icon>mdi-pencil</v-icon>
                     </v-list-item>
-                    <!-- DELETE -->
                     <v-list-item 
                       color="error"
                       v-on:click="confirmDeletion(activity)">
                       {{ this.$t('delete') }}
                       <v-icon>mdi-delete</v-icon>
                     </v-list-item>
-                    <!-- ADD OTHER EDITOR -->
                     <v-list-item v-if="this.userStore.authenticated"
                       color="error"
                       v-on:click="openAddEditorDialog(activity)">
@@ -124,20 +136,20 @@
                       <v-icon>mdi-account-plus-outline</v-icon>
                     </v-list-item> 
                   </v-list>
-                </v-menu>
+                </v-menu> -->
 
                 <!-- v v v v v ACTIVITY EDIT SAVE/CANCEL v v v v v -->
                 <div v-else>
                   <!-- SAVE -->
                   <v-btn
-                    class="mx-1" 
-                    color="primary"
+                    class="ma-1" 
+                    color="success"
                     v-on:click="saveActivity(activity)">
                     <v-icon>mdi-content-save-all</v-icon>
                   </v-btn>
                   <!-- CANCEL -->
                   <v-btn
-                    class="ml-1"
+                    class="ma-1"
                     color="error" 
                     v-on:click="closeActivityEdit(activity)">
                     <v-icon>mdi-close-circle</v-icon>
@@ -146,10 +158,12 @@
 
                 <!-- v v v v v ACTIVITY EDITORS/CLOUD SYNC STATUS v v v v v -->
                 <v-btn icon class="ml-2" variant="text"
-                  v-if="activity.editor.length > 0">
+                  v-if="activity.editor.length > 0"
+                  v-on:click="openAddEditorDialog(activity)">
                   <v-tooltip 
                     activator="parent"
-                    location="bottom">
+                    location="bottom"
+                    max-width="150px">
 
                     <v-list 
                       class="mx-n3">
@@ -163,6 +177,11 @@
                         :key="editor">
                         {{ editor }}
                       </v-list-item>
+                      <v-divider></v-divider>
+                      <p class="text-center pt-1">
+
+                        {{ this.$t('addOtherEditor') }}
+                      </p>
                     </v-list>
                   </v-tooltip>
                   <v-icon>mdi-account-check</v-icon>
@@ -184,7 +203,8 @@
                   <v-icon>mdi-account-off-outline</v-icon>
                 </v-btn>
                 
-                <v-btn icon class="mr-2" variant="text"
+                <!-- SYNC STATUS -->
+                <v-btn icon class="mr-2 non-clickable" variant="text"
                   v-if="activity.lastSync > 0">
                   <v-tooltip 
                     activator="parent"
@@ -193,7 +213,8 @@
                   </v-tooltip>
                   <v-icon>mdi-cloud-check</v-icon>
                 </v-btn>
-                <v-btn icon class="mr-2" variant="text" v-else>
+
+                <v-btn icon class="mr-2 non-clickable" variant="text" v-else>
                   <v-tooltip 
                     activator="parent"
                     location="bottom">
@@ -630,6 +651,10 @@ export default {
 
 .wrap-text {
   -webkit-line-clamp: unset !important;
+}
+.non-clickable {
+  cursor: default; /* Change cursor to indicate non-clickable */
+  /* pointer-events: none; */ /* Disable pointer events */
 }
 </style>
   
