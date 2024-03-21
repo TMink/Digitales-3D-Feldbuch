@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 29.02.2024 16:38:09
+ * Last Modified: 21.03.2024 14:58:03
  * Modified By: Julian Hardtung
  * 
  * Description: english translations
@@ -124,9 +124,11 @@ export default {
   fill: "Fill",
   fontFamily: "Font Family",
   fontSize: "Font Size",
+  add: "Add",
+  settings: "Settings",
 
   // Phrases
-  add: "Add {msg}",
+  addMsg: "Add new {msg}",
   editPhrase: "Edit {msg}",
   deletePhrase: "Delete {msg}",
   moveObj: "Move {obj}",
@@ -163,7 +165,7 @@ export default {
   downloadInfoText:
     "If you are planning on using this fieldbook without an active internet connection, you should download the desktop client.",
   addToYourAccount: "Add to your account",
-  addOtherEditor: "Add other editor",
+  addOtherEditor: "Click to add another editor",
   addEditorToActivity: "Add new editor to this activity",
   notLoggedIn: "You are not logged in!",
   onlyLocal: "This entry is only available locally",
@@ -171,20 +173,25 @@ export default {
   downloadOnlineData: "Download online available data",
   downloadOnlineDataInfo:
     "Check the boxes for which activity data you want to download so you can use it even offline. <br> But the download can take a while for activities with a lot of data.",
-  lpDescription: 
+  lpDescription:
     "This project is the digital 3D field book, which is intended to enable the digital documentation of archaeological excavations. The system was developed in collaboration with the archaeological institute at the University of Cologne.",
   lpWhatIsThis: "What is this?",
   lpHowToDocument: "How do we document?",
-  lpDescriptionStellenkartensystem: 
+  lpDescriptionStellenkartensystem:
     "The Stellenkartensystem is divided into activities, places and positions. Using this form of notation, it is possible to precisely describe found artifacts and to be able to reference them. Since this is a standardized notation method, it simplifies the exchange of data between experts and the interpretation of the respective findings.",
   lpDescriptionActivity: "An archaeological execution. Identified by an activity ID.",
-  lpDescriptionActivity_ID: 
+  lpDescriptionActivity_ID:
     "A unique index to make activities clearly identifiable. This follows the following structure: Two-digit abbreviation for the branch area + space + four-digit year + / + four-digit number sequence",
-  lpDescriptionPlace: "Neutral address for all findings, discolorations or work areas of an activity. Is clearly identified by an place ID.",
+  lpDescriptionPlace:
+    "Neutral address for all findings, discolorations or work areas of an activity. Is clearly identified by an place ID.",
   lpDescriptionPlace_ID: "Consecutive numbering of all positions in an activity",
-  lpDescriptionPosition: "Neutral approach for all work steps and findings of a position. Identified by an position ID.",
-  lpDescriptionPosition_ID: "Consecutive numbering of all positions in a position. Positions can be clearly identified through a combination of activity, job and position IDs.",
-  lpFieldbookDescriptionShort: "A more efficient way to document and visualize archaeological excavations.",
+  lpDescriptionPosition:
+    "Neutral approach for all work steps and findings of a position. Identified by an position ID.",
+  lpDescriptionPosition_ID:
+    "Consecutive numbering of all positions in a position. Positions can be clearly identified through a combination of activity, job and position IDs.",
+  lpFieldbookDescriptionShort:
+    "A more efficient way to document and visualize archaeological excavations.",
   openIn3D: "Open in 3D-Editor",
   clickToAddToYourAccount: "Click to add this to your account",
+  toggleTooltips:"Toggle Tooltips",
 };

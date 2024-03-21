@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 19.03.2024 15:28:55
+ * Last Modified: 21.03.2024 15:00:01
  * Modified By: Julian Hardtung
  * 
  * Description: Vue component with navigation-bar and extendable side-bar
@@ -122,7 +122,7 @@
       v-model="navdrawer" 
       location="right">
       <v-card 
-        height="100%" 
+        height="100%"
         class="d-flex flex-column">
 
         <v-list-item>
@@ -143,20 +143,42 @@
           </v-list-item-title>
         </v-list-item>
 
-        <v-row class="d-flex justify-center ma-3">
-          <LocaleChanger class="ma-2" />
-          <v-btn 
-            @click="toggleTheme" 
-            color="background" 
-            class="ma-2">
-            <v-icon>mdi-theme-light-dark</v-icon>
-          </v-btn>
-        </v-row>
-
         <v-spacer></v-spacer>
+        
+        <!-- SETTINGS -->
+        <v-card 
+          variant="outlined" 
+          class="ma-3">
+          <v-card-title>
+            {{ $t('settings')}}
+          </v-card-title>
+          <v-divider></v-divider>
+          <v-row class="d-flex justify-center ma-3">
+            <LocaleChanger class="ma-2" />
+            <v-btn 
+              @click="toggleTheme" 
+              color="background" 
+              class="ma-2">
+              <v-icon>mdi-theme-light-dark</v-icon>
+            </v-btn>
+          </v-row>
+          <v-divider></v-divider>
+          <v-row no-gutters class="pa-2">
+            <v-checkbox :label="$t('toggleTooltips')"
+              class="ml-3"
+              v-model="tooltipsToggle"
+              density="compact"
+              hide-details
+              @click="toggleTooltips()">
+            </v-checkbox>
+          </v-row>
+        </v-card>
 
+        <!-- DATA BACKUP -->
         <DataBackup />
-
+        
+        <v-spacer></v-spacer>
+        
         <!-- ADMIN MENU -->
         <v-card 
           variant="outlined" 
@@ -225,6 +247,7 @@ export default {
       currentPosition: '-',
       backbutton_link: '',
       navdrawer: false,
+      tooltipsToggle: true,
       toolbar_title: this.$t('fieldbook'),
       path_reload: 0,
       navbar_items: [
@@ -260,6 +283,9 @@ export default {
     } else {
       this.positionIsSet = false;
     }
+
+    this.tooltipsToggle = this.$generalStore.getShowTooltips();
+
   },
   methods: {
     goback() {
@@ -379,6 +405,14 @@ export default {
       }
     },
 
+    /**
+     * Toggles the tooltips in the system
+     */
+    toggleTooltips() {
+      this.tooltipsToggle = this.tooltipsToggle == true ? false : true;
+      this.$generalStore.toggleTooltips(this.tooltipsToggle);
+      location.reload();
+    },
     toggleTheme() {
       this.$generalStore.toggleTheme();
 

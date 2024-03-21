@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 19.03.2024 15:32:37
+ * Last Modified: 21.03.2024 14:59:07
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -124,9 +124,11 @@ export default {
   fill: "Gefüllt",
   fontFamily: "Schriftart",
   fontSize: "Schriftgröße",
+  add: "Hinzufügen",
+  settings: "Einstellungen",
 
   // Phrases
-  add: "{msg} hinzufügen",
+  addMsg: "Neue {msg} hinzufügen",
   editPhrase: "{msg} bearbeiten",
   deletePhrase: "{msg} löschen",
   moveObj: "{obj} bewegen",
@@ -164,7 +166,7 @@ export default {
   downloadInfoText:
     "Wenn du planst das Feldbuch ohne eine aktive Internetverbindung zu nutzen, solltest du das Desktop Programm herunterladen.",
   addToYourAccount: "Zu deinem Account hinzufügen",
-  addOtherEditor: "Einen anderen Bearbeiter hinzufügen",
+  addOtherEditor: "Klicken, um einen anderen Bearbeiter hinzuzufügen",
   addEditorToActivity: "Einen anderen Bearbeiter zu dieser Aktivität hinzufügen",
   notLoggedIn: "Sie sind nicht eingeloggt!",
   onlyLocal: "Dieser Eintrag ist nur lokal verfügbar",
@@ -193,4 +195,5 @@ export default {
     "Ein effizienterer Weg, um archäologische Ausgrabungen zu dokumentieren und visualisieren.",
   openIn3D: "In 3D-Bereich öffnen",
   clickToAddToYourAccount: "Klicken, um deinem Account hinzuzufügen",
+  toggleTooltips: "Tooltips Anzeigen",
 };

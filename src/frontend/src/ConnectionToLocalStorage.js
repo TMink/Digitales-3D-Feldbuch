@@ -2,7 +2,7 @@
  * Created Date: 09.02.2024 21:08:30
  * Author: Julian Hardtung
  * 
- * Last Modified: 17.02.2024 20:17:30
+ * Last Modified: 21.03.2024 15:06:41
  * Modified By: Julian Hardtung
  * 
  * Description: A persistent way to store fieldbook settings in 
@@ -216,6 +216,28 @@ export const generalDataStore = defineStore("generalData", {
           localStorage.setItem("posModulesPreset", presetID);
           break;
       }
+    },
+
+    /**
+     * @returns the current tooltips status
+     * (if all tooltips within the system should be shown or not)
+     */
+    getShowTooltips() {
+      const showTooltips = localStorage.getItem("tooltips");
+      if (showTooltips == null || showTooltips == 'true') {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    /**
+     * Globally toggles the tooltips on or off
+     * @param {Boolean} showTooltips 
+     */
+    toggleTooltips(showTooltips) {
+      this.tooltipsActive = showTooltips;
+      localStorage.setItem("tooltips", showTooltips);
     },
 
     /**
