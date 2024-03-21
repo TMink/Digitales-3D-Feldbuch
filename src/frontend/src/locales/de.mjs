@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 14:59:07
+ * Last Modified: 21.03.2024 15:23:10
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -129,7 +129,10 @@ export default {
 
   // Phrases
   addMsg: "Neue {msg} hinzufügen",
+  openPhrase: "{msg} öffnen",
   editPhrase: "{msg} bearbeiten",
+  savePhrase: "Änderungen an {msg} speichern",
+  cancelPhrase: "Änderungen an {msg} verwerfen",
   deletePhrase: "{msg} löschen",
   moveObj: "{obj} bewegen",
   measureDist: "Abstand messen",

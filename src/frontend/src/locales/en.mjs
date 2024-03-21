@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 14:58:03
+ * Last Modified: 21.03.2024 15:22:57
  * Modified By: Julian Hardtung
  * 
  * Description: english translations
@@ -129,7 +129,10 @@ export default {
 
   // Phrases
   addMsg: "Add new {msg}",
+  openPhrase: "Open {msg}",
   editPhrase: "Edit {msg}",
+  savePhrase: "Save changes to {msg}",
+  cancelPhrase: "Cancel changes to {msg}",
   deletePhrase: "Delete {msg}",
   moveObj: "Move {obj}",
   measureDist: "Measure Distance",
@@ -193,5 +196,5 @@ export default {
     "A more efficient way to document and visualize archaeological excavations.",
   openIn3D: "Open in 3D-Editor",
   clickToAddToYourAccount: "Click to add this to your account",
-  toggleTooltips:"Toggle Tooltips",
+  toggleTooltips: "Toggle Tooltips",
 };

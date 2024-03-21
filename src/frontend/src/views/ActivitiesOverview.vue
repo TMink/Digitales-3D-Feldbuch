@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 14:38:53
+ * Last Modified: 21.03.2024 15:23:15
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -34,6 +34,12 @@
                     <v-list-item-title class="ma-4 text-center">
                       {{ activity.activityNumber }}
                     </v-list-item-title>
+                    <v-tooltip 
+                      v-if="$generalStore.getShowTooltips()" 
+                      activator="parent" 
+                      location="bottom"
+                      :text="$t('openPhrase', { msg: $tc('activity', 1) + ' ' + activity.activityNumber })">
+                    </v-tooltip>
                   </v-list-item>
                 </v-col>
 
@@ -87,6 +93,12 @@
                     color="primary" 
                     v-on:click="activity.edit = !activity.edit">
                     <v-icon>mdi-pencil</v-icon>
+                    <v-tooltip 
+                      v-if="$generalStore.getShowTooltips()" 
+                      activator="parent" 
+                      location="bottom"
+                      :text="$t('editPhrase', { msg: $tc('activity', 1) + ' ' + activity.activityNumber })">
+                    </v-tooltip>
                   </v-btn>
 
                   <v-btn 
@@ -94,49 +106,14 @@
                     class="ma-1" 
                     v-on:click="confirmDeletion(activity)">
                     <v-icon>mdi-delete</v-icon>
+                    <v-tooltip 
+                      v-if="$generalStore.getShowTooltips()" 
+                      activator="parent" 
+                      location="bottom"
+                      :text="$t('deletePhrase', { msg: $tc('activity', 1) + ' ' + activity.activityNumber })">
+                    </v-tooltip>
                   </v-btn>
                 </div>
-                <!-- <v-menu v-if="!activity.edit" location="bottom">
-                  <template v-slot:activator="{ props }">
-                    <v-btn 
-                      v-if="activity.editor.length>0"
-                      color="primary"
-                      v-bind="props">
-                      {{ this.$t('options') }}
-                      <v-icon>mdi-arrow-down-bold-box</v-icon>
-                    </v-btn>
-                  
-                    <v-btn v-else
-                      color="error"
-                      v-bind="props">
-                      {{ this.$t('options') }}
-                      <v-icon>mdi-arrow-down-bold-box</v-icon>
-                    </v-btn>
-                  </template>
-
-                  <v-list>
-                    <v-list-item 
-                      color="primary"
-                      rounded="0"
-                      :block="true"
-                      v-on:click="activity.edit = !activity.edit">
-                      {{ this.$t('edit') }}
-                      <v-icon>mdi-pencil</v-icon>
-                    </v-list-item>
-                    <v-list-item 
-                      color="error"
-                      v-on:click="confirmDeletion(activity)">
-                      {{ this.$t('delete') }}
-                      <v-icon>mdi-delete</v-icon>
-                    </v-list-item>
-                    <v-list-item v-if="this.userStore.authenticated"
-                      color="error"
-                      v-on:click="openAddEditorDialog(activity)">
-                      {{ this.$t('addOtherEditor') }}
-                      <v-icon>mdi-account-plus-outline</v-icon>
-                    </v-list-item> 
-                  </v-list>
-                </v-menu> -->
 
                 <!-- v v v v v ACTIVITY EDIT SAVE/CANCEL v v v v v -->
                 <div v-else>
@@ -146,6 +123,12 @@
                     color="success"
                     v-on:click="saveActivity(activity)">
                     <v-icon>mdi-content-save-all</v-icon>
+                    <v-tooltip 
+                      v-if="$generalStore.getShowTooltips()" 
+                      activator="parent" 
+                      location="bottom"
+                      :text="$t('savePhrase', { msg: $tc('activity', 1) + ' ' + activity.activityNumber })">
+                    </v-tooltip>
                   </v-btn>
                   <!-- CANCEL -->
                   <v-btn
@@ -153,6 +136,12 @@
                     color="error" 
                     v-on:click="closeActivityEdit(activity)">
                     <v-icon>mdi-close-circle</v-icon>
+                    <v-tooltip 
+                      v-if="$generalStore.getShowTooltips()" 
+                      activator="parent" 
+                      location="bottom"
+                      :text="$t('cancelPhrase', { msg: $tc('activity', 1) + ' ' + activity.activityNumber })">
+                    </v-tooltip>
                   </v-btn>
                 </div>
 
