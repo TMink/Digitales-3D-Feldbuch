@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 17:04:25
+ * Last Modified: 21.03.2024 17:24:29
  * Modified By: Julian Hardtung
  * 
  * Description: german translations

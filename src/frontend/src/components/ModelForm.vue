@@ -2,7 +2,7 @@
  * Created Date: 14.07.2023 17:06:51
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 17:05:01
+ * Last Modified: 21.03.2024 17:28:35
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for 3d-models of places/positions
@@ -31,41 +31,44 @@
                 :text="$t('openIn3D')"
                 location="bottom">
                   <template v-slot:activator="{props}">
-
-                    <v-btn v-bind="props" class="mt-2" variant="text" 
-                      @click="routeTo3D()">
-                      <v-icon>
-                        mdi-open-in-new
-                      </v-icon>
-                    </v-btn>
+                    <v-btn class="mt-2" color="primary" 
+                       v-on:click="editModel(model)">
+                    <v-icon>mdi-pencil</v-icon>
+                  </v-btn>
                   </template>
                 </v-tooltip>
               </v-col>
             </v-row>
             <v-row no-gutters class="align-center">
               <v-col>
-                
                 <canvas :id="'canvas' + i" v-show="true" width="360" 
                         height="355"
                         style="display: inline;
                                 border: 1px solid rgb(255, 255, 255)">
                 </canvas>
-                
               </v-col>
             </v-row>
             
-            <v-row no-gutters>
-              <v-col class="pa-1 pl-2">
+            <v-row no-gutters class="pt-1 px-4">
+              <v-col cols="8">
 
-                <v-btn width="172" color="primary" 
-                       v-on:click="editModel(model)">
-                  <v-icon>mdi-pencil</v-icon>
+                <v-btn block v-bind="props" variant="outlined" 
+                  @click="routeTo3D()">
+                  {{ $t('openIn3D')}}
+                  <v-icon class="pl-2">
+                    mdi-open-in-new
+                  </v-icon>
+                  <v-tooltip 
+                    v-if="$generalStore.getShowTooltips()" 
+                    activator="parent" 
+                    location="bottom"
+                    :text="$t('openPhrase', {msg: $tc('model', 1) + ' ' + model.title})">
+                  </v-tooltip>
                 </v-btn>
 
               </v-col>
-              <v-col class="pa-1 pr-2">
-
-                <v-btn width="172" color="error" 
+              <v-col cols="4" class="pl-2">
+                <v-btn block color="error" 
                   v-on:click="confirmDeletion(model)">
                   <v-icon>mdi-delete</v-icon>
                 </v-btn>
