@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 16:42:25
+ * Last Modified: 21.03.2024 16:59:34
  * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
@@ -61,7 +61,11 @@
               </v-card>
             </v-dialog>
 
-            <v-toolbar :height="50" color="surface" density="default">
+            <v-card>
+              
+              <v-toolbar :height="50" color="surface" density="default">
+                <v-card-title>{{ $t('technicalDrawing')}}</v-card-title>
+                <v-divider vertical></v-divider>
               <v-btn-toggle>
                 <v-btn @click="onToolbarClick('pen')" icon="mdi-pencil" rounded="1"></v-btn>
                 <v-btn @click="onToolbarClick('eraser')" icon="mdi-eraser" rounded="1"></v-btn>
@@ -76,6 +80,7 @@
               <v-btn @click.prevent="backgroundDialog = true" icon="mdi-image" rounded="0"></v-btn>
               <v-btn @click.prevent="onToolbarClick('refresh')" icon="mdi-reload" rounded="0"></v-btn>
             </v-toolbar>
+            </v-card>
             <div style="position:relative">
               <v-expand-transition>
                 <v-color-picker class="mt-2" style="position:absolute; left:100px; z-index: 1;"

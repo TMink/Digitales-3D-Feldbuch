@@ -2,20 +2,22 @@
  * Created Date: 14.07.2023 17:06:51
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 13:40:26
+ * Last Modified: 21.03.2024 17:05:01
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for 3d-models of places/positions
  -->
 
 <template>
-    <v-list v-if="models.length === 0">
-      <v-list-subheader>
-        {{ $t('not_created_yet', { object: $tc('model', 1) }) }}
+    <v-list >
+      <v-card-title> {{ $tc('model', 2) }}</v-card-title>
+      <v-divider v-if="models.length === 0"></v-divider>
+      <v-list-subheader class="pa-4" v-if="models.length === 0">
+        {{ $t('not_created_yet', { object: $tc('model', 2) }) }}
       </v-list-subheader>
     </v-list>
       <!-- MODEL LIST -->
-      <v-row no-gutters class="align-center">
+      <v-row no-gutters class="align-center mx-n2">
         <v-col xl="3" md="4" sm="6" v-for="(model, i) in models" :key="model">
           <v-card class="pa-2 ma-2" width="410" height="480" align="center">
             <v-row class="pb-2" no-gutters>

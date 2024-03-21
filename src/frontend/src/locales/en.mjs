@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 16:39:53
+ * Last Modified: 21.03.2024 16:46:32
  * Modified By: Julian Hardtung
  * 
  * Description: english translations
@@ -27,7 +27,7 @@ export default {
   image: "Image | Images",
   imageOverview: "Image Overview",
   picture: "Picture | Pictures",
-  model: "Model | Models",
+  model: "3D-Model | 3D-Models",
   camera: "Camera | Cameras",
   change: "Change | Changes",
   file: "File",

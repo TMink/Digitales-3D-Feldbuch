@@ -2,28 +2,27 @@
  * Created Date: 09.01.2024 11:33:59
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 13:36:47
+ * Last Modified: 21.03.2024 17:04:03
  * Modified By: Julian Hardtung
  * 
  * Description: lists all images of a place
  -->
 
 <template>
-  <v-card v-if="images.length === 0">
-    <v-list>
+  <v-card>
+    <v-card-title>{{ $t('imageOverview')}}</v-card-title>
+    <v-divider v-if="images.length === 0"></v-divider>
 
-      <!-- IMAGES LIST -->
-      <v-list-subheader>
-        {{ $t('not_created_yet', { object: $tc('image', 2) }) }}
-      </v-list-subheader>
+    <v-list-subheader class="pa-4" v-if="images.length === 0">
+      {{ $t('not_created_yet', { object: $tc('image', 2) }) }}
+    </v-list-subheader>
 
-    </v-list>
   </v-card>
 
   <!-- LIST ITEM -->
-  <v-row no-gutters class="align-center">
+  <v-row no-gutters class="align-center mx-n2">
     <v-col xl="3" md="4" sm="6" v-for="(item, i) in images" :key="item">
-      <v-card class="pa-2 ma-2">
+      <v-card class="pa-2 my-2 ma-1">
         <v-card-title> Nr. {{ item.imageNumber }} </v-card-title>
         <v-card-subtitle> {{ item.title }} </v-card-subtitle>
 

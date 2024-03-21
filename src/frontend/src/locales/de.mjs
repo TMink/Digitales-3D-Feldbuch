@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 16:40:12
+ * Last Modified: 21.03.2024 17:04:25
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -27,7 +27,7 @@ export default {
   image: "Bild | Bilder",
   imageOverview: "Bildübersicht",
   picture: "Bild | Bilder",
-  model: "Modell | Modelle",
+  model: "3D-Modell | 3D-Modelle",
   camera: "Kamera | Kameras",
   changes: "Änderung | Änderungen",
   file: "Datei",
@@ -142,7 +142,7 @@ export default {
   title_of: "Titel des {msg}",
   input: "{msg}eingabe",
   showAll: "Alle Infos anzeigen",
-  not_created_yet: "Bisher wurde keine {object} erstellt!",
+  not_created_yet: "Bisher wurden keine {object} erstellt!",
   current_selection: "Aktuelle Auswahl",
   confirm_del: "Möchten Sie wirklich {object} {object_nr} löschen?",
   overview: "{msg} Übersicht",
