@@ -2,7 +2,7 @@
  Created Date: 17.11.2023 16:18:33
  Author: Tobias Mink
  
- Last Modified: 22.02.2024 00:01:11
+ Last Modified: 21.03.2024 18:23:15
  Modified By: Tobias Mink
  
  Description: 
@@ -94,6 +94,92 @@
                               </v-btn>
                             </v-col>
                           </v-row>
+                        </v-card>
+
+                      </v-card>
+  
+                    </v-col>
+                  </v-row>
+                  
+                </v-card>
+              </v-col>
+            </v-row>
+            
+            <!-- Segmentation Tool -->
+            <v-row>
+              <v-col>
+                <v-card width="100%" color="transparent" class="pa-2" 
+                  elevation="0">
+
+                  <!-- Checkboxes -->
+                  <v-row>
+                    <v-col>
+                      
+                      <v-card color="secondary">
+                        <v-row no-gutters align="center" justify="center"
+                               class="pa-1"
+                        > Modell Schneiden
+                        </v-row>
+                            
+                        <v-card color="opp_background">
+                            
+                          <v-row no-gutters class="pt-4 px-4">
+                            <!-- Segmentation Mode Button-->
+                            <v-col cols="12">
+                              <v-btn width="300" color="error"
+                                     v-on:click="segmentationTool.switchToSegmentationMode( 
+                                      exParams.stTool, exParams.main )">
+                                Switch to Segmentation Mode
+                              </v-btn>
+                            </v-col>
+                          </v-row>
+
+                          <v-row no-gutters >
+                            <!-- Attach position-->
+                            <v-col cols="2" class="px-1 pt-0">
+                              <v-checkbox 
+                                :v-model="cuttingTool.displayControls"
+                                :true-value="cuttingTool.displayControls"
+                                :false-value="!cuttingTool.displayControls"
+                                color="primary"
+                                @Click="segmentationTool.displayControls(
+                                  exParams.main)">
+                              </v-checkbox>
+                            </v-col>
+
+                            <v-divider vertical ></v-divider>
+
+                            <!-- Checkbox description-->
+                            <v-col cols="10" class="px-3 py-4">
+                              {{ $t('moveObj', {obj: $t('model')})}}
+                            </v-col>
+                            
+                          </v-row>
+                          
+                          <v-row no-gutters>
+                            <!-- Attach position-->
+                            <v-col cols="2" class="px-1 pt-0">
+                              <v-checkbox 
+                                :v-model="positionMods.attachTransformControls"
+                                :disabled="positionMods.disabled"
+                                :true-value="positionMods.attachTransformControls"
+                                :false-value="!positionMods.attachTransformControls"
+                                color="primary"
+                                @Click="controlSettings.attachTransformControls(
+                                  positionMods, positionObject, 
+                                  exParams.main.transformControls )">
+                              </v-checkbox>
+                            </v-col>
+
+                            <v-divider vertical></v-divider>
+
+                            <!-- Checkbox description-->
+                            <v-col cols="10" class="px-3 py-4">
+                              {{ $t('moveObj', {obj: $t('model')})}}
+                            </v-col>
+                            
+                          </v-row>
+
                         </v-card>
 
                       </v-card>
@@ -616,7 +702,7 @@ import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { ObjectLoaders } from '../components/3dFunctions/ObjectLoaders.js'
 import { UpdateLocalVariables } from '../components/3dFunctions/UpdateLocalVariables.js'
 import { UpdateIndexedDB } from '../components/3dFunctions/UpdateIndexedDB.js';
-import { LineTool, ModelInteraktion } from '../components/3dFunctions/Tools.js'
+import { LineTool, ModelInteraktion, SegmentationTool } from '../components/3dFunctions/Tools.js'
 import { ControlSettings } from '../components/3dFunctions/ControlSettings.js'
 import { CameraSettings } from '../components/3dFunctions/CameraSettings.js'
 import { Utilities } from '../components/3dFunctions/Utilities.js'
@@ -624,6 +710,8 @@ import { ObjectFilter } from '../components/3dFunctions/ObjectFilter.js'
 import { GarbageCollection } from '../components/3dFunctions/GarbageCollection.js'
 import { Initialisations } from '../components/3dFunctions/Initialisations.js'
 import { generalDataStore } from '../ConnectionToLocalStorage';
+
+import * as CSG from 'three-bvh-csg';
 
 export default {
   name: 'ModelViewer',
@@ -739,6 +827,10 @@ export default {
         infoBlock: [], // { lineName, lableName, [ firstBallName, secondBallName ] }
         textField: null,
         texttoken: false,
+      },
+
+      cuttingTool: {
+        displayContorls: false,
       },
   
       /**
@@ -1129,7 +1221,7 @@ export default {
      */
     this.initialisations.initMeasurementTool( document, exParams.main.canvas, 
       exParams.mmTool );
-      
+
     /**
      *  ++++ Initialize Main- and Sub-Scene ++++
      * 
@@ -1161,6 +1253,8 @@ export default {
         }
       }
     }
+
+    
 
     /**
      *  ++++ Load place and position objects into scene. ++++
@@ -1260,6 +1354,11 @@ export default {
     }
 
     /**
+     * Initialize the Segmentation Tool
+     */
+     this.initialisations.initSegmentationTool( exParams.main, exParams.stTool, this.centerOfObjects );
+
+    /**
      * Re-center Camera based on predetermine factors
      */
     await this.cameraSettings.updateCamera ( 
@@ -1354,6 +1453,7 @@ export default {
       this.cameraSettings = new CameraSettings();
       this.garbageCollection = new GarbageCollection();
       this.lineTool = new LineTool();
+      this.segmentationTool = new SegmentationTool();
       this.modelInteraktion = new ModelInteraktion();
       this.initialisations = new Initialisations();
       this.objectLoaders = new ObjectLoaders();
@@ -1828,6 +1928,31 @@ export default {
     },
 
     render: async function() {
+
+      if ( exParams.main.needsUpdate ) {
+
+        exParams.main.needsUpdate = false;
+        
+        if ( exParams.stTool.brushesOfObjects.length > 0) {
+          exParams.stTool.brushesOfObjects.forEach( brush => {
+            brush.brush.updateMatrixWorld();
+          } )
+        }
+        exParams.stTool.brushToCutWith.brush.updateMatrixWorld();
+        exParams.stTool.csgEvaluator.useGroups = true
+        
+        exParams.stTool.brushesOfObjects.forEach( brush => {
+          exParams.stTool.csgEvaluator.evaluate( brush.brush, 
+            exParams.stTool.brushToCutWith.brush,
+            CSG.SUBTRACTION, brush.resultObject );
+        } )
+
+        exParams.stTool.brushesOfObjects.forEach( brush => {
+          brush.resultObject.material = brush.resultObject.material.map( m => exParams.stTool.materialMap.get( m ) );
+        } );
+
+      }
+
       /* Dispose Model from Sub Scene */
       if ( !this.bottomDrawer.showDrawer && exParams.sub.scene.children.length > 1 ) {
         // this.removeModelsInScene( this.sceneSub, this.objectInSub )
