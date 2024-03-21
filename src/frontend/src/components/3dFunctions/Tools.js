@@ -2,7 +2,7 @@
  * Created Date: 15.01.2024 11:05:52
  * Author: Tobias Mink
  * 
- * Last Modified: 19.02.2024 17:15:51
+ * Last Modified: 21.03.2024 18:21:11
  * Modified By: Tobias Mink
  * 
  * Description: 
@@ -13,6 +13,16 @@ import { CSS2DObject } from
   'three/examples/jsm/renderers/CSS2DRenderer'
 import { fromOfflineDB } from '../../ConnectionToOfflineDB.js'
 import { toRaw } from 'vue';
+
+import { MeshBVHVisualizer } from 'three-mesh-bvh';
+import {
+	Brush,
+	Evaluator,
+	EdgesHelper,
+	TriangleSetHelper,
+	logTriangleDefinitions,
+	GridMaterial
+} from 'three-bvh-csg';
 
 export class LineTool {
   
@@ -221,4 +231,84 @@ export class ModelInteraktion {
     }
   }
   
+}
+
+export class SegmentationTool {
+  
+  updateBrush( brush, params ) {
+
+    brush.geometry.dispose();
+  
+    brush.geometry = brush.geometry.toNonIndexed();
+  
+    const position = brush.geometry.attributes.position;
+    const array = new Float32Array( position.count * 3 );
+    for ( let i = 0, l = array.length; i < l; i += 9 ) {
+  
+      array[ i + 0 ] = 1;
+      array[ i + 1 ] = 0;
+      array[ i + 2 ] = 0;
+  
+      array[ i + 3 ] = 0;
+      array[ i + 4 ] = 1;
+      array[ i + 5 ] = 0;
+  
+      array[ i + 6 ] = 0;
+      array[ i + 7 ] = 0;
+      array[ i + 8 ] = 1;
+  
+    }
+  
+    brush.geometry.setAttribute( 'color', new THREE.BufferAttribute( array, 3 ) );
+    brush.prepareGeometry();
+    params.needsUpdate = true;
+  
+  }
+
+  async switchToSegmentationMode( stTool, main ) {
+    
+    /**
+     * Make all objects in scene invisible and all brushes visible and vice 
+     * versa
+     */
+    if( !stTool.brushToCutWith.brush.visible ) {
+      main.objects.allObjects[0].children[0].visible = false;
+      stTool.brushToCutWith.brush.visible = true;
+      stTool.brushesOfObjects.forEach( ( brush ) => {
+        brush.brush.visible = true;
+        brush.resultObject.visible = true;
+      } )
+    } else {
+      stTool.brushToCutWith.brush.visible = false;
+      stTool.brushesOfObjects.forEach( ( brush ) => {
+        brush.brush.visible = false;
+        brush.resultObject.visible = false;
+      } )
+      main.objects.allObjects[0].children[0].visible = true;
+    }
+    
+    /**
+     * Attach transform controls to brush, to be able to move it
+     * Detach if they are already attached
+     */
+    if( !stTool.brushToCutWith.attach ) {
+      main.transformControls.attach( stTool.brushToCutWith.brush );
+      stTool.brushToCutWith.attach = true;
+    } else {
+      main.transformControls.detach();
+      stTool.brushToCutWith.attach = false;
+    }
+
+    main.needsUpdate = true;
+
+  }
+
+  displayControls( main ) {
+    if( main.transformControls.visible ) {
+      main.transformControls.visible = false;
+    } else {
+      main.transformControls.visible = true;
+    }
+  }
+
 }
