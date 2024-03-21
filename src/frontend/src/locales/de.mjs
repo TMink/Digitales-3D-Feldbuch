@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 16:00:48
+ * Last Modified: 21.03.2024 16:36:11
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -12,8 +12,8 @@ export default {
   // Words
   autoNaming: "Auto Benennung",
   objectDescribers: "Objektbeschreibung",
-  moduleManagement: "Modul Management",
-  findType: "Fund Typ",
+  moduleManagement: "Modulmanagement",
+  findType: "Fundtyp",
   generalInformation: "Allgemeine Informationen",
   coordinates: "Koordinaten",
   fieldbook: "Digitales 3D-Feldbuch",
@@ -35,7 +35,7 @@ export default {
   placeNumber: "Stellen-Nr.",
   posNumber: "Positionsnummer | Pos-Nr.",
   subNumber: "Unternummer | Unter-Nr.",
-  posFilter: "Positions Filter",
+  posFilter: "Positionsfilter",
   dating: "Datierung",
   date: "Datum",
   noFind: "Kein Befund",
