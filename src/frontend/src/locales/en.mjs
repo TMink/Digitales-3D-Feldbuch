@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 15:22:57
+ * Last Modified: 21.03.2024 16:00:53
  * Modified By: Julian Hardtung
  * 
  * Description: english translations
@@ -197,4 +197,5 @@ export default {
   openIn3D: "Open in 3D-Editor",
   clickToAddToYourAccount: "Click to add this to your account",
   toggleTooltips: "Toggle Tooltips",
+  continueWithoutAccount: "Continue without an Account",
 };

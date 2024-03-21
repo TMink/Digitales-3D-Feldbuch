@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 15:23:10
+ * Last Modified: 21.03.2024 16:00:48
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -199,4 +199,5 @@ export default {
   openIn3D: "In 3D-Bereich öffnen",
   clickToAddToYourAccount: "Klicken, um deinem Account hinzuzufügen",
   toggleTooltips: "Tooltips Anzeigen",
+  continueWithoutAccount: "Ohne Account fortfahren",
 };
