@@ -2,7 +2,7 @@
  * Created Date: 15.01.2024 17:22:44
  * Author: Tobias Mink
  * 
- * Last Modified: 25.01.2024 15:14:28
+ * Last Modified: 21.03.2024 17:24:47
  * Modified By: Tobias Mink
  * 
  * Description: 
@@ -44,7 +44,8 @@ export const exParams = {
     scene: null,
     sceneParams: {
       bgColor: 0x263238,
-      lightColor: 0xffffff,
+      directionalLightColor: 0xffffff,
+      ambientLightColor: 0xb0bec5,
       outline: {
         color: '#FFFFFF',
         pulsePeriod: 2,
@@ -54,7 +55,8 @@ export const exParams = {
       }
     },
     camera: null,
-    light: null,
+    ambientLight: null,
+    directionalLight: null,
     arcBallControls: null,
     transformControls: null,
     raycaster: null,
@@ -64,7 +66,8 @@ export const exParams = {
     outlinePass: null,
     effectFXAA: null,
     gammaCorrectionShader: null,
-    ctrlDown: false
+    ctrlDown: false,
+    needsUpdate: false
   },
 
   sub: {
@@ -90,6 +93,41 @@ export const exParams = {
     raycaster: null,
     pointer: null,
     css2DRenderer: null,
+  },
+
+  stTool: {
+    materialMap: null,
+    csgEvaluator: null,
+
+    brushToCutWith: null,
+    brushesOfObjects: [],
+    
+    // brush1: null,
+    // brush1Shape: 'mesh',
+	  // brush1Complexity: 1,
+	  // brush1Color: '#ffffff',
+    
+    // brush2: null,
+	  // brush2Shape: 'box',
+	  // brush2Complexity: 1,
+	  // brush2Color: '#ffffff',
+    
+    // brush3: null,
+	  // brush3Shape: 'mesh',
+	  // brush3Complexity: 1,
+	  // brush3Color: '#ffffff',
+    
+    // brush4: null,
+	  // brush4Shape: 'mesh',
+	  // brush4Complexity: 1,
+	  // brush4Color: '#ffffff',
+
+    resultObject: null,
+    resultObject2: null,
+    resultObject3: null,
+    originalMaterial: null,
+    edgesHelper: null,
+    gridTexture: false
   },
   
   placeID: null,
