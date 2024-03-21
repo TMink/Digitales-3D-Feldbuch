@@ -181,7 +181,6 @@
 <script>
 import { useI18n } from 'vue-i18n'
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
-import { generalDataStore } from '../ConnectionToLocalStorage.js';
 import { useTheme } from 'vuetify/lib/framework.mjs';
 import LocaleChanger from './LocaleChanger.vue';
 import DataBackup from './DataBackup.vue';
@@ -200,7 +199,6 @@ export default {
     const { t } = useI18n() // use as global scope
     const message = ref('');
     const userStore = useUserStore();
-    const generalStore = generalDataStore();
 
     if (userStore.authenticated) {
       message.value = toRaw(userStore.user.username);
@@ -211,12 +209,6 @@ export default {
       theme,
       message,
       userStore,
-      generalStore,
-      toggleTheme() {
-        generalStore.toggleTheme()
-
-        theme.global.name.value = generalStore.getTheme();
-      }
     }
   },
   props: {
@@ -252,17 +244,17 @@ export default {
       .catch(err => console.error(err));
     this.active_tab = this.active_tab_prop;
 
-    var activityID = this.generalStore.getCurrentObject('activity');
+    var activityID = this.$generalStore.getCurrentObject('activity');
     if (activityID !== null) {
       this.activityIsSet = true
     }
 
-    var placeID = this.generalStore.getCurrentObject('place');
+    var placeID = this.$generalStore.getCurrentObject('place');
     if (placeID !== null) {
       this.placeIsSet = true
     }
 
-    var positionID = this.generalStore.getCurrentObject('position');
+    var positionID = this.$generalStore.getCurrentObject('position');
     if (positionID !== null) {
       this.positionIsSet = true;
     } else {
@@ -300,7 +292,7 @@ export default {
      * Deletes all data in localStorage
      */
     async clearLocalStorage() {
-      this.generalStore.clearLocalStorage();
+      this.$generalStore.clearLocalStorage();
     },
 
     changePage: function (routeName) {
@@ -323,7 +315,7 @@ export default {
     },
 
     async getInfo(selection) {
-      const _id = this.generalStore.getCurrentObject(selection);
+      const _id = this.$generalStore.getCurrentObject(selection);
 
       if (_id == null || _id == 'null') {
         return;
@@ -355,7 +347,7 @@ export default {
           this.currentPlace = name.placeNumber;
           break;
         case "position":
-          var curPlaceID = this.generalStore.getCurrentObject('place');
+          var curPlaceID = this.$generalStore.getCurrentObject('place');
           var curPlace = '';
           if (curPlaceID.length > 0) {
             curPlace = await fromOfflineDB
@@ -385,7 +377,13 @@ export default {
       } catch (error) {
         console.log("Logout failed")
       }
-    }
+    },
+
+    toggleTheme() {
+      this.$generalStore.toggleTheme();
+
+      this.theme.global.name.value = this.$generalStore.getTheme();
+    },
   }
 }
 </script>

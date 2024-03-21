@@ -2,7 +2,7 @@
  * Created Date: 14.07.2023 17:06:51
  * Author: Julian Hardtung
  * 
- * Last Modified: 29.02.2024 16:36:06
+ * Last Modified: 21.03.2024 13:40:26
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for 3d-models of places/positions
@@ -20,7 +20,9 @@
           <v-card class="pa-2 ma-2" width="410" height="480" align="center">
             <v-row class="pb-2" no-gutters>
               <v-col>
-                <v-card-title class="text-start ml-3"> Nr. {{ model.modelNumber }} - {{ model.title }}</v-card-title>
+                <v-card-title class="text-start ml-3"> 
+                  Nr. {{ model.modelNumber }} - {{ model.title }}
+                </v-card-title>
               </v-col>
               <v-col class="justify-end mr-4" cols="2">
                 <v-tooltip 
@@ -28,7 +30,8 @@
                 location="bottom">
                   <template v-slot:activator="{props}">
 
-                    <v-btn v-bind="props" class="mt-2" variant="text" @click="routeTo3D()">
+                    <v-btn v-bind="props" class="mt-2" variant="text" 
+                      @click="routeTo3D()">
                       <v-icon>
                         mdi-open-in-new
                       </v-icon>
@@ -244,7 +247,6 @@
 import AddButton from '../components/AddButton.vue';
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
-import { generalDataStore } from '../ConnectionToLocalStorage';
 import { toRaw } from 'vue';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
@@ -266,13 +268,6 @@ export default {
   props: {
     object_id: String,
     object_type: String,
-  },
-  setup() {
-    const generalStore = generalDataStore();
-
-    return {
-      generalStore,
-    }
   },
   emits: ['addModel'],
   /**
@@ -631,8 +626,8 @@ export default {
       // new model data
       const newModel = {
         _id: newModelID,
-        placeID: this.generalStore.getCurrentObject('place'),
-        positionID: this.generalStore.getCurrentObject('position'),
+        placeID: this.$generalStore.getCurrentObject('place'),
+        positionID: this.$generalStore.getCurrentObject('position'),
         title: this.model.title,
         model: await this.modelToArrayBuffer(toRaw(this.model.model)),
         color: '#ffffff',
@@ -687,7 +682,7 @@ export default {
           }
           break;
       }
-      const curPlace = this.generalStore.getCurrentObject('place');
+      const curPlace = this.$generalStore.getCurrentObject('place');
       const cameraInDB = await fromOfflineDB.getObject( 
         curPlace, 'Cameras', 'cameras' );
       if ( cameraInDB != undefined ) {
@@ -808,7 +803,7 @@ export default {
       this.deleteToken = true
 
       /* Add Notification for 3D-part camera changes */
-      const curPlace = this.generalStore.getCurrentObject('place');
+      const curPlace = this.$generalStore.getCurrentObject('place');
       const cameraInDB = await fromOfflineDB.getObject( 
         curPlace, 'Cameras', 'cameras' );
       const placeObjects = await fromOfflineDB.getAllObjects( "Models", "places" )

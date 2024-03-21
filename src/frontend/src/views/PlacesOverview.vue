@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 19.03.2024 17:42:02
+ * Last Modified: 21.03.2024 13:38:23
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -363,7 +363,6 @@ import { fromBackend } from '../ConnectionToBackend.js'
 import { useWindowSize } from 'vue-window-size';
 import { toRaw } from 'vue';
 import { useUserStore } from '../Authentication';
-import { generalDataStore } from '../ConnectionToLocalStorage.js';
 
 
 export default {
@@ -377,13 +376,11 @@ export default {
   setup() {
     const { width, height } = useWindowSize();
     const userStore = useUserStore();
-    const generalStore = generalDataStore();
 
     return {
       windowWidth: width,
       windowHeight: height,
       userStore,
-      generalStore
     };
   },
 
@@ -509,7 +506,7 @@ export default {
      * Get all places from IndexedDB
      */
     async updatePlaces() {
-      var curActivityID = this.generalStore.getCurrentObject('activity');
+      var curActivityID = this.$generalStore.getCurrentObject('activity');
 
       this.places = await fromOfflineDB
         .getAllObjectsWithID(curActivityID, 'Activity', 'Places', 'places')
@@ -521,7 +518,7 @@ export default {
     * @deprecated
     */
     async updatePlacesFull() {
-      var curActivityID = this.generalStore.get('activity');
+      var curActivityID = this.$generalStore.get('activity');
 
       var offlinePlaces = await fromOfflineDB
         .getAllObjectsWithID(curActivityID, 'Activity', 'Places', 'places')
@@ -592,7 +589,7 @@ export default {
      * Get all ModulePresets from IndexedDB
      */
     async updateModulePresets() {
-      let presetID = this.generalStore.getModulesPreset('place');
+      let presetID = this.$generalStore.getModulesPreset('place');
 
       if (presetID.length > 0) {
         this.curModulePreset = await fromOfflineDB
@@ -605,7 +602,7 @@ export default {
      * Adds a new place to IndexedDB for the current activity
      */
     async addPlace() {
-      const acID = this.generalStore.getCurrentObject('activity');
+      const acID = this.$generalStore.getCurrentObject('activity');
       var newPlaceID = String(Date.now());
       var activity = await fromOfflineDB
         .getObject(acID, 'Activities', 'activities')
@@ -730,7 +727,7 @@ export default {
      */
     moveToPlace(placeID) {
       if (placeID !== 'new') {
-        this.generalStore.setCurrentObject(placeID, 'place');
+        this.$generalStore.setCurrentObject(placeID, 'place');
       }
       this.$router.push({ name: 'PlaceCreation', params: { placeID: placeID } })
     },
@@ -739,14 +736,14 @@ export default {
      * Set the toggleAllInfo switch state depending on localStorage
      */
     async setShowAllInfoSwitch() {
-      this.showAllInfo = this.generalStore.getShowAllPlaceInfo();
+      this.showAllInfo = this.$generalStore.getShowAllPlaceInfo();
     },
 
     /**
      * Save the change toggle all info state to localStorage
      */
     toggleAllInfo() {
-      this.generalStore.toggleShowAllPlaceInfo(this.showAllInfo);
+      this.$generalStore.toggleShowAllPlaceInfo(this.showAllInfo);
     },
 
     /**
@@ -796,7 +793,7 @@ export default {
      * @returns {Object} An object containing row style properties
      */
     getRowStyle(index) {
-      var currentTheme = this.generalStore.getTheme()
+      var currentTheme = this.$generalStore.getTheme()
       if (currentTheme !== 'fieldbook_light') {
         
         return {

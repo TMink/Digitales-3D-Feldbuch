@@ -623,20 +623,11 @@ import { Utilities } from '../components/3dFunctions/Utilities.js'
 import { ObjectFilter } from '../components/3dFunctions/ObjectFilter.js'
 import { GarbageCollection } from '../components/3dFunctions/GarbageCollection.js'
 import { Initialisations } from '../components/3dFunctions/Initialisations.js'
-import { generalDataStore } from '../ConnectionToLocalStorage';
 
 export default {
   name: 'ModelViewer',
   components: {
     Navigation
-  },
-
-  setup() {
-    const generalStore = generalDataStore();
-
-    return {
-      generalStore,
-    }
   },
 
   data() {
@@ -1360,7 +1351,7 @@ export default {
     },
 
     async loadDataFromIndexedDB() {
-      this.placeID = this.generalStore.getCurrentObject( 'place' );
+      this.placeID = this.$generalStore.getCurrentObject( 'place' );
       this.cameraIDsInDB = await fromOfflineDB.getProperties( '_id', 'Cameras',
         'cameras' );
       this.cameraInDB = await fromOfflineDB.getObject( this.placeID, 'Cameras',
@@ -1520,7 +1511,7 @@ export default {
         this.cameraData = this.utilities.getCameraData( exParams.main.camera )
 
         if ( this.cameraIDsInDB.includes( this.placeID ) ) {
-          const curPlace = this.generalStore.getCurrentObject('place');
+          const curPlace = this.$generalStore.getCurrentObject('place');
           const newCamera = await fromOfflineDB.getObject(
            curPlace, 'Cameras', 'cameras' );
             
@@ -1684,7 +1675,7 @@ export default {
 
             exParams.mmTool.drawingLine = true;
           } else {
-            const curPlace = this.generalStore.getCurrentObject('place');
+            const curPlace = this.$generalStore.getCurrentObject('place');
             const placeInDB = await fromOfflineDB.getObject( 
               curPlace, 'Places', 'places' )
               

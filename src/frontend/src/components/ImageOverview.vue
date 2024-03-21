@@ -2,7 +2,7 @@
  * Created Date: 09.01.2024 11:33:59
  * Author: Julian Hardtung
  * 
- * Last Modified: 17.02.2024 19:53:34
+ * Last Modified: 21.03.2024 13:36:47
  * Modified By: Julian Hardtung
  * 
  * Description: lists all images of a place
@@ -65,7 +65,6 @@
 
 <script>
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
-import { generalDataStore } from '../ConnectionToLocalStorage';
 import { toRaw } from 'vue';
 
 export default {
@@ -76,13 +75,7 @@ export default {
   props: {
     object_id: String,
   },
-  setup() {
-    const generalStore = generalDataStore();
 
-    return {
-      generalStore,
-    }
-  },
   /**
    * Reactive Vue.js data
    */
@@ -131,7 +124,7 @@ export default {
      * @param {ProxyObject} image 
      */
     editImage(image) {
-      this.generalStore.setCurrentObject(image.positionID, 'position');
+      this.$generalStore.setCurrentObject(image.positionID, 'position');
       this.$router.push({ name: 'PositionCreation', params: { positionID: image.positionID } });
     },
 
@@ -141,7 +134,7 @@ export default {
      */
     async deleteImage(image) {
 
-      var curPlaceID = this.generalStore.getCurrentObject('place')
+      var curPlaceID = this.$generalStore.getCurrentObject('place')
       var curPlace = await fromOfflineDB
         .getObject(curPlaceID, 'Places', 'places')
         .catch(err => console.error(err));

@@ -2,7 +2,7 @@
  * Created Date: 06.07.2023 13:22:10
  * Author: Julian Hardtung
  * 
- * Last Modified: 19.03.2024 15:32:04
+ * Last Modified: 21.03.2024 13:44:43
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for images of places/positions
@@ -190,7 +190,6 @@
 <script>
 import AddButton from '../components/AddButton.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
-import { generalDataStore } from '../ConnectionToLocalStorage.js';
 import { useWindowSize } from 'vue-window-size';
 import { toRaw } from 'vue';
 
@@ -234,12 +233,10 @@ export default {
   },
   setup() {
     const { width, height } = useWindowSize();
-    const generalStore = generalDataStore();
     
     return {
       windowWidth: width,
       windowHeight: height,
-      generalStore,
     };
   },
   /**
@@ -473,12 +470,12 @@ export default {
      * @returns {String} image title 
      */
     async getAutoImgTitle() {
-      const curActivityID = this.generalStore.getCurrentObject('activity');
+      const curActivityID = this.$generalStore.getCurrentObject('activity');
       const curActivity = await fromOfflineDB
         .getObject(curActivityID, 'Activities', 'activities')
         .catch(err => console.error(err));
 
-      const curPlaceID = this.generalStore.getCurrentObject('place');
+      const curPlaceID = this.$generalStore.getCurrentObject('place');
       const curPlace = await fromOfflineDB
         .getObject(curPlaceID, 'Places', 'places')
         .catch(err => console.error(err));

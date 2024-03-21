@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 19.03.2024 17:16:57
+ * Last Modified: 21.03.2024 13:37:51
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -387,7 +387,6 @@ import { fromBackend } from '../ConnectionToBackend.js'
 import AddPosition from '../components/AddPosition.vue';
 import { useWindowSize } from 'vue-window-size';
 import { useUserStore } from '../Authentication';
-import { generalDataStore } from '../ConnectionToLocalStorage.js';
 
 export default {
   name: 'PositionsOverview',
@@ -402,12 +401,10 @@ export default {
   setup() {
     const { width, height } = useWindowSize();
     const userStore = useUserStore();
-    const generalStore = generalDataStore();
     return {
       windowWidth: width,
       windowHeight: height,
       userStore,
-      generalStore
     };
   },
 
@@ -540,7 +537,7 @@ export default {
      * Update reactive Vue.js position data
      */
     async updatePositions() {
-      var curPlaceID = this.generalStore.getCurrentObject('place');
+      var curPlaceID = this.$generalStore.getCurrentObject('place');
 
       this.positions = await fromOfflineDB
         .getAllObjectsWithID(curPlaceID, 'Place', 'Positions', 'positions')
@@ -551,7 +548,7 @@ export default {
      * @deprecated
      */
     async updatePositionsFull() {
-      var curPlaceID = this.generalStore.getCurrentObject('place');
+      var curPlaceID = this.$generalStore.getCurrentObject('place');
 
       var offlinePositions = await fromOfflineDB
         .getAllObjectsWithID(curPlaceID, 'Place', 'Positions', 'positions')
@@ -618,7 +615,7 @@ export default {
     },
 
     async updateModulePresets() {
-      let curPresetID = this.generalStore.getModulesPreset('position');
+      let curPresetID = this.$generalStore.getModulesPreset('position');
 
       if (curPresetID) {
         this.curModulePreset = await fromOfflineDB
@@ -676,7 +673,7 @@ export default {
      */
     moveToPosition(positionID) {
       if (positionID !== 'new') {
-        this.generalStore.setCurrentObject(positionID, 'position');
+        this.$generalStore.setCurrentObject(positionID, 'position');
       }
 
       this.$router.push({ name: 'PositionCreation', params: { positionID: positionID } })
@@ -689,7 +686,7 @@ export default {
      *                --> CAN YOU CALL FUNCTIONS OVER PROPS???
      */
     async addPosition() {
-      var curPlaceID = this.generalStore.getCurrentObject('place');
+      var curPlaceID = this.$generalStore.getCurrentObject('place');
       var curPlace = await fromOfflineDB
         .getObject(curPlaceID, "Places", "places")
         .catch(err => console.error(err));
@@ -747,14 +744,14 @@ export default {
      * Set the toggleAllInfo switch state depending on VueCookies
      */
     setShowAllInfoSwitch() {
-      this.showAllInfo = this.generalStore.getShowAllPosInfo();
+      this.showAllInfo = this.$generalStore.getShowAllPosInfo();
     },
 
     /**
      * Save the change toogle all info state to cookies
      */
     toggleAllInfo() {
-      this.generalStore.toggleShowAllPosInfo(this.showAllInfo);
+      this.$generalStore.toggleShowAllPosInfo(this.showAllInfo);
     },
 
     /**
@@ -795,7 +792,7 @@ export default {
      * @returns {Object} An object containing row style properties
      */
      getRowStyle(index) {
-      var currentTheme = this.generalStore.getTheme();
+      var currentTheme = this.$generalStore.getTheme();
       if (currentTheme !== 'fieldbook_light') {
         return {
           cursor: 'pointer',
@@ -825,7 +822,7 @@ export default {
     },
 
     saveModulePresetToCookies() {
-      this.generalStore.setModulesPreset(this.curModulePreset._id, 'position');
+      this.$generalStore.setModulesPreset(this.curModulePreset._id, 'position');
     },
   }
 }
