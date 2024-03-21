@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 16:00:53
+ * Last Modified: 21.03.2024 16:39:53
  * Modified By: Julian Hardtung
  * 
  * Description: english translations
@@ -152,7 +152,7 @@ export default {
   editModule: "Edit Module",
   visibilities: "Bad | Moderate | Good | Very Good",
   addMax5: "Add max. 5 tags which describe the place",
-  noResults: "No attributes matching your search. Press `enter` to create a new one",
+  noResults: 'No attributes matching your search. Press "enter" to create a new one',
   noFindDescr: "When the Place is not a Feature (Workspace, Disruption, natural staining etc.)",
   restFindDescr:
     "If the Feature is still preserved below the intervention depth during soil excavation.",

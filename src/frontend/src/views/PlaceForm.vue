@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 13:30:11
+ * Last Modified: 21.03.2024 16:42:25
  * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
@@ -17,7 +17,6 @@
         <v-card style="position:fixed; width:15%;">
           <v-tabs v-model="tab" direction="vertical" color="primary">
             <v-tab value="one" rounded="0"> {{ $t('general') }} </v-tab>
-            <v-tab class="hideable" value="two" rounded="0"> {{ $t('position') }} </v-tab>
             <v-tab value="three" rounded="0"> {{ $t('imageOverview') }} </v-tab>
             <v-tab class="hideable" value="four" rounded="0"> {{ $tc('technicalDrawing', 2) }} </v-tab>
             <v-tab class="hideable" value="five" rounded="0"> {{ $tc('model', 2) }} </v-tab>
@@ -43,58 +42,6 @@
           <v-window-item value="one">
             <ModuleViewer ref="moduleViewerRef" :datingItemsFirstProp="datingsList" :editorItemsFirstProp="editorsList"
               :titleItemsFirstProp="titlesList" @dataToPlaceForm="getEmitedData($event)" />
-          </v-window-item>
-
-          <!-- Tab item 'positions' -->
-          <v-window-item value="two">
-            <v-form>
-              <v-card class="pa-3" :min-width="windowWidth * 0.5">
-                <v-data-table-virtual :items="positions" fixed-header :height="getTableHeight" :headers="headers"
-                  :sort-by="[{ key: 'positionNumber', order: 'asc' }]" max-height>
-
-                  <template v-slot:item="{ item, index }">
-                    <tr v-on:click="moveToPosition(item.raw._id)" @mouseenter="setHoveredRow(index, true)"
-                      @mouseleave="setHoveredRow(index, false)">
-
-                      <!-- POSITION NUMBER -->
-                      <td :style="getRowStyle(index)">
-                        <v-list-item-title>
-                          {{ item.raw.positionNumber }}
-                        </v-list-item-title>
-                      </td>
-
-                      <!-- SUB NUMBER -->
-                      <td :style="getRowStyle(index)">
-                        <v-list-item-title>
-                          {{ item.raw.subNumber }}
-                        </v-list-item-title>
-                      </td>
-
-                      <!-- TITLE -->
-                      <td class="py-6" :style="getRowStyle(index)">
-                        <v-list-item-title v-if="item.raw.title.length > 0" style="min-width:200px" class="text-wrap">
-                          {{ item.raw.title }}
-                        </v-list-item-title>
-
-                        <v-list-item-title v-if="item.raw.title.length == 0" style="color:dimgrey;">
-                          -
-                        </v-list-item-title>
-                      </td>
-
-                      <!-- DATE -->
-                      <td :style="getRowStyle(index)">
-                        <v-list-item-title>
-                          {{ item.raw.date || '-' }}
-                        </v-list-item-title>
-                      </td>
-                    </tr>
-                  </template>
-                </v-data-table-virtual>
-              </v-card>
-
-              <AddPosition :positions_prop="positions" @updatePositions="updatePositions()" />
-
-            </v-form>
           </v-window-item>
 
           <!-- Tab item 'pictures' -->

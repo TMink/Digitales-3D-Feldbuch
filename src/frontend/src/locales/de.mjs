@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 16:36:11
+ * Last Modified: 21.03.2024 16:40:12
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -152,7 +152,7 @@ export default {
   editModule: "Modul editieren",
   visibilities: "Schlecht | Mäßig | Gut | Sehr gut",
   addMax5: "Füge max. 5 beschreibende Attribute hinzu",
-  noResults: "Keine passenden Attribute gefunden. Drücke `enter`, um ein neues zu erstellen.",
+  noResults: 'Keine passenden Attribute gefunden. Drücke "enter", um ein Neues zu erstellen.',
   noFindDescr:
     "Falls die Stelle kein Befund ist (Arbeitsbereich, Störung, natürliche Verfärbung etc.)",
   restFindDescr:
