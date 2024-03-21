@@ -2,65 +2,73 @@
  * Created Date: 14.07.2023 17:06:51
  * Author: Julian Hardtung
  * 
- * Last Modified: 29.02.2024 16:36:06
+ * Last Modified: 21.03.2024 17:28:35
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for 3d-models of places/positions
  -->
 
 <template>
-    <v-list v-if="models.length === 0">
-      <v-list-subheader>
-        {{ $t('not_created_yet', { object: $tc('model', 1) }) }}
+    <v-list >
+      <v-card-title> {{ $tc('model', 2) }}</v-card-title>
+      <v-divider v-if="models.length === 0"></v-divider>
+      <v-list-subheader class="pa-4" v-if="models.length === 0">
+        {{ $t('not_created_yet', { object: $tc('model', 2) }) }}
       </v-list-subheader>
     </v-list>
       <!-- MODEL LIST -->
-      <v-row no-gutters class="align-center">
+      <v-row no-gutters class="align-center mx-n2">
         <v-col xl="3" md="4" sm="6" v-for="(model, i) in models" :key="model">
           <v-card class="pa-2 ma-2" width="410" height="480" align="center">
             <v-row class="pb-2" no-gutters>
               <v-col>
-                <v-card-title class="text-start ml-3"> Nr. {{ model.modelNumber }} - {{ model.title }}</v-card-title>
+                <v-card-title class="text-start ml-3"> 
+                  Nr. {{ model.modelNumber }} - {{ model.title }}
+                </v-card-title>
               </v-col>
               <v-col class="justify-end mr-4" cols="2">
                 <v-tooltip 
                 :text="$t('openIn3D')"
                 location="bottom">
                   <template v-slot:activator="{props}">
-
-                    <v-btn v-bind="props" class="mt-2" variant="text" @click="routeTo3D()">
-                      <v-icon>
-                        mdi-open-in-new
-                      </v-icon>
-                    </v-btn>
+                    <v-btn class="mt-2" color="primary" 
+                       v-on:click="editModel(model)">
+                    <v-icon>mdi-pencil</v-icon>
+                  </v-btn>
                   </template>
                 </v-tooltip>
               </v-col>
             </v-row>
             <v-row no-gutters class="align-center">
               <v-col>
-                
                 <canvas :id="'canvas' + i" v-show="true" width="360" 
                         height="355"
                         style="display: inline;
                                 border: 1px solid rgb(255, 255, 255)">
                 </canvas>
-                
               </v-col>
             </v-row>
             
-            <v-row no-gutters>
-              <v-col class="pa-1 pl-2">
+            <v-row no-gutters class="pt-1 px-4">
+              <v-col cols="8">
 
-                <v-btn width="172" color="primary" 
-                       v-on:click="editModel(model)">
-                  <v-icon>mdi-pencil</v-icon>
+                <v-btn block v-bind="props" variant="outlined" 
+                  @click="routeTo3D()">
+                  {{ $t('openIn3D')}}
+                  <v-icon class="pl-2">
+                    mdi-open-in-new
+                  </v-icon>
+                  <v-tooltip 
+                    v-if="$generalStore.getShowTooltips()" 
+                    activator="parent" 
+                    location="bottom"
+                    :text="$t('openPhrase', {msg: $tc('model', 1) + ' ' + model.title})">
+                  </v-tooltip>
                 </v-btn>
 
               </v-col>
-              <v-col class="pa-1 pr-2">
-
-                <v-btn width="172" color="error" 
+              <v-col cols="4" class="pl-2">
+                <v-btn block color="error" 
                   v-on:click="confirmDeletion(model)">
                   <v-icon>mdi-delete</v-icon>
                 </v-btn>
@@ -244,7 +252,6 @@
 import AddButton from '../components/AddButton.vue';
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
-import { generalDataStore } from '../ConnectionToLocalStorage';
 import { toRaw } from 'vue';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
@@ -266,13 +273,6 @@ export default {
   props: {
     object_id: String,
     object_type: String,
-  },
-  setup() {
-    const generalStore = generalDataStore();
-
-    return {
-      generalStore,
-    }
   },
   emits: ['addModel'],
   /**
@@ -631,8 +631,8 @@ export default {
       // new model data
       const newModel = {
         _id: newModelID,
-        placeID: this.generalStore.getCurrentObject('place'),
-        positionID: this.generalStore.getCurrentObject('position'),
+        placeID: this.$generalStore.getCurrentObject('place'),
+        positionID: this.$generalStore.getCurrentObject('position'),
         title: this.model.title,
         model: await this.modelToArrayBuffer(toRaw(this.model.model)),
         color: '#ffffff',
@@ -687,7 +687,7 @@ export default {
           }
           break;
       }
-      const curPlace = this.generalStore.getCurrentObject('place');
+      const curPlace = this.$generalStore.getCurrentObject('place');
       const cameraInDB = await fromOfflineDB.getObject( 
         curPlace, 'Cameras', 'cameras' );
       if ( cameraInDB != undefined ) {
@@ -808,7 +808,7 @@ export default {
       this.deleteToken = true
 
       /* Add Notification for 3D-part camera changes */
-      const curPlace = this.generalStore.getCurrentObject('place');
+      const curPlace = this.$generalStore.getCurrentObject('place');
       const cameraInDB = await fromOfflineDB.getObject( 
         curPlace, 'Cameras', 'cameras' );
       const placeObjects = await fromOfflineDB.getAllObjects( "Models", "places" )

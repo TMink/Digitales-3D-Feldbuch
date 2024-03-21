@@ -2,8 +2,8 @@
  * Created Date: 29.11.2023 01:45:54
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.02.2024 21:20:21
- * Modified By: Oliver Mertens
+ * Last Modified: 21.03.2024 16:33:23
+ * Modified By: Julian Hardtung
  * 
  * Description: Vue component for user login
  -->
@@ -42,15 +42,6 @@
                 v-model="form.username" 
                 :label="this.$t('username')">
               </v-text-field>
-
-              <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
-                <a></a>
-                <a
-                  class="text-caption text-decoration-none text-blue"
-                  href="url">
-                  {{ this.$t('forgotPassword') }}
-                </a>
-              </div>
           
               <v-text-field
                 color="primary"
@@ -80,7 +71,10 @@
                 {{ this.$t('login') }}
               </v-btn>
 
-              <v-card-text class="text-center">
+              <v-row>
+
+              
+              <v-card-text>
                 <a
                   v-on:click="routeRegistration()"
                   href="/#/registration"
@@ -89,6 +83,14 @@
                     <v-icon icon="mdi-chevron-right"></v-icon>
                 </a>
               </v-card-text>
+              <v-card-text>
+                <a
+                  class="text-caption text-decoration-none text-blue"
+                  href="url">
+                  {{ this.$t('forgotPassword') }}
+                </a>
+              </v-card-text>
+              </v-row>
             </v-card>
           </div>
         </v-col>
@@ -98,7 +100,6 @@
 </template>
     
 <script>
-import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
 import Navigation from '../components/Navigation.vue'
 import { useUserStore } from '../Authentication.js';
 import { useWindowSize } from 'vue-window-size';

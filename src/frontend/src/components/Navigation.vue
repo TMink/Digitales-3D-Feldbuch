@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 17.02.2024 19:44:59
+ * Last Modified: 21.03.2024 15:00:01
  * Modified By: Julian Hardtung
  * 
  * Description: Vue component with navigation-bar and extendable side-bar
@@ -34,10 +34,10 @@
           max-width="250px" 
           @click="changePage('ActivitiesOverview')">
           <v-window>
-            <v-card-subtitle>
-              {{ currentActivity }}
+            <v-card-subtitle class="mb-n2">
+              {{ $t('activity') }}
             </v-card-subtitle>
-            {{ $t('activity') }}
+            {{ currentActivity }}
           </v-window>
         </v-tab>
 
@@ -48,10 +48,10 @@
           @click="changePage('PlacesOverview')"
           :disabled="!activityIsSet">
           <v-window>
-            <v-card-subtitle>
-              {{ currentPlace }}
+            <v-card-subtitle class="mb-n2">
+              {{ $t('place') }}
             </v-card-subtitle>
-            {{ $t('place') }}
+            {{ currentPlace }}
           </v-window>
         </v-tab>
 
@@ -62,10 +62,10 @@
           @click="changePage('PositionsOverview')"
           :disabled="!placeIsSet">
           <v-window>
-            <v-card-subtitle>
-              {{ currentPosition }}
+            <v-card-subtitle class="mb-n2">
+              {{ $t('position') }}
             </v-card-subtitle>
-            {{ $t('position') }}
+            {{ currentPosition }}
           </v-window>
         </v-tab>
 
@@ -122,7 +122,7 @@
       v-model="navdrawer" 
       location="right">
       <v-card 
-        height="100%" 
+        height="100%"
         class="d-flex flex-column">
 
         <v-list-item>
@@ -143,20 +143,42 @@
           </v-list-item-title>
         </v-list-item>
 
-        <v-row class="d-flex justify-center ma-3">
-          <LocaleChanger class="ma-2" />
-          <v-btn 
-            @click="toggleTheme" 
-            color="background" 
-            class="ma-2">
-            <v-icon>mdi-theme-light-dark</v-icon>
-          </v-btn>
-        </v-row>
-
         <v-spacer></v-spacer>
+        
+        <!-- SETTINGS -->
+        <v-card 
+          variant="outlined" 
+          class="ma-3">
+          <v-card-title>
+            {{ $t('settings')}}
+          </v-card-title>
+          <v-divider></v-divider>
+          <v-row class="d-flex justify-center ma-3">
+            <LocaleChanger class="ma-2" />
+            <v-btn 
+              @click="toggleTheme" 
+              color="background" 
+              class="ma-2">
+              <v-icon>mdi-theme-light-dark</v-icon>
+            </v-btn>
+          </v-row>
+          <v-divider></v-divider>
+          <v-row no-gutters class="pa-2">
+            <v-checkbox :label="$t('toggleTooltips')"
+              class="ml-3"
+              v-model="tooltipsToggle"
+              density="compact"
+              hide-details
+              @click="toggleTooltips()">
+            </v-checkbox>
+          </v-row>
+        </v-card>
 
+        <!-- DATA BACKUP -->
         <DataBackup />
-
+        
+        <v-spacer></v-spacer>
+        
         <!-- ADMIN MENU -->
         <v-card 
           variant="outlined" 
@@ -181,7 +203,6 @@
 <script>
 import { useI18n } from 'vue-i18n'
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
-import { generalDataStore } from '../ConnectionToLocalStorage.js';
 import { useTheme } from 'vuetify/lib/framework.mjs';
 import LocaleChanger from './LocaleChanger.vue';
 import DataBackup from './DataBackup.vue';
@@ -200,7 +221,6 @@ export default {
     const { t } = useI18n() // use as global scope
     const message = ref('');
     const userStore = useUserStore();
-    const generalStore = generalDataStore();
 
     if (userStore.authenticated) {
       message.value = toRaw(userStore.user.username);
@@ -211,12 +231,6 @@ export default {
       theme,
       message,
       userStore,
-      generalStore,
-      toggleTheme() {
-        generalStore.toggleTheme()
-
-        theme.global.name.value = generalStore.getTheme();
-      }
     }
   },
   props: {
@@ -233,6 +247,7 @@ export default {
       currentPosition: '-',
       backbutton_link: '',
       navdrawer: false,
+      tooltipsToggle: true,
       toolbar_title: this.$t('fieldbook'),
       path_reload: 0,
       navbar_items: [
@@ -252,22 +267,25 @@ export default {
       .catch(err => console.error(err));
     this.active_tab = this.active_tab_prop;
 
-    var activityID = this.generalStore.getCurrentObject('activity');
+    var activityID = this.$generalStore.getCurrentObject('activity');
     if (activityID !== null) {
       this.activityIsSet = true
     }
 
-    var placeID = this.generalStore.getCurrentObject('place');
+    var placeID = this.$generalStore.getCurrentObject('place');
     if (placeID !== null) {
       this.placeIsSet = true
     }
 
-    var positionID = this.generalStore.getCurrentObject('position');
+    var positionID = this.$generalStore.getCurrentObject('position');
     if (positionID !== null) {
       this.positionIsSet = true;
     } else {
       this.positionIsSet = false;
     }
+
+    this.tooltipsToggle = this.$generalStore.getShowTooltips();
+
   },
   methods: {
     goback() {
@@ -300,7 +318,7 @@ export default {
      * Deletes all data in localStorage
      */
     async clearLocalStorage() {
-      this.generalStore.clearLocalStorage();
+      this.$generalStore.clearLocalStorage();
     },
 
     changePage: function (routeName) {
@@ -323,7 +341,7 @@ export default {
     },
 
     async getInfo(selection) {
-      const _id = this.generalStore.getCurrentObject(selection);
+      const _id = this.$generalStore.getCurrentObject(selection);
 
       if (_id == null || _id == 'null') {
         return;
@@ -355,7 +373,7 @@ export default {
           this.currentPlace = name.placeNumber;
           break;
         case "position":
-          var curPlaceID = this.generalStore.getCurrentObject('place');
+          var curPlaceID = this.$generalStore.getCurrentObject('place');
           var curPlace = '';
           if (curPlaceID.length > 0) {
             curPlace = await fromOfflineDB
@@ -385,7 +403,21 @@ export default {
       } catch (error) {
         console.log("Logout failed")
       }
-    }
+    },
+
+    /**
+     * Toggles the tooltips in the system
+     */
+    toggleTooltips() {
+      this.tooltipsToggle = this.tooltipsToggle == true ? false : true;
+      this.$generalStore.toggleTooltips(this.tooltipsToggle);
+      location.reload();
+    },
+    toggleTheme() {
+      this.$generalStore.toggleTheme();
+
+      this.theme.global.name.value = this.$generalStore.getTheme();
+    },
   }
 }
 </script>

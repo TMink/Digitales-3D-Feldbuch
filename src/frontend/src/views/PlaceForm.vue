@@ -2,8 +2,8 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.03.2024 17:07:24
- * Modified By: Methusshan Elankumaran
+ * Last Modified: 21.03.2024 16:59:34
+ * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
  *              (shows input modules according to module preset)
@@ -17,7 +17,6 @@
         <v-card style="position:fixed; width:15%;">
           <v-tabs v-model="tab" direction="vertical" color="primary">
             <v-tab value="one" rounded="0"> {{ $t('general') }} </v-tab>
-            <v-tab class="hideable" value="two" rounded="0"> {{ $t('position') }} </v-tab>
             <v-tab value="three" rounded="0"> {{ $t('imageOverview') }} </v-tab>
             <v-tab class="hideable" value="four" rounded="0"> {{ $tc('technicalDrawing', 2) }} </v-tab>
             <v-tab class="hideable" value="five" rounded="0"> {{ $tc('model', 2) }} </v-tab>
@@ -45,58 +44,6 @@
               :titleItemsFirstProp="titlesList" @dataToPlaceForm="getEmitedData($event)" />
           </v-window-item>
 
-          <!-- Tab item 'positions' -->
-          <v-window-item value="two">
-            <v-form>
-              <v-card class="pa-3" :min-width="windowWidth * 0.5">
-                <v-data-table-virtual :items="positions" fixed-header :height="getTableHeight" :headers="headers"
-                  :sort-by="[{ key: 'positionNumber', order: 'asc' }]" max-height>
-
-                  <template v-slot:item="{ item, index }">
-                    <tr v-on:click="moveToPosition(item.raw._id)" @mouseenter="setHoveredRow(index, true)"
-                      @mouseleave="setHoveredRow(index, false)">
-
-                      <!-- POSITION NUMBER -->
-                      <td :style="getRowStyle(index)">
-                        <v-list-item-title>
-                          {{ item.raw.positionNumber }}
-                        </v-list-item-title>
-                      </td>
-
-                      <!-- SUB NUMBER -->
-                      <td :style="getRowStyle(index)">
-                        <v-list-item-title>
-                          {{ item.raw.subNumber }}
-                        </v-list-item-title>
-                      </td>
-
-                      <!-- TITLE -->
-                      <td class="py-6" :style="getRowStyle(index)">
-                        <v-list-item-title v-if="item.raw.title.length > 0" style="min-width:200px" class="text-wrap">
-                          {{ item.raw.title }}
-                        </v-list-item-title>
-
-                        <v-list-item-title v-if="item.raw.title.length == 0" style="color:dimgrey;">
-                          -
-                        </v-list-item-title>
-                      </td>
-
-                      <!-- DATE -->
-                      <td :style="getRowStyle(index)">
-                        <v-list-item-title>
-                          {{ item.raw.date || '-' }}
-                        </v-list-item-title>
-                      </td>
-                    </tr>
-                  </template>
-                </v-data-table-virtual>
-              </v-card>
-
-              <AddPosition :positions_prop="positions" @updatePositions="updatePositions()" />
-
-            </v-form>
-          </v-window-item>
-
           <!-- Tab item 'pictures' -->
           <v-window-item value="three">
             <ImageOverview :object_id="place._id" />
@@ -114,7 +61,11 @@
               </v-card>
             </v-dialog>
 
-            <v-toolbar :height="50" color="surface" density="default">
+            <v-card>
+              
+              <v-toolbar :height="50" color="surface" density="default">
+                <v-card-title>{{ $t('technicalDrawing')}}</v-card-title>
+                <v-divider vertical></v-divider>
               <v-btn-toggle>
                 <v-btn @click="onToolbarClick('pen')" icon="mdi-pencil" rounded="1"></v-btn>
                 <v-btn @click="onToolbarClick('eraser')" icon="mdi-eraser" rounded="1"></v-btn>
@@ -129,6 +80,7 @@
               <v-btn @click.prevent="backgroundDialog = true" icon="mdi-image" rounded="0"></v-btn>
               <v-btn @click.prevent="onToolbarClick('refresh')" icon="mdi-reload" rounded="0"></v-btn>
             </v-toolbar>
+            </v-card>
             <div style="position:relative">
               <v-expand-transition>
                 <v-color-picker class="mt-2" style="position:absolute; left:100px; z-index: 1;"
@@ -205,7 +157,6 @@
  *  cancelPlace     - Cancels all not already saved actions
  */
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
-import { generalDataStore } from '../ConnectionToLocalStorage.js';
 import ConfirmDialog from '../components/ConfirmDialog.vue';
 import AddPosition from '../components/AddPosition.vue';
 import ImageOverview from '../components/ImageOverview.vue';
@@ -231,11 +182,9 @@ export default {
   emits: ['view'],
   setup() {
     const { width, height } = useWindowSize();
-    const generalStore = generalDataStore();
     return {
       windowWidth: width,
       windowHeight: height,
-      generalStore,
     };
   },
   /**
@@ -519,7 +468,7 @@ export default {
      * Update reactive Vue.js place data
      */
     async updatePlace() {
-      const currentPlace = this.generalStore.getCurrentObject('place');
+      const currentPlace = this.$generalStore.getCurrentObject('place');
       const data = await fromOfflineDB
         .getObject(currentPlace, 'Places', 'places')
         .catch(err => console.error(err));
@@ -636,7 +585,7 @@ export default {
     async deletePlace() {
 
       // Remove the placeID from connected activity
-      const acID = this.generalStore.getCurrentObject('activity');
+      const acID = this.$generalStore.getCurrentObject('activity');
       var activity = await fromOfflineDB
         .getObject(acID, 'Activities', 'activities')
         .catch(err => console.error(err));
@@ -650,8 +599,8 @@ export default {
       await fromOfflineDB
         .deleteCascade(this.place._id, 'place', 'Places', 'places')
         .catch(err => console.error(err));
-      this.generalStore.removeCurrentObject('place');
-      this.generalStore.removeCurrentObject('position');
+      this.$generalStore.removeCurrentObject('place');
+      this.$generalStore.removeCurrentObject('position');
 
       this.hasUnsavedChanges = false;
       this.$router.push({ name: "PlacesOverview" });
@@ -687,7 +636,7 @@ export default {
      */
     moveToPosition(positionID) {
       if (positionID !== 'new') {
-        this.generalStore.setCurrentObject(positionID, 'position');
+        this.$generalStore.setCurrentObject(positionID, 'position');
       }
       this.$router.push({ name: 'PositionCreation', params: { positionID: positionID } });
     },
@@ -718,12 +667,12 @@ export default {
      * Sets the AppBarTitle to the current ActivityNumber + PlaceNumber
      */
     async setAppBarTitle() {
-      const acID = this.generalStore.getCurrentObject('activity');
+      const acID = this.$generalStore.getCurrentObject('activity');
       var activity = await fromOfflineDB
         .getObject(acID, 'Activities', 'activities')
         .catch(err => console.error(err));
 
-      const plID = this.generalStore.getCurrentObject('place');
+      const plID = this.$generalStore.getCurrentObject('place');
       var place = await fromOfflineDB
         .getObject(plID, 'Places', 'places')
         .catch(err => console.error(err));

@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 29.02.2024 16:23:48
+ * Last Modified: 21.03.2024 15:23:15
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -25,20 +25,26 @@
             </v-list-subheader>
 
             <template v-for="(activity, i) in activities" :key="activity">
-              <v-row no-gutters class="align-center" justify="end">
+              <v-row no-gutters class="align-center">
 
                 <!-- v v v v v ACTIVITY LIST v v v v v -->
                 <v-col v-if="!activity.edit" >
                   <v-list-item 
-                    class="pa-2 ma-2" v-on:click="setActivity(activity._id)">
+                    class="pa-4 mr-2" v-on:click="setActivity(activity._id)">
                     <v-list-item-title class="ma-4 text-center">
                       {{ activity.activityNumber }}
                     </v-list-item-title>
+                    <v-tooltip 
+                      v-if="$generalStore.getShowTooltips()" 
+                      activator="parent" 
+                      location="bottom"
+                      :text="$t('openPhrase', { msg: $tc('activity', 1) + ' ' + activity.activityNumber })">
+                    </v-tooltip>
                   </v-list-item>
                 </v-col>
 
                 <!-- v v v v v ACTIVITY EDIT v v v v v -->
-                <v-col id="editActivity" v-else class="align-center">
+                <v-col id="editActivity" v-else>
                   <v-row no-gutters class="justify-center">
 
                     <v-col id="activityBranchOffice" cols="4" class="px-2 py-4">
@@ -52,7 +58,7 @@
                       </v-text-field>
                     </v-col>
 
-                    <v-col id="activityYear" min-width="300px" cols="3" class="px-2 py-4">
+                    <v-col id="activityYear" min-width="300px" cols="2" class="px-2 py-4">
                       <v-text-field 
                         counter
                         hide-details
@@ -65,7 +71,7 @@
                       </v-text-field>
                     </v-col>
 
-                    <v-col id="activityNumber" cols="3" class="px-2 py-4">
+                    <v-col id="activityNumber" cols="2" class="px-2 py-4">
                       <v-text-field 
                         counter 
                         hide-details
@@ -81,75 +87,72 @@
                 </v-col>
 
                 <!-- v v v v v ACTIVITY OPTIONS v v v v v -->
-                <v-menu v-if="!activity.edit" location="bottom">
-                  <template v-slot:activator="{ props }">
-                    <v-btn 
-                      v-if="activity.editor.length>0"
-                      color="primary"
-                      v-bind="props">
-                      {{ this.$t('options') }}
-                      <v-icon>mdi-arrow-down-bold-box</v-icon>
-                    </v-btn>
-                  
-                    <v-btn v-else
-                      color="error"
-                      v-bind="props">
-                      {{ this.$t('options') }}
-                      <v-icon>mdi-arrow-down-bold-box</v-icon>
-                    </v-btn>
-                  </template>
+                <div v-if="!activity.edit">
+                  <v-btn 
+                    class="ma-1" 
+                    color="primary" 
+                    v-on:click="activity.edit = !activity.edit">
+                    <v-icon>mdi-pencil</v-icon>
+                    <v-tooltip 
+                      v-if="$generalStore.getShowTooltips()" 
+                      activator="parent" 
+                      location="bottom"
+                      :text="$t('editPhrase', { msg: $tc('activity', 1) + ' ' + activity.activityNumber })">
+                    </v-tooltip>
+                  </v-btn>
 
-                  <v-list>
-                    <!-- EDIT -->
-                    <v-list-item 
-                      color="primary"
-                      rounded="0"
-                      :block="true"
-                      v-on:click="activity.edit = !activity.edit">
-                      {{ this.$t('edit') }}
-                      <v-icon>mdi-pencil</v-icon>
-                    </v-list-item>
-                    <!-- DELETE -->
-                    <v-list-item 
-                      color="error"
-                      v-on:click="confirmDeletion(activity)">
-                      {{ this.$t('delete') }}
-                      <v-icon>mdi-delete</v-icon>
-                    </v-list-item>
-                    <!-- ADD OTHER EDITOR -->
-                    <v-list-item v-if="this.userStore.authenticated"
-                      color="error"
-                      v-on:click="openAddEditorDialog(activity)">
-                      {{ this.$t('addOtherEditor') }}
-                      <v-icon>mdi-account-plus-outline</v-icon>
-                    </v-list-item> 
-                  </v-list>
-                </v-menu>
+                  <v-btn 
+                    color="error" 
+                    class="ma-1" 
+                    v-on:click="confirmDeletion(activity)">
+                    <v-icon>mdi-delete</v-icon>
+                    <v-tooltip 
+                      v-if="$generalStore.getShowTooltips()" 
+                      activator="parent" 
+                      location="bottom"
+                      :text="$t('deletePhrase', { msg: $tc('activity', 1) + ' ' + activity.activityNumber })">
+                    </v-tooltip>
+                  </v-btn>
+                </div>
 
                 <!-- v v v v v ACTIVITY EDIT SAVE/CANCEL v v v v v -->
                 <div v-else>
                   <!-- SAVE -->
                   <v-btn
-                    class="mx-1" 
-                    color="primary"
+                    class="ma-1" 
+                    color="success"
                     v-on:click="saveActivity(activity)">
                     <v-icon>mdi-content-save-all</v-icon>
+                    <v-tooltip 
+                      v-if="$generalStore.getShowTooltips()" 
+                      activator="parent" 
+                      location="bottom"
+                      :text="$t('savePhrase', { msg: $tc('activity', 1) + ' ' + activity.activityNumber })">
+                    </v-tooltip>
                   </v-btn>
                   <!-- CANCEL -->
                   <v-btn
-                    class="ml-1"
+                    class="ma-1"
                     color="error" 
                     v-on:click="closeActivityEdit(activity)">
                     <v-icon>mdi-close-circle</v-icon>
+                    <v-tooltip 
+                      v-if="$generalStore.getShowTooltips()" 
+                      activator="parent" 
+                      location="bottom"
+                      :text="$t('cancelPhrase', { msg: $tc('activity', 1) + ' ' + activity.activityNumber })">
+                    </v-tooltip>
                   </v-btn>
                 </div>
 
                 <!-- v v v v v ACTIVITY EDITORS/CLOUD SYNC STATUS v v v v v -->
                 <v-btn icon class="ml-2" variant="text"
-                  v-if="activity.editor.length > 0">
+                  v-if="activity.editor.length > 0"
+                  v-on:click="openAddEditorDialog(activity)">
                   <v-tooltip 
                     activator="parent"
-                    location="bottom">
+                    location="bottom"
+                    max-width="150px">
 
                     <v-list 
                       class="mx-n3">
@@ -163,6 +166,11 @@
                         :key="editor">
                         {{ editor }}
                       </v-list-item>
+                      <v-divider></v-divider>
+                      <p class="text-center pt-1">
+
+                        {{ this.$t('addOtherEditor') }}
+                      </p>
                     </v-list>
                   </v-tooltip>
                   <v-icon>mdi-account-check</v-icon>
@@ -184,7 +192,8 @@
                   <v-icon>mdi-account-off-outline</v-icon>
                 </v-btn>
                 
-                <v-btn icon class="mr-2" variant="text"
+                <!-- SYNC STATUS -->
+                <v-btn icon class="mr-2 non-clickable" variant="text"
                   v-if="activity.lastSync > 0">
                   <v-tooltip 
                     activator="parent"
@@ -193,7 +202,8 @@
                   </v-tooltip>
                   <v-icon>mdi-cloud-check</v-icon>
                 </v-btn>
-                <v-btn icon class="mr-2" variant="text" v-else>
+
+                <v-btn icon class="mr-2 non-clickable" variant="text" v-else>
                   <v-tooltip 
                     activator="parent"
                     location="bottom">
@@ -239,7 +249,6 @@
 import Navigation from '../components/Navigation.vue'
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
 import { fromBackend } from '../ConnectionToBackend.js'
-import { generalDataStore } from '../ConnectionToLocalStorage'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 import AddButton from '../components/AddButton.vue'
 import OnlineImport from '../components/OnlineImport.vue'
@@ -257,11 +266,9 @@ export default {
   },
   setup() {
     const userStore = useUserStore();
-    const generalStore = generalDataStore();
 
     return {
       userStore,
-      generalStore
     }
   },
   emits: ['view'],
@@ -313,6 +320,7 @@ export default {
       if (!this.userStore.authenticated) {
         console.log("Not logged in, so only show local activities")
         this.activities = offlineActivities;
+        this.activities.sort((a, b) => (parseInt(a.number) > parseInt(b.number)) ? 1 : -1);
         return;
       }
 
@@ -329,6 +337,7 @@ export default {
             .catch(err => console.error(err));
         });
         this.activities = onlineActivities;
+        this.activities.sort((a, b) => (parseInt(a.number) > parseInt(b.number)) ? 1 : -1);
 
         return;
       }
@@ -383,12 +392,12 @@ export default {
      * @param {String} activityID 
      */
     async setActivity(activityID) {
-      if (this.generalStore.getCurrentObject('activity') !== activityID) {
-        this.generalStore.setCurrentObject(null, "place");
-        this.generalStore.setCurrentObject(null, "position");
+      if (this.$generalStore.getCurrentObject('activity') !== activityID) {
+        this.$generalStore.setCurrentObject(null, "place");
+        this.$generalStore.setCurrentObject(null, "position");
       }
 
-      this.generalStore.setCurrentObject(activityID, "activity");
+      this.$generalStore.setCurrentObject(activityID, "activity");
       this.$router.push({ name: 'PlacesOverview' });
     },
 
@@ -590,9 +599,9 @@ export default {
      * @param {Object} activity 
      */
     async deleteActivity(activity) {
-      this.generalStore.setCurrentObject(null, "activity");
-      this.generalStore.setCurrentObject(null, "place");
-      this.generalStore.setCurrentObject(null, "position");
+      this.$generalStore.setCurrentObject(null, "activity");
+      this.$generalStore.setCurrentObject(null, "place");
+      this.$generalStore.setCurrentObject(null, "position");
 
       var activityIndex = this.activities.indexOf(activity);
 
@@ -631,6 +640,10 @@ export default {
 
 .wrap-text {
   -webkit-line-clamp: unset !important;
+}
+.non-clickable {
+  cursor: default; /* Change cursor to indicate non-clickable */
+  /* pointer-events: none; */ /* Disable pointer events */
 }
 </style>
   

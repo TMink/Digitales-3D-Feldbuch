@@ -2,28 +2,26 @@
  * Created Date: 06.07.2023 13:22:10
  * Author: Julian Hardtung
  * 
- * Last Modified: 29.02.2024 16:00:28
+ * Last Modified: 21.03.2024 17:05:35
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for images of places/positions
  -->
 
 <template>
-  <v-card v-if="images.length === 0">
-    <v-list>
-
-      <!-- IMAGES LIST -->
-      <v-list-subheader >
+  <v-card>
+      <v-card-title> {{ $tc('image', 2) }}</v-card-title>
+      <v-divider v-if="images.length === 0"></v-divider>
+      
+      <v-list-subheader class="pa-4" v-if="images.length === 0">
         {{ $t('not_created_yet', { object: $tc('image', 1) }) }}
       </v-list-subheader>
-
-    </v-list>
   </v-card>
 
   <!-- LIST ITEM -->
-      <v-row no-gutters class="align-center">
+      <v-row no-gutters class="align-center mx-n2">
         <v-col xl="3" md="4" sm="6" v-for="(item, i) in images" :key="item">
-          <v-card class="pa-2 ma-2">
+          <v-card class="pa-2 my-2 ma-1">
             <v-card-title> Nr. {{ item.imageNumber }} </v-card-title>
             <v-card-subtitle> {{ item.title }} </v-card-subtitle>
             
@@ -93,7 +91,8 @@
         show-size 
         v-model="uploadImages" 
         prepend-icon="mdi-camera"
-        accept="image/png, image/jpeg, image/bmp">
+        accept="image/png, image/jpeg, image/bmp"
+        :label="$t('input', { msg: $t('image') })">
       </v-file-input>
 
       <v-card-actions class="justify-center">
@@ -189,7 +188,6 @@
 <script>
 import AddButton from '../components/AddButton.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
-import { generalDataStore } from '../ConnectionToLocalStorage.js';
 import { useWindowSize } from 'vue-window-size';
 import { toRaw } from 'vue';
 
@@ -233,12 +231,10 @@ export default {
   },
   setup() {
     const { width, height } = useWindowSize();
-    const generalStore = generalDataStore();
     
     return {
       windowWidth: width,
       windowHeight: height,
-      generalStore,
     };
   },
   /**
@@ -472,12 +468,12 @@ export default {
      * @returns {String} image title 
      */
     async getAutoImgTitle() {
-      const curActivityID = this.generalStore.getCurrentObject('activity');
+      const curActivityID = this.$generalStore.getCurrentObject('activity');
       const curActivity = await fromOfflineDB
         .getObject(curActivityID, 'Activities', 'activities')
         .catch(err => console.error(err));
 
-      const curPlaceID = this.generalStore.getCurrentObject('place');
+      const curPlaceID = this.$generalStore.getCurrentObject('place');
       const curPlace = await fromOfflineDB
         .getObject(curPlaceID, 'Places', 'places')
         .catch(err => console.error(err));

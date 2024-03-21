@@ -2,7 +2,7 @@
  * Created Date: 29.11.2023 13:29:27
  * Author: Oliver Mertens
  * 
- * Last Modified: 09.02.2024 23:01:15
+ * Last Modified: 21.03.2024 15:58:56
  * Modified By: Julian Hardtung
  * 
  * Description: LandingPage as the first entry point for new users
@@ -10,14 +10,14 @@
 
 <template>
     <div id="wrapper">
-        <Navigation active_tab_prop="" />
+        <!-- <Navigation active_tab_prop="" /> -->
 
         <v-parallax   
             src="src/assets/background/Background_Landingpage.jpg"
             :height="getHeight()">
 
             <div class="d-flex flex-column justify-center align-center text-white">
-              <v-card height="40vh"></v-card>
+              <v-card height="35vh"></v-card>
                 <img 
                   src="src/assets/logos/3DDF_Icon.png" 
                   alt=""
@@ -33,17 +33,25 @@
 
                 <v-row wrap text-xs-center class="text-center">
                   <v-col>
-                    <v-btn v-on:click="routeLogin()" color="primary" class="ma-2" 
-                    prepend-icon="mdi-login-variant">Login</v-btn>
-                    <v-btn 
-                      v-on:click="routeRegistration()" 
-                      color="secondary" class="ma-2"
-                      prepend-icon="mdi-account-plus-outline">
-                      {{ this.$t('registration') }}
+                    <v-row no-gutters>
+                      <v-btn v-on:click="routeLogin()" color="primary" class="ma-2" 
+                        prepend-icon="mdi-login-variant">
+                        Login
+                      </v-btn>
+                      <v-btn 
+                        v-on:click="routeRegistration()" 
+                        color="secondary" class="ma-2"
+                        prepend-icon="mdi-account-plus-outline">
+                        {{ this.$t('registration') }}
+                      </v-btn>
+                    </v-row>
+
+                    <v-btn class="mt-4" color="white" v-on:click="routeActivityOverview()">
+                      {{ $t('continueWithoutAccount')}}
                     </v-btn>
 
-                    <v-card variant="plain" height="10vh"></v-card>
-                    <v-icon size="x-large">mdi-arrow-down-circle</v-icon>
+                    <v-card variant="plain" height="20vh"></v-card>
+                    <v-icon class="bounce" size="x-large">mdi-arrow-down-circle</v-icon>
                   </v-col>
                 </v-row>
             </div>
@@ -216,6 +224,10 @@ export default {
         this.$router.push({ name: 'Registration' });
     },
 
+    routeActivityOverview() {
+        this.$router.push({ name: 'ActivitiesOverview' });
+    },
+
     /**
      * Checks, if the system is running through electron or not
      */
@@ -241,11 +253,12 @@ export default {
       return false;
     },
     getHeight() {
-      if(this.windowHeight > 600){
+      /* if(this.windowHeight > 600){
         return this.windowHeight - 112;
       } else {
         return this.windowHeight + 112;
-      } 
+      } */
+       return this.windowHeight
     },
   }
 }
@@ -255,5 +268,33 @@ export default {
 #test {
     text-align: center;
 }
+
+.bounce {
+  -moz-animation: bounce 2s infinite;
+  -webkit-animation: bounce 2s infinite;
+  animation: bounce 2s ease-out infinite;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-30px);
+  }
+  60% {
+    transform: translateY(-15px);
+  }
+  75% {
+    opacity: 100%;
+  }
+
+  100% {
+    opacity: 0%;
+  }
+}
+
+
+
 </style>
     

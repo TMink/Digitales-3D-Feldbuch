@@ -2,26 +2,26 @@
  * Created Date: 24.06.2023 09:35:44
  * Author: Julian Hardtung
  * 
- * Last Modified: 29.02.2024 15:58:57
+ * Last Modified: 21.03.2024 15:13:05
  * Modified By: Julian Hardtung
  * 
  * Description: Simple button with the fieldbook design for adding things
  -->
 
 <template>
-    <div class="text-center pa-2">
-      <v-tooltip location="bottom" :text="$t('add', {msg: $tc(prop_object, 1)}) ">
-        <template v-slot:activator="{props}">
-
-          <v-btn v-bind="props" v-on:click="onClick()" color="secondary" class="ma-2">
-            <v-icon>mdi-plus-box-multiple</v-icon>
-          </v-btn>
-        </template>
+  <div class="text-center pa-2">
+    <v-btn v-on:click="onClick()" color="secondary" class="ma-2">
+      <v-icon>mdi-plus-box-multiple</v-icon>
+      {{ $t('add') }}
+      <v-tooltip v-if="$generalStore.getShowTooltips()" activator="parent" location="bottom"
+        :text="$t('addMsg', { msg: $tc(prop_object, 1) })">
       </v-tooltip>
-    </div>
+    </v-btn>
+  </div>
 </template>
 
 <script>
+
 export default {
     name: "AddButton",
     props: {

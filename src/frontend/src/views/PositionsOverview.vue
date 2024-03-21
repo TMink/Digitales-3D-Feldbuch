@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 17.02.2024 20:08:41
+ * Last Modified: 21.03.2024 13:37:51
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -11,9 +11,9 @@
 <template>
   <div id="wrapper">
     <Navigation active_tab_prop="2" />
-    <v-row no-gutters class="align-center pa-2">
+    <v-row class="pt-2">
         <v-spacer></v-spacer>
-        <v-card class="ma-2 w-50" variant="text">
+        <v-card class="pa-4" :min-width="windowWidth * 0.55" variant="text">
           <v-row no-gutters class="align-center pa-2">
 
             <!-- SHOW ALL SWITCH-->
@@ -42,21 +42,18 @@
         <v-spacer></v-spacer>
       </v-row>
 
-    <v-form class="px-6">
       <v-row>
         <v-spacer></v-spacer>
 
         <!-- POSITIONS LIST -->
-        <v-card class="pa-3" :min-width="windowWidth * 0.7">
-
+        <v-card class="pt-2" :min-width="windowWidth * 0.65">
           <v-data-table-virtual
             v-show="!showAllInfo"
             :items="filteredPositions"
             fixed-header
             :height="getTableHeight"
             :headers="headers"
-            :sort-by="[{ key: 'positionNumber', order: 'asc' }]"
-            max-height>
+            :sort-by="[{ key: 'positionNumber', order: 'asc' }]">
 
             <template v-slot:item="{ item, index }">
               <tr v-on:click="handleRowClick(item.raw._id)"
@@ -65,29 +62,27 @@
 
                   <!-- POSITION NUMBER -->
                   <td :style="getRowStyle(index)">
-                    <v-list-item-title>
+                    <v-list-item-title class="pl-4">
                       {{ item.raw.positionNumber }}
                     </v-list-item-title>
                   </td>
 
                   <!-- SUB NUMBER -->
                   <td :style="getRowStyle(index)">
-                    <v-list-item-title>
+                    <v-list-item-title class="pl-4">
                       {{ item.raw.subNumber }}
                     </v-list-item-title>
                   </td>
 
                   <!-- TITLE -->
-                  <td class="py-6" :style="getRowStyle(index)">
-                    <v-list-item-title
-                      v-if="item.raw.title.length > 0"
-                      style="min-width:200px" 
-                      class="text-wrap">
+                  <td :style="getRowStyle(index)">
+                    <v-list-item-title v-if="item.raw.title.length > 0"
+                      style="min-width:200px" class="text-wrap">
                       {{ item.raw.title }}
                     </v-list-item-title>
 
-                    <v-list-item-title 
-                      v-if="item.raw.title.length == 0" style="color:dimgrey;">
+                    <v-list-item-title v-if="item.raw.title.length == 0" 
+                      style="color:dimgrey;">
                       -
                     </v-list-item-title>
                   </td>
@@ -336,7 +331,6 @@
         </v-card>
         <v-spacer></v-spacer>
       </v-row>
-      </v-form>
 
       <v-row class="align-center">
       <v-spacer></v-spacer>
@@ -393,7 +387,6 @@ import { fromBackend } from '../ConnectionToBackend.js'
 import AddPosition from '../components/AddPosition.vue';
 import { useWindowSize } from 'vue-window-size';
 import { useUserStore } from '../Authentication';
-import { generalDataStore } from '../ConnectionToLocalStorage.js';
 
 export default {
   name: 'PositionsOverview',
@@ -408,12 +401,10 @@ export default {
   setup() {
     const { width, height } = useWindowSize();
     const userStore = useUserStore();
-    const generalStore = generalDataStore();
     return {
       windowWidth: width,
       windowHeight: height,
       userStore,
-      generalStore
     };
   },
 
@@ -530,7 +521,7 @@ export default {
       // Calculate the required table height based on the number of items
       const numberOfRows = this.positions.length > 0 ? this.positions.length : 1;
       const headerHeight = 56;
-      const rowHeight = 73;
+      const rowHeight = 69;
       const totalTableHeight = numberOfRows * rowHeight + headerHeight;
 
       if (totalTableHeight > (this.windowHeight - 390)) {
@@ -546,7 +537,7 @@ export default {
      * Update reactive Vue.js position data
      */
     async updatePositions() {
-      var curPlaceID = this.generalStore.getCurrentObject('place');
+      var curPlaceID = this.$generalStore.getCurrentObject('place');
 
       this.positions = await fromOfflineDB
         .getAllObjectsWithID(curPlaceID, 'Place', 'Positions', 'positions')
@@ -557,7 +548,7 @@ export default {
      * @deprecated
      */
     async updatePositionsFull() {
-      var curPlaceID = this.generalStore.getCurrentObject('place');
+      var curPlaceID = this.$generalStore.getCurrentObject('place');
 
       var offlinePositions = await fromOfflineDB
         .getAllObjectsWithID(curPlaceID, 'Place', 'Positions', 'positions')
@@ -624,7 +615,7 @@ export default {
     },
 
     async updateModulePresets() {
-      let curPresetID = this.generalStore.getModulesPreset('position');
+      let curPresetID = this.$generalStore.getModulesPreset('position');
 
       if (curPresetID) {
         this.curModulePreset = await fromOfflineDB
@@ -682,7 +673,7 @@ export default {
      */
     moveToPosition(positionID) {
       if (positionID !== 'new') {
-        this.generalStore.setCurrentObject(positionID, 'position');
+        this.$generalStore.setCurrentObject(positionID, 'position');
       }
 
       this.$router.push({ name: 'PositionCreation', params: { positionID: positionID } })
@@ -695,7 +686,7 @@ export default {
      *                --> CAN YOU CALL FUNCTIONS OVER PROPS???
      */
     async addPosition() {
-      var curPlaceID = this.generalStore.getCurrentObject('place');
+      var curPlaceID = this.$generalStore.getCurrentObject('place');
       var curPlace = await fromOfflineDB
         .getObject(curPlaceID, "Places", "places")
         .catch(err => console.error(err));
@@ -753,14 +744,14 @@ export default {
      * Set the toggleAllInfo switch state depending on VueCookies
      */
     setShowAllInfoSwitch() {
-      this.showAllInfo = this.generalStore.getShowAllPosInfo();
+      this.showAllInfo = this.$generalStore.getShowAllPosInfo();
     },
 
     /**
      * Save the change toogle all info state to cookies
      */
     toggleAllInfo() {
-      this.generalStore.toggleShowAllPosInfo(this.showAllInfo);
+      this.$generalStore.toggleShowAllPosInfo(this.showAllInfo);
     },
 
     /**
@@ -801,7 +792,7 @@ export default {
      * @returns {Object} An object containing row style properties
      */
      getRowStyle(index) {
-      var currentTheme = this.generalStore.getTheme();
+      var currentTheme = this.$generalStore.getTheme();
       if (currentTheme !== 'fieldbook_light') {
         return {
           cursor: 'pointer',
@@ -831,7 +822,7 @@ export default {
     },
 
     saveModulePresetToCookies() {
-      this.generalStore.setModulesPreset(this.curModulePreset._id, 'position');
+      this.$generalStore.setModulesPreset(this.curModulePreset._id, 'position');
     },
   }
 }
@@ -854,4 +845,10 @@ td {
 th {
   padding: 6px !important;
 }
+
+table tr>td:last-child {
+  border-bottom: 5px solid #b82828;
+  background: lightgray
+}
+
 </style>

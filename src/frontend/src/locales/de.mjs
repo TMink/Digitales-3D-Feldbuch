@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 29.02.2024 16:37:01
+ * Last Modified: 21.03.2024 17:24:29
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -12,8 +12,8 @@ export default {
   // Words
   autoNaming: "Auto Benennung",
   objectDescribers: "Objektbeschreibung",
-  moduleManagement: "Modul Management",
-  findType: "Fund Typ",
+  moduleManagement: "Modulmanagement",
+  findType: "Fundtyp",
   generalInformation: "Allgemeine Informationen",
   coordinates: "Koordinaten",
   fieldbook: "Digitales 3D-Feldbuch",
@@ -27,7 +27,7 @@ export default {
   image: "Bild | Bilder",
   imageOverview: "Bildübersicht",
   picture: "Bild | Bilder",
-  model: "Modell | Modelle",
+  model: "3D-Modell | 3D-Modelle",
   camera: "Kamera | Kameras",
   changes: "Änderung | Änderungen",
   file: "Datei",
@@ -35,7 +35,7 @@ export default {
   placeNumber: "Stellen-Nr.",
   posNumber: "Positionsnummer | Pos-Nr.",
   subNumber: "Unternummer | Unter-Nr.",
-  posFilter: "Positions Filter",
+  posFilter: "Positionsfilter",
   dating: "Datierung",
   date: "Datum",
   noFind: "Kein Befund",
@@ -124,10 +124,15 @@ export default {
   fill: "Gefüllt",
   fontFamily: "Schriftart",
   fontSize: "Schriftgröße",
+  add: "Hinzufügen",
+  settings: "Einstellungen",
 
   // Phrases
-  add: "{msg} hinzufügen",
+  addMsg: "Neue {msg} hinzufügen",
+  openPhrase: "{msg} öffnen",
   editPhrase: "{msg} bearbeiten",
+  savePhrase: "Änderungen an {msg} speichern",
+  cancelPhrase: "Änderungen an {msg} verwerfen",
   deletePhrase: "{msg} löschen",
   moveObj: "{obj} bewegen",
   measureDist: "Abstand messen",
@@ -135,9 +140,9 @@ export default {
   additional: "Zusätzliche {msg}",
   please_input: "Geben Sie einen {msg} an | Geben Sie eine kurze {msg} an",
   title_of: "Titel des {msg}",
-  input: "{msg} Eingabe",
+  input: "{msg}eingabe",
   showAll: "Alle Infos anzeigen",
-  not_created_yet: "Bisher wurde keine {object} erstellt!",
+  not_created_yet: "Bisher wurden keine {object} erstellt!",
   current_selection: "Aktuelle Auswahl",
   confirm_del: "Möchten Sie wirklich {object} {object_nr} löschen?",
   overview: "{msg} Übersicht",
@@ -147,7 +152,7 @@ export default {
   editModule: "Modul editieren",
   visibilities: "Schlecht | Mäßig | Gut | Sehr gut",
   addMax5: "Füge max. 5 beschreibende Attribute hinzu",
-  noResults: "Keine passenden Attribute gefunden. Drücke `enter`, um ein neues zu erstellen.",
+  noResults: 'Keine passenden Attribute gefunden. Drücke "enter", um ein Neues zu erstellen.',
   noFindDescr:
     "Falls die Stelle kein Befund ist (Arbeitsbereich, Störung, natürliche Verfärbung etc.)",
   restFindDescr:
@@ -164,7 +169,7 @@ export default {
   downloadInfoText:
     "Wenn du planst das Feldbuch ohne eine aktive Internetverbindung zu nutzen, solltest du das Desktop Programm herunterladen.",
   addToYourAccount: "Zu deinem Account hinzufügen",
-  addOtherEditor: "Einen anderen Bearbeiter hinzufügen",
+  addOtherEditor: "Klicken, um einen anderen Bearbeiter hinzuzufügen",
   addEditorToActivity: "Einen anderen Bearbeiter zu dieser Aktivität hinzufügen",
   notLoggedIn: "Sie sind nicht eingeloggt!",
   onlyLocal: "Dieser Eintrag ist nur lokal verfügbar",
@@ -193,4 +198,6 @@ export default {
     "Ein effizienterer Weg, um archäologische Ausgrabungen zu dokumentieren und visualisieren.",
   openIn3D: "In 3D-Bereich öffnen",
   clickToAddToYourAccount: "Klicken, um deinem Account hinzuzufügen",
+  toggleTooltips: "Tooltips Anzeigen",
+  continueWithoutAccount: "Ohne Account fortfahren",
 };

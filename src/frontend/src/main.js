@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 10.02.2024 12:23:58
+ * Last Modified: 21.03.2024 13:45:28
  * Modified By: Julian Hardtung
  * 
  * Description: Vue.js project initialization
@@ -95,5 +95,7 @@ const vuetify = createVuetify({
 
 app.use(vuetify)
 app.use(i18n);
+
+app.config.globalProperties.$generalStore = generalStore;
 
 app.mount('#app')

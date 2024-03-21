@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 17.02.2024 20:13:34
+ * Last Modified: 21.03.2024 13:25:06
  * Modified By: Julian Hardtung
  * 
  * Description: main entry point for the fieldbook + 
@@ -51,11 +51,9 @@ export default {
   setup() {
     const { t } = useI18n() // use as global scope
     const userStore =  useUserStore();
-    const generalStore = generalDataStore();
     return {
       t,
       userStore,
-      generalStore
     }
   },
   props: {
@@ -92,7 +90,7 @@ export default {
   },
 
   async created() {
-    var isInitDone = this.generalStore.getInitDone();
+    var isInitDone = this.$generalStore.getInitDone();
 
     // only initialize Cookies and IndexedDB data once
     if (!isInitDone) {
@@ -100,21 +98,21 @@ export default {
         .catch(err => console.error(err));
       await this.initIndexedDB()
         .catch(err => console.error(err));
-      this.generalStore.setInitDone(true);
+      this.$generalStore.setInitDone(true);
     }
 
     await fromOfflineDB.syncLocalDBs()
       .catch(err => console.error(err));
     this.active_tab = this.active_tab_prop;
-    this.placeID = this.generalStore.getCurrentObject("place");
+    this.placeID = this.$generalStore.getCurrentObject("place");
     if (this.placeID !== null) {
       this.placeIsSet = true
     }
-    this.activityID = this.generalStore.getCurrentObject("activity");
+    this.activityID = this.$generalStore.getCurrentObject("activity");
     if (this.activityID !== null) {
       this.activityIsSet = true
     }
-    this.positionID = this.generalStore.getCurrentObject("position");
+    this.positionID = this.$generalStore.getCurrentObject("position");
     if (this.positionID !== null) {
       this.positionIsSet = true
     }
@@ -190,7 +188,7 @@ export default {
       var placePresetID =
         await fromOfflineDB.addObject(allPlaceModules, 'ModulePresets', 'places')
         .catch(err => console.error(err));
-      this.generalStore.setModulesPreset(placePresetID, 'place');
+      this.$generalStore.setModulesPreset(placePresetID, 'place');
 
       var allPosModules = {
         _id: String(Date.now()),
@@ -218,7 +216,7 @@ export default {
       var posPresetID =
         await fromOfflineDB.addObject(allPosModules, 'ModulePresets', 'positions')
         .catch(err => console.error(err));
-      this.generalStore.setModulesPreset(posPresetID, 'position');
+      this.$generalStore.setModulesPreset(posPresetID, 'position');
     },
 
     deleteCookies() {
