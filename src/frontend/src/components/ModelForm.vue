@@ -145,10 +145,10 @@
         </v-file-input>
 
       <v-card-actions class="justify-center">
-        <v-btn icon color="primary" v-on:click="addModel()">
+        <v-btn icon color="success" v-on:click="addModel()">
           <v-icon>mdi-content-save-all</v-icon>
         </v-btn>
-        <v-btn icon color="error" @click="create_dialog = false">
+        <v-btn icon color="primary" @click="create_dialog = false">
           <v-icon>mdi-close-circle</v-icon>
         </v-btn>
       </v-card-actions>
@@ -235,10 +235,10 @@
           </v-file-input>
 
         <v-card-actions class="justify-center">
-          <v-btn icon color="primary" v-on:click="saveModel()">
+          <v-btn icon color="success" v-on:click="saveModel()">
             <v-icon>mdi-content-save-all</v-icon>
           </v-btn>
-          <v-btn icon color="error" @click="edit_dialog = false; updateModels()">
+          <v-btn icon color="primary" @click="edit_dialog = false; updateModels()">
             <v-icon>mdi-close-circle</v-icon>
           </v-btn>
         </v-card-actions>

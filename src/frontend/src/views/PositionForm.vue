@@ -26,7 +26,7 @@
             <v-tab value="four" rounded="0">
               {{ $tc('model', 2) }}
             </v-tab>
-            <v-btn rounded="0" color="primary" v-on:click="savePosition()">
+            <v-btn rounded="0" color="success" v-on:click="savePosition()">
               {{ $t('save') }}
             </v-btn>
             <v-btn rounded="0" color="error" v-on:click="confirmDeletion(position)">

@@ -2,7 +2,7 @@
  * Created Date: 26.06.2023 15:10:20
  * Author: Julian Hardtung
  * 
- * Last Modified: 13.02.2024 13:42:15
+ * Last Modified: 22.03.2024 12:01:04
  * Modified By: Julian Hardtung
  * 
  * Description: export all (or only specified) data to .pdf or .csv
@@ -230,14 +230,14 @@
             <v-card-actions class="justify-center">
               <v-btn 
                 icon 
-                color="primary" 
+                color="success" 
                 v-on:click="startExport()"
                 :disabled="!exportActivities && !exportPlaces && !exportPositions">
                 <v-icon>mdi-content-save-all</v-icon>
               </v-btn>
               <v-btn 
                 icon 
-                color="error" @click="export_overlay = false">
+                color="primary" @click="export_overlay = false">
                 <v-icon>mdi-close-circle</v-icon>
               </v-btn>
             </v-card-actions>

@@ -96,10 +96,10 @@
       </v-file-input>
 
       <v-card-actions class="justify-center">
-        <v-btn icon color="primary" v-on:click="addMultipleImages()">
+        <v-btn icon color="success" v-on:click="addMultipleImages()">
           <v-icon>mdi-content-save-all</v-icon>
         </v-btn>
-        <v-btn icon color="error" @click="create_dialog = false">
+        <v-btn icon color="primary" @click="create_dialog = false">
           <v-icon>mdi-close-circle</v-icon>
         </v-btn>
       </v-card-actions>
@@ -162,10 +162,10 @@
           </v-file-input>
 
         <v-card-actions class="justify-center">
-          <v-btn icon color="primary" v-on:click="saveImage()">
+          <v-btn icon color="success" v-on:click="saveImage()">
             <v-icon>mdi-content-save-all</v-icon>
           </v-btn>
-          <v-btn icon color="error" @click="edit_dialog = false; updateImages()">
+          <v-btn icon color="primary" @click="edit_dialog = false; updateImages()">
             <v-icon>mdi-close-circle</v-icon>
           </v-btn>
         </v-card-actions>

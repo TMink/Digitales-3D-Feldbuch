@@ -2,7 +2,7 @@
  * Created Date: 29.11.2023 01:45:54
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 16:33:23
+ * Last Modified: 22.03.2024 12:01:56
  * Modified By: Julian Hardtung
  * 
  * Description: Vue component for user login
@@ -65,7 +65,7 @@
                 v-on:click="login()"
                 block
                 class="mb-8"
-                color="primary"
+                color="success"
                 size="large"
                 prepend-icon="mdi-login-variant">        
                 {{ this.$t('login') }}

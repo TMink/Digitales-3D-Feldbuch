@@ -2,7 +2,7 @@
  * Created Date: 11.01.2024 11:48:37
  * Author: Julian Hardtung
  * 
- * Last Modified: 13.02.2024 13:25:14
+ * Last Modified: 22.03.2024 11:59:45
  * Modified By: Julian Hardtung
  * 
  * Description: Selection to download online available data of activities.
@@ -37,7 +37,7 @@
       <v-row no-gutters>
           <v-spacer/>
           <v-btn 
-            color="primary"
+            color="success"
             class="mr-2"
             v-on:click="downloadCheckedActivities()">
             <v-icon>mdi-content-save-all</v-icon>

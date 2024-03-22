@@ -2,7 +2,7 @@
  * Created Date: 17.07.2023 11:31:35
  * Author: Julian Hardtung
  * 
- * Last Modified: 13.02.2024 13:54:20
+ * Last Modified: 22.03.2024 11:57:48
  * Modified By: Julian Hardtung
  * 
  * Description: vue-component for downloading data backups and importing those
@@ -90,7 +90,7 @@
       <v-row no-gutters>
         <v-spacer/>
         <v-btn 
-          color="primary"
+          color="success"
           class="mr-2"
           v-on:click="backupData()">
           <v-icon>mdi-content-save-all</v-icon>

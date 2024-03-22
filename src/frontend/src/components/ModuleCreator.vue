@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 13:27:42
+ * Last Modified: 22.03.2024 11:59:17
  * Modified By: Julian Hardtung
  * 
  * Description: component to create, edit, set input module presets 
@@ -222,13 +222,13 @@
       <v-row no-gutter class="align-center text-center">
         <v-col cols="6">
           <v-btn 
-            color="primary" 
+            color="success" 
             v-show="!editPresetForm" 
             v-on:click="saveNewPreset">
             <v-icon>mdi-content-save-all</v-icon>
           </v-btn>
           <v-btn 
-            color="primary" 
+            color="success" 
             v-show="editPresetForm" 
             v-on:click="saveEditedPreset">
             <v-icon>mdi-content-save-all</v-icon>

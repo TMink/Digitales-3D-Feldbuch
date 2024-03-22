@@ -20,7 +20,7 @@
             <v-tab value="three" rounded="0"> {{ $t('imageOverview') }} </v-tab>
             <v-tab class="hideable" value="four" rounded="0"> {{ $tc('technicalDrawing', 2) }} </v-tab>
             <v-tab class="hideable" value="five" rounded="0"> {{ $tc('model', 2) }} </v-tab>
-            <v-btn rounded="0" v-on:click="savePlace()" color="primary">
+            <v-btn rounded="0" v-on:click="savePlace()" color="success">
               {{ $t('save') }}
             </v-btn>
             <v-btn rounded="0" color="error" v-on:click="confirmDeletion(place)">
