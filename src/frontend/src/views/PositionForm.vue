@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 13:30:44
+ * Last Modified: 21.03.2024 19:15:03
  * Modified By: Julian Hardtung
  * 
  * Description: input page for positions data 
@@ -29,11 +29,11 @@
             <v-btn rounded="0" color="success" v-on:click="savePosition()">
               {{ $t('save') }}
             </v-btn>
+            <v-btn rounded="0" color="primary" v-on:click="goBack">
+              {{ $t('cancel') }}
+            </v-btn>
             <v-btn rounded="0" color="error" v-on:click="confirmDeletion(position)">
               {{ $t('delete') }}
-            </v-btn>
-            <v-btn rounded="0" color="secondary" v-on:click="goBack">
-              {{ $t('cancel') }}
             </v-btn>
             <ConfirmDialog ref="confirm" />
           </v-tabs>

@@ -2,7 +2,7 @@
  * Created Date: 14.07.2023 17:06:51
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 17:28:35
+ * Last Modified: 22.03.2024 11:58:21
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for 3d-models of places/positions
@@ -27,16 +27,16 @@
                 </v-card-title>
               </v-col>
               <v-col class="justify-end mr-4" cols="2">
-                <v-tooltip 
-                :text="$t('openIn3D')"
-                location="bottom">
-                  <template v-slot:activator="{props}">
-                    <v-btn class="mt-2" color="primary" 
-                       v-on:click="editModel(model)">
-                    <v-icon>mdi-pencil</v-icon>
-                  </v-btn>
-                  </template>
-                </v-tooltip>
+                <v-btn class="mt-2" color="primary" 
+                  v-on:click="editModel(model)">
+                  <v-icon>mdi-pencil</v-icon>
+                  <v-tooltip 
+                    v-if="$generalStore.getShowTooltips()" 
+                    activator="parent" 
+                    location="bottom"
+                    :text="$t('editPhrase', { msg: $tc('model', 1) + ' ' + model.title })">
+                  </v-tooltip>
+                </v-btn>
               </v-col>
             </v-row>
             <v-row no-gutters class="align-center">
@@ -71,8 +71,13 @@
                 <v-btn block color="error" 
                   v-on:click="confirmDeletion(model)">
                   <v-icon>mdi-delete</v-icon>
+                  <v-tooltip 
+                    v-if="$generalStore.getShowTooltips()" 
+                    activator="parent" 
+                    location="bottom"
+                    :text="$t('deletePhrase', { msg: $tc('model', 1) + ' ' + model.title })">
+                  </v-tooltip>
                 </v-btn>
-
               </v-col>
             </v-row>
           </v-card>

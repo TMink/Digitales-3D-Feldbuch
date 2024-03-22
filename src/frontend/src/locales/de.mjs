@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 17:24:29
+ * Last Modified: 22.03.2024 11:55:54
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -200,4 +200,5 @@ export default {
   clickToAddToYourAccount: "Klicken, um deinem Account hinzuzufügen",
   toggleTooltips: "Tooltips Anzeigen",
   continueWithoutAccount: "Ohne Account fortfahren",
+  uploadOtherImage: "Hochgeladenes Bilder ändern",
 };

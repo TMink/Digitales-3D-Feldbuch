@@ -2,7 +2,7 @@
  * Created Date: 06.07.2023 13:22:10
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 17:05:35
+ * Last Modified: 22.03.2024 11:57:04
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for images of places/positions
@@ -40,13 +40,27 @@
                 color="primary"
                 class="mr-2"
                 v-on:click="editImage(item)">
-                <v-icon>mdi-pencil</v-icon>
+                <v-icon class="pr-2">mdi-pencil</v-icon>
+                {{ $t('edit') }}
+                <v-tooltip 
+                  v-if="$generalStore.getShowTooltips()" 
+                  activator="parent" 
+                  location="bottom"
+                  :text="$t('editPhrase', { msg: $tc('image', 1) + ' ' + item.title })">
+                </v-tooltip>
               </v-btn>
               
               <v-btn 
                 color="error" 
                 v-on:click="deleteImage(item)">
-                <v-icon>mdi-delete</v-icon>
+                <v-icon class="pr-2">mdi-delete</v-icon>
+                {{ $t('delete') }}
+                <v-tooltip 
+                  v-if="$generalStore.getShowTooltips()" 
+                  activator="parent" 
+                  location="bottom"
+                  :text="$t('deletePhrase', { msg: $tc('image', 1) + ' ' + item.title })">
+                </v-tooltip>
               </v-btn>
             </v-row>
           </v-card>
@@ -158,6 +172,7 @@
             show-size 
             v-model="temp_editing_img" 
             prepend-icon="mdi-camera"
+            :label="$t('uploadOtherImage')"
             accept="image/png, image/jpeg, image/bmp">
           </v-file-input>
 

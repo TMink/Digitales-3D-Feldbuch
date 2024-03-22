@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 16:59:34
+ * Last Modified: 22.03.2024 12:04:03
  * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
@@ -23,15 +23,15 @@
             <v-btn rounded="0" v-on:click="savePlace()" color="success">
               {{ $t('save') }}
             </v-btn>
+            <v-btn rounded="0" v-on:click="cancelPlace" color="primary">
+              {{ $t('cancel') }}
+            </v-btn>
             <v-btn rounded="0" color="error" v-on:click="confirmDeletion(place)">
               {{ $t('delete') }}
             </v-btn>
 
             <ConfirmDialog ref="confirm" />
 
-            <v-btn rounded="0" v-on:click="cancelPlace" color="secondary">
-              {{ $t('cancel') }}
-            </v-btn>
           </v-tabs>
         </v-card>
       </v-col>
@@ -129,8 +129,12 @@
             </div>
             <v-row justify="end">
               <v-col class="text-left mt-2">
-                <v-btn color="primary" class="mr-2"><v-icon>mdi-content-save-all</v-icon></v-btn>
-                <v-btn @click="downloadImage()" color="primary"><v-icon>mdi-download</v-icon></v-btn>
+                <v-btn color="success" class="mr-2">
+                  <v-icon>mdi-content-save-all</v-icon>
+                </v-btn>
+                <v-btn @click="downloadImage()" color="success">
+                  <v-icon>mdi-download</v-icon>
+                </v-btn>
               </v-col>
             </v-row>
           </v-window-item>
@@ -370,6 +374,13 @@ export default {
     this.hideNonTechnicalTabs();
     this.componentHasLoaded = true;
     this.hasUnsavedChanges = false;
+  },
+
+  watch: {
+    'place': {
+      handler: 'handlePlaceChange',
+      deep: true,
+    },
   },
 
   computed: {

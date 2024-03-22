@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 15:23:15
+ * Last Modified: 22.03.2024 11:12:15
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -92,7 +92,8 @@
                     class="ma-1" 
                     color="primary" 
                     v-on:click="activity.edit = !activity.edit">
-                    <v-icon>mdi-pencil</v-icon>
+                    <v-icon class="pr-2">mdi-pencil</v-icon>
+                    {{ $t('edit') }}
                     <v-tooltip 
                       v-if="$generalStore.getShowTooltips()" 
                       activator="parent" 
@@ -105,7 +106,8 @@
                     color="error" 
                     class="ma-1" 
                     v-on:click="confirmDeletion(activity)">
-                    <v-icon>mdi-delete</v-icon>
+                    <v-icon class="pr-2">mdi-delete</v-icon>
+                    {{ $t('delete') }}
                     <v-tooltip 
                       v-if="$generalStore.getShowTooltips()" 
                       activator="parent" 
@@ -122,7 +124,8 @@
                     class="ma-1" 
                     color="success"
                     v-on:click="saveActivity(activity)">
-                    <v-icon>mdi-content-save-all</v-icon>
+                    <v-icon class="pr-2">mdi-content-save-all</v-icon>
+                    {{ $t('save') }}
                     <v-tooltip 
                       v-if="$generalStore.getShowTooltips()" 
                       activator="parent" 
@@ -135,7 +138,8 @@
                     class="ma-1"
                     color="error" 
                     v-on:click="closeActivityEdit(activity)">
-                    <v-icon>mdi-close-circle</v-icon>
+                    <v-icon class="pr-2">mdi-close-circle</v-icon>
+                    {{ $t('cancel') }}
                     <v-tooltip 
                       v-if="$generalStore.getShowTooltips()" 
                       activator="parent" 
