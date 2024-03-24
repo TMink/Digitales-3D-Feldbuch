@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 19:15:03
+ * Last Modified: 24.03.2024 19:38:43
  * Modified By: Julian Hardtung
  * 
  * Description: input page for positions data 
@@ -151,6 +151,14 @@ export default {
         lastChanged: Date.now(),
         lastSync: 0,
         testBool: false,
+
+        modulePreset: {
+          general: true,
+          coordinates: true,
+          dating: true,
+          objectDescribers: true,
+          technical: false,
+        }
       },
       materials: [],
       titles: [],
@@ -269,6 +277,9 @@ export default {
         case 'height':
           this.position.height = data[1];
           break;
+        case 'modulePreset.coordinates':
+          this.position.modulePreset.coordinates = data[1];
+          break;
 
         /* Module: General */
         case 'description':             
@@ -293,6 +304,14 @@ export default {
           this.position.subNumber = data[1];
           break;
 
+        /* Module: Dating */
+        case 'dating':
+          this.position.dating = data[1];
+          break;
+        case 'modulePreset.dating':
+          this.position.modulePreset.dating = data[1];
+          break;
+
         /* Module: ObjectDescriber */
         case 'material':
           this.position.material = data[1];
@@ -303,9 +322,10 @@ export default {
         case 'count':
           this.position.count = data[1];
           break;
-        case 'dating':
-          this.position.dating = data[1];
+        case 'modulePreset.objectDescribers':
+          this.position.modulePreset.objectDescribers = data[1];
           break;
+
         default:
           console.log( 'Cant specify emitted data: ' + data[0] );
       }

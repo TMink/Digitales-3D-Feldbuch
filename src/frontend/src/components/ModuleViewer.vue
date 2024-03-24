@@ -2,7 +2,7 @@
  * Created Date: 06.09.2023 17:19:12
  * Author: Julian Hardtung
  * 
- * Last Modified: 22.02.2024 14:00:50
+ * Last Modified: 24.03.2024 19:22:27
  * Modified By: Julian Hardtung
  * 
  * Description: input module viewer that shows all modules that are 
@@ -11,44 +11,57 @@
 
  <template>
   <v-container fluid class="pa-0 ma-0"> 
-    <v-row>
 
-        <ModuleGeneral v-if='object.modulePreset.general'
-          :objectProp="object"
-          :titleItemsSecondProp="titleItemsFirstProp"
-          :editorItemsSecondProp="editorItemsFirstProp"
-          @dataToModuleViewer="sendData($event)"/>
+    <ModuleTechnical v-if='this.object.placeNumber == 1'
+      :objectProp="object"
+      @dataToModuleViewer="sendData($event)"/>
+      
+    <v-row no-gutters v-else >
 
-        <ModuleCoordinates v-if='object.modulePreset.coordinates'
-          :objectProp="object"
-          @dataToModuleViewer="sendData($event)"/>
-                  
-        <ModuleFindTypes v-if='object.modulePreset.findTypes'
-          :objectProp="object"
-          @dataToModuleViewer="sendData($event)"/>
-          
-        <ModulePlane v-if='object.modulePreset.plane'
-          :planeProp="object.plane"
-          @dataToModuleViewer="sendData($event)"/>
+      <ModuleGeneral
+        :objectProp="object"
+        :titleItemsSecondProp="titleItemsFirstProp"
+        :editorItemsSecondProp="editorItemsFirstProp"
+        @dataToModuleViewer="sendData($event)"/>
 
-        <ModuleVisibility v-if='object.modulePreset.visibility'
-          :visibilityProp="object.visibility"
-          @dataToModuleViewer="sendData($event)"/>
-          
-        <ModuleDating v-if='object.modulePreset.dating'
-          :datingProp="object.dating"
-          :datingItemsSecondProp="datingItemsFirstProp"
-          @dataToModuleViewer="sendData($event)"/>
+      <v-col cols="6">
+        <ModuleCoordinates
+        :objectProp="object"
+        @dataToModuleViewer="sendData($event)"/>
+
+      <ModuleVisibility
+        v-if="$route.path.substring($route.path.indexOf('/') + 1, $route.path.lastIndexOf('/')) == 'places'"
+        :visibilityProp="object.visibility"
+        :showModuleProp="object.modulePreset.visibility"
+        @dataToModuleViewer="sendData($event)"/>
+
+      <ModulePlane
+        v-if="$route.path.substring($route.path.indexOf('/') + 1, $route.path.lastIndexOf('/')) == 'places'"
+        :planeProp="object.plane"
+        :showModuleProp="object.modulePreset.plane"
+        @dataToModuleViewer="sendData($event)"/>
+
+      <ModuleObjectDescribers
+        v-if="$route.path.substring($route.path.indexOf('/') + 1, $route.path.lastIndexOf('/')) == 'positions'"
+        :objectProp="object"
+        :materialItemsSecondProp="materialItemsFirstProp"
+        @dataToModuleViewer="sendData($event)"/>
+
+      </v-col>
+
+      <v-col cols="6">
+        <ModuleDating
+        :datingProp="object.dating"
+        :showModuleProp="object.modulePreset.dating"
+        :datingItemsSecondProp="datingItemsFirstProp"
+        @dataToModuleViewer="sendData($event)"/>
         
-        <ModuleObjectDescribers v-if='object.modulePreset.objectDescribers'
-          :objectProp="object"
-          :materialItemsSecondProp="materialItemsFirstProp"
-          @dataToModuleViewer="sendData($event)"/>
-        
-        <ModuleTechnical v-if='object.modulePreset.technical'
-          :objectProp="object"
-          @dataToModuleViewer="sendData($event)"/>
+        <ModuleFindTypes
+        v-if="$route.path.substring($route.path.indexOf('/') + 1, $route.path.lastIndexOf('/')) == 'places'"
+        :objectProp="object"
+        @dataToModuleViewer="sendData($event)"/>
 
+      </v-col>        
     </v-row>
   </v-container>
 </template>
@@ -104,15 +117,13 @@ export default {
         dating: '',
         technical: '',
         modulePreset: {
-          coordinates: false,
-          dating: false,
-          findTypes: false,
-          general: false,
-          _id: false,
-          objectDescribers: false,
-          plane: false,
-          title: false,
-          visibility: false,
+          coordinates: true,
+          dating: true,
+          findTypes: true,
+          general: true,
+          objectDescribers: true,
+          plane: true,
+          visibility: true,
           technical: false,
         }
       },
@@ -121,7 +132,7 @@ export default {
     }
   },
 
-  async beforeCreate() {
+  async created() {
     await fromOfflineDB.syncLocalDBs()
       .catch(err => console.error(err));
     const path = this.$route.path;
@@ -134,6 +145,7 @@ export default {
   methods: {
 
     async updateObject() {
+      
       this.object = await fromOfflineDB
         .getObject(this._id, this.pathNames.db, this.pathNames.os)
         .catch(err => console.error(err));

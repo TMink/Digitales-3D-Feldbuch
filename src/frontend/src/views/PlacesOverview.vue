@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 13:38:23
+ * Last Modified: 24.03.2024 19:42:48
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -316,16 +316,6 @@
     <v-row class="align-center">
       <v-spacer></v-spacer>
       <AddButton v-on:click="addPlace()" prop_object="place" />
-      <v-btn @click="moduleCreatorOverlay = !moduleCreatorOverlay" color="primary">
-        <v-icon>mdi-tune-vertical</v-icon>
-        <v-row no-gutters>
-          <v-col>
-            <v-card-subtitle>
-              {{ curModulePreset.title }}
-            </v-card-subtitle>
-          </v-col>
-        </v-row>
-      </v-btn>
 
       <!-- DUPLICATE SWITCH -->
       <v-switch class="pl-5" v-model="toggleDuplicate" 
@@ -344,8 +334,8 @@
       </v-snackbar>
     </v-row>
   </div>
-  <ModuleCreator v-model="moduleCreatorOverlay" objectTypeProp="places" 
-    @updateModulePresets="updateModulePresets()" />
+  <!-- <ModuleCreator v-model="moduleCreatorOverlay" objectTypeProp="places" 
+    @updateModulePresets="updateModulePresets()" /> -->
 </template>
 
 <script>
@@ -427,10 +417,10 @@ export default {
         { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
         { title: this.$t('syncStatus'), align: 'start', key: 'status', width: "100px"}
       ],
-      curModulePreset: {
+      /* curModulePreset: {
         title: '-',
       },
-      moduleCreatorOverlay: false,
+      moduleCreatorOverlay: false, */
     };
   },
 
@@ -643,7 +633,14 @@ export default {
         images: [],
         models: [],
         lines: [],
-        modulePreset: {},
+        modulePreset: {
+          coordinates: true,
+          dating: true,
+          findTypes: true,
+          plane: true,
+          visibility: true,
+          technical: false,
+        },
         lastChanged: Date.now(),
         lastSync: 0
       }
@@ -653,16 +650,16 @@ export default {
         newPlace.placeNumber = 1;
 
         //set place to technical place if it is the 1. place
-        newPlace.modulePreset = await fromOfflineDB
+        /* newPlace.modulePreset = await fromOfflineDB
           .getFirstEntry('ModulePresets', 'places')
-          .catch(err => console.error(err));
+          .catch(err => console.error(err)); */
       } else {
         const placeNumbers = await fromOfflineDB
           .getPropertiesWithID(acID, 'place', 'placeNumber', 'Places', 'places')
           .catch(err => console.error(err));
         const newPlaceNumber = Math.max(...placeNumbers) + 1;
         newPlace.placeNumber = newPlaceNumber;
-        newPlace.modulePreset = toRaw(this.curModulePreset);
+        /* newPlace.modulePreset = toRaw(this.curModulePreset); */
       }
 
       // update IndexedDB
@@ -717,9 +714,9 @@ export default {
     /**
      * Opens the module presets overlay
      */
-    openPresetOverlay() {
+    /* openPresetOverlay() {
       this.moduleCreatorOverlay = true;
-    },
+    }, */
 
     /**
      * Routes to the place form of `placeID`

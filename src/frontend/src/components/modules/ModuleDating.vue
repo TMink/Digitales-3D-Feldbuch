@@ -2,24 +2,36 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 08.12.2023 14:21:59
+ * Last Modified: 24.03.2024 18:56:51
  * Modified By: Julian Hardtung
  * 
  * Description: `dating` input module for places/positions
  -->
 
 <template>
-	<v-col lg="6">
-		<v-card class="pa-4">
-			<h2 class="text-h6 font-weight-medium pb-1">
-				{{ $t('dating') }}
-			</h2>
+		<v-card class="mb-4 mr-2 pb-4 px-4">
+      <v-row no-gutters class="pt-2">
+        <h2 class="text-h6 font-weight-medium pt-2">
+          {{ $t('dating') }}
+        </h2>
+        
+        <v-spacer></v-spacer>
+
+        <!-- HIDE/SHOW MODULE BUTTON -->
+        <v-btn flat icon v-on:click="showModule = !showModule">
+          <v-icon v-if="showModule">mdi-eye-outline</v-icon>
+          <v-icon v-else>mdi-eye-off-outline</v-icon>
+        </v-btn>
+      </v-row>
+
 			<v-divider></v-divider>
+
 			<v-combobox 
+        v-if="showModule"
 				hide-details 
 				counter 
 				color="primary" 
-				style="padding-top: 46px" 
+				style="padding-top: 45px" 
 				:items="datingItemsSecondProp"
 				:label="$t('dating')" 
 				:hide-no-data="false" 
@@ -33,8 +45,8 @@
 					</v-list-item>
 				</template>
 			</v-combobox>
+      <v-row v-else no-gutters style="padding-top:6px"></v-row>
 		</v-card>
-	</v-col>
 </template>
 
 <script>
@@ -43,6 +55,7 @@ export default {
 	props: {
 		datingProp: String,
 		datingItemsSecondProp: Array,
+    showModuleProp: Boolean,
 	},
 
 	emits: ['dataToModuleViewer'],
@@ -52,11 +65,17 @@ export default {
 			datings: null,
 			dating: null,
 			pathNames: null,
-
+      showModule: true,
 		}
 	},
 
 	watch: {
+    showModuleProp: function(showModuleBool) {
+      this.showModule = showModuleBool;
+    },
+    datingProp: function(datingPropData) {
+        this.dating = datingPropData;
+    },
 		"dating": {
 			handler: function () {
 				if (this.dating != null) {
@@ -64,12 +83,20 @@ export default {
 					this.$emit("dataToModuleViewer", ['dating', this.dating]);
 				}
 			}
-		}
+		},
+    'showModule': {
+      handler: function() {
+        if (this.showModule != null) {
+          this.$emit("dataToModuleViewer", [ 'modulePreset.dating', this.showModule ]);
+        }
+      }
+    },
 	},
 
 	async created() {
 		//this.datings = JSON.parse(import.meta.env.VITE_DATINGS);
 		this.dating = this.datingProp;
+    this.showModule = this.showModuleProp;
 	},
 
 }

@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 09.01.2024 12:18:43
+ * Last Modified: 24.03.2024 18:59:04
  * Modified By: Julian Hardtung
  * 
  * Description: `object descriptors` input module for positions
@@ -10,63 +10,65 @@
 
 <template>
   <!-- CARD 3 COUNT -->
-  <v-col cols="6">
-    <v-card class="pa-4">
-      <h2 class="text-h6 font-weight-medium pl-3 pb-1">
-        {{ $t('objectDescribers') }}
-      </h2>
-      <v-divider class="ml-3"></v-divider>
-      <v-row style="padding-top: 58px;">
-          <v-text-field 
-            color="primary" 
-            hide-details
-            class="pl-6 pr-3 pb-3"
-            :label="$t('count')"  
-            v-model="object.count"
-            @keypress="filterAllNonNumeric(event)" 
-            :hint="$tc('please_input', 2, { msg: 'Anzahl' })">
-          </v-text-field>
-        <v-divider vertical class="mt-n3"/>
-          <v-text-field
-            color="primary" 
-            :label="$t('weight')" 
-            hide-details
-            class="px-3 pb-3"
-            v-model="object.weight"
-            @keypress="filterNonNumeric(event)" 
-            :hint="$tc('please_input', 2, { msg: 'Gewicht' })">
-          </v-text-field>
-      </v-row>
-    </v-card>
-  </v-col>
-
-  <!-- CARD 5 MATERIAL -->
-  <v-col cols="6">
-      <v-card class="pa-4">
-        <h2 class="text-h6 font-weight-medium pb-1">
-          {{ $t('material') }}
+    <v-card class="mb-4 mr-2 pb-4 px-4">
+      <v-row no-gutters class="pt-2">
+        <h2 class="text-h6 font-weight-medium pt-2">
+          {{ $t('objectDescribers') }}
         </h2>
-        <v-divider class="mr-3 pb-4"/>
-        <v-combobox
-            color="primary"
-            :label="$t('material')"
-            :items="materialItemsSecondProp"
-            hide-details
-            class="pr-3"
-            style="padding-top: 29px;"
-            v-model="object.material"
-            :hint="$tc('please_input', 2, { msg: 'Material' })">
-        </v-combobox>
+        
+        <v-spacer></v-spacer>
 
-        <template v-slot:no-data>
-          <v-list-item>
-            <v-list-item-title>
-              {{ $t('noResults') }}
-            </v-list-item-title>
-          </v-list-item>
-        </template>
-      </v-card>
-  </v-col>
+        <!-- HIDE/SHOW MODULE BUTTON -->
+        <v-btn flat icon v-on:click="object.modulePreset.objectDescribers = !object.modulePreset.objectDescribers">
+          <v-icon v-if="object.modulePreset.objectDescribers">mdi-eye-outline</v-icon>
+          <v-icon v-else>mdi-eye-off-outline</v-icon>
+        </v-btn>
+      </v-row>
+
+      <v-divider></v-divider>
+      
+      <v-row v-if="object.modulePreset.objectDescribers" no-gutters style="padding-top:37px" >
+        <v-col cols="3">
+
+          <v-text-field 
+          color="primary" 
+          hide-details
+          class="pr-3 pb-2"
+          :label="$t('count')"  
+          v-model="object.count"
+          @keypress="filterAllNonNumeric(event)" 
+          :hint="$tc('please_input', 2, { msg: 'Anzahl' })">
+        </v-text-field>
+      </v-col>
+      <v-divider vertical class="mt-n3"/>
+      <v-col cols="3">
+
+        <v-text-field
+        color="primary" 
+        :label="$t('weight')" 
+        hide-details
+        class="px-3 pb-2"
+        v-model="object.weight"
+        @keypress="filterNonNumeric(event)" 
+        :hint="$tc('please_input', 2, { msg: 'Gewicht' })">
+      </v-text-field>
+    </v-col>
+    <v-divider vertical class="mt-n3"/>
+    <v-col cols="6">
+
+      <v-combobox
+        color="primary"
+        :label="$t('material')"
+        :items="materialItemsSecondProp"
+        hide-details
+        class="pl-3 pb-2"
+        v-model="object.material"
+        :hint="$tc('please_input', 2, { msg: 'Material' })">
+      </v-combobox>
+    </v-col>
+      </v-row>
+      <v-row v-else no-gutters style="padding-top:6px"></v-row>
+    </v-card>
 </template>
 
 <script>
@@ -91,6 +93,9 @@ export default {
   },
 
   watch: {
+    objectProp: function(objectPropData) {
+      this.object = objectPropData;
+    },
     "object.material": {
       handler: function () {
         if (this.object.material != null) {
@@ -114,12 +119,21 @@ export default {
           this.$emit("dataToModuleViewer", ['count', this.object.count]);
         }
       }
-    }
+    },
+    "object.modulePreset.objectDescribers": {
+        handler: function() {
+          if ( this.object.modulePreset.objectDescribers != null) {
+            /* Send data back to ModuleViewer.vue */
+            this.$emit("dataToModuleViewer", [ 'modulePreset.objectDescribers', this.object.modulePreset.objectDescribers ]);
+          }
+        }
+      }
   },
 
   async created() {
     //this.materials = JSON.parse(import.meta.env.VITE_MATERIALS);
     this.object = this.objectProp;
+    this.showModule = this.objectProp.modulePreset.findTypes;
   },
 
   methods: {

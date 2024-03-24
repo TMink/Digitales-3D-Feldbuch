@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 13:37:51
+ * Last Modified: 24.03.2024 19:40:08
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -337,18 +337,6 @@
       <AddPosition 
         :positions_prop="positions" 
         @updatePositions="updatePositions()"/>
-      <v-btn 
-        @click="moduleCreatorOverlay = !moduleCreatorOverlay"
-        color="primary">
-        <v-icon>mdi-tune-vertical</v-icon>
-        <v-row no-gutters>
-          <v-col>
-            <v-card-subtitle>
-              {{  curModulePreset.title }}
-            </v-card-subtitle>
-          </v-col>
-        </v-row>
-      </v-btn>
 
       <!-- DUPLICATE SWITCH -->
       <v-switch
@@ -372,10 +360,6 @@
       </v-snackbar>
     </v-row>
   </div>
-  <ModuleCreator 
-    v-model="moduleCreatorOverlay" 
-    objectTypeProp="positions"
-    @updateModulePresets="updateModulePresets()"/>
 </template>
 
 <script>
@@ -473,7 +457,6 @@ export default {
       curModulePreset: {
         title: '-',
       },
-      moduleCreatorOverlay: false,
       toggleDuplicate: false,
     };
   },
@@ -716,11 +699,15 @@ export default {
 
         images: [],
         models: [],
+        modulePreset: {
+          coordinates: true,
+          dating: true,
+          objectDescribers: true,
+          technical: false,
+        },
         lastChanged: Date.now(),
         lastSync: 0
       };
-
-      newPosition.modulePreset = toRaw(this.curModulePreset);
 
       if (this.positions.length == 0) {
         newPosition.positionNumber = 1;

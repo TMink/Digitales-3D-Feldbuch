@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 22.03.2024 12:04:03
+ * Last Modified: 24.03.2024 19:28:36
  * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
@@ -277,6 +277,16 @@ export default {
 
         /* Visibility */
         visibility: '',
+
+        modulePreset: {
+          general: true,
+          coordinates: true,
+          dating: true,
+          findTypes: true,
+          plane: true,
+          technical: false,
+          visibility: true,
+        }
       },
       headers: [
         {
@@ -422,10 +432,16 @@ export default {
         case 'depthBot':
           this.place.depthBot = data[1];
           break;
+        case 'modulePreset.coordinates':
+          this.place.modulePreset.coordinates = data[1];
+          break;
 
         /* Module: Dating */
         case 'dating':
           this.place.dating = data[1];
+          break;
+        case 'modulePreset.dating':
+          this.place.modulePreset.dating = data[1];
           break;
 
         /* Module: FindTypes */
@@ -434,6 +450,9 @@ export default {
           break;
         case 'restFinding':
           this.place.restFinding = data[1];
+          break;
+        case 'modulePreset.findTypes':
+          this.place.modulePreset.findTypes = data[1];
           break;
 
         /* Module: General */
@@ -454,6 +473,9 @@ export default {
         case 'plane':
           this.place.plane = data[1];
           break;
+        case 'modulePreset.plane':
+          this.place.modulePreset.plane = data[1];
+          break;
 
         /* Module: PositionList */
         case 'resetBool':
@@ -468,6 +490,9 @@ export default {
         /* Module: Visibility */
         case 'visibility':
           this.place.visibility = data[1];
+          break;
+        case 'modulePreset.visibility':
+          this.place.modulePreset.visibility = data[1];
           break;
 
         default:

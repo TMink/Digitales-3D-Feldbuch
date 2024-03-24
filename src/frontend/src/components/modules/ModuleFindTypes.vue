@@ -2,42 +2,53 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 08.12.2023 14:20:51
+ * Last Modified: 24.03.2024 19:29:03
  * Modified By: Julian Hardtung
  * 
  * Description: `find types` input module for places
  -->
 
 <template>
-  <v-col lg="6" >
-    <v-card class="pa-4">
-      <h2 class="text-h6 font-weight-medium pb-1">
+  <v-card class="mb-4 mr-2 pb-4 px-4">
+    <v-row no-gutters class="pt-2">
+      <h2 class="text-h6 font-weight-medium pt-2">
         {{ $t('findType') }}
       </h2>
-      <v-divider></v-divider>
-      <v-row no-gutters class="mt-4">
-        <v-col cols="6">
-          <v-checkbox
-            color="primary"
-            persistent-hint 
-            :label="$t('noFind')" 
-            :hint="$t('noFindDescr')"
-            v-model="object.noFinding">
-          </v-checkbox>
-        </v-col>
+      
+      <v-spacer></v-spacer>
 
-        <v-col cols="6">
-          <v-checkbox 
-            persistent-hint 
-            color="secondary"
-            :hint="$t('restFindDescr')" 
-            :label="$t('restFind')"
-            v-model="object.restFinding">
-          </v-checkbox>
-        </v-col>
-      </v-row>
-    </v-card>
-  </v-col>
+      <!-- HIDE/SHOW MODULE BUTTON -->
+      <v-btn flat icon v-on:click="object.modulePreset.findTypes = !object.modulePreset.findTypes">
+        <v-icon v-if="object.modulePreset.findTypes">mdi-eye-outline</v-icon>
+        <v-icon v-else>mdi-eye-off-outline</v-icon>
+      </v-btn>
+    </v-row>
+
+    <v-divider></v-divider>
+
+    <v-row v-if="object.modulePreset.findTypes" no-gutters class="mt-4">
+      <v-col cols="6">
+        <v-checkbox
+          color="primary"
+          persistent-hint 
+          :label="$t('noFind')" 
+          :hint="$t('noFindDescr')"
+          v-model="object.noFinding">
+        </v-checkbox>
+      </v-col>
+
+      <v-col cols="6">
+        <v-checkbox 
+          persistent-hint 
+          color="secondary"
+          :hint="$t('restFindDescr')" 
+          :label="$t('restFind')"
+          v-model="object.restFinding">
+        </v-checkbox>
+      </v-col>
+    </v-row>
+    <v-row v-else no-gutters style="padding-top:6px"></v-row>
+  </v-card>
 </template>
 
 <script>
@@ -60,6 +71,9 @@
 		},
 
     watch: {
+      objectProp: function(objectPropData) {
+        this.object = objectPropData;
+      },
       "object.noFinding": {
         handler: function() {
           if ( this.object.noFinding != null ) {
@@ -73,6 +87,14 @@
           if ( this.object.restFinding != null ) {
             /* Send data back to ModuleViewer.vue */
             this.$emit("dataToModuleViewer", [ 'restFinding', this.object.restFinding ]);
+          }
+        }
+      },
+      "object.modulePreset.findTypes": {
+        handler: function() {
+          if ( this.object.modulePreset.findTypes != null) {
+            /* Send data back to ModuleViewer.vue */
+            this.$emit("dataToModuleViewer", [ 'modulePreset.findTypes', this.object.modulePreset.findTypes ]);
           }
         }
       }
