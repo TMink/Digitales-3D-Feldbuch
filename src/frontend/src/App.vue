@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 13:25:06
+ * Last Modified: 24.03.2024 19:12:49
  * Modified By: Julian Hardtung
  * 
  * Description: main entry point for the fieldbook + 
@@ -37,7 +37,6 @@ import LocaleChanger from './components/LocaleChanger.vue';
 import DataBackup from './components/DataBackup.vue';
 import { fromOfflineDB } from './ConnectionToOfflineDB.js';
 import { useUserStore } from './Authentication.js';
-import { generalDataStore } from './ConnectionToLocalStorage.js';
 import { useI18n } from 'vue-i18n'
 
 export default {
@@ -176,7 +175,6 @@ export default {
         plane: true,
         findTypes: true,
         visibility: true,
-        positionslist: true,
 
         //position specific
         objectDescribers: false,
