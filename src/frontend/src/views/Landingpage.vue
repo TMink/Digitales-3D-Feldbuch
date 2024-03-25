@@ -2,7 +2,7 @@
  * Created Date: 29.11.2023 13:29:27
  * Author: Oliver Mertens
  * 
- * Last Modified: 21.03.2024 15:58:56
+ * Last Modified: 25.03.2024 12:33:51
  * Modified By: Julian Hardtung
  * 
  * Description: LandingPage as the first entry point for new users
@@ -13,13 +13,13 @@
         <!-- <Navigation active_tab_prop="" /> -->
 
         <v-parallax   
-            src="src/assets/background/Background_Landingpage.jpg"
+            src="/src/assets/background/Background_Landingpage.jpg"
             :height="getHeight()">
 
             <div class="d-flex flex-column justify-center align-center text-white">
               <v-card height="35vh"></v-card>
                 <img 
-                  src="src/assets/logos/3DDF_Icon.png" 
+                  src="/src/assets/logos/3DDF_Icon.png" 
                   alt=""
                   height="100"
                   class="mb-4"/>

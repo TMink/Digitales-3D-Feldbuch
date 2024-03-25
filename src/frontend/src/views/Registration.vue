@@ -2,7 +2,7 @@
  * Created Date: 29.11.2023 01:45:44
  * Author: Julian Hardtung
  * 
- * Last Modified: 13.02.2024 13:45:13
+ * Last Modified: 25.03.2024 12:34:35
  * Modified By: Julian Hardtung
  * 
  * Description: Vue component for user registration
@@ -13,11 +13,11 @@
     <Navigation active_tab_prop="" />
 
     <v-img cover :height="getHeight()"
-      src="src/assets/background/Background_Landingpage.jpg">
+      src="/src/assets/background/Background_Landingpage.jpg">
       <v-row class="align-center text-center justify-center pt-16 mt-16">
         <v-col>
           <img 
-            src="src/assets/logos/3DDF_Icon.png" 
+            src="/src/assets/logos/3DDF_Icon.png" 
             alt=""
             height="100"
             class="mb-4"/>
