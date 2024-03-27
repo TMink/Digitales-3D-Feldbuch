@@ -2,7 +2,7 @@
  Created Date: 17.11.2023 16:18:33
  Author: Tobias Mink
  
- Last Modified: 21.03.2024 18:23:15
+ Last Modified: 21.03.2024 20:08:17
  Modified By: Tobias Mink
  
  Description: 
@@ -105,6 +105,177 @@
               </v-col>
             </v-row>
             
+            <!-- Segmentation Tool -->
+            <v-row>
+              <v-col>
+                <v-card width="100%" color="transparent" class="pa-2" 
+                  elevation="0">
+
+                  <!-- Checkboxes -->
+                  <v-row>
+                    <v-col>
+                      
+                      <v-card color="secondary">
+                        <v-row no-gutters align="center" justify="center"
+                               class="pa-1"
+                        > Modell Schneiden
+                        </v-row>
+                            
+                        <v-card color="opp_background">
+                            
+                          <v-row no-gutters class="pt-4 px-4">
+                            <!-- Segmentation Mode Button-->
+                            <v-col cols="12">
+                              <v-btn width="300" color="error"
+                                     v-on:click="segmentationTool.switchToSegmentationMode( 
+                                      exParams.stTool, exParams.main )">
+                                Switch to Segmentation Mode
+                              </v-btn>
+                            </v-col>
+                          </v-row>
+
+                          <v-row no-gutters >
+                            <!-- Attach position-->
+                            <v-col cols="2" class="px-1 pt-0">
+                              <v-checkbox 
+                                :v-model="cuttingTool.displayControls"
+                                :true-value="cuttingTool.displayControls"
+                                :false-value="!cuttingTool.displayControls"
+                                color="primary"
+                                @Click="segmentationTool.displayControls(
+                                  exParams.main)">
+                              </v-checkbox>
+                            </v-col>
+
+                            <v-divider vertical ></v-divider>
+
+                            <!-- Checkbox description-->
+                            <v-col cols="10" class="px-3 py-4">
+                              {{ $t('moveObj', {obj: $t('model')})}}
+                            </v-col>
+                            
+                          </v-row>
+                          
+                          <v-row no-gutters>
+                            <!-- Attach position-->
+                            <v-col cols="2" class="px-1 pt-0">
+                              <v-checkbox 
+                                :v-model="positionMods.attachTransformControls"
+                                :disabled="positionMods.disabled"
+                                :true-value="positionMods.attachTransformControls"
+                                :false-value="!positionMods.attachTransformControls"
+                                color="primary"
+                                @Click="controlSettings.attachTransformControls(
+                                  positionMods, positionObject, 
+                                  exParams.main.transformControls )">
+                              </v-checkbox>
+                            </v-col>
+
+                            <v-divider vertical></v-divider>
+
+                            <!-- Checkbox description-->
+                            <v-col cols="10" class="px-3 py-4">
+                              {{ $t('moveObj', {obj: $t('model')})}}
+                            </v-col>
+                            
+                          </v-row>
+
+                        </v-card>
+
+                      </v-card>
+  
+                    </v-col>
+                  </v-row>
+                  
+                </v-card>
+              </v-col>
+            </v-row>
+            
+            <!-- Segmentation Tool -->
+            <v-row>
+              <v-col>
+                <v-card width="100%" color="transparent" class="pa-2" 
+                  elevation="0">
+
+                  <!-- Checkboxes -->
+                  <v-row>
+                    <v-col>
+                      
+                      <v-card color="secondary">
+                        <v-row no-gutters align="center" justify="center"
+                               class="pa-1"
+                        > Modell Schneiden
+                        </v-row>
+                            
+                        <v-card color="opp_background">
+                            
+                          <v-row no-gutters class="pt-4 px-4">
+                            <!-- Segmentation Mode Button-->
+                            <v-col cols="12">
+                              <v-btn width="300" color="error"
+                                     v-on:click="segmentationTool.switchToSegmentationMode( 
+                                      exParams.stTool, exParams.main )">
+                                Switch to Segmentation Mode
+                              </v-btn>
+                            </v-col>
+                          </v-row>
+
+                          <v-row no-gutters >
+                            <!-- Attach position-->
+                            <v-col cols="2" class="px-1 pt-0">
+                              <v-checkbox 
+                                :v-model="cuttingTool.displayControls"
+                                :true-value="cuttingTool.displayControls"
+                                :false-value="!cuttingTool.displayControls"
+                                color="primary"
+                                @Click="segmentationTool.displayControls(
+                                  exParams.main)">
+                              </v-checkbox>
+                            </v-col>
+
+                            <v-divider vertical ></v-divider>
+
+                            <!-- Checkbox description-->
+                            <v-col cols="10" class="px-3 py-4">
+                              {{ $t('moveObj', {obj: $t('model')})}}
+                            </v-col>
+                            
+                          </v-row>
+                          
+                          <v-row no-gutters>
+                            <!-- Attach position-->
+                            <v-col cols="2" class="px-1 pt-0">
+                              <v-checkbox 
+                                :v-model="positionMods.attachTransformControls"
+                                :disabled="positionMods.disabled"
+                                :true-value="positionMods.attachTransformControls"
+                                :false-value="!positionMods.attachTransformControls"
+                                color="primary"
+                                @Click="controlSettings.attachTransformControls(
+                                  positionMods, positionObject, 
+                                  exParams.main.transformControls )">
+                              </v-checkbox>
+                            </v-col>
+
+                            <v-divider vertical></v-divider>
+
+                            <!-- Checkbox description-->
+                            <v-col cols="10" class="px-3 py-4">
+                              {{ $t('moveObj', {obj: $t('model')})}}
+                            </v-col>
+                            
+                          </v-row>
+
+                        </v-card>
+
+                      </v-card>
+  
+                    </v-col>
+                  </v-row>
+                  
+                </v-card>
+              </v-col>
+            </v-row>
             <!-- Segmentation Tool -->
             <v-row>
               <v-col>
@@ -709,6 +880,7 @@ import { Utilities } from '../components/3dFunctions/Utilities.js'
 import { ObjectFilter } from '../components/3dFunctions/ObjectFilter.js'
 import { GarbageCollection } from '../components/3dFunctions/GarbageCollection.js'
 import { Initialisations } from '../components/3dFunctions/Initialisations.js'
+import { useWindowSize } from 'vue-window-size';
 
 import * as CSG from 'three-bvh-csg';
 
@@ -1179,6 +1351,14 @@ export default {
 
   },
 
+  setup() {
+    const { width, height } = useWindowSize();
+    return {
+      windowWidth: width,
+      windowHeight: height,
+    };
+  },
+
   created() {
     this.initExternalImports();
   },
@@ -1475,8 +1655,11 @@ export default {
       exParams.sub.canvas = document.getElementById( 'subCanvas' );
 
       /* Set canvasMain size */
-      exParams.main.canvas.width = window.innerWidth;
-      exParams.main.canvas.height = window.innerHeight - 110;
+      // const { width, height } = useWindowSize();
+      // exParams.main.canvas.width = window.innerWidth;
+      // exParams.main.canvas.height = window.innerHeight;
+      exParams.main.canvas.width = this.windowWidth;
+      exParams.main.canvas.height = this.windowHeight;
     },
     
     /**
