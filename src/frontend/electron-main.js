@@ -1,12 +1,15 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, Menu } = require("electron");
 const path = require("node:path");
+
+const iconPath = path.join(__dirname, "icon.ico");
+console.log("Icon path:", iconPath);
 
 const createWindow = async () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1920,
+    height: 1080,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       partition: "persist:infragistics",
@@ -16,15 +19,15 @@ const createWindow = async () => {
       rejectPublicSuffixes: false,
       webSecurity: false,
     },
-    icon: path.join(__dirname, "icon.ico")
+    //frame: false,
+    icon: path.join(__dirname, '..', 'icon.ico')
   });
 
   // and load the index.html of the app.
   mainWindow.loadURL(`file://${__dirname}/dist/index.html`);
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
-
+  //mainWindow.webContents.openDevTools();
 };
 
 // This method will be called when Electron has finished
@@ -32,6 +35,8 @@ const createWindow = async () => {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   createWindow();
+
+  Menu.setApplicationMenu(null);
 
   app.on("activate", () => {
     // On macOS it's common to re-create a window in the app when the
