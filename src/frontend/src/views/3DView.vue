@@ -769,15 +769,13 @@
 
 <script>
 import * as THREE from 'three';
-
 import Navigation from '../components/Navigation.vue';
-
 import { exParams } from '../components/3dFunctions/Parameter.js'
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { ObjectLoaders } from '../components/3dFunctions/ObjectLoaders.js'
 import { UpdateLocalVariables } from '../components/3dFunctions/UpdateLocalVariables.js'
 import { UpdateIndexedDB } from '../components/3dFunctions/UpdateIndexedDB.js';
-import { LineTool, ModelInteraktion, SegmentationTool } from '../components/3dFunctions/Tools.js'
+import { LineTool, ModelInteraktion, SegmentationTool, AnnotationTool } from '../components/3dFunctions/Tools.js'
 import { ControlSettings } from '../components/3dFunctions/ControlSettings.js'
 import { CameraSettings } from '../components/3dFunctions/CameraSettings.js'
 import { Utilities } from '../components/3dFunctions/Utilities.js'
@@ -824,9 +822,9 @@ export default {
        * Left drawer: Model Interaktion
        */
       leftDrawer: {
-        showDrawers: [ false, false, false, false ],
-        btnColors: ["transparent", "transparent", "transparent", "transparent"],
-        btnNames: ["btn1", "btn2", "btn3", "btn4"],
+        showDrawers: [ false, false, false, false, false ],
+        btnColors: ["transparent", "transparent", "transparent", "transparent", "transparent"],
+        btnNames: ["btn1", "btn2", "btn3", "btn4", "btn5"],
       },
       
       /**
