@@ -2,7 +2,7 @@
  * Created Date: 15.01.2024 17:22:44
  * Author: Tobias Mink
  * 
- * Last Modified: 21.03.2024 17:24:47
+ * Last Modified: 27.03.2024 17:50:44
  * Modified By: Tobias Mink
  * 
  * Description: 
@@ -67,7 +67,10 @@ export const exParams = {
     effectFXAA: null,
     gammaCorrectionShader: null,
     ctrlDown: false,
-    needsUpdate: false
+    needsUpdate: false,
+
+
+    annotationButtonPressed: false,
   },
 
   sub: {
@@ -93,6 +96,10 @@ export const exParams = {
     raycaster: null,
     pointer: null,
     css2DRenderer: null,
+  },
+  
+  anTool: {
+    annotations: [],
   },
 
   stTool: {
