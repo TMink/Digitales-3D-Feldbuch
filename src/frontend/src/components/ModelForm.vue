@@ -751,33 +751,6 @@ export default {
         exParams.main.objects.position._ids.length > 0 ) {
           exParams.main.objects.token = true;
         }
-      // console.log(this.object.models[index])
-      // if ( exParams.main.objects.allObjects.length > 0 ) {
-      //   exParams.main.objects.place._ids.forEach( (id, idx) => {
-      //     if ( id == this.object.models[index] ) {
-      //       exParams.main.objects.allObjects.splice( idx, 1 );
-      //       exParams.main.objects.place._ids.splice( idx, 1 );
-      //       exParams.main.objects.place.titles.splice( idx, 1 );
-      //       exParams.main.objects.place.groups.splice( idx, 1 );
-      //       exParams.main.objects.place.amount--;
-      //       exParams.main.objects.place.entry.splice( idx, 1 );
-      //       console.log(idx)
-      //       console.log(exParams.main.objects)
-      //     }
-      //   } )
-      //   exParams.main.objects.position._ids.forEach( (id, idx) => {
-      //     if ( id == this.object.models[index] ) {
-      //       exParams.main.objects.allObjects.splice( idx, 1 );
-      //       exParams.main.objects.position._ids.splice( idx, 1 );
-      //       exParams.main.objects.position.titles.splice( idx, 1 );
-      //       exParams.main.objects.position.groups.splice( idx, 1 );
-      //       exParams.main.objects.position.amount--;
-      //       exParams.main.objects.position.entry.splice( idx, 1 );
-      //       console.log(idx)
-      //       console.log(exParams.main.objects)
-      //     }
-      //   } )
-      // }
 
       // remove the modelID from connected place/position
       var index = this.object.models.indexOf(model._id);
