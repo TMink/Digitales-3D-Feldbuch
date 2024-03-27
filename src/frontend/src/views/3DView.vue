@@ -2,7 +2,7 @@
  Created Date: 17.11.2023 16:18:33
  Author: Tobias Mink
  
- Last Modified: 21.03.2024 20:08:17
+ Last Modified: 27.03.2024 19:50:36
  Modified By: Tobias Mink
  
  Description: 
@@ -13,20 +13,16 @@
     <Navigation active_tab_prop="1" />
 
     <!-- Main Scene-->
-    <canvas id="mainCanvas" style="position: absolute" tabindex='1'></canvas>
+    <canvas id="mainCanvas" style="position:absolute" tabindex='1'></canvas>
+    <!-- <canvas id="mainCanvas" style="position:fixed" ></canvas> -->
 
     <!-- Left sidebar: GUI -->
-    <div style="float: left;">
+    <div style="position:fixed; float: left;">
       <v-card>
         <!-- Tools -->
-        <v-navigation-drawer v-model="leftDrawer.showDrawers[0]" 
-                             color="background"
-                             style="left: 49px; top:64px; width: 351px;"
-                             temporary
-        >
-          <v-list-item height="50" prepend-icon="mdi-camera-control"
-                       :title="$t('tools')"
-          ></v-list-item>
+        <v-navigation-drawer v-model="leftDrawer.showDrawers[0]" color="background"
+          style="left: 49px; top:64px; width: 470px;" temporary>
+          <v-list-item height="50" prepend-icon="mdi-camera-control" :title="$t('tools')"></v-list-item>
 
           <v-divider></v-divider>
 
@@ -34,48 +30,47 @@
             <!-- Measurement Tool -->
             <v-row>
               <v-col>
-                <v-card width="100%" color="transparent" class="pa-2" 
-                  elevation="0">
+                <v-card width="100%" color="transparent" class="pa-2" elevation="0">
 
                   <!-- Checkboxes -->
                   <v-row>
                     <v-col>
-                      
+
                       <v-card color="secondary">
-                        <v-row no-gutters align="center" justify="center"
-                               class="pa-1"
-                        > {{ $t('measureDist') }}
+                        <v-row no-gutters align="center" justify="center" class="pa-1"> Messungs Tool
                         </v-row>
-                            
+
                         <v-card color="opp_background">
+
+                          <v-row no-gutters class="pt-4 px-4">
+                            <!-- Annotation Mode Button-->
+                            <v-col>
+                              <v-btn width="100%" color="error" v-on:click="switchToAnModus( annotatTool.modus )">
+                                Wechsel zu Messungs-Modus
+                              </v-btn>
+                            </v-col>
+                          </v-row>
+
                           <v-row no-gutters class="pt-4 px-3">
                             <v-col>
-                              <v-select v-model="measureTool.title"
-                                :label="$t('line')"
-                                color="primary"
-                                :items="measureTool.allTitles"
-                                :@update="lineTool.updateTitle( 
-                                  measureTool )"
-                              ></v-select>
+                              <v-select v-model="measureTool.title" :label="$t('line')" color="primary"
+                                :items="measureTool.allTitles" :@update="lineTool.updateTitle( 
+                                  measureTool )"></v-select>
                             </v-col>
                           </v-row>
 
                           <v-divider></v-divider>
-                            
+
                           <v-row no-gutters class="pt-4 px-3">
                             <!-- Checkbox description-->
                             <v-col cols="10">
-                              <v-text-field
-                                v-model="measureTool.textField"
-                                color="primary"
-                                :placeholder="$t('newIdentifier')"
-                              >
+                              <v-text-field v-model="measureTool.textField" color="primary"
+                                :placeholder="$t('newIdentifier')">
                               </v-text-field>
                             </v-col>
 
                             <v-col cols="2">
-                              <v-btn icon class="ma-1" color="primary"
-                                     v-on:click="lineTool.saveLineTitle(
+                              <v-btn icon class="ma-1" color="primary" v-on:click="lineTool.saveLineTitle(
                                       this.$root, this.$t, measureTool, 
                                       exParams.main.scene )">
                                 <v-icon>mdi-content-save-all</v-icon>
@@ -85,8 +80,7 @@
 
                           <v-row no-gutters class="ps-4 pb-3">
                             <v-col cols="12">
-                              <v-btn width="300" color="error"
-                                     v-on:click="lineTool.deleteLine(
+                              <v-btn width="96.6%" color="error" v-on:click="lineTool.deleteLine(
                                       this.placeInDB,
                                       measureTool, 
                                       exParams.main.scene )">
@@ -97,10 +91,10 @@
                         </v-card>
 
                       </v-card>
-  
+
                     </v-col>
                   </v-row>
-                  
+
                 </v-card>
               </v-col>
             </v-row>
