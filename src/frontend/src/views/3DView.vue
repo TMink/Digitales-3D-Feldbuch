@@ -1505,13 +1505,18 @@ export default {
     exParams.main.canvas.removeEventListener( 'keydown', this.keyDown );
     exParams.main.canvas.removeEventListener( 'keyup', this.keyUp );
 
+    exParams.main.canvas.removeEventListener( 'keydown', this.keyDownAnnotation );
+    exParams.main.canvas.removeEventListener( 'keyup', this.keyUpAnnotation );
+
     exParams.main.renderer.domElement.removeEventListener( 'pointerdown', 
       this.onClick, false );
+    exParams.main.renderer.domElement.removeEventListener( 'pointerdown', 
+      this.onClickAnnotation, false );
     exParams.main.canvas.removeEventListener( 'mousemove', 
       this.onDocumentMouseMove, false);
 
     this.garbageCollection.clearCanvases( exParams.main, exParams.sub,
-      this.measureTool.infoBlock )
+      this.measureTool.infoBlock, this.annotatTool.infoBlock )
 
   },
 
@@ -1522,7 +1527,6 @@ export default {
      * # Init parameters
      * -------------------------------------------------------------------------
      */
-
     async initExternalImports() {
       this.utilities = new Utilities();
       this.objectFilter = new ObjectFilter();
@@ -1531,6 +1535,7 @@ export default {
       this.garbageCollection = new GarbageCollection();
       this.lineTool = new LineTool();
       this.segmentationTool = new SegmentationTool();
+      this.annotationTool = new AnnotationTool();
       this.modelInteraktion = new ModelInteraktion();
       this.initialisations = new Initialisations();
       this.objectLoaders = new ObjectLoaders();
@@ -1565,7 +1570,7 @@ export default {
       // exParams.main.canvas.width = window.innerWidth;
       // exParams.main.canvas.height = window.innerHeight;
       exParams.main.canvas.width = this.windowWidth;
-      exParams.main.canvas.height = this.windowHeight;
+      exParams.main.canvas.height = this.windowHeight - 100;
     },
     
     /**
@@ -1684,8 +1689,14 @@ export default {
 
       canvas.addEventListener( 'keydown', this.keyDown );
       canvas.addEventListener( 'keyup', this.keyUp );
+      
+      canvas.addEventListener( 'keydown', this.keyDownAnnotation )
+      canvas.addEventListener( 'keyup', this.keyUpAnnotation )
+
 
       renderer.domElement.addEventListener( 'pointerdown', this.onClick, 
+        false );
+      renderer.domElement.addEventListener( 'pointerdown', this.onClickAnnotation, 
         false );
       canvas.addEventListener( 'mousemove', this.onDocumentMouseMove, 
         false);
@@ -1977,6 +1988,7 @@ export default {
         this.leftDrawer.showDrawers[1] = false;
         this.leftDrawer.showDrawers[2] = false;
         this.leftDrawer.showDrawers[3] = false;
+        this.leftDrawer.showDrawers[4] = false;
   
         this.leftDrawer.btnColors[0] = "transparent";
         this.leftDrawer.btnColors[1] = "transparent";
