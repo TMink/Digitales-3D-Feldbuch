@@ -892,6 +892,16 @@ export default {
         infoBlock: [], // { lineName, lableName, [ firstBallName, secondBallName ] }
         textField: null,
         texttoken: false,
+        modus: false,
+      },
+      
+      annotatTool: {
+        title: null,
+        allTitles: [],
+        infoBlock: [], // { lineName, lableName, [ firstBallName, secondBallName ] }
+        textField: null,
+        texttoken: false,
+        modus: false
       },
 
       cuttingTool: {
