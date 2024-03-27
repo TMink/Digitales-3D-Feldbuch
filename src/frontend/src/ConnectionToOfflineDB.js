@@ -2,8 +2,8 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Tobias Mink
  * 
- * Last Modified: 17.02.2024 19:26:02
- * Modified By: Julian Hardtung
+ * Last Modified: 27.03.2024 16:54:39
+ * Modified By: Tobias Mink
  * 
  * Description: Helper API for manipulating the IndexedDB
  */
@@ -873,6 +873,12 @@ const offlineDBLines = {
   storeNames: ["lines"],
 }
 
+const offlineDBAnnotations = {
+  name: "Annotations",
+  version: 1,
+  storeNames: ["annotations"],
+}
+
 const offlineDBModulePresets = {
   name: "ModulePresets",
   version: 1,
@@ -894,6 +900,7 @@ const fromOfflineDB = new ConnectionToOfflineDB([
   offlineDBImages,
   offlineDBCameras,
   offlineDBLines,
+  offlineDBAnnotations,
   offlineDBModulePresets,
   offlineDBAutoFillLists,
 ]);
