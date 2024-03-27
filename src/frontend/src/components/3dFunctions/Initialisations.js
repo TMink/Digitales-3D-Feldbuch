@@ -2,7 +2,7 @@
  * Created Date: 23.01.2024 13:09:11
  * Author: Tobias Mink
  * 
- * Last Modified: 21.03.2024 17:48:24
+ * Last Modified: 27.03.2024 14:57:10
  * Modified By: Tobias Mink
  * 
  * Description: 
@@ -111,8 +111,6 @@ export class Initialisations {
 	  mat.depthWrite = true;
     mat.name = "segmentationBrush_mat"
 	  stTool.materialMap.set( stTool.brushToCutWith.brush.material, mat );
-
-    console.log(main.objects.allObjects)
     /**
      * Initialize brushesOfObjects
      */
@@ -124,7 +122,6 @@ export class Initialisations {
       brush.name = object.children[0].name;
       brush.position.set( object.children[0].position.x, object.children[0].position.y, object.children[0].position.z );
       brush.scale.setScalar( 1 );
-      // stTool.brushesOfObjects.push( brush );
       stTool.brushesOfObjects.push( {
         brush: brush,
 	      brushColor: brushColor[idx],
@@ -165,11 +162,9 @@ export class Initialisations {
       stTool.materialMap.set( brush.brush.material, mat );
     } );
     stTool.materialMap.forEach( ( m0, m1, m2 ) => {
-
       m0.enableGrid = stTool.gridTexture;
       m1.enableGrid = stTool.gridTexture;
       m2.enableGrid = stTool.gridTexture;
-  
     } );
     // add object displaying the result
     stTool.brushesOfObjects.forEach( brush => {
@@ -185,246 +180,6 @@ export class Initialisations {
       brush.originalMaterial = brush.resultObject.material;
       main.scene.add( brush.resultObject );
     } );
-
-    // -------------------------------------------------------------------------
-    
-    // // --> Create a brush for every object in scene, so that every object can be
-    // // --> used
-    // const brushColor = [ 0x214CEC, 0x0ABA28, 0xF80909 ]
-    // let x = 0;
-    // while ( x < 3 ){
-    //   const brush = new CSG.Brush( main.objects.allObjects[0].children[0].geometry.clone(), new CSG.GridMaterial() );
-    //   brush.name = "brush" + x;
-    //   brush.position.set( 0, x+1, 0 );
-    //   brush.scale.setScalar( 1 );
-    //   stTool.brushesOfObjects.push( {
-    //     brush: brush,
-	  //     brushColor: brushColor[x],
-    //     resultBrush: null,
-    //     originalMaterial: null
-    //   } );
-    //   x++;
-    // }
-    // // --> update brushesOfObjects
-    // stTool.brushesOfObjects.forEach( brush => {
-    //   segmentation.updateBrush( brush.brush, main );
-    // } );
-    // // initialize brush materials
-    // stTool.brushesOfObjects.forEach( brush => {
-    //   brush.brush.material.opacity = 0.05;
-	  //   brush.brush.material.transparent = true;
-	  //   brush.brush.material.depthWrite = false;
-	  //   brush.brush.material.polygonOffset = true;
-	  //   brush.brush.material.polygonOffsetFactor = 0.2;
-	  //   brush.brush.material.polygonOffsetUnits = 0.2;
-	  //   brush.brush.material.side = THREE.DoubleSide;
-	  //   brush.brush.material.premultipliedAlpha = true;
-    //   brush.brush.material.color.set( brush.brushColor )
-    //   brush.brush.receiveShadow = true;
-    // } );
-    // // --> add brushesOfObjects to scene
-    // stTool.brushesOfObjects.forEach( brush => {
-    //   main.scene.add( brush.brush );
-    // } );
-    // // --> create material map for transparent to opaque variants
-    // stTool.brushesOfObjects.forEach( brush => {
-    //   mat = brush.brush.material.clone();
-    //   mat.side = THREE.FrontSide;
-    //   mat.opacity = 1;
-    //   mat.transparent = false;
-    //   mat.depthWrite = true;
-    //   mat.name = brush.brush.name
-    //   stTool.materialMap.set( brush.brush.material, mat );
-    // } );
-    // stTool.materialMap.forEach( ( m0, m1, m2 ) => {
-
-    //   m0.enableGrid = stTool.gridTexture;
-    //   m1.enableGrid = stTool.gridTexture;
-    //   m2.enableGrid = stTool.gridTexture;
-    //   // m3.enableGrid = stTool.gridTexture;
-  
-    // } );
-    // // add object displaying the result
-    // stTool.brushesOfObjects.forEach( brush => {
-    //   brush.resultObject = new THREE.Mesh( new THREE.BufferGeometry(), 
-    //   new THREE.MeshStandardMaterial( {
-    //     flatShading: false,
-    //     polygonOffset: true,
-    //     polygonOffsetUnits: 0.1,
-    //     polygonOffsetFactor: 0.1
-    //   } ) );
-    //   brush.resultObject.castShadow = true;
-    //   brush.resultObject.receiveShadow = true;
-    //   brush.originalMaterial = brush.resultObject.material;
-    //   main.scene.add( brush.resultObject );
-    // } );
-
-    // -------------------------------------------------------------------------
-    
-	  // stTool.brush1 = new CSG.Brush( main.objects.allObjects[0].children[0].geometry.clone(), new CSG.GridMaterial() );
-    // stTool.brush1.name = "brush1"
-    // stTool.brush1.position.set( 0, -2, 0 );
-    // stTool.brush1.scale.setScalar( 1 );
-	  // stTool.brush3 = new CSG.Brush( main.objects.allObjects[0].children[0].geometry.clone(), new CSG.GridMaterial() );
-    // stTool.brush3.name = "brush3"
-    // stTool.brush3.position.set( 0, -3, 0 );
-    // stTool.brush3.scale.setScalar( 1 );
-	  // stTool.brush4 = new CSG.Brush( main.objects.allObjects[0].children[0].geometry.clone(), new CSG.GridMaterial() );
-    // stTool.brush4.name = "brush4"
-    // stTool.brush4.position.set( 0, -4, 0 );
-    // stTool.brush4.scale.setScalar( 1 );
-	  // stTool.brush2 = new CSG.Brush( new THREE.BoxGeometry(1, 30, 30), new CSG.GridMaterial() );
-    // stTool.brush2.name = "brush2"
-	  // stTool.brush2.position.set( 0, -2, 0 );
-	  // stTool.brush2.scale.setScalar( 1 );
-
-    // update brushesOfObjects
-    // segmentation.updateBrush( stTool.brush1, stTool.brush1Shape, 
-    //   stTool.brush1Complexity, main );
-    // segmentation.updateBrush( stTool.brush2, stTool.brush2Shape, 
-    //   stTool.brush2Complexity, main );
-    // segmentation.updateBrush( stTool.brush3, stTool.brush3Shape, 
-    //   stTool.brush3Complexity, main );
-
-    // initialize materials
-	  // stTool.brush1.material.opacity = 0.15;
-	  // stTool.brush1.material.transparent = true;
-	  // stTool.brush1.material.depthWrite = false;
-	  // stTool.brush1.material.polygonOffset = true;
-	  // stTool.brush1.material.polygonOffsetFactor = 0.2;
-	  // stTool.brush1.material.polygonOffsetUnits = 0.2;
-	  // stTool.brush1.material.side = THREE.DoubleSide;
-	  // stTool.brush1.material.premultipliedAlpha = true;
-    // stTool.brush1.material.color.set( 0x214CEC )
-    // stTool.brush1.receiveShadow = true;
-    
-	  // stTool.brush3.material.opacity = 0.15;
-	  // stTool.brush3.material.transparent = true;
-	  // stTool.brush3.material.depthWrite = false;
-	  // stTool.brush3.material.polygonOffset = true;
-	  // stTool.brush3.material.polygonOffsetFactor = 0.2;
-	  // stTool.brush3.material.polygonOffsetUnits = 0.2;
-	  // stTool.brush3.material.side = THREE.DoubleSide;
-	  // stTool.brush3.material.premultipliedAlpha = true;
-    // stTool.brush3.material.color.set( 0x0ABA28 )
-    // stTool.brush3.receiveShadow = true;
-    
-	  // stTool.brush4.material.opacity = 0.15;
-	  // stTool.brush4.material.transparent = true;
-	  // stTool.brush4.material.depthWrite = false;
-	  // stTool.brush4.material.polygonOffset = true;
-	  // stTool.brush4.material.polygonOffsetFactor = 0.2;
-	  // stTool.brush4.material.polygonOffsetUnits = 0.2;
-	  // stTool.brush4.material.side = THREE.DoubleSide;
-	  // stTool.brush4.material.premultipliedAlpha = true;
-    // stTool.brush4.material.color.set( 0xF80909 )
-    // stTool.brush4.receiveShadow = true;
-    
-	  // stTool.brush2.material.opacity = 0;
-	  // stTool.brush2.material.transparent = true;
-	  // stTool.brush2.material.depthWrite = false;
-	  // stTool.brush2.material.polygonOffset = true;
-	  // stTool.brush2.material.polygonOffsetFactor = 0.2;
-	  // stTool.brush2.material.polygonOffsetUnits = 0.2;
-	  // stTool.brush2.material.side = THREE.DoubleSide;
-	  // stTool.brush2.material.premultipliedAlpha = true;
-	  // stTool.brush2.material.roughness = 0.25;
-	  // stTool.brush2.material.color.set( 0x00FFFB );
-	  // stTool.brush2.receiveShadow = true;
-
-    // attach to transform controls
-    // main.transformControls.attach( stTool.brush2 );
-    
-    // add to scene
-    // main.scene.add( stTool.brush1 );
-    // main.scene.add( stTool.brush2 );
-    // main.scene.add( stTool.brush3 );
-    // main.scene.add( stTool.brush4 );
-
-    // create material map for transparent to opaque variants
-	  // let mat;
-	  // mat = stTool.brush2.material.clone();
-	  // mat.side = THREE.FrontSide;
-	  // mat.opacity = 1;
-	  // mat.transparent = false;
-	  // mat.depthWrite = true;
-    // mat.name = "brush2_mat"
-	  // stTool.materialMap.set( stTool.brush2.material, mat );
-    
-	  // mat = stTool.brush1.material.clone();
-	  // mat.side = THREE.FrontSide;
-	  // mat.opacity = 1;
-	  // mat.transparent = false;
-	  // mat.depthWrite = true;
-    // mat.name = "brush1_mat"
-	  // stTool.materialMap.set( stTool.brush1.material, mat );
-    
-	  // mat = stTool.brush3.material.clone();
-	  // mat.side = THREE.FrontSide;
-	  // mat.opacity = 1;
-	  // mat.transparent = false;
-	  // mat.depthWrite = true;
-    // mat.name = "brush3_mat"
-	  // stTool.materialMap.set( stTool.brush3.material, mat );
-    
-	  // mat = stTool.brush4.material.clone();
-	  // mat.side = THREE.FrontSide;
-	  // mat.opacity = 1;
-	  // mat.transparent = false;
-	  // mat.depthWrite = true;
-    // mat.name = "brush4_mat"
-	  // stTool.materialMap.set( stTool.brush4.material, mat );
-
-    // stTool.materialMap.forEach( ( m0, m1, m2 ) => {
-
-    //   m0.enableGrid = stTool.gridTexture;
-    //   m1.enableGrid = stTool.gridTexture;
-    //   m2.enableGrid = stTool.gridTexture;
-    //   // m3.enableGrid = stTool.gridTexture;
-  
-    // } );
-
-    // add object displaying the result
-	  // stTool.resultObject = new THREE.Mesh( new THREE.BufferGeometry(), 
-    //   new THREE.MeshStandardMaterial( {
-		//     flatShading: false,
-		//     polygonOffset: true,
-		//     polygonOffsetUnits: 0.1,
-		//     polygonOffsetFactor: 0.1
-	  // } ) );
-	  // stTool.resultObject.castShadow = true;
-	  // stTool.resultObject.receiveShadow = true;
-	  // stTool.originalMaterial = stTool.resultObject.material;
-	  // // main.scene.add( stTool.resultObject );
-    
-    // // add object displaying the result
-	  // stTool.resultObject2 = new THREE.Mesh( new THREE.BufferGeometry(), 
-    //   new THREE.MeshStandardMaterial( {
-		//     flatShading: false,
-		//     polygonOffset: true,
-		//     polygonOffsetUnits: 0.1,
-		//     polygonOffsetFactor: 0.1
-	  // } ) );
-	  // stTool.resultObject2.castShadow = true;
-	  // stTool.resultObject2.receiveShadow = true;
-	  // // main.scene.add( stTool.resultObject2 );
-    
-    // // add object displaying the result
-	  // stTool.resultObject3 = new THREE.Mesh( new THREE.BufferGeometry(), 
-    //   new THREE.MeshStandardMaterial( {
-		//     flatShading: false,
-		//     polygonOffset: true,
-		//     polygonOffsetUnits: 0.1,
-		//     polygonOffsetFactor: 0.1
-	  // } ) );
-	  // stTool.resultObject3.castShadow = true;
-	  // stTool.resultObject3.receiveShadow = true;
-	  // // main.scene.add( stTool.resultObject3 );
-
-    // helpers
-    // stTool.edgesHelper = new CSG.EdgesHelper();
-	  // stTool.edgesHelper.color.set( 0xE91E63 );
-	  // main.scene.add( stTool.edgesHelper );
     
   }
 
