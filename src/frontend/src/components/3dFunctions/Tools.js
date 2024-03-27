@@ -2,7 +2,7 @@
  * Created Date: 15.01.2024 11:05:52
  * Author: Tobias Mink
  * 
- * Last Modified: 21.03.2024 18:21:11
+ * Last Modified: 27.03.2024 19:11:30
  * Modified By: Tobias Mink
  * 
  * Description: 
@@ -216,6 +216,152 @@ export class LineTool {
       z: (lineEnd.z - lineStart.z) / 2 + lineStart.z };
   }
   
+}
+
+export class AnnotationTool {
+
+  constructor() {
+    this.lableParams = {
+      element: "div",
+      className: "lable",
+      marginTop: "-1em"
+    }
+    this.boxParams = { 
+      size: { width: 0.01, height: 0.01, depth: 0.01 },
+      color: 0xffff00
+    }
+  }
+
+  createLable( name, annotationName, position ) {
+    const lableDiv = document.createElement( this.lableParams.element );
+    lableDiv.className = this.lableParams.className;
+    lableDiv.innerText = annotationName
+    lableDiv.style.marginTop = this.lableParams.marginTop;
+    const measurementLable = new CSS2DObject( lableDiv );
+    measurementLable.name = name;
+    const vec3 = new THREE.Vector3( position[0], position[1], position[2] );
+    measurementLable.position.copy( vec3 );
+    
+    return measurementLable
+  }
+
+  createBox( name, pos ) {
+    const geometry = new THREE.BoxGeometry( this.boxParams.size.width, 
+      this.boxParams.size.height, this.boxParams.size.depth );
+    const material = new THREE.MeshBasicMaterial( { 
+      color: this.boxParams.color } );
+    const box = new THREE.Mesh( geometry, material );
+    box.name = name;
+    return box; 
+  }
+
+  updateTitle( annotatTool ) {
+    if ( annotatTool.texttoken ) {
+      annotatTool.title = annotatTool.textField;
+      annotatTool.texttoken = false;
+    }
+  }
+
+  async saveLineTitle( root, t, annotatTool, scene ) {
+    let idToBeRenamed = null;
+    let token = true;
+
+    const annotationsInDB = await fromOfflineDB.getAllObjects(
+      'Annotations', 'annotations' );
+    
+    /* New names cant be blank, undefined or already taken */
+    /* Check if new name is " " or undefined */
+    if( annotatTool.textField == "" || annotatTool.textField == undefined ) {
+      token = false
+      root.vtoast.show({ message: t('Please enter a name first')});
+    } else {
+      /* Check if the name is already taken */
+      var notTaken = true
+      annotationsInDB.forEach( annotation => {
+        if( annotation.lableName === annotatTool.textField ) {
+          notTaken = false;
+        }
+      } )
+      if( !notTaken ) {
+        token = false;
+        root.vtoast.show({ message: t('Name already taken')});
+      }
+    }
+
+    /* If the new name meet the criteria from above */
+    if( token ) {
+      annotatTool.infoBlock.forEach( element => {
+        if ( element.lableName === annotatTool.title ) {
+          element.lableName = annotatTool.textField;
+          idToBeRenamed = element._id;
+        }
+      } )
+  
+      /* Rename line in IndexedDb */
+      const annotationInDB = annotationsInDB.find( e => e._id === idToBeRenamed );
+      annotationInDB.lableName = annotatTool.textField;
+      await fromOfflineDB.updateObject( annotationInDB, 'Annotations', 'annotations' );
+
+      annotatTool.textField = annotatTool.textField;
+  
+      this.updateAnnotationMenue( annotatTool );
+      this.updateAnnotationInnerText( annotationInDB.boxName, annotatTool.textField, 
+        scene );
+      annotatTool.texttoken = true;
+    }
+  }
+
+  updateAnnotationMenue( annotatTool ) {
+    annotatTool.allTitles = [];
+    annotatTool.infoBlock.forEach( element => {
+      annotatTool.allTitles.push( element.lableName );
+    })
+  }
+
+  updateAnnotationInnerText( boxName, newLable, scene ) {
+    const boxToChange = scene.getObjectByName( boxName )
+    boxToChange.children[0].element.innerText = newLable
+  }
+
+  async deleteLine( placeInDB, annotatTool, scene ) {
+    let idToBeDeleted = null
+    const annotationsInDB = await fromOfflineDB.getAllObjects(
+      'Annotations', 'annotations' );
+      
+    annotatTool.infoBlock.forEach( element => {
+      if ( element.lableName === annotatTool.title ) {
+        idToBeDeleted = element._id;
+        
+        const index = annotatTool.infoBlock.indexOf(element)
+
+        /* Delte line from sceneMain */
+        const lable = scene.getObjectByName(annotatTool.infoBlock[index]._id)
+        const box = scene.getObjectByName(annotatTool.infoBlock[index].boxName)
+
+        box.remove( lable );
+        box.geometry.dispose();
+        box.material.dispose();
+        scene.remove( lable );
+
+        lable.remove()
+
+        /* Delete menue item */
+        annotatTool.textField = null
+        annotatTool.infoBlock.splice(index, 1)
+      }
+    })
+
+    /* Delete from IndexedDb */
+    const annotationInDB = annotationsInDB.find( e => e._id === idToBeDeleted );
+    const index = placeInDB.lines.indexOf(annotationInDB._id);
+    placeInDB.lines.splice( index, 1 );
+    await fromOfflineDB.deleteObject( annotationInDB, 'Annotations', 'annotations' );
+    await fromOfflineDB.updateObject( structuredClone(toRaw(placeInDB)), 
+      'Places', 'places' )
+
+    annotatTool.title = null;
+    this.updateAnnotationMenue( annotatTool );
+  }
 }
 
 export class ModelInteraktion {
