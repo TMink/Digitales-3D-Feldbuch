@@ -610,69 +610,65 @@
 
       <!-- Navigation buttons -->
       <v-card rounded="0" width="50" height="91.2vh">
-        
+
         <!-- Controls -->
-        <v-btn v-model="leftDrawer.btnNames[0]" rounded="0" icon="mdi-camera-control" 
-               width="50" height="50" :color="leftDrawer.btnColors[0]"
-               @click.stop="leftDrawer.showDrawers[0] = !leftDrawer.showDrawers[0]; 
+        <v-btn v-model="leftDrawer.btnNames[0]" rounded="0" icon="mdi-camera-control" width="50" height="50"
+          :color="leftDrawer.btnColors[0]" @click.stop="leftDrawer.showDrawers[0] = !leftDrawer.showDrawers[0]; 
                             leftDrawer.showDrawers[1] = false;
                             leftDrawer.showDrawers[2] = false;
                             leftDrawer.showDrawers[3] = false;
                             utilities.updateBtnColor(
-                              leftDrawer.btnNames[0], leftDrawer);"
-        ></v-btn>
+                              leftDrawer.btnNames[0], leftDrawer);"></v-btn>
         <!-- Place -->
-        <v-btn v-model="leftDrawer.btnNames[1]" rounded="0" icon="mdi-radar" width="50" 
-               height="50" :color="leftDrawer.btnColors[1]"
-               @click.stop="leftDrawer.showDrawers[0] = false;
+        <v-btn v-model="leftDrawer.btnNames[1]" rounded="0" icon="mdi-radar" width="50" height="50"
+          :color="leftDrawer.btnColors[1]" @click.stop="leftDrawer.showDrawers[0] = false;
                             leftDrawer.showDrawers[1] = !leftDrawer.showDrawers[1];
                             leftDrawer.showDrawers[2] = false;
                             leftDrawer.showDrawers[3] = false;
                             utilities.updateBtnColor(
-                              leftDrawer.btnNames[1], leftDrawer);"
-        ></v-btn>
+                              leftDrawer.btnNames[1], leftDrawer);"></v-btn>
         <!-- Positions -->
-        <v-btn v-model="leftDrawer.btnNames[2]" rounded="0" width="50" height="50"
-               icon="mdi-map-marker-radius-outline"  
-               :color="leftDrawer.btnColors[2]"
-               @click.stop="leftDrawer.showDrawers[0] = false;
+        <v-btn v-model="leftDrawer.btnNames[2]" rounded="0" width="50" height="50" icon="mdi-map-marker-radius-outline"
+          :color="leftDrawer.btnColors[2]" @click.stop="leftDrawer.showDrawers[0] = false;
                             leftDrawer.showDrawers[1] = false;
                             leftDrawer.showDrawers[2] = !leftDrawer.showDrawers[2]; 
                             leftDrawer.showDrawers[3] = false;
                             utilities.updateBtnColor(
-                              leftDrawer.btnNames[2], leftDrawer);"
-        ></v-btn>
+                              leftDrawer.btnNames[2], leftDrawer);"></v-btn>
+        <!-- Legende -->
+        <v-btn v-model="leftDrawer.btnNames[3]" rounded="0" width="50" height="50" icon="mdi-map-marker-radius-outline"
+          :color="leftDrawer.btnColors[3]" @click.stop="leftDrawer.showDrawers[0] = false;
+                            leftDrawer.showDrawers[1] = false;
+                            leftDrawer.showDrawers[2] = false;
+                            leftDrawer.showDrawers[3] = !leftDrawer.showDrawers[3];
+                            utilities.updateBtnColor(
+                              leftDrawer.btnNames[3], leftDrawer);"></v-btn>
       </v-card>
     </div>
 
     <!-- Legend -->
-    <div style="float: right;">
-      <v-card color="grey" align="left" height="70" width="350"
-              style="top: 10px; right: 10px">
+    <!-- <div style="float: right;">
+      <v-card color="grey" align="left" height="70" width="350" style="top: 10px; right: 10px">
         <v-card-text>
-          <img src="../assets/keys/ALT_1.png" width="90" height="37" 
-               style="vertical-align: -10px"> 
+          <img src="../assets/keys/ALT_1.png" width="90" height="37" style="vertical-align: -10px">
           <font size="+2" color="black"> = {{ $t('objectSelection') }}</font>
         </v-card-text>
       </v-card>
 
-      <v-card color="grey" align="left" height="70" width="350"
-              style="top: 15px; right: 10px">
+      <v-card color="grey" align="left" height="70" width="350" style="top: 15px; right: 10px">
         <v-card-text>
-          <img src="../assets/keys/CTRL_1.png" width="90" height="37" 
-               style="vertical-align: -10px"> 
-          <font size="+2" color="black"> 
+          <img src="../assets/keys/CTRL_1.png" width="90" height="37" style="vertical-align: -10px">
+          <font size="+2" color="black">
             = {{ $t('moveObj', {obj: $t('model')}) }}
           </font>
         </v-card-text>
       </v-card>
-    </div>
+    </div> -->
   </div>
 
   <!-- Bottom drawer: Position information-->
-  <v-navigation-drawer v-model="bottomDrawer.showDrawer" location="bottom" 
-                       temporary width="300">
-    
+  <v-navigation-drawer v-model="bottomDrawer.showDrawer" location="bottom" temporary width="300">
+
     <v-row>
       <v-col>
         <v-row no-gutters>
@@ -698,15 +694,15 @@
           </v-col>
         </v-row>
         <v-divider></v-divider>
-      </v-col>      
+      </v-col>
     </v-row>
-    
+
     <v-row no-gutters>
       <v-col cols="8">
         <v-row no-gutters>
           <v-col cols="4">
             <v-text-field class="pt-4 pl-4" :label="$t('title')" v-model="posInfo.title">
-              
+
             </v-text-field>
           </v-col>
           <v-col cols="4" align="center">
@@ -763,11 +759,10 @@
       <v-divider vertical></v-divider>
       <v-col cols="2" align="center" class="py-6">
         <v-divider vertical></v-divider>
-          <canvas v-show="true" id="subCanvas" width="200" height="200"
-                  style="display: inline;
+        <canvas v-show="true" id="subCanvas" width="200" height="200" style="display: inline;
                          border: 1px solid rgb(255, 255, 255)">
-          </canvas>
-      </v-col>      
+        </canvas>
+      </v-col>
     </v-row>
   </v-navigation-drawer>
 </template>
