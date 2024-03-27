@@ -13,7 +13,10 @@
     "electron:start": "electron .",
     "package": "electron-forge package",
     "start": "electron-forge start",
-    "make": "electron-forge make"
+    "make": "electron-forge make",
+    "preversion": "npm run build",
+    "version": "npm version --no-git-tag-version",
+    "postversion": "npm run package"
   },
   "dependencies": {
     "axios": "^1.4.0",
