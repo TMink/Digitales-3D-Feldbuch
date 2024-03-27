@@ -1276,22 +1276,28 @@ export default {
   },
 
   async mounted() {
-    /**
+    /***************************************************************************
      *  ++++ Synchronise with IndexedDB ++++
      */
     await fromOfflineDB.syncLocalDBs();
+
     
-    /**
+    
+    /***************************************************************************
      *  ++++ Load specific data from IndexedDB ++++
      */
     await this.loadDataFromIndexedDB();
 
-    /**
+    
+
+    /***************************************************************************
      *  ++++ Link canvases to exParams and specify window width and height. ++++
      */
     this.setupCanvases();
+
+
     
-    /**
+    /***************************************************************************
      *  ++++ Disable Modifikation Options for places and position. ++++
      * (Needs to be done manualy, becaus of an internal vuetify bug)
      */
@@ -1299,13 +1305,16 @@ export default {
     this.placeMods.disabled = true;
     
     
-    /**
-     * Initialize the Measurement Tool
+    
+    /***************************************************************************
+     *  ++++ Initialize the Measurement Tool ++++
      */
     this.initialisations.initMeasurementTool( document, exParams.main.canvas, 
       exParams.mmTool );
 
-    /**
+      
+
+    /***************************************************************************
      *  ++++ Initialize Main- and Sub-Scene ++++
      * 
      * Checks initTokens form exparams => 
@@ -1337,9 +1346,9 @@ export default {
       }
     }
 
-    
 
-    /**
+    
+    /***************************************************************************
      *  ++++ Load place and position objects into scene. ++++
      * 
      * Determines if:
@@ -1436,13 +1445,18 @@ export default {
 
     }
 
-    /**
-     * Initialize the Segmentation Tool
-     */
-     this.initialisations.initSegmentationTool( exParams.main, exParams.stTool, this.centerOfObjects );
 
-    /**
-     * Re-center Camera based on predetermine factors
+    
+    /***************************************************************************
+     *  ++++ Initialize the Segmentation Tool ++++
+     */
+     this.initialisations.initSegmentationTool( exParams.main, exParams.stTool, 
+      this.centerOfObjects );
+
+
+
+    /***************************************************************************
+     *  ++++ Re-center Camera based on predetermine factors ++++
      */
     await this.cameraSettings.updateCamera ( 
       this.centerOfObjects, this.placeID, exParams.main.camera, 
@@ -1450,46 +1464,26 @@ export default {
       exParams.main.arcBallControls, this.arcballAnchor
     )
 
-    /**
-     * Load already drawn lines
+
+    
+    /***************************************************************************
+     *  ++++ Load already drawn lines ++++
      */
     await this.loadLines();
 
-    /**
-     * Animate the scene
+
+    
+    /***************************************************************************
+     *  ++++ Load already created annotations ++++
+     */
+    await this.loadAnnotations();
+
+
+    
+    /***************************************************************************
+     * ++++ Animate the scene ++++
      */
     this.animate();
-    
-    // await this.objectLoaders.loadObjectsInScene( exParams, 'places', this.placeID );
-
-    // if ( exParams.main.objects.allObjects.length > 0 ) {
-    //   /* Re-center Camera */
-    //   await this.cameraSettings.updateCamera( 
-    //     exParams.main.objects.place.entry[ exParams.main.objects.place.groups.length - 1 ]._id,
-    //     this.placeID, exParams.main.camera, this.cameraIDsInDB, this.cameraInDB,
-    //     this.cameraData, exParams.main.arcBallControls, exParams.main.scene, 
-    //     this.arcballAnchor
-    //    )
-
-    //   /* Position Objects */
-    //   await this.objectLoaders.loadObjectsInScene( exParams, 'positions', this.placeID );
-
-    //   console.log(exParams.main.objects.position)
-
-    //   /* Lines (Measurement Tool) */
-    //   await this.loadLines();
-
-    //   /* Fill Place and Position Filter */
-    //   this.objectFilter.getPositionDataInfo( this.positionData, 
-    //     exParams.main.objects.position.entry );
-    //   this.objectFilter.getPlaceObjectInfo( this.placeObject, 
-    //     exParams.main.objects.place.entry );
-      
-    //   /* Animate */
-    //   this.animate();
-    // } else {
-    //   console.log( "No Models found" )
-    // }
   },
 
   async unmounted() {
