@@ -2,8 +2,8 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 24.03.2024 19:28:36
- * Modified By: Julian Hardtung
+ * Last Modified: 27.03.2024 15:52:45
+ * Modified By: Methusshan Elankumaran
  * 
  * Description: input page for places data 
  *              (shows input modules according to module preset)
@@ -66,38 +66,37 @@
               <v-toolbar :height="50" color="surface" density="default">
                 <v-card-title>{{ $t('technicalDrawing')}}</v-card-title>
                 <v-divider vertical></v-divider>
-              <v-btn-toggle>
-                <v-btn @click="onToolbarClick('pen')" icon="mdi-pencil" rounded="1"></v-btn>
-                <v-btn @click="onToolbarClick('eraser')" icon="mdi-eraser" rounded="1"></v-btn>
-                <v-btn @click.prevent="onToolbarClick('text')" icon="mdi-format-text" rounded="0"></v-btn>
-                <v-btn @click="onToolbarClick('shape')" icon="mdi-shape" rounded="0"></v-btn>
-              </v-btn-toggle>
-              <v-btn @click="onToolbarClick('colorPicker')" icon="mdi-palette" rounded="0"></v-btn>
-              <v-btn @click="onToolbarClick('lineWidth')" icon="mdi-minus" rounded="0"></v-btn>
-              <v-btn @click.prevent="$refs.FieldbookDrawingCanvas.undo()" icon="mdi-undo" rounded="0"></v-btn>
-              <v-btn @click.prevent="$refs.FieldbookDrawingCanvas.redo()" icon="mdi-redo" rounded="0"></v-btn>
-              <v-btn @click.prevent="onToolbarClick('clear')" icon="mdi-trash-can-outline" rounded="0"></v-btn>
-              <v-btn @click.prevent="backgroundDialog = true" icon="mdi-image" rounded="0"></v-btn>
-              <v-btn @click.prevent="onToolbarClick('refresh')" icon="mdi-reload" rounded="0"></v-btn>
-            </v-toolbar>
+                <v-btn @click="onToolbarClick('pen')" variant="flat" v-bind:color="canvasSettings.mode ==='pen' ? 'primary' : 'none'" icon="mdi-pencil" rounded="0"></v-btn>
+                <v-btn @click="onToolbarClick('eraser')" variant="flat" v-bind:color="canvasSettings.mode ==='eraser' ? 'primary' : 'none'" icon="mdi-eraser" rounded="0"></v-btn>
+                <v-btn @click.prevent="onToolbarClick('text')" variant="flat" v-bind:color="canvasSettings.mode === 'text' ? 'primary' : 'none'" icon="mdi-format-text" rounded="0"></v-btn>
+                <v-btn @click="onToolbarClick('shape')" variant="flat" v-bind:color=" canvasSettings.mode != 'pen' && canvasSettings.mode != 'eraser' 
+                        && canvasSettings.mode != 'text' && canvasSettings.mode != 'none' ? 'primary' : 'none'" icon="mdi-shape" rounded="0"></v-btn>
+                <v-btn @click="onToolbarClick('colorPicker')" icon="mdi-palette" rounded="0"></v-btn>
+                <v-btn @click="onToolbarClick('lineWidth')" icon="mdi-minus" rounded="0"></v-btn>
+                <v-btn @click.prevent="$refs.FieldbookDrawingCanvas.undo()" icon="mdi-undo" rounded="0"></v-btn>
+                <v-btn @click.prevent="$refs.FieldbookDrawingCanvas.redo()" icon="mdi-redo" rounded="0"></v-btn>
+                <v-btn @click.prevent="onToolbarClick('clear')" icon="mdi-trash-can-outline" rounded="0"></v-btn>
+                <v-btn @click.prevent="backgroundDialog = true" icon="mdi-image" rounded="0"></v-btn>
+                <v-btn @click.prevent="onToolbarClick('refresh')" icon="mdi-reload" rounded="0"></v-btn>
+              </v-toolbar>
             </v-card>
             <div style="position:relative">
               <v-expand-transition>
-                <v-color-picker class="mt-2" style="position:absolute; left:100px; z-index: 1;"
-                  v-show="canvasSettings.colorPickerChosen" v-model="canvasSettings.color"></v-color-picker>
+                <v-color-picker class="mt-2" style="position:absolute; left:430px; z-index: 1;"
+                  v-show="canvasSettings.colorPickerVisible" v-model="canvasSettings.color"></v-color-picker>
               </v-expand-transition>
 
-              <v-card class="mt-2" style="position:absolute; left: 150px; z-index: 1;" :width="600">
+              <v-card class="mt-2" style="position:absolute; left: 480px; z-index: 1;" :width="600">
                 <v-expand-transition>
                   <v-slider v-model="canvasSettings.lineWidth" :min="1" :max="10" :step="1"
-                    v-show="canvasSettings.lineWidthChosen" show-ticks="always"
+                    v-show="canvasSettings.lineWidthVisible" show-ticks="always"
                     :ticks="canvasSettings.lineTicks"></v-slider>
                 </v-expand-transition>
               </v-card>
 
               <v-expand-transition>
-                <v-card class="mt-2" row v-show="canvasSettings.textModeChosen"
-                  style="position: absolute; left: 90px; z-index: 1;">
+                <v-card class="mt-2" row v-show="canvasSettings.textModeVisible"
+                  style="position: absolute; left: 330px; z-index: 1;">
                   <v-layout>
                     <v-card :width="200" class="mx-2"><v-select :label="$t('fontFamily')" v-model="canvasSettings.selectedFont"
                         :items="canvasSettings.fonts"></v-select></v-card>
@@ -108,14 +107,14 @@
               </v-expand-transition>
 
               <v-expand-transition>
-                <v-card class="mt-2" row v-show="canvasSettings.shapeModeChosen"
-                  style="position: absolute; left: 140px; z-index: 1;">
+                <v-card class="mt-2" row v-show="canvasSettings.shapeModeVisible"
+                  style="position: absolute; left: 380px; z-index: 1;">
                   <v-layout>
-                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'line'" icon="mdi-minus" rounded="0"></v-btn></v-card>
-                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'dotted-line'" icon="mdi-dots-horizontal" rounded="0"></v-btn></v-card>
-                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'circle'" icon="mdi-circle-outline" rounded="0"></v-btn></v-card>
-                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'rectangle'" icon="mdi-square-outline" rounded="0"></v-btn></v-card>
-                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'triangle'" icon="mdi-triangle-outline" rounded="0"></v-btn></v-card>
+                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'line'" v-bind:color="canvasSettings.mode === 'line' ? 'primary' : 'none'" icon="mdi-minus" rounded="0"></v-btn></v-card>
+                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'dotted-line'" v-bind:color="canvasSettings.mode === 'dotted-line' ? 'primary' : 'none'" icon="mdi-dots-horizontal" rounded="0"></v-btn></v-card>
+                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'circle'" v-bind:color="canvasSettings.mode === 'circle' ? 'primary' : 'none'" icon="mdi-circle-outline" rounded="0"></v-btn></v-card>
+                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'rectangle'" v-bind:color="canvasSettings.mode === 'rectangle' ? 'primary' : 'none'" icon="mdi-square-outline" rounded="0"></v-btn></v-card>
+                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'triangle'" v-bind:color="canvasSettings.mode === 'triangle' ? 'primary' : 'none'" icon="mdi-triangle-outline"  rounded="0"></v-btn></v-card>
                     <v-card class="mx-2" :height="50"><v-checkbox :label="$t('fill')" v-model="canvasSettings.filled" icon="mdi-triangle-outline" rounded="0"></v-checkbox></v-card>
                   </v-layout>
                 </v-card>
@@ -204,10 +203,10 @@ export default {
         width: 1200,
         height: 800,
         backgroundColor: "#fff",
-        colorPickerChosen: false,
-        lineWidthChosen: false,
-        textModeChosen: false,
-        shapeModeChosen: false,
+        colorPickerVisible: false,
+        lineWidthVisible: false,
+        textModeVisible: false,
+        shapeModeVisible: false,
         color: "#000",
         mode: "none",
         filled: false,
@@ -785,38 +784,39 @@ export default {
       if (toolType == "pen" || toolType == "eraser") {
 
         this.canvasSettings.mode = toolType == "eraser" ? "eraser" : "pen";
-        this.canvasSettings.lineWidthChosen = false;
-        this.canvasSettings.textModeChosen = false;
-        this.canvasSettings.colorPickerChosen = false;
-        this.canvasSettings.shapeModeChosen = false;
+        this.canvasSettings.lineWidthVisible = false;
+        this.canvasSettings.textModeVisible = false;
+        this.canvasSettings.colorPickerVisible = false;
+        this.canvasSettings.shapeModeVisible = false;
       }
       if (toolType == "colorPicker") {
-        this.canvasSettings.lineWidthChosen = false;
-        this.canvasSettings.textModeChosen = false;
-        this.canvasSettings.shapeModeChosen = false;
-        this.canvasSettings.colorPickerChosen = !this.canvasSettings.colorPickerChosen;
+        this.canvasSettings.lineWidthVisible = false;
+        this.canvasSettings.textModeVisible = false;
+        this.canvasSettings.shapeModeVisible = false;
+        this.canvasSettings.colorPickerVisible = !this.canvasSettings.colorPickerVisible;
       }
       if (toolType == "lineWidth") {
-        this.canvasSettings.colorPickerChosen = false;
-        this.canvasSettings.textModeChosen = false;
-        this.canvasSettings.shapeModeChosen = false;
-        this.canvasSettings.lineWidthChosen = !this.canvasSettings.lineWidthChosen;
+        this.canvasSettings.colorPickerVisible = false;
+        this.canvasSettings.textModeVisible = false;
+        this.canvasSettings.shapeModeVisible = false;
+        this.canvasSettings.lineWidthVisible = !this.canvasSettings.lineWidthVisible;
       }
       if (toolType == "text") {
         this.canvasSettings.mode = "text"
-        this.canvasSettings.lineWidthChosen = false;
-        this.canvasSettings.colorPickerChosen = false;
-        this.canvasSettings.shapeModeChosen = false;
-        this.canvasSettings.textModeChosen = !this.canvasSettings.textModeChosen;
+        this.canvasSettings.lineWidthVisible = false;
+        this.canvasSettings.colorPickerVisible = false;
+        this.canvasSettings.shapeModeVisible = false;
+        this.canvasSettings.textModeVisible = !this.canvasSettings.textModeVisible;
       }
       if (toolType == "clear") {
         this.$refs.FieldbookDrawingCanvas.clearCanvas();
       }
       if (toolType == "shape") {
-        this.canvasSettings.lineWidthChosen = false;
-        this.canvasSettings.textModeChosen = false;
-        this.canvasSettings.colorPickerChosen = false;
-        this.canvasSettings.shapeModeChosen = !this.canvasSettings.shapeModeChosen;
+        this.canvasSettings.mode = 'shape';
+        this.canvasSettings.lineWidthVisible = false;
+        this.canvasSettings.textModeVisible = false;
+        this.canvasSettings.colorPickerVisible = false;
+        this.canvasSettings.shapeModeVisible = !this.canvasSettings.shapeModeVisible;
       }
       if (toolType == "deleteBackground") {
 
