@@ -241,6 +241,7 @@ export default {
         images: [],
         models: [],
         lines: [],
+        annotations: [],
         lastChanged: '',
         lastSync: 0,
 
