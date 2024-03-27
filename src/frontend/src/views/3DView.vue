@@ -1660,6 +1660,47 @@ export default {
       }
     },
 
+    loadAnnotations: async function() {
+      this.annotationsInDB = await fromOfflineDB.getAllObjects( 'Annotations', 'annotations' );
+
+      if ( this.annotationsInDB.length > 0 ) {
+        this.annotationsInDB.forEach( annotation => {
+
+          console.log(annotation)
+
+          /* Create Lable */
+          const annotationLable = this.annotationTool.createLable(
+            annotation._id, annotation.lableName, 
+            annotation.position )
+          
+          /* Create Box */
+          const annotationBox = this.annotationTool.createBox(
+            annotation.boxName, annotation.position )
+
+          /* Add lable to box */
+          annotationBox.add(annotationLable)
+
+          /* Add lable and box combo variable Storage for UI purposes */
+          const newAnnotationEntry = {
+            _id: String( annotation._id ),
+            lableName: annotation.lableName,
+            boxName: annotation.boxName,
+            position: annotation.position,
+          }
+          exParams.anTool.annotations.push( newAnnotationEntry );
+          this.annotatTool.infoBlock.push( newAnnotationEntry );
+          this.annotatTool.allTitles.push( annotation.lableName );
+          
+          /* Add lable and box combo to scene */
+          exParams.main.scene.add( annotationBox )
+          annotationBox.position.set( annotation.position.x, 
+            annotation.position.y, annotation.position.z )
+
+        } )
+      }
+      
+    },
+
     /**
      * -------------------------------------------------------------------------
      * # Eventlistener functions
@@ -1739,6 +1780,23 @@ export default {
         exParams.main.ctrlDown = false;
         exParams.main.arcBallControls.enabled = true
         document.body.style.cursor = 'pointer'
+        if ( this.drawingLine ) {
+          exParams.mmTool.line.remove(this.measurementLable)
+          exParams.main.scene.remove( this.line );
+          exParams.mmTool.drawingLine = false;
+        }
+      }
+    },
+
+    switchToMeasureModus: function( buttonPressed ) {
+      if( !buttonPressed ) {
+        this.measureTool.modus = true;
+        exParams.main.arcBallControls.enabled = false;
+        document.body.style.cursor = 'crosshair';
+      } else {
+        this.measureTool.modus = false;
+        exParams.main.arcBallControls.enabled = true
+        document.body.style.cursor = 'pointer';
         if ( this.drawingLine ) {
           exParams.mmTool.line.remove(this.measurementLable)
           exParams.main.scene.remove( this.line );
@@ -1994,6 +2052,95 @@ export default {
         this.leftDrawer.btnColors[1] = "transparent";
         this.leftDrawer.btnColors[2] = "transparent";
         this.leftDrawer.btnColors[3] = "transparent";
+        this.leftDrawer.btnColors[4] = "transparent";
+      }
+    },
+
+    onClickAnnotation: async function() {
+      if ( this.annotatTool.modus ) {
+        /* Get information about current place to store the annotation*/
+        const curPlace = this.$generalStore.getCurrentObject('place');
+        const placeInDB = await fromOfflineDB.getObject( curPlace, 
+          'Places', 'places' )
+          
+        /* Get position of insersection of raycaster with object */
+        exParams.mmTool.raycaster.setFromCamera( exParams.mmTool.pointer, exParams.main.camera );
+        const intersects = exParams.mmTool.raycaster.intersectObjects( 
+          exParams.main.objects.allObjects, true );
+        const position = {
+          x: intersects[ 0 ].point.x,
+          y: intersects[ 0 ].point.y,
+          z: intersects[ 0 ].point.z
+        }
+        
+        if( intersects.length > 0 ) {
+          /* Create annotation id */
+          const annotationID = String( Date.now() );
+          
+          /* Create lable - id, name, position */
+          const annotationLableName = "New Annotation | " + annotationID;
+          const annotationLable = this.annotationTool.createLable(
+            annotationID, annotationLableName, position )
+    
+          /* Create box - id, name, position */
+          const annotationBoxName = "Box - " + annotationID;
+          const annotationBox = this.annotationTool.createBox(
+            annotationBoxName, position )
+          
+          /* Add lable to box */
+          annotationBox.add(annotationLable)
+    
+          /* Add lable and box combo variable Storage for UI purposes */
+          const newAnnotationEntry = {
+            _id: String( annotationID ),
+            lableName: annotationLableName,
+            boxName: annotationBoxName,
+            position: position,
+          }
+          exParams.anTool.annotations.push( newAnnotationEntry );
+          this.annotatTool.infoBlock.push( newAnnotationEntry );
+          this.annotatTool.allTitles.push( annotationLableName );
+          
+          /* Add lable and box combo to scene */
+          exParams.main.scene.add( annotationBox )
+          annotationBox.position.set( position.x, position.y, 
+            position.z )
+          
+          /* Add lable and box combo to IndexedDB Box - id, name, position */
+          await fromOfflineDB.addObject( newAnnotationEntry, 'Annotations', 'annotations' );
+          placeInDB.annotations.push( annotationID );
+          await fromOfflineDB.updateObject( placeInDB, 'Places', 'places' );
+        }
+      }
+    },
+
+    keyDownAnnotation: function( event ) {
+
+      if (event.key === 't') {
+          exParams.main.annotationButtonPressed = true;
+          exParams.main.arcBallControls.enabled = false
+          document.body.style.cursor = 'crosshair';
+      }
+      
+    },
+
+    keyUpAnnotation: function( event ) {
+      if (event.key === 't') {
+        exParams.main.annotationButtonPressed = false;
+        exParams.main.arcBallControls.enabled = true
+        document.body.style.cursor = 'pointer'
+      }
+    },
+
+    switchToAnModus: function( buttonPressed ) {
+      if( !buttonPressed ) {
+        console.log("Test1")
+        this.annotatTool.modus = true;
+        document.body.style.cursor = 'crosshair';
+      } else {
+        console.log("Test2")
+        this.annotatTool.modus = false;
+        document.body.style.cursor = 'pointer';
       }
     },
 
