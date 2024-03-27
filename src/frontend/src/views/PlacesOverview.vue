@@ -633,6 +633,7 @@ export default {
         images: [],
         models: [],
         lines: [],
+        annotations: [],
         modulePreset: {
           coordinates: true,
           dating: true,
