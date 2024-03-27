@@ -223,52 +223,59 @@
                 </v-card>
               </v-col>
             </v-row>
+            
+            <!-- Shapefile Tool -->
             <v-row>
               <v-col>
-                <v-card width="100%" color="transparent" class="pa-2" 
-                  elevation="0">
+                <v-card width="100%" color="transparent" class="pa-2" elevation="0">
 
                   <!-- Checkboxes -->
                   <v-row>
                     <v-col>
-                      
+
                       <v-card color="secondary">
-                        <v-row no-gutters align="center" justify="center"
-                               class="pa-1"
-                        > Modell Schneiden
+                        <v-row no-gutters align="center" justify="center" class="pa-1"> Shapefile Tool
                         </v-row>
-                            
+
                         <v-card color="opp_background">
-                            
+
                           <v-row no-gutters class="pt-4 px-4">
                             <!-- Segmentation Mode Button-->
                             <v-col cols="12">
-                              <v-btn width="300" color="error"
-                                     v-on:click="segmentationTool.switchToSegmentationMode( 
+                              <v-btn width="100%" color="error" v-on:click="segmentationTool.switchToSegmentationMode( 
                                       exParams.stTool, exParams.main )">
-                                Switch to Segmentation Mode
+                                Wechsel zum 
                               </v-btn>
                             </v-col>
                           </v-row>
 
-                          <v-row no-gutters >
-                            <!-- Attach position-->
-                            <v-col cols="2" class="px-1 pt-0">
-                              <v-checkbox 
-                                :v-model="cuttingTool.displayControls"
-                                :true-value="cuttingTool.displayControls"
-                                :false-value="!cuttingTool.displayControls"
-                                color="primary"
-                                @Click="segmentationTool.displayControls(
-                                  exParams.main)">
+                          <v-row no-gutters>
+                            <!-- Show -->
+                            <v-col class="px-4 pt-2">
+                              <v-checkbox color="primary" label="Werkzeuge anzeigen" hide-details density="compact">
                               </v-checkbox>
                             </v-col>
+                          </v-row>
 
-                            <v-divider vertical ></v-divider>
+                          <v-row no-gutters>
+                            <!-- Show wireframe-->
+                            <v-col class="px-4 pb-1">
+                              <v-checkbox color="primary" label="Gitternetz anzeigen" hide-details density="compact">
+                              </v-checkbox>
+                            </v-col>
+                          </v-row>
 
-                            <!-- Checkbox description-->
-                            <v-col cols="10" class="px-3 py-4">
-                              {{ $t('moveObj', {obj: $t('model')})}}
+                        </v-card>
+
+                      </v-card>
+
+                    </v-col>
+                  </v-row>
+
+                </v-card>
+              </v-col>
+            </v-row>
+            
                             </v-col>
                             
                           </v-row>
