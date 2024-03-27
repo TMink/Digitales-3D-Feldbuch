@@ -579,6 +579,33 @@
 
           </v-form>
         </v-navigation-drawer>
+        
+        <!-- Legend -->
+        <v-navigation-drawer v-model="leftDrawer.showDrawers[3]" color="background"
+          style="left: 49px; top:64px; width: 470px;" temporary>
+          <v-list-item height="50" prepend-icon="mdi-map-marker-radius-outline" title=Legende></v-list-item>
+
+          <v-divider></v-divider>
+
+          <v-form>
+            <!-- General control -->
+            <v-row>
+              <v-col>
+                <v-card color="transparent" elevation="0" width="100%" class="pa-2">
+                  
+                  <v-row no-gutters>
+                    ALT + Linksklick = Objektauswahl
+                  </v-row>
+                  <v-row no-gutters>
+                    STRG + Linksklick = 3D-Modell bewegen
+                  </v-row>
+                  
+                </v-card>
+              </v-col>
+            </v-row>
+          </v-form>
+        </v-navigation-drawer>
+
       </v-card>
 
       <!-- Navigation buttons -->
