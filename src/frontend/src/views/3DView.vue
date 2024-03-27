@@ -99,93 +99,78 @@
               </v-col>
             </v-row>
             
-            <!-- Segmentation Tool -->
+            <!-- Annotations Tool -->
             <v-row>
               <v-col>
-                <v-card width="100%" color="transparent" class="pa-2" 
-                  elevation="0">
+                <v-card width="100%" color="transparent" class="pa-2" elevation="0">
 
                   <!-- Checkboxes -->
                   <v-row>
                     <v-col>
-                      
+
                       <v-card color="secondary">
-                        <v-row no-gutters align="center" justify="center"
-                               class="pa-1"
-                        > Modell Schneiden
+                        
+                        <v-row no-gutters align="center" justify="center" class="pa-1"> Annotations Tool
                         </v-row>
-                            
+
                         <v-card color="opp_background">
-                            
+                          
                           <v-row no-gutters class="pt-4 px-4">
-                            <!-- Segmentation Mode Button-->
-                            <v-col cols="12">
-                              <v-btn width="300" color="error"
-                                     v-on:click="segmentationTool.switchToSegmentationMode( 
-                                      exParams.stTool, exParams.main )">
-                                Switch to Segmentation Mode
+                            <!-- Annotation Mode Button-->
+                            <v-col>
+                              <v-btn width="100%" color="error" v-on:click="switchToAnModus( annotatTool.modus )">
+                                Wechsel zu Annotations-Modus
+                              </v-btn>
+                            </v-col>
+                          </v-row>
+                          
+                          <v-row no-gutters class="pt-4 px-3">
+                            <v-col>
+                              <v-select v-model="annotatTool.title" label="Annotation" color="primary"
+                                :items="annotatTool.allTitles" :@update="annotationTool.updateTitle( 
+                                  annotatTool )"></v-select>
+                            </v-col>
+                          </v-row>
+
+                          <v-divider></v-divider>
+
+                          <v-row no-gutters class="pt-4 px-3">
+                            <!-- Checkbox description-->
+                            <v-col cols="10">
+                              <v-text-field v-model="annotatTool.textField" color="primary"
+                                :placeholder="$t('newIdentifier')">
+                              </v-text-field>
+                            </v-col>
+
+                            <v-col cols="2">
+                              <v-btn icon class="ma-1" color="primary" v-on:click="annotationTool.saveLineTitle(
+                                      this.$root, this.$t, annotatTool, 
+                                      exParams.main.scene )">
+                                <v-icon>mdi-content-save-all</v-icon>
                               </v-btn>
                             </v-col>
                           </v-row>
 
-                          <v-row no-gutters >
-                            <!-- Attach position-->
-                            <v-col cols="2" class="px-1 pt-0">
-                              <v-checkbox 
-                                :v-model="cuttingTool.displayControls"
-                                :true-value="cuttingTool.displayControls"
-                                :false-value="!cuttingTool.displayControls"
-                                color="primary"
-                                @Click="segmentationTool.displayControls(
-                                  exParams.main)">
-                              </v-checkbox>
+                          <v-row no-gutters class="ps-4 pb-3">
+                            <v-col cols="12">
+                              <v-btn width="96.6%" color="error" v-on:click="annotationTool.deleteLine(
+                                      this.placeInDB,
+                                      annotatTool, 
+                                      exParams.main.scene )">
+                                <v-icon>mdi-delete</v-icon>
+                              </v-btn>
                             </v-col>
-
-                            <v-divider vertical ></v-divider>
-
-                            <!-- Checkbox description-->
-                            <v-col cols="10" class="px-3 py-4">
-                              {{ $t('moveObj', {obj: $t('model')})}}
-                            </v-col>
-                            
                           </v-row>
-                          
-                          <v-row no-gutters>
-                            <!-- Attach position-->
-                            <v-col cols="2" class="px-1 pt-0">
-                              <v-checkbox 
-                                :v-model="positionMods.attachTransformControls"
-                                :disabled="positionMods.disabled"
-                                :true-value="positionMods.attachTransformControls"
-                                :false-value="!positionMods.attachTransformControls"
-                                color="primary"
-                                @Click="controlSettings.attachTransformControls(
-                                  positionMods, positionObject, 
-                                  exParams.main.transformControls )">
-                              </v-checkbox>
-                            </v-col>
-
-                            <v-divider vertical></v-divider>
-
-                            <!-- Checkbox description-->
-                            <v-col cols="10" class="px-3 py-4">
-                              {{ $t('moveObj', {obj: $t('model')})}}
-                            </v-col>
-                            
-                          </v-row>
-
                         </v-card>
 
                       </v-card>
-  
+
                     </v-col>
                   </v-row>
-                  
+
                 </v-card>
               </v-col>
             </v-row>
-            
-            <!-- Segmentation Tool -->
             <v-row>
               <v-col>
                 <v-card width="100%" color="transparent" class="pa-2" 
