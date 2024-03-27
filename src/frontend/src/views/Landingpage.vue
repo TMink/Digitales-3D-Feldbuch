@@ -2,7 +2,7 @@
  * Created Date: 29.11.2023 13:29:27
  * Author: Oliver Mertens
  * 
- * Last Modified: 25.03.2024 12:33:51
+ * Last Modified: 27.03.2024 20:31:10
  * Modified By: Julian Hardtung
  * 
  * Description: LandingPage as the first entry point for new users
@@ -13,17 +13,20 @@
         <!-- <Navigation active_tab_prop="" /> -->
 
         <v-parallax   
-            src="/src/assets/background/Background_Landingpage.jpg"
+            src="assets/background/Background_Landingpage.jpg"
             :height="getHeight()">
 
             <div class="d-flex flex-column justify-center align-center text-white">
               <v-card height="35vh"></v-card>
-                <img 
-                  src="/src/assets/logos/3DDF_Icon.png" 
-                  alt=""
-                  height="100"
-                  class="mb-4"/>
+              <v-col>
 
+                <v-img 
+                src="assets/logos/3DDF_Icon.png" 
+                alt=""
+                height="100"
+                class="mb-4"/>
+                
+              </v-col>
                 <h1 class="text-h4 font-weight-thin mb-4">
                     {{ toolbar_title }}
                 </h1>
@@ -73,7 +76,7 @@
 
         <div class="d-flex flex-column justify-center align-center mt-6">
           <v-img 
-            src="src/assets/background/hero-image.png" 
+            src="assets/background/hero-image.png" 
             alt=""
             width="1500">
           </v-img>  
@@ -95,7 +98,7 @@
 
         <div class="d-flex flex-column justify-center align-center mt-15">
           <v-img 
-            src="src/assets/background/stellenkartensystem.png" 
+            src="assets/background/stellenkartensystem.png" 
             alt=""
             width="1000">
           </v-img>  
