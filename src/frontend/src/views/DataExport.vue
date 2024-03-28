@@ -2,8 +2,8 @@
  * Created Date: 26.06.2023 15:10:20
  * Author: Julian Hardtung
  * 
- * Last Modified: 22.03.2024 12:01:04
- * Modified By: Julian Hardtung
+ * Last Modified: 28.03.2024 17:57:28
+ * Modified By: Oliver Mertens
  * 
  * Description: export all (or only specified) data to .pdf or .csv
  -->
@@ -252,6 +252,7 @@
             color="primary" 
             v-on:click="export_overlay = true">
             <v-icon size="x-large">mdi-file-export</v-icon>
+            {{ $t('export')}}
           </v-btn>
         </v-row>
 

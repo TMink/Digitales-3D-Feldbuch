@@ -2,8 +2,8 @@
  * Created Date: 29.11.2023 13:29:27
  * Author: Oliver Mertens
  * 
- * Last Modified: 27.03.2024 20:31:10
- * Modified By: Julian Hardtung
+ * Last Modified: 28.03.2024 17:57:08
+ * Modified By: Oliver Mertens
  * 
  * Description: LandingPage as the first entry point for new users
  -->
@@ -55,7 +55,7 @@
                         color="secondary"
                         prepend-icon="mdi-account-off-outline" 
                         v-on:click="routeActivityOverview()">
-                        {{ $t('continueWithoutAccount')}}
+                        {{ $t('continueWithoutAccount') }}
                     </v-btn>
                     </v-row>
 
