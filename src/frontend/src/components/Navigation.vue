@@ -26,7 +26,8 @@
         bg-color="accent_dark" 
         align-tabs="center" 
         slider-color="slider"
-        v-model="active_tab">
+        v-model="active_tab"
+        v-if="active_tab>=0">
 
         <v-tab 
           id="activity" 

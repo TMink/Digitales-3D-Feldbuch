@@ -10,7 +10,7 @@
 
 <template>
     <div id="wrapper">
-        <!-- <Navigation active_tab_prop="" /> -->
+       <Navigation active_tab_prop="-1" />
 
         <v-parallax   
             src="assets/background/Background_Landingpage.jpg"
