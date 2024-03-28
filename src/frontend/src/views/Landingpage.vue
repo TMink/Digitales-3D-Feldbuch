@@ -41,23 +41,25 @@
                         prepend-icon="mdi-login-variant">
                         Login
                       </v-btn>
+                      <!--
                       <v-btn 
                         v-on:click="routeRegistration()" 
-                        color="secondary" class="ma-2"
+                        color="secondary" 
+                        class="ma-2"
                         prepend-icon="mdi-account-plus-outline">
                         {{ this.$t('registration') }}
                       </v-btn>
+                      -->
+                      <v-btn 
+                        class="ma-2" 
+                        color="secondary"
+                        prepend-icon="mdi-account-off-outline" 
+                        v-on:click="routeActivityOverview()">
+                        {{ $t('continueWithoutAccount')}}
+                    </v-btn>
                     </v-row>
 
-                    <v-btn 
-                      class="mt-4" 
-                      color="white"
-                      prepend-icon="mdi-account-off-outline" 
-                      v-on:click="routeActivityOverview()">
-                      {{ $t('continueWithoutAccount')}}
-                    </v-btn>
-
-                    <v-card variant="plain" height="20vh"></v-card>
+                    <v-card variant="plain" height="10vh"></v-card>
                     <v-icon class="bounce" size="x-large">mdi-arrow-down-circle</v-icon>
                   </v-col>
                 </v-row>
