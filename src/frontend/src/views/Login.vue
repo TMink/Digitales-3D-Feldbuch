@@ -72,24 +72,22 @@
               </v-btn>
 
               <v-row>
-
-              
-              <v-card-text>
-                <a
-                  v-on:click="routeRegistration()"
-                  href="/#/registration"
-                  class="text-blue text-decoration-none">
-                    {{ this.$t('registration') }} 
-                    <v-icon icon="mdi-chevron-right"></v-icon>
-                </a>
-              </v-card-text>
-              <v-card-text>
-                <a
-                  class="text-caption text-decoration-none text-blue"
-                  href="url">
-                  {{ this.$t('forgotPassword') }}
-                </a>
-              </v-card-text>
+                <v-card-text>
+                  <a
+                    v-on:click="routeRegistration()"
+                    href="/#/registration"
+                    class="text-blue text-decoration-none">
+                      {{ this.$t('registration') }} 
+                      <v-icon icon="mdi-chevron-right"></v-icon>
+                  </a>
+                </v-card-text>
+                <v-card-text>
+                  <a
+                    class="text-caption text-decoration-none text-blue"
+                    href="url">
+                    {{ this.$t('forgotPassword') }}
+                  </a>
+                </v-card-text>
               </v-row>
             </v-card>
           </div>

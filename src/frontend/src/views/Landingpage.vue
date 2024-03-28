@@ -49,7 +49,11 @@
                       </v-btn>
                     </v-row>
 
-                    <v-btn class="mt-4" color="white" v-on:click="routeActivityOverview()">
+                    <v-btn 
+                      class="mt-4" 
+                      color="white"
+                      prepend-icon="mdi-account-off-outline" 
+                      v-on:click="routeActivityOverview()">
                       {{ $t('continueWithoutAccount')}}
                     </v-btn>
 
@@ -154,6 +158,7 @@
                 </v-card-text>
                 <v-btn href="https://github.com/TMink/Digitales-3D-Feldbuch-Projekt-3-/releases/latest/download/fieldbook-client-win32-x64.7z" 
                   color="secondary" 
+                  prepend-icon="mdi-download-outline"
                   class="ma-2">{{ this.$t('download') }}</v-btn>
               </v-card>
             </v-col>

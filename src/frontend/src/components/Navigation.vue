@@ -170,6 +170,7 @@
               v-model="tooltipsToggle"
               density="compact"
               hide-details
+              color="secondary"
               @click="toggleTooltips()">
             </v-checkbox>
           </v-row>
