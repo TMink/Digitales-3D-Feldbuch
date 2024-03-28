@@ -2,10 +2,12 @@
  * Created Date: 08.01.2024 14:43:50
  * Author: Tobias Mink
  * 
- * Last Modified: 21.02.2024 23:59:44
+ * Last Modified: 28.03.2024 18:38:09
  * Modified By: Tobias Mink
  * 
- * Description: 
+ * Description: A Collections of various functions that are used all over the 
+ *              3DPart in many different situations for minor changes or 
+ *              generell maintenence.
  */
 
 import * as THREE from 'three';
@@ -14,6 +16,11 @@ import { toRaw } from 'vue';
 
 export class Utilities {
   
+  /**
+   * Gets the group of an given object in scene.
+   * @param { object } object 
+   * @returns THREE.Group<any>
+   */
   getGroup( object ) {
     var groupObject = object;
     while ( !( groupObject instanceof THREE.Group ) ) {
@@ -23,6 +30,11 @@ export class Utilities {
     return groupObject;
   }
 
+  /**
+   * Gets the center of an object/group of objects.
+   * @param { object } object 
+   * @returns THREE.Vector3
+   */
   getModelCenter( object ) {
     var groupObject = object;
     while ( !( groupObject instanceof THREE.Group ) ) {
@@ -37,6 +49,11 @@ export class Utilities {
     return center;
   }
 
+  /**
+   * Gets the barycenter of an object/group of objects.
+   * @param {*} objects 
+   * @returns THREE.Vector3
+   */
   getBarycenter( objects ) {
     var groupObjects = objects;
     const groupObjectsCenter = []
@@ -69,6 +86,11 @@ export class Utilities {
     return center
   }
 
+  /**
+   * Get camera position an rotation.
+   * @param { object } camera 
+   * @returns object
+   */
   getCameraData( camera ) {
     const cameraData = {
       position: [ camera.position.x, camera.position.y, camera.position.z ],
@@ -78,6 +100,11 @@ export class Utilities {
     return cameraData;
   }
 
+  /**
+   * Sets new camera position and rotation.
+   * @param { object } camera 
+   * @param { object } cameraData 
+   */
   setCamera( camera, cameraData ) {
     camera.position.set( cameraData.position[ 0 ], cameraData.position[ 1 ],
       cameraData.position[ 2 ] );
@@ -85,6 +112,11 @@ export class Utilities {
       cameraData.rotation[ 2 ]);
   }
 
+  /**
+   * Updates the autofilllists in IndexedDB.
+   * @param { object } storeName 
+   * @param { object } item 
+   */
   async updateAutoFillList( storeName, item ) {
     const newEditor = {};
 
@@ -111,6 +143,12 @@ export class Utilities {
       }
   }
 
+  /**
+   * Updates positions and autofill lists in IndexedDB
+   * @param { any } root 
+   * @param { any } t 
+   * @param { object } posInfo 
+   */
   async savePosition( root, t, posInfo ) {
 
     //convert from vue proxy to JSON object
@@ -136,6 +174,12 @@ export class Utilities {
     root.vtoast.show({ message: t('saveSuccess')});
   }
 
+  /**
+   * Calculates a new SubNumber for a position.
+   * @param { object } curPos 
+   * @param { object } prevPos 
+   * @returns 
+   */
   calcSubNumber(curPos, prevPos) {
     if (prevPos == undefined) {
       return 1;
@@ -147,7 +191,7 @@ export class Utilities {
     
     var subNumber = prevPos.subNumber;
 
-    if (/* curPos.activity == prevPos.activity && */
+    if (
       curPos.placeID == prevPos.placeID &&
       curPos.positionNumber == prevPos.positionNumber &&
       curPos.right == prevPos.right &&
@@ -163,6 +207,11 @@ export class Utilities {
     return parseInt(subNumber) + 1;
   }
 
+  /**
+   * Updates the color value of a button.
+   * @param { object } e 
+   * @param { object } leftDrawer 
+   */
   updateBtnColor( e, leftDrawer ) {
     if(e) {
       switch(e) {
@@ -212,6 +261,12 @@ export class Utilities {
     }
   }
 
+  /**
+   * Gets loaded new objects.
+   * @param { object } alreadyLoadedIDs 
+   * @param { object } objectsInDB 
+   * @param { object } objectsToBeLoaded 
+   */
   getNewObjects( alreadyLoadedIDs, objectsInDB, objectsToBeLoaded ) {
     alreadyLoadedIDs.forEach( id => {
       objectsInDB.forEach( object => {
@@ -223,11 +278,21 @@ export class Utilities {
     } )
   }
 
+  /**
+   * Gets loaded old objects.
+   * @param { object } alreadyLoadedIDs 
+   * @param { object } objectsInDB 
+   * @returns 
+   */
   getOldObject( alreadyLoadedIDs, objectsInDB ) {
     return alreadyLoadedIDs.filter( x => !objectsInDB.includes( x ) )
   }
 
-  checkIDs( arrayToBeChecked, arrayToBeCheckedWith ) {
+  /**
+   * Compares ids with place ids in local storage.
+   * @param {*} arrayToBeChecked 
+   */
+  checkIDs( arrayToBeChecked ) {
     arrayToBeChecked.forEach( arrA => {
       if ( !exParams.main.objects.place._ids.some( id => id === arrA._id ) ) {
         objectsToBeLoaded.push( arrA )

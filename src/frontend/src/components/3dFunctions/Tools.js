@@ -2,10 +2,13 @@
  * Created Date: 15.01.2024 11:05:52
  * Author: Tobias Mink
  * 
- * Last Modified: 27.03.2024 19:11:30
+ * Last Modified: 28.03.2024 16:56:52
  * Modified By: Tobias Mink
  * 
- * Description: 
+ * Description: A collection of all created tools. The initialisation of each 
+ *              tool takes place in Initialisations.js.
+ *              These classes contain the logic behind each tool and can be 
+ *              imported inside 3DView.js for further usage.
  */
 
 import * as THREE from 'three';
@@ -13,18 +16,29 @@ import { CSS2DObject } from
   'three/examples/jsm/renderers/CSS2DRenderer'
 import { fromOfflineDB } from '../../ConnectionToOfflineDB.js'
 import { toRaw } from 'vue';
-
-import { MeshBVHVisualizer } from 'three-mesh-bvh';
-import {
-	Brush,
-	Evaluator,
-	EdgesHelper,
-	TriangleSetHelper,
-	logTriangleDefinitions,
-	GridMaterial
-} from 'three-bvh-csg';
+import { Brush } from 'three-bvh-csg';
 
 export class LineTool {
+
+  constructor() {
+    this.lineParams = {
+      color: 0x0000ff,
+      frustrumCulled: false,
+    }
+    this.lableParams = {
+      element: "div",
+      className: "lable",
+      marginTop: "-1em"
+    }
+    this.ballParams = {
+      size: { x: 0.03, y: 6,z: 4},
+      color: 0xffff00
+    }
+    this.alertParams = {
+      noName: "Please enter a name first",
+      dupName: "Name already taken"
+    }
+  }
   
   createLine( name, position ) {  
     const points = [];
@@ -39,21 +53,21 @@ export class LineTool {
       const line = new THREE.Line(
         geometry,
         new THREE.LineBasicMaterial({
-          color: 0x0000ff,
+          color: this.lineParams.color,
         }),
       )
 
       line.name = name;
-      line.frustumCulled = false;
+      line.frustumCulled = this.lineParams.frustrumCulled;
 
       return line
   }
 
   createLable( name, distance, position ) {
-    const lableDiv = document.createElement( "div" );
-    lableDiv.className = "lable";
+    const lableDiv = document.createElement( this.lableParams.element );
+    lableDiv.className = this.lableParams.className;
     lableDiv.innerText = distance
-    lableDiv.style.marginTop = "-1em";
+    lableDiv.style.marginTop = this.lableParams.marginTop;
     const measurementLable = new CSS2DObject( lableDiv );
     measurementLable.name = name;
     const vec3 = new THREE.Vector3( position.x, position.y, position.z );
@@ -63,8 +77,8 @@ export class LineTool {
   }
 
   createBall( name, pos ) {
-    const geometry = new THREE.SphereGeometry( 0.03, 6, 4 );
-    const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+    const geometry = new THREE.SphereGeometry( this.ballParams.size.x, this.ballParams.size.y, this.ballParams.size.z );
+    const material = new THREE.MeshBasicMaterial( { color: this.ballParams.color } );
     const sphere = new THREE.Mesh( geometry, material );
     sphere.name = name;
     return {
@@ -110,7 +124,7 @@ export class LineTool {
     /* Check if new name is " " or undefined */
     if( measureTool.textField == "" || measureTool.textField == undefined ) {
       token = false
-      root.vtoast.show({ message: t('Please enter a name first')});
+      root.vtoast.show({ message: t( this.alertParams.noName )});
     } else {
       /* Check if the name is already taken */
       var notTaken = true
@@ -121,7 +135,7 @@ export class LineTool {
       } )
       if( !notTaken ) {
         token = false;
-        root.vtoast.show({ message: t('Name already taken')});
+        root.vtoast.show({ message: t( this.alertParams.dupName )});
       }
     }
 
@@ -227,45 +241,92 @@ export class AnnotationTool {
       marginTop: "-1em"
     }
     this.boxParams = { 
-      size: { width: 0.01, height: 0.01, depth: 0.01 },
+      size: { x: 0.01, y: 0.01, z: 0.01 },
       color: 0xffff00
     }
   }
-
+  
+  /**
+   * Creates a new label as an 2D-Sprite. This lable can be added to any
+   * THREE.Object3D.
+   * @param { String } name 
+   * @param { String } annotationName 
+   * @param { object } position 
+   * @returns 
+   */
   createLable( name, annotationName, position ) {
+    /* Create new div-container element for CSS2D-Object */
     const lableDiv = document.createElement( this.lableParams.element );
+    
+    /* Adapt div-container parameters */
     lableDiv.className = this.lableParams.className;
     lableDiv.innerText = annotationName
     lableDiv.style.marginTop = this.lableParams.marginTop;
+
+    /* Create new CSS2D-Object inside the div-container */
     const measurementLable = new CSS2DObject( lableDiv );
+
+    /* Adapt CSS2D-Object parameters */
     measurementLable.name = name;
+    
+    /* Create new vector */
     const vec3 = new THREE.Vector3( position[0], position[1], position[2] );
+    
+    /* Change position of CSS2D-Object in relation to the new vector */
     measurementLable.position.copy( vec3 );
     
+    /* Return the CSS2D-Object */
     return measurementLable
   }
 
-  createBox( name, pos ) {
-    const geometry = new THREE.BoxGeometry( this.boxParams.size.width, 
-      this.boxParams.size.height, this.boxParams.size.depth );
+  /**
+   * Creates a THREE.Mesh based on the THREE.BoxGeometry.
+   * @param { String } name
+   * @returns 
+   */
+  createBox( name ) {
+    /* Create geometry */
+    const geometry = new THREE.BoxGeometry( this.boxParams.size.x, 
+      this.boxParams.size.y, this.boxParams.size.z );
+      
+    /* Create material */
     const material = new THREE.MeshBasicMaterial( { 
       color: this.boxParams.color } );
+
+    /* Create mesh from geometry and material */
     const box = new THREE.Mesh( geometry, material );
+    
+    /* Change name of the object */
     box.name = name;
+    
+    /* Return object */
     return box; 
   }
 
+  /**
+   * Updates UI to match the new textfield input.
+   * @param { object } annotatTool 
+   */
   updateTitle( annotatTool ) {
     if ( annotatTool.texttoken ) {
+      /* Overrides the given title with the string inside the textfield. */
       annotatTool.title = annotatTool.textField;
       annotatTool.texttoken = false;
     }
   }
 
-  async saveLineTitle( root, t, annotatTool, scene ) {
+  /**
+   * Updates the text of an annotation and updateds the ui and IndexedDB.
+   * @param { any } root 
+   * @param { any } t 
+   * @param { object } annotatTool 
+   * @param { THREE.Scene } scene 
+   */
+  async saveAnnotationTitle( root, t, annotatTool, scene ) {
     let idToBeRenamed = null;
     let token = true;
 
+    /* Get all annotations in IndexedDB */
     const annotationsInDB = await fromOfflineDB.getAllObjects(
       'Annotations', 'annotations' );
     
@@ -273,6 +334,7 @@ export class AnnotationTool {
     /* Check if new name is " " or undefined */
     if( annotatTool.textField == "" || annotatTool.textField == undefined ) {
       token = false
+      /* Alert the user if no name in entered */
       root.vtoast.show({ message: t('Please enter a name first')});
     } else {
       /* Check if the name is already taken */
@@ -284,11 +346,12 @@ export class AnnotationTool {
       } )
       if( !notTaken ) {
         token = false;
+        /* Alert the user if the name is already taken */
         root.vtoast.show({ message: t('Name already taken')});
       }
     }
 
-    /* If the new name meet the criteria from above */
+    /* If the new name meet the criteria from above, adapt the new name */
     if( token ) {
       annotatTool.infoBlock.forEach( element => {
         if ( element.lableName === annotatTool.title ) {
@@ -297,20 +360,29 @@ export class AnnotationTool {
         }
       } )
   
-      /* Rename line in IndexedDb */
-      const annotationInDB = annotationsInDB.find( e => e._id === idToBeRenamed );
+      /* Find the annotation with the id that matches the one that will be 
+       * changed. */
+      const annotationInDB = annotationsInDB.find( 
+        e => e._id === idToBeRenamed );
+      /* Rename line */
       annotationInDB.lableName = annotatTool.textField;
-      await fromOfflineDB.updateObject( annotationInDB, 'Annotations', 'annotations' );
-
-      annotatTool.textField = annotatTool.textField;
+      /* Update the entry in IndexedDB */
+      await fromOfflineDB.updateObject( annotationInDB, 'Annotations', 
+        'annotations' );
   
+      /* Update the drop down menue */
       this.updateAnnotationMenue( annotatTool );
-      this.updateAnnotationInnerText( annotationInDB.boxName, annotatTool.textField, 
-        scene );
+      /* Update the text of the CSS2D-Object */
+      this.updateAnnotationInnerText( annotationInDB.boxName, 
+        annotatTool.textField, scene );
       annotatTool.texttoken = true;
     }
   }
 
+  /**
+   * Updates all entrys of the drop down menue.
+   * @param { object } annotatTool 
+   */
   updateAnnotationMenue( annotatTool ) {
     annotatTool.allTitles = [];
     annotatTool.infoBlock.forEach( element => {
@@ -318,31 +390,51 @@ export class AnnotationTool {
     })
   }
 
+  /**
+   * Updates the text of an annotation in scene
+   * @param { String } boxName 
+   * @param { String } newLable 
+   * @param { THREE.Scene } scene 
+   */
   updateAnnotationInnerText( boxName, newLable, scene ) {
     const boxToChange = scene.getObjectByName( boxName )
     boxToChange.children[0].element.innerText = newLable
   }
 
-  async deleteLine( placeInDB, annotatTool, scene ) {
+  /**
+   * Search through all annotations, locate the one wich should be removed and
+   * remove it from scene, ui and IndexedDB.
+   * @param { any } placeInDB 
+   * @param { object } annotatTool 
+   * @param { THREE.scene } scene 
+   */
+  async deleteAnnotation( placeInDB, annotatTool, scene ) {
     let idToBeDeleted = null
+
+    /* Get all annotations in IndexedDB */
     const annotationsInDB = await fromOfflineDB.getAllObjects(
       'Annotations', 'annotations' );
-      
+    
+    /* Disposes the geoemetry and material of the box, removes the CSS2D-Object
+     * and clears the ui entrys. */
     annotatTool.infoBlock.forEach( element => {
       if ( element.lableName === annotatTool.title ) {
         idToBeDeleted = element._id;
         
         const index = annotatTool.infoBlock.indexOf(element)
 
-        /* Delte line from sceneMain */
+        /* Get the CSS2D- and box-Object from scene */
         const lable = scene.getObjectByName(annotatTool.infoBlock[index]._id)
         const box = scene.getObjectByName(annotatTool.infoBlock[index].boxName)
 
+        /* Remove attached CSS2D-Object and dispose geometry and material of the 
+         * box object. Afterwards remove it from scene. */
         box.remove( lable );
         box.geometry.dispose();
         box.material.dispose();
-        scene.remove( lable );
+        scene.remove( box );
 
+        /* Remove the CSS2D-Object */
         lable.remove()
 
         /* Delete menue item */
@@ -351,26 +443,38 @@ export class AnnotationTool {
       }
     })
 
-    /* Delete from IndexedDb */
+    /* Find annotation with id that matches the one that will be 
+     * changed. */
     const annotationInDB = annotationsInDB.find( e => e._id === idToBeDeleted );
+    /* Remove annotation-id from list of the current place */
     const index = placeInDB.lines.indexOf(annotationInDB._id);
-    placeInDB.lines.splice( index, 1 );
+    placeInDB.annotations.splice( index, 1 );
+    /* Remove annotation from IndexedDB */
     await fromOfflineDB.deleteObject( annotationInDB, 'Annotations', 'annotations' );
+    /* Update place entry in IndexedDB */
     await fromOfflineDB.updateObject( structuredClone(toRaw(placeInDB)), 
       'Places', 'places' )
 
+    /* Remove title from ui */
     annotatTool.title = null;
+    /* Update menue content */
     this.updateAnnotationMenue( annotatTool );
   }
 }
 
 export class ModelInteraktion {
   
+  /**
+   * Updates the color of an object
+   * @param { String } color 
+   * @param { THREE.Group } modelGroup 
+   */
   changeColor( color, modelGroup ) {
     if ( color != null && modelGroup != null ) {
 
       modelGroup.traverse( (child) => {
         if ( child instanceof THREE.Mesh) {
+          console.log(typeof(color))
           child.material.color = new THREE.Color( color );
         }
       })
@@ -380,17 +484,24 @@ export class ModelInteraktion {
 }
 
 export class SegmentationTool {
-  
+
+  /**
+   * Updates the position and color attributes of a brush.
+   * @param { Brush } brush 
+   * @param { object } params 
+   */
   updateBrush( brush, params ) {
 
+    /* Dispose currently used geometry and return a non-index version of an 
+     * indexed BufferGeometry. */
     brush.geometry.dispose();
-  
     brush.geometry = brush.geometry.toNonIndexed();
   
+    /* Update position */
     const position = brush.geometry.attributes.position;
     const array = new Float32Array( position.count * 3 );
     for ( let i = 0, l = array.length; i < l; i += 9 ) {
-  
+
       array[ i + 0 ] = 1;
       array[ i + 1 ] = 0;
       array[ i + 2 ] = 0;
@@ -405,18 +516,19 @@ export class SegmentationTool {
   
     }
   
+    /* Set new color attribute */
     brush.geometry.setAttribute( 'color', new THREE.BufferAttribute( array, 3 ) );
     brush.prepareGeometry();
     params.needsUpdate = true;
-  
   }
 
-  async switchToSegmentationMode( stTool, main ) {
-    
-    /**
-     * Make all objects in scene invisible and all brushes visible and vice 
-     * versa
-     */
+  /**
+   * Make all objects in scene invisible and all brushes visible and vice 
+   * versa.
+   * @param { object } stTool 
+   * @param { object } main 
+   */
+  async switchToSegmentationMode( stTool, main ) {   
     if( !stTool.brushToCutWith.brush.visible ) {
       main.objects.allObjects[0].children[0].visible = false;
       stTool.brushToCutWith.brush.visible = true;
@@ -434,8 +546,8 @@ export class SegmentationTool {
     }
     
     /**
-     * Attach transform controls to brush, to be able to move it
-     * Detach if they are already attached
+     * Attach transform controls to brush, to be able to move it.
+     * Detach if they are already attached.
      */
     if( !stTool.brushToCutWith.attach ) {
       main.transformControls.attach( stTool.brushToCutWith.brush );
@@ -446,9 +558,12 @@ export class SegmentationTool {
     }
 
     main.needsUpdate = true;
-
   }
 
+  /**
+   * Show controls or hide them
+   * @param { object } main 
+   */
   displayControls( main ) {
     if( main.transformControls.visible ) {
       main.transformControls.visible = false;

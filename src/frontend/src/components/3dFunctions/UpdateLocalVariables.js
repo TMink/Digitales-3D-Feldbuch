@@ -2,10 +2,11 @@
  * Created Date: 10.12.2023 15:49:23
  * Author: Tobias Mink
  * 
- * Last Modified: 21.02.2024 23:59:37
+ * Last Modified: 28.03.2024 18:20:27
  * Modified By: Tobias Mink
  * 
- * Description: 
+ * Description: Functions to update the local parameter list to reduce the
+ *              amount of IndexedDb accesses.
  */
 
 import * as THREE from 'three';
@@ -14,9 +15,9 @@ export class UpdateLocalVariables {
   /**
    * Creates a new entry with object params and adjust the object within
    * 3D-space. These Informations are given by the IndexedDB entry.
-   * @param {*} objectType 
-   * @param {*} objectData 
-   * @param {*} loadedMesh 
+   * @param { object } objectType 
+   * @param { object } objectData 
+   * @param { THREE.Object3D } loadedMesh 
    * @returns new entry with object params and adjusted object
    */
   updateLoadedObject( objectType, objectData, loadedObject ) {
@@ -86,7 +87,7 @@ export class UpdateLocalVariables {
 
   /**
    * Updates material parameters with data from IndexedDB.
-   * @param { THREE.group } loadedObject 
+   * @param { THREE.Group } loadedObject 
    * @param { object } objectData 
    */
   updateObjectMaterial( loadedObject, objectData ) {

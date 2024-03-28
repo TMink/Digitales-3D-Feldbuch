@@ -2,7 +2,7 @@
  Created Date: 17.11.2023 16:18:33
  Author: Tobias Mink
  
- Last Modified: 27.03.2024 19:50:36
+ Last Modified: 28.03.2024 11:37:56
  Modified By: Tobias Mink
  
  Description: 
@@ -143,7 +143,7 @@
                             </v-col>
 
                             <v-col cols="2">
-                              <v-btn icon class="ma-1" color="primary" v-on:click="annotationTool.saveLineTitle(
+                              <v-btn icon class="ma-1" color="primary" v-on:click="annotationTool.saveAnnotationTitle(
                                       this.$root, this.$t, annotatTool, 
                                       exParams.main.scene )">
                                 <v-icon>mdi-content-save-all</v-icon>
@@ -153,7 +153,7 @@
 
                           <v-row no-gutters class="ps-4 pb-3">
                             <v-col cols="12">
-                              <v-btn width="96.6%" color="error" v-on:click="annotationTool.deleteLine(
+                              <v-btn width="96.6%" color="error" v-on:click="annotationTool.deleteAnnotation(
                                       this.placeInDB,
                                       annotatTool, 
                                       exParams.main.scene )">
