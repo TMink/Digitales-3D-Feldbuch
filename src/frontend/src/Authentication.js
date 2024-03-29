@@ -2,7 +2,7 @@
  * Created Date: 30.11.2023 12:25:16
  * Author: Julian Hardtung
  * 
- * Last Modified: 29.03.2024 14:14:06
+ * Last Modified: 29.03.2024 14:29:46
  * Modified By: Julian Hardtung
  * 
  * Description: Authentication actions and user state storage
@@ -46,18 +46,23 @@ export const useUserStore = defineStore("user", {
      * @param {*} formData {username, mail, password}
      */
     async register(formData) {
-      try {
-        await axios({
-          method: "post",
-          url: "/user/register",
-          data: toRaw(formData),
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        });
-  
-      } catch (error) {
-        console.log(error)
-      }
+      return new Promise(async (resolve, reject) => {
+        try {
+          await axios({
+            method: "post",
+            url: "/user/register",
+            data: toRaw(formData),
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          });
+          resolve();
+        } catch (error) {
+          if (error.response == undefined) {
+            reject("noServerConnection");
+          }
+          reject(error.response.data.message);
+        }
+      });
     },
 
     async login(formData) {

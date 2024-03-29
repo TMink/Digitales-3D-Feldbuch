@@ -2,7 +2,7 @@
  * Created Date: 29.11.2023 01:45:54
  * Author: Julian Hardtung
  * 
- * Last Modified: 29.03.2024 14:13:35
+ * Last Modified: 29.03.2024 14:30:50
  * Modified By: Julian Hardtung
  * 
  * Description: Vue component for user login
@@ -138,7 +138,7 @@ export default {
      */
     async login() {
       this.userStore.login(this.form)
-      .then((value) => {
+      .then((res) => {
         this.$root.vtoast.show({ message: this.$t('loginSuccess'), color: 'success' })
         this.$router.push({ name: "ActivitiesOverview" });
       })

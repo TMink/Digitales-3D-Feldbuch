@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 29.03.2024 14:15:27
+ * Last Modified: 29.03.2024 14:34:09
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -205,4 +205,7 @@ export default {
   noServerConnection: "Keine Verbindung zum Server möglich",
   loginSuccess: "Login erfolgreich",
   invalidCredentials: "Falsches Passwort",
+  userNameAlreadyExists: "Ein Benutzer mit diesem Namen existiert bereits",
+  userMailAlreadyExists: "Ein Benutzer mit diese E-Mail existiert bereits",
+  registrationSuccess: "Account erfolgreich angelegt",
 };
