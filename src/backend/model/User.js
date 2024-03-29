@@ -2,7 +2,7 @@
  * Created Date: 30.11.2023 15:04:12
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.12.2023 14:25:38
+ * Last Modified: 29.03.2024 14:20:22
  * Modified By: Julian Hardtung
  * 
  * Description: A mongoose Schema for Users, which maps to a MongoDb collection
@@ -14,6 +14,7 @@ const Schema = mongoose.Schema;
 const userSchema = new Schema({
   username: {
     type: String,
+    unique: true,
     required: true,
   },
   mail: {
@@ -28,7 +29,7 @@ const userSchema = new Schema({
   },
   activities: {
     type: [String],
-  }
+  },
 });
 
 module.exports = mongoose.model("User", userSchema);

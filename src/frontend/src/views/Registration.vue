@@ -2,7 +2,7 @@
  * Created Date: 29.11.2023 01:45:44
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.03.2024 13:20:11
+ * Last Modified: 29.03.2024 14:33:31
  * Modified By: Julian Hardtung
  * 
  * Description: Vue component for user registration
@@ -131,9 +131,14 @@ export default {
   },
   methods: {
     async registration() {
-      await this.userStore.register(this.form)
-        .catch(err => console.error(err));
-      this.$router.push({ name: "Login" });
+      this.userStore.register(this.form)
+        .then(res => {
+          this.$root.vtoast.show({ message: this.$t('registrationSuccess'), color: 'success' })
+          this.$router.push({ name: "Login" });
+        })
+        .catch((err) => {
+          this.$root.vtoast.show({ message: this.$t(err), color: 'error' })
+        });
     },
     getHeight() {
       if(this.windowHeight > 600){

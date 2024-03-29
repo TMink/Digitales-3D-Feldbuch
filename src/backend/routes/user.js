@@ -30,19 +30,40 @@ function checkAuthentication(cookie) {
 
 
 router.post("/register", async (req, res) => {
+  var user = await User.findOne({ username: req.body.username }).catch((err) =>
+    console.error(err)
+  );
+  
+  if (user != undefined) {
+    return res.status(404).send({
+      message: "userNameAlreadyExists",
+    });
+  } else {
+     user = await User.findOne({ mail: req.body.mail }).catch((err) =>
+      console.error(err)
+    );
+  }
+
+  if (user != undefined) {
+    return res.status(404).send({
+      message: "userMailAlreadyExists",
+    });
+  }
+
   const salt = await bcrypt.genSalt(10).catch(err => console.error(err));
 
   const hashedPassword = await bcrypt.hash(req.body.password, salt)
     .catch((err) => console.error(err));
 
-  const user = new User({
+  const newUser = new User({
     username: req.body.username,
     mail: req.body.mail,
     password: hashedPassword,
-    activities: req.body.activities
+    activities: req.body.activities,
   });
 
-  const result = await user.save().catch((err) => console.error(err));
+  const result = await newUser.save().catch((err) => console.error(err));
+  
 
   const { password, ...data } = await result.toJSON();
 
@@ -56,13 +77,13 @@ router.post("/login", async (req, res) => {
 
   if (!user) {
     return res.status(404).send({
-      message: "user not found",
+      message: "userNotFound",
     });
   }
 
   if (!(await bcrypt.compare(req.body.password, user.password))) {
     return res.status(400).send({
-      message: "invalid credentials",
+      message: "invalidCredentials",
     });
   }
 
