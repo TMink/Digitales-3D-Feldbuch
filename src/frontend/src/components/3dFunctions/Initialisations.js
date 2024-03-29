@@ -2,17 +2,15 @@
  * Created Date: 23.01.2024 13:09:11
  * Author: Tobias Mink
  * 
- * Last Modified: 28.03.2024 16:59:03
+ * Last Modified: 29.03.2024 20:48:25
  * Modified By: Tobias Mink
  * 
  * Description: A Collection of initialisation functions, which will be called
  *              in the mounted function in 3DView.js. This includes the creation
- *              of the main/sub scene and various tools.
+ *              of the mainSceneParams/subSceneParams scene and various tools.
  */
 
 import * as THREE from 'three';
-import { CameraSettings } from './CameraSettings.js';
-import { SegmentationTool } from './Tools.js';
 import { ArcballControls } from
 'three/examples/jsm/controls/ArcballControls.js';
 import { TransformControls } from
@@ -35,159 +33,9 @@ import * as CSG from 'three-bvh-csg';
 
 export class Initialisations {
 
-  constructor() {
-    this.cameraSettings = new CameraSettings();
-    this.segmentationTool = new SegmentationTool();
-
-    this.measurement = {
-      css2DRenderer: {
-        position: "absolute",
-        top: "35px",
-        color: "white",
-        pointerEvents: "none"
-      }      
-    }
-
-    this.segmentation = {
-      css2DRenderer: {
-        position: "absolute",
-        top: "35px",
-        color: "white",
-        pointerEvents: 'none'
-      },
-      brushCut: {
-        name: "brushToCutWith",
-        positionOffset: 5,
-        color: 0x00FFFB,
-        attached: false,
-        material: {
-          opacity: 0,
-          transparent: true,
-          depthWrite: false,
-          polygonOffset: true,
-          polygonOffsetFactor: 0.2,
-          polygonOffsetUnits: 0.2,
-          side: THREE.DoubleSide,
-          premultipliedAlpha: true,
-          receiveShadow: true,
-          visible: false
-        },
-        mat: {
-          side: THREE.FrontSide,
-          opacity: 1,
-          transparent: false,
-          depthWrite: true,
-          name: "segmentationBrush_mat"
-        }
-      },
-      brushObject: {
-        colors: [ 0x214CEC, 0x0ABA28, 0xF80909 ],
-        resultBrush: null,
-        originalMaterial: null,
-        material: {
-          opacity: 0.05,
-          transparent: true,
-          depthWrite: false,
-          polygonOffset: true,
-          polygonOffsetFactor: 0.2,
-          polygonOffsetUnits: 0.2,
-          side: THREE.DoubleSide,
-          premultipliedAlpha: true,
-          receiveShadow: true,
-          visible: false
-        },
-        mat: {
-          side: THREE.FrontSide,
-          opacity: 1,
-          transparent: false,
-          depthWrite: true
-        },
-        resultObject: {
-          flatShading: false,
-          polygonOffset: true,
-          polygonOffsetUnits: 0.1,
-          polygonOffsetFactor: 0.1,
-          castShadow: true,
-          receiveShadow: true
-        }
-      }
-    }
-
-    this.main = {
-      renderer: {
-        backgroundColor: 0x263238,
-        backgroundColorIntensity: 1,
-        antialias: true,
-        shadowMapEnabled: true,
-        shadowMapType: THREE.PCFSoftShadowMap,
-        outputEncoding: THREE.SRGBColorSpace
-      },
-      scene: {
-        name: "SceneMain"
-      },
-      camera: {
-        attributes: {
-          fov: 45,
-          near: 0.01,
-          far: 2000
-        },
-        name: "CameraMain"
-      },
-      light: {
-        ambientLight: {
-          color: 0xb0bec5,
-          intensity: 0.35,
-          name: "ambientMain"
-        },
-        directionalLight: {
-          color: 0xffffff,
-          intensity: 3.5,
-          position: { x: -1, y: -3, z: 0 },
-          name: "directionalMain"
-        }
-      },
-      controls: {
-        arcball: {
-          maxDownTime: 0,
-          maxInterval: 0,
-          cursorZoom: true,
-          gizmosVisible: false
-        }
-      },
-      postProcessing: {
-        outlinePass: {
-          color: "#FFFFFF",
-          pulsePeriod: 2,
-          edgeStrength: 4,
-          edgeThickness: 2,
-          edgeGlow: 0.5
-        }
-      }
-    }
-
-    this.sub = {
-      renderer: {
-        backgroundColor: 0x263238,
-        backgroundColorIntensity: 1,
-        shadowMapEnabled: true,
-        shadowMapType: THREE.PCFSoftShadowMap
-      },
-      scene: {
-        name: "SceneSub"
-      },
-      camera: {
-        attributes: { 
-          fov: 50,
-          near: 1,
-          far: 1000
-        }
-      },
-      light: {
-        ambientLight: {
-          color: 0xffffff
-        }
-      }
-    }
+  constructor( cameraSettings, segmentationTool ) {
+    this.cameraSettings = cameraSettings;
+    this.segmentationTool = segmentationTool;
   }
 
   /**
@@ -196,31 +44,27 @@ export class Initialisations {
    * @param { object } canvas 
    * @param { object } params 
    */
-  initMeasurementTool( document, canvas, params ) {
+  initMeasurementTool( main, mmTool, document ) {
     /* Create CSS2D-Renderer and adjust its attributes */
-    params.css2DRenderer = new CSS2DRenderer()
-    params.css2DRenderer.setSize( canvas.clientWidth,
-      canvas.clientHeight );
-    params.css2DRenderer.domElement.style.position = 
-      this.measurement.css2DRenderer.position
-    params.css2DRenderer.domElement.style.top = 
-      this.measurement.css2DRenderer.top
-    params.css2DRenderer.domElement.style.color = 
-      this.measurement.css2DRenderer.color
-    params.css2DRenderer.domElement.style.pointerEvents = 
-      this.measurement.css2DRenderer.pointerEvents
+    mmTool.css2DRenderer = new CSS2DRenderer()
+    mmTool.css2DRenderer.setSize( main.canvas.clientWidth, main.canvas.clientHeight );
+    mmTool.css2DRenderer.domElement.style.position = mmTool.css2DRendererParams.position;
+    mmTool.css2DRenderer.domElement.style.top = mmTool.css2DRendererParams.top;
+    mmTool.css2DRenderer.domElement.style.color = mmTool.css2DRendererParams.color;
+    mmTool.css2DRenderer.domElement.style.pointerEvents = 
+    mmTool.css2DRendererParams.pointerEvents;
     /* Append the CSS2D-Renderer to document */
-    document.body.appendChild( params.css2DRenderer.domElement)
+    document.body.appendChild( mmTool.css2DRenderer.domElement)
 
-    // Create new Raycaster
-    params.raycaster = new THREE.Raycaster();
-    params.pointer = new THREE.Vector2();
+    /* Create new Raycaster */
+    mmTool.raycaster = new THREE.Raycaster();
+    mmTool.pointer = new THREE.Vector2();
 
-    params.lineID = String(Date.now());
+    mmTool.lineID = String(Date.now());
   }
 
   /**
-   * Initialize the segmentation tool
+   * Initialize the stToolParams tool
    * @param { object } main 
    * @param { object } stTool 
    * @param { object } centerOfObjects 
@@ -238,53 +82,52 @@ export class Initialisations {
      * This brush can be moved and will be used to cut the objects. */
     const brushToCutWith = new CSG.Brush( new THREE.BoxGeometry(5, 10, 10), 
       new CSG.GridMaterial() );
-    brushToCutWith.name = this.segmentation.brushCut.name;
-    /* Move segmentation brush to the loaded objects, according to their 
+    brushToCutWith.name = stTool.brushToCutWithParams.name;
+    /* Move stToolParams brush to the loaded objects, according to their 
      * position */
     brushToCutWith.position.set( 
-      centerOfObjects.x - this.segmentation.brushCut.positionOffset, 
+      centerOfObjects.x - stTool.brushToCutWithParams.positionOffset, 
       centerOfObjects.y, centerOfObjects.z );
     /* Create parameter entry */
     stTool.brushToCutWith = {
       brush: brushToCutWith,
-	    brushColor: this.segmentation.brushCut.color,
-      attached: this.segmentation.brushCut.attached
+	    brushColor: stTool.brushToCutWithParams.color,
+      attached: stTool.brushToCutWithParams.attached
     }
     /* Update brushesOfObjects */
     this.segmentationTool.updateBrush( brushToCutWith, main );
     /* Initialize brush materials */
     stTool.brushToCutWith.brush.material.opacity = 
-      this.segmentation.brushCut.material.opacity;
+      stTool.brushToCutWithParams.material.opacity;
 	  stTool.brushToCutWith.brush.material.transparent = 
-      this.segmentation.brushCut.material.transparent;
+      stTool.brushToCutWithParams.material.transparent;
 	  stTool.brushToCutWith.brush.material.depthWrite = 
-    this.segmentation.brushCut.material.depthWrite;
+      stTool.brushToCutWithParams.material.depthWrite;
 	  stTool.brushToCutWith.brush.material.polygonOffset = 
-      this.segmentation.brushCut.material.polygonOffset;
+      stTool.brushToCutWithParams.material.polygonOffset;
 	  stTool.brushToCutWith.brush.material.polygonOffsetFactor = 
-      this.segmentation.brushCut.material.polygonOffsetFactor;
+      stTool.brushToCutWithParams.material.polygonOffsetFactor;
 	  stTool.brushToCutWith.brush.material.polygonOffsetUnits = 
-      this.segmentation.brushCut.material.polygonOffsetUnits;
-	  stTool.brushToCutWith.brush.material.side = 
-      this.segmentation.brushCut.material.side;
+      stTool.brushToCutWithParams.material.polygonOffsetUnits;
+	  stTool.brushToCutWith.brush.material.side = THREE.DoubleSide;
 	  stTool.brushToCutWith.brush.material.premultipliedAlpha = 
-      this.segmentation.brushCut.material.premultipliedAlpha;
+      stTool.brushToCutWithParams.material.premultipliedAlpha;
     stTool.brushToCutWith.brush.material.color.set( 
       stTool.brushToCutWith.brushColor )
     stTool.brushToCutWith.brush.receiveShadow = 
-      this.segmentation.brushCut.material.receiveShadow;
+      stTool.brushToCutWithParams.material.receiveShadow;
     stTool.brushToCutWith.brush.visible = 
-      this.segmentation.brushCut.material.visible;
+      stTool.brushToCutWithParams.material.visible;
     /* Add brush to scene */
     main.scene.add( stTool.brushToCutWith.brush );
     /* Create material map for transparent to opaque variants */
     let mat;
 	  mat = stTool.brushToCutWith.brush.material.clone();
-	  mat.side = this.segmentation.brushCut.mat.side;
-	  mat.opacity = this.segmentation.brushCut.mat.opacity;
-	  mat.transparent = this.segmentation.brushCut.mat.transparent;
-	  mat.depthWrite = this.segmentation.brushCut.mat.depthWrite;
-    mat.name = this.segmentation.brushCut.mat.name
+	  mat.side = THREE.FrontSide;
+	  mat.opacity = stTool.brushToCutWithParams.mat.opacity;
+	  mat.transparent = stTool.brushToCutWithParams.mat.transparent;
+	  mat.depthWrite = stTool.brushToCutWithParams.mat.depthWrite;
+    mat.name = stTool.brushToCutWithParams.mat.name
 	  stTool.materialMap.set( stTool.brushToCutWith.brush.material, mat );
     
     /* ## Initialize brushesOfObjects ## */
@@ -299,9 +142,9 @@ export class Initialisations {
       brush.scale.setScalar( 1 );
       stTool.brushesOfObjects.push( {
         brush: brush,
-	      brushColor: this.segmentation.brushObject.colors[idx],
-        resultBrush: this.segmentation.brushObject.resultBrush,
-        originalMaterial: this.segmentation.brushObject.originalMaterial
+	      brushColor: stTool.brushesOfObjectsParams.colors[idx],
+        resultBrush: stTool.brushesOfObjectsParams.resultBrush,
+        originalMaterial: stTool.brushesOfObjectsParams.originalMaterial
       } );
     })
     /* Update brushesOfObjects */
@@ -311,26 +154,25 @@ export class Initialisations {
     /* Initialize brush materials */
     stTool.brushesOfObjects.forEach( brush => {
       brush.brush.material.opacity = 
-        this.segmentation.brushObject.material.opacity;
+        stTool.brushesOfObjectsParams.material.opacity;
 	    brush.brush.material.transparent = 
-        this.segmentation.brushObject.material.transparent;
+        stTool.brushesOfObjectsParams.material.transparent;
 	    brush.brush.material.depthWrite = 
-        this.segmentation.brushObject.material.depthWrite;
+        stTool.brushesOfObjectsParams.material.depthWrite;
 	    brush.brush.material.polygonOffset = 
-        this.segmentation.brushObject.material.polygonOffset;
+        stTool.brushesOfObjectsParams.material.polygonOffset;
 	    brush.brush.material.polygonOffsetFactor = 
-        this.segmentation.brushObject.material.polygonOffsetFactor;
+        stTool.brushesOfObjectsParams.material.polygonOffsetFactor;
 	    brush.brush.material.polygonOffsetUnits = 
-        this.segmentation.brushObject.material.polygonOffsetUnits;
-	    brush.brush.material.side = 
-        this.segmentation.brushObject.material.side;
+        stTool.brushesOfObjectsParams.material.polygonOffsetUnits;
+	    brush.brush.material.side = THREE.DoubleSide;
 	    brush.brush.material.premultipliedAlpha = 
-        this.segmentation.brushObject.material.premultipliedAlpha;
+        stTool.brushesOfObjectsParams.material.premultipliedAlpha;
       brush.brush.material.color.set( brush.brushColor )
       brush.brush.receiveShadow = 
-        this.segmentation.brushObject.material.receiveShadow;
+        stTool.brushesOfObjectsParams.material.receiveShadow;
       brush.brush.visible = 
-        this.segmentation.brushObject.material.visible;
+        stTool.brushesOfObjectsParams.material.visible;
     } );
     /* Add brushesOfObjects to scene */
     stTool.brushesOfObjects.forEach( brush => {
@@ -339,10 +181,10 @@ export class Initialisations {
     /* Create material map for transparent to opaque variants */
     stTool.brushesOfObjects.forEach( brush => {
       mat = brush.brush.material.clone();
-      mat.side = this.segmentation.brushObject.mat.side
-      mat.opacity = this.segmentation.brushObject.mat.opacity;
-      mat.transparent = this.segmentation.brushObject.mat.transparent;
-      mat.depthWrite = this.segmentation.brushObject.mat.depthWrite;
+      mat.side = THREE.FrontSide;
+      mat.opacity = stTool.brushesOfObjectsParams.mat.opacity;
+      mat.transparent = stTool.brushesOfObjectsParams.mat.transparent;
+      mat.depthWrite = stTool.brushesOfObjectsParams.mat.depthWrite;
       mat.name = brush.brush.name;
       stTool.materialMap.set( brush.brush.material, mat );
     } );
@@ -355,162 +197,154 @@ export class Initialisations {
     stTool.brushesOfObjects.forEach( brush => {
       brush.resultObject = new THREE.Mesh( new THREE.BufferGeometry(), 
       new THREE.MeshStandardMaterial( {
-        flatShading: this.segmentation.brushObject.resultObject.flatShading,
+        flatShading: stTool.brushesOfObjectsParams.resultObject.flatShading,
         polygonOffset: 
-          this.segmentation.brushObject.resultObject.polygonOffset,
+          stTool.brushesOfObjectsParams.resultObject.polygonOffset,
         polygonOffsetUnits: 
-          this.segmentation.brushObject.resultObject.polygonOffsetUnits,
+          stTool.brushesOfObjectsParams.resultObject.polygonOffsetUnits,
         polygonOffsetFactor: 
-          this.segmentation.brushObject.resultObject.polygonOffsetFactor
+          stTool.brushesOfObjectsParams.resultObject.polygonOffsetFactor
       } ) );
       brush.resultObject.castShadow = 
-        this.segmentation.brushObject.resultObject.castShadow;
+        stTool.brushesOfObjectsParams.resultObject.castShadow;
       brush.resultObject.receiveShadow = 
-        this.segmentation.brushObject.resultObject.receiveShadow;
+        stTool.brushesOfObjectsParams.resultObject.receiveShadow;
       brush.originalMaterial = brush.resultObject.material;
       main.scene.add( brush.resultObject );
     } );
   }
 
   /**
-   * Initializes the main scene and its attributes
+   * Initializes the mainSceneParams scene and its attributes
    * @param { object } params 
    */
-  mainInit( params ) {
-    /* All loaded meshes in main scene */
-    params.objectsInMain = [];
-
+  mainInit( main ) {
     /* Create renderer */
-    params.renderer = new THREE.WebGLRenderer( {
-      canvas: params.canvas,
-      antialias: this.main.renderer.antialias
+    main.renderer = new THREE.WebGLRenderer( {
+      canvas: main.canvas,
+      antialias: main.rendererParams.antialias
     } );
-    params.renderer.setSize( params.canvas.clientWidth,
-      params.canvas.clientHeight );
-    params.renderer.setClearColor( this.main.renderer.backgroundColor, 
-      this.main.renderer.backgroundColorIntensity );
-    params.renderer.shadowMap.enabled = 
-      this.main.renderer.shadowMapEnabled;
-    params.renderer.shadowMap.type = this.main.renderer.shadowMapType;
-    params.renderer.outputEncoding = this.main.renderer.outputEncoding;
+    main.renderer.setSize( main.canvas.clientWidth, main.canvas.clientHeight );
+    main.renderer.setClearColor( main.rendererParams.backgroundColor, 
+      main.rendererParams.backgroundColorIntensity );
+    main.renderer.shadowMap.enabled = main.rendererParams.shadowMapEnabled;
+    main.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    main.renderer.outputEncoding = THREE.SRGBColorSpace;
       
     /* Create scene */
-    params.scene = new THREE.Scene();
-    params.scene.name = this.main.scene.name
+    main.scene = new THREE.Scene();
+    main.scene.name = main.sceneParams.name
 
     /* Create camera */
-    const aspect = params.canvas.clientWidth / params.canvas.clientHeight;
-    params.camera = new THREE.PerspectiveCamera( 
-      this.main.camera.attributes.fov, aspect, this.main.camera.attributes.near, 
-      this.main.camera.attributes.far );
-    params.camera.name = this.main.camera.name
+    const aspect = main.canvas.clientWidth / main.canvas.clientHeight;
+    main.camera = new THREE.PerspectiveCamera( 
+      main.cameraParams.attributes.fov, aspect, main.cameraParams.attributes.near, 
+      main.cameraParams.attributes.far );
+    main.camera.name = main.cameraParams.name
 
     /* Create light */
-    params.directionalLight = new THREE.DirectionalLight( 
-      this.main.light.directionalLight.color,
-      this.main.light.directionalLight.intensity );
-    params.directionalLight.position.set( 
-      this.main.light.directionalLight.position.x,
-      this.main.light.directionalLight.position.y,
-      this.main.light.directionalLight.position.z );
-    params.scene.add( params.directionalLight, params.directionalLight.target );
-    params.directionalLight.name = this.main.light.directionalLight.name;
+    main.directionalLight = new THREE.DirectionalLight( 
+      main.lightParams.directional.color,
+      main.lightParams.directional.intensity );
+      main.directionalLight.position.set( 
+      main.lightParams.directional.position.x,
+      main.lightParams.directional.position.y,
+      main.lightParams.directional.position.z );
+    main.scene.add( main.directionalLight, main.directionalLight.target );
+    main.directionalLight.name = main.lightParams.directional.name;
 
-    params.ambientlight = new THREE.AmbientLight( 
-      this.main.light.ambientLight.color, 
-      this.main.light.ambientLight.intensity );
-    params.scene.add( params.ambientlight );
-    params.ambientlight.name = this.main.light.ambientLight.name;
+    main.ambientlight = new THREE.AmbientLight( main.lightParams.ambient.color, 
+      main.lightParams.ambient.intensity );
+    main.scene.add( main.ambientlight );
+    main.ambientlight.name = main.lightParams.ambient.name;
 
     /* Create controls */
-    params.arcBallControls = new ArcballControls( params.camera,
-      params.renderer.domElement, params.scene );
-    params.arcBallControls._maxDownTime = 
-      this.main.controls.arcball.maxDownTime;
-    params.arcBallControls._maxInterval = 
-      this.main.controls.arcball.maxInterval;
-    params.arcBallControls.cursorZoom = this.main.controls.arcball.cursorZoom;
-    params.arcBallControls.setGizmosVisible( 
-      this.main.controls.arcball.gizmosVisible );
+    main.arcBallControls = new ArcballControls( main.camera, 
+      main.renderer.domElement, main.scene );
+    main.arcBallControls._maxDownTime = main.controlsParams.arcball.maxDownTime;
+    main.arcBallControls._maxInterval = main.controlsParams.arcball.maxInterval;
+    main.arcBallControls.cursorZoom = main.controlsParams.arcball.cursorZoom;
+    main.arcBallControls.setGizmosVisible( 
+      main.controlsParams.arcball.gizmosVisible );
 
-    params.transformControls = new TransformControls( params.camera,
-      params.renderer.domElement );
-    params.transformControls.addEventListener( 'dragging-changed', e => {
-      params.arcBallControls.enabled = !e.value;
+    main.transformControls = new TransformControls( main.camera,
+      main.renderer.domElement );
+    main.transformControls.addEventListener( 'dragging-changed', e => {
+      main.arcBallControls.enabled = !e.value;
     } );
-    params.transformControls.addEventListener( 'objectChange', () => {
-      params.needsUpdate = true;
+    main.transformControls.addEventListener( 'objectChange', () => {
+      main.needsUpdate = true;
     } )
-    params.scene.add( params.transformControls );
+    main.scene.add( main.transformControls );
 
     /* Create raycaster */
-    params.raycaster = new THREE.Raycaster();
-    params.pointer = new THREE.Vector2();
+    main.raycaster = new THREE.Raycaster();
+    main.pointer = new THREE.Vector2();
     
     /* Post processing */
-    params.composer = new EffectComposer( params.renderer );
+    main.composer = new EffectComposer( main.renderer );
 
-    params.renderPass = new RenderPass( params.scene, params.camera );
-    params.composer.addPass( params.renderPass );
+    main.renderPass = new RenderPass( main.scene, main.camera );
+    main.composer.addPass( main.renderPass );
 
-    params.outlinePass = new OutlinePass( new THREE.Vector2(
-      params.canvas.clientWidth, params.canvas.clientHeight ),
-      params.scene, params.camera );
-    params.outlinePass.hiddenEdgeColor.set( 
-      this.main.postProcessing.outlinePass.color )
-    params.outlinePass.pulsePeriod = 
-      this.main.postProcessing.outlinePass.pulsePeriod;
-    params.outlinePass.edgeStrength = 
-      this.main.postProcessing.outlinePass.edgeStrength;
-    params.outlinePass.edgeThickness = 
-      this.main.postProcessing.outlinePass.edgeThickness;
-    params.outlinePass.edgeGlow = 
-      this.main.postProcessing.outlinePass.edgeGlow;
-    params.composer.addPass( params.outlinePass );
+    main.outlinePass = new OutlinePass( new THREE.Vector2(
+      main.canvas.clientWidth, main.canvas.clientHeight ),
+      main.scene, main.camera );
+    main.outlinePass.hiddenEdgeColor.set( 
+      main.postProcessingParams.outlinePass.color )
+    main.outlinePass.pulsePeriod = 
+      main.postProcessingParams.outlinePass.pulsePeriod;
+    main.outlinePass.edgeStrength = 
+      main.postProcessingParams.outlinePass.edgeStrength;
+    main.outlinePass.edgeThickness = 
+      main.postProcessingParams.outlinePass.edgeThickness;
+    main.outlinePass.edgeGlow = 
+      main.postProcessingParams.outlinePass.edgeGlow;
+    main.composer.addPass( main.outlinePass );
 
     // Shader
-    params.effectFXAA = new ShaderPass( FXAAShader );
-    params.effectFXAA.uniforms[ 'resolution' ].value.set(
-      1 / params.canvas.clientWidth, 1 / params.canvas.clientHeight );
-    params.composer.addPass( params.effectFXAA );
+    main.effectFXAA = new ShaderPass( FXAAShader );
+    main.effectFXAA.uniforms[ 'resolution' ].value.set(
+      1 / main.canvas.clientWidth, 1 / main.canvas.clientHeight );
+    main.composer.addPass( main.effectFXAA );
 
-    params.gammaCorrectionShader = new ShaderPass( GammaCorrectionShader );
-    params.composer.addPass( params.gammaCorrectionShader )
+    main.gammaCorrectionShader = new ShaderPass( GammaCorrectionShader );
+    main.composer.addPass( main.gammaCorrectionShader )
   }
 
   /**
    * Initializes the sub scene and its attributes
    * @param { object } params 
    */
-  subInit( params ) {
+  subInit( sub ) {
     /* Mesh in sub scene */
-    params.object = [];
+    sub.object = [];
 
     /* Create Renderer */
-    params.renderer = new THREE.WebGLRenderer( { canvas: params.canvas } );
-    params.renderer.setPixelRatio( params.canvas.devicePixelRatio );
-    params.renderer.setSize( params.canvas.clientWidth,
-      params.canvas.clientHeight );
-    params.renderer.setClearColor( this.sub.renderer.backgroundColor,
-      this.sub.renderer.backgroundColorIntensity );
-    params.renderer.shadowMap.enabled = this.sub.renderer.shadowMapEnabled;
-    params.renderer.shadowMap.type = this.sub.renderer.shadowMapType;
+    sub.renderer = new THREE.WebGLRenderer( { canvas: sub.canvas } );
+    sub.renderer.setPixelRatio( sub.canvas.devicePixelRatio );
+    sub.renderer.setSize( sub.canvas.clientWidth,
+      sub.canvas.clientHeight );
+    sub.renderer.setClearColor( sub.rendererParams.backgroundColor,
+      sub.renderer.backgroundColorIntensity );
+    sub.renderer.shadowMap.enabled = sub.rendererParams.shadowMapEnabled;
+    sub.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     /* Create Scene */
-    params.scene = new THREE.Scene();
-    params.scene.name = this.sub.scene.name;
+    sub.scene = new THREE.Scene();
+    sub.scene.name = sub.sceneParams.name;
 
     /* Create Camera */
-    const aspect = params.canvas.clientWidth / params.canvas.clientHeight;
-    params.camera = new THREE.PerspectiveCamera( this.sub.camera.fov, aspect, 
-      this.sub.camera.near, this.sub.camera.far );
+    const aspect = sub.canvas.clientWidth / sub.canvas.clientHeight;
+    sub.camera = new THREE.PerspectiveCamera( sub.cameraParams.fov, aspect, 
+      sub.cameraParams.near, sub.cameraParams.far );
 
     /* Create Light */
-    params.light = new THREE.AmbientLight( this.sub.light.ambientLight.color );
-    params.scene.add( params.light );
+    sub.light = new THREE.AmbientLight( sub.lightParams.ambient.color );
+    sub.scene.add( sub.light );
 
     /* Create Controls */
-    params.orbitControls = new OrbitControls( params.camera,
-      params.renderer.domElement );
+    sub.orbitControls = new OrbitControls( sub.camera, 
+      sub.renderer.domElement );
   }
 }

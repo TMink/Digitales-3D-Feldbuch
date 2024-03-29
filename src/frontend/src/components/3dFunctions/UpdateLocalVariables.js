@@ -2,7 +2,7 @@
  * Created Date: 10.12.2023 15:49:23
  * Author: Tobias Mink
  * 
- * Last Modified: 28.03.2024 18:20:27
+ * Last Modified: 30.03.2024 00:16:28
  * Modified By: Tobias Mink
  * 
  * Description: Functions to update the local parameter list to reduce the
@@ -10,6 +10,7 @@
  */
 
 import * as THREE from 'three';
+
 export class UpdateLocalVariables {
 
   /**

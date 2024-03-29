@@ -2,7 +2,7 @@
  * Created Date: 15.01.2024 12:38:45
  * Author: Tobias Mink
  * 
- * Last Modified: 28.03.2024 17:16:59
+ * Last Modified: 30.03.2024 00:02:42
  * Modified By: Tobias Mink
  * 
  * Description: A Collection of functions to modify the control settings and
@@ -17,16 +17,16 @@ export class ControlSettings {
    * @param { object } posObject 
    * @param { object } tControls 
    */
-  attachTransformControls( posMods, posObject, tControls ) {
+  attachTransformControls( posMods, posObject, main ) {
     if ( !posMods.attachTransformControls ) {
       posMods.attachTransformControls = true;
       if ( posObject.chosenfinalModelGroup ) {
-        tControls.detach();
-        tControls.attach(posObject.chosenfinalModelGroup);
+        main.transformControls.detach();
+        main.transformControls.attach(posObject.chosenfinalModelGroup);
       }
     } else {
       posMods.attachTransformControls = false;
-      tControls.detach();
+      main.transformControls.detach();
     }
   }
 

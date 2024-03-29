@@ -2,7 +2,7 @@
  Created Date: 17.11.2023 16:18:33
  Author: Tobias Mink
  
- Last Modified: 28.03.2024 11:37:56
+ Last Modified: 30.03.2024 00:21:27
  Modified By: Tobias Mink
  
  Description: 
@@ -54,7 +54,7 @@
                           <v-row no-gutters class="pt-4 px-3">
                             <v-col>
                               <v-select v-model="measureTool.title" :label="$t('line')" color="primary"
-                                :items="measureTool.allTitles" :@update="lineTool.updateTitle( 
+                                :items="measureTool.allTitles" :@update="measurementTool.updateTitle( 
                                   measureTool )"></v-select>
                             </v-col>
                           </v-row>
@@ -70,9 +70,9 @@
                             </v-col>
 
                             <v-col cols="2">
-                              <v-btn icon class="ma-1" color="primary" v-on:click="lineTool.saveLineTitle(
+                              <v-btn icon class="ma-1" color="primary" v-on:click="measurementTool.saveLineTitle(
                                       this.$root, this.$t, measureTool, 
-                                      exParams.main.scene )">
+                                      exParams.main, exParams.mmTool )">
                                 <v-icon>mdi-content-save-all</v-icon>
                               </v-btn>
                             </v-col>
@@ -80,10 +80,8 @@
 
                           <v-row no-gutters class="ps-4 pb-3">
                             <v-col cols="12">
-                              <v-btn width="96.6%" color="error" v-on:click="lineTool.deleteLine(
-                                      this.placeInDB,
-                                      measureTool, 
-                                      exParams.main.scene )">
+                              <v-btn width="96.6%" color="error" v-on:click="measurementTool.deleteLine(
+                                      this.placeInDB, measureTool, exParams.main )">
                                 <v-icon>mdi-delete</v-icon>
                               </v-btn>
                             </v-col>
@@ -145,7 +143,7 @@
                             <v-col cols="2">
                               <v-btn icon class="ma-1" color="primary" v-on:click="annotationTool.saveAnnotationTitle(
                                       this.$root, this.$t, annotatTool, 
-                                      exParams.main.scene )">
+                                      exParams.main )">
                                 <v-icon>mdi-content-save-all</v-icon>
                               </v-btn>
                             </v-col>
@@ -154,9 +152,8 @@
                           <v-row no-gutters class="ps-4 pb-3">
                             <v-col cols="12">
                               <v-btn width="96.6%" color="error" v-on:click="annotationTool.deleteAnnotation(
-                                      this.placeInDB,
-                                      annotatTool, 
-                                      exParams.main.scene )">
+                                      this.placeInDB, annotatTool, 
+                                      exParams.main )">
                                 <v-icon>mdi-delete</v-icon>
                               </v-btn>
                             </v-col>
@@ -516,8 +513,7 @@
                               <v-checkbox :v-model="positionMods.attachTransformControls"
                                 :disabled="positionMods.disabled" :true-value="positionMods.attachTransformControls"
                                 :false-value="!positionMods.attachTransformControls" color="primary" @Click="controlSettings.attachTransformControls(
-                                  positionMods, positionObject, 
-                                  exParams.main.transformControls )">
+                                  positionMods, positionObject, exParams.main )">
                               </v-checkbox>
                             </v-col>
 
@@ -770,19 +766,18 @@
 <script>
 import * as THREE from 'three';
 import Navigation from '../components/Navigation.vue';
+import { useWindowSize } from 'vue-window-size';
 import { exParams } from '../components/3dFunctions/Parameter.js'
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { ObjectLoaders } from '../components/3dFunctions/ObjectLoaders.js'
-import { UpdateLocalVariables } from '../components/3dFunctions/UpdateLocalVariables.js'
 import { UpdateIndexedDB } from '../components/3dFunctions/UpdateIndexedDB.js';
-import { LineTool, ModelInteraktion, SegmentationTool, AnnotationTool } from '../components/3dFunctions/Tools.js'
+import { MeasurementTool, ModelInteraktion, SegmentationTool, AnnotationTool } from '../components/3dFunctions/Tools.js'
 import { ControlSettings } from '../components/3dFunctions/ControlSettings.js'
 import { CameraSettings } from '../components/3dFunctions/CameraSettings.js'
 import { Utilities } from '../components/3dFunctions/Utilities.js'
 import { ObjectFilter } from '../components/3dFunctions/ObjectFilter.js'
 import { GarbageCollection } from '../components/3dFunctions/GarbageCollection.js'
 import { Initialisations } from '../components/3dFunctions/Initialisations.js'
-import { useWindowSize } from 'vue-window-size';
 
 import * as CSG from 'three-bvh-csg';
 
@@ -926,8 +921,8 @@ export default {
 
         /* Reset modifikations and save changes */
         if ( this.positionMods.token ) {
-          this.objectFilter.resetPositionMods( this.positionObject, this.positionMods,
-            exParams.main.scene );
+          this.objectFilter.resetPositionMods( this.positionObject, 
+            this.positionMods, exParams.main );
         }
 
         /* Reset positionData & positionObject menus content 
@@ -957,8 +952,8 @@ export default {
 
         /* Reset modifikations and save changes */
         if ( this.positionMods.token ) {
-          this.objectFilter.resetPositionMods( this.positionObject, this.positionMods,
-          exParams.main.scene );
+          this.objectFilter.resetPositionMods( this.positionObject, 
+            this.positionMods, exParams.main );
         }
 
         /* Reset positionData & positionObject menus content
@@ -988,8 +983,8 @@ export default {
 
         /* Reset modifikations and save changes */
         if ( this.positionMods.token ) {
-          this.objectFilter.resetPositionMods( this.positionObject, this.positionMods,
-          exParams.main.scene );
+          this.objectFilter.resetPositionMods( this.positionObject, 
+            this.positionMods, exParams.main );
         }
 
         /* Reset positionData & positionObject menus content
@@ -1030,8 +1025,8 @@ export default {
 
         /* Reset modifikations and save changes to model */
         if ( this.positionMods.token ) {
-          this.objectFilter.resetPositionMods( this.positionObject, this.positionMods,
-          exParams.main.scene );
+          this.objectFilter.resetPositionMods( this.positionObject, 
+            this.positionMods, exParams.main );
         }
 
         /* Reset positionObject menus content */
@@ -1052,8 +1047,8 @@ export default {
 
         /* Reset modifikations and save changes to model */
         if ( this.positionMods.token ) {
-          this.objectFilter.resetPositionMods( this.positionObject, this.positionMods,
-          exParams.main.scene );
+          this.objectFilter.resetPositionMods( this.positionObject, 
+            this.positionMods, exParams.main );
         }
 
         /* Reset positionObject menus content */
@@ -1127,7 +1122,7 @@ export default {
         /* Reset modifikations and save changes to model */
         if (this.placeMods.token) {
           this.objectFilter.resetPlaceMods( this.placeObject, this.placeMods, 
-          exParams.main.scene );
+          exParams.main );
         }
 
         this.objectFilter.resetPlaceObjectInfo( this.placeObject );
@@ -1147,7 +1142,7 @@ export default {
         /* Reset modifikations and save changes to model */
         if (this.placeMods.token) {
           this.objectFilter.resetPlaceMods(this.placeObject, this.placeMods, 
-          exParams.main.scene );
+          exParams.main );
         }
 
         this.objectFilter.resetPlaceObjectInfo( this.placeObject );
@@ -1309,8 +1304,8 @@ export default {
     /***************************************************************************
      *  ++++ Initialize the Measurement Tool ++++
      */
-    this.initialisations.initMeasurementTool( document, exParams.main.canvas, 
-      exParams.mmTool );
+    this.initialisations.initMeasurementTool( exParams.main, exParams.mmTool, 
+      document );
 
       
 
@@ -1329,8 +1324,7 @@ export default {
             /* Initialize main scene */
             this.initialisations.mainInit( exParams.main );
             /* Initialize main eventlistener */
-            this.initMainEventlisteners( window, exParams.main.canvas,
-              exParams.main.renderer, exParams.main.transformControls );
+            this.initMainEventlisteners( window, exParams.main );
             /* Set token to true */
             this.tokenValue = true;
             break;
@@ -1338,7 +1332,7 @@ export default {
             /* Initialize sub scene */
             this.initialisations.subInit( exParams.sub );
             /* Initialize sub eventlistener */
-            this.initSubEventlisteners( exParams.sub.canvas );
+            this.initSubEventlisteners( exParams.sub );
             /* Set token to true */
             this.tokenValue = true;
             break;
@@ -1372,12 +1366,11 @@ export default {
     } else if ( this.placeObjects.length != 0 && this.positionObjects == 0 ) {
       
       /* Load objects in scene */
-      await this.objectLoaders.loadObjectsInScene( exParams, 'places', 
+      await this.objectLoaders.loadObjectsInScene( exParams.main, 'places', 
         this.placeID );
       /* Fill object Filter menue options with data based on currently loaded
        * objects. */
-      this.objectFilter.getPlaceObjectInfo( this.placeObject, 
-        exParams.main.objects.place.entry );
+      this.objectFilter.getPlaceObjectInfo( this.placeObject, exParams.main );
 
       /* Get object center for camera and control alignment if ... */
       /* ... there is only one objects present or ... */
@@ -1396,12 +1389,12 @@ export default {
     } else if ( this.placeObjects.length == 0 && this.positionObjects != 0 ) {
       
       /* Load objects in scene */
-      await this.objectLoaders.loadObjectsInScene( exParams, 'positions', 
+      await this.objectLoaders.loadObjectsInScene( exParams.main, 'positions', 
         this.placeID );
       /* Fill object Filter menue options with data based on currently loaded
        * objects. */
       this.objectFilter.getPositionDataInfo( this.positionData, 
-        exParams.main.objects.position.entry );
+        exParams.main );
 
       /* Get object center for camera and control alignment if ... */
       /* ... there is only one objects present or ... */
@@ -1419,9 +1412,9 @@ export default {
     /* 4. Place and position objects */
     } else if ( this.placeObjects.length != 0 && this.positionObjects != 0 ) {
       /* Load objects in scene */
-      await this.objectLoaders.loadObjectsInScene( exParams, 'places', 
+      await this.objectLoaders.loadObjectsInScene( exParams.main, 'places', 
       this.placeID );
-      await this.objectLoaders.loadObjectsInScene( exParams, 'positions', 
+      await this.objectLoaders.loadObjectsInScene( exParams.main, 'positions', 
       this.placeID );
       /* Fill object Filter menue options with data based on currently loaded
       * objects. */
@@ -1459,9 +1452,8 @@ export default {
      *  ++++ Re-center Camera based on predetermine factors ++++
      */
     await this.cameraSettings.updateCamera ( 
-      this.centerOfObjects, this.placeID, exParams.main.camera, 
-      this.cameraIDsInDB, this.cameraInDB, this.cameraData, 
-      exParams.main.arcBallControls, this.arcballAnchor
+      this.centerOfObjects, this.placeID, exParams.main, this.cameraIDsInDB, 
+      this.cameraInDB, this.cameraData, this.arcballAnchor
     )
 
 
@@ -1492,11 +1484,9 @@ export default {
 
     if ( exParams.main.objects.allObjects.length > 0 ) {
       updateDB.updateCamera( this.placeID, this.cameraIDsInDB,
-        this.cameraInDB, this.arcballAnchor, exParams.main.camera,
-        exParams.main.objects.allObjects )
+        this.cameraInDB, this.arcballAnchor, exParams.main )
 
-      updateDB.updateObjects( exParams.main.objects.place.entry,
-      exParams.main.objects.position.entry, exParams.main.scene )
+      updateDB.updateObjects( exParams.main )
     }
 
     exParams.main.canvas.removeEventListener( 'click', this.updateArcball );
@@ -1533,11 +1523,12 @@ export default {
       this.controlSettings = new ControlSettings();
       this.cameraSettings = new CameraSettings();
       this.garbageCollection = new GarbageCollection();
-      this.lineTool = new LineTool();
+      this.measurementTool = new MeasurementTool();
       this.segmentationTool = new SegmentationTool();
       this.annotationTool = new AnnotationTool();
       this.modelInteraktion = new ModelInteraktion();
-      this.initialisations = new Initialisations();
+      this.initialisations = new Initialisations( this.cameraSettings, 
+        this.segmentationTool );
       this.objectLoaders = new ObjectLoaders();
     },
 
@@ -1619,17 +1610,17 @@ export default {
 
       if ( this.linesInDB.length > 0 ) {
         this.linesInDB.forEach( elem => {
-          exParams.mmTool.line = this.lineTool.createLine( 
-            elem.line.name, elem.line.geoPosition );
-          const balls = this.lineTool.createBalls( 
+          exParams.mmTool.line = this.measurementTool.createLine( 
+            elem.line.name, elem.line.geoPosition, exParams.mmTool );
+          const balls = this.measurementTool.createBalls( 
             elem.balls, elem.line.geoPosition )
 
-          const lineCenter = this.lineTool.findLineCenter( 
+          const lineCenter = this.measurementTool.findLineCenter( 
             balls[ 0 ].position,
             balls[ 1 ].position )
 
-          exParams.mmTool.measurementLable = this.lineTool.createLable( 
-            elem.lable.name, elem.lable.distance, lineCenter );
+          exParams.mmTool.measurementLable = this.measurementTool.createLable( 
+            elem.lable.name, elem.lable.distance, lineCenter, exParams.mmTool );
 
           balls.forEach( ball => {
             exParams.main.scene.add( ball.sphere )
@@ -1666,16 +1657,14 @@ export default {
       if ( this.annotationsInDB.length > 0 ) {
         this.annotationsInDB.forEach( annotation => {
 
-          console.log(annotation)
-
           /* Create Lable */
           const annotationLable = this.annotationTool.createLable(
             annotation._id, annotation.lableName, 
-            annotation.position )
+            annotation.position, exParams.anTool )
           
           /* Create Box */
           const annotationBox = this.annotationTool.createBox(
-            annotation.boxName, annotation.position )
+            annotation.boxName, exParams.anTool )
 
           /* Add lable to box */
           annotationBox.add(annotationLable)
@@ -1707,43 +1696,43 @@ export default {
      * -------------------------------------------------------------------------
      */
 
-    initMainEventlisteners( window, canvas, renderer, transformControls ) {
+    initMainEventlisteners( window, main ) {
       // Eventlistener
       document.addEventListener( 'click', this.func, false );
       /* Auto Resize */
       window.addEventListener( 'resize', this.onWindowResize, false )
-      canvas.addEventListener( 'click', this.updateArcball );
-      canvas.addEventListener( 'click', this.onMouseDown );
+      main.canvas.addEventListener( 'click', this.updateArcball );
+      main.canvas.addEventListener( 'click', this.onMouseDown );
       window.addEventListener( 'keydown', e => {
         switch ( e.code ) {
           case 'KeyW':
-            transformControls.mode = 'translate';
+            main.transformControls.mode = 'translate';
             break;
           case 'KeyE':
-            transformControls.mode = 'rotate';
+            main.transformControls.mode = 'rotate';
             break;
           case 'KeyR':
-            transformControls.mode = 'scale';
+            main.transformControls.mode = 'scale';
             break;
         }
       });
 
-      canvas.addEventListener( 'keydown', this.keyDown );
-      canvas.addEventListener( 'keyup', this.keyUp );
+      main.canvas.addEventListener( 'keydown', this.keyDown );
+      main.canvas.addEventListener( 'keyup', this.keyUp );
       
-      canvas.addEventListener( 'keydown', this.keyDownAnnotation )
-      canvas.addEventListener( 'keyup', this.keyUpAnnotation )
+      main.canvas.addEventListener( 'keydown', this.keyDownAnnotation )
+      main.canvas.addEventListener( 'keyup', this.keyUpAnnotation )
 
 
-      renderer.domElement.addEventListener( 'pointerdown', this.onClick, 
+      main.renderer.domElement.addEventListener( 'pointerdown', this.onClick, 
         false );
-      renderer.domElement.addEventListener( 'pointerdown', this.onClickAnnotation, 
-        false );
-      canvas.addEventListener( 'mousemove', this.onDocumentMouseMove, 
+      main.renderer.domElement.addEventListener( 'pointerdown', 
+        this.onClickAnnotation, false );
+        main.canvas.addEventListener( 'mousemove', this.onDocumentMouseMove, 
         false);
     },
 
-    initSubEventlisteners( canvas ) {
+    initSubEventlisteners( sub ) {
     },
 
     updateArcball: async function( event ) {
@@ -1915,7 +1904,8 @@ export default {
               intersects[ 0 ].point.clone.z,
             ]
             /* Create Line */
-            exParams.mmTool.line = this.lineTool.createLine( nameLine, position )
+            exParams.mmTool.line = this.measurementTool.createLine( 
+              nameLine, position, exParams.mmTool )
 
             const lineCenter = { 
               x: position.slice(0, 3)[0],
@@ -1924,7 +1914,7 @@ export default {
              }
 
             /* Create lable */
-            exParams.mmTool.measurementLable = this.lineTool.createLable( nameLable,
+            exParams.mmTool.measurementLable = this.measurementTool.createLable( nameLable,
               "New Line\n0.0m", lineCenter )
             
             /* Add line and lable to Main Scene */
@@ -1958,8 +1948,10 @@ export default {
             
             /* Create first and second ball and load them in main Scene */
             const balls = {
-              firstBall: this.lineTool.createBall( nameOfBalls[ 0 ], v0 ),
-              secondBall: this.lineTool.createBall( nameOfBalls[ 1 ], v1 )
+              firstBall: this.measurementTool.createBall( nameOfBalls[ 0 ], v0,
+                exParams.mmTool ),
+              secondBall: this.measurementTool.createBall( nameOfBalls[ 1 ], v1,
+                exParams.mmTool )
             }
             
             Object.entries( balls ).forEach( ( [ key, value ] ) => {
@@ -2080,12 +2072,12 @@ export default {
           /* Create lable - id, name, position */
           const annotationLableName = "New Annotation | " + annotationID;
           const annotationLable = this.annotationTool.createLable(
-            annotationID, annotationLableName, position )
+            annotationID, annotationLableName, position, exParams.anTool )
     
           /* Create box - id, name, position */
           const annotationBoxName = "Box - " + annotationID;
           const annotationBox = this.annotationTool.createBox(
-            annotationBoxName, position )
+            annotationBoxName, exParams.anTool )
           
           /* Add lable to box */
           annotationBox.add(annotationLable)
@@ -2134,11 +2126,9 @@ export default {
 
     switchToAnModus: function( buttonPressed ) {
       if( !buttonPressed ) {
-        console.log("Test1")
         this.annotatTool.modus = true;
         document.body.style.cursor = 'crosshair';
       } else {
-        console.log("Test2")
         this.annotatTool.modus = false;
         document.body.style.cursor = 'pointer';
       }

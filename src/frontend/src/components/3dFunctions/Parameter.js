@@ -2,15 +2,11 @@
  * Created Date: 15.01.2024 17:22:44
  * Author: Tobias Mink
  * 
- * Last Modified: 28.03.2024 16:49:27
+ * Last Modified: 30.03.2024 00:21:40
  * Modified By: Tobias Mink
  * 
  * Description: 
  */
-
-/*
-
-*/
 
 export const exParams = {
 
@@ -41,24 +37,51 @@ export const exParams = {
       },
     },
     renderer: null,
+    rendererParams: {
+      backgroundColor: 0x263238,
+      backgroundColorIntensity: 1,
+      antialias: true,
+      shadowMapEnabled: true
+    },
     scene: null,
     sceneParams: {
-      bgColor: 0x263238,
-      directionalLightColor: 0xffffff,
-      ambientLightColor: 0xb0bec5,
-      outline: {
-        color: '#FFFFFF',
-        pulsePeriod: 2,
-        edgeStrength: 4,
-        edgeThickness: 2,
-        edgeGlow: 0.5
-      }
+      instance: null,
+      name: "SceneMain",
     },
     camera: null,
+    cameraParams: {
+      name: "CameraMain",
+      attributes: {
+        fov: 45,
+        near: 0.01,
+        far: 2000
+      }
+    },
     ambientLight: null,
     directionalLight: null,
+    lightParams: {
+      ambient: {
+        name: "ambientMain",
+        color: 0xb0bec5,
+        intensity: 0.35
+      },
+      directional: {
+        name: "directionalMain",
+        color: 0xffffff,
+        intensity: 3.5,
+        position: { x: -1, y: -3, z: 0 }
+      }
+    },
     arcBallControls: null,
     transformControls: null,
+    controlsParams: {
+      arcball: {
+        maxDownTime: 0,
+        maxInterval: 0,
+        cursorZoom: true,
+        gizmosVisible: false
+      }
+    },
     raycaster: null,
     pointer: null,
     composer: null,
@@ -66,10 +89,17 @@ export const exParams = {
     outlinePass: null,
     effectFXAA: null,
     gammaCorrectionShader: null,
+    postProcessingParams: {
+      outlinePass: {
+        color: "#FFFFFF",
+        pulsePeriod: 2,
+        edgeStrength: 4,
+        edgeThickness: 2,
+        edgeGlow: 0.5
+      }
+    },
     ctrlDown: false,
     needsUpdate: false,
-
-
     annotationButtonPressed: false,
   },
 
@@ -77,64 +107,135 @@ export const exParams = {
     canvas: null,
     object: [],
     renderer: null,
+    rendererParams: {
+      backgroundColor: 0x263238,
+      backgroundColorIntensity: 1,
+      shadowMapEnabled: true
+    },
     scene: null,
     sceneParams: {
-      bgColor: 0x263238,
-      lightColor: 0xffffff
+      name: "SceneSub"
     },
     camera: null,
+    cameraParams: {
+      fov: 50,
+      near: 1,
+      far: 1000
+    },
     light: null,
+    lightParams: {
+      ambient: {
+        color: 0xffffff
+      }
+    },
     orbitControls: null,
   },
 
   mmTool: {
     lineID: null,
     line: null,
+    lineParams: {
+      color: 0x0000ff,
+      frustrumCulled: false,
+    },
     measurementLable: null,
+    measurementLableParams: {
+      element: "div",
+      className: "lable",
+      marginTop: "-1em"
+    },
+    ballParams: {
+      size: { x: 0.03, y: 6,z: 4},
+      color: 0xffff00
+    },
+    alertParams: {
+      noName: "Please enter a name first",
+      dupName: "Name already taken"
+    },
     drawingLine: false,
     intersectsMeasurement: null,
     raycaster: null,
     pointer: null,
     css2DRenderer: null,
+    css2DRendererParams: {
+      position: "absolute",
+        top: "35px",
+        color: "white",
+        pointerEvents: "none"
+    }
   },
   
   anTool: {
     annotations: [],
+    lableParams: {
+      element: "div",
+      className: "lable",
+      marginTop: "-1em"
+    },
+    boxParams: {
+      size: { x: 0.01, y: 0.01, z: 0.01 },
+      color: 0xffff00
+    }
   },
 
   stTool: {
     materialMap: null,
     csgEvaluator: null,
-
     brushToCutWith: null,
+    brushToCutWithParams: {
+      name: "brushToCutWith",
+        positionOffset: 5,
+        color: 0x00FFFB,
+        attached: false,
+        material: {
+          opacity: 0,
+          transparent: true,
+          depthWrite: false,
+          polygonOffset: true,
+          polygonOffsetFactor: 0.2,
+          polygonOffsetUnits: 0.2,
+          premultipliedAlpha: true,
+          receiveShadow: true,
+          visible: false
+        },
+        mat: {
+          opacity: 1,
+          transparent: false,
+          depthWrite: true,
+          name: "segmentationBrush_mat"
+        }
+    },
     brushesOfObjects: [],
-    
-    // brush1: null,
-    // brush1Shape: 'mesh',
-	  // brush1Complexity: 1,
-	  // brush1Color: '#ffffff',
-    
-    // brush2: null,
-	  // brush2Shape: 'box',
-	  // brush2Complexity: 1,
-	  // brush2Color: '#ffffff',
-    
-    // brush3: null,
-	  // brush3Shape: 'mesh',
-	  // brush3Complexity: 1,
-	  // brush3Color: '#ffffff',
-    
-    // brush4: null,
-	  // brush4Shape: 'mesh',
-	  // brush4Complexity: 1,
-	  // brush4Color: '#ffffff',
-
-    resultObject: null,
-    resultObject2: null,
-    resultObject3: null,
-    originalMaterial: null,
-    edgesHelper: null,
-    gridTexture: false
+    brushesOfObjectsParams: {
+      colors: [ 0x214CEC, 0x0ABA28, 0xF80909 ],
+      resultBrush: null,
+      originalMaterial: null,
+        material: {
+        opacity: 0.05,
+        transparent: true,
+        depthWrite: false,
+        polygonOffset: true,
+        polygonOffsetFactor: 0.2,
+        polygonOffsetUnits: 0.2,
+        premultipliedAlpha: true,
+        receiveShadow: true,
+        visible: false
+      },
+      mat: {
+        opacity: 1,
+        transparent: false,
+        depthWrite: true
+      },
+      resultObject: {
+        flatShading: false,
+        polygonOffset: true,
+        polygonOffsetUnits: 0.1,
+        polygonOffsetFactor: 0.1,
+        castShadow: true,
+        receiveShadow: true
+      }
+    },
+    gridTexture: false,
   },
   
   placeID: null,

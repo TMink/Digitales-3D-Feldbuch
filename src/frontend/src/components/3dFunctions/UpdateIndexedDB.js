@@ -2,7 +2,7 @@
  * Created Date: 24.02.2024 18:07:56
  * Author: Tobias Mink
  * 
- * Last Modified: 28.03.2024 18:16:22
+ * Last Modified: 30.03.2024 00:04:09
  * Modified By: Tobias Mink
  * 
  * Description: A Collection of functions to update saved data in IndexedDB.
@@ -21,20 +21,20 @@ export class UpdateIndexedDB {
    * @param { object } cameraIDsInDB 
    * @param { object } cameraInDB 
    * @param { object } arcballAnchor 
-   * @param { object } cameraMain 
+   * @param { object } main 
    */
-  updateCamera( placeID, cameraIDsInDB, cameraInDB, arcballAnchor, cameraMain ) {
+  updateCamera( placeID, cameraIDsInDB, cameraInDB, arcballAnchor, main ) {
 
     const anchor = []
     
     /* Get position and rotation data */
     const cameraData = [
-      cameraMain.position.x,
-      cameraMain.position.y,
-      cameraMain.position.z,
-      cameraMain.rotation.x,
-      cameraMain.rotation.y,
-      cameraMain.rotation.z
+      main.camera.position.x,
+      main.camera.position.y,
+      main.camera.position.z,
+      main.camera.rotation.x,
+      main.camera.rotation.y,
+      main.camera.rotation.z
     ];
 
     /* Create new Anchor for arcball controls */
@@ -66,18 +66,18 @@ export class UpdateIndexedDB {
    * @param { object } positionModelsInScene 
    * @param { THREE.Scene } sceneMain 
    */
-  async updateObjects( placeModelsInScene, positionModelsInScene, sceneMain ) {
+  async updateObjects( main ) {
 
     /* Update place models */
-    for ( var i = 0; i < placeModelsInScene.length; i++ ) {
-      const modelID = placeModelsInScene[ i ]._id;
-      this.updateObjectOpacityAndColor(modelID, 'places', sceneMain);
+    for ( var i = 0; i < main.objects.place.entry.length; i++ ) {
+      const modelID = main.objects.place.entry[ i ]._id;
+      this.updateObjectOpacityAndColor(modelID, 'places', main);
     }
 
     /* Update position models */
-    for ( var u = 0; u < positionModelsInScene.length; u++ ) {
-      const modelID = positionModelsInScene[ u ]._id;
-      const modelInScene = sceneMain.getObjectByName( modelID );
+    for ( var u = 0; u < main.objects.position.entry.length; u++ ) {
+      const modelID = main.objects.position.entry[ u ]._id;
+      const modelInScene = main.scene.getObjectByName( modelID );
       const modelInDB = await fromOfflineDB.getObject( modelID, 'Models',
         'positions' );
 
@@ -117,9 +117,9 @@ export class UpdateIndexedDB {
    * @param { object } storeName 
    * @param { THREE.Scene } scene 
    */
-  async updateObjectOpacityAndColor( modelID, storeName, scene ) {
+  async updateObjectOpacityAndColor( modelID, storeName, main ) {
 
-    const modelInScene = scene.getObjectByName( modelID );
+    const modelInScene = main.scene.getObjectByName( modelID );
       const modelInDB = await fromOfflineDB.getObject( modelID, 'Models',
       storeName );
 

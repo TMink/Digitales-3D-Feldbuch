@@ -2,7 +2,7 @@
  * Created Date: 15.01.2024 11:05:52
  * Author: Tobias Mink
  * 
- * Last Modified: 28.03.2024 16:56:52
+ * Last Modified: 30.03.2024 00:15:45
  * Modified By: Tobias Mink
  * 
  * Description: A collection of all created tools. The initialisation of each 
@@ -18,29 +18,9 @@ import { fromOfflineDB } from '../../ConnectionToOfflineDB.js'
 import { toRaw } from 'vue';
 import { Brush } from 'three-bvh-csg';
 
-export class LineTool {
-
-  constructor() {
-    this.lineParams = {
-      color: 0x0000ff,
-      frustrumCulled: false,
-    }
-    this.lableParams = {
-      element: "div",
-      className: "lable",
-      marginTop: "-1em"
-    }
-    this.ballParams = {
-      size: { x: 0.03, y: 6,z: 4},
-      color: 0xffff00
-    }
-    this.alertParams = {
-      noName: "Please enter a name first",
-      dupName: "Name already taken"
-    }
-  }
+export class MeasurementTool {
   
-  createLine( name, position ) {  
+  createLine( name, position, mmTool ) {  
     const points = [];
       points.push( new THREE.Vector3(position[0], position[1], position[2]),
                    new THREE.Vector3(position[3], position[4], position[5]) );
@@ -53,21 +33,21 @@ export class LineTool {
       const line = new THREE.Line(
         geometry,
         new THREE.LineBasicMaterial({
-          color: this.lineParams.color,
+          color: mmTool.lineParams.color,
         }),
       )
 
       line.name = name;
-      line.frustumCulled = this.lineParams.frustrumCulled;
+      line.frustumCulled = mmTool.lineParams.frustrumCulled;
 
       return line
   }
 
-  createLable( name, distance, position ) {
-    const lableDiv = document.createElement( this.lableParams.element );
-    lableDiv.className = this.lableParams.className;
+  createLable( name, distance, position, mmTool ) {
+    const lableDiv = document.createElement( mmTool.lableParams.element );
+    lableDiv.className = mmTool.lableParams.className;
     lableDiv.innerText = distance
-    lableDiv.style.marginTop = this.lableParams.marginTop;
+    lableDiv.style.marginTop = mmTool.lableParams.marginTop;
     const measurementLable = new CSS2DObject( lableDiv );
     measurementLable.name = name;
     const vec3 = new THREE.Vector3( position.x, position.y, position.z );
@@ -76,9 +56,9 @@ export class LineTool {
     return measurementLable
   }
 
-  createBall( name, pos ) {
-    const geometry = new THREE.SphereGeometry( this.ballParams.size.x, this.ballParams.size.y, this.ballParams.size.z );
-    const material = new THREE.MeshBasicMaterial( { color: this.ballParams.color } );
+  createBall( name, pos, mmTool ) {
+    const geometry = new THREE.SphereGeometry( mmTool.ballParams.size.x, mmTool.ballParams.size.y, this.ballParams.size.z );
+    const material = new THREE.MeshBasicMaterial( { color: mmTool.ballParams.color } );
     const sphere = new THREE.Mesh( geometry, material );
     sphere.name = name;
     return {
@@ -113,7 +93,7 @@ export class LineTool {
     }
   }
 
-  async saveLineTitle( root, t, measureTool, scene ) {
+  async saveLineTitle( root, t, measureTool, main, mmTool ) {
     let idToBeRenamed = null;
     let token = true;
 
@@ -124,7 +104,7 @@ export class LineTool {
     /* Check if new name is " " or undefined */
     if( measureTool.textField == "" || measureTool.textField == undefined ) {
       token = false
-      root.vtoast.show({ message: t( this.alertParams.noName )});
+      root.vtoast.show({ message: t( alertParams.noName )});
     } else {
       /* Check if the name is already taken */
       var notTaken = true
@@ -135,7 +115,7 @@ export class LineTool {
       } )
       if( !notTaken ) {
         token = false;
-        root.vtoast.show({ message: t( this.alertParams.dupName )});
+        root.vtoast.show({ message: t( alertParams.dupName )});
       }
     }
 
@@ -151,19 +131,21 @@ export class LineTool {
       /* Rename line in IndexedDb */
       const lineInDB = linesInDB.find( e => e._id === idToBeRenamed );
       lineInDB.name = measureTool.textField + " - " + lineInDB.name.split('- ')[1];
-      lineInDB.lable.distance = measureTool.textField + " \n " + lineInDB.name.split('- ')[1];
+      lineInDB.lable.distance = 
+        measureTool.textField + " \n " + lineInDB.name.split('- ')[1];
       await fromOfflineDB.updateObject( lineInDB, 'Lines', 'lines' );
 
-      measureTool.textField = measureTool.textField + " - " + lineInDB.name.split('- ')[1];
+      measureTool.textField = 
+        measureTool.textField + " - " + lineInDB.name.split('- ')[1];
   
       this.updateLineMenue( measureTool );
       this.updateLineInnerText( lineInDB.line.name, 
-        measureTool.textField.split('- ')[0] + " \n " + lineInDB.name.split('- ')[1], scene );
+        measureTool.textField.split('- ')[0] + " \n " + lineInDB.name.split('- ')[1], main );
       measureTool.texttoken = true;
     }
   }
 
-  async deleteLine( placeInDB, measureTool, scene ) {
+  async deleteLine( placeInDB, measureTool, main ) {
     let idToBeDeleted = null
     const linesInDB = await fromOfflineDB.getAllObjects(
       'Lines', 'lines' );
@@ -175,23 +157,23 @@ export class LineTool {
         const index = measureTool.infoBlock.indexOf(element)
 
         /* Delte line from sceneMain */
-        const line = scene.getObjectByName(measureTool.infoBlock[index].line)
-        const lable = scene.getObjectByName(measureTool.infoBlock[index].lable)
-        const firstBall = scene.getObjectByName(measureTool.infoBlock[index].balls[0])
-        const secondBall = scene.getObjectByName(measureTool.infoBlock[index].balls[1])
+        const line = main.scene.getObjectByName(measureTool.infoBlock[index].line)
+        const lable = main.scene.getObjectByName(measureTool.infoBlock[index].lable)
+        const firstBall = main.scene.getObjectByName(measureTool.infoBlock[index].balls[0])
+        const secondBall = main.scene.getObjectByName(measureTool.infoBlock[index].balls[1])
 
         line.remove( lable );
         line.geometry.dispose();
         line.material.dispose();
-        scene.remove( line );
+        main.scene.remove( line );
 
         firstBall.geometry.dispose();
         firstBall.material.dispose();
-        scene.remove( firstBall );
+        main.scene.remove( firstBall );
 
         secondBall.geometry.dispose();
         secondBall.material.dispose();
-        scene.remove( secondBall );
+        main.scene.remove( secondBall );
 
         /* Delete menue item */
         measureTool.textField = null
@@ -218,8 +200,8 @@ export class LineTool {
     })
   }
 
-  updateLineInnerText( lineName, newLable, scene ) {
-    const lineToChange = scene.getObjectByName( lineName )
+  updateLineInnerText( lineName, newLable, main ) {
+    const lineToChange = main.scene.getObjectByName( lineName )
     lineToChange.children[0].element.innerText = newLable
   }
 
@@ -233,19 +215,6 @@ export class LineTool {
 }
 
 export class AnnotationTool {
-
-  constructor() {
-    this.lableParams = {
-      element: "div",
-      className: "lable",
-      marginTop: "-1em"
-    }
-    this.boxParams = { 
-      size: { x: 0.01, y: 0.01, z: 0.01 },
-      color: 0xffff00
-    }
-  }
-  
   /**
    * Creates a new label as an 2D-Sprite. This lable can be added to any
    * THREE.Object3D.
@@ -254,14 +223,14 @@ export class AnnotationTool {
    * @param { object } position 
    * @returns 
    */
-  createLable( name, annotationName, position ) {
+  createLable( name, annotationName, position, anTool ) {
     /* Create new div-container element for CSS2D-Object */
-    const lableDiv = document.createElement( this.lableParams.element );
+    const lableDiv = document.createElement( anTool.lableParams.element );
     
     /* Adapt div-container parameters */
-    lableDiv.className = this.lableParams.className;
+    lableDiv.className = anTool.lableParams.className;
     lableDiv.innerText = annotationName
-    lableDiv.style.marginTop = this.lableParams.marginTop;
+    lableDiv.style.marginTop = anTool.lableParams.marginTop;
 
     /* Create new CSS2D-Object inside the div-container */
     const measurementLable = new CSS2DObject( lableDiv );
@@ -284,14 +253,14 @@ export class AnnotationTool {
    * @param { String } name
    * @returns 
    */
-  createBox( name ) {
+  createBox( name, anTool ) {
     /* Create geometry */
-    const geometry = new THREE.BoxGeometry( this.boxParams.size.x, 
-      this.boxParams.size.y, this.boxParams.size.z );
+    const geometry = new THREE.BoxGeometry( anTool.boxParams.size.x, 
+      anTool.boxParams.size.y, anTool.boxParams.size.z );
       
     /* Create material */
     const material = new THREE.MeshBasicMaterial( { 
-      color: this.boxParams.color } );
+      color: anTool.boxParams.color } );
 
     /* Create mesh from geometry and material */
     const box = new THREE.Mesh( geometry, material );
@@ -322,7 +291,7 @@ export class AnnotationTool {
    * @param { object } annotatTool 
    * @param { THREE.Scene } scene 
    */
-  async saveAnnotationTitle( root, t, annotatTool, scene ) {
+  async saveAnnotationTitle( root, t, annotatTool, main ) {
     let idToBeRenamed = null;
     let token = true;
 
@@ -374,7 +343,7 @@ export class AnnotationTool {
       this.updateAnnotationMenue( annotatTool );
       /* Update the text of the CSS2D-Object */
       this.updateAnnotationInnerText( annotationInDB.boxName, 
-        annotatTool.textField, scene );
+        annotatTool.textField, main );
       annotatTool.texttoken = true;
     }
   }
@@ -396,8 +365,8 @@ export class AnnotationTool {
    * @param { String } newLable 
    * @param { THREE.Scene } scene 
    */
-  updateAnnotationInnerText( boxName, newLable, scene ) {
-    const boxToChange = scene.getObjectByName( boxName )
+  updateAnnotationInnerText( boxName, newLable, main ) {
+    const boxToChange = main.scene.getObjectByName( boxName )
     boxToChange.children[0].element.innerText = newLable
   }
 
@@ -408,7 +377,7 @@ export class AnnotationTool {
    * @param { object } annotatTool 
    * @param { THREE.scene } scene 
    */
-  async deleteAnnotation( placeInDB, annotatTool, scene ) {
+  async deleteAnnotation( placeInDB, annotatTool, main ) {
     let idToBeDeleted = null
 
     /* Get all annotations in IndexedDB */
@@ -424,15 +393,15 @@ export class AnnotationTool {
         const index = annotatTool.infoBlock.indexOf(element)
 
         /* Get the CSS2D- and box-Object from scene */
-        const lable = scene.getObjectByName(annotatTool.infoBlock[index]._id)
-        const box = scene.getObjectByName(annotatTool.infoBlock[index].boxName)
+        const lable = main.scene.getObjectByName(annotatTool.infoBlock[index]._id)
+        const box = main.scene.getObjectByName(annotatTool.infoBlock[index].boxName)
 
         /* Remove attached CSS2D-Object and dispose geometry and material of the 
          * box object. Afterwards remove it from scene. */
         box.remove( lable );
         box.geometry.dispose();
         box.material.dispose();
-        scene.remove( box );
+        main.scene.remove( box );
 
         /* Remove the CSS2D-Object */
         lable.remove()
@@ -474,7 +443,6 @@ export class ModelInteraktion {
 
       modelGroup.traverse( (child) => {
         if ( child instanceof THREE.Mesh) {
-          console.log(typeof(color))
           child.material.color = new THREE.Color( color );
         }
       })
@@ -490,7 +458,7 @@ export class SegmentationTool {
    * @param { Brush } brush 
    * @param { object } params 
    */
-  updateBrush( brush, params ) {
+  updateBrush( brush, main ) {
 
     /* Dispose currently used geometry and return a non-index version of an 
      * indexed BufferGeometry. */
@@ -519,7 +487,7 @@ export class SegmentationTool {
     /* Set new color attribute */
     brush.geometry.setAttribute( 'color', new THREE.BufferAttribute( array, 3 ) );
     brush.prepareGeometry();
-    params.needsUpdate = true;
+    main.needsUpdate = true;
   }
 
   /**

@@ -2,7 +2,7 @@
  * Created Date: 10.12.2023 15:32:15
  * Author: Tobias Mink
  * 
- * Last Modified: 28.03.2024 18:06:52
+ * Last Modified: 29.03.2024 18:31:35
  * Modified By: Tobias Mink
  * 
  * Description: A Collection of loader functions which are used to determines,
@@ -15,7 +15,6 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader"
 import { UpdateLocalVariables } from './UpdateLocalVariables.js'
-import { Utilities } from './Utilities.js'
 import { fromOfflineDB } from '../../ConnectionToOfflineDB.js'
 import { exParams } from './Parameter.js';
 
@@ -28,18 +27,22 @@ export class ObjectLoaders {
    * @returns THREE.Group<THREE.Object3DEventMap>
    */
   async load( objectData ) {
+    let loader, object = null
+    const id = objectData._id
+    /* Implementation of draco loader to speed up loading time of the 
+         * object. */
+    const dracoLoader = new DRACOLoader()
+    dracoLoader.setDecoderPath(
+      'https://www.gstatic.com/draco/versioned/decoders/1.5.6/' );
+      dracoLoader.setDecoderConfig( { type: 'js' } );
+    
     switch ( objectData.loaderType ) {
       case 'glb' || 'gltf':
-        const loader = new GLTFLoader()
-        /* Implementation of draco loader to speed up loading time of the 
-         * object. */
-        const malfoy = new DRACOLoader()
-        malfoy.setDecoderPath(
-          'https://www.gstatic.com/draco/versioned/decoders/1.5.6/' );
-        malfoy.setDecoderConfig( { type: 'js' } );
-        loader.setDRACOLoader( malfoy )
-        const id = objectData._id
-        const object = await new Promise( ( resolve ) => {
+        /* Set the loader type and append the dracoLoader */
+        loader = new GLTFLoader()
+        loader.setDRACOLoader( dracoLoader )
+        
+        object = await new Promise( ( resolve ) => {
           loader.parse( objectData.model, '', ( glb ) => {
             glb.scene.traverse( ( child ) => {
               if ( child instanceof THREE.Mesh ) {
@@ -50,7 +53,23 @@ export class ObjectLoaders {
           });
         });
         return object
-
+      case 'obj':
+        /* Set the loader type and append the dracoLoader */
+        loader = new OBJLoader()
+        loader.setDRACOLoader( dracoLoader )
+        
+        object = await new Promise( ( resolve ) => {
+          loader.parse( objectData.model, '', ( obj ) => {
+            obj.scene.traverse( ( child ) => {
+              if ( child instanceof THREE.Mesh ) {
+                child.name = id
+              }
+            } )
+            resolve( obj );
+          });
+        });
+        return object
+        
       default:
         console.log( "No valid loaderType" );
         break;
@@ -63,12 +82,10 @@ export class ObjectLoaders {
    * @param { object } objectType 
    * @param { object } placeID 
    */
-  async loadObjectsInScene( exParams, objectType, placeID ) {
+  async loadObjectsInScene( main, objectType, placeID ) {
     /* Init loader and updater */
     const updater = new UpdateLocalVariables()
-    const utilities = new Utilities()
     const objectsToBeLoaded = [];
-    const objectsToBeDeleted = [];
 
     /* Get all objects of chosen place */
     const objects = await fromOfflineDB.getAllObjectsWithID( placeID, 'Place',
@@ -103,24 +120,24 @@ export class ObjectLoaders {
           
           /* Push new entry */
           if ( objectType === 'places') {
-            exParams.main.objects.place._ids.push( updated.entry._id );
-            exParams.main.objects.place.titles.push( updated.entry.title );
-            exParams.main.objects.place.groups.push( updated.object );
-            exParams.main.objects.place.amount++;
+            main.objects.place._ids.push( updated.entry._id );
+            main.objects.place.titles.push( updated.entry.title );
+            main.objects.place.groups.push( updated.object );
+            main.objects.place.amount++;
 
-            exParams.main.objects.place.entry.push( {
+            main.objects.place.entry.push( {
               _id: updated.entry._id,
               placeID: updated.entry.placeID,
               title: updated.entry.title,
               group: updated.object
             } );
           } else if ( objectType === 'positions' ) {
-            exParams.main.objects.position._ids.push( updated.entry._id );
-            exParams.main.objects.position.titles.push( updated.entry.title );
-            exParams.main.objects.position.groups.push( updated.object );
-            exParams.main.objects.position.amount++;
+            main.objects.position._ids.push( updated.entry._id );
+            main.objects.position.titles.push( updated.entry.title );
+            main.objects.position.groups.push( updated.object );
+            main.objects.position.amount++;
 
-            exParams.main.objects.position.entry.push( {
+            main.objects.position.entry.push( {
               _id: updated.entry._id,
               positionID: updated.entry.positionID,
               title: updated.entry.title,
@@ -131,8 +148,8 @@ export class ObjectLoaders {
           }
 
           /* Add loaded object to scene */
-          exParams.main.scene.add( updated.object );
-          exParams.main.objects.allObjects.push( updated.object );
+          main.scene.add( updated.object );
+          main.objects.allObjects.push( updated.object );
         }
       }     
     }

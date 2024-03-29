@@ -2,7 +2,7 @@
  * Created Date: 15.01.2024 14:52:11
  * Author: Tobias Mink
  * 
- * Last Modified: 28.03.2024 17:52:15
+ * Last Modified: 30.03.2024 00:04:42
  * Modified By: Tobias Mink
  * 
  * Description: A filter algorithmen to search for an object to modify.
@@ -142,10 +142,9 @@ export class ObjectFilter {
    * @param {*} placeObject 
    * @param {*} placeObjectsInScene 
    */
-  async getPlaceObjectInfo( placeObject, placeObjectsInScene ) {
-    for ( let i=0; i < placeObjectsInScene.length; i++) {
-      // const objectID = placeObjectsInScene[ i ].modelID;
-      const objectID = placeObjectsInScene[ i ]._id;
+  async getPlaceObjectInfo( placeObject, main ) {
+    for ( let i=0; i < main.objects.place.entry.length; i++) {
+      const objectID = main.objects.place.entry[ i ]._id;
       const objectInDB = await fromOfflineDB.getObject(objectID, 'Models', 
         'places');
 
@@ -176,12 +175,13 @@ export class ObjectFilter {
    * @param {*} positionData 
    * @param {*} positionObjectsInScene 
    */
-  async getPositionDataInfo( positionData, positionObjectsInScene ) {
+  async getPositionDataInfo( positionData, main ) {
     const positionIDs = [];
 
-    for ( let i=0; i < positionObjectsInScene.length; i++) {
-      const positionID = positionObjectsInScene[i].positionID
-      const positionInDB = await fromOfflineDB.getObject(positionID, 'Positions', 'positions')
+    for ( let i=0; i < main.objects.position.entry.length; i++) {
+      const positionID = main.objects.position.entry[i].positionID;
+      const positionInDB = await fromOfflineDB.getObject(positionID, 
+        'Positions', 'positions' );
 
       if ( !positionIDs.includes(positionID) ) {
 
@@ -317,13 +317,13 @@ export class ObjectFilter {
    * @param {*} positionMods 
    * @param {*} scene 
    */
-  resetPositionMods( positionObject, positionMods, scene ) {
+  resetPositionMods( positionObject, positionMods, main ) {
     const updateIndexedDB = new UpdateIndexedDB()
     
     positionObject.chosenfinalModelGroup = null;
     positionMods.disabled = true;
     updateIndexedDB.updateObjectOpacityAndColor( 
-      positionObject.chosenfinalModel[ 0 ], 'positions', scene );
+      positionObject.chosenfinalModel[ 0 ], 'positions', main );
     positionObject.chosenfinalModelGroup = null;
     positionMods.colorPicker.color = null;
     positionMods.opacitySliderValue = 0;
@@ -336,13 +336,13 @@ export class ObjectFilter {
    * @param {*} placeMods 
    * @param {*} scene 
    */
-  resetPlaceMods( placeObject, placeMods, scene ) {
+  resetPlaceMods( placeObject, placeMods, main ) {
     const updateIndexedDB = new UpdateIndexedDB()
     
     placeMods.token = false;
     placeMods.disabled = true;
     updateIndexedDB.updateObjectOpacityAndColor(
-      placeObject.chosenfinalModel[ 0 ], 'places', scene);
+      placeObject.chosenfinalModel[ 0 ], 'places', main );
     placeMods.chosenfinalModelGroup = null;
     placeMods.colorPicker.color = null;
     placeMods.opacitySliderValue = 0;

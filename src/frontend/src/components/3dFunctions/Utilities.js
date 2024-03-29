@@ -2,7 +2,7 @@
  * Created Date: 08.01.2024 14:43:50
  * Author: Tobias Mink
  * 
- * Last Modified: 28.03.2024 18:38:09
+ * Last Modified: 29.03.2024 18:22:02
  * Modified By: Tobias Mink
  * 
  * Description: A Collections of various functions that are used all over the 

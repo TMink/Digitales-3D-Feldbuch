@@ -2,7 +2,7 @@
  * Created Date: 15.01.2024 13:52:27
  * Author: Tobias Mink
  * 
- * Last Modified: 28.03.2024 18:17:09
+ * Last Modified: 29.03.2024 20:57:26
  * Modified By: Tobias Mink
  * 
  * Description: This class includes functions to modify the camera state in 
@@ -26,8 +26,8 @@ export class CameraSettings {
    * @param { object } controls 
    * @param { object } arcballAnchor 
    */
-  async updateCamera( barycenter, placeID, camera, cameraIDsInDB, cameraInDB,
-    cameraData, controls, arcballAnchor ) {
+  async updateCamera( barycenter, placeID, main, cameraIDsInDB, cameraInDB,
+    cameraData, arcballAnchor ) {
     
     if ( cameraIDsInDB.includes( placeID ) && !cameraInDB.newObjectsInScene ) {
       const utilities = new Utilities();
@@ -42,10 +42,10 @@ export class CameraSettings {
 
       /* Restore saved anchor position for the arcball target */
       controlSettings.restoreArcballAnchor( cameraInDB.arcballAnchor, 
-        controls );
+        main.arcBallControls );
       
       /* Set new camera state */
-      utilities.setCamera( camera, cameraData );
+      utilities.setCamera( main.camera, cameraData );
     } else {
       const utilities = new Utilities()
 
@@ -55,14 +55,14 @@ export class CameraSettings {
       arcballAnchor.push( barycenter.z );
 
       /* Set center as the new arcball target */
-      controls.target.set( barycenter.x, barycenter.y, barycenter.z );
+      main.arcBallControls.target.set( barycenter.x, barycenter.y, barycenter.z );
 
       /* Move camera to the object */
-      camera.position.set( barycenter.x, barycenter.y - 15, barycenter.z );
-      cameraData = utilities.getCameraData( camera );
+      main.camera.position.set( barycenter.x, barycenter.y - 15, barycenter.z );
+      cameraData = utilities.getCameraData( main.camera );
 
       /* Save changes made to the arcball control settings */
-      controls.update();
+      main.arcBallControls.update();
     }
   }
 }

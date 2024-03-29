@@ -2,7 +2,7 @@
  * Created Date: 15.01.2024 17:29:22
  * Author: Tobias Mink
  * 
- * Last Modified: 28.03.2024 17:36:10
+ * Last Modified: 30.03.2024 00:13:40
  * Modified By: Tobias Mink
  * 
  * Description: The Process that will happen, wenn ever the 3DView is closed and
@@ -78,8 +78,6 @@ export class GarbageCollection {
   removeAnnotations( scene, infoBlock ) {
     if( infoBlock.length > 0 ) {
       infoBlock.forEach( elem => {
-        console.log("Garbage collection")
-        console.log(elem)
         const lableInScene = scene.getObjectByName( elem._id )
         const boxInScene = scene.getObjectByName( elem.boxName )
         
