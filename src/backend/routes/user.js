@@ -56,13 +56,13 @@ router.post("/login", async (req, res) => {
 
   if (!user) {
     return res.status(404).send({
-      message: "user not found",
+      message: "userNotFound",
     });
   }
 
   if (!(await bcrypt.compare(req.body.password, user.password))) {
     return res.status(400).send({
-      message: "invalid credentials",
+      message: "invalidCredentials",
     });
   }
 

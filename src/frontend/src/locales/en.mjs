@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 22.03.2024 11:55:46
+ * Last Modified: 29.03.2024 14:15:19
  * Modified By: Julian Hardtung
  * 
  * Description: english translations
@@ -199,4 +199,8 @@ export default {
   toggleTooltips: "Toggle Tooltips",
   continueWithoutAccount: "Continue without an Account",
   uploadOtherImage: "Change uploaded image",
+  userNotFound: "User not found",
+  noServerConnection: "Can't connect to server",
+  loginSuccess: "Login successful",
+  invalidCredentials: "Wrong password",
 };

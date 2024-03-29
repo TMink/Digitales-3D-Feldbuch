@@ -2,7 +2,7 @@
  * Created Date: 29.11.2023 01:45:54
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.03.2024 13:20:04
+ * Last Modified: 29.03.2024 14:13:35
  * Modified By: Julian Hardtung
  * 
  * Description: Vue component for user login
@@ -137,12 +137,14 @@ export default {
      * Logging in the user with the given username + passsword
      */
     async login() {
-      try {
-        await this.userStore.login(this.form);
+      this.userStore.login(this.form)
+      .then((value) => {
+        this.$root.vtoast.show({ message: this.$t('loginSuccess'), color: 'success' })
         this.$router.push({ name: "ActivitiesOverview" });
-      } catch (error) {
-        console.log("Login failed: " + error)
-      }
+      })
+      .catch((error) => {
+        this.$root.vtoast.show({ message: this.$t(error), color: 'error' })
+      });
     },
     getHeight() {
       if(this.windowHeight > 600){

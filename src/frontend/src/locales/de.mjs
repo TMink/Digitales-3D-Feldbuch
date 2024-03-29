@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 22.03.2024 11:55:54
+ * Last Modified: 29.03.2024 14:15:27
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -201,4 +201,8 @@ export default {
   toggleTooltips: "Tooltips Anzeigen",
   continueWithoutAccount: "Ohne Account fortfahren",
   uploadOtherImage: "Hochgeladenes Bilder ändern",
+  userNotFound: "Benutzer nicht gefunden",
+  noServerConnection: "Keine Verbindung zum Server möglich",
+  loginSuccess: "Login erfolgreich",
+  invalidCredentials: "Falsches Passwort",
 };

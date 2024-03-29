@@ -2,7 +2,7 @@
  * Created Date: 30.11.2023 12:25:16
  * Author: Julian Hardtung
  * 
- * Last Modified: 17.02.2024 16:48:37
+ * Last Modified: 29.03.2024 14:14:06
  * Modified By: Julian Hardtung
  * 
  * Description: Authentication actions and user state storage
@@ -61,22 +61,27 @@ export const useUserStore = defineStore("user", {
     },
 
     async login(formData) {
-
-      try {
-        const response = await axios({
-          method: "post",
-          url: "/user/login",
-          data: toRaw(formData),
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        });
-  
-        this.authenticated = true;
-        this.user = toRaw(response.data.user);
-        
-      } catch (error) {
-        console.log("Login failed: " + error);
-      }
+      return new Promise(async (resolve, reject) => {
+        try {
+          const response = await axios({
+            method: "post",
+            url: "/user/login",
+            data: toRaw(formData),
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          });
+    
+          this.authenticated = true;
+          this.user = toRaw(response.data.user);
+          resolve();
+          
+        } catch (error) {
+          if (error.response == undefined) {
+            reject("noServerConnection")
+          }
+          reject(error.response.data.message);
+        }
+      });
     },
 
     async updateUser() {
