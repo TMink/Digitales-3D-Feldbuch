@@ -2,7 +2,7 @@
  * Created Date: 15.01.2024 11:05:52
  * Author: Tobias Mink
  * 
- * Last Modified: 30.03.2024 03:16:36
+ * Last Modified: 30.03.2024 03:55:58
  * Modified By: Tobias Mink
  * 
  * Description: A collection of all created tools. The initialisation of each 
@@ -215,13 +215,14 @@ export class MeasurementTool {
 }
 
 export class AnnotationTool {
+  
   /**
    * Creates a new label as an 2D-Sprite. This lable can be added to any
    * THREE.Object3D.
    * @param { String } name 
    * @param { String } annotationName 
    * @param { object } position 
-   * @returns 
+   * @returns CSS2DObject
    */
   createLable( name, annotationName, position, anTool ) {
     /* Create new div-container element for CSS2D-Object */
