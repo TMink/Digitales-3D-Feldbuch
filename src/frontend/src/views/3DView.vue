@@ -2,7 +2,7 @@
  Created Date: 17.11.2023 16:18:33
  Author: Tobias Mink
  
- Last Modified: 30.03.2024 03:41:41
+ Last Modified: 30.03.2024 04:49:31
  Modified By: Tobias Mink
  
  Description: 
@@ -927,9 +927,9 @@ export default {
 
         /* Reset positionData & positionObject menus content 
          *       and positionObject input */
-        this.objectFilter.resetPositionInfo2( this.positionData );
-        this.objectFilter.resetObjectInfo2Input( this.positionObject );
-        this.objectFilter.resetObjectInfo2( this.positionObject );
+        this.objectFilter.resetPositionInfo( this.positionData );
+        this.objectFilter.resetObjectInfoInput( this.positionObject );
+        this.objectFilter.resetObjectInfo( this.positionObject );
 
         /* Update positionData menus */
         this.objectFilter.fieldSearch( 3, this.positionData.chosenPositionModels,
@@ -958,9 +958,9 @@ export default {
 
         /* Reset positionData & positionObject menus content
          *       and positionObject input */
-         this.objectFilter.resetPositionInfo2( this.positionData );
-         this.objectFilter.resetObjectInfo2Input( this.positionObject );
-        this.objectFilter.resetObjectInfo2( this.positionObject );
+         this.objectFilter.resetPositionInfo( this.positionData );
+         this.objectFilter.resetObjectInfoInput( this.positionObject );
+        this.objectFilter.resetObjectInfo( this.positionObject );
 
         /* Update positionData menus */
         this.objectFilter.fieldSearch( 3, this.positionData.chosenPositionModels,
@@ -989,9 +989,9 @@ export default {
 
         /* Reset positionData & positionObject menus content
          *       and positionObject input */
-        this.objectFilter.resetPositionInfo2( this.positionData );
-        this.objectFilter.resetObjectInfo2Input( this.positionObject );
-        this.objectFilter.resetObjectInfo2( this.positionObject );
+        this.objectFilter.resetPositionInfo( this.positionData );
+        this.objectFilter.resetObjectInfoInput( this.positionObject );
+        this.objectFilter.resetObjectInfo( this.positionObject );
 
         /* Update positionData menus */
         this.objectFilter.fieldSearch( 3, this.positionData.chosenPositionModels,
@@ -1030,7 +1030,7 @@ export default {
         }
 
         /* Reset positionObject menus content */
-        this.objectFilter.resetObjectInfo2( this.positionObject );
+        this.objectFilter.resetObjectInfo( this.positionObject );
 
         /* Update positionObject menus */
         this.objectFilter.fieldSearch( 2, this.positionObject.chosenfinalModel,
@@ -1052,7 +1052,7 @@ export default {
         }
 
         /* Reset positionObject menus content */
-        this.objectFilter.resetObjectInfo2( this.positionObject );
+        this.objectFilter.resetObjectInfo( this.positionObject );
 
         /* Update positionObject menus */
         this.objectFilter.fieldSearch( 2, this.positionObject.chosenfinalModel,

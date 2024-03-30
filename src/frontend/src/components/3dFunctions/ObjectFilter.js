@@ -2,7 +2,7 @@
  * Created Date: 15.01.2024 14:52:11
  * Author: Tobias Mink
  * 
- * Last Modified: 30.03.2024 00:04:42
+ * Last Modified: 30.03.2024 04:49:22
  * Modified By: Tobias Mink
  * 
  * Description: A filter algorithmen to search for an object to modify.
@@ -274,7 +274,7 @@ export class ObjectFilter {
    * Resets the filtered object info. (Input)
    * @param {*} positionObject 
    */
-  resetObjectInfo2Input( positionObject ) {
+  resetObjectInfoInput( positionObject ) {
     positionObject.number = null;
     positionObject.title = null;
     positionObject.infoBlock = [];
@@ -284,7 +284,7 @@ export class ObjectFilter {
    * Resets the filtered object info.
    * @param {*} positionObject 
    */
-  resetObjectInfo2( positionObject ) {
+  resetObjectInfo( positionObject ) {
     positionObject.allNumbers = [];
     positionObject.allTitles = [];
     positionObject.chosenfinalModel = [];
@@ -304,7 +304,7 @@ export class ObjectFilter {
    * Resets the filtered position object info.
    * @param {*} positionData 
    */
-  resetPositionInfo2( positionData ) {
+  resetPositionInfo( positionData ) {
     positionData.allNumbers = [];
     positionData.allSubNumbers = [];
     positionData.allTitles = [];
