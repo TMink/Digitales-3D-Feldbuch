@@ -2,7 +2,7 @@
  Created Date: 17.11.2023 16:18:33
  Author: Tobias Mink
  
- Last Modified: 30.03.2024 00:21:27
+ Last Modified: 30.03.2024 03:41:41
  Modified By: Tobias Mink
  
  Description: 
@@ -1435,7 +1435,6 @@ export default {
       }
       
       console.log("Place and position objects")
-
     }
 
 
@@ -1443,7 +1442,7 @@ export default {
     /***************************************************************************
      *  ++++ Initialize the Segmentation Tool ++++
      */
-     this.initialisations.initSegmentationTool( exParams.main, exParams.stTool, 
+    this.initialisations.initSegmentationTool( exParams.main, exParams.stTool, 
       this.centerOfObjects );
 
 
@@ -1479,7 +1478,6 @@ export default {
   },
 
   async unmounted() {
-    
     const updateDB = new UpdateIndexedDB()
 
     if ( exParams.main.objects.allObjects.length > 0 ) {
@@ -1505,9 +1503,8 @@ export default {
     exParams.main.canvas.removeEventListener( 'mousemove', 
       this.onDocumentMouseMove, false);
 
-    this.garbageCollection.clearCanvases( exParams.main, exParams.sub,
-      this.measureTool.infoBlock, this.annotatTool.infoBlock )
-
+    /* Dispose geometries and materials in scene */
+    this.garbageCollection.clearCanvases( exParams.main, exParams.sub );
   },
 
   methods: {
@@ -1613,7 +1610,7 @@ export default {
           exParams.mmTool.line = this.measurementTool.createLine( 
             elem.line.name, elem.line.geoPosition, exParams.mmTool );
           const balls = this.measurementTool.createBalls( 
-            elem.balls, elem.line.geoPosition )
+            elem.balls, elem.line.geoPosition, exParams.mmTool )
 
           const lineCenter = this.measurementTool.findLineCenter( 
             balls[ 0 ].position,
@@ -1915,7 +1912,7 @@ export default {
 
             /* Create lable */
             exParams.mmTool.measurementLable = this.measurementTool.createLable( nameLable,
-              "New Line\n0.0m", lineCenter )
+              "New Line\n0.0m", lineCenter, exParams.mmTool )
             
             /* Add line and lable to Main Scene */
             exParams.mmTool.line.add(exParams.mmTool.measurementLable)
@@ -2145,9 +2142,11 @@ export default {
       this.render();
       
       /* Render Main and Sub Scene */
-      exParams.main.renderer.render( exParams.main.scene, exParams.main.camera );
-      exParams.sub.renderer.render( exParams.sub.scene, exParams.sub.camera );
-      exParams.mmTool.css2DRenderer.render( exParams.main.scene, exParams.main.camera )
+      if( exParams.main.renderer != null ) {
+        exParams.main.renderer.render( exParams.main.scene, exParams.main.camera );
+        exParams.sub.renderer.render( exParams.sub.scene, exParams.sub.camera );
+        exParams.mmTool.css2DRenderer.render( exParams.main.scene, exParams.main.camera )
+      }
 
       /* Render composer */
       exParams.main.composer.render()
@@ -2183,12 +2182,12 @@ export default {
       }
 
       /* Dispose Model from Sub Scene */
-      if ( !this.bottomDrawer.showDrawer && exParams.sub.scene.children.length > 1 ) {
-        // this.removeModelsInScene( this.sceneSub, this.objectInSub )
-        // this.garbageCollection.removeObjects( this.sceneSub, this.objectInSub )
-        exParams.sub.object = [];
-        exParams.sub.orbitControls.reset();
-        exParams.main.outlinePass.selectedObjects = [];
+      if( exParams.sub.scene != null ) {
+        if ( !this.bottomDrawer.showDrawer && exParams.sub.scene.children.length > 1 ) {
+          exParams.sub.object = [];
+          exParams.sub.orbitControls.reset();
+          exParams.main.outlinePass.selectedObjects = [];
+        }
       }
 
       /* Rotate model in Sub Scene */
