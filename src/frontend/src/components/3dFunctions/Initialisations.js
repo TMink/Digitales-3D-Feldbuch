@@ -2,7 +2,7 @@
  * Created Date: 23.01.2024 13:09:11
  * Author: Tobias Mink
  * 
- * Last Modified: 29.03.2024 20:48:25
+ * Last Modified: 30.03.2024 03:34:57
  * Modified By: Tobias Mink
  * 
  * Description: A Collection of initialisation functions, which will be called
@@ -11,6 +11,7 @@
  */
 
 import * as THREE from 'three';
+import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
 import { ArcballControls } from
 'three/examples/jsm/controls/ArcballControls.js';
 import { TransformControls } from
@@ -134,8 +135,15 @@ export class Initialisations {
     /* Create a brush for every object in scene, so that every object can be 
      * used. */
     main.objects.allObjects.forEach( (object, idx) => {
-      const brush = new CSG.Brush( object.children[0].geometry.clone(), 
-        new CSG.GridMaterial() );
+      /* Merge meshes of object */
+      const geometryForBrush = [];
+      object.traverse( ( child ) => {
+        if( child instanceof THREE.Mesh ) {
+          geometryForBrush.push(child.geometry.clone())
+        }
+      } )
+      const geomMerge = BufferGeometryUtils.mergeGeometries(geometryForBrush)
+      const brush = new CSG.Brush( geomMerge, new CSG.GridMaterial() );
       brush.name = object.children[0].name;
       brush.position.set( object.children[0].position.x, 
         object.children[0].position.y, object.children[0].position.z );
@@ -229,7 +237,7 @@ export class Initialisations {
       main.rendererParams.backgroundColorIntensity );
     main.renderer.shadowMap.enabled = main.rendererParams.shadowMapEnabled;
     main.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    main.renderer.outputEncoding = THREE.SRGBColorSpace;
+    main.renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
       
     /* Create scene */
     main.scene = new THREE.Scene();
