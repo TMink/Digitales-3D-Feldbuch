@@ -2,7 +2,7 @@
  * Created Date: 15.01.2024 11:05:52
  * Author: Tobias Mink
  * 
- * Last Modified: 30.03.2024 00:15:45
+ * Last Modified: 30.03.2024 03:16:36
  * Modified By: Tobias Mink
  * 
  * Description: A collection of all created tools. The initialisation of each 
@@ -44,10 +44,10 @@ export class MeasurementTool {
   }
 
   createLable( name, distance, position, mmTool ) {
-    const lableDiv = document.createElement( mmTool.lableParams.element );
-    lableDiv.className = mmTool.lableParams.className;
+    const lableDiv = document.createElement( mmTool.measurementLableParams.element );
+    lableDiv.className = mmTool.measurementLableParams.className;
     lableDiv.innerText = distance
-    lableDiv.style.marginTop = mmTool.lableParams.marginTop;
+    lableDiv.style.marginTop = mmTool.measurementLableParams.marginTop;
     const measurementLable = new CSS2DObject( lableDiv );
     measurementLable.name = name;
     const vec3 = new THREE.Vector3( position.x, position.y, position.z );
@@ -57,7 +57,7 @@ export class MeasurementTool {
   }
 
   createBall( name, pos, mmTool ) {
-    const geometry = new THREE.SphereGeometry( mmTool.ballParams.size.x, mmTool.ballParams.size.y, this.ballParams.size.z );
+    const geometry = new THREE.SphereGeometry( mmTool.ballParams.size.x, mmTool.ballParams.size.y, mmTool.ballParams.size.z );
     const material = new THREE.MeshBasicMaterial( { color: mmTool.ballParams.color } );
     const sphere = new THREE.Mesh( geometry, material );
     sphere.name = name;
@@ -71,7 +71,7 @@ export class MeasurementTool {
     }
   }
   
-  createBalls( names, position ) {
+  createBalls( names, position, mmTool ) {
     const pos = [ 
       [ position[0], position[1], position[2] ],
       [ position[3], position[4], position[5] ]
@@ -80,7 +80,7 @@ export class MeasurementTool {
     const spheres = []
 
     names.forEach( (_, i) => {
-      spheres.push( this.createBall( names[ i ], pos[ i ] ))
+      spheres.push( this.createBall( names[ i ], pos[ i ], mmTool ))
     } )
 
     return spheres
