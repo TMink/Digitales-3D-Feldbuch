@@ -2,7 +2,7 @@
  * Created Date: 15.01.2024 17:22:44
  * Author: Tobias Mink
  * 
- * Last Modified: 30.03.2024 00:21:40
+ * Last Modified: 30.03.2024 03:12:50
  * Modified By: Tobias Mink
  * 
  * Description: 
@@ -145,7 +145,7 @@ export const exParams = {
       marginTop: "-1em"
     },
     ballParams: {
-      size: { x: 0.03, y: 6,z: 4},
+      size: { x:0.03, y:6, z:4},
       color: 0xffff00
     },
     alertParams: {
@@ -237,21 +237,4 @@ export const exParams = {
     },
     gridTexture: false,
   },
-  
-  placeID: null,
-  cameraIDsInDB: null,
-  cameraInDB: null,
-  linesInDB: null,
-  placeInDB:null,
-
-  utilities: null,
-  controlSettings: null,
-  cameraSettings: null,
-  objectFilter: null,
-  garbageCollection: null,
-  modelInteraktion: null,
-  lineTool: null,
-  initialisations: null,
-
-  selectedObjects: [],
 }
