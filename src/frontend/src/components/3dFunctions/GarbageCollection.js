@@ -2,7 +2,7 @@
  * Created Date: 15.01.2024 17:29:22
  * Author: Tobias Mink
  * 
- * Last Modified: 30.03.2024 00:13:40
+ * Last Modified: 30.03.2024 03:28:59
  * Modified By: Tobias Mink
  * 
  * Description: The Process that will happen, wenn ever the 3DView is closed and
@@ -12,7 +12,7 @@
  */
 
 export class GarbageCollection {
-  
+
   /**
    * Top function which combines every step of the cleaning process.
    * @param {*} main 
@@ -20,110 +20,49 @@ export class GarbageCollection {
    * @param {*} mmToolInfoBlock 
    * @param {*} anToolInfoBlock 
    */
-  async clearCanvases( main, sub, mmToolInfoBlock, anToolInfoBlock ) {
-    /* Main scene */  
-    this.removeObjects( main.scene, main.objects );
-    this.removeLines( main.scene, mmToolInfoBlock );
-    this.removeAnnotations( main.scene, anToolInfoBlock );
-    this.removeRenderer( main.renderer );
-    main.arcBallControls.dispose()
-    main.transformControls.detach()
-
-    /* Sub scene */
-    this.removeObjects( sub.scene, sub.object );
-    this.removeRenderer( sub.renderer );   
+  async clearCanvases( main, sub ) {
+    /* Dispose scenes */
+    this.disposeOfObjects( main );
+    main.arcBallControls.dispose();
+    main.transformControls.dispose();
+    this.disposeOfObjects( sub );
+    sub.orbitControls.dispose();
   }
 
   /**
-   * Dispose Lines which includes, beside the line object, the lable and the
-   * attached balls.
-   * @param { object } scene 
-   * @param { object } infoBlock 
+   * Disposes all objects of given scene.
+   * @param { object } whichScene 
    */
-  removeLines( scene, infoBlock ) {
-    if( infoBlock.length > 0 ) {
-      /* Dispose lines in sceneMain */
-      infoBlock.forEach( elem => {
-        const lineInScene = scene.getObjectByName( elem.line )
-        const lableInScene = scene.getObjectByName( elem.lable )
-        const ballsInScene = [];
-        elem.balls.forEach( ball => {
-          ballsInScene.push( scene.getObjectByName( ball ) );
-        } )
-  
-        /* Remove line */
-        lineInScene.remove(lableInScene)
-        lineInScene.material.dispose()
-        lineInScene.geometry.dispose()
-        scene.remove(lineInScene)
-  
-        /* Remove Lable */
-        lableInScene.remove()
-  
-        /* Remove Balls */
-        ballsInScene.forEach( ball => {
-          ball.material.dispose();
-          ball.geometry.dispose();
-          scene.remove( ball );
-        } )
-      } )
-    }
-  }
+  async disposeOfObjects( whichScene ) {
+    whichScene.scene.traverse( o => {
+      if (o.geometry) {
+        o.geometry.dispose()                       
+      }
 
-  /**
-   * Disposes annotations wicht includes the lable and box object.
-   * @param { object } scene 
-   * @param { object } infoBlock 
-   */
-  removeAnnotations( scene, infoBlock ) {
-    if( infoBlock.length > 0 ) {
-      infoBlock.forEach( elem => {
-        const lableInScene = scene.getObjectByName( elem._id )
-        const boxInScene = scene.getObjectByName( elem.boxName )
-        
-        /* Remove box */
-        boxInScene.remove( lableInScene )
-        boxInScene.material.dispose()
-        boxInScene.geometry.dispose()
-        scene.remove( boxInScene )
-        
-        /* Remove lable */
-        lableInScene.remove()        
-
-      } )
-    }
-  }
-
-  /**
-   * Removes all objects from scene.
-   * @param { object } scene 
-   * @param { object } objects 
-   */
-  removeObjects( scene, objects ) {
-    /* Dispose models in sceneMain */
-    for ( let i = 0; i < objects.length; i++ ) {
-      const childrenToBeRemoved = [];
-      const nameTo = objects[ i ].name;
-      scene.traverse( ( child ) => {
-        if ( child.name == nameTo ) {
-          childrenToBeRemoved.push( child );
+      if (o.material) {
+        if (o.material.length) {
+          for (let i = 0; i < o.material.length; ++i) {
+            o.material[i].dispose()                                
+          }  
         }
-      } );
+        else {
+          o.material.dispose()                           
+        }
+      }
+    } )
 
-      childrenToBeRemoved.forEach( ( child ) => {
-        scene.remove( child );
-      } );
+    while( whichScene.scene.children.length > 0 ) {
+      await Promise.all( whichScene.scene.children.map( async ( child ) => {
+        if( child.children.length ) {
+          if( child.children[0].type == "Object3D" ) {
+            child.remove( child.children[0] )
+          }
+        }
+        whichScene.scene.remove( child )
+      } ) )
     }
-  }
-
-  /**
-   * Disposes the aktive WebGLRenderer instance.
-   * @param { THREE.WebGLRenderer } renderer 
-   */
-  removeRenderer( renderer ) {
-    renderer.dispose();
-    renderer.forceContextLoss();
-    renderer.renderLists.dispose();
+    whichScene.renderer && whichScene.renderer.renderLists.dispose()
+    whichScene.renderer = null
   }
   
 }
