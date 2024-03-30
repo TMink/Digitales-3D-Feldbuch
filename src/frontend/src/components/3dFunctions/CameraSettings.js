@@ -2,17 +2,19 @@
  * Created Date: 15.01.2024 13:52:27
  * Author: Tobias Mink
  * 
- * Last Modified: 29.03.2024 20:57:26
+ * Last Modified: 30.03.2024 15:30:50
  * Modified By: Tobias Mink
  * 
  * Description: This class includes functions to modify the camera state in 
  *              main- and sub scene.
  */
 
-import { Utilities } from './Utilities.js';
-import { ControlSettings } from './ControlSettings.js';
-
 export class CameraSettings {
+
+  constructor( utilities, controlSettings ) {
+    this.utilities = utilities;
+    this.controlSettings = controlSettings;
+  }
   /**
    * Updates the Camera position position accordingly to the barycenter of the
    * object/objects in scene and restores the arcball settings if they are
@@ -30,8 +32,6 @@ export class CameraSettings {
     cameraData, arcballAnchor ) {
     
     if ( cameraIDsInDB.includes( placeID ) && !cameraInDB.newObjectsInScene ) {
-      const utilities = new Utilities();
-      const controlSettings = new ControlSettings();
 
       /* Update current camera state with camera data from IndexedDB */
       const cameraPosition = cameraInDB.cameraPosition;
@@ -41,13 +41,12 @@ export class CameraSettings {
         cameraPosition[ 5 ] ];
 
       /* Restore saved anchor position for the arcball target */
-      controlSettings.restoreArcballAnchor( cameraInDB.arcballAnchor, 
+      this.controlSettings.restoreArcballAnchor( cameraInDB.arcballAnchor, 
         main.arcBallControls );
       
       /* Set new camera state */
-      utilities.setCamera( main.camera, cameraData );
+      this.utilities.setCamera( main.camera, cameraData );
     } else {
-      const utilities = new Utilities()
 
       /* Define an anchor point for the arcball */
       arcballAnchor.push( barycenter.x );
@@ -59,7 +58,7 @@ export class CameraSettings {
 
       /* Move camera to the object */
       main.camera.position.set( barycenter.x, barycenter.y - 15, barycenter.z );
-      cameraData = utilities.getCameraData( main.camera );
+      cameraData = this.utilities.getCameraData( main.camera );
 
       /* Save changes made to the arcball control settings */
       main.arcBallControls.update();

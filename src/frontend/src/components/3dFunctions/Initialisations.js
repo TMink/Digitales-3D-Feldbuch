@@ -2,7 +2,7 @@
  * Created Date: 23.01.2024 13:09:11
  * Author: Tobias Mink
  * 
- * Last Modified: 30.03.2024 03:34:57
+ * Last Modified: 30.03.2024 18:11:28
  * Modified By: Tobias Mink
  * 
  * Description: A Collection of initialisation functions, which will be called
@@ -10,7 +10,10 @@
  *              of the mainSceneParams/subSceneParams scene and various tools.
  */
 
-import * as THREE from 'three';
+import { Raycaster, Vector2, BoxGeometry, DoubleSide, FrontSide, Mesh, 
+  BufferGeometry, MeshStandardMaterial, WebGLRenderer, PCFSoftShadowMap, 
+  LinearSRGBColorSpace, Scene, PerspectiveCamera, DirectionalLight, 
+  AmbientLight } from 'three';
 import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
 import { ArcballControls } from
 'three/examples/jsm/controls/ArcballControls.js';
@@ -30,12 +33,11 @@ import { GammaCorrectionShader } from
 'three/examples/jsm/shaders/GammaCorrectionShader';
 import { CSS2DRenderer } from 
 'three/examples/jsm/renderers/CSS2DRenderer'
-import * as CSG from 'three-bvh-csg';
+import { Evaluator, Brush, GridMaterial } from 'three-bvh-csg';
 
 export class Initialisations {
 
-  constructor( cameraSettings, segmentationTool ) {
-    this.cameraSettings = cameraSettings;
+  constructor( segmentationTool ) {
     this.segmentationTool = segmentationTool;
   }
 
@@ -58,8 +60,8 @@ export class Initialisations {
     document.body.appendChild( mmTool.css2DRenderer.domElement)
 
     /* Create new Raycaster */
-    mmTool.raycaster = new THREE.Raycaster();
-    mmTool.pointer = new THREE.Vector2();
+    mmTool.raycaster = new Raycaster();
+    mmTool.pointer = new Vector2();
 
     mmTool.lineID = String(Date.now());
   }
@@ -76,13 +78,13 @@ export class Initialisations {
 
     /* Create evaluator for csg purposes. It will produce the final result of 
      * the operation. */
-    stTool.csgEvaluator = new CSG.Evaluator();
+    stTool.csgEvaluator = new Evaluator();
     stTool.csgEvaluator.attributes = [ 'position', 'normal' ];
 
     /* Create a brush to cut with.
      * This brush can be moved and will be used to cut the objects. */
-    const brushToCutWith = new CSG.Brush( new THREE.BoxGeometry(5, 10, 10), 
-      new CSG.GridMaterial() );
+    const brushToCutWith = new Brush( new BoxGeometry(5, 10, 10), 
+      new GridMaterial() );
     brushToCutWith.name = stTool.brushToCutWithParams.name;
     /* Move stToolParams brush to the loaded objects, according to their 
      * position */
@@ -110,7 +112,7 @@ export class Initialisations {
       stTool.brushToCutWithParams.material.polygonOffsetFactor;
 	  stTool.brushToCutWith.brush.material.polygonOffsetUnits = 
       stTool.brushToCutWithParams.material.polygonOffsetUnits;
-	  stTool.brushToCutWith.brush.material.side = THREE.DoubleSide;
+	  stTool.brushToCutWith.brush.material.side = DoubleSide;
 	  stTool.brushToCutWith.brush.material.premultipliedAlpha = 
       stTool.brushToCutWithParams.material.premultipliedAlpha;
     stTool.brushToCutWith.brush.material.color.set( 
@@ -124,7 +126,7 @@ export class Initialisations {
     /* Create material map for transparent to opaque variants */
     let mat;
 	  mat = stTool.brushToCutWith.brush.material.clone();
-	  mat.side = THREE.FrontSide;
+	  mat.side = FrontSide;
 	  mat.opacity = stTool.brushToCutWithParams.mat.opacity;
 	  mat.transparent = stTool.brushToCutWithParams.mat.transparent;
 	  mat.depthWrite = stTool.brushToCutWithParams.mat.depthWrite;
@@ -138,12 +140,12 @@ export class Initialisations {
       /* Merge meshes of object */
       const geometryForBrush = [];
       object.traverse( ( child ) => {
-        if( child instanceof THREE.Mesh ) {
+        if( child instanceof Mesh ) {
           geometryForBrush.push(child.geometry.clone())
         }
       } )
       const geomMerge = BufferGeometryUtils.mergeGeometries(geometryForBrush)
-      const brush = new CSG.Brush( geomMerge, new CSG.GridMaterial() );
+      const brush = new Brush( geomMerge, new GridMaterial() );
       brush.name = object.children[0].name;
       brush.position.set( object.children[0].position.x, 
         object.children[0].position.y, object.children[0].position.z );
@@ -173,7 +175,7 @@ export class Initialisations {
         stTool.brushesOfObjectsParams.material.polygonOffsetFactor;
 	    brush.brush.material.polygonOffsetUnits = 
         stTool.brushesOfObjectsParams.material.polygonOffsetUnits;
-	    brush.brush.material.side = THREE.DoubleSide;
+	    brush.brush.material.side = DoubleSide;
 	    brush.brush.material.premultipliedAlpha = 
         stTool.brushesOfObjectsParams.material.premultipliedAlpha;
       brush.brush.material.color.set( brush.brushColor )
@@ -189,7 +191,7 @@ export class Initialisations {
     /* Create material map for transparent to opaque variants */
     stTool.brushesOfObjects.forEach( brush => {
       mat = brush.brush.material.clone();
-      mat.side = THREE.FrontSide;
+      mat.side = FrontSide;
       mat.opacity = stTool.brushesOfObjectsParams.mat.opacity;
       mat.transparent = stTool.brushesOfObjectsParams.mat.transparent;
       mat.depthWrite = stTool.brushesOfObjectsParams.mat.depthWrite;
@@ -203,8 +205,8 @@ export class Initialisations {
     } );
     /* Add object displaying the result */
     stTool.brushesOfObjects.forEach( brush => {
-      brush.resultObject = new THREE.Mesh( new THREE.BufferGeometry(), 
-      new THREE.MeshStandardMaterial( {
+      brush.resultObject = new Mesh( new BufferGeometry(), 
+      new MeshStandardMaterial( {
         flatShading: stTool.brushesOfObjectsParams.resultObject.flatShading,
         polygonOffset: 
           stTool.brushesOfObjectsParams.resultObject.polygonOffset,
@@ -228,7 +230,7 @@ export class Initialisations {
    */
   mainInit( main ) {
     /* Create renderer */
-    main.renderer = new THREE.WebGLRenderer( {
+    main.renderer = new WebGLRenderer( {
       canvas: main.canvas,
       antialias: main.rendererParams.antialias
     } );
@@ -236,22 +238,22 @@ export class Initialisations {
     main.renderer.setClearColor( main.rendererParams.backgroundColor, 
       main.rendererParams.backgroundColorIntensity );
     main.renderer.shadowMap.enabled = main.rendererParams.shadowMapEnabled;
-    main.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    main.renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+    main.renderer.shadowMap.type = PCFSoftShadowMap;
+    main.renderer.outputColorSpace = LinearSRGBColorSpace;
       
     /* Create scene */
-    main.scene = new THREE.Scene();
+    main.scene = new Scene();
     main.scene.name = main.sceneParams.name
 
     /* Create camera */
     const aspect = main.canvas.clientWidth / main.canvas.clientHeight;
-    main.camera = new THREE.PerspectiveCamera( 
+    main.camera = new PerspectiveCamera( 
       main.cameraParams.attributes.fov, aspect, main.cameraParams.attributes.near, 
       main.cameraParams.attributes.far );
     main.camera.name = main.cameraParams.name
 
     /* Create light */
-    main.directionalLight = new THREE.DirectionalLight( 
+    main.directionalLight = new DirectionalLight( 
       main.lightParams.directional.color,
       main.lightParams.directional.intensity );
       main.directionalLight.position.set( 
@@ -261,7 +263,7 @@ export class Initialisations {
     main.scene.add( main.directionalLight, main.directionalLight.target );
     main.directionalLight.name = main.lightParams.directional.name;
 
-    main.ambientlight = new THREE.AmbientLight( main.lightParams.ambient.color, 
+    main.ambientlight = new AmbientLight( main.lightParams.ambient.color, 
       main.lightParams.ambient.intensity );
     main.scene.add( main.ambientlight );
     main.ambientlight.name = main.lightParams.ambient.name;
@@ -286,8 +288,8 @@ export class Initialisations {
     main.scene.add( main.transformControls );
 
     /* Create raycaster */
-    main.raycaster = new THREE.Raycaster();
-    main.pointer = new THREE.Vector2();
+    main.raycaster = new Raycaster();
+    main.pointer = new Vector2();
     
     /* Post processing */
     main.composer = new EffectComposer( main.renderer );
@@ -295,7 +297,7 @@ export class Initialisations {
     main.renderPass = new RenderPass( main.scene, main.camera );
     main.composer.addPass( main.renderPass );
 
-    main.outlinePass = new OutlinePass( new THREE.Vector2(
+    main.outlinePass = new OutlinePass( new Vector2(
       main.canvas.clientWidth, main.canvas.clientHeight ),
       main.scene, main.camera );
     main.outlinePass.hiddenEdgeColor.set( 
@@ -329,26 +331,26 @@ export class Initialisations {
     sub.object = [];
 
     /* Create Renderer */
-    sub.renderer = new THREE.WebGLRenderer( { canvas: sub.canvas } );
+    sub.renderer = new WebGLRenderer( { canvas: sub.canvas } );
     sub.renderer.setPixelRatio( sub.canvas.devicePixelRatio );
     sub.renderer.setSize( sub.canvas.clientWidth,
       sub.canvas.clientHeight );
     sub.renderer.setClearColor( sub.rendererParams.backgroundColor,
       sub.renderer.backgroundColorIntensity );
     sub.renderer.shadowMap.enabled = sub.rendererParams.shadowMapEnabled;
-    sub.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    sub.renderer.shadowMap.type = PCFSoftShadowMap;
 
     /* Create Scene */
-    sub.scene = new THREE.Scene();
+    sub.scene = new Scene();
     sub.scene.name = sub.sceneParams.name;
 
     /* Create Camera */
     const aspect = sub.canvas.clientWidth / sub.canvas.clientHeight;
-    sub.camera = new THREE.PerspectiveCamera( sub.cameraParams.fov, aspect, 
+    sub.camera = new PerspectiveCamera( sub.cameraParams.fov, aspect, 
       sub.cameraParams.near, sub.cameraParams.far );
 
     /* Create Light */
-    sub.light = new THREE.AmbientLight( sub.lightParams.ambient.color );
+    sub.light = new AmbientLight( sub.lightParams.ambient.color );
     sub.scene.add( sub.light );
 
     /* Create Controls */

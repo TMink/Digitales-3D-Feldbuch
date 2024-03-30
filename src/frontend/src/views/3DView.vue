@@ -2,7 +2,7 @@
  Created Date: 17.11.2023 16:18:33
  Author: Tobias Mink
  
- Last Modified: 30.03.2024 04:49:31
+ Last Modified: 30.03.2024 18:11:45
  Modified By: Tobias Mink
  
  Description: 
@@ -72,7 +72,7 @@
                             <v-col cols="2">
                               <v-btn icon class="ma-1" color="primary" v-on:click="measurementTool.saveLineTitle(
                                       this.$root, this.$t, measureTool, 
-                                      exParams.main, exParams.mmTool )">
+                                      exParams.main )">
                                 <v-icon>mdi-content-save-all</v-icon>
                               </v-btn>
                             </v-col>
@@ -197,7 +197,7 @@
                           <v-row no-gutters>
                             <!-- Show -->
                             <v-col class="px-4 pt-2">
-                              <v-checkbox color="primary" label="Werkzeuge anzeigen" hide-details density="compact">
+                              <v-checkbox color="primary" v-on:click="detachForFoto()" label="Werkzeuge anzeigen" hide-details density="compact">
                               </v-checkbox>
                             </v-col>
                           </v-row>
@@ -764,13 +764,13 @@
 </template>
 
 <script>
-import * as THREE from 'three';
+import { Mesh, Vector3 } from 'three';
+import { SUBTRACTION } from 'three-bvh-csg';
 import Navigation from '../components/Navigation.vue';
 import { useWindowSize } from 'vue-window-size';
 import { exParams } from '../components/3dFunctions/Parameter.js'
-import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { ObjectLoaders } from '../components/3dFunctions/ObjectLoaders.js'
-import { UpdateIndexedDB } from '../components/3dFunctions/UpdateIndexedDB.js';
+import { InterfaceToOfflineDB } from '../components/3dFunctions/InterfaceToOfflineDB.js';
 import { MeasurementTool, ModelInteraktion, SegmentationTool, AnnotationTool } from '../components/3dFunctions/Tools.js'
 import { ControlSettings } from '../components/3dFunctions/ControlSettings.js'
 import { CameraSettings } from '../components/3dFunctions/CameraSettings.js'
@@ -779,7 +779,6 @@ import { ObjectFilter } from '../components/3dFunctions/ObjectFilter.js'
 import { GarbageCollection } from '../components/3dFunctions/GarbageCollection.js'
 import { Initialisations } from '../components/3dFunctions/Initialisations.js'
 
-import * as CSG from 'three-bvh-csg';
 
 export default {
   name: 'ModelViewer',
@@ -1205,7 +1204,7 @@ export default {
       handler: function(value) {
         if( this.positionObject.chosenfinalModelGroup != null ) {
           this.positionObject.chosenfinalModelGroup.traverse( ( child ) => {
-            if ( child instanceof THREE.Mesh ) {
+            if ( child instanceof Mesh ) {
               child.material.opacity = value;
             }
           })
@@ -1217,7 +1216,7 @@ export default {
       handler: function(value) {
         if( this.placeObject.chosenfinalModelGroup != null ) {
           this.placeObject.chosenfinalModelGroup.traverse( ( child ) => {
-            if ( child instanceof THREE.Mesh ) {
+            if ( child instanceof Mesh ) {
               child.material.opacity = value;
             }
           })
@@ -1274,7 +1273,7 @@ export default {
     /***************************************************************************
      *  ++++ Synchronise with IndexedDB ++++
      */
-    await fromOfflineDB.syncLocalDBs();
+    await this.indexedDB.synchronise( 'localDBs' );
 
     
     
@@ -1478,13 +1477,11 @@ export default {
   },
 
   async unmounted() {
-    const updateDB = new UpdateIndexedDB()
-
     if ( exParams.main.objects.allObjects.length > 0 ) {
-      updateDB.updateCamera( this.placeID, this.cameraIDsInDB,
+      this.indexedDB.updateCamera( this.placeID, this.cameraIDsInDB,
         this.cameraInDB, this.arcballAnchor, exParams.main )
 
-      updateDB.updateObjects( exParams.main )
+      this.indexedDB.updateObjects( exParams.main )
     }
 
     exParams.main.canvas.removeEventListener( 'click', this.updateArcball );
@@ -1509,38 +1506,37 @@ export default {
 
   methods: {
 
+    detachForFoto() {
+      exParams.main.transformControls.detach()
+    },
+
     /**
      * -------------------------------------------------------------------------
      * # Init parameters
      * -------------------------------------------------------------------------
      */
     async initExternalImports() {
-      this.utilities = new Utilities();
-      this.objectFilter = new ObjectFilter();
+      this.indexedDB = new InterfaceToOfflineDB();
       this.controlSettings = new ControlSettings();
-      this.cameraSettings = new CameraSettings();
       this.garbageCollection = new GarbageCollection();
-      this.measurementTool = new MeasurementTool();
-      this.segmentationTool = new SegmentationTool();
-      this.annotationTool = new AnnotationTool();
+      this.utilities = new Utilities( this.indexedDB );
+      this.objectLoaders = new ObjectLoaders( this.indexedDB );
+      this.cameraSettings = new CameraSettings( this.utilities, this.controlSettings );
       this.modelInteraktion = new ModelInteraktion();
-      this.initialisations = new Initialisations( this.cameraSettings, 
-        this.segmentationTool );
-      this.objectLoaders = new ObjectLoaders();
+      this.segmentationTool = new SegmentationTool();
+      this.measurementTool = new MeasurementTool( this.indexedDB );
+      this.annotationTool = new AnnotationTool( this.indexedDB );
+      this.objectFilter = new ObjectFilter( this.indexedDB );
+      this.initialisations = new Initialisations( this.segmentationTool );
     },
 
     async loadDataFromIndexedDB() {
       this.placeID = this.$generalStore.getCurrentObject( 'place' );
-      this.cameraIDsInDB = await fromOfflineDB.getProperties( '_id', 'Cameras',
-        'cameras' );
-      this.cameraInDB = await fromOfflineDB.getObject( this.placeID, 'Cameras',
-        'cameras' ); 
-      this.placeInDB = await fromOfflineDB.getObject( 
-        this.placeID, 'Places', 'places' );
-      this.placeObjects = await fromOfflineDB.getAllObjectsWithID( 
-        this.placeID, 'Place', 'Models', 'places' );
-      this.positionObjects = await fromOfflineDB.getAllObjectsWithID( 
-        this.placeID, 'Place', 'Models', 'positions' );
+      this.cameraIDsInDB = await this.indexedDB.get( 'properties', '_id', 'Cameras', 'cameras' );
+      this.cameraInDB = await this.indexedDB.get( 'object', this.placeID, 'Cameras', 'cameras' );
+      this.placeInDB = await this.indexedDB.get( 'object', this.placeID, 'Places', 'places' );
+      this.placeObjects = await this.indexedDB.get( 'allObjectsWithID', this.placeID, 'Models', 'places', 'Place' );
+      this.positionObjects = await this.indexedDB.get( 'allObjectsWithID', this.placeID, 'Models', 'positions', 'Place' );
     }, 
 
     /**
@@ -1568,8 +1564,7 @@ export default {
      */
 
     loadObjectInSub: async function( objectID ) {
-      const object = await fromOfflineDB.getObject( objectID, 'Models',
-        'positions' );
+      const object = await this.indexedDB.get( 'object', objectID, 'Models', 'positions' );
 
       const loader = new ObjectLoaders()
       const loadedObject = await loader.load( object )
@@ -1603,7 +1598,7 @@ export default {
     },
 
     loadLines: async function() {
-      this.linesInDB = await fromOfflineDB.getAllObjects( 'Lines', 'lines' );
+      this.linesInDB = await this.indexedDB.get( 'allObjects', undefined, 'Lines', 'lines' );
 
       if ( this.linesInDB.length > 0 ) {
         this.linesInDB.forEach( elem => {
@@ -1649,7 +1644,7 @@ export default {
     },
 
     loadAnnotations: async function() {
-      this.annotationsInDB = await fromOfflineDB.getAllObjects( 'Annotations', 'annotations' );
+      this.annotationsInDB = await this.indexedDB.get( 'allObjects', undefined, 'Annotations', 'annotations' );
 
       if ( this.annotationsInDB.length > 0 ) {
         this.annotationsInDB.forEach( annotation => {
@@ -1738,9 +1733,7 @@ export default {
         this.cameraData = this.utilities.getCameraData( exParams.main.camera )
 
         if ( this.cameraIDsInDB.includes( this.placeID ) ) {
-          const curPlace = this.$generalStore.getCurrentObject('place');
-          const newCamera = await fromOfflineDB.getObject(
-           curPlace, 'Cameras', 'cameras' );
+          const newCamera = await this.indexedDB.get( 'object', this.placeID, 'Cameras', 'cameras' );
             
           this.controlSettings.updateWithNewCamera( exParams.main.arcBallControls,
             newCamera );
@@ -1833,8 +1826,7 @@ export default {
 
             /* Fill drawer with position info */
             const positionID = exParams.main.objects.position.entry[ i ].positionID;
-            const positionInDB = await fromOfflineDB.getObject( positionID,
-              'Positions', 'positions' );
+            const positionInDB = await this.indexedDB.get( 'object', positionID, 'Positions', 'positions' );
             this.posInfo = positionInDB;
           }
         }
@@ -1860,12 +1852,12 @@ export default {
         if ( intersects.length > 0 ) {
           const positions = exParams.mmTool.line.geometry.attributes.position;
 
-          const v0 = new THREE.Vector3(
+          const v0 = new Vector3(
             positions.array[0],
             positions.array[1],
             positions.array[2]
           )
-          const v1 = new THREE.Vector3(
+          const v1 = new Vector3(
             intersects[0].point.x,
             intersects[0].point.y,
             intersects[0].point.z
@@ -1920,13 +1912,10 @@ export default {
 
             exParams.mmTool.drawingLine = true;
           } else {
-            const curPlace = this.$generalStore.getCurrentObject('place');
-            const placeInDB = await fromOfflineDB.getObject( 
-              curPlace, 'Places', 'places' )
+            const placeInDB = await this.indexedDB.get( 'object', this.placeID,
+              'Places', 'places' );
               
             /* Generate names for line and balls */
-            // const nameOfLine = "New Line - " + this.lineID;
-            // const nameOfLine = "New Line - " + exParams.mmTool.measurementLable.element.innerText;
             const nameOfLine = "New Line - " + 
               exParams.mmTool.measurementLable.element.innerText.split('\n')[1];
             const nameOfBalls = [ "firstBall - " + this.lineID, 
@@ -1999,9 +1988,9 @@ export default {
             this.measureTool.infoBlock.push( newLine );
             this.measureTool.allTitles.push( nameOfLine );
 
-            await fromOfflineDB.addObject( newLineEntry, 'Lines', 'lines' );
+            await this.indexedDB.add( 'object', newLineEntry, 'Lines', 'lines' );
             placeInDB.lines.push( exParams.mmTool.lineID );
-            await fromOfflineDB.updateObject( placeInDB, 'Places', 'places' );
+            await this.indexedDB.update( 'object', placeInDB, 'Places', 'places' );
 
             exParams.mmTool.lineID = String( Date.now() );
             exParams.mmTool.line = null;
@@ -2048,9 +2037,8 @@ export default {
     onClickAnnotation: async function() {
       if ( this.annotatTool.modus ) {
         /* Get information about current place to store the annotation*/
-        const curPlace = this.$generalStore.getCurrentObject('place');
-        const placeInDB = await fromOfflineDB.getObject( curPlace, 
-          'Places', 'places' )
+        const placeInDB = await this.indexedDB.get( 'object', this.placeID, 'Places', 
+          'places' );
           
         /* Get position of insersection of raycaster with object */
         exParams.mmTool.raycaster.setFromCamera( exParams.mmTool.pointer, exParams.main.camera );
@@ -2096,9 +2084,9 @@ export default {
             position.z )
           
           /* Add lable and box combo to IndexedDB Box - id, name, position */
-          await fromOfflineDB.addObject( newAnnotationEntry, 'Annotations', 'annotations' );
+          await this.indexedDB.add( 'object', newAnnotationEntry, 'Annotations', 'annotations' );
           placeInDB.annotations.push( annotationID );
-          await fromOfflineDB.updateObject( placeInDB, 'Places', 'places' );
+          await this.indexedDB.update( 'object', placeInDB, 'Places', 'places' );
         }
       }
     },
@@ -2172,7 +2160,7 @@ export default {
         exParams.stTool.brushesOfObjects.forEach( brush => {
           exParams.stTool.csgEvaluator.evaluate( brush.brush, 
             exParams.stTool.brushToCutWith.brush,
-            CSG.SUBTRACTION, brush.resultObject );
+            SUBTRACTION, brush.resultObject );
         } )
 
         exParams.stTool.brushesOfObjects.forEach( brush => {

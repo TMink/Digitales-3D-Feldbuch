@@ -2,7 +2,7 @@
  * Created Date: 15.01.2024 11:05:52
  * Author: Tobias Mink
  * 
- * Last Modified: 30.03.2024 03:55:58
+ * Last Modified: 30.03.2024 17:08:41
  * Modified By: Tobias Mink
  * 
  * Description: A collection of all created tools. The initialisation of each 
@@ -11,28 +11,32 @@
  *              imported inside 3DView.js for further usage.
  */
 
-import * as THREE from 'three';
+import { Vector3, LineBasicMaterial, Line, BufferGeometry, SphereGeometry, 
+  MeshBasicMaterial, Mesh, BoxGeometry, Color, BufferAttribute } from "three";
 import { CSS2DObject } from 
   'three/examples/jsm/renderers/CSS2DRenderer'
-import { fromOfflineDB } from '../../ConnectionToOfflineDB.js'
 import { toRaw } from 'vue';
 import { Brush } from 'three-bvh-csg';
 
 export class MeasurementTool {
+
+  constructor( interfaceToOfflineDB ) {
+    this.indexedDB = interfaceToOfflineDB;
+  }
   
   createLine( name, position, mmTool ) {  
     const points = [];
-      points.push( new THREE.Vector3(position[0], position[1], position[2]),
-                   new THREE.Vector3(position[3], position[4], position[5]) );
+      points.push( new Vector3(position[0], position[1], position[2]),
+                   new Vector3(position[3], position[4], position[5]) );
 
-      const geometry = new THREE.BufferGeometry().setFromPoints(
+      const geometry = new BufferGeometry().setFromPoints(
         points
       )
 
       /* Create line */
-      const line = new THREE.Line(
+      const line = new Line(
         geometry,
-        new THREE.LineBasicMaterial({
+        new LineBasicMaterial({
           color: mmTool.lineParams.color,
         }),
       )
@@ -50,16 +54,16 @@ export class MeasurementTool {
     lableDiv.style.marginTop = mmTool.measurementLableParams.marginTop;
     const measurementLable = new CSS2DObject( lableDiv );
     measurementLable.name = name;
-    const vec3 = new THREE.Vector3( position.x, position.y, position.z );
+    const vec3 = new Vector3( position.x, position.y, position.z );
     measurementLable.position.copy( vec3 );
     
     return measurementLable
   }
 
   createBall( name, pos, mmTool ) {
-    const geometry = new THREE.SphereGeometry( mmTool.ballParams.size.x, mmTool.ballParams.size.y, mmTool.ballParams.size.z );
-    const material = new THREE.MeshBasicMaterial( { color: mmTool.ballParams.color } );
-    const sphere = new THREE.Mesh( geometry, material );
+    const geometry = new SphereGeometry( mmTool.ballParams.size.x, mmTool.ballParams.size.y, mmTool.ballParams.size.z );
+    const material = new MeshBasicMaterial( { color: mmTool.ballParams.color } );
+    const sphere = new Mesh( geometry, material );
     sphere.name = name;
     return {
       sphere: sphere,
@@ -93,11 +97,11 @@ export class MeasurementTool {
     }
   }
 
-  async saveLineTitle( root, t, measureTool, main, mmTool ) {
+  async saveLineTitle( root, t, measureTool, main ) {
     let idToBeRenamed = null;
     let token = true;
 
-    const linesInDB = await fromOfflineDB.getAllObjects(
+    const linesInDB = await this.indexedDB.get( 'allObjects', undefined, 
       'Lines', 'lines' );
     
     /* New names cant be blank, undefined or already taken */
@@ -133,7 +137,7 @@ export class MeasurementTool {
       lineInDB.name = measureTool.textField + " - " + lineInDB.name.split('- ')[1];
       lineInDB.lable.distance = 
         measureTool.textField + " \n " + lineInDB.name.split('- ')[1];
-      await fromOfflineDB.updateObject( lineInDB, 'Lines', 'lines' );
+      await this.indexedDB.update( 'object', lineInDB, 'Lines', 'lines' );
 
       measureTool.textField = 
         measureTool.textField + " - " + lineInDB.name.split('- ')[1];
@@ -147,8 +151,8 @@ export class MeasurementTool {
 
   async deleteLine( placeInDB, measureTool, main ) {
     let idToBeDeleted = null
-    const linesInDB = await fromOfflineDB.getAllObjects(
-      'Lines', 'lines' );
+    const linesInDB = await this.indexedDB.get( 'allObjects', undefined, 'Lines', 
+      'lines' );
       
     measureTool.infoBlock.forEach( element => {
       if ( element.name === measureTool.title ) {
@@ -185,8 +189,8 @@ export class MeasurementTool {
     const lineInDB = linesInDB.find( e => e._id === idToBeDeleted );
     const index = placeInDB.lines.indexOf(lineInDB.name);
     placeInDB.lines.splice( index, 1 );
-    await fromOfflineDB.deleteObject( lineInDB, 'Lines', 'lines' );
-    await fromOfflineDB.updateObject( structuredClone(toRaw(placeInDB)), 
+    await this.indexedDB.delete( 'object', lineInDB, 'Lines', 'lines' );
+    await this.indexedDB.update( 'object', structuredClone(toRaw(placeInDB)), 
       'Places', 'places' )
 
     measureTool.title = null;
@@ -215,10 +219,14 @@ export class MeasurementTool {
 }
 
 export class AnnotationTool {
+
+  constructor( interfaceToOfflineDB ) {
+    this.indexedDB = interfaceToOfflineDB
+  }
   
   /**
    * Creates a new label as an 2D-Sprite. This lable can be added to any
-   * THREE.Object3D.
+   * Object3D.
    * @param { String } name 
    * @param { String } annotationName 
    * @param { object } position 
@@ -240,7 +248,7 @@ export class AnnotationTool {
     measurementLable.name = name;
     
     /* Create new vector */
-    const vec3 = new THREE.Vector3( position[0], position[1], position[2] );
+    const vec3 = new Vector3( position[0], position[1], position[2] );
     
     /* Change position of CSS2D-Object in relation to the new vector */
     measurementLable.position.copy( vec3 );
@@ -250,21 +258,21 @@ export class AnnotationTool {
   }
 
   /**
-   * Creates a THREE.Mesh based on the THREE.BoxGeometry.
+   * Creates a Mesh based on the BoxGeometry.
    * @param { String } name
    * @returns 
    */
   createBox( name, anTool ) {
     /* Create geometry */
-    const geometry = new THREE.BoxGeometry( anTool.boxParams.size.x, 
+    const geometry = new BoxGeometry( anTool.boxParams.size.x, 
       anTool.boxParams.size.y, anTool.boxParams.size.z );
       
     /* Create material */
-    const material = new THREE.MeshBasicMaterial( { 
+    const material = new MeshBasicMaterial( { 
       color: anTool.boxParams.color } );
 
     /* Create mesh from geometry and material */
-    const box = new THREE.Mesh( geometry, material );
+    const box = new Mesh( geometry, material );
     
     /* Change name of the object */
     box.name = name;
@@ -290,14 +298,14 @@ export class AnnotationTool {
    * @param { any } root 
    * @param { any } t 
    * @param { object } annotatTool 
-   * @param { THREE.Scene } scene 
+   * @param { Scene } scene 
    */
   async saveAnnotationTitle( root, t, annotatTool, main ) {
     let idToBeRenamed = null;
     let token = true;
 
     /* Get all annotations in IndexedDB */
-    const annotationsInDB = await fromOfflineDB.getAllObjects(
+    const annotationsInDB = await this.indexedDB.get( 'allObjects', undefined,
       'Annotations', 'annotations' );
     
     /* New names cant be blank, undefined or already taken */
@@ -337,7 +345,7 @@ export class AnnotationTool {
       /* Rename line */
       annotationInDB.lableName = annotatTool.textField;
       /* Update the entry in IndexedDB */
-      await fromOfflineDB.updateObject( annotationInDB, 'Annotations', 
+      await this.indexedDB.update( 'object', annotationInDB, 'Annotations', 
         'annotations' );
   
       /* Update the drop down menue */
@@ -364,7 +372,7 @@ export class AnnotationTool {
    * Updates the text of an annotation in scene
    * @param { String } boxName 
    * @param { String } newLable 
-   * @param { THREE.Scene } scene 
+   * @param { Scene } scene 
    */
   updateAnnotationInnerText( boxName, newLable, main ) {
     const boxToChange = main.scene.getObjectByName( boxName )
@@ -376,13 +384,13 @@ export class AnnotationTool {
    * remove it from scene, ui and IndexedDB.
    * @param { any } placeInDB 
    * @param { object } annotatTool 
-   * @param { THREE.scene } scene 
+   * @param { scene } scene 
    */
   async deleteAnnotation( placeInDB, annotatTool, main ) {
     let idToBeDeleted = null
 
     /* Get all annotations in IndexedDB */
-    const annotationsInDB = await fromOfflineDB.getAllObjects(
+    const annotationsInDB = await this.indexedDB.get( 'allObjects', undefined,
       'Annotations', 'annotations' );
     
     /* Disposes the geoemetry and material of the box, removes the CSS2D-Object
@@ -420,9 +428,10 @@ export class AnnotationTool {
     const index = placeInDB.lines.indexOf(annotationInDB._id);
     placeInDB.annotations.splice( index, 1 );
     /* Remove annotation from IndexedDB */
-    await fromOfflineDB.deleteObject( annotationInDB, 'Annotations', 'annotations' );
+    await this.indexedDB.delete( 'object', annotationInDB, 'Annotations', 
+      'annotations' );
     /* Update place entry in IndexedDB */
-    await fromOfflineDB.updateObject( structuredClone(toRaw(placeInDB)), 
+    await this.indexedDB.update( 'object', structuredClone(toRaw(placeInDB)), 
       'Places', 'places' )
 
     /* Remove title from ui */
@@ -437,14 +446,14 @@ export class ModelInteraktion {
   /**
    * Updates the color of an object
    * @param { String } color 
-   * @param { THREE.Group } modelGroup 
+   * @param { Group } modelGroup 
    */
   changeColor( color, modelGroup ) {
     if ( color != null && modelGroup != null ) {
 
       modelGroup.traverse( (child) => {
-        if ( child instanceof THREE.Mesh) {
-          child.material.color = new THREE.Color( color );
+        if ( child instanceof Mesh) {
+          child.material.color = new Color( color );
         }
       })
     }
@@ -486,7 +495,7 @@ export class SegmentationTool {
     }
   
     /* Set new color attribute */
-    brush.geometry.setAttribute( 'color', new THREE.BufferAttribute( array, 3 ) );
+    brush.geometry.setAttribute( 'color', new BufferAttribute( array, 3 ) );
     brush.prepareGeometry();
     main.needsUpdate = true;
   }

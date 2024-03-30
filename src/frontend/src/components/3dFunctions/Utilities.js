@@ -2,28 +2,30 @@
  * Created Date: 08.01.2024 14:43:50
  * Author: Tobias Mink
  * 
- * Last Modified: 29.03.2024 18:22:02
+ * Last Modified: 30.03.2024 17:17:13
  * Modified By: Tobias Mink
  * 
  * Description: A Collections of various functions that are used all over the 
  *              3DPart in many different situations for minor changes or 
  *              generell maintenence.
  */
-
-import * as THREE from 'three';
-import { fromOfflineDB } from '../../ConnectionToOfflineDB.js'
+import { Group, Box3, Vector3 } from 'three';
 import { toRaw } from 'vue';
 
 export class Utilities {
+
+  constructor( interfaceToOfflineDB ) {
+    this.indexedDB = interfaceToOfflineDB;
+  }
   
   /**
    * Gets the group of an given object in scene.
    * @param { object } object 
-   * @returns THREE.Group<any>
+   * @returns Group<any>
    */
   getGroup( object ) {
     var groupObject = object;
-    while ( !( groupObject instanceof THREE.Group ) ) {
+    while ( !( groupObject instanceof Group ) ) {
       groupObject = groupObject.parent;
     }
     
@@ -33,17 +35,17 @@ export class Utilities {
   /**
    * Gets the center of an object/group of objects.
    * @param { object } object 
-   * @returns THREE.Vector3
+   * @returns Vector3
    */
   getModelCenter( object ) {
     var groupObject = object;
-    while ( !( groupObject instanceof THREE.Group ) ) {
+    while ( !( groupObject instanceof Group ) ) {
       groupObject = groupObject.parent;
     }
 
-    const boundingBox = new THREE.Box3();
+    const boundingBox = new Box3();
     boundingBox.setFromObject( groupObject );
-    const center = new THREE.Vector3();
+    const center = new Vector3();
     boundingBox.getCenter( center );
 
     return center;
@@ -52,21 +54,21 @@ export class Utilities {
   /**
    * Gets the barycenter of an object/group of objects.
    * @param {*} objects 
-   * @returns THREE.Vector3
+   * @returns Vector3
    */
   getBarycenter( objects ) {
     var groupObjects = objects;
     const groupObjectsCenter = []
-    const center = new THREE.Vector3()
+    const center = new Vector3()
     
     groupObjects.forEach( groupObject => {
-      while ( !( groupObject instanceof THREE.Group ) ) {
+      while ( !( groupObject instanceof Group ) ) {
         groupObject = groupObject.parent;
       }
       
-      const boundingBox = new THREE.Box3();
+      const boundingBox = new Box3();
       boundingBox.setFromObject( groupObject );
-      const center = new THREE.Vector3();
+      const center = new Vector3();
       boundingBox.getCenter( center );
       
       groupObjectsCenter.push( center );
@@ -120,8 +122,8 @@ export class Utilities {
   async updateAutoFillList( storeName, item ) {
     const newEditor = {};
 
-      const editorsFromDB = await fromOfflineDB.getAllObjects('AutoFillLists', 
-        storeName);
+      const editorsFromDB = await this.indexedDB.get( 'allObjects', undefined, 
+        'AutoFillLists', storeName);
       if ( editorsFromDB.length > 0 ) {
         let hasItem = false;
         
@@ -139,7 +141,8 @@ export class Utilities {
         newEditor.item = toRaw(item)
       }
       if ( !!Object.keys(newEditor).length ) {
-        await fromOfflineDB.addObject(newEditor, 'AutoFillLists', storeName)
+        await this.indexedDB.add('object', newEditor, 'AutoFillLists', 
+          storeName);
       }
   }
 
@@ -156,7 +159,8 @@ export class Utilities {
     rawPosition.count = Number(rawPosition.count);
     rawPosition.lastChanged = Date.now();
     
-    var positionFromDb = await fromOfflineDB.getObject(rawPosition._id, 'Positions', 'positions');
+    var positionFromDb = await this.indexedDB.get( 'object', rawPosition._id, 
+      'Positions', 'positions');
     if ( positionFromDb.hasSubNumber ) {
       var newSubNumber = this.calcSubNumber(rawPosition, positionFromDb);
       rawPosition.subNumber = newSubNumber;
@@ -164,7 +168,8 @@ export class Utilities {
       rawPosition.subNumber = '';
     }
 
-    await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions');
+    await this.indexedDB.update( 'object', rawPosition, 'Positions', 
+      'positions');
 
     this.updateAutoFillList( 'datings', posInfo.dating )
     this.updateAutoFillList( 'titles', posInfo.title )

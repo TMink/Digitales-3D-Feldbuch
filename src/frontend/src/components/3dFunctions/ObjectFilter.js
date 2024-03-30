@@ -2,16 +2,17 @@
  * Created Date: 15.01.2024 14:52:11
  * Author: Tobias Mink
  * 
- * Last Modified: 30.03.2024 04:49:22
+ * Last Modified: 30.03.2024 14:29:31
  * Modified By: Tobias Mink
  * 
  * Description: A filter algorithmen to search for an object to modify.
  */
 
-import { UpdateIndexedDB } from './UpdateIndexedDB.js'
-import { fromOfflineDB } from '../../ConnectionToOfflineDB.js'
-
 export class ObjectFilter {
+
+  constructor( interfaceToOfflineDB ) {
+    this.indexedDB = interfaceToOfflineDB
+  }
 
   /**
    * Searches through each given field.
@@ -145,8 +146,8 @@ export class ObjectFilter {
   async getPlaceObjectInfo( placeObject, main ) {
     for ( let i=0; i < main.objects.place.entry.length; i++) {
       const objectID = main.objects.place.entry[ i ]._id;
-      const objectInDB = await fromOfflineDB.getObject(objectID, 'Models', 
-        'places');
+      const objectInDB = await this.indexedDB.get( 'object', objectID, 'Models',
+        'places' );
 
       if ( !placeObject.allNumbers.includes(objectInDB.modelNumber) ) {
         placeObject.allNumbers.push(objectInDB.modelNumber);
@@ -180,7 +181,7 @@ export class ObjectFilter {
 
     for ( let i=0; i < main.objects.position.entry.length; i++) {
       const positionID = main.objects.position.entry[i].positionID;
-      const positionInDB = await fromOfflineDB.getObject(positionID, 
+      const positionInDB = await this.indexedDB.get( 'object', positionID, 
         'Positions', 'positions' );
 
       if ( !positionIDs.includes(positionID) ) {
@@ -218,7 +219,8 @@ export class ObjectFilter {
   async getPositionObjectInfo( positionData, positionObject ) {
     for ( let i=0; i < positionData.chosenPositionModels.length; i++) {
       const objectID = positionData.chosenPositionModels[ i ];
-      const objectInDB = await fromOfflineDB.getObject(objectID, 'Models', 'positions')
+      const objectInDB = await this.indexedDB.get( 'object', objectID, 'Models',
+        'positions' );
 
       if ( !positionObject.allNumbers.includes(objectInDB.modelNumber) ) {
         positionObject.allNumbers.push(objectInDB.modelNumber)
@@ -318,11 +320,9 @@ export class ObjectFilter {
    * @param {*} scene 
    */
   resetPositionMods( positionObject, positionMods, main ) {
-    const updateIndexedDB = new UpdateIndexedDB()
-    
     positionObject.chosenfinalModelGroup = null;
     positionMods.disabled = true;
-    updateIndexedDB.updateObjectOpacityAndColor( 
+    this.indexedDB.updateObjectOpacityAndColor( 
       positionObject.chosenfinalModel[ 0 ], 'positions', main );
     positionObject.chosenfinalModelGroup = null;
     positionMods.colorPicker.color = null;
@@ -337,11 +337,9 @@ export class ObjectFilter {
    * @param {*} scene 
    */
   resetPlaceMods( placeObject, placeMods, main ) {
-    const updateIndexedDB = new UpdateIndexedDB()
-    
     placeMods.token = false;
     placeMods.disabled = true;
-    updateIndexedDB.updateObjectOpacityAndColor(
+    this.indexedDB.updateObjectOpacityAndColor(
       placeObject.chosenfinalModel[ 0 ], 'places', main );
     placeMods.chosenfinalModelGroup = null;
     placeMods.colorPicker.color = null;
