@@ -37,7 +37,7 @@
                 <v-row wrap text-xs-center class="text-center">
                   <v-col>
                     <v-row no-gutters>
-                      <v-btn v-on:click="routeLogin()" color="primary" class="ma-2" 
+                      <v-btn v-on:click="changePage('Login')" color="primary" class="ma-2" 
                         prepend-icon="mdi-login-variant">
                         Login
                       </v-btn>
@@ -54,7 +54,7 @@
                         class="ma-2" 
                         color="secondary"
                         prepend-icon="mdi-account-off-outline" 
-                        v-on:click="routeActivityOverview()">
+                        v-on:click="changePage('ActivitiesOverview')">
                         {{ $t('continueWithoutAccount') }}
                     </v-btn>
                     </v-row>
@@ -227,15 +227,12 @@ export default {
 
   methods: {
 
-    routeLogin() {
-        this.$router.push({ name: 'Login' });
-    },
-    routeRegistration() {
-        this.$router.push({ name: 'Registration' });
-    },
-
-    routeActivityOverview() {
-        this.$router.push({ name: 'ActivitiesOverview' });
+    /**
+     * Uses the router to change the current page
+     * @param {String} pageName 
+     */
+    changePage(pageName) {
+      this.$router.push({ name: pageName });
     },
 
     /**
@@ -262,13 +259,16 @@ export default {
 
       return false;
     },
+
+    /**
+     * Returns ParallaxHeight for different screen sizes
+     */
     getHeight() {
-      /* if(this.windowHeight > 600){
-        return this.windowHeight - 112;
+      if (this.windowHeight > 600){
+        return this.windowHeight - 103;
       } else {
-        return this.windowHeight + 112;
-      } */
-       return this.windowHeight
+        return this.windowHeight + 103;
+      }
     },
   }
 }
