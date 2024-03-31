@@ -334,8 +334,6 @@
       </v-snackbar>
     </v-row>
   </div>
-  <!-- <ModuleCreator v-model="moduleCreatorOverlay" objectTypeProp="places" 
-    @updateModulePresets="updateModulePresets()" /> -->
 </template>
 
 <script>
@@ -347,11 +345,9 @@
  */
 import Navigation from '../components/Navigation.vue';
 import AddButton from '../components/AddButton.vue';
-import ModuleCreator from '../components/ModuleCreator.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { fromBackend } from '../ConnectionToBackend.js'
 import { useWindowSize } from 'vue-window-size';
-import { toRaw } from 'vue';
 import { useUserStore } from '../Authentication';
 
 
@@ -360,7 +356,6 @@ export default {
   components: {
     Navigation,
     AddButton,
-    ModuleCreator
   },
   emits: ['view'],
   setup() {
@@ -417,10 +412,6 @@ export default {
         { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
         { title: this.$t('syncStatus'), align: 'start', key: 'status', width: "100px"}
       ],
-      /* curModulePreset: {
-        title: '-',
-      },
-      moduleCreatorOverlay: false, */
     };
   },
 
@@ -438,8 +429,6 @@ export default {
     await fromOfflineDB.syncLocalDBs()
       .catch(err => console.error(err));
     await this.updatePlaces()
-      .catch(err => console.error(err));
-    await this.updateModulePresets()
       .catch(err => console.error(err));
     this.setShowAllInfoSwitch();
     
@@ -576,19 +565,6 @@ export default {
     },
 
     /**
-     * Get all ModulePresets from IndexedDB
-     */
-    async updateModulePresets() {
-      let presetID = this.$generalStore.getModulesPreset('place');
-
-      if (presetID.length > 0) {
-        this.curModulePreset = await fromOfflineDB
-          .getObject(presetID, 'ModulePresets', 'places')
-          .catch(err => console.error(err));
-        }
-    },
-
-    /**
      * Adds a new place to IndexedDB for the current activity
      */
     async addPlace() {
@@ -651,16 +627,12 @@ export default {
         newPlace.placeNumber = 1;
 
         //set place to technical place if it is the 1. place
-        /* newPlace.modulePreset = await fromOfflineDB
-          .getFirstEntry('ModulePresets', 'places')
-          .catch(err => console.error(err)); */
       } else {
         const placeNumbers = await fromOfflineDB
           .getPropertiesWithID(acID, 'place', 'placeNumber', 'Places', 'places')
           .catch(err => console.error(err));
         const newPlaceNumber = Math.max(...placeNumbers) + 1;
         newPlace.placeNumber = newPlaceNumber;
-        /* newPlace.modulePreset = toRaw(this.curModulePreset); */
       }
 
       // update IndexedDB
@@ -711,13 +683,6 @@ export default {
         this.moveToPlace(placeID);
       }
     },
-
-    /**
-     * Opens the module presets overlay
-     */
-    /* openPresetOverlay() {
-      this.moduleCreatorOverlay = true;
-    }, */
 
     /**
      * Routes to the place form of `placeID`
