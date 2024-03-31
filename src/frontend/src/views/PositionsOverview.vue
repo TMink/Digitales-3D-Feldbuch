@@ -364,9 +364,9 @@
 
 <script>
 import Navigation from '../components/Navigation.vue';
+import AddPosition from '../components/AddPosition.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { fromBackend } from '../ConnectionToBackend.js'
-import AddPosition from '../components/AddPosition.vue';
 import { useWindowSize } from 'vue-window-size';
 import { useUserStore } from '../Authentication';
 
@@ -516,7 +516,7 @@ export default {
     },
 
     /**
-     * @deprecated
+     * Fully upgrades the position with online + offline data
      */
     async updatePositionsFull() {
       var curPlaceID = this.$generalStore.getCurrentObject('place');

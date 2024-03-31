@@ -94,7 +94,7 @@ import { useUserStore } from '../Authentication.js';
 import { useWindowSize } from 'vue-window-size';
 
 export default {
-  name: 'Landingpage',
+  name: 'RegistrationPage',
   components: {
     Navigation,
   },
@@ -130,18 +130,27 @@ export default {
       .catch(err => console.error(err));
   },
   methods: {
+
+    /**
+     * Registers a new user and shows toast error messages
+     */
     async registration() {
       this.userStore.register(this.form)
         .then(res => {
           this.$root.vtoast.show({ message: this.$t('registrationSuccess'), color: 'success' })
-          this.$router.push({ name: "Login" });
+          this.$router.push({ name: "LoginPage" });
         })
         .catch((err) => {
           this.$root.vtoast.show({ message: this.$t(err), color: 'error' })
         });
     },
+
+    /**
+     * Returns the vue window size with 
+     * specific offsets depending on screen size
+     */
     getHeight() {
-      if(this.windowHeight > 600){
+      if (this.windowHeight > 600){
         return this.windowHeight - 112;
       } else {
         return this.windowHeight + 112;

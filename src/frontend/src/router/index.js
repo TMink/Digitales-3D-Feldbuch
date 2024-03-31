@@ -19,9 +19,9 @@ import ModelViewer from "@/views/3DView.vue";
 import OnlineSync from "@/views/OnlineSync.vue";
 import DataExport from "@/views/DataExport.vue";
 import DataBackup from "@/components/DataBackup.vue";
-import Landingpage from "@/views/Landingpage.vue";
-import Login from "@/views/Login.vue";
-import Registration from "@/views/Registration.vue";
+import LandingPage from "@/views/LandingPage.vue";
+import LoginPage from "@/views/LoginPage.vue";
+import RegistrationPage from "@/views/Registration.vue";
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -29,8 +29,8 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      name: "Landingpage",
-      component: Landingpage,
+      name: "LandingPage",
+      component: LandingPage,
     },
     {
       path: "/activities",
@@ -83,13 +83,13 @@ const router = createRouter({
     },
     {
       path: "/login",
-      name: "Login",
-      component: Login,
+      name: "LoginPage",
+      component: LoginPage,
     },
     {
       path: "/registration",
-      name: "Registration",
-      component: Registration,
+      name: "RegistrationPage",
+      component: RegistrationPage,
     },
   ],
 });

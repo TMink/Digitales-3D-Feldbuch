@@ -99,11 +99,11 @@
             </v-list>
             <v-list v-else>
                 <v-list-item 
-                  @click="changePage('Registration')">
+                  @click="changePage('RegistrationPage')">
                   {{ $t('registration') }}
                 </v-list-item>
                 <v-list-item 
-                  @click="changePage('Login')">
+                  @click="changePage('LoginPage')">
                   {{ $t('login') }}
                 </v-list-item>
             </v-list>
@@ -401,7 +401,7 @@ export default {
       try {
         await this.userStore.logout();
         this.message = "You are not logged in!"
-        this.$router.push({ name: "Login" });
+        this.$router.push({ name: "LoginPage" });
       } catch (error) {
         console.log("Logout failed")
       }

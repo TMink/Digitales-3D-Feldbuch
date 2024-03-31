@@ -103,7 +103,7 @@ import { useUserStore } from '../Authentication.js';
 import { useWindowSize } from 'vue-window-size';
 
 export default {
-  name: 'Landingpage',
+  name: 'LoginPage',
   components: {
     Navigation,
   },
@@ -131,7 +131,7 @@ export default {
   },
   methods: {
     routeRegistration() {
-      this.$router.push({ name: 'Registration' });
+      this.$router.push({ name: 'RegistrationPage' });
     },
     /**
      * Logging in the user with the given username + passsword

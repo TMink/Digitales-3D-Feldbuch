@@ -176,7 +176,7 @@ import Navigation from '../components/Navigation.vue'
 import { useWindowSize } from 'vue-window-size';
 
 export default {
-  name: 'Landingpage',
+  name: 'LandingPage',
   components: {
       Navigation
   },
