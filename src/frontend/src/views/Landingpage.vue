@@ -14,7 +14,7 @@
 
         <v-parallax   
             src="assets/background/Background_Landingpage.jpg"
-            :height="getHeight()">
+            :height="getParallaxHeight()">
 
             <div class="d-flex flex-column justify-center align-center text-white">
               <v-card height="35vh"></v-card>
@@ -263,7 +263,7 @@ export default {
     /**
      * Returns ParallaxHeight for different screen sizes
      */
-    getHeight() {
+    getParallaxHeight() {
       if (this.windowHeight > 600){
         return this.windowHeight - 103;
       } else {
