@@ -364,8 +364,6 @@
 
 <script>
 import Navigation from '../components/Navigation.vue';
-import { toRaw } from 'vue';
-import ModuleCreator from '../components/ModuleCreator.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { fromBackend } from '../ConnectionToBackend.js'
 import AddPosition from '../components/AddPosition.vue';
@@ -377,7 +375,6 @@ export default {
   components: {
     Navigation,
     AddPosition,
-    ModuleCreator
   },
   
   emits: ['view'],
@@ -393,10 +390,6 @@ export default {
   },
 
   watch: {
-    'curModulePreset': {
-      handler: 'saveModulePresetToCookies',
-      deep: true,
-    },
     'showAllInfo': {
       handler: 'toggleAllInfo',
     },
@@ -454,9 +447,6 @@ export default {
         { title: this.$t('isSeparate'), align: 'start', key: 'isSeparate' },
         { title: this.$t('syncStatus'), align: 'start', key: 'status', width: "100px"}
       ],
-      curModulePreset: {
-        title: '-',
-      },
       toggleDuplicate: false,
     };
   },
@@ -469,8 +459,6 @@ export default {
     await fromOfflineDB.syncLocalDBs()
       .catch(err => console.error(err));
     await this.updatePositions()
-      .catch(err => console.error(err));
-    await this.updateModulePresets()
       .catch(err => console.error(err));
     this.setShowAllInfoSwitch();
   },
@@ -539,7 +527,6 @@ export default {
 
       // if user isn't logged in, just show the local stuff
       if (!this.userStore.authenticated) {
-        console.log("Not logged in, so only show local positions")
         this.positions = offlinePositions;
         return;
       }
@@ -550,7 +537,6 @@ export default {
 
       // if there are no offlinePositions, don't check for duplicates
       if (offlinePositions.length == 0) {
-        console.log("No local positions, so only show online");
         onlinePositions.forEach(async (onPosition) => {
           await fromOfflineDB.addObject(onPosition, 'Positions', 'positions')
             .catch(err => console.error(err));
@@ -566,7 +552,6 @@ export default {
       var newPositionsList = [];
       var sameIdFound = false;
 
-      console.log("online and offline positions have to be combined")
       offlinePositions.forEach(async (offPosition) => {
         for (var i = 0; i < onlinePositions.length; i++) {
 
@@ -595,16 +580,6 @@ export default {
       // add remaining online places to the whole list
       newPositionsList.concat(onlinePositions);
       this.positions = newPositionsList;
-    },
-
-    async updateModulePresets() {
-      let curPresetID = this.$generalStore.getModulesPreset('position');
-
-      if (curPresetID) {
-        this.curModulePreset = await fromOfflineDB
-          .getObject(curPresetID, 'ModulePresets', 'positions')
-          .catch(err => console.error(err));
-        }
     },
 
     /**
@@ -721,7 +696,6 @@ export default {
         .catch(err => console.error(err));
       await fromOfflineDB.addObject(newPosition, "Positions", "positions")
         .catch(err => console.error(err));
-      //await fromOfflineDB.addObject({ _id: newPositionID, object: 'positions' }, 'Changes', 'created');
       
       return newPositionID;
     },
@@ -793,6 +767,7 @@ export default {
         backgroundColor: this.hoveredRow === index ? '#F6F6F6' : 'transparent'
       }
     },
+
     /**
      * Update the hoveredRow based on the isHovered flag.
      *
@@ -806,10 +781,6 @@ export default {
       } else if (this.hoveredRow === index) {
         this.hoveredRow = -1;
       }
-    },
-
-    saveModulePresetToCookies() {
-      this.$generalStore.setModulesPreset(this.curModulePreset._id, 'position');
     },
   }
 }
