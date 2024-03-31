@@ -21,7 +21,7 @@ import DataExport from "@/views/DataExport.vue";
 import DataBackup from "@/components/DataBackup.vue";
 import LandingPage from "@/views/LandingPage.vue";
 import LoginPage from "@/views/LoginPage.vue";
-import RegistrationPage from "@/views/Registration.vue";
+import RegistrationPage from "@/views/RegistrationPage.vue";
 
 const router = createRouter({
   history: createWebHashHistory(),

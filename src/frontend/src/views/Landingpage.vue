@@ -37,7 +37,7 @@
                 <v-row wrap text-xs-center class="text-center">
                   <v-col>
                     <v-row no-gutters>
-                      <v-btn v-on:click="changePage('Login')" color="primary" class="ma-2" 
+                      <v-btn v-on:click="changePage('LoginPage')" color="primary" class="ma-2" 
                         prepend-icon="mdi-login-variant">
                         Login
                       </v-btn>
