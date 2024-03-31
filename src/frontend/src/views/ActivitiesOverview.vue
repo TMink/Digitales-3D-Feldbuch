@@ -251,11 +251,11 @@
   
 <script>
 import Navigation from '../components/Navigation.vue'
-import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
-import { fromBackend } from '../ConnectionToBackend.js'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 import AddButton from '../components/AddButton.vue'
 import OnlineImport from '../components/OnlineImport.vue'
+import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
+import { fromBackend } from '../ConnectionToBackend.js'
 import { toRaw } from 'vue'
 import { useUserStore } from '../Authentication.js';
 
@@ -322,7 +322,6 @@ export default {
 
       // if user isn't logged in, just show the local stuff
       if (!this.userStore.authenticated) {
-        console.log("Not logged in, so only show local activities")
         this.activities = offlineActivities;
         this.activities.sort((a, b) => (parseInt(a.number) > parseInt(b.number)) ? 1 : -1);
         return;
@@ -334,7 +333,6 @@ export default {
       
       // if there are no offlineActivities, don't check for duplicates
       if (offlineActivities.length == 0) {
-        console.log("No local activities, so only show online")
         onlineActivities.forEach(async (onActivity) => {
           await fromOfflineDB
             .addObject(onActivity, 'Activities', 'activities')
@@ -353,7 +351,6 @@ export default {
       var newActivityList = [];
       var sameIdFound = false;
 
-      console.log("online and offline activities have to be combined")
         for (var i=0; i<offlineActivities.length; i++) {
 
           for (var j=0; j<onlineActivities.length; j++) {
@@ -510,6 +507,26 @@ export default {
     },
 
     /**
+     * Removes an activity from IndexedDB and Cookies
+     * @param {Object} activity 
+     */
+     async deleteActivity(activity) {
+      this.$generalStore.setCurrentObject(null, "activity");
+      this.$generalStore.setCurrentObject(null, "place");
+      this.$generalStore.setCurrentObject(null, "position");
+
+      var activityIndex = this.activities.indexOf(activity);
+
+      if (activityIndex != -1) {
+        this.activities.splice(activityIndex, 1);
+      }
+      
+      await fromOfflineDB
+        .deleteCascade(activity._id, 'activity', 'Activities', 'activities')
+        .catch(err => console.error(err));
+    },
+
+    /**
      * Opens the dialog for adding a new editor to an activity
      * @param {*} activity 
      */
@@ -524,7 +541,6 @@ export default {
 
     /**
      * Confirms the addition of a new editor to an activity
-     * @param {*} activity 
      */
     confirmAddEditor() {
       this.addEditor(this.editActivity, this.newEditorName);
@@ -596,26 +612,6 @@ export default {
       ) {
         this.deleteActivity(activity);
       }
-    },
-
-    /**
-     * Removes an activity from IndexedDB and Cookies
-     * @param {Object} activity 
-     */
-    async deleteActivity(activity) {
-      this.$generalStore.setCurrentObject(null, "activity");
-      this.$generalStore.setCurrentObject(null, "place");
-      this.$generalStore.setCurrentObject(null, "position");
-
-      var activityIndex = this.activities.indexOf(activity);
-
-      if (activityIndex != -1) {
-        this.activities.splice(activityIndex, 1);
-      }
-      
-      await fromOfflineDB
-        .deleteCascade(activity._id, 'activity', 'Activities', 'activities')
-        .catch(err => console.error(err));
     },
 
     /**
