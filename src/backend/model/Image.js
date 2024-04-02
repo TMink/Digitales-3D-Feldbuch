@@ -15,7 +15,7 @@ const imagesSchema = new Schema({
     type: String,
     required: true,
   },
-  positionID: Number,
+  positionID: String,
   imageNumber: Number,
   title: String,
   image: String,

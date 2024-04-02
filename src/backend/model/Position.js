@@ -32,8 +32,8 @@ const positionsSchema = new Schema({
   hasSubNumber: Boolean,
   isSeparate: Boolean,
   modulePreset: Object,
-  images: [Number],
-  models: [Number],
+  images: [String],
+  models: [String],
   lastChanged: Number,
   lastSync: Number,
 });
