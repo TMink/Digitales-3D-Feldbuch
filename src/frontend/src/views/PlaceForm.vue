@@ -66,18 +66,18 @@
               <v-toolbar :height="50" color="surface" density="default">
                 <v-card-title>{{ $t('technicalDrawing')}}</v-card-title>
                 <v-divider vertical></v-divider>
-                <v-btn @click="onToolbarClick('pen')" variant="flat" v-bind:color="canvasSettings.mode ==='pen' ? 'primary' : 'none'" icon="mdi-pencil" rounded="0"></v-btn>
-                <v-btn @click="onToolbarClick('eraser')" variant="flat" v-bind:color="canvasSettings.mode ==='eraser' ? 'primary' : 'none'" icon="mdi-eraser" rounded="0"></v-btn>
-                <v-btn @click.prevent="onToolbarClick('text')" variant="flat" v-bind:color="canvasSettings.mode === 'text' ? 'primary' : 'none'" icon="mdi-format-text" rounded="0"></v-btn>
+                <v-btn @click="onToolbarClick('pen')" variant="flat" v-bind:color="canvasSettings.mode ==='pen' ? 'success' : 'none'" icon="mdi-pencil" rounded="0"></v-btn>
+                <v-btn @click="onToolbarClick('eraser')" variant="flat" v-bind:color="canvasSettings.mode ==='eraser' ? 'success' : 'none'" icon="mdi-eraser" rounded="0"></v-btn>
+                <v-btn @click.prevent="onToolbarClick('text')" variant="flat" v-bind:color="canvasSettings.mode === 'text' ? 'success' : 'none'" icon="mdi-format-text" rounded="0"></v-btn>
                 <v-btn @click="onToolbarClick('shape')" variant="flat" v-bind:color=" canvasSettings.mode != 'pen' && canvasSettings.mode != 'eraser' 
-                        && canvasSettings.mode != 'text' && canvasSettings.mode != 'none' ? 'primary' : 'none'" icon="mdi-shape" rounded="0"></v-btn>
+                        && canvasSettings.mode != 'text' && canvasSettings.mode != 'none' ? 'success' : 'none'" icon="mdi-shape" rounded="0"></v-btn>
                 <v-btn @click="onToolbarClick('colorPicker')" icon="mdi-palette" rounded="0"></v-btn>
                 <v-btn @click="onToolbarClick('lineWidth')" icon="mdi-minus" rounded="0"></v-btn>
                 <v-btn @click.prevent="$refs.FieldbookDrawingCanvas.undo()" icon="mdi-undo" rounded="0"></v-btn>
                 <v-btn @click.prevent="$refs.FieldbookDrawingCanvas.redo()" icon="mdi-redo" rounded="0"></v-btn>
                 <v-btn @click.prevent="onToolbarClick('clear')" icon="mdi-trash-can-outline" rounded="0"></v-btn>
                 <v-btn @click.prevent="backgroundDialog = true" icon="mdi-image" rounded="0"></v-btn>
-                <v-btn @click.prevent="onToolbarClick('refresh')" icon="mdi-reload" rounded="0"></v-btn>
+                <v-btn @click.prevent="onToolbarClick('removeBackground')" icon="mdi-image-remove" rounded="0"></v-btn>
               </v-toolbar>
             </v-card>
             <div style="position:relative">
@@ -110,11 +110,11 @@
                 <v-card class="mt-2" row v-show="canvasSettings.shapeModeVisible"
                   style="position: absolute; left: 380px; z-index: 1;">
                   <v-layout>
-                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'line'" v-bind:color="canvasSettings.mode === 'line' ? 'primary' : 'none'" icon="mdi-minus" rounded="0"></v-btn></v-card>
-                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'dotted-line'" v-bind:color="canvasSettings.mode === 'dotted-line' ? 'primary' : 'none'" icon="mdi-dots-horizontal" rounded="0"></v-btn></v-card>
-                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'circle'" v-bind:color="canvasSettings.mode === 'circle' ? 'primary' : 'none'" icon="mdi-circle-outline" rounded="0"></v-btn></v-card>
-                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'rectangle'" v-bind:color="canvasSettings.mode === 'rectangle' ? 'primary' : 'none'" icon="mdi-square-outline" rounded="0"></v-btn></v-card>
-                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'triangle'" v-bind:color="canvasSettings.mode === 'triangle' ? 'primary' : 'none'" icon="mdi-triangle-outline"  rounded="0"></v-btn></v-card>
+                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'line'" v-bind:color="canvasSettings.mode === 'line' ? 'success' : 'none'" icon="mdi-minus" rounded="0"></v-btn></v-card>
+                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'dotted-line'" v-bind:color="canvasSettings.mode === 'dotted-line' ? 'success' : 'none'" icon="mdi-dots-horizontal" rounded="0"></v-btn></v-card>
+                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'circle'" v-bind:color="canvasSettings.mode === 'circle' ? 'success' : 'none'" icon="mdi-circle-outline" rounded="0"></v-btn></v-card>
+                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'rectangle'" v-bind:color="canvasSettings.mode === 'rectangle' ? 'success' : 'none'" icon="mdi-square-outline" rounded="0"></v-btn></v-card>
+                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'triangle'" v-bind:color="canvasSettings.mode === 'triangle' ? 'success' : 'none'" icon="mdi-triangle-outline"  rounded="0"></v-btn></v-card>
                     <v-card class="mx-2" :height="50"><v-checkbox :label="$t('fill')" v-model="canvasSettings.filled" icon="mdi-triangle-outline" rounded="0"></v-checkbox></v-card>
                   </v-layout>
                 </v-card>
@@ -128,9 +128,6 @@
             </div>
             <v-row justify="end">
               <v-col class="text-left mt-2">
-                <v-btn color="success" class="mr-2">
-                  <v-icon>mdi-content-save-all</v-icon>
-                </v-btn>
                 <v-btn @click="downloadImage()" color="success">
                   <v-icon>mdi-download</v-icon>
                 </v-btn>
@@ -734,17 +731,15 @@ export default {
         this.$refs.FieldbookDrawingCanvas.clearCanvas();
       }
       if (toolType == "shape") {
-        this.canvasSettings.mode = 'shape';
         this.canvasSettings.lineWidthVisible = false;
         this.canvasSettings.textModeVisible = false;
         this.canvasSettings.colorPickerVisible = false;
         this.canvasSettings.shapeModeVisible = !this.canvasSettings.shapeModeVisible;
       }
-      if (toolType == "deleteBackground") {
-
+      if(toolType == "removeBackground"){
+        this.$refs.FieldbookDrawingCanvas.removeBackground();
       }
     },
-
 
     /**
      * Converts the base64-output of the Vue-Drawing-Canvas to an Imagefile, which can be downloaded.
