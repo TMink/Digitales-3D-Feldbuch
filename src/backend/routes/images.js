@@ -2,7 +2,7 @@
  * Created Date: 10.05.2023 12:58:23
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.02.2024 16:26:19
+ * Last Modified: 02.04.2024 16:10:43
  * Modified By: Julian Hardtung
  * 
  * Description: Backend CRUD API routes for images
@@ -38,6 +38,7 @@ const upload = multer({ storage: storage });
  */
 function getImageJson(doc, filename, mimetype) {
   const curTime = Date.now();
+
   return {
     _id: doc._id,
     imageNumber: doc.imageNumber,
@@ -58,6 +59,17 @@ router.get("/list/:image_ids", async function (req, res, next) {});
 router.get("/:image_id", async function (req, res, next) {
   try {
     var image = await Image.findById(req.params.image_id).exec();
+
+    fs.readFile(FILE_PATH + image.image, (err, base64Img) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send("error reading image file");
+      }
+
+      result.image = base64Img;
+      res.status(200).send(result);
+    });
+
   } catch (error) {
     res.status(404).send("No Image with ID: " + req.params.image_id + " found");
   }
@@ -70,10 +82,21 @@ router.get("/:image_id", async function (req, res, next) {
 router.post("/:position_id", upload.single("image"), async function (req, res, next) {
   var newImage = getImageJson(req.body, req.file.filename);
 
+
+
   try {
     const result = await Image.create(newImage);
 
-    res.status(200).send(result);
+    fs.readFile(FILE_PATH + req.file.filename, (err, base64Img) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send("error reading image file");
+      }
+
+      result.image = base64Img;
+      res.status(200).send(result);
+    });
+
   } catch (error) {
     res.status(500).send("Couldn't save Image: " + error.message);
   }
@@ -84,9 +107,9 @@ router.post("/:position_id", upload.single("image"), async function (req, res, n
  */
 router.delete("/:image_id", async function (req, res, next) {
   try {
-    // delete model from DB
+    // delete image from DB
     const result = await Image.findByIdAndDelete(req.params.image_id);
-    // delete model and texture files
+    // delete image
     fs.unlinkSync(FILE_PATH + result.image);
 
     res.status(200).send(result);
