@@ -2,7 +2,7 @@
  * Created Date: 06.07.2023 13:22:10
  * Author: Julian Hardtung
  * 
- * Last Modified: 22.03.2024 11:57:04
+ * Last Modified: 02.04.2024 17:15:10
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for images of places/positions
@@ -273,6 +273,8 @@ export default {
         this.images = await fromOfflineDB
           .getAllObjectsWithID(this.position._id, 'Position', 'Images', 'images')
           .catch(err => console.error(err));
+        
+        console.log(this.images)
     },
 
     /**
@@ -309,17 +311,15 @@ export default {
      */
     async addMultipleImages() {
       var rawImageArray = toRaw(this.uploadImages);
-      var curImages = [];
       const initImageNumbers = this.images.length;
 
       for (var i=0; i<rawImageArray.length; i++) {
-
         var imageNumber = initImageNumbers + 1 + i;
-        var addedImg = await this.addImage(rawImageArray[i], imageNumber)
+        await this.addImage(rawImageArray[i], imageNumber)
           .catch(err => console.error(err));
-        curImages.push(addedImg);
       }
-      this.images = this.images.concat(curImages);
+
+      this.updateImages()
     },
 
     /**
@@ -327,9 +327,9 @@ export default {
      */
     async addImage(imageFile, imageNumber) {
       // get all data for the new image
-      var newImage = await this.fillNewImgData(imageFile, imageNumber)
+      const newImage = await this.fillNewImgData(imageFile, imageNumber)
         .catch(err => console.error(err));
-
+        
       // add imageID to the position array of all images
       var rawPosition = toRaw(this.position);
 
@@ -341,12 +341,9 @@ export default {
       this.create_dialog = false;
 
       // update IndexedDB
-      await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions')
-        .catch(err => console.error(err));
-      await fromOfflineDB.addObject(newImage, "Images", "images")
-        .catch(err => console.error(err));
-      //await fromOfflineDB.addObject({ _id: newImage._id, object: 'images' }, 'Changes', 'created');
-      return newImage;
+      await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions').catch(err => console.error(err));
+
+      await fromOfflineDB.addObject(newImage, "Images", "images").catch(err => console.error(err));
     },
 
     /**
