@@ -2,7 +2,7 @@
  Created Date: 17.11.2023 16:18:33
  Author: Tobias Mink
  
- Last Modified: 30.03.2024 18:11:45
+ Last Modified: 02.04.2024 18:51:24
  Modified By: Tobias Mink
  
  Description: 
@@ -778,6 +778,7 @@ import { Utilities } from '../components/3dFunctions/Utilities.js'
 import { ObjectFilter } from '../components/3dFunctions/ObjectFilter.js'
 import { GarbageCollection } from '../components/3dFunctions/GarbageCollection.js'
 import { Initialisations } from '../components/3dFunctions/Initialisations.js'
+import * as TWEEN from '@tweenjs/tween.js'
 
 
 export default {
@@ -1306,174 +1307,179 @@ export default {
     this.initialisations.initMeasurementTool( exParams.main, exParams.mmTool, 
       document );
 
-      
+    if( this.placeID == null ){
 
-    /***************************************************************************
-     *  ++++ Initialize Main- and Sub-Scene ++++
-     * 
-     * Checks initTokens form exparams => 
-     *  false == Scene not initialized yet 
-     *  true == Scene already initialized
-     */
-    for ( const [ sceneName, tokenValue ] of 
-      Object.entries( exParams.initTokens ) ) {
-      if ( !tokenValue ) {
-        switch ( sceneName ) {
-          case "main":
-            /* Initialize main scene */
-            this.initialisations.mainInit( exParams.main );
-            /* Initialize main eventlistener */
-            this.initMainEventlisteners( window, exParams.main );
-            /* Set token to true */
-            this.tokenValue = true;
-            break;
-          case "sub":
-            /* Initialize sub scene */
-            this.initialisations.subInit( exParams.sub );
-            /* Initialize sub eventlistener */
-            this.initSubEventlisteners( exParams.sub );
-            /* Set token to true */
-            this.tokenValue = true;
-            break;
+      this.initialisations.mainInitNoObjects( exParams.main );
+      this.animation();
+      
+    } else {
+      /***************************************************************************
+       *  ++++ Initialize Main- and Sub-Scene ++++
+       * 
+       * Checks initTokens form exparams => 
+       *  false == Scene not initialized yet 
+       *  true == Scene already initialized
+       */
+      for ( const [ sceneName, tokenValue ] of 
+        Object.entries( exParams.initTokens ) ) {
+        if ( !tokenValue ) {
+          switch ( sceneName ) {
+            case "main":
+              /* Initialize main scene */
+              this.initialisations.mainInit( exParams.main );
+              /* Initialize main eventlistener */
+              this.initMainEventlisteners( window, exParams.main );
+              /* Set token to true */
+              this.tokenValue = true;
+              break;
+            case "sub":
+              /* Initialize sub scene */
+              this.initialisations.subInit( exParams.sub );
+              /* Initialize sub eventlistener */
+              this.initSubEventlisteners( exParams.sub );
+              /* Set token to true */
+              this.tokenValue = true;
+              break;
+          }
         }
       }
-    }
-
-
-    
-    /***************************************************************************
-     *  ++++ Load place and position objects into scene. ++++
-     * 
-     * Determines if:
-     *    1. No objects are present in IndexedDb
-     * or   
-     *    2. Only place objects are present in IndexedDB
-     * or
-     *    3. Only position objects are present in IndexedDB
-     * or
-     *    3. Place and position objects are present in IndexedDB
-     * 
-     * Based on these different cases the camera will be placed accordingly to
-     * the amount and size of the objects, present in the scene
-     */
-    /* 1. No Models found */
-    if ( this.placeObjects.length == 0 && this.positionObjects == 0 ) {
+  
+  
       
-      console.log( "No Models found" )
-    
-    /* 2. Only place objects */
-    } else if ( this.placeObjects.length != 0 && this.positionObjects == 0 ) {
+      /***************************************************************************
+       *  ++++ Load place and position objects into scene. ++++
+       * 
+       * Determines if:
+       *    1. No objects are present in IndexedDb
+       * or   
+       *    2. Only place objects are present in IndexedDB
+       * or
+       *    3. Only position objects are present in IndexedDB
+       * or
+       *    3. Place and position objects are present in IndexedDB
+       * 
+       * Based on these different cases the camera will be placed accordingly to
+       * the amount and size of the objects, present in the scene
+       */
+      /* 1. No Models found */
+      if ( this.placeObjects.length == 0 && this.positionObjects == 0 ) {
+        
+        console.log( "No Models found" )
       
-      /* Load objects in scene */
-      await this.objectLoaders.loadObjectsInScene( exParams.main, 'places', 
+      /* 2. Only place objects */
+      } else if ( this.placeObjects.length != 0 && this.positionObjects == 0 ) {
+        
+        /* Load objects in scene */
+        await this.objectLoaders.loadObjectsInScene( exParams.main, 'places', 
+          this.placeID );
+        /* Fill object Filter menue options with data based on currently loaded
+         * objects. */
+        this.objectFilter.getPlaceObjectInfo( this.placeObject, exParams.main );
+  
+        /* Get object center for camera and control alignment if ... */
+        /* ... there is only one objects present or ... */
+        if ( exParams.main.objects.allObjects.length < 2 ) {
+          this.centerOfObjects = this.utilities.getModelCenter( 
+            exParams.main.objects.place.groups[ 0 ] )
+        /* ... there are multiple objects present. */
+        } else {
+          this.centerOfObjects = this.utilities.getBarycenter( 
+            exParams.main.objects.place.groups );
+        }
+  
+        console.log("Only place objects")
+      
+      /* 3. Only position objects */
+      } else if ( this.placeObjects.length == 0 && this.positionObjects != 0 ) {
+        
+        /* Load objects in scene */
+        await this.objectLoaders.loadObjectsInScene( exParams.main, 'positions', 
+          this.placeID );
+        /* Fill object Filter menue options with data based on currently loaded
+         * objects. */
+        this.objectFilter.getPositionDataInfo( this.positionData, 
+          exParams.main );
+  
+        /* Get object center for camera and control alignment if ... */
+        /* ... there is only one objects present or ... */
+        if ( exParams.main.objects.allObjects.length < 2 ) {
+          this.centerOfObjects = this.utilities.getModelCenter( 
+            exParams.main.objects.position.groups[ 0 ] )
+        /* ... there are multiple objects present. */
+        } else {
+          this.centerOfObjects = this.utilities.getBarycenter( 
+            exParams.main.objects.position.groups );
+        }
+  
+        console.log("Only position objects")
+      
+      /* 4. Place and position objects */
+      } else if ( this.placeObjects.length != 0 && this.positionObjects != 0 ) {
+        /* Load objects in scene */
+        await this.objectLoaders.loadObjectsInScene( exParams.main, 'places', 
         this.placeID );
-      /* Fill object Filter menue options with data based on currently loaded
-       * objects. */
-      this.objectFilter.getPlaceObjectInfo( this.placeObject, exParams.main );
-
-      /* Get object center for camera and control alignment if ... */
-      /* ... there is only one objects present or ... */
-      if ( exParams.main.objects.allObjects.length < 2 ) {
-        this.centerOfObjects = this.utilities.getModelCenter( 
-          exParams.main.objects.place.groups[ 0 ] )
-      /* ... there are multiple objects present. */
-      } else {
-        this.centerOfObjects = this.utilities.getBarycenter( 
-          exParams.main.objects.place.groups );
-      }
-
-      console.log("Only place objects")
-    
-    /* 3. Only position objects */
-    } else if ( this.placeObjects.length == 0 && this.positionObjects != 0 ) {
-      
-      /* Load objects in scene */
-      await this.objectLoaders.loadObjectsInScene( exParams.main, 'positions', 
+        await this.objectLoaders.loadObjectsInScene( exParams.main, 'positions', 
         this.placeID );
-      /* Fill object Filter menue options with data based on currently loaded
-       * objects. */
-      this.objectFilter.getPositionDataInfo( this.positionData, 
-        exParams.main );
-
-      /* Get object center for camera and control alignment if ... */
-      /* ... there is only one objects present or ... */
-      if ( exParams.main.objects.allObjects.length < 2 ) {
-        this.centerOfObjects = this.utilities.getModelCenter( 
-          exParams.main.objects.position.groups[ 0 ] )
-      /* ... there are multiple objects present. */
-      } else {
-        this.centerOfObjects = this.utilities.getBarycenter( 
-          exParams.main.objects.position.groups );
+        /* Fill object Filter menue options with data based on currently loaded
+        * objects. */
+        this.objectFilter.getPlaceObjectInfo( this.placeObject, 
+        exParams.main.objects.place.entry );
+        this.objectFilter.getPositionDataInfo( this.positionData, 
+        exParams.main.objects.position.entry );
+       
+        /* Get object center for camera and control alignment if ... */
+        /* ... there is only one objects present or ... */
+        if ( exParams.main.objects.allObjects.length < 2 ) {
+          this.centerOfObjects = this.utilities.getModelCenter( 
+            exParams.main.objects.place.groups[ 0 ] );
+        /* ... there are multiple objects present. */
+        } else {
+          this.centerOfObjects = this.utilities.getBarycenter( 
+            exParams.main.objects.place.groups );
+        }
+        
+        console.log("Place and position objects")
       }
-
-      console.log("Only position objects")
-    
-    /* 4. Place and position objects */
-    } else if ( this.placeObjects.length != 0 && this.positionObjects != 0 ) {
-      /* Load objects in scene */
-      await this.objectLoaders.loadObjectsInScene( exParams.main, 'places', 
-      this.placeID );
-      await this.objectLoaders.loadObjectsInScene( exParams.main, 'positions', 
-      this.placeID );
-      /* Fill object Filter menue options with data based on currently loaded
-      * objects. */
-      this.objectFilter.getPlaceObjectInfo( this.placeObject, 
-      exParams.main.objects.place.entry );
-      this.objectFilter.getPositionDataInfo( this.positionData, 
-      exParams.main.objects.position.entry );
-     
-      /* Get object center for camera and control alignment if ... */
-      /* ... there is only one objects present or ... */
-      if ( exParams.main.objects.allObjects.length < 2 ) {
-        this.centerOfObjects = this.utilities.getModelCenter( 
-          exParams.main.objects.place.groups[ 0 ] );
-      /* ... there are multiple objects present. */
-      } else {
-        this.centerOfObjects = this.utilities.getBarycenter( 
-          exParams.main.objects.place.groups );
-      }
+  
+  
       
-      console.log("Place and position objects")
+      /***************************************************************************
+       *  ++++ Initialize the Segmentation Tool ++++
+       */
+      this.initialisations.initSegmentationTool( exParams.main, exParams.stTool, 
+        this.centerOfObjects );
+  
+  
+  
+      /***************************************************************************
+       *  ++++ Re-center Camera based on predetermine factors ++++
+       */
+      await this.cameraSettings.updateCamera ( 
+        this.centerOfObjects, this.placeID, exParams.main, this.cameraIDsInDB, 
+        this.cameraInDB, this.cameraData, this.arcballAnchor
+      )
+  
+  
+      
+      /***************************************************************************
+       *  ++++ Load already drawn lines ++++
+       */
+      await this.loadLines();
+  
+  
+      
+      /***************************************************************************
+       *  ++++ Load already created annotations ++++
+       */
+      await this.loadAnnotations();
+  
+  
+      
+      /***************************************************************************
+       * ++++ Animate the scene ++++
+       */
+      this.animate();
     }
-
-
-    
-    /***************************************************************************
-     *  ++++ Initialize the Segmentation Tool ++++
-     */
-    this.initialisations.initSegmentationTool( exParams.main, exParams.stTool, 
-      this.centerOfObjects );
-
-
-
-    /***************************************************************************
-     *  ++++ Re-center Camera based on predetermine factors ++++
-     */
-    await this.cameraSettings.updateCamera ( 
-      this.centerOfObjects, this.placeID, exParams.main, this.cameraIDsInDB, 
-      this.cameraInDB, this.cameraData, this.arcballAnchor
-    )
-
-
-    
-    /***************************************************************************
-     *  ++++ Load already drawn lines ++++
-     */
-    await this.loadLines();
-
-
-    
-    /***************************************************************************
-     *  ++++ Load already created annotations ++++
-     */
-    await this.loadAnnotations();
-
-
-    
-    /***************************************************************************
-     * ++++ Animate the scene ++++
-     */
-    this.animate();
   },
 
   async unmounted() {
@@ -1532,11 +1538,14 @@ export default {
 
     async loadDataFromIndexedDB() {
       this.placeID = this.$generalStore.getCurrentObject( 'place' );
-      this.cameraIDsInDB = await this.indexedDB.get( 'properties', '_id', 'Cameras', 'cameras' );
-      this.cameraInDB = await this.indexedDB.get( 'object', this.placeID, 'Cameras', 'cameras' );
-      this.placeInDB = await this.indexedDB.get( 'object', this.placeID, 'Places', 'places' );
-      this.placeObjects = await this.indexedDB.get( 'allObjectsWithID', this.placeID, 'Models', 'places', 'Place' );
-      this.positionObjects = await this.indexedDB.get( 'allObjectsWithID', this.placeID, 'Models', 'positions', 'Place' );
+      if( this.placeID != null ) {
+        
+        this.cameraIDsInDB = await this.indexedDB.get( 'properties', '_id', 'Cameras', 'cameras' );
+        this.cameraInDB = await this.indexedDB.get( 'object', this.placeID, 'Cameras', 'cameras' );
+        this.placeInDB = await this.indexedDB.get( 'object', this.placeID, 'Places', 'places' );
+        this.placeObjects = await this.indexedDB.get( 'allObjectsWithID', this.placeID, 'Models', 'places', 'Place' );
+        this.positionObjects = await this.indexedDB.get( 'allObjectsWithID', this.placeID, 'Models', 'positions', 'Place' );
+      }
     }, 
 
     /**
@@ -2124,6 +2133,13 @@ export default {
      * # Animation
      * -------------------------------------------------------------------------
      */
+    // Animation	
+    animation() {
+      exParams.main.controls.update();
+      exParams.main.renderer.render(exParams.main.scene, exParams.main.camera);  
+      TWEEN.update();
+      requestAnimationFrame( this.animation );
+    },
 
     animate: function() {
       /* Check interactions */

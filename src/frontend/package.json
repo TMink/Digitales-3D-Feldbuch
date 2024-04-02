@@ -19,6 +19,7 @@
     "postversion": "npm run package"
   },
   "dependencies": {
+    "@tweenjs/tween.js": "^23.1.1",
     "axios": "^1.4.0",
     "electron-cookies": "github:heap/electron-cookies",
     "electron-squirrel-startup": "^1.0.0",

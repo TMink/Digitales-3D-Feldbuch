@@ -2,7 +2,7 @@
  * Created Date: 23.01.2024 13:09:11
  * Author: Tobias Mink
  * 
- * Last Modified: 30.03.2024 18:11:28
+ * Last Modified: 02.04.2024 19:25:18
  * Modified By: Tobias Mink
  * 
  * Description: A Collection of initialisation functions, which will be called
@@ -34,6 +34,11 @@ import { GammaCorrectionShader } from
 import { CSS2DRenderer } from 
 'three/examples/jsm/renderers/CSS2DRenderer'
 import { Evaluator, Brush, GridMaterial } from 'three-bvh-csg';
+
+import { Vector3, HemisphereLight, ShadowMaterial, IcosahedronGeometry, PlaneGeometry, VSMShadowMap, sRGBEncoding, MeshPhongMaterial  } from 'three';
+import * as TWEEN from '@tweenjs/tween.js'
+import { exParams } from './Parameter';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 export class Initialisations {
 
@@ -357,4 +362,134 @@ export class Initialisations {
     sub.orbitControls = new OrbitControls( sub.camera, 
       sub.renderer.domElement );
   }
+
+  async mainInitNoObjects( main ) {
+    
+    main.scene = new Scene();
+
+		main.camera = new PerspectiveCamera(25, window.innerWidth / window.innerHeight, 0.1,1000);
+		main.camera.position.set(0,1.5,-17);
+
+		main.renderer = new WebGLRenderer( {
+      canvas: main.canvas,
+      antialias: main.rendererParams.antialias
+    } );
+    main.renderer.setSize( main.canvas.clientWidth, main.canvas.clientHeight );
+    main.renderer.setClearColor( main.rendererParams.backgroundColor, 
+      main.rendererParams.backgroundColorIntensity );
+    main.renderer.shadowMap.enabled = main.rendererParams.shadowMapEnabled;
+		main.renderer.shadowMap.type = VSMShadowMap
+		main.renderer.outputEncoding = sRGBEncoding;
+
+		main.controls = new OrbitControls(main.camera, main.renderer.domElement);
+		main.controls.target = new Vector3(0, 1.5, 0);
+		main.controls.enableDamping = true;
+		main.controls.maxPolarAngle = Math.PI/2
+		main.controls.minDistance = 2
+    main.controls.maxDistance = 30
+    main.controls.enablePan = false
+    main.controls.ebableRotate = false
+
+		// Directional (Key) Light
+
+		main.directional_light = new DirectionalLight( 0xffffff, 0.8 )
+		main.directional_light.position.set( 0, 5, 0 )
+		main.directional_light.castShadow = true
+		main.directional_light.shadow.mapSize.width = 1024
+		main.directional_light.shadow.mapSize.height = 1024
+		main.directional_light.shadow.camera.far = 24
+		main.directional_light.shadow.radius = 5
+		main.directional_light.shadow.bias = - 0.00006
+		main.scene.add( main.directional_light )
+
+
+		// Hemisphere (Fill) Light
+
+		const hemisphere_light = new HemisphereLight( 0xffffff, 0x000000, 0.2 );
+		hemisphere_light.position.set( 0, 6, 0 );
+		main.scene.add( hemisphere_light );
+
+
+		// Materials
+
+		const white_material = new MeshPhongMaterial({color: 0xffffff,});
+		const shadow_material = new ShadowMaterial({opacity: 0.3});
+
+
+		// Ground Plane
+
+		const ground_geometry = new PlaneGeometry(20, 20);
+		const ground = new Mesh(ground_geometry, shadow_material);
+		ground.receiveShadow = true;
+		ground.rotateX(-Math.PI / 2);
+		ground.position.set(0, -2, 0)
+		main.scene.add(ground);
+
+
+		// Icosahedron
+
+		const icosahedron_geometry = new IcosahedronGeometry(1);
+		const icosahedron = new Mesh( icosahedron_geometry, white_material );
+		icosahedron.position.y = 2;
+		icosahedron.castShadow = true;
+		main.scene.add(icosahedron);
+
+
+		// Tween.js Tweening
+
+		new TWEEN.Tween(icosahedron.position)
+			.to( { y:1.5 }, 2000)
+			.yoyo(true)
+			.repeat(Infinity)
+			.easing(TWEEN.Easing.Cubic.InOut)
+			.start()
+		;
+
+		new TWEEN.Tween(icosahedron.rotation)
+      .to({ y: "-" + (Math.PI/2) * 8}, 6000) 
+      // Math.PI/2 = 360degrees x8 rotations over 6 seconds
+      .delay(1000)
+      .repeat(Infinity)
+      .easing(TWEEN.Easing.Cubic.InOut)
+      .start()
+    ;
+
+    new TWEEN.Tween(icosahedron.rotation)
+  		.to({ x: "-" + (Math.PI/2) * 9}, 14000)
+			.repeat(Infinity)
+			.easing(TWEEN.Easing.Cubic.InOut)
+			.start()
+		;
+
+    new TWEEN.Tween(icosahedron.scale)
+			.to( { x:1.25, y:1.25, z:1.25 }, 5000)
+			.yoyo(true)
+			.repeat(Infinity)
+			.easing(TWEEN.Easing.Cubic.InOut)
+			.start()
+		;
+
+    let object, loader = null;
+    loader = new GLTFLoader();
+
+    object = await new Promise( ( resolve ) => {
+      loader.load(
+      '../assets/3d_part/no_objects_default_3.glb',
+        function( glb ) {
+          glb.scene.traverse( ( child ) => {
+            if ( child instanceof Mesh ) {
+              child.name = "Default mesh";
+              child.position.set( 0, -0.5, 0 );
+            }
+          } )
+          resolve( glb.scene )
+        }
+      )
+    });
+    main.scene.add( object );
+    object.rotation.y = Math.PI / 1
+
+	}
+  
+	
 }
