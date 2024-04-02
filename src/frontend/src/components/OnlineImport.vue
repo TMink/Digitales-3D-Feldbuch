@@ -2,7 +2,7 @@
  * Created Date: 11.01.2024 11:48:37
  * Author: Julian Hardtung
  * 
- * Last Modified: 22.03.2024 11:59:45
+ * Last Modified: 02.04.2024 13:53:57
  * Modified By: Julian Hardtung
  * 
  * Description: Selection to download online available data of activities.
@@ -56,10 +56,10 @@
   
 <script>
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
-import { toRaw } from 'vue';
-import { useWindowSize } from 'vue-window-size';
-import { fromBackend } from '../ConnectionToBackend';
+import { fromBackend } from '../ConnectionToBackend.js';
 import { useUserStore } from '../Authentication.js';
+import { useWindowSize } from 'vue-window-size';
+import { toRaw } from 'vue';
 
 export default {
   name: 'DataBackup',

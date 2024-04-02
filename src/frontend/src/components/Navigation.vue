@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 15:00:01
+ * Last Modified: 02.04.2024 13:50:49
  * Modified By: Julian Hardtung
  * 
  * Description: Vue component with navigation-bar and extendable side-bar
@@ -290,14 +290,25 @@ export default {
 
   },
   methods: {
-    goback() {
+    /**
+     * Goes back to the last visited page
+     */
+    goBack() {
       this.$router.go(-1);
     },
+
+    /**
+     * Updates the NavBar title after a page change
+     * @param {String} title 
+     */
     onViewChange(title) {
       this.toolbar_title = title;
       this.path_reload += 1;
     },
 
+    /**
+     * Clears all local data for dev purposes
+     */
     async clearLocalData() {
       this.deleteCookies();
       this.clearLocalStorage();
@@ -306,10 +317,16 @@ export default {
       this.$router.go();
     },
 
+    /**
+     * Deletes all cookies for dev purposes
+     */
     deleteCookies() {
       this.$cookies.keys().forEach(cookie => this.$cookies.remove(cookie));
     },
 
+    /**
+     * Deletes all data in IndexedDB for dev purposes
+     */
     async clearIndexedDB() {
       const dbs = await window.indexedDB.databases()
         .catch(err => console.error(err));
@@ -317,13 +334,17 @@ export default {
     },
 
     /**
-     * Deletes all data in localStorage
+     * Deletes all data in localStorage for dev purposes
      */
     async clearLocalStorage() {
       this.$generalStore.clearLocalStorage();
     },
 
-    changePage: function (routeName) {
+    /**
+     * Changes the shown page
+     * @param {String} routeName 
+     */
+    changePage(routeName) {
       this.$router.push({ name: routeName })
         .catch(error => {
           if (
@@ -334,6 +355,11 @@ export default {
           }
         })
     },
+
+    /**
+     * Updates the pathbar to show the current 
+     * activity-, place- and position-number
+     */
     async updatePathbar() {
         await this.getInfo("activity").catch(err => console.error(err));
 
@@ -342,6 +368,10 @@ export default {
         await this.getInfo("position").catch(err => console.error(err));
     },
 
+    /**
+     * Retrieves the currently selected activity-, place- or position-number
+     * @param {String} selection 
+     */
     async getInfo(selection) {
       const _id = this.$generalStore.getCurrentObject(selection);
 
@@ -415,6 +445,10 @@ export default {
       this.$generalStore.toggleTooltips(this.tooltipsToggle);
       location.reload();
     },
+
+    /**
+     * Toggles the currently active theme between dark-/light-theme
+     */
     toggleTheme() {
       this.$generalStore.toggleTheme();
 
