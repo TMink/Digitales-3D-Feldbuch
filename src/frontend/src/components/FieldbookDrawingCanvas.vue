@@ -21,11 +21,11 @@ export default defineComponent({
     props: {
         canvasWidth: {
             type: Number,
-            default: 1200
+            default: 800
         },
         canvasHeight: {
             type: Number,
-            default: 800
+            default: 600
         },
         lineWidth: {
             type: Number,
@@ -110,11 +110,18 @@ export default defineComponent({
             var image = new Image();
             image.src = imageSrc;
             var vm = this;
+            vm.width = imageWidth;
+            vm.height = imageHeight
 
             image.onload = function () {
                 vm.backgroundContext.clearRect(0, 0, imageWidth, imageHeight);
+                vm.backgroundContext.globalAlpha = 0.5;
                 vm.backgroundContext.drawImage(image, 0, 0, imageWidth, imageHeight);
             }
+        },
+
+        removeBackground(){
+            this.backgroundContext.clearRect(0, 0, this.width, this.height);
         },
 
         startDrawing(e) {
@@ -148,6 +155,7 @@ export default defineComponent({
             [this.lastX, this.lastY] = [e.changedTouches[0].clientX - dim.left, e.changedTouches[0].clientY - dim.top];
             this.fieldbookContext.beginPath();
             this.fieldbookContext.moveTo(this.lastX, this.lastY);
+            this.snapshot = this.fieldbookContext.getImageData(0, 0, this.canvasWidth, this.canvasHeight);
 
         },
 
@@ -156,15 +164,31 @@ export default defineComponent({
             const dim = this.fieldbookCanvas.getBoundingClientRect();
             var currentX = e.changedTouches[0].clientX - dim.left;
             var currentY = e.changedTouches[0].clientY - dim.top;
-            var cpX = (currentX + this.lastX) / 2;
-            var cpY = (currentY + this.lastY) / 2;
+            this.fieldbookContext.putImageData(this.snapshot, 0, 0);
             if (this.mode === "pen" || this.mode === "eraser") {
+                var cpX = (currentX + this.lastX) / 2;
+                var cpY = (currentY + this.lastY) / 2;
                 this.fieldbookContext.globalCompositeOperation = this.mode === "eraser" ? 'destination-out' : 'source-over';
                 this.fieldbookContext.quadraticCurveTo(this.lastX, this.lastY, cpX, cpY);
                 this.fieldbookContext.stroke();
+                this.lastX = currentX;
+                this.lastY = currentY;
             }
-            this.lastX = currentX;
-            this.lastY = currentY;
+            if (this.mode === "rectangle") {
+                this.drawRect(currentX, currentY);
+            }
+            if(this.mode === "circle"){
+                this.drawCircle(currentX, currentY);
+            }
+            if(this.mode === "triangle"){
+                this.drawTriangle(currentX, currentY);
+            }
+            if(this.mode === "line"){
+                this.drawLine(currentX, currentY);
+            }
+            if(this.mode === "dotted-line"){
+                this.drawDottedLine(currentX, currentY);
+            }
         },
 
         drawing(e) {
@@ -182,64 +206,64 @@ export default defineComponent({
                 this.lastY = currentY;
             }
             if (this.mode === "rectangle") {
-                this.drawRect(e);
+                this.drawRect(e.offsetX, e.offsetY);
             }
             if(this.mode === "circle"){
-                this.drawCircle(e);
+                this.drawCircle(e.offsetX, e.offsetY);
             }
             if(this.mode === "triangle"){
-                this.drawTriangle(e);
+                this.drawTriangle(e.offsetX, e.offsetY);
             }
             if(this.mode === "line"){
-                this.drawLine(e);
+                this.drawLine(e.offsetX, e.offsetY);
             }
             if(this.mode === "dotted-line"){
-                this.drawDottedLine(e);
+                this.drawDottedLine(e.offsetX, e.offsetY);
             }
         },
 
-        drawRect(e) {
+        drawRect(offsetX, offsetY) {
             this.fieldbookContext.setLineDash([])
             if(!this.filled){
-                this.fieldbookContext.strokeRect(e.offsetX, e.offsetY, this.lastX - e.offsetX, this.lastY - e.offsetY);
+                this.fieldbookContext.strokeRect(offsetX, offsetY, this.lastX - offsetX, this.lastY - offsetY);
             }
             else{
-                this.fieldbookContext.fillRect(e.offsetX, e.offsetY, this.lastX - e.offsetX, this.lastY - e.offsetY);
+                this.fieldbookContext.fillRect(offsetX, offsetY, this.lastX - offsetX, this.lastY - offsetY);
             }
             
         },
 
-        drawCircle(e){
+        drawCircle(offsetX, offsetY){
             this.fieldbookContext.beginPath();
             this.fieldbookContext.setLineDash([])
-            let radius = Math.sqrt(Math.pow(this.lastX - e.offsetX, 2) + Math.pow(this.lastY - e.offsetY, 2))
+            let radius = Math.sqrt(Math.pow(this.lastX - offsetX, 2) + Math.pow(this.lastY - offsetY, 2))
             this.fieldbookContext.arc(this.lastX, this.lastY, radius, 0, 2 * Math.PI);
             this.filled ? this.fieldbookContext.fill() : this.fieldbookContext.stroke();
         },
 
-        drawTriangle(e){
+        drawTriangle(offsetX, offsetY){
             this.fieldbookContext.beginPath();
             this.fieldbookContext.setLineDash([])
             this.fieldbookContext.moveTo(this.lastX, this.lastY);
-            this.fieldbookContext.lineTo(e.offsetX, e.offsetY);
-            this.fieldbookContext.lineTo(this.lastX * 2 - e.offsetX, e.offsetY);
+            this.fieldbookContext.lineTo(offsetX, offsetY);
+            this.fieldbookContext.lineTo(this.lastX * 2 - offsetX, offsetY);
             this.fieldbookContext.closePath();
             this.filled ? this.fieldbookContext.fill() : this.fieldbookContext.stroke();
         },
 
-        drawLine(e){
+        drawLine(offsetX, offsetY){
             this.fieldbookContext.beginPath();
             this.fieldbookContext.setLineDash([])
             this.fieldbookContext.moveTo(this.lastX, this.lastY);
-            this.fieldbookContext.lineTo(e.offsetX, e.offsetY);
+            this.fieldbookContext.lineTo(offsetX, offsetY);
             this.fieldbookContext.stroke();
         },
 
-        drawDottedLine(e){
+        drawDottedLine(offsetX, offsetY){
             this.fieldbookContext.beginPath();
             this.fieldbookContext.setLineDash([10, 20])
             this.fieldbookContext.moveTo(this.lastX, this.lastY);
-            this.fieldbookContext.lineTo(e.offsetX, e.offsetY);
+            this.fieldbookContext.lineTo(offsetX, offsetY);
             this.fieldbookContext.stroke();
         },
 

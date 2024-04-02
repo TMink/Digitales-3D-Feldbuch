@@ -2,10 +2,10 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Julian Hardtung
  * 
- * Last Modified: 22.03.2024 11:59:17
+ * Last Modified: 02.04.2024 13:43:20
  * Modified By: Julian Hardtung
  * 
- * Description: component to create, edit, set input module presets 
+ * Description: DEPRECATED component to create, edit, set input module presets 
  *              for places/positions
  -->
 

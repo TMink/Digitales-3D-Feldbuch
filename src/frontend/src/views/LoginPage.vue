@@ -2,7 +2,7 @@
  * Created Date: 29.11.2023 01:45:54
  * Author: Julian Hardtung
  * 
- * Last Modified: 29.03.2024 14:30:50
+ * Last Modified: 02.04.2024 13:10:11
  * Modified By: Julian Hardtung
  * 
  * Description: Vue component for user login
@@ -103,7 +103,7 @@ import { useUserStore } from '../Authentication.js';
 import { useWindowSize } from 'vue-window-size';
 
 export default {
-  name: 'Landingpage',
+  name: 'LoginPage',
   components: {
     Navigation,
   },
@@ -130,9 +130,13 @@ export default {
     };
   },
   methods: {
+    /**
+     * Routes to the registration page
+     */
     routeRegistration() {
-      this.$router.push({ name: 'Registration' });
+      this.$router.push({ name: 'RegistrationPage' });
     },
+    
     /**
      * Logging in the user with the given username + passsword
      */
@@ -146,6 +150,10 @@ export default {
         this.$root.vtoast.show({ message: this.$t(error), color: 'error' })
       });
     },
+
+    /**
+     * Returns the height of the parallax bg-image
+     */
     getHeight() {
       if(this.windowHeight > 600){
         return this.windowHeight - 112;

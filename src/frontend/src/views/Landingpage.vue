@@ -14,7 +14,7 @@
 
         <v-parallax   
             src="assets/background/Background_Landingpage.jpg"
-            :height="getHeight()">
+            :height="getParallaxHeight()">
 
             <div class="d-flex flex-column justify-center align-center text-white">
               <v-card height="35vh"></v-card>
@@ -37,7 +37,7 @@
                 <v-row wrap text-xs-center class="text-center">
                   <v-col>
                     <v-row no-gutters>
-                      <v-btn v-on:click="routeLogin()" color="primary" class="ma-2" 
+                      <v-btn v-on:click="changePage('LoginPage')" color="primary" class="ma-2" 
                         prepend-icon="mdi-login-variant">
                         Login
                       </v-btn>
@@ -54,7 +54,7 @@
                         class="ma-2" 
                         color="secondary"
                         prepend-icon="mdi-account-off-outline" 
-                        v-on:click="routeActivityOverview()">
+                        v-on:click="changePage('ActivitiesOverview')">
                         {{ $t('continueWithoutAccount') }}
                     </v-btn>
                     </v-row>
@@ -176,7 +176,7 @@ import Navigation from '../components/Navigation.vue'
 import { useWindowSize } from 'vue-window-size';
 
 export default {
-  name: 'Landingpage',
+  name: 'LandingPage',
   components: {
       Navigation
   },
@@ -227,15 +227,12 @@ export default {
 
   methods: {
 
-    routeLogin() {
-        this.$router.push({ name: 'Login' });
-    },
-    routeRegistration() {
-        this.$router.push({ name: 'Registration' });
-    },
-
-    routeActivityOverview() {
-        this.$router.push({ name: 'ActivitiesOverview' });
+    /**
+     * Uses the router to change the current page
+     * @param {String} pageName 
+     */
+    changePage(pageName) {
+      this.$router.push({ name: pageName });
     },
 
     /**
@@ -262,13 +259,16 @@ export default {
 
       return false;
     },
-    getHeight() {
-      /* if(this.windowHeight > 600){
-        return this.windowHeight - 112;
+
+    /**
+     * Returns ParallaxHeight for different screen sizes
+     */
+    getParallaxHeight() {
+      if (this.windowHeight > 600){
+        return this.windowHeight - 103;
       } else {
-        return this.windowHeight + 112;
-      } */
-       return this.windowHeight
+        return this.windowHeight + 103;
+      }
     },
   }
 }

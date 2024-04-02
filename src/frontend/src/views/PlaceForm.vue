@@ -66,18 +66,18 @@
               <v-toolbar :height="50" color="surface" density="default">
                 <v-card-title>{{ $t('technicalDrawing')}}</v-card-title>
                 <v-divider vertical></v-divider>
-                <v-btn @click="onToolbarClick('pen')" variant="flat" v-bind:color="canvasSettings.mode ==='pen' ? 'primary' : 'none'" icon="mdi-pencil" rounded="0"></v-btn>
-                <v-btn @click="onToolbarClick('eraser')" variant="flat" v-bind:color="canvasSettings.mode ==='eraser' ? 'primary' : 'none'" icon="mdi-eraser" rounded="0"></v-btn>
-                <v-btn @click.prevent="onToolbarClick('text')" variant="flat" v-bind:color="canvasSettings.mode === 'text' ? 'primary' : 'none'" icon="mdi-format-text" rounded="0"></v-btn>
+                <v-btn @click="onToolbarClick('pen')" variant="flat" v-bind:color="canvasSettings.mode ==='pen' ? 'success' : 'none'" icon="mdi-pencil" rounded="0"></v-btn>
+                <v-btn @click="onToolbarClick('eraser')" variant="flat" v-bind:color="canvasSettings.mode ==='eraser' ? 'success' : 'none'" icon="mdi-eraser" rounded="0"></v-btn>
+                <v-btn @click.prevent="onToolbarClick('text')" variant="flat" v-bind:color="canvasSettings.mode === 'text' ? 'success' : 'none'" icon="mdi-format-text" rounded="0"></v-btn>
                 <v-btn @click="onToolbarClick('shape')" variant="flat" v-bind:color=" canvasSettings.mode != 'pen' && canvasSettings.mode != 'eraser' 
-                        && canvasSettings.mode != 'text' && canvasSettings.mode != 'none' ? 'primary' : 'none'" icon="mdi-shape" rounded="0"></v-btn>
+                        && canvasSettings.mode != 'text' && canvasSettings.mode != 'none' ? 'success' : 'none'" icon="mdi-shape" rounded="0"></v-btn>
                 <v-btn @click="onToolbarClick('colorPicker')" icon="mdi-palette" rounded="0"></v-btn>
                 <v-btn @click="onToolbarClick('lineWidth')" icon="mdi-minus" rounded="0"></v-btn>
                 <v-btn @click.prevent="$refs.FieldbookDrawingCanvas.undo()" icon="mdi-undo" rounded="0"></v-btn>
                 <v-btn @click.prevent="$refs.FieldbookDrawingCanvas.redo()" icon="mdi-redo" rounded="0"></v-btn>
                 <v-btn @click.prevent="onToolbarClick('clear')" icon="mdi-trash-can-outline" rounded="0"></v-btn>
                 <v-btn @click.prevent="backgroundDialog = true" icon="mdi-image" rounded="0"></v-btn>
-                <v-btn @click.prevent="onToolbarClick('refresh')" icon="mdi-reload" rounded="0"></v-btn>
+                <v-btn @click.prevent="onToolbarClick('removeBackground')" icon="mdi-image-remove" rounded="0"></v-btn>
               </v-toolbar>
             </v-card>
             <div style="position:relative">
@@ -110,11 +110,11 @@
                 <v-card class="mt-2" row v-show="canvasSettings.shapeModeVisible"
                   style="position: absolute; left: 380px; z-index: 1;">
                   <v-layout>
-                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'line'" v-bind:color="canvasSettings.mode === 'line' ? 'primary' : 'none'" icon="mdi-minus" rounded="0"></v-btn></v-card>
-                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'dotted-line'" v-bind:color="canvasSettings.mode === 'dotted-line' ? 'primary' : 'none'" icon="mdi-dots-horizontal" rounded="0"></v-btn></v-card>
-                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'circle'" v-bind:color="canvasSettings.mode === 'circle' ? 'primary' : 'none'" icon="mdi-circle-outline" rounded="0"></v-btn></v-card>
-                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'rectangle'" v-bind:color="canvasSettings.mode === 'rectangle' ? 'primary' : 'none'" icon="mdi-square-outline" rounded="0"></v-btn></v-card>
-                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'triangle'" v-bind:color="canvasSettings.mode === 'triangle' ? 'primary' : 'none'" icon="mdi-triangle-outline"  rounded="0"></v-btn></v-card>
+                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'line'" v-bind:color="canvasSettings.mode === 'line' ? 'success' : 'none'" icon="mdi-minus" rounded="0"></v-btn></v-card>
+                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'dotted-line'" v-bind:color="canvasSettings.mode === 'dotted-line' ? 'success' : 'none'" icon="mdi-dots-horizontal" rounded="0"></v-btn></v-card>
+                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'circle'" v-bind:color="canvasSettings.mode === 'circle' ? 'success' : 'none'" icon="mdi-circle-outline" rounded="0"></v-btn></v-card>
+                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'rectangle'" v-bind:color="canvasSettings.mode === 'rectangle' ? 'success' : 'none'" icon="mdi-square-outline" rounded="0"></v-btn></v-card>
+                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'triangle'" v-bind:color="canvasSettings.mode === 'triangle' ? 'success' : 'none'" icon="mdi-triangle-outline"  rounded="0"></v-btn></v-card>
                     <v-card class="mx-2" :height="50"><v-checkbox :label="$t('fill')" v-model="canvasSettings.filled" icon="mdi-triangle-outline" rounded="0"></v-checkbox></v-card>
                   </v-layout>
                 </v-card>
@@ -128,9 +128,6 @@
             </div>
             <v-row justify="end">
               <v-col class="text-left mt-2">
-                <v-btn color="success" class="mr-2">
-                  <v-icon>mdi-content-save-all</v-icon>
-                </v-btn>
                 <v-btn @click="downloadImage()" color="success">
                   <v-icon>mdi-download</v-icon>
                 </v-btn>
@@ -156,19 +153,17 @@
  *  savePlace       - Saves the current processing status
  *  confirmDeletion - Opens the confirmation dialog
  *  deletePlace     - Deletes the currently selected place
- *  moveToPosition  - Loads the view of the selected position
  *  cancelPlace     - Cancels all not already saved actions
  */
-import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
-import ConfirmDialog from '../components/ConfirmDialog.vue';
-import AddPosition from '../components/AddPosition.vue';
+import Navigation from '../components/Navigation.vue';
 import ImageOverview from '../components/ImageOverview.vue';
 import ModuleViewer from '../components/ModuleViewer.vue';
 import ModelForm from '../components/ModelForm.vue';
+import FieldbookDrawingCanvas from "../components/FieldbookDrawingCanvas.vue";
+import ConfirmDialog from '../components/ConfirmDialog.vue';
+import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { toRaw } from 'vue';
 import { useWindowSize } from 'vue-window-size';
-import Navigation from '../components/Navigation.vue';
-import FieldbookDrawingCanvas from "../components/FieldbookDrawingCanvas.vue";
 
 export default {
 
@@ -176,7 +171,6 @@ export default {
   components: {
     Navigation,
     ConfirmDialog,
-    AddPosition,
     ImageOverview,
     ModuleViewer,
     ModelForm,
@@ -269,9 +263,6 @@ export default {
         /* Plane */
         plane: '',
 
-        /* PositionsList */
-        testBool: false,
-
         /* Technical */
         technical: '',
 
@@ -306,7 +297,6 @@ export default {
       ],
       searchQuery: '',
       hoveredRow: -1,
-      positions: null,
       titles: [],
       datings: [],
       is_required: [v => !!v || 'Pflichtfeld'],
@@ -355,8 +345,6 @@ export default {
       .catch(err => console.error(err));
     await this.updatePlace()
       .catch(err => console.error(err));
-    await this.updatePositions()
-      .catch(err => console.error(err));
 
     const datingFromDB = await fromOfflineDB
       .getAllObjects('AutoFillLists', 'datings')
@@ -390,22 +378,6 @@ export default {
     'place': {
       handler: 'handlePlaceChange',
       deep: true,
-    },
-  },
-
-  computed: {
-    getTableHeight() {
-      // Calculate the required table height based on the number of items
-      const numberOfRows = this.positions.length > 0 ? this.positions.length : 1;
-      const headerHeight = 56;
-      const rowHeight = 73;
-      const totalTableHeight = numberOfRows * rowHeight + headerHeight;
-
-      if (totalTableHeight > (this.windowHeight - 350)) {
-        return this.windowHeight - 350;
-      }
-
-      return totalTableHeight + "px";
     },
   },
 
@@ -477,11 +449,6 @@ export default {
           this.place.modulePreset.plane = data[1];
           break;
 
-        /* Module: PositionList */
-        case 'resetBool':
-          this.place.testBool = data[1];
-          break;
-
         /* Module: Technical */
         case 'technical':
           this.place.technical = data[1]
@@ -512,15 +479,6 @@ export default {
     },
 
     /**
-     * Update reactive Vue.js positions data
-     */
-    async updatePositions() {
-      this.positions = await fromOfflineDB
-        .getAllObjectsWithID(this.place._id, 'Place', 'Positions', 'positions')
-        .catch(err => console.error(err));
-    },
-
-    /**
      * Save a place to local storage for the current activity
      */
     async savePlace() {
@@ -538,6 +496,40 @@ export default {
       this.updateAutoFillList('titles', this.place.title, this.titlesList);
 
       this.$root.vtoast.show({ message: this.$t('saveSuccess') });
+    },
+
+        /**
+     * Removes a place from the IndexedDB and the Cookies
+     */
+     async deletePlace() {
+
+      // Remove the placeID from connected activity
+      const acID = this.$generalStore.getCurrentObject('activity');
+      var activity = await fromOfflineDB
+        .getObject(acID, 'Activities', 'activities')
+        .catch(err => console.error(err));
+      var index = activity.places.indexOf(this.place._id.toString());
+
+      activity.places.splice(index, 1)
+      await fromOfflineDB.updateObject(activity, 'Activities', 'activities')
+        .catch(err => console.error(err));
+
+      // Delete the place and all data that is dependent on it
+      await fromOfflineDB
+        .deleteCascade(this.place._id, 'place', 'Places', 'places')
+        .catch(err => console.error(err));
+      this.$generalStore.removeCurrentObject('place');
+      this.$generalStore.removeCurrentObject('position');
+
+      this.hasUnsavedChanges = false;
+      this.$router.push({ name: "PlacesOverview" });
+    },
+
+    /**
+     * Cancels the PositionForm and returns to the PositionOverview
+     */
+     cancelPlace() {
+      this.$router.push({ name: "PlacesOverview" });
     },
 
     async updateAutoFillList(storeName, item, itemList) {
@@ -616,33 +608,6 @@ export default {
     },
 
     /**
-     * Removes a place from the IndexedDB and the Cookies
-     */
-    async deletePlace() {
-
-      // Remove the placeID from connected activity
-      const acID = this.$generalStore.getCurrentObject('activity');
-      var activity = await fromOfflineDB
-        .getObject(acID, 'Activities', 'activities')
-        .catch(err => console.error(err));
-      var index = activity.places.indexOf(this.place._id.toString());
-
-      activity.places.splice(index, 1)
-      await fromOfflineDB.updateObject(activity, 'Activities', 'activities')
-        .catch(err => console.error(err));
-
-      // Delete the place and all data that is dependent on it
-      await fromOfflineDB
-        .deleteCascade(this.place._id, 'place', 'Places', 'places')
-        .catch(err => console.error(err));
-      this.$generalStore.removeCurrentObject('place');
-      this.$generalStore.removeCurrentObject('position');
-
-      this.hasUnsavedChanges = false;
-      this.$router.push({ name: "PlacesOverview" });
-    },
-
-    /**
      * Adds a new `image_id` to the `images`-array of this place
      * @param {String} image_id 
      */
@@ -664,24 +629,6 @@ export default {
       } else {
         this.place.models.push(model_id);
       }
-    },
-
-    /**
-     *  Routes to the PositionForm for the chosen positionID
-     * @param {String} positionID 
-     */
-    moveToPosition(positionID) {
-      if (positionID !== 'new') {
-        this.$generalStore.setCurrentObject(positionID, 'position');
-      }
-      this.$router.push({ name: 'PositionCreation', params: { positionID: positionID } });
-    },
-
-    /**
-     * Cancels the PositionForm and returns to the PositionOverview
-     */
-    cancelPlace() {
-      this.$router.push({ name: "PlacesOverview" });
     },
 
     /**
@@ -746,35 +693,6 @@ export default {
       }
     },
 
-    /**
-     * Get the style for the row at the specified index.
-     *
-     * @param {number} index The index of the row
-     * @returns {Object} An object containing row style properties
-     */
-    getRowStyle(index) {
-      return {
-        backgroundColor: this.hoveredRow === index ? '#2f3845' : 'transparent',
-        cursor: 'pointer',
-        padding: '8px 16px'
-      };
-    },
-
-    /**
-     * Update the hoveredRow based on the isHovered flag.
-     *
-     * @param {number} index - The index of the row being hovered.
-     * @param {boolean} isHovered - Indicates if the row is being hovered 
-     *                              (true) or not (false).
-     */
-    setHoveredRow(index, isHovered) {
-      if (isHovered) {
-        this.hoveredRow = index;
-      } else if (this.hoveredRow === index) {
-        this.hoveredRow = -1;
-      }
-    },
-
 
     /**
      * Changes the status of variables related to the toolbar, if clicked.
@@ -813,17 +731,15 @@ export default {
         this.$refs.FieldbookDrawingCanvas.clearCanvas();
       }
       if (toolType == "shape") {
-        this.canvasSettings.mode = 'shape';
         this.canvasSettings.lineWidthVisible = false;
         this.canvasSettings.textModeVisible = false;
         this.canvasSettings.colorPickerVisible = false;
         this.canvasSettings.shapeModeVisible = !this.canvasSettings.shapeModeVisible;
       }
-      if (toolType == "deleteBackground") {
-
+      if(toolType == "removeBackground"){
+        this.$refs.FieldbookDrawingCanvas.removeBackground();
       }
     },
-
 
     /**
      * Converts the base64-output of the Vue-Drawing-Canvas to an Imagefile, which can be downloaded.

@@ -2,8 +2,8 @@
  * Created Date: 26.06.2023 15:10:20
  * Author: Julian Hardtung
  * 
- * Last Modified: 28.03.2024 17:57:28
- * Modified By: Oliver Mertens
+ * Last Modified: 02.04.2024 13:23:39
+ * Modified By: Julian Hardtung
  * 
  * Description: export all (or only specified) data to .pdf or .csv
  -->
@@ -265,8 +265,8 @@
   
 <script>
 import Navigation from '../components/Navigation.vue';
-import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
+import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
 import { toRaw } from 'vue'
 import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable'
@@ -366,7 +366,7 @@ export default {
       .catch(err => console.error(err));
     await this.updatePositions()
       .catch(err => console.error(err));
-    this.prepareTheStellenkarte();
+    this.preparePlaceCard();
   },
 
   computed: {
@@ -398,6 +398,7 @@ export default {
       // This method dynamically sets the CSS class for each row
       return index % 2 === 0 ? 'even-row' : 'odd-row';
     },
+    
     /**
      * Get all activities from IndexedDb
      */
@@ -410,6 +411,7 @@ export default {
         return a.number - b.number;
       });
     },
+
     /**
      * Get all places from IndexedDb
      */
@@ -433,6 +435,7 @@ export default {
       }
 
     },
+
     /**
      * Get all places from IndexedDb
      */
@@ -473,6 +476,7 @@ export default {
         position.activity = activityNumber;
       }
     },
+
     /**
     * Opens the confirmation dialog for export
     * @param {*} activity 
@@ -488,6 +492,7 @@ export default {
         this.exportActivity(activity);
       }
     },
+
     /**
      * Sets the active activity and filters places + positions accordingly
      * @param {String} activity_id 
@@ -521,6 +526,7 @@ export default {
       this.exportPlaces = true;
       this.exportPositions = true;
     },
+
     /**
      *  Sets the active activity and filters positions accordingly
      * @param {*} place_id 
@@ -543,6 +549,7 @@ export default {
       this.exportPlaces = false;
       this.exportPositions = true;
     },
+
     /**
      * Starts the export process and checks 
      * which data format has to be exported
@@ -554,6 +561,7 @@ export default {
         this.startCSVExport();
       }
     },
+
     /**
      * Starts the CSV export process
      */
@@ -573,6 +581,7 @@ export default {
         this.createCSV(this.positions, "positionslist");
       }
     },
+
     /**
      * Creates and saves a .csv file
      * @param {[ProxyObject]} data 
@@ -625,6 +634,7 @@ export default {
         this.createPositionsPDF();
       }
     },
+
     /**
      * Creates and saves a pdf file of all activities
      */
@@ -654,7 +664,10 @@ export default {
       doc.save(filename + ".pdf");
     },
 
-    prepareTheStellenkarte() {
+    /**
+     * Prepares data and layout for the placeCard export
+     */
+    preparePlaceCard() {
       // Get all places with same activityID
       // save as: Array [ [0: activity1(object), 1: place(object), 2: place(object), ...]
       //                  [0: activity2(object), 1: place(object), 2: place(object), ...] ]
@@ -719,6 +732,7 @@ export default {
       })
 
     },
+
     /**
      * Creates and saves a pdf file of all activities
      */
@@ -926,6 +940,7 @@ export default {
       // save the .pdf file
       doc.save(filename + ".pdf");
     },
+
     /**
      * Creates and saves a pdf file of all positions
      */
@@ -971,6 +986,7 @@ export default {
       // save the .pdf file
       doc.save(filename + ".pdf");
     },
+    
     /**
      * Creates and saves a pdf file of all images
      */
