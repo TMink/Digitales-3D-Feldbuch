@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 02.04.2024 13:50:49
+ * Last Modified: 02.04.2024 15:09:17
  * Modified By: Julian Hardtung
  * 
  * Description: Vue component with navigation-bar and extendable side-bar
@@ -14,7 +14,7 @@
   <v-app-bar 
       style="z-index: 2;" 
       color="accent_dark">
-      <v-btn icon v-on:click="goback">
+      <v-btn icon v-on:click="goBack">
         <v-icon>mdi-arrow-left</v-icon>
       </v-btn>
       <v-toolbar-title> {{ toolbar_title }} </v-toolbar-title>
