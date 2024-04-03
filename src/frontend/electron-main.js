@@ -2,8 +2,7 @@
 const { app, BrowserWindow, Menu } = require("electron");
 const path = require("node:path");
 
-const iconPath = path.join(__dirname, "icon.ico");
-console.log("Icon path:", iconPath);
+if (require("electron-squirrel-startup")) app.quit();
 
 const createWindow = async () => {
   // Create the browser window.
@@ -19,8 +18,6 @@ const createWindow = async () => {
       rejectPublicSuffixes: false,
       webSecurity: false,
     },
-    //frame: false,
-    icon: path.join(__dirname, '..', 'icon.ico')
   });
 
   // and load the index.html of the app.
