@@ -2,7 +2,7 @@
  * Created Date: 10.05.2023 12:58:23
  * Author: Julian Hardtung
  * 
- * Last Modified: 02.04.2024 16:10:43
+ * Last Modified: 03.04.2024 11:54:36
  * Modified By: Julian Hardtung
  * 
  * Description: Backend CRUD API routes for images
@@ -36,7 +36,7 @@ const upload = multer({ storage: storage });
  * @param {String} imageURL The image URL to gcs
  * @returns image Json-Object with all required fields
  */
-function getImageJson(doc, filename, mimetype) {
+function getImageJson(doc, filename) {
   const curTime = Date.now();
 
   return {
@@ -82,8 +82,6 @@ router.get("/:image_id", async function (req, res, next) {
 router.post("/:position_id", upload.single("image"), async function (req, res, next) {
   var newImage = getImageJson(req.body, req.file.filename);
 
-
-
   try {
     const result = await Image.create(newImage);
 
@@ -99,6 +97,33 @@ router.post("/:position_id", upload.single("image"), async function (req, res, n
 
   } catch (error) {
     res.status(500).send("Couldn't save Image: " + error.message);
+  }
+});
+
+/**
+ * PUT existing position in MongoDB by id
+ */
+router.put("/:image_id", upload.single("image"), async function (req, res, next) {
+  var editedImage = getImageJson(req.body, req.file.filename);
+
+  try {
+    //update image data
+    const result = await Image.findByIdAndUpdate(req.params.image_id, editedImage);
+
+    //get image file as base64
+    fs.readFile(FILE_PATH + req.file.filename, (err, base64Img) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send("error reading image file");
+      }
+
+      //send back the result
+      result.image = base64Img;
+      res.status(200).send(result);
+    });
+
+  } catch (error) {
+    res.status(500).send("Couldn't edit Image: " + error.message);
   }
 });
 

@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 13.02.2024 13:02:09
+ * Last Modified: 03.04.2024 11:48:24
  * Modified By: Julian Hardtung
  * 
  * Description: Helper API to the backend server
@@ -122,7 +122,11 @@ class ConnectionToBackend {
     if (data.lastSync == 0) {
       data = await this.postData(subdomain, data).catch((err) => console.error(err));
     } else {
-      data = await this.putData(subdomain, data).catch((err) => console.error(err));
+      if (subdomain == "images" || subdomain == "models") {
+        data = await this.uploadFormData(data, 'put', subdomain).catch((err) => console.err(err));
+      } else {
+        data = await this.putData(subdomain, data).catch((err) => console.error(err));
+      }
     }
 
     return data;
@@ -213,7 +217,6 @@ class ConnectionToBackend {
         type: "text/plain",
       });
     }
-
     return new Promise((resolve, reject) => {
       axios({
         method: request,

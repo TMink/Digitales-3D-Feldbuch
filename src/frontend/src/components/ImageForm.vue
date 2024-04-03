@@ -2,7 +2,7 @@
  * Created Date: 06.07.2023 13:22:10
  * Author: Julian Hardtung
  * 
- * Last Modified: 02.04.2024 17:15:10
+ * Last Modified: 03.04.2024 11:55:10
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for images of places/positions
@@ -284,6 +284,7 @@ export default {
       var rawImage = toRaw(this.image);
       var index = this.images.indexOf(this.image);
       
+      rawImage.lastChanged = Date.now();
       if (this.temp_editing_img.length == 0) {
         rawImage.image = this.backup_image;
       } else {
@@ -300,8 +301,7 @@ export default {
       await fromOfflineDB.updateObject(rawImage, 'Images', 'images')
         .catch(err => console.error(err));
 
-      this.images[index] = await fromOfflineDB.getObject(rawImage._id, 'Images', 'images')
-        .catch(err => console.error(err));
+      this.updateImages();
       this.edit_dialog = false;
     },
 
