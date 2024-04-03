@@ -2,7 +2,7 @@
  * Created Date: 23.01.2024 13:09:11
  * Author: Tobias Mink
  * 
- * Last Modified: 02.04.2024 19:25:18
+ * Last Modified: 03.04.2024 16:17:39
  * Modified By: Tobias Mink
  * 
  * Description: A Collection of initialisation functions, which will be called
@@ -37,7 +37,6 @@ import { Evaluator, Brush, GridMaterial } from 'three-bvh-csg';
 
 import { Vector3, HemisphereLight, ShadowMaterial, IcosahedronGeometry, PlaneGeometry, VSMShadowMap, sRGBEncoding, MeshPhongMaterial  } from 'three';
 import * as TWEEN from '@tweenjs/tween.js'
-import { exParams } from './Parameter';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 export class Initialisations {
@@ -422,13 +421,13 @@ export class Initialisations {
 		const ground = new Mesh(ground_geometry, shadow_material);
 		ground.receiveShadow = true;
 		ground.rotateX(-Math.PI / 2);
-		ground.position.set(0, -2, 0)
+		ground.position.set(0, -2, 0);
 		main.scene.add(ground);
 
 
 		// Icosahedron
 
-		const icosahedron_geometry = new IcosahedronGeometry(1);
+		const icosahedron_geometry = new IcosahedronGeometry(1,0);
 		const icosahedron = new Mesh( icosahedron_geometry, white_material );
 		icosahedron.position.y = 2;
 		icosahedron.castShadow = true;
@@ -439,33 +438,36 @@ export class Initialisations {
 
 		new TWEEN.Tween(icosahedron.position)
 			.to( { y:1.5 }, 2000)
+      .delay(1000)
 			.yoyo(true)
 			.repeat(Infinity)
-			.easing(TWEEN.Easing.Cubic.InOut)
+			.easing(TWEEN.Easing.Cubic.Out)
 			.start()
 		;
 
 		new TWEEN.Tween(icosahedron.rotation)
-      .to({ y: "-" + (Math.PI/2) * 8}, 6000) 
+      .to({ y: "-" + (Math.PI/2) * 8}, 6000)
       // Math.PI/2 = 360degrees x8 rotations over 6 seconds
       .delay(1000)
       .repeat(Infinity)
-      .easing(TWEEN.Easing.Cubic.InOut)
+      .easing(TWEEN.Easing.Cubic.Out)
       .start()
     ;
 
     new TWEEN.Tween(icosahedron.rotation)
   		.to({ x: "-" + (Math.PI/2) * 9}, 14000)
+      .delay(1000)
 			.repeat(Infinity)
-			.easing(TWEEN.Easing.Cubic.InOut)
+			.easing(TWEEN.Easing.Cubic.Out)
 			.start()
 		;
 
     new TWEEN.Tween(icosahedron.scale)
 			.to( { x:1.25, y:1.25, z:1.25 }, 5000)
+      .delay(1000)
 			.yoyo(true)
 			.repeat(Infinity)
-			.easing(TWEEN.Easing.Cubic.InOut)
+			.easing(TWEEN.Easing.Cubic.Out)
 			.start()
 		;
 
