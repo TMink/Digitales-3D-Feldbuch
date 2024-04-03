@@ -2,7 +2,7 @@
  * Created Date: 12.06.2023 11:17:28
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.02.2024 17:15:29
+ * Last Modified: 03.04.2024 12:56:06
  * Modified By: Julian Hardtung
  * 
  * Description: Backend CRUD API routes for positions
@@ -44,6 +44,7 @@ function getPositionJson(doc) {
     modulePreset: doc.modulePreset,
 
     images: doc.images,
+    models: doc.models,
     places: doc.places,
 
     lastChanged: curTime,

@@ -2,8 +2,8 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Tobias Mink
  * 
- * Last Modified: 27.03.2024 16:54:39
- * Modified By: Tobias Mink
+ * Last Modified: 03.04.2024 12:59:27
+ * Modified By: Julian Hardtung
  * 
  * Description: Helper API for manipulating the IndexedDB
  */
@@ -656,7 +656,6 @@ export default class ConnectionToOfflineDB {
    *    Object store name
    */
   async deleteObject(object, localDBName, storeName) {
-
     var localDB = this.getLocalDBFromName(localDBName);
     const userStore = useUserStore();
 
@@ -682,15 +681,6 @@ export default class ConnectionToOfflineDB {
 
       const store = trans.objectStore(storeName);
       store.delete(object._id);
-
-      // Make sure that no 'changes' get marked for synchronization
-      // and don't mark objects, that never got uploaded before deletion
-      /* if (localDBName != "Changes" && localDBName != "Lines" && localDBName != "ModulePresets") {
-        if (object.lastSync > 0) {
-          this.addObject({ _id: object._id, object: localDBName }, "Changes", "deleted");
-        }
-        this.deleteObject(object, "Changes", "created");
-      } */
     });
   }
 
@@ -722,11 +712,10 @@ export default class ConnectionToOfflineDB {
    */
   async deleteCascade(_id, selection, localDBName, storeName) {
     const localDB = this.getLocalDBFromName(localDBName);
-
     const context = this;
     var object = await this.getObject(_id.toString(), localDBName, storeName)
       .catch((err) => console.error(err));
-
+    
     await new Promise(async function (resolve, _reject) {
       const trans = localDB.transaction(storeName, "readwrite");
       trans.oncomplete = (_e) => {
@@ -743,6 +732,7 @@ export default class ConnectionToOfflineDB {
             }
           }
           break;
+
         case "place":
           if (object.positions.length > 0) {
             for (var j = 0; j < object.positions.length; j++) {
@@ -751,14 +741,6 @@ export default class ConnectionToOfflineDB {
                 .catch((err) => console.error(err));
             }
           }
-          // there can be no images in a place, they always have to be within a position
-          /* if (object.images.length > 0) {
-            console.log("DELETE CASCADE IMAGE");
-            for (var k = 0; k < object.images.length; k++) {
-              var image = await context.getObject(object.images[k], "Images", "images");
-              await fromOfflineDB.deleteObject(image, "Images", "images");
-            }
-          } */
           if (object.models.length != 0) {
             for (var l = 0; l < object.models.length; l++) {
               var model = await context
@@ -771,6 +753,7 @@ export default class ConnectionToOfflineDB {
             }
           }
           break;
+
         case "position":
           if (object.images.length != 0) {
             for (var m = 0; m < object.images.length; m++) {
@@ -795,6 +778,7 @@ export default class ConnectionToOfflineDB {
             }
           }
           break;
+          
         default:
           console.log("Error");
       }
