@@ -3,6 +3,7 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vuetify from 'vite-plugin-vuetify'
+import glslify from 'rollup-plugin-glslify';
 const path = require("path");
 
 // https://vitejs.dev/config/
@@ -19,7 +20,7 @@ export default defineConfig({
       inline: ["vuetify"],
     },
   },
-  plugins: [vue(), vuetify()],
+  plugins: [vue(), vuetify(), glslify()],
   resolve: {
     preserveSymlinks: true,
     alias: {
