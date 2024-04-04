@@ -2,7 +2,7 @@
  Created Date: 17.11.2023 16:18:33
  Author: Tobias Mink
  
- Last Modified: 02.04.2024 18:51:24
+ Last Modified: 04.04.2024 14:37:15
  Modified By: Tobias Mink
  
  Description: 
@@ -37,7 +37,7 @@
                     <v-col>
 
                       <v-card color="secondary">
-                        <v-row no-gutters align="center" justify="center" class="pa-1"> Messungs Tool
+                        <v-row no-gutters align="center" justify="center" class="pa-1"> Messungs Tool - WORK IN PROGRESS -
                         </v-row>
 
                         <v-card color="opp_background">
@@ -108,7 +108,7 @@
 
                       <v-card color="secondary">
                         
-                        <v-row no-gutters align="center" justify="center" class="pa-1"> Annotations Tool
+                        <v-row no-gutters align="center" justify="center" class="pa-1"> Annotations Tool - WORK IN PROGRESS -
                         </v-row>
 
                         <v-card color="opp_background">
@@ -179,138 +179,18 @@
                     <v-col>
 
                       <v-card color="secondary">
-                        <v-row no-gutters align="center" justify="center" class="pa-1"> Schneid Tool
+                        <v-row no-gutters align="center" justify="center" class="pa-1"> Schneid Tool - WORK IN PROGRESS -
                         </v-row>
 
                         <v-card color="opp_background">
 
-                          <v-row no-gutters class="pt-4 px-4">
+                          <v-row no-gutters class="pt-4 pb-4 px-4">
                             <!-- Segmentation Mode Button-->
                             <v-col>
                               <v-btn width="100%" color="error" v-on:click="segmentationTool.switchToSegmentationMode( 
                                       exParams.stTool, exParams.main )">
                                 Switch to Segmentation Mode
                               </v-btn>
-                            </v-col>
-                          </v-row>
-
-                          <v-row no-gutters>
-                            <!-- Show -->
-                            <v-col class="px-4 pt-2">
-                              <v-checkbox color="primary" v-on:click="detachForFoto()" label="Werkzeuge anzeigen" hide-details density="compact">
-                              </v-checkbox>
-                            </v-col>
-                          </v-row>
-
-                          <v-row no-gutters>
-                            <!-- Show wireframe-->
-                            <v-col class="px-4 pb-1">
-                              <v-checkbox color="primary" label="Gitternetz anzeigen" hide-details density="compact">
-                              </v-checkbox>
-                            </v-col>
-                          </v-row>
-
-                        </v-card>
-
-                      </v-card>
-
-                    </v-col>
-                  </v-row>
-
-                </v-card>
-              </v-col>
-            </v-row>
-            
-            <!-- Shapefile Tool -->
-            <v-row>
-              <v-col>
-                <v-card width="100%" color="transparent" class="pa-2" elevation="0">
-
-                  <!-- Checkboxes -->
-                  <v-row>
-                    <v-col>
-
-                      <v-card color="secondary">
-                        <v-row no-gutters align="center" justify="center" class="pa-1"> Shapefile Tool
-                        </v-row>
-
-                        <v-card color="opp_background">
-
-                          <v-row no-gutters class="pt-4 px-4">
-                            <!-- Segmentation Mode Button-->
-                            <v-col cols="12">
-                              <v-btn width="100%" color="error" v-on:click="segmentationTool.switchToSegmentationMode( 
-                                      exParams.stTool, exParams.main )">
-                                Wechsel zum 
-                              </v-btn>
-                            </v-col>
-                          </v-row>
-
-                          <v-row no-gutters>
-                            <!-- Show -->
-                            <v-col class="px-4 pt-2">
-                              <v-checkbox color="primary" label="Werkzeuge anzeigen" hide-details density="compact">
-                              </v-checkbox>
-                            </v-col>
-                          </v-row>
-
-                          <v-row no-gutters>
-                            <!-- Show wireframe-->
-                            <v-col class="px-4 pb-1">
-                              <v-checkbox color="primary" label="Gitternetz anzeigen" hide-details density="compact">
-                              </v-checkbox>
-                            </v-col>
-                          </v-row>
-
-                        </v-card>
-
-                      </v-card>
-
-                    </v-col>
-                  </v-row>
-
-                </v-card>
-              </v-col>
-            </v-row>
-            
-            <!-- GeoTIFF Tool -->
-            <v-row>
-              <v-col>
-                <v-card width="100%" color="transparent" class="pa-2" elevation="0">
-
-                  <!-- Checkboxes -->
-                  <v-row>
-                    <v-col>
-
-                      <v-card color="secondary">
-                        <v-row no-gutters align="center" justify="center" class="pa-1"> GeoTIFF Tool
-                        </v-row>
-
-                        <v-card color="opp_background">
-
-                          <v-row no-gutters class="pt-4 px-4">
-                            <!-- Segmentation Mode Button-->
-                            <v-col cols="12">
-                              <v-btn width="100%" color="error" v-on:click="segmentationTool.switchToSegmentationMode( 
-                                      exParams.stTool, exParams.main )">
-                                GeoTIFF erstellen
-                              </v-btn>
-                            </v-col>
-                          </v-row>
-
-                          <v-row no-gutters>
-                            <!-- Show -->
-                            <v-col class="px-4 pt-2">
-                              <v-checkbox color="primary" label="Werkzeuge anzeigen" hide-details density="compact">
-                              </v-checkbox>
-                            </v-col>
-                          </v-row>
-
-                          <v-row no-gutters>
-                            <!-- Show wireframe-->
-                            <v-col class="px-4 pb-1">
-                              <v-checkbox color="primary" label="Gitternetz anzeigen" hide-details density="compact">
-                              </v-checkbox>
                             </v-col>
                           </v-row>
 
@@ -579,7 +459,7 @@
         <!-- Legend -->
         <v-navigation-drawer v-model="leftDrawer.showDrawers[3]" color="background"
           style="left: 49px; top:64px; width: 470px;" temporary>
-          <v-list-item height="50" prepend-icon="mdi-map-marker-radius-outline" title=Legende></v-list-item>
+          <v-list-item height="50" prepend-icon="mdi-information" title=Legende></v-list-item>
 
           <v-divider></v-divider>
 
@@ -589,10 +469,10 @@
               <v-col>
                 <v-card color="transparent" elevation="0" width="100%" class="pa-2">
                   
-                  <v-row no-gutters>
+                  <v-row no-gutters class="pt-4 px-4">
                     ALT + Linksklick = Objektauswahl
                   </v-row>
-                  <v-row no-gutters>
+                  <v-row no-gutters class="pt-0 px-4">
                     STRG + Linksklick = 3D-Modell bewegen
                   </v-row>
                   
@@ -632,7 +512,7 @@
                             utilities.updateBtnColor(
                               leftDrawer.btnNames[2], leftDrawer);"></v-btn>
         <!-- Legende -->
-        <v-btn v-model="leftDrawer.btnNames[3]" rounded="0" width="50" height="50" icon="mdi-map-marker-radius-outline"
+        <v-btn v-model="leftDrawer.btnNames[3]" rounded="0" width="50" height="50" icon="mdi-information"
           :color="leftDrawer.btnColors[3]" @click.stop="leftDrawer.showDrawers[0] = false;
                             leftDrawer.showDrawers[1] = false;
                             leftDrawer.showDrawers[2] = false;
@@ -1423,9 +1303,9 @@ export default {
         /* Fill object Filter menue options with data based on currently loaded
         * objects. */
         this.objectFilter.getPlaceObjectInfo( this.placeObject, 
-        exParams.main.objects.place.entry );
+        exParams.main );
         this.objectFilter.getPositionDataInfo( this.positionData, 
-        exParams.main.objects.position.entry );
+        exParams.main );
        
         /* Get object center for camera and control alignment if ... */
         /* ... there is only one objects present or ... */
