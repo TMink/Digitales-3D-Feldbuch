@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 24.03.2024 18:59:04
+ * Last Modified: 04.04.2024 14:34:43
  * Modified By: Julian Hardtung
  * 
  * Description: `object descriptors` input module for positions
@@ -89,12 +89,17 @@ export default {
         weight: null,
         count: null,
       },
+      materialItems: [],
     }
   },
 
   watch: {
     objectProp: function(objectPropData) {
       this.object = objectPropData;
+    },
+    materialItemsSecondProp: function(materials) {
+      var lvrMaterials = JSON.parse(import.meta.env.VITE_MATERIALS);
+      this.materialItems = lvrMaterials.concat(materials);
     },
     "object.material": {
       handler: function () {
@@ -131,7 +136,6 @@ export default {
   },
 
   async created() {
-    //this.materials = JSON.parse(import.meta.env.VITE_MATERIALS);
     this.object = this.objectProp;
     this.showModule = this.objectProp.modulePreset.findTypes;
   },

@@ -48,7 +48,12 @@ Starts the building project in Electrons simulated Chromium browser
 ```
 npm run package
 ```
-Packages the fieldbook project into an executable and/or installer
+Packages the fieldbook project into an executable
+
+```
+npm run make
+```
+Creates an installer (Squirrel and .msi on win) for the fieldbook
 
 ## Codedocumentation
 The `src/` folder contains the front- and backend of the digital 3D field book. The relevant folders and files are explained below to provide an overview of the project structure and code.

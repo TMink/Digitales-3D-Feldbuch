@@ -2,8 +2,8 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.03.2024 15:52:45
- * Modified By: Methusshan Elankumaran
+ * Last Modified: 04.04.2024 14:08:51
+ * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
  *              (shows input modules according to module preset)
@@ -349,9 +349,14 @@ export default {
     const datingFromDB = await fromOfflineDB
       .getAllObjects('AutoFillLists', 'datings')
       .catch(err => console.error(err));
+    
+    var customDatings = [];
     datingFromDB.forEach(element => {
-      this.datingsList.push(element.item)
+      customDatings.push(element.item)
     });
+
+    var lvrDatings = JSON.parse(import.meta.env.VITE_DATINGS)
+    this.datingsList = await lvrDatings.concat(customDatings)
 
     const editorsFromDB = await fromOfflineDB
       .getAllObjects('AutoFillLists', 'editors')
@@ -363,9 +368,14 @@ export default {
     const titlesFromDB = await fromOfflineDB
       .getAllObjects('AutoFillLists', 'titles')
       .catch(err => console.error(err));
-    titlesFromDB.forEach(element => {
-      this.titlesList.push(element.item)
+
+    var customTitles = [];
+    await titlesFromDB.forEach(element => {
+      customTitles.push(element.item)
     });
+
+    var lvrTitles = JSON.parse(import.meta.env.VITE_TITLES);
+    this.titlesList = await lvrTitles.concat(customTitles);
 
     await this.setAppBarTitle()
       .catch(err => console.error(err));
