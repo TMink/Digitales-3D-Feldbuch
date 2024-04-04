@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 24.03.2024 19:38:43
+ * Last Modified: 04.04.2024 14:35:24
  * Modified By: Julian Hardtung
  * 
  * Description: input page for positions data 
@@ -204,7 +204,7 @@ export default {
    * Initialize data from localDB and .env to the reactive Vue.js data
    */
   async created() {
-    const acID = this.$generalStore.getCurrentObject('activity');
+    /* const acID = this.$generalStore.getCurrentObject('activity');
     var activity = await fromOfflineDB
       .getObject(acID, 'Activities', 'activities')
       .catch(err => console.error(err));
@@ -220,7 +220,7 @@ export default {
       .catch(err => console.error(err));
     
     this.$emit("view", activity.activityNumber + ' ' + place.placeNumber + ' ' + position.positionNumber);
-
+ */
     this.materials = JSON.parse(import.meta.env.VITE_MATERIALS);
     this.titles = JSON.parse(import.meta.env.VITE_TITLES);
     this.datings = JSON.parse(import.meta.env.VITE_DATINGS);
@@ -233,9 +233,14 @@ export default {
     const datingFromDB = await fromOfflineDB
       .getAllObjects('AutoFillLists', 'datings')
       .catch(err => console.error(err));
+
+    var customDatings = [];
     datingFromDB.forEach(element => {
-      this.datingsList.push( element.item )
+      customDatings.push( element.item )
     });
+
+    var lvrDatings = JSON.parse(import.meta.env.VITE_DATINGS);
+    this.datingsList = await lvrDatings.concat(customDatings);
 
     const editorsFromDB = await fromOfflineDB
       .getAllObjects('AutoFillLists', 'editors')
@@ -247,16 +252,23 @@ export default {
     const materialsFromDB = await fromOfflineDB
       .getAllObjects('AutoFillLists', 'materials')
       .catch(err => console.error(err));
+    var customMaterials = [];
     materialsFromDB.forEach(element => {
-      this.materialsList.push( element.item )
+      customMaterials.push( element.item )
     });
+    var lvrMaterials = JSON.parse(import.meta.env.VITE_MATERIALS);
+    this.materialsList = await lvrMaterials.concat(customMaterials);
 
     const titlesFromDB = await fromOfflineDB
       .getAllObjects('AutoFillLists', 'titles')
       .catch(err => console.error(err));
+    var customTitles = [];
     titlesFromDB.forEach(element => {
-      this.titlesList.push( element.item )
+      customTitles.push( element.item )
     });
+
+    var lvrTitles = JSON.parse(import.meta.env.VITE_TITLES);
+    this.titlesList = await lvrTitles.concat(customTitles);
 
     this.componentHasLoaded = true;
   },
@@ -362,7 +374,6 @@ export default {
         var newSubNumber = this.calcSubNumber(rawPosition, lastAddedPos);
         rawPosition.subNumber = newSubNumber;
       }
-
       await fromOfflineDB.updateObject(rawPosition, 'Positions', 'positions')
         .catch(err => console.error(err));
       this.hasUnsavedChanges = false;

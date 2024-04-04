@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 24.03.2024 15:51:07
+ * Last Modified: 04.04.2024 13:58:54
  * Modified By: Julian Hardtung
  * 
  * Description: `general information` input module for places/positions
@@ -104,7 +104,7 @@
           <v-combobox
             hide-selected 
             color="primary" 
-            :items="titleItemsSecondProp"
+            :items="titleItems"
             persistent-hint
             :label="$tc('title', 2) + ' *'" 
             :hide-no-data="false" 
@@ -163,7 +163,7 @@
           <v-combobox
             hide-selected 
             color="primary" 
-            :items="titleItemsSecondProp" 
+            :items="titleItems" 
             persistent-hint
             :label="$tc('title', 2)" 
             :hide-no-data="false" 
@@ -255,6 +255,13 @@ export default {
   },
 
   watch: {
+    objectProp: function(datingPropData) {
+        this.object = datingPropData;
+    },
+    titleItemsSecondProp: function(titles) {
+      var lvrTitles = JSON.parse(import.meta.env.VITE_TITLES);
+      this.titleItems = lvrTitles.concat(titles);
+    },
     "object.description": {
       handler: function () {
         if ( this.object.description != null ) {
@@ -321,7 +328,6 @@ export default {
 
   created() {
     this.type = this.getType(this.$route.path);
-    //this.titles = JSON.parse(import.meta.env.VITE_TITLES);
     this.object = this.objectProp;
   },
 

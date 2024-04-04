@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 24.03.2024 18:56:51
+ * Last Modified: 04.04.2024 14:02:07
  * Modified By: Julian Hardtung
  * 
  * Description: `dating` input module for places/positions
@@ -32,7 +32,7 @@
 				counter 
 				color="primary" 
 				style="padding-top: 45px" 
-				:items="datingItemsSecondProp"
+				:items="datings"
 				:label="$t('dating')" 
 				:hide-no-data="false" 
 				v-model="dating">
@@ -62,7 +62,7 @@ export default {
 
 	data() {
 		return {
-			datings: null,
+			datings: [],
 			dating: null,
 			pathNames: null,
       showModule: true,
@@ -75,6 +75,10 @@ export default {
     },
     datingProp: function(datingPropData) {
         this.dating = datingPropData;
+    },
+    datingItemsSecondProp: function(datings) {
+      var lvrDatings = JSON.parse(import.meta.env.VITE_DATINGS);
+      this.datings = lvrDatings.concat(datings);
     },
 		"dating": {
 			handler: function () {
