@@ -1,6 +1,6 @@
 # Digital 3D Fieldbook
 
-This project is the digital 3D field book, which is intended to enable the digital documentation of archaeological excavations. The system was developed in collaboration with the archaeological institute at the University of Cologne.
+This project is the Digital 3D-Fieldbook, which is intended to enable the digital documentation of archaeological excavations. The system was developed in collaboration with the archaeological institute at the University of Cologne.
 
 ![1_E0-qLJQ8-27JInLfbQUILGbGsItqH9cxOKy0EoYHgdbDs42sZbQSsg0yCfxGw](https://github.com/TMink/Digitales-3D-Feldbuch-Projekt-3-/assets/15029310/6c346cf9-7834-44d9-b4d0-6d29d6aa6307)
 
