@@ -20,7 +20,6 @@ module.exports = {
         description: "Ein digitales Feldbuch zur Dokumentation von archaeologischen Ausgrabungen",
         manufacturer: "FieldbookDevs",
         programFilesFolderName: "Digital3DFieldbook",
-        shortcutFolderName: "Fieldbook",
         languages: "1031",
         icon: "icon.ico",
         setupIcon: "icon.ico",
