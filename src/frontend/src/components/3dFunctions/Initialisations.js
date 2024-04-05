@@ -62,8 +62,8 @@ export class Initialisations {
     mmTool.css2DRenderer.domElement.style.position = mmTool.css2DRendererParams.position;
     mmTool.css2DRenderer.domElement.style.top = mmTool.css2DRendererParams.top;
     mmTool.css2DRenderer.domElement.style.color = mmTool.css2DRendererParams.color;
-    mmTool.css2DRenderer.domElement.style.pointerEvents = 
-    mmTool.css2DRendererParams.pointerEvents;
+    mmTool.css2DRenderer.domElement.style.pointerEvents = mmTool.css2DRendererParams.pointerEvents;
+    mmTool.css2DRenderer.domElement.style.zIndex = "2"; // Always above canvas
     /* Append the CSS2D-Renderer to document */
     document.body.appendChild( mmTool.css2DRenderer.domElement)
 
@@ -242,6 +242,8 @@ export class Initialisations {
       canvas: main.canvas,
       antialias: main.rendererParams.antialias
     } );
+    main.renderer.setPixelRatio(window.devicePixelRatio);
+    // main.renderer.setSize( main.canvas.clientWidth, main.canvas.clientHeight );
     main.renderer.setSize( main.canvas.clientWidth, main.canvas.clientHeight );
     main.renderer.setClearColor( main.rendererParams.backgroundColor, 
       main.rendererParams.backgroundColorIntensity );
@@ -301,12 +303,13 @@ export class Initialisations {
     
     /* Post processing */
     main.composer = new EffectComposer( main.renderer );
+    main.composer.setSize( window.innerWidth, window.innerHeight )
 
     main.renderPass = new RenderPass( main.scene, main.camera );
     main.composer.addPass( main.renderPass );
-
+    
     main.outlinePass = new OutlinePass( new Vector2(
-      main.canvas.clientWidth, main.canvas.clientHeight ),
+      window.innerWidth, window.innerHeight ),
       main.scene, main.camera );
     main.outlinePass.hiddenEdgeColor.set( 
       main.postProcessingParams.outlinePass.color )
@@ -319,11 +322,11 @@ export class Initialisations {
     main.outlinePass.edgeGlow = 
       main.postProcessingParams.outlinePass.edgeGlow;
     main.composer.addPass( main.outlinePass );
-
+    
     // Shader
     main.effectFXAA = new ShaderPass( FXAAShader );
     main.effectFXAA.uniforms[ 'resolution' ].value.set(
-      1 / main.canvas.clientWidth, 1 / main.canvas.clientHeight );
+      1 / window.innerWidth, 1 / window.innerHeight );
     main.composer.addPass( main.effectFXAA );
 
     main.gammaCorrectionShader = new ShaderPass( GammaCorrectionShader );

@@ -2,26 +2,22 @@
  Created Date: 17.11.2023 16:18:33
  Author: Tobias Mink
  
- Last Modified: 04.04.2024 14:37:15
+ Last Modified: 05.04.2024 14:21:58
  Modified By: Tobias Mink
  
  Description: 
  -->
 
 <template>
-  <div style="position: relative">
+  <div id="wrapper">
     <Navigation active_tab_prop="1" />
 
-    <!-- Main Scene-->
-    <canvas id="mainCanvas" style="position:absolute" tabindex='1'></canvas>
-    <!-- <canvas id="mainCanvas" style="position:fixed" ></canvas> -->
-
     <!-- Left sidebar: GUI -->
-    <div style="position:fixed; float: left;">
+    <div id="leftSidebar" style="position:relative; float: left; z-index: 3; width: 50px; visibility: visible;">
       <v-card>
         <!-- Tools -->
         <v-navigation-drawer v-model="leftDrawer.showDrawers[0]" color="background"
-          style="left: 49px; top:64px; width: 470px;" temporary>
+          style="left: 50px; width: 470px; " temporary>
           <v-list-item height="50" prepend-icon="mdi-camera-control" :title="$t('tools')"></v-list-item>
 
           <v-divider></v-divider>
@@ -211,7 +207,7 @@
 
         <!-- Place -->
         <v-navigation-drawer v-model="leftDrawer.showDrawers[1]" color="background"
-          style="left: 49px; top:64px; width: 470px;" temporary>
+          style="left: 50px; top:64px; width: 470px; padding-bottom: 48px;" temporary>
           <v-list-item height="50" prepend-icon="mdi-radar" :title="$tc('place', 2)"></v-list-item>
 
           <v-divider></v-divider>
@@ -311,7 +307,7 @@
 
         <!-- Positions -->
         <v-navigation-drawer v-model="leftDrawer.showDrawers[2]" color="background"
-          style="left: 49px; top:64px; width: 470px;" temporary>
+          style="left: 50px; top:64px; width: 470px; padding-bottom: 48px;" temporary>
           <v-list-item height="50" prepend-icon="mdi-map-marker-radius-outline" :title="$t('posFilter')"></v-list-item>
 
           <v-divider></v-divider>
@@ -458,7 +454,7 @@
         
         <!-- Legend -->
         <v-navigation-drawer v-model="leftDrawer.showDrawers[3]" color="background"
-          style="left: 49px; top:64px; width: 470px;" temporary>
+          style="left: 50px; top:64px; width: 470px;" temporary>
           <v-list-item height="50" prepend-icon="mdi-information" title=Legende></v-list-item>
 
           <v-divider></v-divider>
@@ -485,10 +481,10 @@
       </v-card>
 
       <!-- Navigation buttons -->
-      <v-card rounded="0" width="50" height="91.2vh">
+      <v-card width="100%" height="100vh" max-height="100%">
 
         <!-- Controls -->
-        <v-btn v-model="leftDrawer.btnNames[0]" rounded="0" icon="mdi-camera-control" width="50" height="50"
+        <v-btn v-model="leftDrawer.btnNames[0]" rounded="0" icon="mdi-camera-control" width="100%" height="50"
           :color="leftDrawer.btnColors[0]" @click.stop="leftDrawer.showDrawers[0] = !leftDrawer.showDrawers[0]; 
                             leftDrawer.showDrawers[1] = false;
                             leftDrawer.showDrawers[2] = false;
@@ -496,7 +492,7 @@
                             utilities.updateBtnColor(
                               leftDrawer.btnNames[0], leftDrawer);"></v-btn>
         <!-- Place -->
-        <v-btn v-model="leftDrawer.btnNames[1]" rounded="0" icon="mdi-radar" width="50" height="50"
+        <v-btn v-model="leftDrawer.btnNames[1]" rounded="0" icon="mdi-radar" width="100%" height="50"
           :color="leftDrawer.btnColors[1]" @click.stop="leftDrawer.showDrawers[0] = false;
                             leftDrawer.showDrawers[1] = !leftDrawer.showDrawers[1];
                             leftDrawer.showDrawers[2] = false;
@@ -504,7 +500,7 @@
                             utilities.updateBtnColor(
                               leftDrawer.btnNames[1], leftDrawer);"></v-btn>
         <!-- Positions -->
-        <v-btn v-model="leftDrawer.btnNames[2]" rounded="0" width="50" height="50" icon="mdi-map-marker-radius-outline"
+        <v-btn v-model="leftDrawer.btnNames[2]" rounded="0" width="100%" height="50" icon="mdi-map-marker-radius-outline"
           :color="leftDrawer.btnColors[2]" @click.stop="leftDrawer.showDrawers[0] = false;
                             leftDrawer.showDrawers[1] = false;
                             leftDrawer.showDrawers[2] = !leftDrawer.showDrawers[2]; 
@@ -512,7 +508,7 @@
                             utilities.updateBtnColor(
                               leftDrawer.btnNames[2], leftDrawer);"></v-btn>
         <!-- Legende -->
-        <v-btn v-model="leftDrawer.btnNames[3]" rounded="0" width="50" height="50" icon="mdi-information"
+        <v-btn v-model="leftDrawer.btnNames[3]" rounded="0" width="100%" height="50" icon="mdi-information"
           :color="leftDrawer.btnColors[3]" @click.stop="leftDrawer.showDrawers[0] = false;
                             leftDrawer.showDrawers[1] = false;
                             leftDrawer.showDrawers[2] = false;
@@ -522,28 +518,11 @@
       </v-card>
     </div>
 
-    <!-- Legend -->
-    <!-- <div style="float: right;">
-      <v-card color="grey" align="left" height="70" width="350" style="top: 10px; right: 10px">
-        <v-card-text>
-          <img src="../assets/keys/ALT_1.png" width="90" height="37" style="vertical-align: -10px">
-          <font size="+2" color="black"> = {{ $t('objectSelection') }}</font>
-        </v-card-text>
-      </v-card>
+    <!-- Canvas -->
+    <canvas id="mainCanvas" style="position:relative; float:left; z-index: 2;"></canvas>
 
-      <v-card color="grey" align="left" height="70" width="350" style="top: 15px; right: 10px">
-        <v-card-text>
-          <img src="../assets/keys/CTRL_1.png" width="90" height="37" style="vertical-align: -10px">
-          <font size="+2" color="black">
-            = {{ $t('moveObj', {obj: $t('model')}) }}
-          </font>
-        </v-card-text>
-      </v-card>
-    </div> -->
-  </div>
-
-  <!-- Bottom drawer: Position information-->
-  <v-navigation-drawer v-model="bottomDrawer.showDrawer" location="bottom" temporary width="300">
+    <!-- Bottom drawer: Position information-->
+    <v-navigation-drawer v-model="bottomDrawer.showDrawer" location="bottom" temporary width="300">
 
     <v-row>
       <v-col>
@@ -640,11 +619,11 @@
         </canvas>
       </v-col>
     </v-row>
-  </v-navigation-drawer>
+    </v-navigation-drawer>
+  </div>
 </template>
 
 <script>
-import { Mesh, Vector3 } from 'three';
 import { Mesh, Vector3, Clock } from 'three';
 import { SUBTRACTION } from 'three-bvh-csg';
 import Navigation from '../components/Navigation.vue';
@@ -1163,14 +1142,14 @@ export default {
      *  ++++ Load specific data from IndexedDB ++++
      */
     await this.loadDataFromIndexedDB();
-
     
-
+    
+    
     /***************************************************************************
      *  ++++ Link canvases to exParams and specify window width and height. ++++
      */
     this.setupCanvases();
-
+    
 
     
     /***************************************************************************
@@ -1190,7 +1169,10 @@ export default {
 
     if( this.placeID == null || this.placeObjects.length == 0 ){
 
-      this.initialisations.mainInitNoObjects( exParams.main );
+      this.initialisations.mainInitNoObjects2( exParams.main );
+      this.leftSidebar.style.visibility = "hidden";
+      this.leftSidebar.style.width = "0px";
+      
       this.animation();
       
     } else {
@@ -1364,31 +1346,35 @@ export default {
   },
 
   async unmounted() {
-    if ( exParams.main.objects.allObjects.length > 0 ) {
-      this.indexedDB.updateCamera( this.placeID, this.cameraIDsInDB,
-        this.cameraInDB, this.arcballAnchor, exParams.main )
-
-      this.indexedDB.updateObjects( exParams.main )
+    if( this.placeID == null || this.placeObjects == null ) {
+      this.garbageCollection.disposeOfObjects(exParams.main)
+      
+    } else {
+      if ( exParams.main.objects.allObjects.length > 0 ) {
+        this.indexedDB.updateCamera( this.placeID, this.cameraIDsInDB,
+          this.cameraInDB, this.arcballAnchor, exParams.main )
+  
+        this.indexedDB.updateObjects( exParams.main )
+      }
+  
+      exParams.main.canvas.removeEventListener( 'click', this.updateArcball );
+      exParams.main.canvas.removeEventListener( 'click', this.onMouseDown );
+      exParams.main.canvas.removeEventListener( 'keydown', this.keyDown );
+      exParams.main.canvas.removeEventListener( 'keyup', this.keyUp );
+  
+      exParams.main.canvas.removeEventListener( 'keydown', this.keyDownAnnotation );
+      exParams.main.canvas.removeEventListener( 'keyup', this.keyUpAnnotation );
+  
+      exParams.main.renderer.domElement.removeEventListener( 'pointerdown', 
+        this.onClick, false );
+      exParams.main.renderer.domElement.removeEventListener( 'pointerdown', 
+        this.onClickAnnotation, false );
+      exParams.main.canvas.removeEventListener( 'mousemove', 
+        this.onDocumentMouseMove, false);
+  
+      /* Dispose geometries and materials in scene */
+      this.garbageCollection.clearCanvases( exParams.main, exParams.sub );
     }
-
-    exParams.main.canvas.removeEventListener( 'click', this.updateArcball );
-    exParams.main.canvas.removeEventListener( 'click', this.onMouseDown );
-    window.removeEventListener( 'resize', this.onWindowResize, false );
-    exParams.main.canvas.removeEventListener( 'keydown', this.keyDown );
-    exParams.main.canvas.removeEventListener( 'keyup', this.keyUp );
-
-    exParams.main.canvas.removeEventListener( 'keydown', this.keyDownAnnotation );
-    exParams.main.canvas.removeEventListener( 'keyup', this.keyUpAnnotation );
-
-    exParams.main.renderer.domElement.removeEventListener( 'pointerdown', 
-      this.onClick, false );
-    exParams.main.renderer.domElement.removeEventListener( 'pointerdown', 
-      this.onClickAnnotation, false );
-    exParams.main.canvas.removeEventListener( 'mousemove', 
-      this.onDocumentMouseMove, false);
-
-    /* Dispose geometries and materials in scene */
-    this.garbageCollection.clearCanvases( exParams.main, exParams.sub );
   },
 
   methods: {
@@ -1420,12 +1406,13 @@ export default {
     async loadDataFromIndexedDB() {
       this.placeID = this.$generalStore.getCurrentObject( 'place' );
       if( this.placeID != null ) {
-        
-        this.cameraIDsInDB = await this.indexedDB.get( 'properties', '_id', 'Cameras', 'cameras' );
-        this.cameraInDB = await this.indexedDB.get( 'object', this.placeID, 'Cameras', 'cameras' );
-        this.placeInDB = await this.indexedDB.get( 'object', this.placeID, 'Places', 'places' );
         this.placeObjects = await this.indexedDB.get( 'allObjectsWithID', this.placeID, 'Models', 'places', 'Place' );
-        this.positionObjects = await this.indexedDB.get( 'allObjectsWithID', this.placeID, 'Models', 'positions', 'Place' );
+        if(this.placeObjects.length > 0 ) {
+          this.cameraIDsInDB = await this.indexedDB.get( 'properties', '_id', 'Cameras', 'cameras' );
+          this.cameraInDB = await this.indexedDB.get( 'object', this.placeID, 'Cameras', 'cameras' );
+          this.placeInDB = await this.indexedDB.get( 'object', this.placeID, 'Places', 'places' );
+          this.positionObjects = await this.indexedDB.get( 'allObjectsWithID', this.placeID, 'Models', 'positions', 'Place' );
+        } 
       }
     }, 
 
@@ -1436,15 +1423,12 @@ export default {
      */
 
     setupCanvases: function() {
-      exParams.main.canvas = document.getElementById( 'mainCanvas' );
-      exParams.sub.canvas = document.getElementById( 'subCanvas' );
-
-      /* Set canvasMain size */
-      // const { width, height } = useWindowSize();
-      // exParams.main.canvas.width = window.innerWidth;
-      // exParams.main.canvas.height = window.innerHeight;
-      exParams.main.canvas.width = this.windowWidth;
-      exParams.main.canvas.height = this.windowHeight - 100;
+      this.mainCanvas = document.getElementById("mainCanvas");
+      this.subCanvas = document.getElementById("subCanvas");
+      this.leftSidebar = document.getElementById("leftSidebar");
+      this.clock = new Clock()
+      exParams.main.canvas = this.mainCanvas;
+      exParams.sub.canvas = this.subCanvas;
     },
     
     /**
@@ -1581,8 +1565,6 @@ export default {
     initMainEventlisteners( window, main ) {
       // Eventlistener
       document.addEventListener( 'click', this.func, false );
-      /* Auto Resize */
-      window.addEventListener( 'resize', this.onWindowResize, false )
       main.canvas.addEventListener( 'click', this.updateArcball );
       main.canvas.addEventListener( 'click', this.onMouseDown );
       window.addEventListener( 'keydown', e => {
@@ -1891,21 +1873,6 @@ export default {
       }
     },
 
-    onWindowResize: function () {
-      exParams.main.camera.aspect = exParams.main.canvas.clientWidth /
-        exParams.main.canvas.clientHeight;
-      exParams.main.camera.updateProjectionMatrix();
-
-      exParams.main.renderer.setSize( exParams.main.canvas.clientWidth,
-        exParams.main.canvas.clientHeight, false );
-
-      exParams.main.composer.setSize( exParams.main.canvas.clientWidth,
-        exParams.main.canvas.clientHeight );
-
-      exParams.main.effectFXAA.uniforms[ 'resolution' ].value.set(
-        1 / exParams.main.canvas.clientWidth, 1 / exParams.main.canvas.clientHeight );
-    },
-
     func: function(e) {
       const compareStrings = Boolean(Number(
         e.target.id.localeCompare("mainCanvas")));
@@ -2016,11 +1983,28 @@ export default {
      */
     // Animation	
     animation() {
-      exParams.main.controls.update();
-      exParams.main.renderer.render(exParams.main.scene, exParams.main.camera);  
-      TWEEN.update();
-      requestAnimationFrame( this.animation );
+      if( exParams.main.renderer != null ) {
+
         exParams.main.scene.getObjectByName("ICO").material.uniforms.u_time.value = this.clock.getElapsedTime();
+        
+        exParams.main.controls.update();
+        exParams.main.renderer.render(exParams.main.scene, exParams.main.camera);
+        
+        exParams.main.canvas.style.height = (this.windowHeight - 112).toString() + "px";
+        exParams.main.canvas.style.width = (this.windowWidth).toString() + "px";
+        this.leftSidebar.style.height = (this.windowHeight - 112).toString() + "px";
+        
+        exParams.main.renderer.setSize( exParams.main.canvas.clientWidth,
+          exParams.main.canvas.clientHeight, false );
+        exParams.main.renderer.setPixelRatio(window.devicePixelRatio)
+        
+        exParams.main.camera.aspect = exParams.main.canvas.clientWidth /
+          exParams.main.canvas.clientHeight;
+        exParams.main.camera.updateProjectionMatrix();
+  
+        TWEEN.update();
+        requestAnimationFrame( this.animation );
+      }
     },
 
     animate: function() {
@@ -2031,12 +2015,21 @@ export default {
       if( exParams.main.renderer != null ) {
         exParams.main.renderer.render( exParams.main.scene, exParams.main.camera );
         exParams.sub.renderer.render( exParams.sub.scene, exParams.sub.camera );
+        exParams.main.composer.render()
         exParams.mmTool.css2DRenderer.render( exParams.main.scene, exParams.main.camera )
+
+        exParams.main.canvas.style.height = (this.windowHeight - 112).toString() + "px";
+        exParams.main.canvas.style.width = (this.windowWidth - 58).toString() + "px";
+        this.leftSidebar.style.height = (this.windowHeight - 112).toString() + "px";
+        
+        exParams.main.renderer.setSize( exParams.main.canvas.clientWidth, exParams.main.canvas.clientHeight, false );
+        exParams.main.composer.setSize( window.innerWidth, window.innerHeight, false );
+        exParams.mmTool.css2DRenderer.setSize( exParams.main.canvas.clientWidth, exParams.main.canvas.clientHeight );
+
+        exParams.main.camera.aspect = exParams.main.canvas.clientWidth / exParams.main.canvas.clientHeight;
+        exParams.main.camera.updateProjectionMatrix();
       }
 
-      /* Render composer */
-      exParams.main.composer.render()
-      
       /* Render-Loop */
       requestAnimationFrame( this.animate );
     },
