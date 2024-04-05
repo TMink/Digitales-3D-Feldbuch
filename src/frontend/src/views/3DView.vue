@@ -645,6 +645,7 @@
 
 <script>
 import { Mesh, Vector3 } from 'three';
+import { Mesh, Vector3, Clock } from 'three';
 import { SUBTRACTION } from 'three-bvh-csg';
 import Navigation from '../components/Navigation.vue';
 import { useWindowSize } from 'vue-window-size';
@@ -1187,7 +1188,7 @@ export default {
     this.initialisations.initMeasurementTool( exParams.main, exParams.mmTool, 
       document );
 
-    if( this.placeID == null ){
+    if( this.placeID == null || this.placeObjects.length == 0 ){
 
       this.initialisations.mainInitNoObjects( exParams.main );
       this.animation();
@@ -2019,6 +2020,7 @@ export default {
       exParams.main.renderer.render(exParams.main.scene, exParams.main.camera);  
       TWEEN.update();
       requestAnimationFrame( this.animation );
+        exParams.main.scene.getObjectByName("ICO").material.uniforms.u_time.value = this.clock.getElapsedTime();
     },
 
     animate: function() {

@@ -2,7 +2,7 @@
  * Created Date: 23.01.2024 13:09:11
  * Author: Tobias Mink
  * 
- * Last Modified: 03.04.2024 16:17:39
+ * Last Modified: 05.04.2024 15:29:50
  * Modified By: Tobias Mink
  * 
  * Description: A Collection of initialisation functions, which will be called
@@ -13,7 +13,9 @@
 import { Raycaster, Vector2, BoxGeometry, DoubleSide, FrontSide, Mesh, 
   BufferGeometry, MeshStandardMaterial, WebGLRenderer, PCFSoftShadowMap, 
   LinearSRGBColorSpace, Scene, PerspectiveCamera, DirectionalLight, 
-  AmbientLight } from 'three';
+  AmbientLight, ShaderMaterial, Vector3, HemisphereLight, ShadowMaterial, 
+  IcosahedronGeometry, PlaneGeometry, VSMShadowMap, sRGBEncoding, 
+  MeshPhongMaterial } from 'three';
 import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
 import { ArcballControls } from
 'three/examples/jsm/controls/ArcballControls.js';
@@ -35,9 +37,11 @@ import { CSS2DRenderer } from
 'three/examples/jsm/renderers/CSS2DRenderer'
 import { Evaluator, Brush, GridMaterial } from 'three-bvh-csg';
 
-import { Vector3, HemisphereLight, ShadowMaterial, IcosahedronGeometry, PlaneGeometry, VSMShadowMap, sRGBEncoding, MeshPhongMaterial  } from 'three';
 import * as TWEEN from '@tweenjs/tween.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+
+import vertexShader from './shaders/blob/vertexShader.glsl';
+import fragmentShader from './shaders/blob/fragmentShader.glsl';
 
 export class Initialisations {
 
@@ -366,8 +370,9 @@ export class Initialisations {
     
     main.scene = new Scene();
 
-		main.camera = new PerspectiveCamera(25, window.innerWidth / window.innerHeight, 0.1,1000);
+		main.camera = new PerspectiveCamera(25, main.canvas.clientWidth / main.canvas.clientHeight, 0.1, 1000);
 		main.camera.position.set(0,1.5,-17);
+    main.camera.updateProjectionMatrix();
 
 		main.renderer = new WebGLRenderer( {
       canvas: main.canvas,
@@ -429,7 +434,8 @@ export class Initialisations {
 
 		const icosahedron_geometry = new IcosahedronGeometry(1,0);
 		const icosahedron = new Mesh( icosahedron_geometry, white_material );
-		icosahedron.position.y = 2;
+		icosahedron.position.y = 3;
+    icosahedron.scale.set(1.5, 1.5, 1.5)
 		icosahedron.castShadow = true;
 		main.scene.add(icosahedron);
 
@@ -437,7 +443,7 @@ export class Initialisations {
 		// Tween.js Tweening
 
 		new TWEEN.Tween(icosahedron.position)
-			.to( { y:1.5 }, 2000)
+			.to( { y:3 }, 2000)
       .delay(1000)
 			.yoyo(true)
 			.repeat(Infinity)
@@ -481,7 +487,7 @@ export class Initialisations {
           glb.scene.traverse( ( child ) => {
             if ( child instanceof Mesh ) {
               child.name = "Default mesh";
-              child.position.set( 0, -0.5, 0 );
+              child.position.set( 0, 0, 0 );
             }
           } )
           resolve( glb.scene )
@@ -489,6 +495,123 @@ export class Initialisations {
       )
     });
     main.scene.add( object );
+    object.scale.set(1.5, 1.5, 1.5)
+    object.rotation.y = Math.PI / 1
+
+	}
+  
+  async mainInitNoObjects2( main ) {
+    main.scene = new Scene();
+
+		main.camera = new PerspectiveCamera(25, main.canvas.clientWidth / main.canvas.clientHeight, 0.1, 1000);
+		main.camera.position.set(0,1.5,-17);
+
+		main.renderer = new WebGLRenderer( {
+      canvas: main.canvas,
+      antialias: main.rendererParams.antialias
+    } );
+    main.renderer.setSize( main.canvas.clientWidth, main.canvas.clientHeight );
+    main.renderer.setClearColor( main.rendererParams.backgroundColor, 
+      main.rendererParams.backgroundColorIntensity );
+    main.renderer.shadowMap.enabled = main.rendererParams.shadowMapEnabled;
+		// main.renderer.shadowMap.type = VSMShadowMap
+		// main.renderer.outputEncoding = sRGBEncoding;
+    main.renderer.shadowMap.type = PCFSoftShadowMap;
+    main.renderer.outputColorSpace = LinearSRGBColorSpace;
+
+		main.controls = new OrbitControls(main.camera, main.renderer.domElement);
+		main.controls.target = new Vector3(0, 1.5, 0);
+		main.controls.enableDamping = true;
+		main.controls.maxPolarAngle = Math.PI/2
+		main.controls.minDistance = 2
+    main.controls.maxDistance = 30
+    main.controls.enablePan = false
+    main.controls.ebableRotate = false
+    main.controls.enabled = false
+    
+
+		// Directional (Key) Light
+		main.directional_light = new DirectionalLight( 0xffffff, 1 )
+		main.directional_light.position.set( 0, 5, -2 )
+		// main.directional_light.castShadow = true
+		main.directional_light.shadow.mapSize.width = 1024
+		main.directional_light.shadow.mapSize.height = 1024
+		main.directional_light.shadow.camera.far = 24
+		main.directional_light.shadow.radius = 5
+		main.directional_light.shadow.bias = - 0.00006
+		main.scene.add( main.directional_light )
+
+
+		// Hemisphere (Fill) Light
+		const hemisphere_light = new HemisphereLight( 0xffffff, 0x000000, 0.3 );
+		hemisphere_light.position.set( 0, 6, 0 );
+		// main.scene.add( hemisphere_light );
+
+
+    // Uniforms
+    const uniforms = {
+      u_resolution: { type: 'v2', value: new Vector2( window.innerWidth, window.innerHeight ) },
+      u_time: { type: 'f', value: 0.0 }
+    }
+
+
+		// Ground Plane
+		const ground_geometry = new PlaneGeometry(200, 200);
+		// const ground = new Mesh(ground_geometry, shadow_material);
+		const ground = new Mesh(ground_geometry, new MeshStandardMaterial({color: 0x151d21}));
+		const ground2 = new Mesh(ground_geometry, new MeshStandardMaterial({color: 0x151d21}));
+		ground.receiveShadow = true;
+		ground.rotateX(-Math.PI / 2);
+		ground2.rotateY(-Math.PI);
+    ground2.position.set( 0, 0, 3 );
+		ground.position.set(0, -2, 0);
+		// main.scene.add(ground);
+		main.scene.add(ground2);
+
+
+		// Icosahedron
+		const icosahedron_geometry = new IcosahedronGeometry(4, 30);
+		const icosahedron_material = new ShaderMaterial( {
+      uniforms,
+      vertexShader: vertexShader,
+      fragmentShader: fragmentShader
+    } );
+    icosahedron_material.wireframe = true;
+		const icosahedron = new Mesh( icosahedron_geometry, icosahedron_material );
+    icosahedron.position.y = 3;
+    icosahedron.scale.set(0.3, 0.3, 0.3);
+    // icosahedron.scale.set(1.5, 1.5, 1.5)
+		icosahedron.castShadow = true;
+    icosahedron.name = "ICO";
+		main.scene.add(icosahedron);
+
+    new TWEEN.Tween(icosahedron.rotation)
+  		.to({ y: "-" + (Math.PI/2) * 9}, 120000)
+			.repeat(Infinity)
+			.easing(TWEEN.Easing.Cubic.Out)
+			.start()
+		;
+
+    // Text
+    let object, loader = null;
+    loader = new GLTFLoader();
+
+    object = await new Promise( ( resolve ) => {
+      loader.load(
+      '../assets/3d_part/no_objects_default_3.glb',
+        function( glb ) {
+          glb.scene.traverse( ( child ) => {
+            if ( child instanceof Mesh ) {
+              child.name = "Default mesh";
+              child.position.set( 0, 0, 0 );
+            }
+          } )
+          resolve( glb.scene )
+        }
+      )
+    });
+    main.scene.add( object );
+    // object.scale.set(1.5, 1.5, 1.5)
     object.rotation.y = Math.PI / 1
 
 	}

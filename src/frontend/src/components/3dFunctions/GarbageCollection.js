@@ -2,7 +2,7 @@
  * Created Date: 15.01.2024 17:29:22
  * Author: Tobias Mink
  * 
- * Last Modified: 30.03.2024 03:28:59
+ * Last Modified: 04.04.2024 22:22:07
  * Modified By: Tobias Mink
  * 
  * Description: The Process that will happen, wenn ever the 3DView is closed and
