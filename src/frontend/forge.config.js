@@ -25,9 +25,9 @@ module.exports = {
         setupIcon: "icon.ico",
       },
     },
-    /* {
+    {
       name: "@electron-forge/maker-zip",
-    }, */
+    },
     {
       name: "@electron-forge/maker-deb",
       config: {},
