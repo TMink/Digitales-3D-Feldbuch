@@ -121,7 +121,8 @@
     <v-navigation-drawer
       color="surface" 
       v-model="navdrawer" 
-      location="right">
+      location="right"
+      temporary>
       <v-card 
         height="100%"
         class="d-flex flex-column">
