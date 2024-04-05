@@ -640,6 +640,7 @@ import { GarbageCollection } from '../components/3dFunctions/GarbageCollection.j
 import { Initialisations } from '../components/3dFunctions/Initialisations.js'
 import * as TWEEN from '@tweenjs/tween.js'
 
+import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
 
 export default {
   name: 'ModelViewer',
@@ -1126,16 +1127,16 @@ export default {
     };
   },
 
-  created() {
+  async created() {
     this.initExternalImports();
+    
   },
 
   async mounted() {
     /***************************************************************************
      *  ++++ Synchronise with IndexedDB ++++
      */
-    await this.indexedDB.synchronise( 'localDBs' );
-
+    await fromOfflineDB.syncLocalDBs();
     
     
     /***************************************************************************

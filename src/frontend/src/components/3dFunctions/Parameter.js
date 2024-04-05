@@ -2,7 +2,7 @@
  * Created Date: 15.01.2024 17:22:44
  * Author: Tobias Mink
  * 
- * Last Modified: 30.03.2024 06:18:14
+ * Last Modified: 05.04.2024 01:33:27
  * Modified By: Tobias Mink
  * 
  * Description: 
@@ -63,7 +63,7 @@ export const exParams = {
       ambient: {
         name: "ambientMain",
         color: 0xb0bec5,
-        intensity: 0.35
+        intensity: 1
       },
       directional: {
         name: "directionalMain",
@@ -199,7 +199,7 @@ export const exParams = {
           visible: false
         },
         mat: {
-          opacity: 1,
+          opacity: 0,
           transparent: false,
           depthWrite: true,
           name: "segmentationBrush_mat"
@@ -222,7 +222,7 @@ export const exParams = {
         visible: false
       },
       mat: {
-        opacity: 1,
+        opacity: 0,
         transparent: false,
         depthWrite: true
       },

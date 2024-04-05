@@ -2,7 +2,7 @@
  * Created Date: 24.02.2024 18:07:56
  * Author: Tobias Mink
  * 
- * Last Modified: 30.03.2024 17:22:39
+ * Last Modified: 03.04.2024 18:49:17
  * Modified By: Tobias Mink
  * 
  * Description: A Collection of functions to update saved data in IndexedDB.
@@ -138,7 +138,7 @@ export class InterfaceToOfflineDB {
       case 'allObjectsWithID':
         return fromOfflineDB.getAllObjectsWithID( _id, selection, localDBName, storeName );
       case 'properties':
-        return fromOfflineDB.getProperties( _id, localDBName, storeName );
+        return fromOfflineDB.getProperties( "_id", localDBName, storeName );
       default:
         console.log( "IndexedDB_Getting error" )
         console.log( _id )
