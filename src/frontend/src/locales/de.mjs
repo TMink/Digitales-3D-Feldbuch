@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 29.03.2024 14:34:09
+ * Last Modified: 05.04.2024 13:17:23
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -208,4 +208,5 @@ export default {
   userNameAlreadyExists: "Ein Benutzer mit diesem Namen existiert bereits",
   userMailAlreadyExists: "Ein Benutzer mit diese E-Mail existiert bereits",
   registrationSuccess: "Account erfolgreich angelegt",
+  duplicationDescription: "Klicke auf eine {msg}, um sie zu duplizieren.",
 };

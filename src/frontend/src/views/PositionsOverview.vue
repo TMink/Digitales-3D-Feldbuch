@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 24.03.2024 19:40:08
+ * Last Modified: 05.04.2024 13:24:04
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -345,7 +345,7 @@
           hide-details
           color="secondary">
           <template v-slot:prepend>
-            <v-icon color="warning">mdi-content-duplicate</v-icon> 
+            <v-icon color="warning">mdi-content-duplicate</v-icon>
           </template>
       </v-switch>
 
@@ -355,8 +355,15 @@
         timeout="-1" 
         v-model="toggleDuplicate" 
         location="bottom">
-        <v-icon start>mdi-content-duplicate</v-icon>
-        {{ $t('duplicationMode') }}
+        <v-row no-gutters>
+          <v-icon start>mdi-content-duplicate</v-icon>
+          <v-col>
+            {{ $t('duplicationMode') }}
+            <v-card-subtitle class="px-0">
+              {{ $t('duplicationDescription', {msg: $t('position')}) }}
+            </v-card-subtitle>
+          </v-col>
+        </v-row>
       </v-snackbar>
     </v-row>
   </div>

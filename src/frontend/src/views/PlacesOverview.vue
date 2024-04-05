@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 24.03.2024 19:42:48
+ * Last Modified: 05.04.2024 13:23:30
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -321,7 +321,15 @@
       <v-switch class="pl-5" v-model="toggleDuplicate" 
         hide-details color="secondary">
         <template v-slot:prepend>
-          <v-icon color="warning">mdi-content-duplicate</v-icon>
+          <v-row no-gutters>
+          <v-icon start>mdi-content-duplicate</v-icon>
+          <v-col>
+            {{ $t('duplicationMode') }}
+            <v-card-subtitle class="px-0">
+              {{ $t('duplicationDescription', {msg: $t('place')}) }}
+            </v-card-subtitle>
+          </v-col>
+        </v-row>
         </template>
       </v-switch>
 
