@@ -2,7 +2,7 @@
  Created Date: 17.11.2023 16:18:33
  Author: Tobias Mink
  
- Last Modified: 05.04.2024 14:21:58
+ Last Modified: 05.04.2024 15:49:47
  Modified By: Tobias Mink
  
  Description: 
@@ -1363,9 +1363,6 @@ export default {
       exParams.main.canvas.removeEventListener( 'keydown', this.keyDown );
       exParams.main.canvas.removeEventListener( 'keyup', this.keyUp );
   
-      exParams.main.canvas.removeEventListener( 'keydown', this.keyDownAnnotation );
-      exParams.main.canvas.removeEventListener( 'keyup', this.keyUpAnnotation );
-  
       exParams.main.renderer.domElement.removeEventListener( 'pointerdown', 
         this.onClick, false );
       exParams.main.renderer.domElement.removeEventListener( 'pointerdown', 
@@ -1582,12 +1579,8 @@ export default {
         }
       });
 
-      main.canvas.addEventListener( 'keydown', this.keyDown );
-      main.canvas.addEventListener( 'keyup', this.keyUp );
-      
-      main.canvas.addEventListener( 'keydown', this.keyDownAnnotation )
-      main.canvas.addEventListener( 'keyup', this.keyUpAnnotation )
-
+      document.addEventListener( 'keydown', this.keyDown );
+      document.addEventListener( 'keyup', this.keyUp );
 
       main.renderer.domElement.addEventListener( 'pointerdown', this.onClick, 
         false );
@@ -1620,6 +1613,7 @@ export default {
     },
 
     keyDown: function( event ) {
+      console.log(event)
       if (event.key === 'x') {
           exParams.main.ctrlDown = true;
           exParams.main.arcBallControls.enabled = false
@@ -1946,24 +1940,6 @@ export default {
           placeInDB.annotations.push( annotationID );
           await this.indexedDB.update( 'object', placeInDB, 'Places', 'places' );
         }
-      }
-    },
-
-    keyDownAnnotation: function( event ) {
-
-      if (event.key === 't') {
-          exParams.main.annotationButtonPressed = true;
-          exParams.main.arcBallControls.enabled = false
-          document.body.style.cursor = 'crosshair';
-      }
-      
-    },
-
-    keyUpAnnotation: function( event ) {
-      if (event.key === 't') {
-        exParams.main.annotationButtonPressed = false;
-        exParams.main.arcBallControls.enabled = true
-        document.body.style.cursor = 'pointer'
       }
     },
 
