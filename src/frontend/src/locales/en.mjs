@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 05.04.2024 13:17:44
+ * Last Modified: 09.04.2024 15:51:54
  * Modified By: Julian Hardtung
  * 
  * Description: english translations
@@ -126,6 +126,9 @@ export default {
   fontSize: "Font Size",
   add: "Add",
   settings: "Settings",
+  annotationMode: "Annotation Mode",
+  measureMode: "Measure Mode",
+  cuttingMode: "Cutting Mode",
 
   // Phrases
   addMsg: "Add new {msg}",
@@ -207,4 +210,8 @@ export default {
   userMailAlreadyExists: "A user with this mail already exists",
   registrationSuccess: "Account successfully registered",
   duplicationDescription: "Click on a {msg} to duplicate it.",
+  annotationDescription: "Click on a point on the model to create an annotation.",
+  measureDescription:
+    "Hold X and click on two points to measure their distance.",
+  cuttingDescription: "Move the controls within the 3d-view to cut the model.",
 };
