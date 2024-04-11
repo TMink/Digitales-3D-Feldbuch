@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.04.2024 15:51:01
+ * Last Modified: 11.04.2024 13:48:48
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -216,4 +216,5 @@ export default {
   measureDescription:
     "Halte X gedrückt und klicke auf zwei Punkte, um ihre Distanz zu messen.",
   cuttingDescription: "Verschiebe die Steuerung in der 3D-Ansicht, um das Modell zu schneiden.",
+  chooseModelDescription: "Wähle ein Modell aus, um die Editieroptionen anzzuzeigen.",
 };
