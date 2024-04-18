@@ -2,7 +2,7 @@
  * Created Date: 24.02.2024 18:07:56
  * Author: Tobias Mink
  * 
- * Last Modified: 03.04.2024 18:49:17
+ * Last Modified: 18.04.2024 17:10:34
  * Modified By: Tobias Mink
  * 
  * Description: A Collection of functions to update saved data in IndexedDB.
@@ -15,6 +15,49 @@ import { Utilities } from './Utilities.js';
 export class InterfaceToOfflineDB {
 
   /**
+   * 
+   * @param {*} activityID 
+   * @param {*} arcballAnchor 
+   * @param {*} camera 
+   */
+  async createCamera( activityID, arcballAnchor, camera ) {
+
+    const anchor = []
+    const activity = await this.get( 'object', activityID, 'Activities', 'activities' )
+
+    /* Get position and rotation data */
+    const cameraData = [
+      camera.position.x,
+      camera.position.y,
+      camera.position.z,
+      camera.rotation.x,
+      camera.rotation.y,
+      camera.rotation.z
+    ];
+
+    /* Create new Anchor for arcball controls */
+    anchor.push( arcballAnchor[ 0 ] );
+    anchor.push( arcballAnchor[ 1 ] );
+    anchor.push( arcballAnchor[ 2 ] );
+
+    /* Create and save new camera settings */
+    const newCameraID = String(Date.now());
+    const newCamera = {
+      _id: newCameraID,
+      activityID: activityID,
+      cameraPosition: cameraData,
+      arcballAnchor: anchor,
+      objectsInSceneChanged: false
+    };
+
+    activity.camera = newCameraID
+
+    await this.add( 'object', newCamera, 'Cameras', 'cameras' );
+    await this.update( 'object', activity, 'Activities', 'activities' )
+    
+  }
+
+  /**
    * Update all camera specific parameters. These are used to reset the camera
    * options when switching between fieldbook and 3DPart. Because of the garbage
    * collection this data will be lost otherwise.
@@ -24,41 +67,31 @@ export class InterfaceToOfflineDB {
    * @param { object } arcballAnchor 
    * @param { object } main 
    */
-  async updateCamera( placeID, cameraIDsInDB, cameraInDB, arcballAnchor, main ) {
+  async updateCamera( activityID, cameraOfActivity, camera ) {
 
     const anchor = []
     
     /* Get position and rotation data */
     const cameraData = [
-      main.camera.position.x,
-      main.camera.position.y,
-      main.camera.position.z,
-      main.camera.rotation.x,
-      main.camera.rotation.y,
-      main.camera.rotation.z
+      camera.position.x,
+      camera.position.y,
+      camera.position.z,
+      camera.rotation.x,
+      camera.rotation.y,
+      camera.rotation.z
     ];
-
+    
     /* Create new Anchor for arcball controls */
-    if ( !cameraIDsInDB.includes( placeID ) ) {
-      anchor.push( arcballAnchor[ 0 ] );
-      anchor.push( arcballAnchor[ 1 ] );
-      anchor.push( arcballAnchor[ 2 ] );
-    } else {
-      anchor.push( cameraInDB.arcballAnchor[ 0 ] );
-      anchor.push( cameraInDB.arcballAnchor[ 1 ] );
-      anchor.push( cameraInDB.arcballAnchor[ 2 ] );
-    }
+    anchor.push( cameraOfActivity.arcballAnchor[ 0 ] );
+    anchor.push( cameraOfActivity.arcballAnchor[ 1 ] );
+    anchor.push( cameraOfActivity.arcballAnchor[ 2 ] );
 
-    /* Create and save new camera settings */
-    const newCamera = {
-      _id: placeID,
-      cameraPosition: cameraData,
-      arcballAnchor: anchor,
-      newObjectsInScene: false
-    };
+    /* Update existing camera */
+    cameraOfActivity.cameraPosition = cameraData;
+    cameraOfActivity.arcballAnchor = anchor;
     
     /* Update the entry in IndexDB */
-    await this.update( 'object', newCamera, 'Cameras', 'cameras' );
+    await this.update( 'object', cameraOfActivity, 'Cameras', 'cameras' );
   }
 
   /**
@@ -67,18 +100,18 @@ export class InterfaceToOfflineDB {
    * @param { object } positionModelsInScene 
    * @param { Scene } sceneMain 
    */
-  async updateObjects( main ) {
+  async updateObjects( objects, scene ) {
 
     /* Update place models */
-    for ( var i = 0; i < main.objects.place.entry.length; i++ ) {
-      const modelID = main.objects.place.entry[ i ]._id;
-      this.updateObjectOpacityAndColor( modelID, 'places', main );
+    for ( var i = 0; i < objects.place.entry.length; i++ ) {
+      const modelID = objects.place.entry[ i ]._id;
+      this.updateObjectOpacityAndColor( modelID, 'places', scene );
     }
 
     /* Update position models */
-    for ( var u = 0; u < main.objects.position.entry.length; u++ ) {
-      const modelID = main.objects.position.entry[ u ]._id;
-      const modelInScene = main.scene.getObjectByName( modelID );
+    for ( var u = 0; u < objects.position.entry.length; u++ ) {
+      const modelID = objects.position.entry[ u ]._id;
+      const modelInScene = scene.getObjectByName( modelID );
       const modelInDB = await this.get( 'object', modelID, 'Models',
         'positions' );
 
@@ -118,8 +151,8 @@ export class InterfaceToOfflineDB {
    * @param { object } storeName 
    * @param { Scene } scene 
    */
-  async updateObjectOpacityAndColor( modelID, storeName, main ) {
-    const modelInScene = main.scene.getObjectByName( modelID );
+  async updateObjectOpacityAndColor( modelID, storeName, scene ) {
+    const modelInScene = scene.getObjectByName( modelID );
     const modelInDB = await this.get( 'object', modelID, 'Models',
       storeName );
 
@@ -129,19 +162,56 @@ export class InterfaceToOfflineDB {
     await this.update( 'object', modelInDB, 'Models', storeName );
   }
 
-  async get( type, _id, localDBName, storeName, selection ) {
+  async get( type, _ids, localDBName, storeName, selection, property ) {
     switch( type ) {
       case 'object':
-        return fromOfflineDB.getObject( _id, localDBName, storeName );
+        return await fromOfflineDB.getObject( _ids, localDBName, storeName );
       case 'allObjects':
-        return fromOfflineDB.getAllObjects( localDBName, storeName );
+        return await fromOfflineDB.getAllObjects( localDBName, storeName );
       case 'allObjectsWithID':
-        return fromOfflineDB.getAllObjectsWithID( _id, selection, localDBName, storeName );
+        return await fromOfflineDB.getAllObjectsWithID( _ids, selection, localDBName, storeName );
       case 'properties':
-        return fromOfflineDB.getProperties( "_id", localDBName, storeName );
+        return await fromOfflineDB.getProperties( "_id", localDBName, storeName );
+      case 'propertiesWithID':
+        return await fromOfflineDB.getPropertiesWithID( _ids, selection, property, localDBName, storeName );
+      case 'allPositionIDsOfAllPlaceIDs':
+        const positionIDs = {};
+        for ( let placeID of _ids ) {
+          const placeIDPositionIDs = await fromOfflineDB.getPropertiesWithID( placeID, 'ofID', 'positions', 'Places', 'places' );
+          positionIDs[ placeID.toString() ] = placeIDPositionIDs[ 0 ];
+        }
+        return positionIDs;
+      case 'allPositionObejctsOfAllPositionIDs':
+        const positionObjects = {}
+        for( let placeID in _ids ) {
+          /* Check if the place contains position */
+          if( _ids[placeID].length > 0 ) {
+            for( let positionID of _ids[placeID] ) {
+              const models = await fromOfflineDB.getPropertiesWithID( positionID, 'ofID', 'models', 'Positions', 'positions' );
+              /* Check if the position contains models */
+              if( models.length > 0 ) {
+                /* Create new entry, if all requierements are met */
+                positionObjects[ positionID.toString() ] = {
+                  placeID: placeID,
+                  models: models
+                }
+              }
+            }
+          }
+        }
+        return positionObjects;
+      case 'allPlaceObejctsOfActivityID':
+        const placeObjects = {}
+        for( const placeID of _ids ) {
+          const models = await fromOfflineDB.getPropertiesWithID( placeID, 'ofID', 'models', 'Places', 'places' );
+          if( models.length > 0 ) {
+            placeObjects[ placeID.toString() ] = models
+          }
+        }
+      return placeObjects;
       default:
         console.log( "IndexedDB_Getting error" )
-        console.log( _id )
+        console.log( _ids )
     }
   }
 
