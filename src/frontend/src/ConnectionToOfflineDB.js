@@ -2,8 +2,8 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Tobias Mink
  * 
- * Last Modified: 03.04.2024 12:59:27
- * Modified By: Julian Hardtung
+ * Last Modified: 18.04.2024 12:25:41
+ * Modified By: Tobias Mink
  * 
  * Description: Helper API for manipulating the IndexedDB
  */
@@ -288,6 +288,11 @@ export default class ConnectionToOfflineDB {
           let conv = false;
 
           switch (selection) {
+            case "ofID":
+              if (cursor.value._id === _id) {
+                conv = true;
+              }
+              break;
             case "place":
               if (cursor.value.activityID === _id) {
                 conv = true;
@@ -306,6 +311,15 @@ export default class ConnectionToOfflineDB {
             switch (property) {
               case "_id":
                 data.push(cursor.value._id);
+                break;
+              case "places":
+                data.push(...cursor.value.places);
+                break;
+              case "positions":
+                data.push(cursor.value.positions);
+                break;
+              case "models":
+                data.push(...cursor.value.models);
                 break;
               case "placeNumber":
                 data.push(cursor.value.placeNumber);
@@ -362,6 +376,10 @@ export default class ConnectionToOfflineDB {
               break;
             case "Position":
               if (cursor.value.positionID === _id) {
+                data.push(cursor.value);
+              }
+            case "Camera":
+              if (cursor.value.activityID === _id) {
                 data.push(cursor.value);
               }
           }
@@ -726,6 +744,7 @@ export default class ConnectionToOfflineDB {
         case "activity":
           if (object.places.length > 0) {
             for (var i = 0; i < object.places.length; i++) {
+              console.log(object.places)
               await context
                 .deleteCascade(object.places[i], "place", "Places", "places")
                 .catch((err) => console.error(err));
@@ -734,6 +753,7 @@ export default class ConnectionToOfflineDB {
           break;
 
         case "place":
+          /* Delete all attached positions and their params */
           if (object.positions.length > 0) {
             for (var j = 0; j < object.positions.length; j++) {
               await context
@@ -741,6 +761,7 @@ export default class ConnectionToOfflineDB {
                 .catch((err) => console.error(err));
             }
           }
+          /* Delete all attached modells */
           if (object.models.length != 0) {
             for (var l = 0; l < object.models.length; l++) {
               var model = await context
@@ -752,9 +773,35 @@ export default class ConnectionToOfflineDB {
                 .catch((err) => console.error(err));
             }
           }
+          /* Delete all attached lines */
+          if (object.lines.length != 0) {
+            for (var l = 0; l < object.lines.length; l++) {
+              var line = await context
+                .getObject(object.lines[l], "Lines", "lines")
+                .catch((err) => console.error(err));
+                
+              await fromOfflineDB
+                .deleteObject(line, "Lines", "lines")
+                .catch((err) => console.error(err));
+            }
+          }
+          /* Delete all attached annotations */
+          if (object.annotations.length != 0) {
+            for (var l = 0; l < object.annotations.length; l++) {
+              var annotation = await context
+                .getObject(object.annotations[l], "Annotations", "annotations")
+                .catch((err) => console.error(err));
+                
+              await fromOfflineDB
+                .deleteObject(annotation, "Annotations", "annotations")
+                .catch((err) => console.error(err));
+            }
+          }
           break;
 
         case "position":
+          console.log(object)
+          /* Delete all attached images */
           if (object.images.length != 0) {
             for (var m = 0; m < object.images.length; m++) {
               var image = await context
@@ -766,6 +813,7 @@ export default class ConnectionToOfflineDB {
                 .catch((err) => console.error(err));
             }
           }
+          /* Delete all attached models */
           if (object.models.length != 0) {
             for (var n = 0; n < object.models.length; n++) {
               var model = await context
