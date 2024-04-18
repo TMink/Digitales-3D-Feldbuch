@@ -2,7 +2,7 @@
  * Created Date: 10.12.2023 15:32:15
  * Author: Tobias Mink
  * 
- * Last Modified: 30.03.2024 19:54:21
+ * Last Modified: 17.04.2024 23:12:42
  * Modified By: Tobias Mink
  * 
  * Description: A Collection of loader functions which are used to determines,
@@ -13,7 +13,8 @@
 import { Mesh, Box3, Vector3, Euler, Color } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
-import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader"
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
+import { exParams } from './Parameter';
 
 export class ObjectLoaders {
 
@@ -57,7 +58,6 @@ export class ObjectLoaders {
       case 'obj':
         /* Set the loader type and append the dracoLoader */
         loader = new OBJLoader()
-        loader.setDRACOLoader( dracoLoader )
         
         object = await new Promise( ( resolve ) => {
           loader.parse( objectData.model, '', ( obj ) => {
@@ -179,7 +179,7 @@ export class ObjectLoaders {
       case 'positions':
         const bbox = new Box3().setFromObject( loadedObject );
         const vec3 = new Vector3();
-        bbox.getCenter( vec3 )
+        bbox.getCenter( vec3 );
         
         entry["_id"] = objectData._id
         entry["title"] = objectData.title
@@ -241,6 +241,134 @@ export class ObjectLoaders {
         child.name = objectData._id;
       }
     } )
+  }
+
+  async loadObjects( type, env, ids ) {
+    let loader;
+
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath(
+      'https://www.gstatic.com/draco/versioned/decoders/1.5.6/' );
+      dracoLoader.setDecoderConfig( { type: 'js' } );
+    
+    // Get all object which should be loaded
+    if( type == 'threeDPart_withoutObjects' ) {
+      loader = new GLTFLoader();
+      loader.setDRACOLoader( dracoLoader )
+
+      for( const object of exParams.envs.defaultMain.objects.defaultObjects ) {
+        // Load .glb from path and create an THREE.Object3D
+        object.data = await new Promise( ( resolve ) => {
+          loader.load(
+            object.path,
+            function( glb ) {
+              resolve( glb.scene )
+            }
+          )
+        });
+        // Apply Methods and Properties from parameterlist
+        object.data.traverse( ( child ) => {
+          if( child instanceof Mesh ) {
+            this.applyMethodsAndSetProperties( child, object.methods, object.properties );
+          }
+        } )
+        // Add to scene
+        if( object.addToScene ) {
+          exParams.envs[type].components.scene[0].data.add( object.data );
+        }
+      }
+      
+    } else {
+      for( const [placePositionID, data] of Object.entries(ids) ) {
+        const selection = type.charAt(0).toUpperCase() + type.slice(1, -1);
+        const objects = await this.indexedDB.get( 'allObjectsWithID', placePositionID,
+        'Models', type, selection );
+        
+        if( objects.length > 0 ) {
+          for( const object of objects) {
+            /* Load the object and create an THREE.Group or THREE.Mesh */
+            const loadedObject = await this.load( object )
+            /* Updated the position parameters of the object, if the object was
+             * already part of the scene. This is enables the system to "remember"
+             * the current rotation, coordinates and scale of the object. Also
+             * returns an entry to be saved for better overview of currently
+             * loaded objects. */
+            const updatedObject = this.updateLoadedObject( type, object, loadedObject )
+            /* Push new object-entry in parameter-list */
+            const parameterListPath = exParams.envs[env].objects[type.slice(0, -1)]
+            parameterListPath._ids.push( updatedObject.entry._id );
+            parameterListPath.titles.push( updatedObject.entry.title );
+            parameterListPath.groups.push( updatedObject.object );
+            parameterListPath.amount++;
+            if( type === 'places' ) {
+
+              parameterListPath.entry.push( {
+                _id: updatedObject.entry._id,
+                placeID: updatedObject.entry.placeID,
+                title: updatedObject.entry.title,
+                group: updatedObject.object
+              } );
+
+            } else {
+
+              parameterListPath.entry.push( {
+                _id: updatedObject.entry._id,
+                positionID: updatedObject.entry.positionID,
+                placeID: data.placeID,
+                title: updatedObject.entry.title,
+                group: updatedObject.object,
+                position: updatedObject.entry.position,
+                bbox: updatedObject.entry.bbox
+              } );
+              
+            }
+            /* Add loaded object to scene */
+            exParams.envs[env].components.scene[0].data.add( updatedObject.object );
+            exParams.envs[env].objects.allObjects.push( updatedObject.object );
+          }
+        }
+      }
+      
+    }
+    // Load objects and save data in parameterlist
+  }
+  testFunc(){
+    console.log("Hello")
+  }
+
+  applyMethodsAndSetProperties( mesh, methods, properties ) {
+    // Apply methods, if available
+    if( Object.keys( methods ).length != 0 ) {
+      for( const [ key, value ] of Object.entries( methods ) ) {
+        this.executeFunctionApply( key, mesh, ...Object.values( value ) )
+      }
+    }
+    // Set properties, if available
+    if( Object.keys( properties ).length != 0 ) {
+      for( const [ key, value ] of Object.entries( properties ) ) {
+        this.executeFunctionSet( key, mesh, value );
+      }
+    }
+  }
+
+  executeFunctionApply( functionName, context ) {
+    var args = Array.prototype.slice.call( arguments, 2 );
+    var namespaces = functionName.split( "." );
+    var func = namespaces.pop();
+    for( var i = 0; i < namespaces.length; i++ ) {
+      context = context[ namespaces[ i ] ];
+    }
+    return context[ func ].apply( context, args );
+  }
+  
+  executeFunctionSet( functionName, context ) {
+    var args = Array.prototype.slice.call( arguments, 2 )[ 0 ];
+    var namespaces = functionName.split( "." );
+    var func = namespaces.pop();
+    for( var i = 0; i < namespaces.length; i++ ) {
+      context = context[ namespaces[ i ] ];
+    }
+    return context[ func ] = args;
   }
 
   // /**
