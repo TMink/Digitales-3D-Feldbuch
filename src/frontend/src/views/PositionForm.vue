@@ -479,7 +479,8 @@ export default {
       }
 
       // Delete the position itself
-      await fromOfflineDB.deleteObject(rawPosition, 'Positions', 'positions')
+      await fromOfflineDB
+        .deleteCascade( rawPosition._id, 'position', 'Positions', 'positions' )
         .catch(err => console.error(err));
       this.$generalStore.removeCurrentObject('position');
       this.hasUnsavedChanges = false;
