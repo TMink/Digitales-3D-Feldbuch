@@ -2,7 +2,7 @@
  * Created Date: 15.01.2024 14:52:11
  * Author: Tobias Mink
  * 
- * Last Modified: 30.03.2024 14:29:31
+ * Last Modified: 16.04.2024 19:00:12
  * Modified By: Tobias Mink
  * 
  * Description: A filter algorithmen to search for an object to modify.
@@ -143,9 +143,9 @@ export class ObjectFilter {
    * @param {*} placeObject 
    * @param {*} placeObjectsInScene 
    */
-  async getPlaceObjectInfo( placeObject, main ) {
-    for ( let i=0; i < main.objects.place.entry.length; i++) {
-      const objectID = main.objects.place.entry[ i ]._id;
+  async getPlaceObjectInfo( placeObject, objects ) {
+    for ( let i=0; i < objects.place.entry.length; i++) {
+      const objectID = objects.place.entry[ i ]._id;
       const objectInDB = await this.indexedDB.get( 'object', objectID, 'Models',
         'places' );
 
@@ -176,11 +176,11 @@ export class ObjectFilter {
    * @param {*} positionData 
    * @param {*} positionObjectsInScene 
    */
-  async getPositionDataInfo( positionData, main ) {
+  async getPositionDataInfo( positionData, objects ) {
     const positionIDs = [];
 
-    for ( let i=0; i < main.objects.position.entry.length; i++) {
-      const positionID = main.objects.position.entry[i].positionID;
+    for ( let i=0; i < objects.position.entry.length; i++) {
+      const positionID = objects.position.entry[i].positionID;
       const positionInDB = await this.indexedDB.get( 'object', positionID, 
         'Positions', 'positions' );
 
@@ -319,11 +319,11 @@ export class ObjectFilter {
    * @param {*} positionMods 
    * @param {*} scene 
    */
-  resetPositionMods( positionObject, positionMods, main ) {
+  resetPositionMods( positionObject, positionMods, scene ) {
     positionObject.chosenfinalModelGroup = null;
     positionMods.disabled = true;
     this.indexedDB.updateObjectOpacityAndColor( 
-      positionObject.chosenfinalModel[ 0 ], 'positions', main );
+      positionObject.chosenfinalModel[ 0 ], 'positions', scene );
     positionObject.chosenfinalModelGroup = null;
     positionMods.colorPicker.color = null;
     positionMods.opacitySliderValue = 0;
@@ -336,11 +336,11 @@ export class ObjectFilter {
    * @param {*} placeMods 
    * @param {*} scene 
    */
-  resetPlaceMods( placeObject, placeMods, main ) {
+  resetPlaceMods( placeObject, placeMods, scene ) {
     placeMods.token = false;
     placeMods.disabled = true;
     this.indexedDB.updateObjectOpacityAndColor(
-      placeObject.chosenfinalModel[ 0 ], 'places', main );
+      placeObject.chosenfinalModel[ 0 ], 'places', scene );
     placeMods.chosenfinalModelGroup = null;
     placeMods.colorPicker.color = null;
     placeMods.opacitySliderValue = 0;
