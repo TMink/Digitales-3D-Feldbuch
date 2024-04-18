@@ -423,6 +423,8 @@ export default {
      */
     async addActivity() {
 
+      console.log("Test")
+
       const newActivity = {
         activityNumber: '',
         branchOffice: 'Platzhalter',
@@ -432,7 +434,7 @@ export default {
         editor: [],
         lastChanged: Date.now(),
         lastSync: 0,
-        edit: true,
+        edit: true
       }
 
       if (this.activities.length != 0) {
@@ -474,6 +476,7 @@ export default {
           lastChanged: Date.now(),
           lastSync: rawActivity.lastSync,
           editor: rawActivity.editor,
+          camera: null
         }
 
         // add new activity to current authenticated user 
