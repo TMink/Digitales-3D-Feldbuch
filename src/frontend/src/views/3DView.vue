@@ -2,7 +2,7 @@
  Created Date: 17.11.2023 16:18:33
  Author: Tobias Mink
  
- Last Modified: 05.04.2024 15:49:47
+ Last Modified: 18.04.2024 17:56:48
  Modified By: Tobias Mink
  
  Description: 
@@ -68,7 +68,7 @@
                             <v-col cols="2">
                               <v-btn icon class="ma-1" color="primary" v-on:click="measurementTool.saveLineTitle(
                                       this.$root, this.$t, measureTool, 
-                                      exParams.main )">
+                                      exParams.envs[enviroments.withAllObjects].components.scene[0].data )">
                                 <v-icon>mdi-content-save-all</v-icon>
                               </v-btn>
                             </v-col>
@@ -77,7 +77,7 @@
                           <v-row no-gutters class="ps-4 pb-3">
                             <v-col cols="12">
                               <v-btn width="96.6%" color="error" v-on:click="measurementTool.deleteLine(
-                                      this.placeInDB, measureTool, exParams.main )">
+                                      this.placeInDB, measureTool, exParams.envs[enviroments.withAllObjects].components.scene[0].data )">
                                 <v-icon>mdi-delete</v-icon>
                               </v-btn>
                             </v-col>
@@ -139,7 +139,7 @@
                             <v-col cols="2">
                               <v-btn icon class="ma-1" color="primary" v-on:click="annotationTool.saveAnnotationTitle(
                                       this.$root, this.$t, annotatTool, 
-                                      exParams.main )">
+                                      exParams.envs[enviroments.withAllObjects].components.scene[0].data )">
                                 <v-icon>mdi-content-save-all</v-icon>
                               </v-btn>
                             </v-col>
@@ -149,7 +149,7 @@
                             <v-col cols="12">
                               <v-btn width="96.6%" color="error" v-on:click="annotationTool.deleteAnnotation(
                                       this.placeInDB, annotatTool, 
-                                      exParams.main )">
+                                      exParams.envs[enviroments.withAllObjects].components.scene[0].data )">
                                 <v-icon>mdi-delete</v-icon>
                               </v-btn>
                             </v-col>
@@ -184,7 +184,7 @@
                             <!-- Segmentation Mode Button-->
                             <v-col>
                               <v-btn width="100%" color="error" v-on:click="segmentationTool.switchToSegmentationMode( 
-                                      exParams.stTool, exParams.main )">
+                                      exParams.stTool, exParams.envs[enviroments.withAllObjects] )">
                                 Switch to Segmentation Mode
                               </v-btn>
                             </v-col>
@@ -519,7 +519,12 @@
     </div>
 
     <!-- Canvas -->
-    <canvas id="mainCanvas" style="position:relative; float:left; z-index: 2;"></canvas>
+    <canvas id="mainCanvas" style="position:relative; float:left; z-index: 2; opacity: 0; transition: opacity 2s; will-change: transform, opacity;"></canvas>
+    
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="preloader-wrap">
+      <span class="loader"></span>
+    </div>
 
     <!-- Bottom drawer: Position information-->
     <v-navigation-drawer v-model="bottomDrawer.showDrawer" location="bottom" temporary width="300">
@@ -641,6 +646,12 @@ import { Initialisations } from '../components/3dFunctions/Initialisations.js'
 import * as TWEEN from '@tweenjs/tween.js'
 
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
+
+const enviroment = {
+  withoutObjects: 'threeDPart_withoutObjects',
+  withAllObjects: 'threeDPart_withAllObjects',
+  withSpecificObject: 'threeDPart_withSpecificObject'
+}
 
 export default {
   name: 'ModelViewer',
@@ -783,7 +794,7 @@ export default {
         /* Reset modifikations and save changes */
         if ( this.positionMods.token ) {
           this.objectFilter.resetPositionMods( this.positionObject, 
-            this.positionMods, exParams.main );
+            this.positionMods, exParams.envs[enviroment.withAllObjects].components.scene[0].data );
         }
 
         /* Reset positionData & positionObject menus content 
@@ -814,7 +825,7 @@ export default {
         /* Reset modifikations and save changes */
         if ( this.positionMods.token ) {
           this.objectFilter.resetPositionMods( this.positionObject, 
-            this.positionMods, exParams.main );
+            this.positionMods, exParams.envs[enviroment.withAllObjects].components.scene[0].data );
         }
 
         /* Reset positionData & positionObject menus content
@@ -845,7 +856,7 @@ export default {
         /* Reset modifikations and save changes */
         if ( this.positionMods.token ) {
           this.objectFilter.resetPositionMods( this.positionObject, 
-            this.positionMods, exParams.main );
+            this.positionMods, exParams.envs[enviroment.withAllObjects].components.scene[0].data );
         }
 
         /* Reset positionData & positionObject menus content
@@ -887,7 +898,7 @@ export default {
         /* Reset modifikations and save changes to model */
         if ( this.positionMods.token ) {
           this.objectFilter.resetPositionMods( this.positionObject, 
-            this.positionMods, exParams.main );
+            this.positionMods, exParams.envs[enviroment.withAllObjects].components.scene[0].data );
         }
 
         /* Reset positionObject menus content */
@@ -909,7 +920,7 @@ export default {
         /* Reset modifikations and save changes to model */
         if ( this.positionMods.token ) {
           this.objectFilter.resetPositionMods( this.positionObject, 
-            this.positionMods, exParams.main );
+            this.positionMods, exParams.envs[enviroment.withAllObjects].components.scene[0].data );
         }
 
         /* Reset positionObject menus content */
@@ -939,7 +950,7 @@ export default {
 
             const result = this.positionObject.infoBlock.find( arr => 
               value );
-            const modelInScene = exParams.main.scene.getObjectByName( 
+            const modelInScene = exParams.envs[enviroment.withAllObjects].components.scene[0].data.getObjectByName( 
               value[0] );
             this.positionObject.chosenfinalModelGroup = this.utilities.getGroup(
               modelInScene );
@@ -956,7 +967,7 @@ export default {
           /* Update color picker and opacity slider if a model has been 
              modified */
           else {
-            const modelInScene = exParams.main.scene.getObjectByName( 
+            const modelInScene = exParams.envs[enviroment.withAllObjects].components.scene[0].data.getObjectByName( 
               value[0] );
             this.positionObject.chosenfinalModelGroup = this.utilities.getGroup( 
               modelInScene );
@@ -972,7 +983,7 @@ export default {
 
         } else {
           this.positionMods.attachTransformControls = false;
-          exParams.main.transformControls.detach();
+          exParams.envs[enviroment.withAllObjects].components.controls[1].data.detach();
         }
       }
     },
@@ -983,7 +994,7 @@ export default {
         /* Reset modifikations and save changes to model */
         if (this.placeMods.token) {
           this.objectFilter.resetPlaceMods( this.placeObject, this.placeMods, 
-          exParams.main );
+          exParams.envs[enviroment.withAllObjects].components.scene[0].data );
         }
 
         this.objectFilter.resetPlaceObjectInfo( this.placeObject );
@@ -1003,7 +1014,7 @@ export default {
         /* Reset modifikations and save changes to model */
         if (this.placeMods.token) {
           this.objectFilter.resetPlaceMods(this.placeObject, this.placeMods, 
-          exParams.main );
+          exParams.envs[enviroment.withAllObjects].components.scene[0].data );
         }
 
         this.objectFilter.resetPlaceObjectInfo( this.placeObject );
@@ -1029,7 +1040,7 @@ export default {
               this.placeMods.colorPicker.object == null ) {
 
             const result = this.placeObject.infoBlock.find( arr => value );
-            const modelInScene = exParams.main.scene.getObjectByName( value[0] );
+            const modelInScene = exParams.envs[enviroment.withAllObjects].components.scene[0].data.getObjectByName( value[0] );
             this.placeObject.chosenfinalModelGroup = this.utilities.getGroup( 
               modelInScene );
             
@@ -1045,7 +1056,7 @@ export default {
           /* Update color picker and opacity slider if a model has been 
              modified */
           else {
-            const modelInScene = exParams.main.scene.getObjectByName( value[0] );
+            const modelInScene = exParams.envs[enviroment.withAllObjects].components.scene[0].data.getObjectByName( value[0] );
             this.placeObject.chosenfinalModelGroup = this.utilities.getGroup( 
               modelInScene );
             
@@ -1120,6 +1131,8 @@ export default {
   },
 
   setup() {
+    console.log( "==> Setup" )
+    console.log( "----> Determin window width and height" )
     const { width, height } = useWindowSize();
     return {
       windowWidth: width,
@@ -1127,258 +1140,296 @@ export default {
     };
   },
 
-  async created() {
+  created() {
+    console.log( "==> Created" )
+    console.log( "----> Create deep clone of attribute list of every enviroment (DeepClean)" )
     this.initExternalImports();
-    
-  },
-
-  async mounted() {
-    /***************************************************************************
-     *  ++++ Synchronise with IndexedDB ++++
-     */
-    await fromOfflineDB.syncLocalDBs();
-    
-    
-    /***************************************************************************
-     *  ++++ Load specific data from IndexedDB ++++
-     */
-    await this.loadDataFromIndexedDB();
-    
-    
-    
-    /***************************************************************************
-     *  ++++ Link canvases to exParams and specify window width and height. ++++
-     */
-    this.setupCanvases();
-    
-
-    
-    /***************************************************************************
-     *  ++++ Disable Modifikation Options for places and position. ++++
-     * (Needs to be done manualy, becaus of an internal vuetify bug)
-     */
-    this.positionMods.disabled = true;
-    this.placeMods.disabled = true;
-    
-    
-    
-    /***************************************************************************
-     *  ++++ Initialize the Measurement Tool ++++
-     */
-    this.initialisations.initMeasurementTool( exParams.main, exParams.mmTool, 
-      document );
-
-    if( this.placeID == null || this.placeObjects.length == 0 ){
-
-      this.initialisations.mainInitNoObjects2( exParams.main );
-      this.leftSidebar.style.visibility = "hidden";
-      this.leftSidebar.style.width = "0px";
-      
-      this.animation();
-      
-    } else {
-      /***************************************************************************
-       *  ++++ Initialize Main- and Sub-Scene ++++
-       * 
-       * Checks initTokens form exparams => 
-       *  false == Scene not initialized yet 
-       *  true == Scene already initialized
-       */
-      for ( const [ sceneName, tokenValue ] of 
-        Object.entries( exParams.initTokens ) ) {
-        if ( !tokenValue ) {
-          switch ( sceneName ) {
-            case "main":
-              /* Initialize main scene */
-              this.initialisations.mainInit( exParams.main );
-              /* Initialize main eventlistener */
-              this.initMainEventlisteners( window, exParams.main );
-              /* Set token to true */
-              this.tokenValue = true;
-              break;
-            case "sub":
-              /* Initialize sub scene */
-              this.initialisations.subInit( exParams.sub );
-              /* Initialize sub eventlistener */
-              this.initSubEventlisteners( exParams.sub );
-              /* Set token to true */
-              this.tokenValue = true;
-              break;
-          }
-        }
-      }
-  
-  
-      
-      /***************************************************************************
-       *  ++++ Load place and position objects into scene. ++++
-       * 
-       * Determines if:
-       *    1. No objects are present in IndexedDb
-       * or   
-       *    2. Only place objects are present in IndexedDB
-       * or
-       *    3. Only position objects are present in IndexedDB
-       * or
-       *    3. Place and position objects are present in IndexedDB
-       * 
-       * Based on these different cases the camera will be placed accordingly to
-       * the amount and size of the objects, present in the scene
-       */
-      /* 1. No Models found */
-      if ( this.placeObjects.length == 0 && this.positionObjects == 0 ) {
-        
-        console.log( "No Models found" )
-      
-      /* 2. Only place objects */
-      } else if ( this.placeObjects.length != 0 && this.positionObjects == 0 ) {
-        
-        /* Load objects in scene */
-        await this.objectLoaders.loadObjectsInScene( exParams.main, 'places', 
-          this.placeID );
-        /* Fill object Filter menue options with data based on currently loaded
-         * objects. */
-        this.objectFilter.getPlaceObjectInfo( this.placeObject, exParams.main );
-  
-        /* Get object center for camera and control alignment if ... */
-        /* ... there is only one objects present or ... */
-        if ( exParams.main.objects.allObjects.length < 2 ) {
-          this.centerOfObjects = this.utilities.getModelCenter( 
-            exParams.main.objects.place.groups[ 0 ] )
-        /* ... there are multiple objects present. */
-        } else {
-          this.centerOfObjects = this.utilities.getBarycenter( 
-            exParams.main.objects.place.groups );
-        }
-  
-        console.log("Only place objects")
-      
-      /* 3. Only position objects */
-      } else if ( this.placeObjects.length == 0 && this.positionObjects != 0 ) {
-        
-        /* Load objects in scene */
-        await this.objectLoaders.loadObjectsInScene( exParams.main, 'positions', 
-          this.placeID );
-        /* Fill object Filter menue options with data based on currently loaded
-         * objects. */
-        this.objectFilter.getPositionDataInfo( this.positionData, 
-          exParams.main );
-  
-        /* Get object center for camera and control alignment if ... */
-        /* ... there is only one objects present or ... */
-        if ( exParams.main.objects.allObjects.length < 2 ) {
-          this.centerOfObjects = this.utilities.getModelCenter( 
-            exParams.main.objects.position.groups[ 0 ] )
-        /* ... there are multiple objects present. */
-        } else {
-          this.centerOfObjects = this.utilities.getBarycenter( 
-            exParams.main.objects.position.groups );
-        }
-  
-        console.log("Only position objects")
-      
-      /* 4. Place and position objects */
-      } else if ( this.placeObjects.length != 0 && this.positionObjects != 0 ) {
-        /* Load objects in scene */
-        await this.objectLoaders.loadObjectsInScene( exParams.main, 'places', 
-        this.placeID );
-        await this.objectLoaders.loadObjectsInScene( exParams.main, 'positions', 
-        this.placeID );
-        /* Fill object Filter menue options with data based on currently loaded
-        * objects. */
-        this.objectFilter.getPlaceObjectInfo( this.placeObject, 
-        exParams.main );
-        this.objectFilter.getPositionDataInfo( this.positionData, 
-        exParams.main );
-       
-        /* Get object center for camera and control alignment if ... */
-        /* ... there is only one objects present or ... */
-        if ( exParams.main.objects.allObjects.length < 2 ) {
-          this.centerOfObjects = this.utilities.getModelCenter( 
-            exParams.main.objects.place.groups[ 0 ] );
-        /* ... there are multiple objects present. */
-        } else {
-          this.centerOfObjects = this.utilities.getBarycenter( 
-            exParams.main.objects.place.groups );
-        }
-        
-        console.log("Place and position objects")
-      }
-  
-  
-      
-      /***************************************************************************
-       *  ++++ Initialize the Segmentation Tool ++++
-       */
-      this.initialisations.initSegmentationTool( exParams.main, exParams.stTool, 
-        this.centerOfObjects );
-  
-  
-  
-      /***************************************************************************
-       *  ++++ Re-center Camera based on predetermine factors ++++
-       */
-      await this.cameraSettings.updateCamera ( 
-        this.centerOfObjects, this.placeID, exParams.main, this.cameraIDsInDB, 
-        this.cameraInDB, this.cameraData, this.arcballAnchor
-      )
-  
-  
-      
-      /***************************************************************************
-       *  ++++ Load already drawn lines ++++
-       */
-      await this.loadLines();
-  
-  
-      
-      /***************************************************************************
-       *  ++++ Load already created annotations ++++
-       */
-      await this.loadAnnotations();
-  
-  
-      
-      /***************************************************************************
-       * ++++ Animate the scene ++++
-       */
-      this.animate();
+    for( const [_,envName] of Object.entries(enviroment) ) {
+      exParams.envs[envName].reset = JSON.parse(JSON.stringify(exParams.envs[ envName ].components.attributes.list))
     }
   },
 
-  async unmounted() {
-    if( this.placeID == null || this.placeObjects == null ) {
-      this.garbageCollection.disposeOfObjects(exParams.main)
+  async mounted() {
+    console.log( "==> Mounted" )
+    
+    console.log( "----> Get Actinity-ID" )
+    this.activityID = this.$generalStore.getCurrentObject( 'activity' );
+    
+    console.log( "----> Synchronise with IndexedDB" )
+    await fromOfflineDB.syncLocalDBs();
+    
+    console.log( "----> Get Place-IDs of currently selected activity" );
+    const placeIDs = await fromOfflineDB
+                      .getPropertiesWithID( this.activityID, 'ofID', 'places', 'Activities', 'activities' )
+                      .catch(err => console.error(err));
+    
+    console.log( "----> Get Position-IDs of all places of activity" );
+    const positionIDs = await this.indexedDB
+                          .get( 'allPositionIDsOfAllPlaceIDs', placeIDs, 'Place', 'place' )
+                          .catch(err => console.error(err));
+    
+    this.leftSidebar = document.getElementById( "leftSidebar" );
+    
+    if( this.activityID != null && (placeIDs.length > 1 || positionIDs.length > 0) ) {
+      console.log( "----> Get all place objects of the activity" )
+      const placeObjects = await this.indexedDB
+                            .get( 'allPlaceObejctsOfActivityID', placeIDs )
+                            .catch(err => console.error(err));
+      this.placeObjectsPresent = Object.keys( placeObjects ).length > 0;
       
+      console.log( "----> Get all position objects of all positions of all places of the activity" )
+      const positionObjects = await this.indexedDB
+                                .get( 'allPositionObejctsOfAllPositionIDs', positionIDs )
+                                .catch(err => console.error(err));
+      this.positionObjectsPresent = Object.keys( positionObjects ).length > 0
+      
+      if( this.placeObjectsPresent || this.positionObjectsPresent ) {
+        const envMain = exParams.envs[ enviroment.withAllObjects ]
+        
+        /************
+         * If place or position objects are present, update the parameter list
+         * with canvas and window data and proceed to generate the main
+         * enviroment.
+         */
+        envMain.canvas = document.getElementById( 'mainCanvas' );
+        envMain.window = window;
+        console.log( "----> Initialize enviroment: withAllObjects" )
+        this.initialisations.initEnviroment( enviroment.withAllObjects )
+
+        if( this.positionObjectsPresent ) {
+          const envSub = exParams.envs[ enviroment.withSpecificObject ];
+          // --> Disable modifikation options for positions
+          // (Needs to be done manualy, becaus of an internal vuetify bug)
+          this.positionMods.disabled = true;
+          
+          /****
+           * If position objects are present, update the parameter list with
+           * canvas and window data and proceed to generate the sub enviroment.
+           */
+          envSub.canvas = document.getElementById( 'subCanvas' );
+          envSub.window = window;
+          // console.log( "----> Initialize new enviroment: withAllObjects" )
+          // this.initialisations.initEnviroment(enviroment.withSpecificObject);
+          
+          /****
+           * Load position objects
+           */
+          await this.objectLoaders
+            .loadObjects( 'positions', enviroment.withAllObjects, positionObjects )
+            .catch(err => console.error(err));
+
+          /****
+           * Fill object-filter-menue options with data based on currently 
+           * loaded objects. 
+           */
+          this.objectFilter
+            .getPositionDataInfo( this.positionData, envMain.objects )
+            .catch(err => console.error(err));
+
+          /****
+           * Get object center for camera and control alignment if ...
+           */
+          // ... there is only one object present or ...
+          if ( envMain.objects.position.groups.length == 1 ) {
+            console.log( "----> Get center of object for camera recalibration: Single object" );
+            this.centerOfObjects = this.utilities.getModelCenter( envMain.objects.position.groups[ 0 ] );
+            console.log(this.centerOfObjects)
+          // ... there are multiple objects present.
+          } else {
+            console.log( "----> Get center of object for camera recalibration: Multiple objects" );
+            this.centerOfObjects = this.utilities.getBarycenter( envMain.objects.position.groups );
+          }
+        }
+
+        if( this.placeObjectsPresent ) {
+          // --> Disable modifikation options for places
+          // (Needs to be done manualy, becaus of an internal vuetify bug)
+          this.placeMods.disabled = true;
+          
+          /****
+           * Load place objects
+           */
+          console.log( "----> Load place objects, add them to scene and write into parameter list" );
+          await this.objectLoaders
+            .loadObjects( 'places', enviroment.withAllObjects, placeObjects )
+            .catch(err => console.error(err));
+
+          console.log( "----> Fill object-filter-menue options with data based on currently loaded objects" );
+          this.objectFilter
+            .getPlaceObjectInfo( this.placeObject, envMain.objects )
+            .catch(err => console.error(err));
+
+          /****
+           * Get object center for camera and control alignment if ...
+           */
+          // ... there is only one object present or ...
+          if ( envMain.objects.place.groups.length == 1 ) {
+            console.log( "----> Get center of object for camera recalibration: Single object\n      (Overwrites previous calculation based on position model/-s)" );
+            this.centerOfObjects = this.utilities.getModelCenter( envMain.objects.place.groups[ 0 ] )
+            // ... there are multiple objects present.
+          } else {
+            console.log( "----> Get center of object for camera recalibration: Multiple objects\n      (Overwrites previous calculation based on position model/-s)" );
+            this.centerOfObjects = this.utilities.getBarycenter( envMain.objects.place.groups )
+            // console.log(envMain.objects.place.groups)
+            console.log(this.centerOfObjects)
+          }
+        }
+
+
+
+
+        /***********************************************************************
+         * Init Tools
+         * --> Check if tools were used in combination with loaded objects (place/position)
+         */
+        console.log( "----> Initialize tools:" );
+        console.log( "------> Measurement Tool" );
+        this.initialisations.initMeasurementTool( envMain.canvas, exParams.mmTool, document )
+
+        console.log( "--------> Load lines from IndexedDB" );
+        await this.loadLines();
+
+        console.log( "------> Segmentation Tool" );
+        this.initialisations.initSegmentationTool( envMain.objects, envMain.components.scene[0].data, envMain.components.attributes.list , exParams.stTool, this.centerOfObjects )
+
+        console.log( "--------> Load annotations from IndexedDB" );
+        await this.loadAnnotations();
+        // Load saved lines
+        // Load saved annotations
+
+
+
+
+        /***********************************************************************
+         * Re-locate camera according to the already loaded objects
+         */
+        this.cameraOfActivity = await this.indexedDB
+                                  .get( 'allObjectsWithID', this.activityID, 'Cameras', 'cameras', 'Camera' )
+                                  .catch(err => console.error(err));
+
+        console.log( "----> Update camera" );
+        await this.cameraSettings
+          .updateCamera( this.centerOfObjects, envMain.components.camera[0].data, envMain.components.controls[0].data, this.cameraOfActivity, this.cameraData, this.arcballAnchor )
+          .catch(err => console.error(err));
+        
+
+         
+        /***********************************************************************
+         * Init Eventlisteners
+         */
+        console.log( "----> Create eventlisteners" );
+        this.initEventlisteners( window, envMain );
+
+
+
+
+        /***********************************************************************
+         * Loading screen fade
+         */
+        console.log( "----> Fade between loading screen and canvas view" );
+        var el2 = document.getElementById('mainCanvas');
+        el2.style.opacity = 1;
+        var el = document.getElementById('loadingScreen');
+        el.style.opacity = 0;
+
+        
+        
+        
+        /***********************************************************************
+         * Animate the scene/-s
+         */
+        console.log( "----> Start animation" );
+        this.animateThreeMain()
+      } else {
+        var el2 = document.getElementById('mainCanvas');
+        el2.style.opacity = 1;
+        this.createDefaultScene();
+      }
     } else {
-      if ( exParams.main.objects.allObjects.length > 0 ) {
-        this.indexedDB.updateCamera( this.placeID, this.cameraIDsInDB,
-          this.cameraInDB, this.arcballAnchor, exParams.main )
+      var el2 = document.getElementById('mainCanvas');
+      el2.style.opacity = 1;
+      this.createDefaultScene();
+    }
+  },
   
-        this.indexedDB.updateObjects( exParams.main )
+  beforeUnmount() {
+    var loadingScreen = document.getElementById('loadingScreen');
+    loadingScreen.style.opacity = 1
+    var mainCanvas = document.getElementById('mainCanvas');
+    mainCanvas.style.opacity = 0
+  },
+
+  async unmounted() {
+    console.log( "==> Unmounted" )
+    if( this.activityID == null && (!this.placeObjectsPresent || !this.positionObjectsPresent) ) {
+      console.log( "----> No loaded objects in scene, continue with garbage collection" )
+      console.log( "----> Garbage Collection: Default objects" )
+      this.garbageCollection
+        .disposeOfObjects(exParams.envs[enviroment.withoutObjects].components.scene[0].data, exParams.envs[enviroment.withoutObjects].components.renderer[0].data)
+        .catch(err => console.error(err));
+      console.log( "----> Garbage Collection: Parameter-List" )
+      this.garbageCollection
+        .deepCleanEnv( exParams.envs[enviroment.withoutObjects] );
+    } else {
+      if ( exParams.envs[enviroment.withAllObjects].objects.allObjects.length > 0 ) {
+        console.log( "----> Objects in scene, continue with preservation of camera state" );
+        if( !this.cameraOfActivity.length ) {
+          console.log( "----> Create new camera in indexedDB" );
+          this.indexedDB
+            .createCamera( this.activityID, this.arcballAnchor, exParams.envs[enviroment.withAllObjects].components.camera[0].data )
+            .catch(err => console.error(err));
+        } else {
+          console.log( "----> Update existing camera in indexedDB" );
+          this.indexedDB
+            .updateCamera( this.activityID, this.cameraOfActivity[0], exParams.envs[enviroment.withAllObjects].components.camera[0].data )
+            .catch(err => console.error(err));
+        }
+        
+        console.log( "----> Update objects in indexedDB" );
+        this.indexedDB
+          .updateObjects( exParams.envs[enviroment.withAllObjects].objects, exParams.envs[enviroment.withAllObjects].components.scene[0].data )
+          .catch(err => console.error(err));
       }
   
-      exParams.main.canvas.removeEventListener( 'click', this.updateArcball );
-      exParams.main.canvas.removeEventListener( 'click', this.onMouseDown );
-      exParams.main.canvas.removeEventListener( 'keydown', this.keyDown );
-      exParams.main.canvas.removeEventListener( 'keyup', this.keyUp );
+      console.log( "----> Remove all eventlisteners from canvas" )
+      exParams.envs[enviroment.withAllObjects].canvas.removeEventListener( 'click', this.updateArcball );
+      exParams.envs[enviroment.withAllObjects].canvas.removeEventListener( 'click', this.onMouseDown );
+      exParams.envs[enviroment.withAllObjects].canvas.removeEventListener( 'keydown', this.keyDown );
+      exParams.envs[enviroment.withAllObjects].canvas.removeEventListener( 'keyup', this.keyUp );
+      exParams.envs[enviroment.withAllObjects].canvas.removeEventListener( 'mousemove', this.onDocumentMouseMove, false);
+
+      console.log( "----> Remove all eventlisteners from renderer" )
+      exParams.envs[enviroment.withAllObjects].components.renderer[0].data.domElement.removeEventListener( 'pointerdown', this.onClick, false );
+      exParams.envs[enviroment.withAllObjects].components.renderer[0].data.domElement.removeEventListener( 'pointerdown', this.onClickAnnotation, false );
   
-      exParams.main.renderer.domElement.removeEventListener( 'pointerdown', 
-        this.onClick, false );
-      exParams.main.renderer.domElement.removeEventListener( 'pointerdown', 
-        this.onClickAnnotation, false );
-      exParams.main.canvas.removeEventListener( 'mousemove', 
-        this.onDocumentMouseMove, false);
-  
-      /* Dispose geometries and materials in scene */
-      this.garbageCollection.clearCanvases( exParams.main, exParams.sub );
+      console.log( "----> Garbage Collection: Canvases" )
+      this.garbageCollection
+        .cleanEnv( exParams.envs[enviroment.withAllObjects] )
+        .catch(err => console.error(err));
+      this.garbageCollection
+        .cleanEnv( exParams.envs[enviroment.withSpecificObject] )
+        .catch(err => console.error(err));
+      console.log( "----> Garbage Collection: Parameter-List" )
+      this.garbageCollection
+        .deepCleanEnv( exParams.envs[ enviroment.withAllObjects ] );
     }
   },
 
   methods: {
 
-    detachForFoto() {
-      exParams.main.transformControls.detach()
+    createDefaultScene() {
+      // Create clock for animation
+      this.clock = new Clock()
+      // Load canvas and window
+      exParams.envs[ enviroment.withoutObjects ].canvas = document.getElementById( "mainCanvas" );
+      exParams.envs[ enviroment.withoutObjects ].window = window;
+      // Init place enviroment and load objects
+      this.initialisations.initEnviroment( enviroment.withoutObjects );
+      this.objectLoaders.loadObjects( enviroment.withoutObjects )
+      // Update Ui -> Set visibility of left drawer
+      this.leftSidebar.style.visibility = "hidden";
+      this.leftSidebar.style.width = "0px";
+      this.animateDefault();
     },
 
     /**
@@ -1400,34 +1451,6 @@ export default {
       this.objectFilter = new ObjectFilter( this.indexedDB );
       this.initialisations = new Initialisations( this.segmentationTool );
     },
-
-    async loadDataFromIndexedDB() {
-      this.placeID = this.$generalStore.getCurrentObject( 'place' );
-      if( this.placeID != null ) {
-        this.placeObjects = await this.indexedDB.get( 'allObjectsWithID', this.placeID, 'Models', 'places', 'Place' );
-        if(this.placeObjects.length > 0 ) {
-          this.cameraIDsInDB = await this.indexedDB.get( 'properties', '_id', 'Cameras', 'cameras' );
-          this.cameraInDB = await this.indexedDB.get( 'object', this.placeID, 'Cameras', 'cameras' );
-          this.placeInDB = await this.indexedDB.get( 'object', this.placeID, 'Places', 'places' );
-          this.positionObjects = await this.indexedDB.get( 'allObjectsWithID', this.placeID, 'Models', 'positions', 'Place' );
-        } 
-      }
-    }, 
-
-    /**
-     * -------------------------------------------------------------------------
-     * # Setup vuetify/html components
-     * -------------------------------------------------------------------------
-     */
-
-    setupCanvases: function() {
-      this.mainCanvas = document.getElementById("mainCanvas");
-      this.subCanvas = document.getElementById("subCanvas");
-      this.leftSidebar = document.getElementById("leftSidebar");
-      this.clock = new Clock()
-      exParams.main.canvas = this.mainCanvas;
-      exParams.sub.canvas = this.subCanvas;
-    },
     
     /**
      * -------------------------------------------------------------------------
@@ -1435,37 +1458,37 @@ export default {
      * -------------------------------------------------------------------------
      */
 
-    loadObjectInSub: async function( objectID ) {
+    loadObjectInSub: async function( objectID, allObjects, allScene, specificObject, specificCamera ) {
       const object = await this.indexedDB.get( 'object', objectID, 'Models', 'positions' );
 
       const loader = new ObjectLoaders()
       const loadedObject = await loader.load( object )
 
-      for ( var i in exParams.main.objects.position.groups ) {
-        if ( exParams.main.objects.position.entry[ i ]._id == objectID ) {
+      for ( var i in allObjects.position.groups ) {
+        if ( allObjects.position.entry[ i ]._id == objectID ) {
           this.posInfo.modelName = "Model name: " + 
-          exParams.main.objects.position.entry[ i ].modelTitle;
+          allObjects.position.entry[ i ].modelTitle;
           
           loadedObject.position.set( 
-            -exParams.main.objects.position.entry[ i ].position.x, 
-            -exParams.main.objects.position.entry[ i ].position.y,
-            -exParams.main.objects.position.entry[ i ].position.z )
+            -allObjects.position.entry[ i ].position.x, 
+            -allObjects.position.entry[ i ].position.y,
+            -allObjects.position.entry[ i ].position.z )
             
-          const height = exParams.main.objects.position.entry[ i ].bbox.max.y - 
-            exParams.main.objects.position.entry[ i ].bbox.min.y;
-          const width = exParams.main.objects.position.entry[ i ].bbox.max.x - 
-            exParams.main.objects.position.entry[ i ].bbox.min.x;
-          const length = exParams.main.objects.position.entry[ i ].bbox.max.z - 
-            exParams.main.objects.position.entry[ i ].bbox.max.z;
+          const height = allObjects.position.entry[ i ].bbox.max.y - 
+            allObjects.position.entry[ i ].bbox.min.y;
+          const width = allObjects.position.entry[ i ].bbox.max.x - 
+            allObjects.position.entry[ i ].bbox.min.x;
+          const length = allObjects.position.entry[ i ].bbox.max.z - 
+            allObjects.position.entry[ i ].bbox.max.z;
           const largest = Math.max(height, width, length)
-          exParams.sub.camera.position.z = largest * 2;
+          specificCamera.position.z = largest * 2;
 
         }
       }
 
       /* Add model to sub scene */
-      exParams.sub.scene.add( loadedObject );
-      exParams.sub.object.push( loadedObject );
+      allScene.add( loadedObject );
+      specificObject.push( loadedObject );
       
     },
 
@@ -1487,7 +1510,7 @@ export default {
             elem.lable.name, elem.lable.distance, lineCenter, exParams.mmTool );
 
           balls.forEach( ball => {
-            exParams.main.scene.add( ball.sphere )
+            exParams.envs[enviroment.withAllObjects].components.scene[0].data.add( ball.sphere )
             ball.sphere.position.set( ball.position.x, ball.position.y, 
               ball.position.z )
           })
@@ -1495,7 +1518,7 @@ export default {
           /* Add lable to line */
           exParams.mmTool.line.add( exParams.mmTool.measurementLable );
           /* Add line to scene */
-          exParams.main.scene.add( exParams.mmTool.line );
+          exParams.envs[enviroment.withAllObjects].components.scene[0].data.scene.add( exParams.mmTool.line );
 
           const newLine = {
               _id: elem._id,
@@ -1545,7 +1568,7 @@ export default {
           this.annotatTool.allTitles.push( annotation.lableName );
           
           /* Add lable and box combo to scene */
-          exParams.main.scene.add( annotationBox )
+          exParams.envs[enviroment.withAllObjects].components.scene[0].data.add( annotationBox )
           annotationBox.position.set( annotation.position.x, 
             annotation.position.y, annotation.position.z )
 
@@ -1560,21 +1583,21 @@ export default {
      * -------------------------------------------------------------------------
      */
 
-    initMainEventlisteners( window, main ) {
+    initEventlisteners( window, env ) {
       // Eventlistener
       document.addEventListener( 'click', this.func, false );
-      main.canvas.addEventListener( 'click', this.updateArcball );
-      main.canvas.addEventListener( 'click', this.onMouseDown );
+      env.canvas.addEventListener( 'click', this.updateArcball );
+      env.canvas.addEventListener( 'click', this.onMouseDown );
       window.addEventListener( 'keydown', e => {
         switch ( e.code ) {
           case 'KeyW':
-            main.transformControls.mode = 'translate';
+            env.components[1].data.mode = 'translate';
             break;
           case 'KeyE':
-            main.transformControls.mode = 'rotate';
+            env.components[1].data.mode = 'rotate';
             break;
           case 'KeyR':
-            main.transformControls.mode = 'scale';
+            env.components[1].data.mode = 'scale';
             break;
         }
       });
@@ -1582,70 +1605,46 @@ export default {
       document.addEventListener( 'keydown', this.keyDown );
       document.addEventListener( 'keyup', this.keyUp );
 
-      main.renderer.domElement.addEventListener( 'pointerdown', this.onClick, 
+      env.components.renderer[0].data.domElement.addEventListener( 'pointerdown', this.onClick, 
         false );
-      main.renderer.domElement.addEventListener( 'pointerdown', 
+      env.components.renderer[0].data.domElement.addEventListener( 'pointerdown', 
         this.onClickAnnotation, false );
-        main.canvas.addEventListener( 'mousemove', this.onDocumentMouseMove, 
+        env.canvas.addEventListener( 'mousemove', this.onDocumentMouseMove, 
         false);
-    },
-
-    initSubEventlisteners( sub ) {
     },
 
     updateArcball: async function( event ) {
       if ( event.ctrlKey ) {
-        
-        this.cameraData = this.utilities.getCameraData( exParams.main.camera )
+        this.cameraData = this.utilities.getCameraData( exParams.envs[enviroment.withAllObjects].components.camera[0].data )
 
-        if ( this.cameraIDsInDB.includes( this.placeID ) ) {
-          const newCamera = await this.indexedDB.get( 'object', this.placeID, 'Cameras', 'cameras' );
-            
-          this.controlSettings.updateWithNewCamera( exParams.main.arcBallControls,
-            newCamera );
+        if ( this.cameraOfActivity.length > 0 ) {
+          this.controlSettings.updateWithNewCamera( exParams.envs[enviroment.withAllObjects].components.controls[0].data,
+          this.cameraOfActivity[0] );
         } else {
-          this.controlSettings.updateWithOldCamera( exParams.main.arcBallControls,
+          this.controlSettings.updateWithOldCamera( exParams.envs[enviroment.withAllObjects].components.controls[0].data,
             this.arcballAnchor )
         }
 
-        this.utilities.setCamera( exParams.main.camera, this.cameraData );
+        this.utilities.setCamera( exParams.envs[enviroment.withAllObjects].components.camera[0].data, this.cameraData );
       }
     },
 
     keyDown: function( event ) {
-      console.log(event)
       if (event.key === 'x') {
-          exParams.main.ctrlDown = true;
-          exParams.main.arcBallControls.enabled = false
-          document.body.style.cursor = 'crosshair';
+        exParams.envs[enviroment.withAllObjects].components.attributes.list.ctrlDown = true;
+        exParams.envs[enviroment.withAllObjects].components.controls[0].data.enabled = false;
+        document.body.style.cursor = 'crosshair';
       }
     },
 
     keyUp: function( event ) {
       if (event.key === 'x') {
-        exParams.main.ctrlDown = false;
-        exParams.main.arcBallControls.enabled = true
+        exParams.envs[enviroment.withAllObjects].components.attributes.list.ctrlDown = false;
+        exParams.envs[enviroment.withAllObjects].components.controls[0].data.enabled = true
         document.body.style.cursor = 'pointer'
         if ( this.drawingLine ) {
           exParams.mmTool.line.remove(this.measurementLable)
-          exParams.main.scene.remove( this.line );
-          exParams.mmTool.drawingLine = false;
-        }
-      }
-    },
-
-    switchToMeasureModus: function( buttonPressed ) {
-      if( !buttonPressed ) {
-        this.measureTool.modus = true;
-        exParams.main.arcBallControls.enabled = false;
-        document.body.style.cursor = 'crosshair';
-      } else {
-        this.measureTool.modus = false;
-        exParams.main.arcBallControls.enabled = true
-        document.body.style.cursor = 'pointer';
-        if ( this.drawingLine ) {
-          exParams.mmTool.line.remove(this.measurementLable)
-          exParams.main.scene.remove( this.line );
+          exParams.envs[enviroment.withAllObjects].components.scene[0].data.remove( this.line );
           exParams.mmTool.drawingLine = false;
         }
       }
@@ -1654,45 +1653,49 @@ export default {
     onMouseDown: async function( event ) {
       event.preventDefault();
 
-      const rect = exParams.main.renderer.domElement.getBoundingClientRect();
+      const rect = exParams.envs[enviroment.withAllObjects].components.renderer[0].data.domElement.getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
 
-      exParams.main.pointer.x = ( x / exParams.main.canvas.clientWidth ) * 2 - 1;
-      exParams.main.pointer.y = ( y / exParams.main.canvas.clientHeight ) * - 2 + 1;
+      exParams.envs[enviroment.withAllObjects].components.attributes.list.raycastPointer.x = ( x / exParams.envs[enviroment.withAllObjects].canvas.clientWidth ) * 2 - 1;
+      exParams.envs[enviroment.withAllObjects].components.attributes.list.raycastPointer.y = ( y / exParams.envs[enviroment.withAllObjects].canvas.clientHeight ) * - 2 + 1;
 
-      exParams.main.raycaster.setFromCamera( exParams.main.pointer, exParams.main.camera );
-      const intersects = exParams.main.raycaster.intersectObjects( 
-        exParams.main.objects.position.groups,
+      exParams.envs[enviroment.withAllObjects].components.raycaster[0].data.setFromCamera( exParams.envs[enviroment.withAllObjects].components.attributes.list.raycastPointer, exParams.envs[enviroment.withAllObjects].components.camera[0].data );
+      const intersects = exParams.envs[enviroment.withAllObjects].components.raycaster[0].data.intersectObjects( 
+        exParams.envs[enviroment.withAllObjects].objects.position.groups,
         true );
 
       if ( intersects.length > 0 && event.altKey ) {
         const objectName = intersects[ 0 ].object.name;
 
-        for ( let i = 0; i < exParams.main.objects.position.entry.length; i++ ) {
-          if (exParams.main.objects.position.entry[ i ]._id === objectName ) {
+        for ( let i = 0; i < exParams.envs[enviroment.withAllObjects].objects.position.entry.length; i++ ) {
+          if ( exParams.envs[enviroment.withAllObjects].objects.position.entry[ i ]._id === objectName ) {
             /* Trigger vuetify components */
             this.bottomDrawer.showDrawer = true;
-            this.loadObjectInSub( intersects[ 0 ].object.name );
+            this.loadObjectInSub( intersects[ 0 ].object.name, 
+            exParams.envs[enviroment.withAllObjects].objects, 
+            exParams.envs[enviroment.withSpecificObject].components.scene[0].data, 
+            exParams.envs[enviroment.withSpecificObject].object,
+            exParams.envs[enviroment.withSpecificObject].components.camera[0].data );
 
             /* Draw outline */
-            const objectID = exParams.main.objects.position.entry[ i ]._id;
-            const objectFromScene = exParams.main.scene.getObjectByName( objectName );
+            const objectID = exParams.envs[enviroment.withAllObjects].objects.position.entry[ i ]._id;
+            const objectFromScene = exParams.envs[enviroment.withAllObjects].components.scene[0].data.getObjectByName( objectName );
 
-            if ( objectFromScene.parent != exParams.main.scene ) {
+            if ( objectFromScene.parent != exParams.envs[enviroment.withAllObjects].components.scene[0].data ) {
               const groupObject = this.utilities.getGroup( objectFromScene );
               const selectedObject = groupObject;
               this.selectedObjects = []
               this.selectedObjects.push( selectedObject )
               // this.addSelectedObject( selectedObject );
-              exParams.main.outlinePass.selectedObjects = this.selectedObjects;
+              exParams.envs[enviroment.withAllObjects].components.postProcessing[2].data.selectedObjects = this.selectedObjects;
             } else {
               const selectedObject = objectFromScene;
-              exParams.main.outlinePass.selectedObjects = this.selectedObjects;
+              exParams.envs[enviroment.withAllObjects].components.postProcessing[2].data.selectedObjects = this.selectedObjects;
             }
 
             /* Fill drawer with position info */
-            const positionID = exParams.main.objects.position.entry[ i ].positionID;
+            const positionID = exParams.envs[enviroment.withAllObjects].objects.position.entry[ i ].positionID;
             const positionInDB = await this.indexedDB.get( 'object', positionID, 'Positions', 'positions' );
             this.posInfo = positionInDB;
           }
@@ -1703,17 +1706,17 @@ export default {
     onDocumentMouseMove: function ( event ) {
       event.preventDefault();
 
-      const rect = exParams.main.renderer.domElement.getBoundingClientRect();
+      const rect = exParams.envs[enviroment.withAllObjects].components.renderer[0].data.domElement.getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
 
-      exParams.mmTool.pointer.x = ( x / exParams.main.canvas.clientWidth ) * 2 - 1;
-      exParams.mmTool.pointer.y = ( y / exParams.main.canvas.clientHeight ) * - 2 + 1;
+      exParams.mmTool.pointer.x = ( x / exParams.envs[enviroment.withAllObjects].canvas.clientWidth ) * 2 - 1;
+      exParams.mmTool.pointer.y = ( y / exParams.envs[enviroment.withAllObjects].canvas.clientHeight ) * - 2 + 1;
 
       if ( exParams.mmTool.drawingLine ) {
-        exParams.mmTool.raycaster.setFromCamera( exParams.mmTool.pointer, exParams.main.camera );
+        exParams.mmTool.raycaster.setFromCamera( exParams.mmTool.pointer, exParams.envs[enviroment.withAllObjects].components.camera[0].data );
         const intersects = exParams.mmTool.raycaster.intersectObjects( 
-          exParams.main.objects.allObjects,
+          exParams.envs[enviroment.withAllObjects].objects.allObjects,
           true );
 
         if ( intersects.length > 0 ) {
@@ -1742,10 +1745,10 @@ export default {
     },
 
     onClick: async function() {
-      if ( exParams.main.ctrlDown ) {
-        exParams.mmTool.raycaster.setFromCamera( exParams.mmTool.pointer, exParams.main.camera );
+      if ( exParams.envs[enviroment.withAllObjects].components.attributes.list.ctrlDown ) {
+        exParams.mmTool.raycaster.setFromCamera( exParams.mmTool.pointer, exParams.envs[enviroment.withAllObjects].components.camera[0].data );
         const intersects = exParams.mmTool.raycaster.intersectObjects( 
-          exParams.main.objects.allObjects,
+          exParams.envs[enviroment.withAllObjects].objects.allObjects,
           true );
         if ( intersects.length > 0 ) {
           const nameLine = "Line - " + exParams.mmTool.lineID;
@@ -1775,7 +1778,7 @@ export default {
             
             /* Add line and lable to Main Scene */
             exParams.mmTool.line.add(exParams.mmTool.measurementLable)
-            exParams.main.scene.add(exParams.mmTool.line);
+            exParams.envs[enviroment.withAllObjects].components.scene[0].data.add(exParams.mmTool.line);
 
             exParams.mmTool.drawingLine = true;
           } else {
@@ -1808,7 +1811,7 @@ export default {
             }
             
             Object.entries( balls ).forEach( ( [ key, value ] ) => {
-              exParams.main.scene.add( value.sphere )
+              exParams.envs[enviroment.withAllObjects].components.scene[0].data.add( value.sphere )
               value.sphere.position.set( value.position.x, value.position.y, 
               value.position.z )
             } )
@@ -1893,9 +1896,9 @@ export default {
           'places' );
           
         /* Get position of insersection of raycaster with object */
-        exParams.mmTool.raycaster.setFromCamera( exParams.mmTool.pointer, exParams.main.camera );
+        exParams.mmTool.raycaster.setFromCamera( exParams.mmTool.pointer, exParams.envs[enviroment.withAllObjects].components.camera[0].data );
         const intersects = exParams.mmTool.raycaster.intersectObjects( 
-          exParams.main.objects.allObjects, true );
+          exParams.envs[enviroment.withAllObjects].objects.allObjects, true );
         const position = {
           x: intersects[ 0 ].point.x,
           y: intersects[ 0 ].point.y,
@@ -1931,7 +1934,7 @@ export default {
           this.annotatTool.allTitles.push( annotationLableName );
           
           /* Add lable and box combo to scene */
-          exParams.main.scene.add( annotationBox )
+          exParams.envs[enviroment.withAllObjects].components.scene[0].data.add( annotationBox )
           annotationBox.position.set( position.x, position.y, 
             position.z )
           
@@ -1958,64 +1961,65 @@ export default {
      * # Animation
      * -------------------------------------------------------------------------
      */
-    // Animation	
-    animation() {
-      if( exParams.main.renderer != null ) {
-
-        exParams.main.scene.getObjectByName("ICO").material.uniforms.u_time.value = this.clock.getElapsedTime();
+    // Animation
+    animateDefault() {
+      if( exParams.envs[enviroment.withoutObjects].components.renderer[0].data != null) {
+        exParams.envs[enviroment.withoutObjects].components.scene[0].data.getObjectByName("ICO").material.uniforms.u_time.value = this.clock.getElapsedTime();
         
-        exParams.main.controls.update();
-        exParams.main.renderer.render(exParams.main.scene, exParams.main.camera);
+        exParams.envs[enviroment.withoutObjects].components.controls[0].data.update();
+        exParams.envs[enviroment.withoutObjects].components.renderer[0].data.render(exParams.envs[enviroment.withoutObjects].components.scene[0].data, exParams.envs[enviroment.withoutObjects].components.camera[0].data);
         
-        exParams.main.canvas.style.height = (this.windowHeight - 112).toString() + "px";
-        exParams.main.canvas.style.width = (this.windowWidth).toString() + "px";
+        exParams.envs[enviroment.withoutObjects].canvas.style.height = (this.windowHeight - 112).toString() + "px";
+        exParams.envs[enviroment.withoutObjects].canvas.style.width = (this.windowWidth).toString() + "px";
         this.leftSidebar.style.height = (this.windowHeight - 112).toString() + "px";
         
-        exParams.main.renderer.setSize( exParams.main.canvas.clientWidth,
-          exParams.main.canvas.clientHeight, false );
-        exParams.main.renderer.setPixelRatio(window.devicePixelRatio)
+        exParams.envs[enviroment.withoutObjects].components.renderer[0].data.setSize( exParams.envs[enviroment.withoutObjects].canvas.clientWidth,
+          exParams.envs[enviroment.withoutObjects].canvas.clientHeight, false );
+        exParams.envs[enviroment.withoutObjects].components.renderer[0].data.setPixelRatio(window.devicePixelRatio)
         
-        exParams.main.camera.aspect = exParams.main.canvas.clientWidth /
-          exParams.main.canvas.clientHeight;
-        exParams.main.camera.updateProjectionMatrix();
-  
-        TWEEN.update();
-        requestAnimationFrame( this.animation );
+        exParams.envs[enviroment.withoutObjects].components.camera[0].data.aspect = exParams.envs[enviroment.withoutObjects].canvas.clientWidth /
+        exParams.envs[enviroment.withoutObjects].canvas.clientHeight;
+        exParams.envs[enviroment.withoutObjects].components.camera[0].data.updateProjectionMatrix();
+        
+        requestAnimationFrame( this.animateDefault );
       }
     },
 
-    animate: function() {
+    animateThreeMain: function() {
       /* Check interactions */
-      this.render();
-      
-      /* Render Main and Sub Scene */
-      if( exParams.main.renderer != null ) {
-        exParams.main.renderer.render( exParams.main.scene, exParams.main.camera );
-        exParams.sub.renderer.render( exParams.sub.scene, exParams.sub.camera );
-        exParams.main.composer.render()
-        exParams.mmTool.css2DRenderer.render( exParams.main.scene, exParams.main.camera )
+      // this.renderThreeMain();
 
-        exParams.main.canvas.style.height = (this.windowHeight - 112).toString() + "px";
-        exParams.main.canvas.style.width = (this.windowWidth - 58).toString() + "px";
+      /* Render Main and Sub Scene */
+      if( exParams.envs[enviroment.withAllObjects].components.renderer[0].data != null ) {
+        exParams.envs[enviroment.withAllObjects].components.renderer[0].data.render( exParams.envs[enviroment.withAllObjects].components.scene[0].data, exParams.envs[enviroment.withAllObjects].components.camera[0].data );
+        // exParams.envs.threeDPartSub.components.renderer[0].data.render( exParams.envs.threeDPartSub.components.scene[0].data, exParams.envs.threeDPartSub.components.camera[0].data );
+        exParams.envs[enviroment.withAllObjects].components.postProcessing[0].data.render()
+        // exParams.mmTool.css2DRenderer.render( exParams.main.scene, exParams.main.camera )
+
+        // exParams.envs[enviroment.withAllObjects].canvas.style.height = (this.windowHeight - 112).toString() + "px";
+        exParams.envs[enviroment.withAllObjects].canvas.style.height = (window.innerHeight - 112).toString() + "px";
+        exParams.envs[enviroment.withAllObjects].canvas.style.width = (this.windowWidth - 58).toString() + "px";
         this.leftSidebar.style.height = (this.windowHeight - 112).toString() + "px";
         
-        exParams.main.renderer.setSize( exParams.main.canvas.clientWidth, exParams.main.canvas.clientHeight, false );
-        exParams.main.composer.setSize( window.innerWidth, window.innerHeight, false );
-        exParams.mmTool.css2DRenderer.setSize( exParams.main.canvas.clientWidth, exParams.main.canvas.clientHeight );
+        exParams.envs[enviroment.withAllObjects].components.renderer[0].data.setSize( exParams.envs[enviroment.withAllObjects].canvas.clientWidth, exParams.envs[enviroment.withAllObjects].canvas.clientHeight, false );
+        exParams.envs[enviroment.withAllObjects].components.postProcessing[0].data.setSize( window.innerWidth, window.innerHeight, false );
+        // exParams.mmTool.css2DRenderer.setSize( exParams.main.canvas.clientWidth, exParams.main.canvas.clientHeight );
 
-        exParams.main.camera.aspect = exParams.main.canvas.clientWidth / exParams.main.canvas.clientHeight;
-        exParams.main.camera.updateProjectionMatrix();
+        exParams.envs[enviroment.withAllObjects].components.camera[0].data.aspect = exParams.envs[enviroment.withAllObjects].canvas.clientWidth / exParams.envs[enviroment.withAllObjects].canvas.clientHeight;
+        exParams.envs[enviroment.withAllObjects].components.camera[0].data.updateProjectionMatrix();
+
+        exParams.envs[enviroment.withAllObjects].components.controls[0].data.setTbRadius( 0.67 );
+        /* Render-Loop */
+        requestAnimationFrame( this.animateThreeMain );
       }
 
-      /* Render-Loop */
-      requestAnimationFrame( this.animate );
     },
 
-    render: async function() {
+    renderThreeMain: async function() {
 
-      if ( exParams.main.needsUpdate ) {
+      if ( exParams.envs[enviroment.withAllObjects].components.attributes.list.needsUpdate ) {
 
-        exParams.main.needsUpdate = false;
+        exParams.envs[enviroment.withAllObjects].components.attributes.list.needsUpdate = false;
         
         if ( exParams.stTool.brushesOfObjects.length > 0) {
           exParams.stTool.brushesOfObjects.forEach( brush => {
@@ -2042,7 +2046,7 @@ export default {
         if ( !this.bottomDrawer.showDrawer && exParams.sub.scene.children.length > 1 ) {
           exParams.sub.object = [];
           exParams.sub.orbitControls.reset();
-          exParams.main.outlinePass.selectedObjects = [];
+          exParams.envs[enviroment.withAllObjects].components.postProcessing[2].data.selectedObjects = [];
         }
       }
 
@@ -2052,11 +2056,59 @@ export default {
       }
 
       /* Reset arcball gizmo radius */
-      exParams.main.arcBallControls.setTbRadius( 0.67 );
-    },
+      exParams.envs[enviroment.withAllObjects].components.controls[0].data.setTbRadius( 0.67 );
+    }
 
   }
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.preloader-wrap {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 2s;
+}
+
+.loader {
+  width: 408px;
+  height: 408px;
+  display: inline-block;
+  position: relative;
+  background-image: url(..\..\public\assets\logos\3DDF_Icon.png);
+  background-size: 250px;
+  background-position: center;
+}
+.loader::after,
+.loader::before {
+  content: '';  
+  box-sizing: border-box;
+  width: 408px;
+  height: 408px;
+  border: 2px solid #FFF;
+  position: absolute;
+  left: 0;
+  top: 0;
+  animation: rotation 2s ease-in-out infinite alternate;
+}
+.loader::after {
+  border-color: #FF3D00;
+  animation-direction: alternate-reverse;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+</style>
