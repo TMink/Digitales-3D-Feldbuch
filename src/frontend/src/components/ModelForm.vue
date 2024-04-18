@@ -680,31 +680,13 @@ export default {
       this.addToken = true
 
       /* Add Notification for 3D-part camera changes */
-      switch (this.object_type.toLowerCase()) {
-        case 'places':
-          if ( exParams.main.objects.place._ids.length > 0 ) {
-            exParams.main.objects.token = true;
-          }
-          break;
-        case 'positions':
-          if ( exParams.main.objects.position._ids.length > 0 ) {
-            exParams.main.objects.token = true;
-          }
-          break;
-      }
-      const curPlace = this.$generalStore.getCurrentObject('place');
-      const cameraInDB = await fromOfflineDB.getObject( 
-        curPlace, 'Cameras', 'cameras' );
-      if ( cameraInDB != undefined ) {
-        const newCamera = {
-          _id: cameraInDB._id,
-          cameraPosition: cameraInDB.cameraPosition,
-          arcballAnchor: cameraInDB.arcballAnchor,
-          newObjectsInScene: true
-        };
-
-        fromOfflineDB.updateObject( newCamera, 'Cameras', 'cameras' );
-      }
+      const curActivity = this.$generalStore.getCurrentObject( 'activity' );
+      const cameraOfActivity = await fromOfflineDB
+                                  .getAllObjectsWithID( curActivity, 'Camera', 'Cameras', 'cameras' )
+                                  .catch(err => console.error(err));
+      cameraOfActivity[0].objectsInSceneChanged = true
+      console.log(cameraOfActivity)
+      await fromOfflineDB.updateObject( cameraOfActivity[0], 'Cameras', 'cameras' );
     },
 
     /**
@@ -745,12 +727,18 @@ export default {
      * @param {Object} model 
      */
     async deleteModel(model) {
-      console.log(this.object_type)
-      var index = this.object.models.indexOf(model._id);
-      if ( exParams.main.objects.place._ids.length > 0 || 
-        exParams.main.objects.position._ids.length > 0 ) {
-          exParams.main.objects.token = true;
-        }
+      // console.log(this.object_type)
+      // console.log(exParams.main)
+      // var indexAllObjects = exParams.main.objects.allObjects.indexOf(model._id)
+      // console.log(indexAllObjects)
+
+      // var index = this.object.models.indexOf(model._id);
+      // if ( exParams.main.objects.place._ids.length > 0 || 
+      //   exParams.main.objects.position._ids.length > 0 ) {
+      //   exParams.main.objects.token = true;
+      // }
+
+      // remove camera of specific activity
 
       // remove the modelID from connected place/position
       var index = this.object.models.indexOf(model._id);
@@ -786,35 +774,13 @@ export default {
       this.deleteToken = true
 
       /* Add Notification for 3D-part camera changes */
-      const curPlace = this.$generalStore.getCurrentObject('place');
-      const cameraInDB = await fromOfflineDB.getObject( 
-        curPlace, 'Cameras', 'cameras' );
-      const placeObjects = await fromOfflineDB.getAllObjects( "Models", "places" )
-      const positionObjects = await fromOfflineDB.getAllObjects( "Models", "positions" )
-
-      if ( cameraInDB && placeObjects.length == 0 && positionObjects.length == 0 ) {
-        await fromOfflineDB.deleteObject( cameraInDB, 'Cameras', 'cameras' )
-        if( exParams.main.objects.allObjects.length > 0 ) {
-          exParams.main.objects.allObjects = []
-          exParams.main.objects.place._ids = []
-          exParams.main.objects.place.titles = []
-          exParams.main.objects.place.groups = []
-          exParams.main.objects.place.amount = 0
-          exParams.main.objects.place.entry = []
-          console.log("Cleaned remaining local data")
-        }
-      } else {
-        if ( cameraInDB != undefined ) {
-          const newCamera = {
-            _id: cameraInDB._id,
-            cameraPosition: cameraInDB.cameraPosition,
-            arcballAnchor: cameraInDB.arcballAnchor,
-            newObjectsInScene: true
-          };
-  
-          fromOfflineDB.updateObject( newCamera, 'Cameras', 'cameras' );
-        }
-      }
+      const curActivity = this.$generalStore.getCurrentObject( 'activity' );
+      const cameraOfActivity = await fromOfflineDB
+                                  .getAllObjectsWithID( curActivity, 'Camera', 'Cameras', 'cameras' )
+                                  .catch(err => console.error(err));
+      cameraOfActivity[0].objectsInSceneChanged = true
+      console.log(cameraOfActivity)
+      await fromOfflineDB.updateObject( cameraOfActivity[0], 'Cameras', 'cameras' );
     },
 
     /**
