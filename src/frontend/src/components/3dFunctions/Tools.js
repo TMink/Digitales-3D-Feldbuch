@@ -2,7 +2,7 @@
  * Created Date: 15.01.2024 11:05:52
  * Author: Tobias Mink
  * 
- * Last Modified: 05.04.2024 14:24:19
+ * Last Modified: 15.04.2024 20:14:42
  * Modified By: Tobias Mink
  * 
  * Description: A collection of all created tools. The initialisation of each 
@@ -97,7 +97,7 @@ export class MeasurementTool {
     }
   }
 
-  async saveLineTitle( root, t, measureTool, main ) {
+  async saveLineTitle( root, t, measureTool, scene ) {
     let idToBeRenamed = null;
     let token = true;
 
@@ -144,12 +144,12 @@ export class MeasurementTool {
   
       this.updateLineMenue( measureTool );
       this.updateLineInnerText( lineInDB.line.name, 
-        measureTool.textField.split('- ')[0] + " \n " + lineInDB.name.split('- ')[1], main );
+        measureTool.textField.split('- ')[0] + " \n " + lineInDB.name.split('- ')[1], scene );
       measureTool.texttoken = true;
     }
   }
 
-  async deleteLine( placeInDB, measureTool, main ) {
+  async deleteLine( placeInDB, measureTool, scene ) {
     let idToBeDeleted = null
     const linesInDB = await this.indexedDB.get( 'allObjects', undefined, 'Lines', 
       'lines' );
@@ -161,23 +161,23 @@ export class MeasurementTool {
         const index = measureTool.infoBlock.indexOf(element)
 
         /* Delte line from sceneMain */
-        const line = main.scene.getObjectByName(measureTool.infoBlock[index].line)
-        const lable = main.scene.getObjectByName(measureTool.infoBlock[index].lable)
-        const firstBall = main.scene.getObjectByName(measureTool.infoBlock[index].balls[0])
-        const secondBall = main.scene.getObjectByName(measureTool.infoBlock[index].balls[1])
+        const line = scene.getObjectByName(measureTool.infoBlock[index].line)
+        const lable = scene.getObjectByName(measureTool.infoBlock[index].lable)
+        const firstBall = scene.getObjectByName(measureTool.infoBlock[index].balls[0])
+        const secondBall = scene.getObjectByName(measureTool.infoBlock[index].balls[1])
 
         line.remove( lable );
         line.geometry.dispose();
         line.material.dispose();
-        main.scene.remove( line );
+        scene.remove( line );
 
         firstBall.geometry.dispose();
         firstBall.material.dispose();
-        main.scene.remove( firstBall );
+        scene.remove( firstBall );
 
         secondBall.geometry.dispose();
         secondBall.material.dispose();
-        main.scene.remove( secondBall );
+        scene.remove( secondBall );
 
         /* Delete menue item */
         measureTool.textField = null
@@ -204,8 +204,8 @@ export class MeasurementTool {
     })
   }
 
-  updateLineInnerText( lineName, newLable, main ) {
-    const lineToChange = main.scene.getObjectByName( lineName )
+  updateLineInnerText( lineName, newLable, scene ) {
+    const lineToChange = scene.getObjectByName( lineName )
     lineToChange.children[0].element.innerText = newLable
   }
 
@@ -300,7 +300,7 @@ export class AnnotationTool {
    * @param { object } annotatTool 
    * @param { Scene } scene 
    */
-  async saveAnnotationTitle( root, t, annotatTool, main ) {
+  async saveAnnotationTitle( root, t, annotatTool, scene ) {
     let idToBeRenamed = null;
     let token = true;
 
@@ -352,7 +352,7 @@ export class AnnotationTool {
       this.updateAnnotationMenue( annotatTool );
       /* Update the text of the CSS2D-Object */
       this.updateAnnotationInnerText( annotationInDB.boxName, 
-        annotatTool.textField, main );
+        annotatTool.textField, scene );
       annotatTool.texttoken = true;
     }
   }
@@ -374,8 +374,8 @@ export class AnnotationTool {
    * @param { String } newLable 
    * @param { Scene } scene 
    */
-  updateAnnotationInnerText( boxName, newLable, main ) {
-    const boxToChange = main.scene.getObjectByName( boxName )
+  updateAnnotationInnerText( boxName, newLable, scene ) {
+    const boxToChange = scene.getObjectByName( boxName )
     boxToChange.children[0].element.innerText = newLable
   }
 
@@ -386,7 +386,7 @@ export class AnnotationTool {
    * @param { object } annotatTool 
    * @param { scene } scene 
    */
-  async deleteAnnotation( placeInDB, annotatTool, main ) {
+  async deleteAnnotation( placeInDB, annotatTool, scene ) {
     let idToBeDeleted = null
 
     /* Get all annotations in IndexedDB */
@@ -402,15 +402,15 @@ export class AnnotationTool {
         const index = annotatTool.infoBlock.indexOf(element)
 
         /* Get the CSS2D- and box-Object from scene */
-        const lable = main.scene.getObjectByName(annotatTool.infoBlock[index]._id)
-        const box = main.scene.getObjectByName(annotatTool.infoBlock[index].boxName)
+        const lable = scene.getObjectByName(annotatTool.infoBlock[index]._id)
+        const box = scene.getObjectByName(annotatTool.infoBlock[index].boxName)
 
         /* Remove attached CSS2D-Object and dispose geometry and material of the 
          * box object. Afterwards remove it from scene. */
         box.remove( lable );
         box.geometry.dispose();
         box.material.dispose();
-        main.scene.remove( box );
+        scene.remove( box );
 
         /* Remove the CSS2D-Object */
         lable.remove()
@@ -506,9 +506,9 @@ export class SegmentationTool {
    * @param { object } stTool 
    * @param { object } main 
    */
-  async switchToSegmentationMode( stTool, main ) {   
+  async switchToSegmentationMode( stTool, env_withAllObjects ) {   
     if( !stTool.brushToCutWith.brush.visible ) {
-      main.objects.allObjects[0].children[0].visible = false;
+      env_withAllObjects.objects.allObjects[0].children[0].visible = false;
       stTool.brushToCutWith.brush.visible = true;
       stTool.brushesOfObjects.forEach( ( brush ) => {
         brush.brush.visible = true;
@@ -520,7 +520,7 @@ export class SegmentationTool {
         brush.brush.visible = false;
         brush.resultObject.visible = false;
       } )
-      main.objects.allObjects[0].children[0].visible = true;
+      env_withAllObjects.objects.allObjects[0].children[0].visible = true;
     }
     
     /**
@@ -528,14 +528,14 @@ export class SegmentationTool {
      * Detach if they are already attached.
      */
     if( !stTool.brushToCutWith.attach ) {
-      main.transformControls.attach( stTool.brushToCutWith.brush );
+      env_withAllObjects.components.controls[1].data.attach( stTool.brushToCutWith.brush );
       stTool.brushToCutWith.attach = true;
     } else {
-      main.transformControls.detach();
+      env_withAllObjects.components.controls[1].data.transformControls.detach();
       stTool.brushToCutWith.attach = false;
     }
 
-    main.needsUpdate = true;
+    env_withAllObjects.components.attributes.list.needsUpdate = true;
   }
 
   /**
