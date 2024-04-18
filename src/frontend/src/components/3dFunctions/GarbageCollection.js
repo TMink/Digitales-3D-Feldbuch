@@ -78,6 +78,52 @@ export class GarbageCollection {
     renderer && renderer.renderLists.dispose()
     renderer = null
   }
+
+  /**
+   * 
+   * @param {*} env 
+   */
+  deepCleanEnv( env ) {
+    for( const [key, value] of Object.entries(env) ) {
+      switch( key ) {
+        case "canvas":
+          env[key] = null;
+          break;
+        case "objects":
+          for( const [key2, value2] of Object.entries( value ) ) {
+            switch( key2 ) {
+              case "allObjects":
+                env[key][key2] = []
+                break;
+              case "place" || "position":
+                for( const [ key3, _ ] of Object.entries( value2 ) ) {
+                  if( key3 == "amount" ) {
+                    env[key][key2][key3] = 0
+                  } else {
+                    env[key][key2][key3] = []
+                  }
+                }
+                break;
+            }
+          }
+          break;
+        case "components":
+          for( const [ key2, value2 ] of Object.entries( value ) ) {
+            if( key2 == "attributes" ) {
+              env[key][key2].list = env.reset;
+            } else {
+              for( const [ key3, value3 ] of Object.entries( value2 ) ) {
+                for( const [ key4, _ ] of Object.entries( value3 ) ) {
+                  if( key4 == "data" ) {
+                    env[key][key2][key3][key4] = null;
+                  } 
+                }
+              }
+            }
+          }
+          break;
+      }
+    }
   }
   
 }
