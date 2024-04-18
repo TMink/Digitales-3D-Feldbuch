@@ -2,7 +2,7 @@
  Created Date: 17.11.2023 16:18:33
  Author: Tobias Mink
  
- Last Modified: 18.04.2024 17:56:48
+ Last Modified: 18.04.2024 18:39:28
  Modified By: Tobias Mink
  
  Description: 
@@ -33,20 +33,15 @@
                     <v-col>
 
                       <v-card color="secondary">
-                        <v-row no-gutters align="center" justify="center" class="pa-1"> Messungs Tool - WORK IN PROGRESS -
+                        <v-row no-gutters align="center" justify="center" class="pa-1"> 
+                          <v-switch v-model="measureTool.modus" 
+                            @change="switchToMeasureTool()" 
+                            :label="$t('measureMode') + ' *WIP*'"
+                            hide-details inset density="compact">
+                          </v-switch>
                         </v-row>
 
-                        <v-card color="opp_background">
-
-                          <v-row no-gutters class="pt-4 px-4">
-                            <!-- Annotation Mode Button-->
-                            <v-col>
-                              <v-btn width="100%" color="error" v-on:click="switchToAnModus( annotatTool.modus )">
-                                Wechsel zu Messungs-Modus
-                              </v-btn>
-                            </v-col>
-                          </v-row>
-
+                        <v-card rounded="0" v-if="measureTool.modus" color="opp_background">
                           <v-row no-gutters class="pt-4 px-3">
                             <v-col>
                               <v-select v-model="measureTool.title" :label="$t('line')" color="primary"
@@ -85,14 +80,28 @@
                         </v-card>
 
                       </v-card>
-
                     </v-col>
                   </v-row>
-
                 </v-card>
+                <!-- Annotation Snackbar - stays activated as long as switch value is true -->
+                <v-snackbar color="warning" timeout="-1" 
+                  v-model="measureTool.modus" 
+                  location="bottom">
+                  <v-row no-gutters>
+                    <v-icon start>mdi-content-duplicate</v-icon>
+                    <v-col>
+                      {{ $t('measureMode') }}
+                      <v-card-subtitle class="px-0">
+                        {{ $t('measureDescription') }}
+                      </v-card-subtitle>
+                    </v-col>
+                  </v-row>
+                </v-snackbar>
               </v-col>
             </v-row>
             
+            <v-divider></v-divider>
+
             <!-- Annotations Tool -->
             <v-row>
               <v-col>
@@ -104,25 +113,21 @@
 
                       <v-card color="secondary">
                         
-                        <v-row no-gutters align="center" justify="center" class="pa-1"> Annotations Tool - WORK IN PROGRESS -
+                        <v-row no-gutters align="center" justify="center" class="pa-1">
+                          <v-switch v-model="annotatTool.modus" 
+                            @change="switchToAnnotTool()" 
+                            :label="$t('annotationMode') + ' *WIP*'"
+                            hide-details inset density="compact">
+                          </v-switch>
                         </v-row>
 
-                        <v-card color="opp_background">
-                          
-                          <v-row no-gutters class="pt-4 px-4">
-                            <!-- Annotation Mode Button-->
-                            <v-col>
-                              <v-btn width="100%" color="error" v-on:click="switchToAnModus( annotatTool.modus )">
-                                Wechsel zu Annotations-Modus
-                              </v-btn>
-                            </v-col>
-                          </v-row>
-                          
+                        <v-card rounded="0" v-if="annotatTool.modus" color="opp_background">                          
                           <v-row no-gutters class="pt-4 px-3">
                             <v-col>
                               <v-select v-model="annotatTool.title" label="Annotation" color="primary"
                                 :items="annotatTool.allTitles" :@update="annotationTool.updateTitle( 
-                                  annotatTool )"></v-select>
+                                  annotatTool )">
+                              </v-select>
                             </v-col>
                           </v-row>
 
@@ -146,8 +151,9 @@
                           </v-row>
 
                           <v-row no-gutters class="ps-4 pb-3">
-                            <v-col cols="12">
-                              <v-btn width="96.6%" color="error" v-on:click="annotationTool.deleteAnnotation(
+                            <v-col>
+                              <v-btn width="96.6%" color="error" 
+                                v-on:click="annotationTool.deleteAnnotation(
                                       this.placeInDB, annotatTool, 
                                       exParams.envs[enviroments.withAllObjects].components.scene[0].data )">
                                 <v-icon>mdi-delete</v-icon>
@@ -162,8 +168,25 @@
                   </v-row>
 
                 </v-card>
+                <!-- Annotation Snackbar - stays activated as long as switch value is true -->
+                <v-snackbar color="warning" timeout="-1" 
+                  v-model="annotatTool.modus" 
+                  location="bottom">
+                  <v-row no-gutters>
+                    <v-icon start>mdi-content-duplicate</v-icon>
+                    <v-col>
+                      {{ $t('annotationMode') }}
+                      <v-card-subtitle class="px-0">
+                        {{ $t('annotationDescription') }}
+                      </v-card-subtitle>
+                    </v-col>
+                  </v-row>
+                </v-snackbar>
+
               </v-col>
             </v-row>
+
+            <v-divider></v-divider>
 
             <!-- Cutting Tool -->
             <v-row>
@@ -175,18 +198,19 @@
                     <v-col>
 
                       <v-card color="secondary">
-                        <v-row no-gutters align="center" justify="center" class="pa-1"> Schneid Tool - WORK IN PROGRESS -
+                        <v-row no-gutters align="center" justify="center" class="pa-1"> <v-switch v-model="cuttingTool.modus" 
+                            @change="switchToCuttingTool()" 
+                            :label="$t('cuttingMode') + ' *WIP*'"
+                            hide-details inset density="compact">
+                          </v-switch>
                         </v-row>
 
-                        <v-card color="opp_background">
+                        <v-card rounded="0" v-if="cuttingTool.modus" color="opp_background">
 
                           <v-row no-gutters class="pt-4 pb-4 px-4">
-                            <!-- Segmentation Mode Button-->
                             <v-col>
-                              <v-btn width="100%" color="error" v-on:click="segmentationTool.switchToSegmentationMode( 
-                                      exParams.stTool, exParams.envs[enviroments.withAllObjects] )">
-                                Switch to Segmentation Mode
-                              </v-btn>
+                              <!-- TODO: Settings for segmentation -->
+                              PLACEHOLDER
                             </v-col>
                           </v-row>
 
@@ -196,8 +220,23 @@
 
                     </v-col>
                   </v-row>
-
                 </v-card>
+
+                <!-- Annotation Snackbar - stays activated as long as switch value is true -->
+                <v-snackbar color="warning" timeout="-1" 
+                  v-model="cuttingTool.modus" 
+                  location="bottom">
+                  <v-row no-gutters>
+                    <v-icon start>mdi-content-duplicate</v-icon>
+                    <v-col>
+                      {{ $t('cuttingMode') }}
+                      <v-card-subtitle class="px-0">
+                        {{ $t('cuttingDescription') }}
+                      </v-card-subtitle>
+                    </v-col>
+                  </v-row>
+                </v-snackbar>
+
               </v-col>
             </v-row>
 
@@ -208,248 +247,196 @@
         <!-- Place -->
         <v-navigation-drawer v-model="leftDrawer.showDrawers[1]" color="background"
           style="left: 50px; top:64px; width: 470px; padding-bottom: 48px;" temporary>
-          <v-list-item height="50" prepend-icon="mdi-radar" :title="$tc('place', 2)"></v-list-item>
+          <v-list-item class="my-2" prepend-icon="mdi-radar" :title="$tc('place', 2)">
+          </v-list-item>
 
           <v-divider></v-divider>
 
-          <v-form>
+          <!-- Filter -->
+          <v-card color="transparent" elevation="0" width="100%" class="pa-2">
+            <!-- Place Model -->
+            <div class="text-button pl-3">
+              {{ $tc('model', 1) }}
+            </div>
 
-            <!-- Filter -->
-            <v-row>
-              <v-col>
-                <v-card color="transparent" elevation="0" width="100%" class="pa-2">
+            <v-row no-gutters>
+              <v-col cols="3" class="pl-2 ">
+                <v-combobox v-model="placeObject.number" :label="$tc('number', 2)" item-title="modelNumber"
+                  color="primary" bgColor="opp_background" hide-details :items="placeObject.allNumbers"></v-combobox>
+              </v-col>
 
-                  <!-- Model -->
-                  <v-row no-gutters class="pl-3">
-                    {{ $tc('model', 1) }}
-                  </v-row>
-
-                  <v-row no-gutters>
-
-                    <v-col cols="3" class="pl-2 ">
-                      <v-combobox v-model="placeObject.number" :label="$tc('number', 2)" item-title="modelNumber"
-                        color="primary" bgColor="opp_background" :items="placeObject.allNumbers"></v-combobox>
-                    </v-col>
-
-                    <v-col cols="6" class="pl-2 ">
-                      <v-combobox v-model="placeObject.title" :label="$t('title')" item-title="modelTitel"
-                        color="primary" bgColor="opp_background" :items="placeObject.allTitles"></v-combobox>
-                    </v-col>
-
-                  </v-row>
-                </v-card>
+              <v-col cols="9" class="pl-2 pr-2">
+                <v-combobox v-model="placeObject.title" :label="$t('title')" item-title="modelTitel"
+                  color="primary" bgColor="opp_background" hide-details :items="placeObject.allTitles"></v-combobox>
               </v-col>
             </v-row>
+          </v-card>
 
-            <v-divider thickness="5"></v-divider>
+          <v-divider class="my-2"></v-divider>
 
-            <!-- Model Interaktion -->
-            <v-row>
-              <v-col>
-                <v-card width="100%" color="transparent" class="pa-2" elevation="0">
-                  <v-row class="pb-2">
-                    <v-col>
+          <!-- Model Interaktion -->
+          <v-card v-if="!placeMods.disabled" width="100%" color="transparent" class="pa-2" elevation="0">
 
-                      <!-- Checkboxes -->
-                      <v-card color="secondary">
-                        <v-row no-gutters align="center" justify="center" class="pa-1"> {{ $t('general') }}
-                        </v-row>
+            <!-- Checkboxes -->
+            <v-card class="mb-2" color="secondary">
+              <v-row no-gutters justify="center" class="pa-1">
+                {{ $t('general') }}
+              </v-row>
 
-                        <v-card color="opp_background" class="pa-2">
+              <v-card rounded="0" color="opp_background" class="pa-2">
+                <!-- Opacity-->
+                <v-slider class="px-2 pt-6" v-model="placeMods.opacitySliderValue" :max="1"
+                  track-color="primary" thumb-color="secondary" color="warning" step="0.1"
+                  show-ticks :label="$t('opacity')" thumb-label>
+                  <template v-slot:thumb-label="{ modelValue }">
+                    {{ modelValue*100 + "%" }}
+                  </template>
+                </v-slider>
+              </v-card>
+            </v-card>
 
-                          <v-row no-gutters>
-                            <!-- Opacity-->
-                            <v-col cols="2" class="px-2 pt-4">
-                              <v-slider v-model="placeMods.opacitySliderValue" :max="1" :disabled="placeMods.disabled"
-                                track-color="primary" thumb-color="secondary" color="warning">
-                              </v-slider>
-                            </v-col>
+            <v-divider></v-divider>
 
-                            <v-divider vertical></v-divider>
 
-                            <!-- Checkbox description-->
-                            <v-col cols="10" class="py-5 px-4">
-                              {{ $t('opacity') }}
-                            </v-col>
-                          </v-row>
-                        </v-card>
-                      </v-card>
+            <!-- Color Picker -->
+            <v-card color="secondary">
+              <v-row no-gutters justify="center" class="pa-1">
+                {{ $t('colorPicker') }}
+              </v-row>
 
-                    </v-col>
-                  </v-row>
-                  <v-divider></v-divider>
-                  <v-spacer></v-spacer>
-                  <v-row>
-                    <v-col>
+              <v-card rounded="0" id="cpPlace" color="opp_background" class="pa-2">
+                <v-color-picker v-model="placeMods.colorPicker.color" width="100%"
+                  :v-on:update="modelInteraktion.changeColor(
+                    placeMods.colorPicker.color, 
+                    placeMods.colorPicker.object)">
+                </v-color-picker>
+              </v-card>
+            </v-card>
 
-                      <!-- Color Picker -->
-                      <v-card color="secondary">
-                        <v-row no-gutters align="center" justify="center" class="pa-1"> {{ $t('colorPicker') }}
-                        </v-row>
-
-                        <v-card id="cpPlace" color="opp_background" class="pa-2">
-                          <v-color-picker v-model="placeMods.colorPicker.color" hide-canvas hide-sliders hide-inputs
-                            show-swatches swatches-max-height="235px" width="100%" :disabled="placeMods.disabled"
-                            :v-on:update="modelInteraktion.changeColor(
-                                            placeMods.colorPicker.color, 
-                                            placeMods.colorPicker.object)"></v-color-picker>
-                        </v-card>
-                      </v-card>
-
-                    </v-col>
-                  </v-row>
-                </v-card>
-              </v-col>
-            </v-row>
-
-          </v-form>
+          </v-card>
+          <div v-else class="text-button text-center py-4"> 
+            {{ $t('chooseModelDescription') }}
+          </div>
         </v-navigation-drawer>
 
         <!-- Positions -->
         <v-navigation-drawer v-model="leftDrawer.showDrawers[2]" color="background"
           style="left: 50px; top:64px; width: 470px; padding-bottom: 48px;" temporary>
-          <v-list-item height="50" prepend-icon="mdi-map-marker-radius-outline" :title="$t('posFilter')"></v-list-item>
+          <v-list-item class="my-2" 
+            prepend-icon="mdi-map-marker-radius-outline" 
+            :title="$t('posFilter')">
+          </v-list-item>
 
           <v-divider></v-divider>
 
-          <v-form>
+          <!-- Filter -->
+          <v-card color="transparent" elevation="0" width="100%" class="pa-2">
 
-            <!-- Filter -->
-            <v-row>
-              <v-col>
-                <v-card color="transparent" elevation="0" width="100%" class="pa-2">
+            <!-- Position -->
+            <div class="text-button pl-3">
+              {{ $tc('position', 1) }}
+            </div>
+            <v-row no-gutters>
+              <v-col cols="3" class="pl-2">
+                <v-combobox v-model="positionData.number" :label="$tc('number', 2)" item-title="positionNumber"
+                  color="primary" bgColor="opp_background" hide-details :items="positionData.allNumbers">
+                </v-combobox>
+              </v-col>
 
-                  <!-- Position -->
-                  <v-row no-gutters class="pl-3">
-                    {{ $tc('position', 1) }}
-                  </v-row>
+              <v-col cols="3" class="pl-2">
+                <v-combobox v-model="positionData.subNumber" :label="$tc('subNumber', 2)" color="primary"
+                  bgColor="opp_background" hide-details item-title="positionSubnumber"
+                  :items="positionData.allSubNumbers">
+                </v-combobox>
+              </v-col>
 
-                  <v-row no-gutters>
-
-                    <v-col cols="3" class="pl-2">
-                      <v-combobox v-model="positionData.number" :label="$tc('number', 2)" item-title="positionNumber"
-                        color="primary" bgColor="opp_background" :items="positionData.allNumbers"></v-combobox>
-                    </v-col>
-
-                    <v-col cols="3" class="pl-2">
-                      <v-combobox v-model="positionData.subNumber" :label="$t('subNumber')" color="primary"
-                        bgColor="opp_background" item-title="positionSubnumber"
-                        :items="positionData.allSubNumbers"></v-combobox>
-                    </v-col>
-
-                    <v-col cols="6" class="pl-2 pr-2">
-                      <v-combobox v-model="positionData.title" :label="$t('title')" item-title="positionTitle"
-                        color="primary" bgColor="opp_background" :items="positionData.allTitles"></v-combobox>
-                    </v-col>
-
-                  </v-row>
-
-                  <!-- Model -->
-                  <v-row no-gutters class="pl-3">
-                    {{ $t('model') }}
-                  </v-row>
-
-                  <v-row no-gutters>
-
-                    <v-col cols="3" class="pl-2 ">
-                      <v-combobox v-model="positionObject.number" :label="$tc('number', 2)" item-title="modelNumber"
-                        color="primary" bgColor="opp_background" :items="positionObject.allNumbers"
-                        :disabled="!positionObject.disableInput"></v-combobox>
-                    </v-col>
-
-                    <v-col cols="6" class="pl-2 ">
-                      <v-combobox v-model="positionObject.title" :label="$tc('title', 2)" item-title="modelTitel"
-                        color="primary" bgColor="opp_background" :items="positionObject.allTitles"
-                        :disabled="!positionObject.disableInput"></v-combobox>
-                    </v-col>
-
-                  </v-row>
-                </v-card>
+              <v-col cols="6" class="pl-2 pr-2">
+                <v-combobox v-model="positionData.title" :label="$tc('title', 2)" item-title="positionTitle"
+                  color="primary" bgColor="opp_background" hide-details :items="positionData.allTitles">
+                </v-combobox>
               </v-col>
             </v-row>
 
-            <v-divider thickness="5"></v-divider>
+            <!-- Model -->
+            <div class="text-button pt-2 pl-3">
+              {{ $tc('model') }}
+            </div>
 
-            <!-- Model Interaktion -->
-            <v-row>
-              <v-col>
-                <v-card width="100%" color="transparent" class="pa-2" elevation="0">
-                  <v-row class="pb-2">
-                    <v-col>
+            <v-row no-gutters>
+              <v-col cols="3" class="pl-2 ">
+                <v-combobox v-model="positionObject.number" :label="$tc('number', 2)" item-title="modelNumber"
+                  color="primary" bgColor="opp_background" hide-details :items="positionObject.allNumbers"
+                  :disabled="!positionObject.disableInput"></v-combobox>
+              </v-col>
 
-                      <!-- Checkboxes -->
-                      <v-card color="secondary">
-                        <v-row no-gutters align="center" justify="center" class="pa-1"> {{ $t('general') }}
-                        </v-row>
-
-                        <v-card color="opp_background" class="pa-2">
-                          <v-row no-gutters>
-                            <!-- Attach position-->
-                            <v-col cols="2" class="px-3 pt-5">
-                              <v-checkbox :v-model="positionMods.attachTransformControls"
-                                :disabled="positionMods.disabled" :true-value="positionMods.attachTransformControls"
-                                :false-value="!positionMods.attachTransformControls" color="primary" @Click="controlSettings.attachTransformControls(
-                                  positionMods, positionObject, exParams.main )">
-                              </v-checkbox>
-                            </v-col>
-
-                            <v-divider vertical></v-divider>
-
-                            <!-- Checkbox description-->
-                            <v-col cols="10" class="px-4 py-9">
-                              {{ $t('moveObj', {obj: $t('model')})}}
-                            </v-col>
-
-                          </v-row>
-
-                          <v-divider></v-divider>
-
-                          <v-row no-gutters>
-                            <!-- Opacity-->
-                            <v-col cols="2" class="px-2 pt-4">
-                              <v-slider :disabled="positionMods.disabled" v-model="positionMods.opacitySliderValue"
-                                :max="1" track-color="primary" thumb-color="secondary" color="warning">
-                              </v-slider>
-                            </v-col>
-
-                            <v-divider vertical></v-divider>
-
-                            <!-- Checkbox description-->
-                            <v-col cols="10" class="py-5 px-4">
-                              {{ $t('opacity')}}
-                            </v-col>
-                          </v-row>
-                        </v-card>
-                      </v-card>
-
-                    </v-col>
-                  </v-row>
-                  <v-divider></v-divider>
-                  <v-spacer></v-spacer>
-                  <v-row>
-                    <v-col>
-
-                      <!-- Color Picker -->
-                      <v-card color="secondary">
-                        <v-row no-gutters align="center" justify="center" class="pa-1"> {{ $t('colorPicker') }}
-                        </v-row>
-
-                        <v-card id="cpPosition" color="opp_background" class="pa-2">
-                          <v-color-picker v-model="positionMods.colorPicker.color" hide-canvas hide-sliders hide-inputs
-                            show-swatches swatches-max-height="235px" width="100%" :disabled="positionMods.disabled"
-                            :v-on:update="modelInteraktion.changeColor(
-                              positionMods.colorPicker.color, 
-                              positionMods.colorPicker.object)"></v-color-picker>
-                        </v-card>
-                      </v-card>
-
-                    </v-col>
-                  </v-row>
-                </v-card>
+              <v-col cols="9" class="pl-2 pr-2">
+                <v-combobox v-model="positionObject.title" :label="$t('title')" item-title="modelTitel"
+                  color="primary" bgColor="opp_background" hide-details :items="positionObject.allTitles"
+                  :disabled="!positionObject.disableInput"></v-combobox>
               </v-col>
             </v-row>
+          </v-card>
 
-          </v-form>
+          <v-divider class="my-2"></v-divider>
+
+          <!-- Model Interaktion -->
+          <v-card v-if="!positionMods.disabled" width="100%" color="transparent" class="pa-2" elevation="0">
+
+            <!-- Checkboxes -->
+            <v-card color="secondary" class="mb-2">
+              <v-row no-gutters justify="center" class="pa-1"> 
+                {{ $t('general') }}
+              </v-row>
+
+              <v-card rounded="0" color="opp_background" class="pa-2">
+                <!-- Attach position-->
+                <v-checkbox hide-details color="primary"
+                class="pt-1 pb-2"
+                  :v-model="positionMods.attachTransformControls" 
+                  :label="$t('moveObj', {obj: $t('model')})"  
+                  @click="controlSettings.attachTransformControls(
+                    positionMods, positionObject, exParams.main )">
+                </v-checkbox>
+
+                <v-divider></v-divider>
+
+                <v-slider class="pt-8"
+                  thumb-label
+                  show-ticks
+                  step="0.1"
+                  color="warning"
+                  track-color="primary" 
+                  thumb-color="secondary" 
+                  :max="1"
+                  :label="$t('opacity')"
+                  v-model="positionMods.opacitySliderValue">
+                  <template v-slot:thumb-label="{ modelValue }">
+                    {{ modelValue*100 + "%" }}
+                  </template>
+                </v-slider>
+              </v-card>
+            </v-card>
+
+            <v-divider></v-divider>
+
+            <!-- Color Picker -->
+            <v-card color="secondary">
+              <v-row no-gutters justify="center" class="pa-1"> 
+                {{ $t('colorPicker') }}
+              </v-row>
+
+              <v-card rounded="0" id="cpPosition" color="opp_background" class="pa-2">
+                <v-color-picker v-model="positionMods.colorPicker.color" width="100%"
+                  :v-on:update="modelInteraktion.changeColor(
+                    positionMods.colorPicker.color, 
+                    positionMods.colorPicker.object)">
+                </v-color-picker>
+              </v-card>
+            </v-card>
+          </v-card>
+          <div v-else class="text-button text-center py-4"> 
+            {{ $t('chooseModelDescription') }}
+          </div>
         </v-navigation-drawer>
         
         <!-- Legend -->
@@ -459,23 +446,16 @@
 
           <v-divider></v-divider>
 
-          <v-form>
-            <!-- General control -->
-            <v-row>
-              <v-col>
-                <v-card color="transparent" elevation="0" width="100%" class="pa-2">
-                  
-                  <v-row no-gutters class="pt-4 px-4">
-                    ALT + Linksklick = Objektauswahl
-                  </v-row>
-                  <v-row no-gutters class="pt-0 px-4">
-                    STRG + Linksklick = 3D-Modell bewegen
-                  </v-row>
-                  
-                </v-card>
-              </v-col>
+          <!-- General control -->
+          <v-card color="transparent" elevation="0" width="100%" class="pa-2">
+            <v-row no-gutters class="pt-4 px-4">
+              ALT + Linksklick = Objektauswahl
             </v-row>
-          </v-form>
+            <v-row no-gutters class="pt-0 px-4">
+              STRG + Linksklick = 3D-Modell bewegen
+            </v-row>
+          </v-card>
+
         </v-navigation-drawer>
 
       </v-card>
@@ -1946,15 +1926,52 @@ export default {
       }
     },
 
-    switchToAnModus: function( buttonPressed ) {
-      if( !buttonPressed ) {
-        this.annotatTool.modus = true;
+    /**
+     * Switches the UI to the measure tool and hides other tools
+     */
+    switchToMeasureTool() {
+      if ( this.measureTool.modus ) {
         document.body.style.cursor = 'crosshair';
-      } else {
         this.annotatTool.modus = false;
-        document.body.style.cursor = 'pointer';
+        if (this.cuttingTool.modus) {
+          this.segmentationTool.switchToSegmentationMode(
+                                    this.exParams.stTool, this.exParams.main )
+        }
+        this.cuttingTool.modus = false;
+      } else {
+        document.body.style.cursor = 'auto';
       }
     },
+
+    /**
+     * Switches the UI to the annotation tool and hides other tools
+     */
+    switchToAnnotTool() {
+      if ( this.annotatTool.modus ) {
+        document.body.style.cursor = 'crosshair';
+        this.measureTool.modus = false;
+        if ( this.cuttingTool.modus ) {
+          this.segmentationTool.switchToSegmentationMode( 
+                                    this.exParams.stTool, this.exParams.main )
+        }
+        this.cuttingTool.modus = false;
+      } else {
+        document.body.style.cursor = 'auto';
+      }
+    },
+
+    /**
+     * Switches the UI to the cutting tool and hides other tools
+     */
+    switchToCuttingTool() {
+      this.segmentationTool.switchToSegmentationMode( 
+                                    this.exParams.stTool, this.exParams.main )
+      if ( this.cuttingTool.modus ) {
+        this.measureTool.modus = false;
+        this.annotatTool.modus = false;
+      }
+    },
+
 
     /**
      * -------------------------------------------------------------------------

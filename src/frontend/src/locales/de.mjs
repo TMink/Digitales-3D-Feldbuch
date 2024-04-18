@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 05.04.2024 13:17:23
+ * Last Modified: 11.04.2024 13:48:48
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -126,6 +126,9 @@ export default {
   fontSize: "Schriftgröße",
   add: "Hinzufügen",
   settings: "Einstellungen",
+  annotationMode: "Annotationsmodus",
+  measureMode: "Messungsmodus",
+  cuttingMode: "Schneidemodus",
 
   // Phrases
   addMsg: "Neue {msg} hinzufügen",
@@ -209,4 +212,9 @@ export default {
   userMailAlreadyExists: "Ein Benutzer mit diese E-Mail existiert bereits",
   registrationSuccess: "Account erfolgreich angelegt",
   duplicationDescription: "Klicke auf eine {msg}, um sie zu duplizieren.",
+  annotationDescription: "Klicke auf einen Punkt auf dem Modell, um eine Annotation zu erstellen.",
+  measureDescription:
+    "Halte X gedrückt und klicke auf zwei Punkte, um ihre Distanz zu messen.",
+  cuttingDescription: "Verschiebe die Steuerung in der 3D-Ansicht, um das Modell zu schneiden.",
+  chooseModelDescription: "Wähle ein Modell aus, um die Editieroptionen anzzuzeigen.",
 };
