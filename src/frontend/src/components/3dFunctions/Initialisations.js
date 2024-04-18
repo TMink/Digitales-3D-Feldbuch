@@ -2,7 +2,7 @@
  * Created Date: 23.01.2024 13:09:11
  * Author: Tobias Mink
  * 
- * Last Modified: 05.04.2024 15:29:50
+ * Last Modified: 18.04.2024 15:53:47
  * Modified By: Tobias Mink
  * 
  * Description: A Collection of initialisation functions, which will be called
@@ -16,6 +16,7 @@ import { Raycaster, Vector2, BoxGeometry, DoubleSide, FrontSide, Mesh,
   AmbientLight, ShaderMaterial, Vector3, HemisphereLight, ShadowMaterial, 
   IcosahedronGeometry, PlaneGeometry, VSMShadowMap, sRGBEncoding, 
   MeshPhongMaterial } from 'three';
+import * as THREE from 'three';
 import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
 import { ArcballControls } from
 'three/examples/jsm/controls/ArcballControls.js';
@@ -43,10 +44,19 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import vertexShader from './shaders/blob/vertexShader.glsl';
 import fragmentShader from './shaders/blob/fragmentShader.glsl';
 
+import { exParams } from './Parameter';
+import { uniform } from 'three/examples/jsm/nodes/core/UniformNode.js';
+
 export class Initialisations {
 
   constructor( segmentationTool ) {
     this.segmentationTool = segmentationTool;
+    this.shader = {
+      PerlinNoise: {
+        vertexShader: vertexShader,
+        fragmentShader: fragmentShader
+      }
+    }
   }
 
   /**
@@ -55,10 +65,10 @@ export class Initialisations {
    * @param { object } canvas 
    * @param { object } params 
    */
-  initMeasurementTool( main, mmTool, document ) {
+  initMeasurementTool( canvas, mmTool, document ) {
     /* Create CSS2D-Renderer and adjust its attributes */
     mmTool.css2DRenderer = new CSS2DRenderer()
-    mmTool.css2DRenderer.setSize( main.canvas.clientWidth, main.canvas.clientHeight );
+    mmTool.css2DRenderer.setSize( canvas.clientWidth, canvas.clientHeight );
     mmTool.css2DRenderer.domElement.style.position = mmTool.css2DRendererParams.position;
     mmTool.css2DRenderer.domElement.style.top = mmTool.css2DRendererParams.top;
     mmTool.css2DRenderer.domElement.style.color = mmTool.css2DRendererParams.color;
@@ -80,7 +90,7 @@ export class Initialisations {
    * @param { object } stTool 
    * @param { object } centerOfObjects 
    */
-  initSegmentationTool( main, stTool, centerOfObjects ) {
+  initSegmentationTool( objects, scene, list, stTool, centerOfObjects ) {
     /* Create new map to override attributes of new brushes */
     stTool.materialMap = new Map();
 
@@ -106,7 +116,7 @@ export class Initialisations {
       attached: stTool.brushToCutWithParams.attached
     }
     /* Update brushesOfObjects */
-    this.segmentationTool.updateBrush( brushToCutWith, main );
+    this.segmentationTool.updateBrush( brushToCutWith, list );
     /* Initialize brush materials */
     stTool.brushToCutWith.brush.material.opacity = 
       stTool.brushToCutWithParams.material.opacity;
@@ -130,7 +140,7 @@ export class Initialisations {
     stTool.brushToCutWith.brush.visible = 
       stTool.brushToCutWithParams.material.visible;
     /* Add brush to scene */
-    main.scene.add( stTool.brushToCutWith.brush );
+    scene.add( stTool.brushToCutWith.brush );
     /* Create material map for transparent to opaque variants */
     let mat;
 	  mat = stTool.brushToCutWith.brush.material.clone();
@@ -144,7 +154,7 @@ export class Initialisations {
     /* ## Initialize brushesOfObjects ## */
     /* Create a brush for every object in scene, so that every object can be 
      * used. */
-    main.objects.allObjects.forEach( (object, idx) => {
+    objects.allObjects.forEach( (object, idx) => {
       /* Merge meshes of object */
       const geometryForBrush = [];
       object.traverse( ( child ) => {
@@ -167,7 +177,7 @@ export class Initialisations {
     })
     /* Update brushesOfObjects */
     stTool.brushesOfObjects.forEach( brush => {
-      this.segmentationTool.updateBrush( brush.brush, main );
+      this.segmentationTool.updateBrush( brush.brush, list );
     })
     /* Initialize brush materials */
     stTool.brushesOfObjects.forEach( brush => {
@@ -194,7 +204,7 @@ export class Initialisations {
     } );
     /* Add brushesOfObjects to scene */
     stTool.brushesOfObjects.forEach( brush => {
-      main.scene.add( brush.brush );
+      scene.add( brush.brush );
     } );
     /* Create material map for transparent to opaque variants */
     stTool.brushesOfObjects.forEach( brush => {
@@ -228,7 +238,7 @@ export class Initialisations {
       brush.resultObject.receiveShadow = 
         stTool.brushesOfObjectsParams.resultObject.receiveShadow;
       brush.originalMaterial = brush.resultObject.material;
-      main.scene.add( brush.resultObject );
+      scene.add( brush.resultObject );
     } );
   }
 
@@ -243,10 +253,10 @@ export class Initialisations {
       antialias: main.rendererParams.antialias
     } );
     main.renderer.setPixelRatio(window.devicePixelRatio);
-    // main.renderer.setSize( main.canvas.clientWidth, main.canvas.clientHeight );
     main.renderer.setSize( main.canvas.clientWidth, main.canvas.clientHeight );
     main.renderer.setClearColor( main.rendererParams.backgroundColor, 
       main.rendererParams.backgroundColorIntensity );
+    
     main.renderer.shadowMap.enabled = main.rendererParams.shadowMapEnabled;
     main.renderer.shadowMap.type = PCFSoftShadowMap;
     main.renderer.outputColorSpace = LinearSRGBColorSpace;
@@ -338,9 +348,6 @@ export class Initialisations {
    * @param { object } params 
    */
   subInit( sub ) {
-    /* Mesh in sub scene */
-    sub.object = [];
-
     /* Create Renderer */
     sub.renderer = new WebGLRenderer( { canvas: sub.canvas } );
     sub.renderer.setPixelRatio( sub.canvas.devicePixelRatio );
@@ -517,10 +524,11 @@ export class Initialisations {
     main.renderer.setClearColor( main.rendererParams.backgroundColor, 
       main.rendererParams.backgroundColorIntensity );
     main.renderer.shadowMap.enabled = main.rendererParams.shadowMapEnabled;
-		// main.renderer.shadowMap.type = VSMShadowMap
+		// main.renderer.shadowMap.type = VSMShadowMap;
 		// main.renderer.outputEncoding = sRGBEncoding;
     main.renderer.shadowMap.type = PCFSoftShadowMap;
     main.renderer.outputColorSpace = LinearSRGBColorSpace;
+    
 
 		main.controls = new OrbitControls(main.camera, main.renderer.domElement);
 		main.controls.target = new Vector3(0, 1.5, 0);
@@ -536,7 +544,7 @@ export class Initialisations {
 		// Directional (Key) Light
 		main.directional_light = new DirectionalLight( 0xffffff, 1 )
 		main.directional_light.position.set( 0, 5, -2 )
-		// main.directional_light.castShadow = true
+		main.directional_light.castShadow = true
 		main.directional_light.shadow.mapSize.width = 1024
 		main.directional_light.shadow.mapSize.height = 1024
 		main.directional_light.shadow.camera.far = 24
@@ -560,16 +568,10 @@ export class Initialisations {
 
 		// Ground Plane
 		const ground_geometry = new PlaneGeometry(200, 200);
-		// const ground = new Mesh(ground_geometry, shadow_material);
 		const ground = new Mesh(ground_geometry, new MeshStandardMaterial({color: 0x151d21}));
-		const ground2 = new Mesh(ground_geometry, new MeshStandardMaterial({color: 0x151d21}));
-		ground.receiveShadow = true;
-		ground.rotateX(-Math.PI / 2);
-		ground2.rotateY(-Math.PI);
-    ground2.position.set( 0, 0, 3 );
-		ground.position.set(0, -2, 0);
-		// main.scene.add(ground);
-		main.scene.add(ground2);
+		ground.rotateY(-Math.PI);
+    ground.position.set( 0, 0, 3 );
+		main.scene.add(ground);
 
 
 		// Icosahedron
@@ -587,6 +589,7 @@ export class Initialisations {
 		icosahedron.castShadow = true;
     icosahedron.name = "ICO";
 		main.scene.add(icosahedron);
+    
 
     new TWEEN.Tween(icosahedron.rotation)
   		.to({ y: "-" + (Math.PI/2) * 9}, 120000)
@@ -595,6 +598,7 @@ export class Initialisations {
 			.start()
 		;
 
+    
     // Text
     let object, loader = null;
     loader = new GLTFLoader();
@@ -615,9 +619,245 @@ export class Initialisations {
     });
     main.scene.add( object );
     // object.scale.set(1.5, 1.5, 1.5)
-    object.rotation.y = Math.PI / 1
-
+    object.rotation.y = Math.PI / 1;
 	}
   
+  initEnviroment( type ) {
+    const env = exParams.envs[ type ];
+
+    for( const [ designation, instances ] of Object.entries( env.components ) ) {
+      switch( designation ) {
+        case 'renderer':
+          for( const renderer of instances ) {
+            // Create renderer instance and connect it with canvas
+            renderer.data = new THREE[renderer.type](renderer.params)
+            
+            // Apply methods and set properties
+            this.applyMethodsAndSetProperties( renderer );
+          }
+          break;
+        case 'scene':
+          for( const scene of instances ) {
+            // Create scene instance
+            scene.data = new THREE[scene.type]();
+
+            // Apply methods and set properties
+            this.applyMethodsAndSetProperties( scene );
+          }
+          break;
+        case 'camera':
+          for( const camera of instances ) {
+            // Create camera instance and connect it with canvas
+            camera.data = new THREE[camera.type](...Object.values(camera.params))
+            
+            // Apply methods and set properties
+            this.applyMethodsAndSetProperties( camera );
+          }
+          break;
+        case 'light':
+          for( const light of instances ) {
+            // Create camera instance and connect it with canvas
+            light.data = new THREE[light.type](...Object.values(light.params))
+            
+            // Apply methods and set properties
+            this.applyMethodsAndSetProperties( light );
+            
+            // Add to scene
+            if( light.addToScene ) {
+              env.components.scene[0].data.add( light.data )
+            }
+          }
+          break;
+        case 'controls':
+          for( const controls of instances ) {
+            // Create camera instance and connect it with canvas
+            switch(controls.type) {
+              case 'ArcballControls':
+                controls.data = new ArcballControls(...Object.values(controls.params))
+                break;
+              case 'TransformControls':
+                controls.data = new TransformControls(...Object.values(controls.params))
+                break;
+              case 'OrbitControls':
+                controls.data = new OrbitControls(...Object.values(controls.params))
+                break;
+              default:
+                console.log( "Error" );
+            }
+            
+            // Apply methods and set properties
+            this.applyMethodsAndSetProperties( controls );
+            
+            // Add to scene
+            if( controls.addToScene ) {
+              env.components.scene[0].data.add( controls.data )
+            }
+          }
+          break;
+        case 'raycaster':
+          for( const raycaster of instances ) {
+            // Create camera instance and connect it with canvas
+            raycaster.data = new THREE[raycaster.type]()
+            
+            // Apply methods and set properties
+            this.applyMethodsAndSetProperties( raycaster );
+          }
+          break;
+        case 'postProcessing':
+          for( const process of instances ) {
+            // Create camera instance and connect it with canvas
+            switch( process.type ){
+              case 'EffectComposer':
+                if( Object.keys(process.params).length == 1) {
+                  process.data = new EffectComposer(process.params.renderer)
+                } else {
+                  process.data = new EffectComposer(...Object.values(process.params))
+                }
+              break;
+              case 'RenderPass':
+                if( Object.keys(process.params).length == 1) {
+                  process.data = new RenderPass(process.params)
+                } else {
+                  process.data = new RenderPass(...Object.values(process.params))
+                }
+              break;
+              case 'OutlinePass':
+                if( Object.keys(process.params).length == 1) {
+                  process.data = new OutlinePass(process.params)
+                } else {
+                  process.data = new OutlinePass(...Object.values(process.params))
+                }
+              break;
+            }
+
+            // Apply methods and set properties
+            this.applyMethodsAndSetProperties( process );
+
+            // Add process to composer
+            if( process.type != "EffectComposer" ) {
+              env.components.postProcessing[0].data.addPass(process.data)
+            }
+          }
+          break;
+        case 'attributes':
+          for( const [ key2, value2 ] of Object.entries(instances.list) ) {
+            if( value2 == null ) {
+              for( const check of instances.update ) {
+                if( key2 == check.id ){
+                  instances.list[key2] = new THREE[check.type](...Object.values(check.params))
+                }
+              }
+            }
+          }
+          break;
+        case 'shader':
+          for( const shader of instances ) {
+            // Create shader instance
+            switch( shader.type ) {
+              case 'FXAA':
+                shader.data = new ShaderPass(FXAAShader)
+                break;
+              case 'GammaCorrection':
+                shader.data = new ShaderPass(GammaCorrectionShader)
+            }
+
+            // Apply methods and set properties
+            this.applyMethodsAndSetProperties( shader );
+
+            // Add process to composer
+            env.components.postProcessing[0].data.addPass(shader.data)
+
+          }
+          break;
+        case 'externalShader':
+          // Import new shader [ vertex, frag ]
+          if( Object.keys(this.shader).length > 0 && env.components.attributes.list.externalShader.length > 0 ){
+            for( const type of env.components.attributes.list.externalShader ) {
+              env.components.externalShader[type] = 
+              {
+                data: {
+                  vertexShader: this.shader[type].vertexShader,
+                  fragmentShader: this.shader[type].fragmentShader
+                }
+              }
+            }
+          }
+          break;
+        case 'defaultObjects':
+          // Create new geometries and materials
+          for( const [ geomName, geomData ] of Object.entries( instances.geometries.list ) ) {
+            if( geomData == null ) {
+              for( const check of instances.geometries.initData ) {
+                if( geomName == check.id ) {
+                  if( geomName == "icosahedronMaterial"){
+                    instances.geometries.list[geomName] = new THREE[check.type](check.params)
+                  } else {
+                    instances.geometries.list[geomName] = new THREE[check.type](...Object.values(check.params))
+                  }
+                }
+              }
+            }
+          }
+          // Create new mesh
+          for( const [ meshName, meshData ] of Object.entries( instances.meshes ) ) {
+            meshData.data = new THREE[meshData.type](...Object.values(meshData.params))
+            // Apply methods and set properties
+            this.applyMethodsAndSetProperties( meshData );
+            // Add mesh to scene
+            env.components.scene[0].data.add( meshData.data )
+          }
+          break;
+        default:
+          console.log( "No fitting key available" );
+      }
+    }
+  }
+
+  applyMethodsAndSetProperties( object ) {
+    // Apply methods, if available
+    if( Object.keys( object.methods ).length != 0 ) {
+      for( const [key, value] of Object.entries(object.methods) ) {
+        if( key == "addEventListener" ) {
+          for( const [key2, value2] of Object.entries(value)) {
+            this.executeFunctionApply(key, object.data, key2, value2);
+          }
+        } else if( key == "uniforms['resolution'].value.set" ) {
+          object.data.uniforms['resolution'].value.set(...Object.values(value))
+        } else {
+          this.executeFunctionApply(key, object.data, ...Object.values(value))
+        }
+      }
+    }
+    
+    // Set properties, if available
+    if( Object.keys( object.properties ).length != 0 ) {
+      for( const [key, value] of Object.entries(object.properties) ) {
+        this.executeFunctionSet(key, object.data, value);
+      }
+    }
+  }
+
+  executeFunctionApply( functionName, context ) {
+    var args = Array.prototype.slice.call(arguments, 2);
+    var namespaces = functionName.split(".");
+    var func = namespaces.pop();
+    for(var i = 0; i < namespaces.length; i++) {
+      context = context[namespaces[i]];
+    }
+    return context[func].apply(context, args);
+  }
+  
+  executeFunctionSet( functionName, context ) {
+    var args = Array.prototype.slice.call(arguments, 2)[0];
+    var namespaces = functionName.split(".");
+    var func = namespaces.pop();
+    for(var i = 0; i < namespaces.length; i++) {
+      context = context[namespaces[i]];
+    }
+    if( args == "PCFSoftShadowMap" || args == "LinearSRGBColorSpace" ) {
+      return context[func] = THREE[args]
+    }
+    return context[func] = args;
+  }
 	
 }
