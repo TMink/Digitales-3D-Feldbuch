@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.04.2024 10:25:27
+ * Last Modified: 23.04.2024 12:31:51
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -696,9 +696,11 @@ export default {
      * @param {String} placeID 
      */
     moveToPlace(placeID) {
-      if (placeID !== 'new') {
-        this.$generalStore.setCurrentObject(placeID, 'place');
+      if (this.$generalStore.getCurrentObject('place') !== placeID) {
+        this.$generalStore.setCurrentObject(null, "position");
       }
+      
+      this.$generalStore.setCurrentObject(placeID, 'place');
       this.$router.push({ name: 'PlaceCreation', params: { placeID: placeID } })
     },
 
