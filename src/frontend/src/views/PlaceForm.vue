@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 04.04.2024 14:08:51
+ * Last Modified: 23.04.2024 14:25:10
  * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
@@ -137,7 +137,7 @@
 
           <!-- Tab item 'models' -->
           <v-window-item value="five">
-            <ModelForm :object_id="place._id" object_type="Places" @addModel="addModel($event)">
+            <ModelForm :object_prop="place" object_type="Places">
             </ModelForm>
           </v-window-item>
         </v-window>
@@ -614,30 +614,6 @@ export default {
         return true;
       } else {
         return false;
-      }
-    },
-
-    /**
-     * Adds a new `image_id` to the `images`-array of this place
-     * @param {String} image_id 
-     */
-    addImage(image_id) {
-      if (this.place.images == undefined) {
-        this.place.images = [image_id];
-      } else {
-        this.place.images.push(image_id);
-      }
-    },
-
-    /**
-     * Adds a new `model_id` to the `models`-array of this place
-     * @param {String} model_id 
-     */
-    addModel(model_id) {
-      if (this.place.models == undefined) {
-        this.place.models = [model_id];
-      } else {
-        this.place.models.push(model_id);
       }
     },
 

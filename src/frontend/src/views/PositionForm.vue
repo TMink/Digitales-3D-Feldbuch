@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 04.04.2024 14:35:24
+ * Last Modified: 23.04.2024 13:51:49
  * Modified By: Julian Hardtung
  * 
  * Description: input page for positions data 
@@ -55,17 +55,14 @@
 
           <!-- TAB ITEM 'IMAGES' -->
           <v-window-item value="two">
-            <ImageForm 
-              :position_prop="position" 
-              @addImage="addImage($event)"/>
+            <ImageForm :position_prop="position"/>
           </v-window-item>
 
           <!-- Tab item 'MODELS' -->
           <v-window-item value="four">
             <ModelForm 
               object_type="Positions" 
-              :object_id="position._id" 
-              @addModel="addModel($event)"/>
+              :object_prop="position"/>
           </v-window-item>
         </v-window>
       </v-col>
@@ -90,7 +87,6 @@
  *  savePosition    - Saves the current processing status
  *  confirmDeletion - Opens the confirmation dialog
  *  deletePosition  - Deletes the currently selected position
- *  addImage        - Adds a new image to the position
  *  deleteImage     - Deletes an image from the position
  *  addText         - Adds a new text to the list
  *  saveText        - Saves changes to a text of the position
@@ -485,30 +481,6 @@ export default {
       this.$generalStore.removeCurrentObject('position');
       this.hasUnsavedChanges = false;
       this.$router.push({ name: "PositionsOverview" });
-    },
-
-    /**
-     * Adds a new `image_id` to the `images`-array of this position
-     * @param {String} image_id 
-     */
-    addImage(image_id) {
-      if (this.position.images == undefined) {
-        this.position.images = [image_id];
-      } else {
-        this.position.images.push(image_id);
-      }
-    },
-
-    /**
-     * Adds a new `model_id` to the `models`-array of this position
-     * @param {String} model_id 
-     */
-    addModel(model_id) {
-      if (this.position.models == undefined) {
-        this.position.models = [model_id];
-      } else {
-        this.position.models.push(model_id);
-      }
     },
 
     /**

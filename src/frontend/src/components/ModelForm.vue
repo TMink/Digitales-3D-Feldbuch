@@ -2,7 +2,7 @@
  * Created Date: 14.07.2023 17:06:51
  * Author: Julian Hardtung
  * 
- * Last Modified: 22.03.2024 11:58:21
+ * Last Modified: 23.04.2024 14:23:55
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for 3d-models of places/positions
@@ -276,7 +276,7 @@ export default {
    * Props from PlaceForm/PositionForm
    */
   props: {
-    object_id: String,
+    object_prop: Object,
     object_type: String,
   },
   emits: ['addModel'],
@@ -379,7 +379,7 @@ export default {
    */
   async created() {
     await fromOfflineDB.syncLocalDBs().catch(err => console.error(err));
-    await this.updateObject().catch(err => console.error(err));
+    /* await this.updateObject().catch(err => console.error(err)); */
     await this.updateModels().catch(err => console.error(err));
   },
 
@@ -583,14 +583,6 @@ export default {
         });
       });
     },
-
-    /**
-     * Update reactive Vue.js object data
-     */
-    async updateObject() {
-      this.object = await fromOfflineDB.getObject(this.object_id,
-        this.object_type, this.object_type.toLowerCase());
-    },
     
     /**
      * Update reactive Vue.js model data
@@ -598,7 +590,7 @@ export default {
     async updateModels() {
       var objectType = this.object_type.substring(0, this.object_type.length - 1);
       this.models = await fromOfflineDB.getAllObjectsWithID(
-        this.object_id, objectType, 'Models', this.object_type.toLowerCase());
+        this.object_prop._id, objectType, 'Models', this.object_type.toLowerCase());
     },
 
     /**
@@ -630,8 +622,8 @@ export default {
       var ctx = this;
       // add modelID to the object array of all models
       const newModelID = String(Date.now());
-      this.object.models.push(newModelID);
-      this.object.lastChanged = Date.now();
+      this.object_prop.models.push(newModelID);
+      this.object_prop.lastChanged = Date.now();
 
       // new model data
       const newModel = {
@@ -665,7 +657,7 @@ export default {
 
       // update IndexedDB
       await fromOfflineDB
-        .updateObject(toRaw(this.object), this.object_type, this.object_type.toLowerCase())
+        .updateObject(toRaw(this.object_prop), this.object_type, this.object_type.toLowerCase())
         .catch(err => console.error(err));
       await fromOfflineDB
         .addObject(newModel, 'Models', this.object_type.toLowerCase())
@@ -674,7 +666,7 @@ export default {
       await this.updateModels(newModel._id)
         .catch(err => console.error(err));
 
-      ctx.$emit('addModel', newModel._id);
+      /* ctx.$emit('addModel', newModel._id); */
 
       /* Bob Ross */
       this.addToken = true
@@ -732,7 +724,7 @@ export default {
       // var indexAllObjects = exParams.main.objects.allObjects.indexOf(model._id)
       // console.log(indexAllObjects)
 
-      // var index = this.object.models.indexOf(model._id);
+      // var index = this.object_prop.models.indexOf(model._id);
       // if ( exParams.main.objects.place._ids.length > 0 || 
       //   exParams.main.objects.position._ids.length > 0 ) {
       //   exParams.main.objects.token = true;
@@ -741,13 +733,13 @@ export default {
       // remove camera of specific activity
 
       // remove the modelID from connected place/position
-      var index = this.object.models.indexOf(model._id);
+      var index = this.object_prop.models.indexOf(model._id);
       if (index != -1) {
-        this.object.models.splice(index, 1);
-        this.object.lastChanged = Date.now();
+        this.object_prop.models.splice(index, 1);
+        this.object_prop.lastChanged = Date.now();
         if ( this.object_type === 'Places') {
-          if ( this.object.lines.length > 0 ) {
-            for ( const line of this.object.lines ) {
+          if ( this.object_prop.lines.length > 0 ) {
+            for ( const line of this.object_prop.lines ) {
               const lineToBeDeleted = await fromOfflineDB
                 .getObject(line, 'Lines', 'lines')
                 .catch(err => console.error(err));
@@ -755,11 +747,11 @@ export default {
                 .deleteObject(lineToBeDeleted, 'Lines', 'lines')
                 .catch(err => console.error(err));
             }
-            this.object.lines = []
+            this.object_prop.lines = []
           }
         }
         await fromOfflineDB
-          .updateObject(toRaw(this.object), this.object_type, this.object_type.toLowerCase())
+          .updateObject(toRaw(this.object_prop), this.object_type, this.object_type.toLowerCase())
           .catch(err => console.error(err));
       }
 
