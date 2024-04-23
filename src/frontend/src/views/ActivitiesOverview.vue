@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 22.03.2024 11:12:15
+ * Last Modified: 23.04.2024 12:24:50
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -527,6 +527,7 @@ export default {
       await fromOfflineDB
         .deleteCascade(activity._id, 'activity', 'Activities', 'activities')
         .catch(err => console.error(err));
+      this.$router.go();
     },
 
     /**
