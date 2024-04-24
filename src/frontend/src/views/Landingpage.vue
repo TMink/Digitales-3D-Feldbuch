@@ -2,8 +2,8 @@
  * Created Date: 29.11.2023 13:29:27
  * Author: Oliver Mertens
  * 
- * Last Modified: 28.03.2024 17:57:08
- * Modified By: Oliver Mertens
+ * Last Modified: 24.04.2024 21:18:31
+ * Modified By: Julian Hardtung
  * 
  * Description: LandingPage as the first entry point for new users
  -->
@@ -158,7 +158,7 @@
                     {{ this.$t('downloadInfoText') }}
                   </p>
                 </v-card-text>
-                <v-btn href="https://github.com/TMink/Digitales-3D-Feldbuch-Projekt-3-/releases/latest/download/fieldbook-client-win32-x64.7z" 
+                <v-btn href="https://github.com/TMink/Digitales-3D-Feldbuch-Projekt-3-/releases/latest" 
                   color="secondary" 
                   prepend-icon="mdi-download-outline"
                   class="ma-2">{{ this.$t('download') }}</v-btn>
