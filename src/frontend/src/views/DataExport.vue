@@ -44,6 +44,7 @@
         <v-window 
           color="background" 
           v-if="activity_open && !place_open">
+          
           <v-btn 
             icon 
             @click="activity_open = false;
@@ -52,9 +53,13 @@
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
 
-          <h2 class="text-center pb-4">
+          <h2 class="text-center pb-2">
             {{ $tc('place', 2).toUpperCase() }}
           </h2>
+
+          <v-card-title class="pb-2 pl-4">
+            {{ selected_activity_number }}
+          </v-card-title>
 
           <!--Lists all locally saved places-->
           <v-data-table-virtual 
@@ -78,9 +83,13 @@
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
 
-          <h2 class="text-center pb-4">
+          <h2 class="text-center pb-2">
             {{ $tc('position', 2).toUpperCase() }}
           </h2>
+
+          <v-card-title class="pb-2 pl-4">
+            {{ selected_activity_number }} | {{ $tc('place', 1) + ' ' + selected_place_number }}
+          </v-card-title>
 
           <!--Lists all locally saved positions-->
           <v-data-table-virtual 
@@ -293,6 +302,7 @@ export default {
       places: [],
       positions: [],
       selected_activity: '',
+      selected_activity_number: '',
       selected_place: '',
       activity_open: false,
       place_open: false,
@@ -521,6 +531,7 @@ export default {
       
       this.activity_open = true;
       this.selected_activity = activity_id;
+      this.selected_activity_number = item.raw.activityNumber;
 
       this.exportActivities = false;
       this.exportPlaces = true;
@@ -544,6 +555,7 @@ export default {
         .catch(err => console.error(err));
       this.place_open = true;
       this.selected_place = place_id;
+      this.selected_place_number = item.raw.placeNumber;
 
       this.exportActivities = false;
       this.exportPlaces = false;
