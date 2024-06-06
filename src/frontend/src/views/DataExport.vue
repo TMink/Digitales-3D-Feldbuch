@@ -582,23 +582,98 @@ export default {
       }
     },
 
+    // /**
+    //  * Creates and saves a .csv file
+    //  * @param {[ProxyObject]} data 
+    //  * @param {String} filename 
+    //  */
+    // createCSV(data, filename) {
+    //   const items = toRaw(data);
+    //   const replacer = (key, value) => value === null ? '' : value;
+    //   const header = Object.keys(items[0]);
+
+    //   // remove unwanted fields
+    //   let index = header.indexOf("lastSync");
+    //   header.splice(index, 1);
+    //   index = header.indexOf("lastChanged");
+    //   header.splice(index, 1);
+    //   index = header.indexOf("_id");
+    //   header.splice(index, 1);
+
+    //   // TODO: reformat the export output of fields 
+    //   //    - boolean fields should show `x` or `` instead of `true` and `false`
+    //   //    - arrays should be shortened to a `(not sure yet)` separated string of the IDs
+
+    //   // build ',' or ';' separated string
+    //   const csv = [header.join(this.separator), ...items.map(row => 
+    //     header.map(fieldName => JSON.stringify(row[fieldName], replacer))
+    //       .join(this.separator))
+    //   ].join('\r\n')
+
+    //   // create ',' or ';' separated blob
+    //   var blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    //   // save .csv file
+    //   saveAs(blob, filename + ".csv");
+    // },
+
     /**
      * Creates and saves a .csv file
      * @param {[ProxyObject]} data 
      * @param {String} filename 
      */
-    createCSV(data, filename) {
+     createCSV(data, filename) {
       const items = toRaw(data);
       const replacer = (key, value) => value === null ? '' : value;
-      const header = Object.keys(items[0]);
+      const cursor = Object.keys(items[0]);
+      let header = null;
+
+      console.log(items)
 
       // remove unwanted fields
-      let index = header.indexOf("lastSync");
-      header.splice(index, 1);
-      index = header.indexOf("lastChanged");
-      header.splice(index, 1);
-      index = header.indexOf("_id");
-      header.splice(index, 1);
+      let index = cursor.indexOf("lastSync");
+      cursor.splice(index, 1);
+      index = cursor.indexOf("lastChanged");
+      cursor.splice(index, 1);
+      index = cursor.indexOf("_id");
+      cursor.splice(index, 1);
+      if( filename == "activitylist" ) {
+        index = cursor.indexOf("camera");
+        cursor.splice(index, 1);
+
+        header = JSON.parse(JSON.stringify(cursor))
+        let index2 = header.indexOf( "activityNumber" )
+        header[ index2 ] = "activity"
+      }
+      if( filename == "placeslist" ) {
+        index = cursor.indexOf("activity");
+        cursor.splice(index, 1);
+        index = cursor.indexOf("modulePreset");
+        cursor.splice(index, 1);
+        index = cursor.indexOf("activityID");
+        cursor[index] = "activity"
+
+        header = JSON.parse(JSON.stringify(cursor))
+        let index2 = header.indexOf( "acitivityID" )
+        header[ index2 ] = "activity"
+        index2 = header.indexOf( "placeNumber" )
+        header[ index2 ] = "place"
+      }
+      if( filename == "positionslist" ) {
+        index = cursor.indexOf("activity");
+        cursor.splice(index, 1);
+        index = cursor.indexOf("place");
+        cursor.splice(index, 1);
+        index = cursor.indexOf("placeID");
+        cursor.splice(index, 1);
+        index = cursor.indexOf("modulePreset");
+        cursor.splice(index, 1);
+
+        cursor.unshift("activity", "place")
+
+        header = JSON.parse(JSON.stringify(cursor))
+        let index2 = header.indexOf( "positionNumber" )
+        header[ index2 ] = "position"
+      }
 
       // TODO: reformat the export output of fields 
       //    - boolean fields should show `x` or `` instead of `true` and `false`
@@ -606,7 +681,7 @@ export default {
 
       // build ',' or ';' separated string
       const csv = [header.join(this.separator), ...items.map(row => 
-        header.map(fieldName => JSON.stringify(row[fieldName], replacer))
+        cursor.map(fieldName => JSON.stringify(row[fieldName], replacer))
           .join(this.separator))
       ].join('\r\n')
 
