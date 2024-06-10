@@ -17,7 +17,8 @@
     "make": "electron-forge make",
     "preversion": "npm run build",
     "version": "npm version --no-git-tag-version",
-    "postversion": "npm run package && npm run make"
+    "postversion": "npm run package && npm run make",
+    "copy-dist": "xcopy /E /I /Y dist\\* fieldbook-app\\www"
   },
   "dependencies": {
     "@tweenjs/tween.js": "^23.1.1",
