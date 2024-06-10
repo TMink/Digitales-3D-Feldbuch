@@ -2,7 +2,7 @@
  * Created Date: 06.07.2023 13:22:10
  * Author: Julian Hardtung
  * 
- * Last Modified: 03.04.2024 11:55:10
+ * Last Modified: 23.04.2024 12:38:45
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for images of places/positions
@@ -272,9 +272,7 @@ export default {
     async updateImages() {
         this.images = await fromOfflineDB
           .getAllObjectsWithID(this.position._id, 'Position', 'Images', 'images')
-          .catch(err => console.error(err));
-        
-        console.log(this.images)
+          .catch(err => console.error(err));        
     },
 
     /**
