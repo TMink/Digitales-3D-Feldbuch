@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="assets/logos/3DDF_Icon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digitales 3D-Feldbuch</title>
+    <script type="module" crossorigin src="./assets/index-a1483231.js"></script>
+    <link rel="stylesheet" href="./assets/index-6edda113.css">
+  </head>
+  <body>
+    <div id="app"></div>
+    
+    <script>
+      
+      if (isElectron()) {
+        require('electron-cookies')
+      }
+
+
+      function isElectron() {
+          // Renderer process
+          if (typeof window !== 'undefined' && typeof window.process === 'object' && window.process.type === 'renderer') {
+            console.log("renderer true");
+            return true;
+          }
+
+          // Main process
+          if (typeof process !== 'undefined' && typeof process.versions === 'object' && !!process.versions.electron) {
+            console.log("main process true");
+            return true;
+          }
+
+          // Detect the user agent when the `nodeIntegration` option is set to true
+          if (typeof navigator === 'object' && typeof navigator.userAgent === 'string' && navigator.userAgent.indexOf('Electron') >= 0) {
+            console.log("user agent true");
+            return true;
+          }
+
+          console.log("electron false");
+          return false;
+        }
+    </script>
+  </body>
+</html>

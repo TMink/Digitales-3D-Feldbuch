@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.fieldbook.android" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>DigitalFieldbook</name>
+    <description>A digital fieldbook for documenting archeological excavations</description>
+    <author email="ju.hardtung@gmx.de">
+        Julian Hardtung
+    </author>
+    <icon src="www\assets\3DDF_Icon-e6464505.png" density="mdpi" />
+    <preference name="Orientation" value="landscape" />
+    <preference name="Fullscreen" value="true" />
+    <preference name="DisallowOverscroll" value="true" />
+    <content src="index.html" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+</widget>
