@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.08.2024 15:02:30
+ * Last Modified: 09.08.2024 15:26:33
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -53,7 +53,7 @@
             fixed-header
             :height="getTableHeight"
             :headers="headers"
-            :sort-by="[{ key: 'positionNumber', order: 'asc' }]">
+            :sort-by="[{ key: 'positionNumber', order: 'desc' }]">
 
             <template v-slot:item="{ item, index }">
               <tr v-on:click="handleRowClick(item._id)"
@@ -132,7 +132,7 @@
               :items="filteredPositions" 
               :height="getTableHeight"
               :headers="fullHeaders"
-              :sort-by="[{ key: 'positionNumber', order: 'asc' }]">
+              :sort-by="[{ key: 'positionNumber', order: 'desc' }]">
 
               <template v-slot:item="{ item, index }">
                 <tr v-on:click="handleRowClick(item._id)" 
