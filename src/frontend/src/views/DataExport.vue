@@ -2,7 +2,7 @@
  * Created Date: 26.06.2023 15:10:20
  * Author: Julian Hardtung
  * 
- * Last Modified: 02.04.2024 13:23:39
+ * Last Modified: 09.08.2024 15:06:42
  * Modified By: Julian Hardtung
  * 
  * Description: export all (or only specified) data to .pdf or .csv
@@ -508,10 +508,10 @@ export default {
      * @param {String} activity_id 
      */
     async setActivity(e, { item }) {
-      var activity_id = item.raw._id;
+      var activity_id = item._id;
 
       // don't move to places list if there are none
-      if (item.raw.places.length == 0) {
+      if (item.places.length == 0) {
         return;
       }
 
@@ -531,7 +531,7 @@ export default {
       
       this.activity_open = true;
       this.selected_activity = activity_id;
-      this.selected_activity_number = item.raw.activityNumber;
+      this.selected_activity_number = item.activityNumber;
 
       this.exportActivities = false;
       this.exportPlaces = true;
@@ -545,17 +545,17 @@ export default {
     async setPlace(e, { item }) {
 
       // don't move to positions list if there are none
-      if (item.raw.positions.length == 0) {
+      if (item.positions.length == 0) {
         return;
       }
 
-      var place_id = item.raw._id;
+      var place_id = item._id;
       this.positions = await fromOfflineDB
         .getAllObjectsWithID(place_id, 'Place', 'Positions', 'positions')
         .catch(err => console.error(err));
       this.place_open = true;
       this.selected_place = place_id;
-      this.selected_place_number = item.raw.placeNumber;
+      this.selected_place_number = item.placeNumber;
 
       this.exportActivities = false;
       this.exportPlaces = false;

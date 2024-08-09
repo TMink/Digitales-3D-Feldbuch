@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 23.04.2024 12:24:50
+ * Last Modified: 09.08.2024 15:11:27
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -423,8 +423,6 @@ export default {
      */
     async addActivity() {
 
-      console.log("Test")
-
       const newActivity = {
         activityNumber: '',
         branchOffice: 'Platzhalter',
@@ -506,6 +504,7 @@ export default {
       }
       await this.updateActivities()
         .catch(err => console.error(err));
+      console.log(this.$root)
       this.$root.vtoast.show({ message: this.$t('saveSuccess') });
     },
 

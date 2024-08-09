@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Julian Hardtung
  * 
- * Last Modified: 02.04.2024 13:43:20
+ * Last Modified: 09.08.2024 15:06:01
  * Modified By: Julian Hardtung
  * 
  * Description: DEPRECATED component to create, edit, set input module presets 
@@ -199,17 +199,17 @@
                   @mouseleave="setHoveredRow(index, false)">
 
                   <v-row no-gutters class="align-center">
-                    <td v-on:click="setModulePreset(item.raw), editPreset(item.raw)" :style="getRowStyle(index)">
+                    <td v-on:click="setModulePreset(item), editPreset(item)" :style="getRowStyle(index)">
                       <v-list-item-title>
-                        {{ item.raw.title || '-' }}
+                        {{ item.title || '-' }}
                       </v-list-item-title>
                     </td>  
                       <v-btn 
-                        v-if="item.raw.canEdit"
+                        v-if="item.canEdit"
                         class="mr-2"
                         color="error" 
                         density="compact"
-                        v-on:click="confirmDeletion(item.raw)">
+                        v-on:click="confirmDeletion(item)">
                         <v-icon>mdi-delete</v-icon>
                       </v-btn>
                   </v-row>

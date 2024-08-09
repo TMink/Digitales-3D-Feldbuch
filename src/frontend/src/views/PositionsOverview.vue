@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 05.04.2024 13:24:04
+ * Last Modified: 09.08.2024 15:02:30
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -56,32 +56,32 @@
             :sort-by="[{ key: 'positionNumber', order: 'asc' }]">
 
             <template v-slot:item="{ item, index }">
-              <tr v-on:click="handleRowClick(item.raw._id)"
+              <tr v-on:click="handleRowClick(item._id)"
                   @mouseenter="setHoveredRow(index, true)"
                   @mouseleave="setHoveredRow(index, false)">
 
                   <!-- POSITION NUMBER -->
                   <td :style="getRowStyle(index)">
                     <v-list-item-title class="pl-4">
-                      {{ item.raw.positionNumber }}
+                      {{ item.positionNumber }}
                     </v-list-item-title>
                   </td>
 
                   <!-- SUB NUMBER -->
                   <td :style="getRowStyle(index)">
                     <v-list-item-title class="pl-4">
-                      {{ item.raw.subNumber }}
+                      {{ item.subNumber }}
                     </v-list-item-title>
                   </td>
 
                   <!-- TITLE -->
                   <td :style="getRowStyle(index)">
-                    <v-list-item-title v-if="item.raw.title.length > 0"
+                    <v-list-item-title v-if="item.title.length > 0"
                       style="min-width:200px" class="text-wrap">
-                      {{ item.raw.title }}
+                      {{ item.title }}
                     </v-list-item-title>
 
-                    <v-list-item-title v-if="item.raw.title.length == 0" 
+                    <v-list-item-title v-if="item.title.length == 0" 
                       style="color:dimgrey;">
                       -
                     </v-list-item-title>
@@ -90,7 +90,7 @@
                   <!-- DATE -->
                   <td :style="getRowStyle(index)">
                     <v-list-item-title>
-                      {{ item.raw.date || '-' }}
+                      {{ item.date || '-' }}
                     </v-list-item-title>
                   </td>
 
@@ -100,11 +100,11 @@
                       <v-btn 
                         icon 
                         variant="text"
-                        v-if="item.raw.lastSync > 0">
+                        v-if="item.lastSync > 0">
                           <v-tooltip 
                             activator="parent"
                             location="bottom">
-                            {{ this.$t('lastSync') + new Date(item.raw.lastSync).toLocaleString() }}
+                            {{ this.$t('lastSync') + new Date(item.lastSync).toLocaleString() }}
                           </v-tooltip>
                           <v-icon>mdi-cloud-check</v-icon>
                       </v-btn>
@@ -135,35 +135,35 @@
               :sort-by="[{ key: 'positionNumber', order: 'asc' }]">
 
               <template v-slot:item="{ item, index }">
-                <tr v-on:click="handleRowClick(item.raw._id)" 
+                <tr v-on:click="handleRowClick(item._id)" 
                   @mouseenter="setHoveredRow(index, true)"
                   @mouseleave="setHoveredRow(index, false)">
 
                   <!-- PLACE NUMBER -->
                   <td :style="getRowStyle(index)">
                     <v-list-item-title>
-                      {{ item.raw.positionNumber }}
+                      {{ item.positionNumber }}
                     </v-list-item-title>
                   </td>
 
                   <!-- SUB NUMBER -->
                   <td :style="getRowStyle(index)">
                     <v-list-item-title>
-                      {{ item.raw.subNumber }}
+                      {{ item.subNumber }}
                     </v-list-item-title>
                   </td>
 
                   <!-- TITLE -->
                   <td class="py-2" :style="getRowStyle(index)">
                     <v-list-item-title
-                      v-if="item.raw.title.length > 0"
+                      v-if="item.title.length > 0"
                       style="min-width:200px" 
                       class="text-wrap">
-                      {{ item.raw.title }}
+                      {{ item.title }}
                     </v-list-item-title>
 
                     <v-list-item-title 
-                      v-if="item.raw.title.length == 0" style="color:dimgrey;">
+                      v-if="item.title.length == 0" style="color:dimgrey;">
                       -
                     </v-list-item-title>
                   </td>
@@ -171,12 +171,12 @@
                   <!-- DATING -->
                     <td :style="getRowStyle(index)">
                       <v-list-item-title 
-                        v-if="item.raw.dating">
-                        {{ item.raw.dating }}
+                        v-if="item.dating">
+                        {{ item.dating }}
                       </v-list-item-title>
 
                       <v-list-item-title 
-                        v-if="!item.raw.dating" style="color:dimgrey;">
+                        v-if="!item.dating" style="color:dimgrey;">
                         -
                       </v-list-item-title>
                     </td>
@@ -184,36 +184,36 @@
                   <!-- RIGHT VALUES -->
                   <td :style="getRowStyle(index)" class="align-right">
                     <v-list-item-title 
-                      v-if="item.raw.right">
-                      {{ item.raw.right }}
+                      v-if="item.right">
+                      {{ item.right }}
                     </v-list-item-title>
 
                     <v-list-item-title 
-                      v-if="!item.raw.right" style="color:dimgrey;">
+                      v-if="!item.right" style="color:dimgrey;">
                       -
                     </v-list-item-title>
                   </td>
 
                   <!-- UP VALUES -->
                   <td :style="getRowStyle(index)" class="align-right">
-                    <v-list-item-title v-if="item.raw.up">
-                      {{ item.raw.up }}
+                    <v-list-item-title v-if="item.up">
+                      {{ item.up }}
                     </v-list-item-title>
 
                     <v-list-item-title 
-                      v-if="!item.raw.up" style="color:dimgrey;">
+                      v-if="!item.up" style="color:dimgrey;">
                       -
                     </v-list-item-title>
                   </td>
 
                   <!-- HEIGHT -->
                     <td :style="getRowStyle(index)" class="align-right">
-                      <v-list-item-title v-if="item.raw.height">
-                        {{ item.raw.up }}
+                      <v-list-item-title v-if="item.height">
+                        {{ item.up }}
                       </v-list-item-title>
 
                       <v-list-item-title 
-                        v-if="!item.raw.height" style="color:dimgrey;">
+                        v-if="!item.height" style="color:dimgrey;">
                         -
                       </v-list-item-title>
                     </td>
@@ -221,11 +221,11 @@
                   <!-- PLANE -->
                   <td :style="getRowStyle(index)">
                     <v-list-item-title 
-                      v-if="item.raw.count != ''" class="text-wrap">
-                      {{ item.raw.count || '-' }}
+                      v-if="item.count != ''" class="text-wrap">
+                      {{ item.count || '-' }}
                     </v-list-item-title>
                     <v-list-item-title 
-                      v-if="item.raw.count == ''" style="color:dimgrey;">
+                      v-if="item.count == ''" style="color:dimgrey;">
                       -
                     </v-list-item-title>
                   </td>
@@ -233,11 +233,11 @@
                   <!-- WEIGHT -->
                   <td :style="getRowStyle(index)">
                     <v-list-item-title 
-                      v-if="item.raw.weight != ''" class="text-wrap">
-                      {{ item.raw.weight || '-' }}
+                      v-if="item.weight != ''" class="text-wrap">
+                      {{ item.weight || '-' }}
                     </v-list-item-title>
                     <v-list-item-title 
-                      v-if="item.raw.weight == ''" style="color:dimgrey;">
+                      v-if="item.weight == ''" style="color:dimgrey;">
                       -
                     </v-list-item-title>
                   </td>
@@ -245,11 +245,11 @@
                   <!-- WEIGHT -->
                     <td :style="getRowStyle(index)">
                       <v-list-item-title 
-                        v-if="item.raw.material != ''" class="text-wrap">
-                        {{ item.raw.material || '-' }}
+                        v-if="item.material != ''" class="text-wrap">
+                        {{ item.material || '-' }}
                       </v-list-item-title>
                       <v-list-item-title 
-                        v-if="item.raw.material == ''" style="color:dimgrey;">
+                        v-if="item.material == ''" style="color:dimgrey;">
                         -
                       </v-list-item-title>
                     </td>
@@ -257,10 +257,10 @@
                   <!-- DESCRIPTION -->
                   <td :style="getRowStyle(index)">
                     <v-list-item-title class="text-wrap">
-                      {{ item.raw.description }}
+                      {{ item.description }}
                     </v-list-item-title>
                     <v-list-item-title 
-                      v-if="item.raw.description == ''" style="color:dimgrey;">
+                      v-if="item.description == ''" style="color:dimgrey;">
                       -
                     </v-list-item-title>
                   </td>
@@ -268,11 +268,11 @@
                   <!-- EDITOR -->
                   <td :style="getRowStyle(index)">
                     <v-list-item-title
-                      v-if="item.raw.editor != ''">
-                      {{ item.raw.editor }}
+                      v-if="item.editor != ''">
+                      {{ item.editor }}
                     </v-list-item-title>
                     <v-list-item-title 
-                      v-if="item.raw.editor == ''" style="color:dimgrey;">
+                      v-if="item.editor == ''" style="color:dimgrey;">
                       -
                     </v-list-item-title>
                   </td>
@@ -280,19 +280,19 @@
                   <!-- DATE -->
                   <td :style="getRowStyle(index)">
                     <v-list-item-title>
-                      {{ item.raw.date}}
+                      {{ item.date}}
                     </v-list-item-title>
                   </td>
 
                   <!-- IS SEPARATE -->
                   <td :style="getRowStyle(index)">
                     <v-list-item-title 
-                      v-if="item.raw.isSeparate">
+                      v-if="item.isSeparate">
                       &cross;
                     </v-list-item-title>
 
                     <v-list-item-title 
-                      v-if="!item.raw.isSeparate" style="color:dimgrey;">
+                      v-if="!item.isSeparate" style="color:dimgrey;">
                       -
                     </v-list-item-title>
                   </td>
@@ -303,11 +303,11 @@
                       <v-btn 
                         icon 
                         variant="text"
-                        v-if="item.raw.lastSync > 0">
+                        v-if="item.lastSync > 0">
                           <v-tooltip 
                             activator="parent"
                             location="bottom">
-                            {{ this.$t('lastSync') + new Date(item.raw.lastSync).toLocaleString() }}
+                            {{ this.$t('lastSync') + new Date(item.lastSync).toLocaleString() }}
                           </v-tooltip>
                           <v-icon>mdi-cloud-check</v-icon>
                       </v-btn>
@@ -330,9 +330,9 @@
             </v-data-table-virtual>
         </v-card>
         <v-spacer></v-spacer>
-      </v-row>
+    </v-row>
 
-      <v-row class="align-center">
+    <v-row class="align-center">
       <v-spacer></v-spacer>
       <AddPosition 
         :positions_prop="positions" 
@@ -365,6 +365,7 @@
           </v-col>
         </v-row>
       </v-snackbar>
+      <v-spacer></v-spacer>
     </v-row>
   </div>
 </template>

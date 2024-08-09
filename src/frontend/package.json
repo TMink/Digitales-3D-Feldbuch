@@ -1,7 +1,7 @@
 {
   "name": "fieldbook",
   "productName": "Digitales 3D-Feldbuch",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "author": "FieldbookDevs",
   "description": "A 3d fieldbook for documentation of archeological excavations",
   "private": true,
@@ -11,6 +11,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest",
+    "test:vuetify": "vitest run Navigation.test.mjs",
     "electron:start": "electron .",
     "package": "electron-forge package",
     "start": "electron-forge start",
@@ -35,13 +36,13 @@
     "three-bvh-csg": "^0.0.5",
     "three-mesh-bvh": "^0.6.0",
     "tough-cookie": "^4.1.3",
-    "vite-plugin-vuetify": "^1.0.2",
+    "vite-plugin-vuetify": "^2.0.0",
     "vue": "^3.3.2",
     "vue-cookies": "^1.8.3",
     "vue-i18n": "^9.2.2",
     "vue-router": "^4.2.0",
     "vue-window-size": "^2.0.0",
-    "vuetify": "^3.3.9"
+    "vuetify": "^3.6.14"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.1.0",
@@ -51,9 +52,10 @@
     "@electron-forge/maker-wix": "^7.3.1",
     "@electron-forge/maker-zip": "^7.1.0",
     "@electron-forge/plugin-auto-unpack-natives": "^7.1.0",
+    "@pinia/testing": "^0.1.3",
     "@testing-library/vue": "^7.0.0",
     "@vitejs/plugin-vue": "^4.2.3",
-    "@vue/test-utils": "^2.3.2",
+    "@vue/test-utils": "^2.4.6",
     "electron": "^27.0.4",
     "electron-wix-msi": "^5.1.3",
     "eslint": "^8.41.0",
@@ -64,7 +66,7 @@
     "resize-observer-polyfill": "^1.5.1",
     "rollup-plugin-glslify": "^1.3.1",
     "vite": "^4.3.5",
-    "vitest": "^0.32.2",
+    "vitest": "^2.0.4",
     "vue-router-mock": "^0.2.0"
   }
 }

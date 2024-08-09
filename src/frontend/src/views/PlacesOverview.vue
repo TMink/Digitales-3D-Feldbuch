@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 23.04.2024 12:31:51
+ * Last Modified: 09.08.2024 15:17:34
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -44,34 +44,34 @@
           :items="filteredPlaces" 
           :height="getTableHeight"
           :headers="headers"
-          :sort-by="[{ key: 'placeNumber', order: 'asc' }]">
+          :sort-by="[{ key: 'placeNumber', order: 'desc' }]">
 
           <template v-slot:item="{ item, index }">
-            <tr v-on:click="handleRowClick(item.raw._id)" 
+            <tr v-on:click="handleRowClick(item._id)" 
               @mouseenter="setHoveredRow(index, true)"
               @mouseleave="setHoveredRow(index, false)">
               <!-- PLACE NUMBER -->
               <td :style="getRowStyle(index)">
                 <v-list-item-title class="pl-4">
-                  {{ item.raw.placeNumber }}
+                  {{ item.placeNumber }}
                 </v-list-item-title>
               </td>
 
               <!-- TITLE -->
               <td :style="getRowStyle(index)">
-                <div v-if="item.raw.placeNumber > 1">
-                  <v-list-item-title v-if="item.raw.title.length > 0" 
+                <div v-if="item.placeNumber > 1">
+                  <v-list-item-title v-if="item.title.length > 0" 
                     style="min-width:200px" class="text-wrap">
-                    {{ item.raw.title }}
+                    {{ item.title }}
                   </v-list-item-title>
 
-                  <v-list-item-title v-if="item.raw.title.length == 0" 
+                  <v-list-item-title v-if="item.title.length == 0" 
                     style="color:dimgrey;">
                     -
                   </v-list-item-title>
                 </div>
 
-                <v-list-item-title v-if="item.raw.placeNumber == 1" 
+                <v-list-item-title v-if="item.placeNumber == 1" 
                   style="color:#C4A484;">
                   {{ $t('technical') }}
                 </v-list-item-title>
@@ -80,16 +80,16 @@
               <!-- DATE -->
               <td :style="getRowStyle(index)">
                 <v-list-item-title>
-                  {{ item.raw.date || '-' }}
+                  {{ item.date || '-' }}
                 </v-list-item-title>
               </td>
 
               <!-- SYNC STATUS -->
               <td :style="getRowStyle(index)">
                 <v-list-item>
-                  <v-btn icon variant="text" v-if="item.raw.lastSync > 0">
+                  <v-btn icon variant="text" v-if="item.lastSync > 0">
                     <v-tooltip activator="parent" location="bottom">
-                      {{ this.$t('lastSync') + new Date(item.raw.lastSync).toLocaleString() }}
+                      {{ this.$t('lastSync') + new Date(item.lastSync).toLocaleString() }}
                     </v-tooltip>
                     <v-icon>mdi-cloud-check</v-icon>
                   </v-btn>
@@ -108,34 +108,35 @@
         <!-- PLACES LIST COMPLETE -->
         <v-data-table-virtual fixed-header v-show="showAllInfo" 
           :items="filteredPlaces" :height="getTableHeight"
-          :headers="fullHeaders">
+          :headers="fullHeaders"
+          :sort-by="[{ key: 'placeNumber', order: 'desc' }]">
 
           <template v-slot:item="{ item, index }">
-            <tr v-on:click="handleRowClick(item.raw._id)" 
+            <tr v-on:click="handleRowClick(item._id)" 
               @mouseenter="setHoveredRow(index, true)"
               @mouseleave="setHoveredRow(index, false)">
 
               <!-- PLACE NUMBER -->
               <td :style="getRowStyle(index)">
                 <v-list-item-title class="pl-4">
-                  {{ item.raw.placeNumber }}
+                  {{ item.placeNumber }}
                 </v-list-item-title>
               </td>
 
               <!-- TITLE -->
               <td class="py-2" :style="getRowStyle(index)">
-                <div v-if="item.raw.placeNumber > 1">
-                  <v-list-item-title v-if="item.raw.title.length > 0" 
+                <div v-if="item.placeNumber > 1">
+                  <v-list-item-title v-if="item.title.length > 0" 
                     style="min-width:200px" class="text-wrap">
-                    {{ item.raw.title }}
+                    {{ item.title }}
                   </v-list-item-title>
 
-                  <v-list-item-title v-if="item.raw.title.length == 0" 
+                  <v-list-item-title v-if="item.title.length == 0" 
                     style="color:dimgrey;">
                     -
                   </v-list-item-title>
                 </div>
-                <v-list-item-title v-if="item.raw.placeNumber == 1" 
+                <v-list-item-title v-if="item.placeNumber == 1" 
                   style="color:#C4A484;">
                   {{ $t('technical') }}
                 </v-list-item-title>
@@ -143,11 +144,11 @@
 
               <!-- NO FINDING -->
               <td :style="getRowStyle(index)">
-                <v-list-item-title class="pl-4" v-if="item.raw.noFinding">
+                <v-list-item-title class="pl-4" v-if="item.noFinding">
                   &cross;
                 </v-list-item-title>
 
-                <v-list-item-title class="pl-4" v-if="!item.raw.noFinding" 
+                <v-list-item-title class="pl-4" v-if="!item.noFinding" 
                   style="color:dimgrey;">
                   -
                 </v-list-item-title>
@@ -155,11 +156,11 @@
 
               <!-- REST FINDING -->
               <td :style="getRowStyle(index)">
-                <v-list-item-title class="pl-4" v-if="item.raw.restFinding">
+                <v-list-item-title class="pl-4" v-if="item.restFinding">
                   &cross;
                 </v-list-item-title>
 
-                <v-list-item-title class="pl-4" v-if="!item.raw.restFinding" 
+                <v-list-item-title class="pl-4" v-if="!item.restFinding" 
                   style="color:dimgrey;">
                   -
                 </v-list-item-title>
@@ -167,22 +168,22 @@
 
               <!-- RIGHT VALUES -->
               <td :style="getRowStyle(index)" class="align-right">
-                <v-list-item-title v-if="item.raw.right">
-                  {{ item.raw.right}}
+                <v-list-item-title v-if="item.right">
+                  {{ item.right}}
                 </v-list-item-title>
 
-                <v-list-item-title v-if="item.raw.rightTo">
+                <v-list-item-title v-if="item.rightTo">
                   <span style="color:dimgrey">
                     {{ $t('to') }}
                   </span>
-                  {{ item.raw.rightTo}}
+                  {{ item.rightTo}}
                 </v-list-item-title>
 
-                <v-list-item-title v-if="!item.raw.right" 
+                <v-list-item-title v-if="!item.right" 
                   style="color:dimgrey;">
                   -
                 </v-list-item-title>
-                <v-list-item-title v-if="!item.raw.rightTo" 
+                <v-list-item-title v-if="!item.rightTo" 
                   style="color:dimgrey;">
                   -
                 </v-list-item-title>
@@ -190,19 +191,19 @@
 
               <!-- UP VALUES -->
               <td :style="getRowStyle(index)" class="align-right">
-                <div v-if="item.raw.up">
+                <div v-if="item.up">
                   <v-list-item-title>
-                    {{ item.raw.up}}
+                    {{ item.up}}
                   </v-list-item-title>
                   <v-list-item-title>
                     <span style="color:dimgrey; text-align: left;">
                       {{ $t('to') }}
                     </span>
-                    {{ item.raw.upTo || '-' }}
+                    {{ item.upTo || '-' }}
                   </v-list-item-title>
                 </div>
 
-                <div v-if="!item.raw.upTo" style="color:dimgrey;">
+                <div v-if="!item.upTo" style="color:dimgrey;">
                   <v-list-item-title>
                     -
                   </v-list-item-title>
@@ -214,24 +215,24 @@
 
               <!-- DEPTH -->
               <td :style="getRowStyle(index)" class="align-right">
-                <v-list-item-title v-if="item.raw.depthTop">
-                  {{ item.raw.depthTop }}
+                <v-list-item-title v-if="item.depthTop">
+                  {{ item.depthTop }}
                   <span style="color:dimgrey">
                     &#x25B2;
                   </span>
                 </v-list-item-title>
-                <v-list-item-title v-if="item.raw.depthBot">
-                  {{ item.raw.depthBot }}
+                <v-list-item-title v-if="item.depthBot">
+                  {{ item.depthBot }}
                   <span style="color:dimgrey">
                     &#x25BC;
                   </span>
                 </v-list-item-title>
 
-                <v-list-item-title v-if="!item.raw.depthTop" 
+                <v-list-item-title v-if="!item.depthTop" 
                   style="color:dimgrey;">
                   -
                 </v-list-item-title>
-                <v-list-item-title v-if="!item.raw.depthBot" 
+                <v-list-item-title v-if="!item.depthBot" 
                   style="color:dimgrey;">
                   -
                 </v-list-item-title>
@@ -239,11 +240,11 @@
 
               <!-- PLANE -->
               <td :style="getRowStyle(index)">
-                <v-list-item-title v-if="item.raw.plane != ''" 
+                <v-list-item-title v-if="item.plane != ''" 
                   class="text-wrap pl-3">
-                  {{ item.raw.plane || '-' }}
+                  {{ item.plane || '-' }}
                 </v-list-item-title>
-                <v-list-item-title class="pl-3" v-if="item.raw.plane == ''" 
+                <v-list-item-title class="pl-3" v-if="item.plane == ''" 
                   style="color:dimgrey;">
                   -
                 </v-list-item-title>
@@ -251,10 +252,10 @@
 
               <!-- VISIBILITY -->
               <td :style="getRowStyle(index)">
-                <v-list-item-title v-if="item.raw.visibility != null">
-                  {{ $tc('visibilities', item.raw.visibility) }}
+                <v-list-item-title v-if="item.visibility != null">
+                  {{ $tc('visibilities', item.visibility) }}
                 </v-list-item-title>
-                <v-list-item-title v-if="item.raw.visibility == null" 
+                <v-list-item-title v-if="item.visibility == null" 
                   style="color:dimgrey;">
                   -
                 </v-list-item-title>
@@ -263,9 +264,9 @@
               <!-- DESCRIPTION -->
               <td :style="getRowStyle(index)">
                 <v-list-item-title class="text-wrap" style="min-width:200px">
-                  {{ item.raw.description }}
+                  {{ item.description }}
                 </v-list-item-title>
-                <v-list-item-title v-if="item.raw.description == ''" 
+                <v-list-item-title v-if="item.description == ''" 
                   style="color:dimgrey;">
                   -
                 </v-list-item-title>
@@ -273,10 +274,10 @@
 
               <!-- EDITOR -->
               <td :style="getRowStyle(index)">
-                <v-list-item-title v-if="item.raw.editor != ''">
-                  {{ item.raw.editor || '-' }}
+                <v-list-item-title v-if="item.editor != ''">
+                  {{ item.editor || '-' }}
                 </v-list-item-title>
-                <v-list-item-title v-if="item.raw.editor == ''" 
+                <v-list-item-title v-if="item.editor == ''" 
                   style="color:dimgrey;">
                   -
                 </v-list-item-title>
@@ -285,16 +286,16 @@
               <!-- DATE -->
               <td :style="getRowStyle(index)">
                 <v-list-item-title>
-                  {{ item.raw.date || '-' }}
+                  {{ item.date || '-' }}
                 </v-list-item-title>
               </td>
 
               <!-- SYNC STATUS -->
               <td :style="getRowStyle(index)">
                 <v-list-item>
-                  <v-btn icon variant="text" v-if="item.raw.lastSync > 0">
+                  <v-btn icon variant="text" v-if="item.lastSync > 0">
                     <v-tooltip activator="parent" location="bottom">
-                      {{ this.$t('lastSync') + new Date(item.raw.lastSync).toLocaleString() }}
+                      {{ this.$t('lastSync') + new Date(item.lastSync).toLocaleString() }}
                     </v-tooltip>
                     <v-icon>mdi-cloud-check</v-icon>
                   </v-btn>
@@ -339,6 +340,7 @@
           </v-col>
         </v-row>
       </v-snackbar>
+      <v-spacer></v-spacer>
     </v-row>
   </div>
 </template>
@@ -356,6 +358,7 @@ import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { fromBackend } from '../ConnectionToBackend.js'
 import { useWindowSize } from 'vue-window-size';
 import { useUserStore } from '../Authentication';
+import { generalDataStore } from '../ConnectionToLocalStorage.js'
 
 
 export default {
@@ -368,11 +371,13 @@ export default {
   setup() {
     const { width, height } = useWindowSize();
     const userStore = useUserStore();
+    const generalStore = generalDataStore();
 
     return {
       windowWidth: width,
       windowHeight: height,
       userStore,
+      generalStore
     };
   },
 
@@ -457,8 +462,14 @@ export default {
       // split searchQuery to query array and escape special characters
       const queries = this.searchQuery.trim().toLowerCase().split(/\s+/).map(this.escapeRegExp);
       
+      if (this.places.length == 0) {
+        console.log("just return")
+        return;
+      }
+      
       // if no queries are present, return all places
       if (queries.length === 0 || (queries.length === 1 && queries[0] === '')) {
+        console.log(this.places)
         return this.places;
       } else {
         // filter places by all query filters
@@ -492,7 +503,7 @@ export default {
      * Get all places from IndexedDB
      */
     async updatePlaces() {
-      var curActivityID = this.$generalStore.getCurrentObject('activity');
+      var curActivityID = this.generalStore.getCurrentObject('activity');
 
       this.places = await fromOfflineDB
         .getAllObjectsWithID(curActivityID, 'Activity', 'Places', 'places')
@@ -504,7 +515,7 @@ export default {
     * @deprecated
     */
     async updatePlacesFull() {
-      var curActivityID = this.$generalStore.get('activity');
+      var curActivityID = this.generalStore.get('activity');
 
       var offlinePlaces = await fromOfflineDB
         .getAllObjectsWithID(curActivityID, 'Activity', 'Places', 'places')
@@ -575,7 +586,7 @@ export default {
      * Adds a new place to IndexedDB for the current activity
      */
     async addPlace() {
-      const acID = this.$generalStore.getCurrentObject('activity');
+      const acID = this.generalStore.getCurrentObject('activity');
       var newPlaceID = String(Date.now());
       var activity = await fromOfflineDB
         .getObject(acID, 'Activities', 'activities')
@@ -696,11 +707,11 @@ export default {
      * @param {String} placeID 
      */
     moveToPlace(placeID) {
-      if (this.$generalStore.getCurrentObject('place') !== placeID) {
-        this.$generalStore.setCurrentObject(null, "position");
+      if (this.generalStore.getCurrentObject('place') !== placeID) {
+        this.generalStore.setCurrentObject(null, "position");
       }
       
-      this.$generalStore.setCurrentObject(placeID, 'place');
+      this.generalStore.setCurrentObject(placeID, 'place');
       this.$router.push({ name: 'PlaceCreation', params: { placeID: placeID } })
     },
 
@@ -708,14 +719,14 @@ export default {
      * Set the toggleAllInfo switch state depending on localStorage
      */
     async setShowAllInfoSwitch() {
-      this.showAllInfo = this.$generalStore.getShowAllPlaceInfo();
+      this.showAllInfo = this.generalStore.getShowAllPlaceInfo();
     },
 
     /**
      * Save the change toggle all info state to localStorage
      */
     toggleAllInfo() {
-      this.$generalStore.toggleShowAllPlaceInfo(this.showAllInfo);
+      this.generalStore.toggleShowAllPlaceInfo(this.showAllInfo);
     },
 
     /**
@@ -765,7 +776,7 @@ export default {
      * @returns {Object} An object containing row style properties
      */
     getRowStyle(index) {
-      var currentTheme = this.$generalStore.getTheme()
+      var currentTheme = this.generalStore.getTheme()
       if (currentTheme !== 'fieldbook_light') {
         
         return {
