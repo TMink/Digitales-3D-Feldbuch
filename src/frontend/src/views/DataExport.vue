@@ -2,7 +2,7 @@
  * Created Date: 26.06.2023 15:10:20
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.08.2024 15:06:42
+ * Last Modified: 09.08.2024 15:54:30
  * Modified By: Julian Hardtung
  * 
  * Description: export all (or only specified) data to .pdf or .csv
@@ -36,7 +36,8 @@
             :items="activities" 
             :height="getTableHeight" 
             @click:row="setActivity"
-            :headers="activityHeaders">
+            :headers="activityHeaders"
+            item-value="number">
           </v-data-table-virtual>
         </v-window>
 
@@ -48,8 +49,8 @@
           <v-btn 
             icon 
             @click="activity_open = false;
-          exportPlaces = true;
-          exportActivities = true">
+            exportPlaces = true;
+            exportActivities = true">
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
 
@@ -324,34 +325,31 @@ export default {
       allActivitiesCount: '',
       allPlacesCount: '',
       allPositionsCount: '',
-      activityHeaders: [
-        [
-          { title: this.$t('branchOffice'), align: 'start', key: 'branchOffice' },
-          { title: this.$t('year'), align: 'start', key: 'year' },
-          { title: this.$tc('number', 2), align: 'start', key: 'number' },
-          { title: this.$tc('place', 2), align: 'start', key: 'places.length' },
-        ],
+      activityHeaders: 
+      [
+        { title: this.$t('branchOffice'), align: 'start', key: 'branchOffice' },
+        { title: this.$t('year'), align: 'start', key: 'year' },
+        { title: this.$tc('number', 2), align: 'start', key: 'number' },
+        { title: this.$tc('place', 2), align: 'start', key: 'places.length' },
       ],
-      placeHeaders: [
-        [
-          { title: this.$tc('number', 2), align: 'start', key: 'placeNumber'},
-          { title: this.$tc('title', 2), align: 'start', key: 'title' },
-          { title: this.$t('date'), align: 'start', key: 'date' },
-          { title: this.$tc('image', 2), align: 'start', key: 'images.length' },
-          { title: this.$tc('model', 2), align: 'start', key: 'models.length' },
-          { title: this.$tc('position', 2), align: 'start', key: 'positions.length' },
-        ],
+      placeHeaders: 
+      [
+        { title: this.$tc('number', 2), align: 'start', key: 'placeNumber'},
+        { title: this.$tc('title', 2), align: 'start', key: 'title' },
+        { title: this.$t('date'), align: 'start', key: 'date' },
+        { title: this.$tc('image', 2), align: 'start', key: 'images.length' },
+        { title: this.$tc('model', 2), align: 'start', key: 'models.length' },
+        { title: this.$tc('position', 2), align: 'start', key: 'positions.length' },
       ],
-      positionHeaders: [
-        [
-          { title: this.$tc('number', 2), align: 'start', key: 'positionNumber' },
-          { title: this.$tc('subNumber', 2), align: 'start', key: 'subNumber' },
-          { title: this.$tc('title', 2), align: 'start', key: 'title' },
-          { title: this.$t('dating'), align: 'start', key: 'dating' },
-          { title: this.$t('date'), align: 'start', key: 'date' },
-          { title: this.$tc('image', 2), align: 'start', key: 'images.length' },
-          { title: this.$tc('model', 2), align: 'start', key: 'models.length' },
-        ],
+      positionHeaders: 
+      [
+        { title: this.$tc('number', 2), align: 'start', key: 'positionNumber' },
+        { title: this.$tc('subNumber', 2), align: 'start', key: 'subNumber' },
+        { title: this.$tc('title', 2), align: 'start', key: 'title' },
+        { title: this.$t('dating'), align: 'start', key: 'dating' },
+        { title: this.$t('date'), align: 'start', key: 'date' },
+        { title: this.$tc('image', 2), align: 'start', key: 'images.length' },
+        { title: this.$tc('model', 2), align: 'start', key: 'models.length' },
       ],
     };
   },
@@ -417,6 +415,7 @@ export default {
       this.activities = await fromOfflineDB
         .getAllObjects('Activities', 'activities')
         .catch(err => console.error(err));
+
       this.activities = this.activities.sort((a, b) => {
         return a.number - b.number;
       });
@@ -791,7 +790,6 @@ export default {
           }
         } )
         this.allPlacesOfOneActivity.push( placeArr )
-        console.log(this.allPlacesOfOneActivity)
       })
 
       // Get all places with same activityID
