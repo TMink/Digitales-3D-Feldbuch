@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 10.02.2024 12:24:42
+ * Last Modified: 23.07.2024 12:08:58
  * Modified By: Julian Hardtung
  * 
  * Description: @deprecated
@@ -11,11 +11,15 @@
 
 import "vuetify/styles";
 import { createVuetify } from "vuetify";
+import * as components from "vuetify/components";
+import * as directives from "vuetify/directives";
 import * as labsComponents from "vuetify/labs/components";
 
 export default createVuetify({
   components: {
-    ...labsComponents,
+    components,
+    directives,
+    labsComponents,
   },
   theme: {
     defaultTheme: "fieldbook_dark",

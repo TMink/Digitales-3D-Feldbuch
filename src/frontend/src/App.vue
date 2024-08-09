@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 24.03.2024 19:12:49
+ * Last Modified: 09.08.2024 15:15:21
  * Modified By: Julian Hardtung
  * 
  * Description: main entry point for the fieldbook + 
@@ -37,6 +37,7 @@ import LocaleChanger from './components/LocaleChanger.vue';
 import DataBackup from './components/DataBackup.vue';
 import { fromOfflineDB } from './ConnectionToOfflineDB.js';
 import { useUserStore } from './Authentication.js';
+import { generalDataStore } from './ConnectionToLocalStorage.js';
 import { useI18n } from 'vue-i18n'
 
 export default {
@@ -50,9 +51,11 @@ export default {
   setup() {
     const { t } = useI18n() // use as global scope
     const userStore =  useUserStore();
+    const generalStore = generalDataStore();
     return {
       t,
       userStore,
+      generalStore
     }
   },
   props: {
@@ -82,14 +85,12 @@ export default {
 
   async beforeCreate() {
     await this.userStore.getUser();
-  },
-
-  async mounted() {
     this.$root.vtoast = this.$refs.vtoast;
   },
 
+
   async created() {
-    var isInitDone = this.$generalStore.getInitDone();
+    var isInitDone = this.generalStore.getInitDone();
 
     // only initialize Cookies and IndexedDB data once
     if (!isInitDone) {
@@ -103,15 +104,15 @@ export default {
     await fromOfflineDB.syncLocalDBs()
       .catch(err => console.error(err));
     this.active_tab = this.active_tab_prop;
-    this.placeID = this.$generalStore.getCurrentObject("place");
+    this.placeID = this.generalStore.getCurrentObject("place");
     if (this.placeID !== null) {
       this.placeIsSet = true
     }
-    this.activityID = this.$generalStore.getCurrentObject("activity");
+    this.activityID = this.generalStore.getCurrentObject("activity");
     if (this.activityID !== null) {
       this.activityIsSet = true
     }
-    this.positionID = this.$generalStore.getCurrentObject("position");
+    this.positionID = this.generalStore.getCurrentObject("position");
     if (this.positionID !== null) {
       this.positionIsSet = true
     }

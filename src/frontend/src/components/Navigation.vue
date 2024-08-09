@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 02.04.2024 15:09:17
+ * Last Modified: 25.07.2024 14:30:04
  * Modified By: Julian Hardtung
  * 
  * Description: Vue component with navigation-bar and extendable side-bar
@@ -27,7 +27,7 @@
         align-tabs="center" 
         slider-color="slider"
         v-model="active_tab"
-        v-if="active_tab>=0">
+        >
 
         <v-tab 
           id="activity" 
@@ -211,6 +211,7 @@ import LocaleChanger from './LocaleChanger.vue';
 import DataBackup from './DataBackup.vue';
 import { ref } from 'vue'
 import { useUserStore } from '../Authentication.js';
+import { generalDataStore } from '../ConnectionToLocalStorage.js';
 import { toRaw } from "vue";
 
 export default {
@@ -224,6 +225,7 @@ export default {
     const { t } = useI18n() // use as global scope
     const message = ref('');
     const userStore = useUserStore();
+    const generalStore = generalDataStore();
 
     if (userStore.authenticated) {
       message.value = toRaw(userStore.user.username);
@@ -234,6 +236,7 @@ export default {
       theme,
       message,
       userStore,
+      generalStore
     }
   },
   props: {
@@ -270,24 +273,24 @@ export default {
       .catch(err => console.error(err));
     this.active_tab = this.active_tab_prop;
 
-    var activityID = this.$generalStore.getCurrentObject('activity');
+    var activityID = this.generalStore.getCurrentObject('activity');
     if (activityID !== null) {
       this.activityIsSet = true
     }
 
-    var placeID = this.$generalStore.getCurrentObject('place');
+    var placeID = this.generalStore.getCurrentObject('place');
     if (placeID !== null) {
       this.placeIsSet = true
     }
 
-    var positionID = this.$generalStore.getCurrentObject('position');
+    var positionID = this.generalStore.getCurrentObject('position');
     if (positionID !== null) {
       this.positionIsSet = true;
     } else {
       this.positionIsSet = false;
     }
 
-    this.tooltipsToggle = this.$generalStore.getShowTooltips();
+    this.tooltipsToggle = this.generalStore.getShowTooltips();
 
   },
   methods: {
@@ -338,7 +341,7 @@ export default {
      * Deletes all data in localStorage for dev purposes
      */
     async clearLocalStorage() {
-      this.$generalStore.clearLocalStorage();
+      this.generalStore.clearLocalStorage();
     },
 
     /**
@@ -374,7 +377,7 @@ export default {
      * @param {String} selection 
      */
     async getInfo(selection) {
-      const _id = this.$generalStore.getCurrentObject(selection);
+      const _id = this.generalStore.getCurrentObject(selection);
 
       if (_id == null || _id == 'null') {
         return;
@@ -406,7 +409,7 @@ export default {
           this.currentPlace = name.placeNumber;
           break;
         case "position":
-          var curPlaceID = this.$generalStore.getCurrentObject('place');
+          var curPlaceID = this.generalStore.getCurrentObject('place');
           var curPlace = '';
           if (curPlaceID.length > 0) {
             curPlace = await fromOfflineDB
@@ -443,7 +446,7 @@ export default {
      */
     toggleTooltips() {
       this.tooltipsToggle = this.tooltipsToggle == true ? false : true;
-      this.$generalStore.toggleTooltips(this.tooltipsToggle);
+      this.generalStore.toggleTooltips(this.tooltipsToggle);
       location.reload();
     },
 
@@ -451,9 +454,9 @@ export default {
      * Toggles the currently active theme between dark-/light-theme
      */
     toggleTheme() {
-      this.$generalStore.toggleTheme();
+      this.generalStore.toggleTheme();
 
-      this.theme.global.name.value = this.$generalStore.getTheme();
+      this.theme.global.name.value = this.generalStore.getTheme();
     },
   }
 }

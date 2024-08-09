@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.03.2024 13:05:41
+ * Last Modified: 25.07.2024 14:30:40
  * Modified By: Julian Hardtung
  * 
  * Description: language switcher
@@ -26,9 +26,17 @@
 </template>
 
 <script>
+import { generalDataStore } from '../ConnectionToLocalStorage';
 
 export default {
     name: 'LocaleChanger',
+    setup() {
+      const generalStore = generalDataStore();
+
+      return {
+        generalStore
+      }
+    },
     data() {
         return {
             langs: ['de', 'en'],
@@ -37,13 +45,13 @@ export default {
     },
     methods: {
         changeLang(lang, i) {
-            this.$generalStore.setLocale(lang);
+            this.generalStore.setLocale(lang);
             this.current = i;
             location.reload();
         }
     },
     created() {
-        this.current = this.langs.findIndex(e => e == this.$generalStore.getLocale())
+        this.current = this.langs.findIndex(e => e == this.generalStore.getLocale())
         if (this.current == -1) this.current = 0
     },
 }
