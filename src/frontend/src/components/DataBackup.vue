@@ -2,7 +2,7 @@
  * Created Date: 17.07.2023 11:31:35
  * Author: Julian Hardtung
  * 
- * Last Modified: 22.03.2024 11:57:48
+ * Last Modified: 13.08.2024 14:21:46
  * Modified By: Julian Hardtung
  * 
  * Description: vue-component for downloading data backups and importing those
@@ -158,7 +158,7 @@
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
 import { toRaw } from 'vue';
 import { saveAs } from 'file-saver';
-import * as JSZip from 'jszip';
+import JSZip from 'jszip';
 import { useWindowSize } from 'vue-window-size';
 
 export default {
@@ -292,7 +292,7 @@ export default {
       var dbData = {};
       // add all the data back to their corresponding IndexedDB stores
       
-      var zipData = await JSZip.loadAsync(rawFile[0])
+      var zipData = await JSZip.loadAsync(rawFile)
         .catch(err => console.error(err));
       var fileKeys = Object.keys(zipData.files);
       
