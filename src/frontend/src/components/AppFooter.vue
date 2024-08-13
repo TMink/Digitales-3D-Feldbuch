@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.03.2024 13:08:31
+ * Last Modified: 13.08.2024 12:28:13
  * Modified By: Julian Hardtung
  * 
  * Description: app footer of the fieldbook
@@ -20,14 +20,26 @@
                         >
                     <v-icon><v-img src="assets/logos/THCologne_Icon.png"></v-img></v-icon>
                 </v-btn> 
-            </v-col>
+                v{{ curVersion }}
+              </v-col>
         </v-row>
     </v-footer>
 </template>
   
 <script>
+
+import {version} from '../../package.json';
+
 export default {
-    name: 'AppFooter'
+    name: 'AppFooter',
+    data() {
+      return {
+        curVersion: "-"
+      }
+    },
+    created() {
+      this.curVersion = version
+    },
 }
 </script>
   
