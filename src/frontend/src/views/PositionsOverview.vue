@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.08.2024 15:26:33
+ * Last Modified: 19.08.2024 10:56:51
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -334,9 +334,7 @@
 
     <v-row class="align-center">
       <v-spacer></v-spacer>
-      <AddPosition 
-        :positions_prop="positions" 
-        @updatePositions="updatePositions()"/>
+        <AddButton @click="addPosition()"/>
 
       <!-- DUPLICATE SWITCH -->
       <v-switch
@@ -372,7 +370,7 @@
 
 <script>
 import Navigation from '../components/Navigation.vue';
-import AddPosition from '../components/AddPosition.vue';
+import AddButton from '../components/AddButton.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { fromBackend } from '../ConnectionToBackend.js'
 import { useWindowSize } from 'vue-window-size';
@@ -382,7 +380,7 @@ export default {
   name: 'PositionsOverview',
   components: {
     Navigation,
-    AddPosition,
+    AddButton,
   },
   
   emits: ['view'],
@@ -704,8 +702,8 @@ export default {
         .catch(err => console.error(err));
       await fromOfflineDB.addObject(newPosition, "Positions", "positions")
         .catch(err => console.error(err));
-      
-      return newPositionID;
+    
+      this.updatePositions();
     },
 
 

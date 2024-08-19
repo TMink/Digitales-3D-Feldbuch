@@ -2,10 +2,11 @@
  * Created Date: 01.07.2023 14:01:06
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 13:56:53
+ * Last Modified: 19.08.2024 10:56:33
  * Modified By: Julian Hardtung
  * 
  * Description: vue component for adding a position
+                @deprecated
  -->
 
 <template>
@@ -84,6 +85,7 @@ export default {
         hasSubNumber: false,
         isSeparate: false,
 
+        coordinates: '',
         images: [],
         models: [],
         lastChanged: Date.now(),
