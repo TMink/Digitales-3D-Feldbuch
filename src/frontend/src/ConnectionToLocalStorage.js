@@ -2,7 +2,7 @@
  * Created Date: 09.02.2024 21:08:30
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 15:06:41
+ * Last Modified: 15.08.2024 11:11:53
  * Modified By: Julian Hardtung
  * 
  * Description: A persistent way to store fieldbook settings in 
@@ -224,10 +224,10 @@ export const generalDataStore = defineStore("generalData", {
      */
     getShowTooltips() {
       const showTooltips = localStorage.getItem("tooltips");
-      if (showTooltips == null || showTooltips == 'true') {
-        return true;
-      } else {
+      if (showTooltips == null || showTooltips == 'false') {
         return false;
+      } else {
+        return true;
       }
     },
 
