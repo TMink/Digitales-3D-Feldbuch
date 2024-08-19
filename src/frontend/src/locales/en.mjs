@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 11.04.2024 13:49:07
+ * Last Modified: 19.08.2024 10:26:04
  * Modified By: Julian Hardtung
  * 
  * Description: english translations
@@ -148,6 +148,7 @@ export default {
   not_created_yet: "No {object} has been created yet!",
   current_selection: "Current Selection",
   confirm_del: "Do you really want to delete {object} {object_nr}?",
+  confirmDelCoords: "Do you really want to delete the imported coordinates?",
   overview: "{msg} Overview",
   addNewPreset: "Add new Preset",
   existingPresets: "Existing Presets",
@@ -163,6 +164,9 @@ export default {
   thisExports: "Export: {count} {object}",
   wantToLeave: "Do you really want to leave? You have unsaved changes.",
   saveSuccess: "Saving successful",
+  saveError: "Saving failed",
+  emptyFile: "The file doesn't contain any data",
+  wrongFormat: "The data is in the wrong format.",
   syncSuccess: "Data upload successful",
   duplicationMode: "Duplicationmode activated",
   getBackup: "Getting your files",

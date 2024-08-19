@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 19.08.2024 10:56:51
+ * Last Modified: 19.08.2024 11:01:06
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -141,7 +141,7 @@
 
                   <!-- PLACE NUMBER -->
                   <td :style="getRowStyle(index)">
-                    <v-list-item-title>
+                    <v-list-item-title class="pl-4">
                       {{ item.positionNumber }}
                     </v-list-item-title>
                   </td>
@@ -677,7 +677,8 @@ export default {
         date: new Date().toLocaleDateString("de-DE"),
         hasSubNumber: false,
         isSeparate: false,
-
+        
+        coordinates: '',
         images: [],
         models: [],
         modulePreset: {

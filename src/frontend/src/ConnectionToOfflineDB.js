@@ -2,8 +2,8 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Tobias Mink
  * 
- * Last Modified: 18.04.2024 12:25:41
- * Modified By: Tobias Mink
+ * Last Modified: 19.08.2024 11:05:59
+ * Modified By: Julian Hardtung
  * 
  * Description: Helper API for manipulating the IndexedDB
  */
@@ -74,7 +74,7 @@ export default class ConnectionToOfflineDB {
       const request = window.indexedDB.open(dbName, dbVersion);
 
       request.onerror = (e) => {
-        console.log("Error opening db", e);
+        console.error("Error opening db", e);
         reject("Error");
       };
 
@@ -253,7 +253,7 @@ export default class ConnectionToOfflineDB {
               data.push(cursor.value.placeNumber);
               break;
             default:
-              console.log("Entries do not contain the propertie: '" + property + "'");
+              console.error("Entries do not contain the propertie: '" + property + "'");
           }
           cursor.continue();
         }
@@ -304,7 +304,7 @@ export default class ConnectionToOfflineDB {
               }
               break;
             default:
-              console.log("Error");
+              console.error("Error");
           }
 
           if (conv === true) {
@@ -325,7 +325,7 @@ export default class ConnectionToOfflineDB {
                 data.push(cursor.value.placeNumber);
                 break;
               default:
-                console.log("Entries do not contain the propertie: '" + property + "'");
+                console.error("Entries do not contain the propertie: '" + property + "'");
             }
           }
 
@@ -568,7 +568,7 @@ export default class ConnectionToOfflineDB {
       };
 
       trans.onerror = (_e) => {
-        console.log(_e)
+        console.error(_e)
       };
       const store = trans.objectStore(storeName);
       store.put(data);
@@ -744,7 +744,6 @@ export default class ConnectionToOfflineDB {
         case "activity":
           if (object.places.length > 0) {
             for (var i = 0; i < object.places.length; i++) {
-              console.log(object.places)
               await context
                 .deleteCascade(object.places[i], "place", "Places", "places")
                 .catch((err) => console.error(err));
@@ -761,13 +760,23 @@ export default class ConnectionToOfflineDB {
                 .catch((err) => console.error(err));
             }
           }
-          /* Delete all attached modells */
+          /* Delete all attached coordinates */
+          if (object.coordinates != "") {
+            var coords = await context
+              .getObject(object.coordinates, "Coordinates", "coordinates")
+              .catch((err) => console.error(err));
+
+            await fromOfflineDB
+              .deleteObject(coords, "Coordinates", "coordinates")
+              .catch((err) => console.error(err));
+          }
+          /* Delete all attached models */
           if (object.models.length != 0) {
             for (var l = 0; l < object.models.length; l++) {
               var model = await context
                 .getObject(object.models[l], "Models", "places")
                 .catch((err) => console.error(err));
-                
+
               await fromOfflineDB
                 .deleteObject(model, "Models", "places")
                 .catch((err) => console.error(err));
@@ -779,19 +788,20 @@ export default class ConnectionToOfflineDB {
               var line = await context
                 .getObject(object.lines[l], "Lines", "lines")
                 .catch((err) => console.error(err));
-                
+
               await fromOfflineDB
                 .deleteObject(line, "Lines", "lines")
                 .catch((err) => console.error(err));
             }
           }
+
           /* Delete all attached annotations */
           if (object.annotations.length != 0) {
             for (var l = 0; l < object.annotations.length; l++) {
               var annotation = await context
                 .getObject(object.annotations[l], "Annotations", "annotations")
                 .catch((err) => console.error(err));
-                
+
               await fromOfflineDB
                 .deleteObject(annotation, "Annotations", "annotations")
                 .catch((err) => console.error(err));
@@ -800,7 +810,16 @@ export default class ConnectionToOfflineDB {
           break;
 
         case "position":
-          console.log(object)
+          /* Delete all attached coordinates */
+          if (object.coordinates != "") {
+            var coords = await context
+              .getObject(object.coordinates, "Coordinates", "coordinates")
+              .catch((err) => console.error(err));
+
+            await fromOfflineDB
+              .deleteObject(coords, "Coordinates", "coordinates")
+              .catch((err) => console.error(err));
+          }
           /* Delete all attached images */
           if (object.images.length != 0) {
             for (var m = 0; m < object.images.length; m++) {
@@ -826,9 +845,9 @@ export default class ConnectionToOfflineDB {
             }
           }
           break;
-          
+
         default:
-          console.log("Error");
+          console.error("Error");
       }
 
       await fromOfflineDB
@@ -881,6 +900,12 @@ const offlineDBPositions = {
   storeNames: ["positions"],
 };
 
+const offlineDBCoordinates = {
+  name: "Coordinates",
+  version: 1,
+  storeNames: ["coordinates"],
+};
+
 const offlineDBImages = {
   name: "Images",
   version: 1,
@@ -928,6 +953,7 @@ const fromOfflineDB = new ConnectionToOfflineDB([
   offlineDBActivities,
   offlineDBPlaces,
   offlineDBPositions,
+  offlineDBCoordinates,
   offlineDBChanges,
   offlineDBImages,
   offlineDBCameras,

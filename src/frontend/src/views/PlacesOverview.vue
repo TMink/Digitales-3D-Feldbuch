@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.08.2024 15:17:34
+ * Last Modified: 15.08.2024 16:04:07
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -622,6 +622,7 @@ export default {
         editor: '',
         date: new Date().toLocaleDateString("de-DE"),
         technical: '',
+        coordinates: '',
 
         positions: [],
         images: [],

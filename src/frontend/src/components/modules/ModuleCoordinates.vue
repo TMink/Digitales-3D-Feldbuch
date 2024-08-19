@@ -2,14 +2,14 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 24.03.2024 18:54:58
+ * Last Modified: 19.08.2024 11:08:12
  * Modified By: Julian Hardtung
  * 
  * Description: `coordinates` input module for places/positions
  -->
 
 <template>
-  <v-card v-if="type == 'places'" class="mb-4 mr-2 pb-4 px-4">
+  <v-card class="mb-4 mr-2 pb-4 px-4">
     <v-row no-gutters class="pt-2">
       <h2 class="text-h6 font-weight-medium pt-2">
         {{ $t('coordinates') }}
@@ -27,156 +27,101 @@
 
     <v-divider/>
     
-    <v-row v-if="object.modulePreset.coordinates" style="padding-top:7px">
-      <!-- RIGHT -->
-      <v-col lg="4">
-        <v-text-field 
-          hide-details 
-          color="primary" 
-          density="compact" 
-          v-model="object.right"
-          :label="$t('right')" 
-          @keypress="filterNonNumeric(event)">
-        </v-text-field>
-        <v-text-field 
-          hide-details 
-          color="primary" 
-          density="compact"
-          :label="$t('rightTo')"
-          v-model="object.rightTo" 
-          @keypress="filterNonNumeric(event)">
-        </v-text-field>
-      </v-col>
+    <div v-if="object.modulePreset.coordinates">
+      <v-row v-show="!showCoords" class="pt-4 pb-2 align-center">
+        <v-file-input 
+          v-model="coordinatesFile"
+          accept=".txt, .csv" 
+          class="pt-6"
+          label=".txt-Datei mit Koordinaten aus Tachymeter oder ähnlichem auswählen">
+        </v-file-input>
+        <v-btn
+          class="ma-3 ml-4" 
+          color="success"
+          v-on:click="saveCoordinates(coordinatesFile)">
+          <v-icon class="pr-2">mdi-content-save-all</v-icon>
+          {{ $t('save') }}
+          <v-tooltip 
+            v-if="$generalStore.getShowTooltips()" 
+            activator="parent" 
+            location="bottom"
+            :text="$t('savePhrase', { msg: $tc('activity', 1) + ' ' + activity.activityNumber })">
+          </v-tooltip>
+        </v-btn>
+      </v-row>
+      <v-row no-gutters v-show="showCoords">
+        <v-col>
+          <v-data-table-virtual 
+                fixed-header
+                density="compact" 
+                :items="coordinatesList.coords" 
+                height="150px" 
+                :headers="coordHeaders">
+          </v-data-table-virtual>
+          
+          <v-row no-gutters>
+            <v-spacer></v-spacer>
+            <v-btn
+              class="mt-3 d-flex justify-end" 
+              color="error"
+              v-on:click="confirmDeletion()">
+              <v-icon class="pr-2">mdi-delete</v-icon>
+              {{ $t('delete') }}
+              <v-tooltip 
+                v-if="$generalStore.getShowTooltips()" 
+                activator="parent" 
+                location="bottom"
+                :text="$t('deletePhrase', { msg: $tc('activity', 1) + ' ' + activity.activityNumber })">
+              </v-tooltip>
+            </v-btn>
+          </v-row>
+        </v-col>
+      </v-row>
+    </div>
 
-      <v-divider vertical class="mt-1"/>
-
-      <!-- UP -->
-      <v-col lg="4">
-        <v-text-field 
-          hide-details 
-          color="primary" 
-          density="compact" 
-          :label="$t('up')"
-          v-model="object.up" 
-          @keypress="filterNonNumeric(event)">
-        </v-text-field>
-
-        <v-text-field 
-          hide-details 
-          color="primary" 
-          density="compact" 
-          :label="$t('upTo')"
-          v-model="object.upTo" 
-          @keypress="filterNonNumeric(event)">
-        </v-text-field>
-      </v-col>
-
-      <v-divider vertical class="mt-1"/>
-
-      <!-- DEPTH -->
-      <v-col lg="4">
-        <v-text-field 
-          hide-details 
-          color="primary" 
-          density="compact" 
-          :label="$t('depthTop')"
-          v-model="object.depthTop" 
-          @keypress="filterNonNumeric(event)">
-        </v-text-field>
-
-        <v-text-field 
-          hide-details 
-          color="primary" 
-          density="compact" 
-          :label="$t('depthBot')"
-          v-model="object.depthBot" 
-          @keypress="filterNonNumeric(event)">
-        </v-text-field>
-      </v-col>
-    </v-row>
-    <v-row v-else no-gutters style="padding-top:6px"></v-row>
   </v-card>
-
-  <v-card  v-if="type == 'positions'" class="mb-4 mr-2 pb-4 px-4">
-    <v-row no-gutters class="pt-2">
-      <h2 class="text-h6 font-weight-medium pt-2">
-        {{ $t('coordinates') }}
-      </h2>
-      
-      <v-spacer></v-spacer>
-
-      <!-- HIDE/SHOW MODULE BUTTON -->
-      <v-btn flat icon 
-        v-on:click="object.modulePreset.coordinates = !object.modulePreset.coordinates">
-        <v-icon v-if="object.modulePreset.coordinates">mdi-eye-outline</v-icon>
-        <v-icon v-else>mdi-eye-off-outline</v-icon>
-      </v-btn>
-    </v-row>
-
-    <v-divider/>
-
-    <v-row v-if="object.modulePreset.coordinates" style="padding-top:46px">
-      <v-col lg="4">
-        <v-text-field 
-          color="primary" 
-          hide-details 
-          :label="$t('right')" 
-          v-model="object.right" 
-          @keypress="filterNonNumeric(event)"
-          :hint="$tc('please_input', 2, { msg: 'Rechtswert' })">
-        </v-text-field>
-      </v-col>
-
-      <v-divider vertical/>
-
-      <v-col lg="4">
-        <v-text-field 
-          hide-details 
-          color="primary" 
-          :label="$t('up')" 
-          v-model="object.up"
-          @keypress="filterNonNumeric(event)" 
-          :hint="$tc('please_input', 2, { msg: 'Hochwert' })">
-        </v-text-field>
-      </v-col>
-
-      <v-divider vertical/>
-
-      <v-col lg="4">
-        <v-text-field 
-          hide-details 
-          :label="$t('height')" 
-          color="primary" 
-          v-model="object.height" 
-          @keypress="filterNonNumeric(event)" 
-          :hint="$tc('please_input', 2, { msg: 'Höhe' })">
-        </v-text-field>
-      </v-col>
-    </v-row>
-
-    <v-row v-else no-gutters style="padding-top:6px"></v-row>
-  </v-card>
+  <ConfirmDialog ref="confirm" />
 </template>
 
 <script>
-export default {
-		
-		props: {
-			objectProp: Object,
-		},
+  import { parse } from 'csv-parse/browser/esm/sync';
+  import { fromOfflineDB } from '../../ConnectionToOfflineDB';
+  import { toRaw } from "vue";
+  import ConfirmDialog from '../../components/ConfirmDialog.vue';
+
+  export default {
+      
+    components: {
+      ConfirmDialog
+    },
+    props: {
+      objectProp: Object,
+    },
 
     emits: ['dataToModuleViewer'],
 
-		data () {
-			return {
-        object: null,
+    data () {
+      return {
+        object: '',
         type: null,
-			}
-		},
+        coordinatesFile: null,
+        coordinatesList: [],
+        showCoords: false,
+        coordHeaders: 
+        [
+          { title: 'PtNr', align: 'start', key: 'PtNr' },
+          { title: 'Ost', align: 'start', key: 'Ost' },
+          { title: 'Nord', align: 'start', key: 'Nord' },
+          { title: 'Höhe', align: 'start', key: 'Höhe' },
+          { title: 'Code', align: 'start', key: 'Code' },
+        ],
+      }
+    },
 
     watch: {
-      objectProp: function(objectPropData) {
+      objectProp: async function(objectPropData) {
         this.object = objectPropData;
+        await this.updateCoordinates();
       },
       "object.right": {
         handler: function() {
@@ -244,12 +189,25 @@ export default {
       }
     },
 
-    created() {
+    async created() {
       this.type = this.getType(this.$route.path);
       this.object = this.objectProp;
     },
 
     methods: {
+
+      async updateCoordinates() {
+        console.log(this.object)
+        var res = await fromOfflineDB
+          .getObject(this.object.coordinates, 'Coordinates', 'coordinates')
+          .catch(err => console.error(err));
+        
+        if (res != null) {
+          this.coordinatesList = res;
+          this.showCoords = true;
+        }
+      },
+      
       getType(path) {
         const lowerName = path.substring(
           path.indexOf("/") + 1, 
@@ -257,6 +215,184 @@ export default {
         );
         return lowerName
       },
+      
+      /**
+       * Parses the coordinates-file according to its decoding (utf-8 or ansi)
+       */
+      parseFile() {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+
+          reader.onload = (e) => {
+            const arrayBuffer = e.target.result;
+            var decodedText = null;
+            var delimiter = null;
+
+            // change parsing setting if utf-8 or ansi encoded
+            if (this.isValidUTF8(arrayBuffer)) {
+              //UTF-8
+              const headers = "PtNr\tOst\tNord\tHöhe\tCode";
+              decodedText = [headers, new TextDecoder('utf-8').decode(arrayBuffer)].join('\n');
+              delimiter = '\t'
+            } else {
+              //ANSI or something else
+              decodedText = new TextDecoder('windows-1252').decode(arrayBuffer);
+              delimiter = ';'
+            }
+
+            var parsedText = this.parseCSV(decodedText, delimiter);
+
+            // error checks
+            if (parsedText == undefined 
+                || parsedText == null) {
+              this.$root.vtoast.show({ message: this.$t('saveError') + ' ' + this.$t('wrongFormat'), color: 'error' });
+            } else if (parsedText.length == 0) {
+              this.$root.vtoast.show({ message: this.$t('saveError') + ' ' + this.$t('emptyFile'), color: 'error' });
+            } else {
+              resolve(parsedText);
+            }
+          };
+
+          reader.onerror = function(error) {
+            //this.$root.vtoast.show({ message: this.$t('saveError'), color: 'error' });
+            reject(error);
+          };
+
+          if (this.coordinatesFile) {
+            reader.readAsArrayBuffer(this.coordinatesFile);
+          }
+        });
+      },
+
+      /**
+       * Parses a csv text with the specified delimiter
+       * @param {String} text 
+       * @param {String} delimiter 
+       */
+      parseCSV(text, delimiter) {
+        var records = null;
+        try {
+          records = parse(text, {
+            delimiter: delimiter,
+            comment: "#",
+            columns: true, 
+            skip_empty_lines: true,
+            //trim: true, 
+            //relax_column_count: true, 
+          });
+        } catch (error) {
+          console.error(error);
+        }
+    
+        return records;
+      },
+
+      /**
+       * Saves the imported file as coordinates for a place/position
+       */
+      async saveCoordinates() {
+        var coordinates = await this.parseFile().catch(err => console.error(err));
+
+        var coordsInput = {
+          _id: String(Date.now()),
+          coords: coordinates,
+        }
+
+        if (this.type == "places") {
+          coordsInput.place = this.object._id;
+        } else {
+          coordsInput.position = this.object._id;
+        }
+
+        //add coords to indexedDB
+        await fromOfflineDB.addObject(coordsInput, "Coordinates", "coordinates")
+          .catch(err => console.error(err));
+        
+        //update place/position in indexedDB
+        var updatedObject = toRaw(this.object);
+        updatedObject.coordinates = coordsInput._id;
+
+        var capitalized = this.type.charAt(0).toUpperCase() + this.type.slice(1)
+
+        await fromOfflineDB.addObject(updatedObject, capitalized, this.type)
+          .catch(err => console.error(err));
+
+        this.coordinatesList = coordsInput;
+        this.showCoords = true;
+        this.$root.vtoast.show({ message: this.$t('saveSuccess')});
+      },
+
+      /**
+       * Deletes coordinates and updates the connected place/position
+       */
+      async deleteCoordinates() {
+
+        var updatedObject = toRaw(this.object)
+        updatedObject.coordinates = '';
+
+        var capitalized = this.type.charAt(0).toUpperCase() + this.type.slice(1);
+
+        await fromOfflineDB.updateObject(updatedObject, capitalized, this.type)
+
+        await fromOfflineDB.deleteObject(this.coordinatesList, 'Coordinates', 'coordinates')
+        this.coordinatesList = [];
+        this.showCoords = false;
+      },
+
+      /**
+       * Opens the confirmation dialog for deletion
+       * @param {Object}  
+       */
+      async confirmDeletion() {
+        if (
+          await this.$refs.confirm.open(
+            this.$t('confirm'),
+            this.$t('confirmDelCoords'),
+          ).catch(err => console.error(err))
+        ) {
+          this.deleteCoordinates();
+        }
+      },
+
+      /**
+       * Checks if the arrayBuffer is encoded in valid UTF-8 or not
+       * @param {*} arrayBuffer 
+       */
+      isValidUTF8(arrayBuffer) {
+        const uint8Array = new Uint8Array(arrayBuffer);
+        let i = 0;
+        while (i < uint8Array.length) {
+          if (uint8Array[i] <= 0x7F) {
+            // 0xxxxxxx - ASCII
+            i += 1;
+          } else if (uint8Array[i] >= 0xC2 && uint8Array[i] <= 0xDF) {
+            // 110xxxxx 10xxxxxx
+            if (uint8Array[i + 1] >= 0x80 && uint8Array[i + 1] <= 0xBF) {
+              i += 2;
+            } else {
+              return false;
+            }
+          } else if (uint8Array[i] >= 0xE0 && uint8Array[i] <= 0xEF) {
+            // 1110xxxx 10xxxxxx 10xxxxxx
+            if (uint8Array[i + 1] >= 0x80 && uint8Array[i + 1] <= 0xBF && uint8Array[i + 2] >= 0x80 && uint8Array[i + 2] <= 0xBF) {
+              i += 3;
+            } else {
+              return false;
+            }
+          } else if (uint8Array[i] >= 0xF0 && uint8Array[i] <= 0xF4) {
+            // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+            if (uint8Array[i + 1] >= 0x80 && uint8Array[i + 1] <= 0xBF && uint8Array[i + 2] >= 0x80 && uint8Array[i + 2] <= 0xBF && uint8Array[i + 3] >= 0x80 && uint8Array[i + 3] <= 0xBF) {
+              i += 4;
+            } else {
+              return false;
+            }
+          } else {
+            return false;
+          }
+        }
+        return true;
+      },
+      
       /**
       * Prevents the input of non numeric values 
       * (allows one single `,` or `.` for float values)
@@ -273,13 +409,12 @@ export default {
         }
       },
     }
-		
-	}
+  }
 </script>
 
 <style scoped>
 
-.v-field__input {
-  padding-top: 0px !important;
-}
+  .v-field__input {
+    padding-top: 0px !important;
+  }
 </style>

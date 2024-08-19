@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 11.04.2024 13:48:48
+ * Last Modified: 19.08.2024 10:25:53
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -148,6 +148,7 @@ export default {
   not_created_yet: "Bisher wurden keine {object} erstellt!",
   current_selection: "Aktuelle Auswahl",
   confirm_del: "Möchten Sie wirklich {object} {object_nr} löschen?",
+  confirmDelCoords: "Möchten Sie wirklich die importierten Koordinaten löschen?",
   overview: "{msg} Übersicht",
   addNewPreset: "Neues Preset hinzufügen",
   existingPresets: "Bestehende Presets",
@@ -164,6 +165,9 @@ export default {
   wantToLeave:
     "Möchten Sie diese Seite wirklich verlassen? Sie haben noch ungespeicherte Änderungen.",
   saveSuccess: "Speichern erfolgreich",
+  saveError: "Speichern fehlgeschlagen.",
+  emptyFile: "Die angegebene Datei enthält keine Daten.",
+  wrongFormat: "Die Daten sind im falschen Format.",
   syncSuccess: "Hochladen der Daten erfolgreich",
   duplicationMode: "Duplikationsmodus aktiviert",
   getBackup: "Ihre Daten werden geladen",
@@ -213,8 +217,7 @@ export default {
   registrationSuccess: "Account erfolgreich angelegt",
   duplicationDescription: "Klicke auf eine {msg}, um sie zu duplizieren.",
   annotationDescription: "Klicke auf einen Punkt auf dem Modell, um eine Annotation zu erstellen.",
-  measureDescription:
-    "Halte X gedrückt und klicke auf zwei Punkte, um ihre Distanz zu messen.",
+  measureDescription: "Halte X gedrückt und klicke auf zwei Punkte, um ihre Distanz zu messen.",
   cuttingDescription: "Verschiebe die Steuerung in der 3D-Ansicht, um das Modell zu schneiden.",
   chooseModelDescription: "Wähle ein Modell aus, um die Editieroptionen anzzuzeigen.",
 };
