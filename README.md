@@ -1,3 +1,17 @@
+<p align="center">
+  <a href="https://github.com/TMink/Digitales-3D-Feldbuch/releases/latest" alt="Version">
+      <img src="https://img.shields.io/github/package-json/v/TMink/Digitales-3D-Feldbuch?filename=src%2Ffrontend%2Fpackage.json" /></a>
+  <a href="https://github.com/TMink/Digitales-3D-Feldbuch/graphs/contributors" alt="Contributors">
+      <img src="https://img.shields.io/github/contributors/TMink/Digitales-3D-Feldbuch" /></a>
+  <a alt="Downloads">
+      <img src="https://img.shields.io/github/downloads/TMink/Digitales-3D-Feldbuch/total" /></a>
+  <a alt="Closed Issues">
+      <img src="https://img.shields.io/github/issues-closed/TMink/Digitales-3D-Feldbuch" /></a>
+  <a alt="Licence">
+      <img src="https://img.shields.io/github/license/TMink/Digitales-3D-Feldbuch"/></a>
+</p>
+
+        
 # Digital 3D Fieldbook
 
 This project is the Digital 3D-Fieldbook, which is intended to enable the digital documentation of archaeological excavations. The system was developed in collaboration with the archaeological institute at the University of Cologne.
