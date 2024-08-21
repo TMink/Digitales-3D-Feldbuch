@@ -7,6 +7,8 @@
       <img src="https://img.shields.io/github/downloads/TMink/Digitales-3D-Feldbuch/total" /></a>
   <a alt="Closed Issues">
       <img src="https://img.shields.io/github/issues-closed/TMink/Digitales-3D-Feldbuch" /></a>
+  <a alt="Commit Activity">
+      <img src="https://img.shields.io/github/commit-activity/m/TMink/Digitales-3D-Feldbuch" /></a>
   <a alt="Licence">
       <img src="https://img.shields.io/github/license/TMink/Digitales-3D-Feldbuch"/></a>
 </p>
@@ -105,7 +107,7 @@ The backend of the digital 3D field book is implemented with the node.js framewo
 Click [here](https://github.com/TMink/Digitales-3D-Feldbuch-Projekt-3-/graphs/contributors) to see the list of contributors who participated in this project.
 
 ## License
-This project is licensed under the MIT license - see the LICENSE.md file for details
+This project is licensed under MPL-2.0 - see the LICENSE.md file for details
 
 ## Acknowledgments
 
