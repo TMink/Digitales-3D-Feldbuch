@@ -2,7 +2,7 @@
  * Created Date: 11.01.2024 11:48:37
  * Author: Julian Hardtung
  * 
- * Last Modified: 02.04.2024 13:53:57
+ * Last Modified: 27.08.2024 12:26:11
  * Modified By: Julian Hardtung
  * 
  * Description: Selection to download online available data of activities.
@@ -26,7 +26,7 @@
       </v-card-text>
          
       <v-checkbox hide-details
-        v-for="(activity, i) in activities" 
+        v-for="(activity) in activities" 
         :key="activity"
         multiple
         v-model="selected"
@@ -142,25 +142,25 @@ export default {
           // check which object it is and download dependent data
           if (type == 'places') {
             try {
-              await downloadAllObjectsFromArray(tmpObject.positions, 'Positions');
+              await this.downloadAllObjectsFromArray(tmpObject.positions, 'Positions');
             } catch (error) {
               console.error(error)
             }
             try {
-              await downloadAllObjectsFromArray(tmpObject.models, 'Models');
+              await this.downloadAllObjectsFromArray(tmpObject.models, 'Models');
             } catch (error) {
               console.error(error)
             }
 
           } else if (type == 'positions') {
             try {
-              await downloadAllObjectsFromArray(tmpObject.images, 'Images');
+              await this.downloadAllObjectsFromArray(tmpObject.images, 'Images');
             } catch (error) {
               console.error(error)
             }
 
             try {
-              await downloadAllObjectsFromArray(tmpObject.models, 'Models');
+              await this.downloadAllObjectsFromArray(tmpObject.models, 'Models');
             } catch (error) {
               console.error(error)
             }

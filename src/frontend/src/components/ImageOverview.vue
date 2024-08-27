@@ -2,7 +2,7 @@
  * Created Date: 09.01.2024 11:33:59
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.03.2024 17:04:03
+ * Last Modified: 27.08.2024 12:30:03
  * Modified By: Julian Hardtung
  * 
  * Description: lists all images of a place
@@ -148,9 +148,9 @@ export default {
       if (curPos.images.length == 1) {
         
         // Remove the posID from place
-        var index = curPlace.positions.indexOf(rawImage.positionID.toString());
-        if (index != -1) {
-          curPlace.positions.splice(index, 1);
+        var posIndex = curPlace.positions.indexOf(rawImage.positionID.toString());
+        if (posIndex != -1) {
+          curPlace.positions.splice(posIndex, 1);
           curPlace.lastChanged = Date.now();
           await fromOfflineDB.updateObject(curPlace, 'Places', 'places')
             .catch(err => console.error(err));
@@ -162,9 +162,9 @@ export default {
 
       } else {
         //just remove the image id fromt he position
-        var index = curPos.images.indexOf(rawImage._id);
-        if (index != -1) {
-          curPos.images.splice(index, 1);
+        var posImgIndex = curPos.images.indexOf(rawImage._id);
+        if (posImgIndex != -1) {
+          curPos.images.splice(posImgIndex, 1);
         }
       }
 

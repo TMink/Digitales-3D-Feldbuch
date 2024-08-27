@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 27.08.2024 11:09:23
+ * Last Modified: 27.08.2024 12:18:13
  * Modified By: Julian Hardtung
  * 
  * Description: `general information` input module for places/positions
@@ -231,7 +231,6 @@ export default {
         positionNumber: null,
         hasSubNumber: null,
         subNumber: null,
-        editor: null,
       },
       titleItems: [],
       editorItems: [],

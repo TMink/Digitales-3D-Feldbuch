@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.08.2024 11:39:27
+ * Last Modified: 27.08.2024 12:17:50
  * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
@@ -41,7 +41,7 @@
           <!-- Tab item 'GENERAL' -->
           <v-window-item value="one">
             <ModuleViewer ref="moduleViewerRef" :datingItemsFirstProp="datingsList" :editorItemsFirstProp="editorsList"
-              :titleItemsFirstProp="titlesList" @dataToPlaceForm="getEmitedData($event)" />
+              :titleItemsFirstProp="titlesList" @dataToPlaceForm="getEmittedData($event)" />
           </v-window-item>
 
           <!-- Tab item 'pictures' -->
@@ -51,7 +51,7 @@
 
           <!-- Tab item 'technical drawing' -->
           <v-window-item value="four">
-            <v-dialog persistent overlay-color="black" overlay-opacity="1" v-model="backgroundDialog">
+            <v-dialog persistent overlay-color="black" v-model="backgroundDialog">
               <v-card class="pa-4">
                 <v-card-title>Set Background Image</v-card-title>
                 <v-file-input @change="setBackgroundImage($event)" prepend-icon="mdi-image"
@@ -389,7 +389,7 @@ export default {
 
   methods: {
 
-    async getEmitedData(data) {
+    async getEmittedData(data) {
       switch (data[0]) {
         /* Module: Coordinates */
         case 'right':
@@ -561,7 +561,7 @@ export default {
         newEditor._id = String(Date.now())
         newEditor.item = toRaw(item)
       }
-      if (!!Object.keys(newEditor).length) {
+      if (Object.keys(newEditor).length) {
         await fromOfflineDB.addObject(newEditor, 'AutoFillLists', storeName)
           .catch(err => console.error(err));
       }

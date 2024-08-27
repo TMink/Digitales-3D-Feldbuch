@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 03.04.2024 11:48:24
+ * Last Modified: 27.08.2024 12:19:13
  * Modified By: Julian Hardtung
  * 
  * Description: Helper API to the backend server
@@ -118,18 +118,20 @@ class ConnectionToBackend {
    * @returns
    */
   async uploadObject(subdomain, data) {
-    var data;
+    var newData;
     if (data.lastSync == 0) {
-      data = await this.postData(subdomain, data).catch((err) => console.error(err));
+      newData = await this.postData(subdomain, data).catch((err) => console.error(err));
     } else {
       if (subdomain == "images" || subdomain == "models") {
-        data = await this.uploadFormData(data, 'put', subdomain).catch((err) => console.err(err));
+        newData = await this.uploadFormData(data, "put", subdomain).catch((err) =>
+          console.err(err)
+        );
       } else {
-        data = await this.putData(subdomain, data).catch((err) => console.error(err));
+        newData = await this.putData(subdomain, data).catch((err) => console.error(err));
       }
     }
 
-    return data;
+    return newData;
   }
 
   /**

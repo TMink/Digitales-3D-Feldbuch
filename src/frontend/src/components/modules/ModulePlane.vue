@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 24.03.2024 19:31:39
+ * Last Modified: 27.08.2024 12:27:10
  * Modified By: Julian Hardtung
  * 
  * Description: `plane` input module for places
@@ -18,7 +18,7 @@
       <v-spacer></v-spacer>
 
       <!-- HIDE/SHOW MODULE BUTTON -->
-      <v-btn flat icon v-on:click="this.showModule = !this.showModule">
+      <v-btn variant="flat" icon v-on:click="this.showModule = !this.showModule">
         <v-icon v-if="this.showModule">mdi-eye-outline</v-icon>
         <v-icon v-else>mdi-eye-off-outline</v-icon>
       </v-btn>

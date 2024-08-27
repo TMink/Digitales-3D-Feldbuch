@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 19.08.2024 11:08:12
+ * Last Modified: 27.08.2024 12:26:34
  * Modified By: Julian Hardtung
  * 
  * Description: `coordinates` input module for places/positions
@@ -18,7 +18,7 @@
       <v-spacer></v-spacer>
 
       <!-- HIDE/SHOW MODULE BUTTON -->
-      <v-btn flat icon 
+      <v-btn variant="flat" icon 
         v-on:click="object.modulePreset.coordinates = !object.modulePreset.coordinates">
         <v-icon v-if="object.modulePreset.coordinates">mdi-eye-outline</v-icon>
         <v-icon v-else>mdi-eye-off-outline</v-icon>

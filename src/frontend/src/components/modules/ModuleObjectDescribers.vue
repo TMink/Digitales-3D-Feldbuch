@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 27.08.2024 10:37:18
+ * Last Modified: 27.08.2024 12:24:01
  * Modified By: Julian Hardtung
  * 
  * Description: `object descriptors` input module for positions
@@ -19,7 +19,7 @@
         <v-spacer></v-spacer>
 
         <!-- HIDE/SHOW MODULE BUTTON -->
-        <v-btn flat icon v-on:click="object.modulePreset.objectDescribers = !object.modulePreset.objectDescribers">
+        <v-btn variant="flat" icon v-on:click="object.modulePreset.objectDescribers = !object.modulePreset.objectDescribers">
           <v-icon v-if="object.modulePreset.objectDescribers">mdi-eye-outline</v-icon>
           <v-icon v-else>mdi-eye-off-outline</v-icon>
         </v-btn>

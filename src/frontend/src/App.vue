@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.08.2024 15:15:21
+ * Last Modified: 27.08.2024 12:23:23
  * Modified By: Julian Hardtung
  * 
  * Description: main entry point for the fieldbook + 
@@ -33,8 +33,6 @@
 <script>
 import AppFooter from './components/AppFooter.vue';
 import VToast from './components/VToast.vue';
-import LocaleChanger from './components/LocaleChanger.vue';
-import DataBackup from './components/DataBackup.vue';
 import { fromOfflineDB } from './ConnectionToOfflineDB.js';
 import { useUserStore } from './Authentication.js';
 import { generalDataStore } from './ConnectionToLocalStorage.js';
@@ -44,8 +42,6 @@ export default {
   name: 'App',
   components: {
     AppFooter,
-    LocaleChanger,
-    DataBackup,
     VToast
   },
   setup() {
