@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 20.08.2024 15:57:31
+ * Last Modified: 27.08.2024 13:39:42
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -547,12 +547,6 @@ export default {
         dating: '',
         noFinding: false,
         restFinding: false,
-        right: '',
-        rightTo: '',
-        up: '',
-        upTo: '',
-        depthTop: '',
-        depthBot: '',
         plane: '',
         profile: '',
         visibility: null,
@@ -695,13 +689,6 @@ export default {
       return (
         item.placeNumber.toString().match(re) ||
         item.title.match(re) ||
-        item.right.toString().match(re) ||
-        item.rightTo.toString().match(re) ||
-        item.up.match(re) ||
-        item.upTo.match(re) ||
-        item.depthBot.match(re) ||
-        item.depthTop.match(re) ||
-/*         item.visibility.match(re) ||*/
         item.description.match(re) ||
         item.editor.match(re) ||
         item.date.match(re)

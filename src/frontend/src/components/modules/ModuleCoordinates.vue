@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 27.08.2024 12:26:34
+ * Last Modified: 27.08.2024 13:35:58
  * Modified By: Julian Hardtung
  * 
  * Description: `coordinates` input module for places/positions
@@ -123,59 +123,11 @@
         this.object = objectPropData;
         await this.updateCoordinates();
       },
-      "object.right": {
+      "object.coordinates": {
         handler: function() {
-          if ( this.object.right != null ) {
+          if ( this.object.coordinates != null ) {
             /* Send data back to ModuleViewer.vue */
-            this.$emit("dataToModuleViewer", [ 'right', this.object.right ]);
-          }
-        }
-      },
-      "object.rightTo": {
-        handler: function() {
-          if ( this.object.rightTo != null ) {
-            /* Send data back to ModuleViewer.vue */
-            this.$emit("dataToModuleViewer", [ 'rightTo', this.object.rightTo ]);
-          }
-        }
-      },
-      "object.up": {
-        handler: function() {
-          if ( this.object.up != null ) {
-            /* Send data back to ModuleViewer.vue */
-            this.$emit("dataToModuleViewer", [ 'up', this.object.up ]);
-          }
-        }
-      },
-      "object.upTo": {
-        handler: function() {
-          if ( this.object.upTo != null ) {
-            /* Send data back to ModuleViewer.vue */
-            this.$emit("dataToModuleViewer", [ 'upTo', this.object.upTo ]);
-          }
-        }
-      },
-      "object.depthBot": {
-        handler: function() {
-          if ( this.object.depthBot != null ) {
-            /* Send data back to ModuleViewer.vue */
-            this.$emit("dataToModuleViewer", [ 'depthBot', this.object.depthBot ]);
-          }
-        }
-      },
-      "object.depthTop": {
-        handler: function() {
-          if ( this.object.depthTop != null ) {
-            /* Send data back to ModuleViewer.vue */
-            this.$emit("dataToModuleViewer", [ 'depthTop', this.object.depthTop ]);
-          }
-        }
-      },
-      "object.height": {
-        handler: function() {
-          if ( this.object.height != null && this.type == 'positions' ) {
-            /* Send data back to ModuleViewer.vue */
-            this.$emit("dataToModuleViewer", [ 'height', this.object.height ]);
+            this.$emit("dataToModuleViewer", [ 'coordinates', this.object.coordinates ]);
           }
         }
       },
@@ -197,7 +149,6 @@
     methods: {
 
       async updateCoordinates() {
-        console.log(this.object)
         var res = await fromOfflineDB
           .getObject(this.object.coordinates, 'Coordinates', 'coordinates')
           .catch(err => console.error(err));
@@ -316,7 +267,8 @@
 
         await fromOfflineDB.addObject(updatedObject, capitalized, this.type)
           .catch(err => console.error(err));
-
+        
+        this.$emit("dataToModuleViewer", [ 'coordinates', coordsInput._id ]);
         this.coordinatesList = coordsInput;
         this.showCoords = true;
         this.$root.vtoast.show({ message: this.$t('saveSuccess')});

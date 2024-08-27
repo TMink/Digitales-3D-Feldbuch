@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.08.2024 12:17:50
+ * Last Modified: 27.08.2024 13:40:35
  * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
@@ -240,12 +240,7 @@ export default {
         lastSync: 0,
 
         /* Coordinates */
-        right: '',
-        rightTo: '',
-        up: '',
-        upTo: '',
-        depthTop: '',
-        depthBot: '',
+        coordinates: '',
 
         /* Dating */
         dating: '',
@@ -392,23 +387,8 @@ export default {
     async getEmittedData(data) {
       switch (data[0]) {
         /* Module: Coordinates */
-        case 'right':
-          this.place.right = data[1];
-          break;
-        case 'rightTo':
-          this.place.rightTo = data[1];
-          break;
-        case 'up':
-          this.place.up = data[1];
-          break;
-        case 'upTo':
-          this.place.upTo = data[1];
-          break;
-        case 'depthTop':
-          this.place.depthTop = data[1];
-          break;
-        case 'depthBot':
-          this.place.depthBot = data[1];
+        case 'coordinates':
+          this.place.coordinates = data[1];
           break;
         case 'modulePreset.coordinates':
           this.place.modulePreset.coordinates = data[1];

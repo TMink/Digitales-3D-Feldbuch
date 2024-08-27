@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 19.08.2024 16:52:07
+ * Last Modified: 27.08.2024 13:39:17
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -649,9 +649,7 @@ export default {
         placeID: curPlaceID,
         positionNumber: '',
         subNumber: '',
-        right: '',
-        up: '',
-        height: '',
+        coordinates: '',
         count: '',
         weight: '',
         material: '',
@@ -663,7 +661,6 @@ export default {
         hasSubNumber: false,
         isSeparate: false,
         
-        coordinates: '',
         images: [],
         models: [],
         modulePreset: {

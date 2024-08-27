@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 23.04.2024 13:51:49
+ * Last Modified: 27.08.2024 13:37:36
  * Modified By: Julian Hardtung
  * 
  * Description: input page for positions data 
@@ -124,9 +124,7 @@ export default {
         isSeparate: false,
         
         /* Coordinates */
-        right: '',
-        up: '',
-        height: '',
+        coordinates: '',
         
         /* General */
         description: '',
@@ -276,14 +274,8 @@ export default {
     getEmitedData(data) {
       switch (data[0]) {
         /* Module: Coordinates */
-        case 'right':
-          this.position.right = data[1];
-          break;
-        case 'up':
-          this.position.up = data[1];
-          break;
-        case 'height':
-          this.position.height = data[1];
+        case 'coordinates':
+          this.position.coordinates = data[1];
           break;
         case 'modulePreset.coordinates':
           this.position.modulePreset.coordinates = data[1];
