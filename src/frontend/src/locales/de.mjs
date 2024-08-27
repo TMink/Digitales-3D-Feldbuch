@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.08.2024 10:58:54
+ * Last Modified: 27.08.2024 14:41:56
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -161,6 +161,7 @@ export default {
     "Falls die Stelle kein Befund ist (Arbeitsbereich, Störung, natürliche Verfärbung etc.)",
   restFindDescr:
     "Falls der Befund bei einem Bodeneingriff noch unterhalb der Eingriffstiefe erhalten ist.",
+  skipEmptyPlaceCards: "Leere Stellenkarten überspringen",
   thisExports: "Dies wird {count} {object} exportieren",
   wantToLeave:
     "Möchten Sie diese Seite wirklich verlassen? Sie haben noch ungespeicherte Änderungen.",
@@ -174,7 +175,8 @@ export default {
   createBackup: "Ihre Daten werden gesammelt",
   forgotPassword: "Passwort vergessen",
   checkIfSubNumber: "Ankreuzen, wenn die Position eine eigene Unternummer haben soll.",
-  checkIfSeperateSubNumber: "Ankreuzen, wenn die Position mit einer eigenen Unternummer gespeichert werden soll, <br/>selbst wenn die Daten der vorherigen Position gleichen.",
+  checkIfSeperateSubNumber:
+    "Ankreuzen, wenn die Position mit einer eigenen Unternummer gespeichert werden soll, <br/>selbst wenn die Daten der vorherigen Position gleichen.",
   downloadInfoText:
     "Wenn du planst das Feldbuch ohne eine aktive Internetverbindung zu nutzen, solltest du das Desktop Programm herunterladen.",
   addToYourAccount: "Zu deinem Account hinzufügen",

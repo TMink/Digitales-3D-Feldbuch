@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.08.2024 10:59:41
+ * Last Modified: 27.08.2024 14:40:56
  * Modified By: Julian Hardtung
  * 
  * Description: english translations
@@ -161,6 +161,7 @@ export default {
   restFindDescr:
     "If the Feature is still preserved below the intervention depth during soil excavation.",
   //thisExports: "This will export {count} {object}",
+  skipEmptyPlaceCards: "Skip empty placecards",
   thisExports: "Export: {count} {object}",
   wantToLeave: "Do you really want to leave? You have unsaved changes.",
   saveSuccess: "Saving successful",

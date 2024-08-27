@@ -2,7 +2,7 @@
  * Created Date: 26.06.2023 15:10:20
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.08.2024 15:54:30
+ * Last Modified: 27.08.2024 14:40:19
  * Modified By: Julian Hardtung
  * 
  * Description: export all (or only specified) data to .pdf or .csv
@@ -129,6 +129,12 @@
                     <p v-if="exportActivities">
                       {{ this.activities.length + ' ' + $tc('activity', 2) }}
                     </p>
+                    <v-checkbox  
+                      class="pt-4" 
+                      v-model="skipEmpty"
+                      :label="$t('skipEmptyPlaceCards')" 
+                      color="secondary">
+                    </v-checkbox>
                   </v-col>
                 </v-col>
 
@@ -311,6 +317,7 @@ export default {
       fileFormat: '.pdf',
       export_overlay: false,
       exportActivities: true,
+      skipEmpty: true,
       exportPlaces: true,
       exportPositions: true,
       exportPlaceImages: false,
@@ -483,6 +490,7 @@ export default {
         }
         position.place = placeNumber;
         position.activity = activityNumber;
+        console.log(position)
       }
     },
 
@@ -637,8 +645,6 @@ export default {
       const replacer = (key, value) => value === null ? '' : value;
       const cursor = Object.keys(items[0]);
       let header = null;
-
-      console.log(items)
 
       // remove unwanted fields
       let index = cursor.indexOf("lastSync");
@@ -841,23 +847,8 @@ export default {
           styles: { fontSize: 7 },
           head: [
             [
-              { content: activity.activityNumber, colSpan: 1 },
-              { content: '', colSpan: 1 },
-              { content: '', colSpan: 1 },
-              { content: '', colSpan: 1 },
-              { content: '', colSpan: 1 },
-              { content: '', colSpan: 1 },
-              { content: '', colSpan: 1 },
-              { content: '', colSpan: 1 },
-              { content: '', colSpan: 1 },
-              { content: '', colSpan: 1 },
-              { content: '', colSpan: 1 },
-              { content: '', colSpan: 1 },
-              { content: '', colSpan: 1 },
-              { content: '', colSpan: 1 },
-              { content: '', colSpan: 1 },
-              { content: '', colSpan: 1 },
-              { content: '', colSpan: 1 }
+              { content: activity.activityNumber, colSpan: 2 },
+              { content: '', colSpan: 15 },
             ],
             [
               { content: 'StellenNr' },
@@ -905,11 +896,15 @@ export default {
         const placeToBePrinted = this.allPositionsOfOnePlace
         
         placeToBePrinted.forEach( place => {
-          if (place.length == 0) {
+          if (place[0].length == 0) {
             return;
           }
 
           const placeShift = place[0];
+          if (placeShift.positions.length == 0
+              && this.skipEmpty) {
+            return;
+          }
 
           if (activity.activityNumber == placeShift.activity) {
             const activityNumber = toRaw(activity).activityNumber
@@ -923,15 +918,7 @@ export default {
               head: [
                 [
                   { content: activityNumber, colSpan: 1 },
-                  { content: '', colSpan: 1 },
-                  { content: '', colSpan: 1 },
-                  { content: '', colSpan: 1 },
-                  { content: '', colSpan: 1 },
-                  { content: '', colSpan: 1 },
-                  { content: '', colSpan: 1 },
-                  { content: '', colSpan: 1 },
-                  { content: '', colSpan: 1 },
-                  { content: '', colSpan: 1 },
+                  { content: '', colSpan: 9 },
                   { content: 'Stelle:' + placeShift.placeNumber + ' - ' + placeShift.title, colSpan: 2 },
                 ],
                 [
@@ -1048,7 +1035,7 @@ export default {
         margin: { top: 10 },
         columns: [
           { header: 'Aktivität', dataKey: 'activity' },
-          { header: 'Stellennr', dataKey: 'placeNumber' },
+          { header: 'Stellennr', dataKey: 'place' },
           { header: 'Posnr', dataKey: 'positionNumber' },
           { header: 'Unternr', dataKey: 'subNumber' },
           { header: 'Rechts', dataKey: 'right' },
