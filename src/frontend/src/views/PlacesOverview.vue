@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.08.2024 16:04:07
+ * Last Modified: 20.08.2024 15:57:31
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -126,13 +126,11 @@
               <!-- TITLE -->
               <td class="py-2" :style="getRowStyle(index)">
                 <div v-if="item.placeNumber > 1">
-                  <v-list-item-title v-if="item.title.length > 0" 
-                    style="min-width:200px" class="text-wrap">
+                  <v-list-item-title v-if="item.title.length > 0" class="text-wrap">
                     {{ item.title }}
                   </v-list-item-title>
 
-                  <v-list-item-title v-if="item.title.length == 0" 
-                    style="color:dimgrey;">
+                  <v-list-item-title style="color:dimgrey;" v-else>
                     -
                   </v-list-item-title>
                 </div>
@@ -148,8 +146,7 @@
                   &cross;
                 </v-list-item-title>
 
-                <v-list-item-title class="pl-4" v-if="!item.noFinding" 
-                  style="color:dimgrey;">
+                <v-list-item-title class="pl-4" style="color:dimgrey;" v-else>
                   -
                 </v-list-item-title>
               </td>
@@ -160,80 +157,17 @@
                   &cross;
                 </v-list-item-title>
 
-                <v-list-item-title class="pl-4" v-if="!item.restFinding" 
-                  style="color:dimgrey;">
+                <v-list-item-title class="pl-4" style="color:dimgrey;" v-else>
                   -
                 </v-list-item-title>
               </td>
 
-              <!-- RIGHT VALUES -->
-              <td :style="getRowStyle(index)" class="align-right">
-                <v-list-item-title v-if="item.right">
-                  {{ item.right}}
+              <!-- COORDINATES COUNT -->
+              <td :style="getRowStyle(index)">
+                <v-list-item-title v-if="item.coordinates != ''">
+                  {{ item.coordsCount + " " +  $t('coordinates')}} 
                 </v-list-item-title>
-
-                <v-list-item-title v-if="item.rightTo">
-                  <span style="color:dimgrey">
-                    {{ $t('to') }}
-                  </span>
-                  {{ item.rightTo}}
-                </v-list-item-title>
-
-                <v-list-item-title v-if="!item.right" 
-                  style="color:dimgrey;">
-                  -
-                </v-list-item-title>
-                <v-list-item-title v-if="!item.rightTo" 
-                  style="color:dimgrey;">
-                  -
-                </v-list-item-title>
-              </td>
-
-              <!-- UP VALUES -->
-              <td :style="getRowStyle(index)" class="align-right">
-                <div v-if="item.up">
-                  <v-list-item-title>
-                    {{ item.up}}
-                  </v-list-item-title>
-                  <v-list-item-title>
-                    <span style="color:dimgrey; text-align: left;">
-                      {{ $t('to') }}
-                    </span>
-                    {{ item.upTo || '-' }}
-                  </v-list-item-title>
-                </div>
-
-                <div v-if="!item.upTo" style="color:dimgrey;">
-                  <v-list-item-title>
-                    -
-                  </v-list-item-title>
-                  <v-list-item-title>
-                    -
-                  </v-list-item-title>
-                </div>
-              </td>
-
-              <!-- DEPTH -->
-              <td :style="getRowStyle(index)" class="align-right">
-                <v-list-item-title v-if="item.depthTop">
-                  {{ item.depthTop }}
-                  <span style="color:dimgrey">
-                    &#x25B2;
-                  </span>
-                </v-list-item-title>
-                <v-list-item-title v-if="item.depthBot">
-                  {{ item.depthBot }}
-                  <span style="color:dimgrey">
-                    &#x25BC;
-                  </span>
-                </v-list-item-title>
-
-                <v-list-item-title v-if="!item.depthTop" 
-                  style="color:dimgrey;">
-                  -
-                </v-list-item-title>
-                <v-list-item-title v-if="!item.depthBot" 
-                  style="color:dimgrey;">
+                <v-list-item-title style="color:dimgrey;" v-else>
                   -
                 </v-list-item-title>
               </td>
@@ -244,8 +178,7 @@
                   class="text-wrap pl-3">
                   {{ item.plane || '-' }}
                 </v-list-item-title>
-                <v-list-item-title class="pl-3" v-if="item.plane == ''" 
-                  style="color:dimgrey;">
+                <v-list-item-title class="pl-3" style="color:dimgrey;" v-else>
                   -
                 </v-list-item-title>
               </td>
@@ -255,15 +188,14 @@
                 <v-list-item-title v-if="item.visibility != null">
                   {{ $tc('visibilities', item.visibility) }}
                 </v-list-item-title>
-                <v-list-item-title v-if="item.visibility == null" 
-                  style="color:dimgrey;">
+                <v-list-item-title style="color:dimgrey;" v-else>
                   -
                 </v-list-item-title>
               </td>
 
               <!-- DESCRIPTION -->
               <td :style="getRowStyle(index)">
-                <v-list-item-title class="text-wrap" style="min-width:200px">
+                <v-list-item-title class="text-wrap">
                   {{ item.description }}
                 </v-list-item-title>
                 <v-list-item-title v-if="item.description == ''" 
@@ -277,8 +209,7 @@
                 <v-list-item-title v-if="item.editor != ''">
                   {{ item.editor || '-' }}
                 </v-list-item-title>
-                <v-list-item-title v-if="item.editor == ''" 
-                  style="color:dimgrey;">
+                <v-list-item-title style="color:dimgrey;" v-else>
                   -
                 </v-list-item-title>
               </td>
@@ -414,15 +345,13 @@ export default {
         { title: this.$tc('title', 2), align: 'start', key: 'title', width: "250px" },
         { title: this.$t('noFind'), align: 'start', key: 'noFinding', width: "50px" },
         { title: this.$t('restFind'), align: 'start', key: 'restFinding', width: "50px" },
-        { title: this.$t('right'), align: 'end', key: 'right', width: "50px" },
-        { title: this.$t('up'), align: 'end', key: 'up', width: "50px" },
-        { title: this.$t('depth'), align: 'end', key: 'depthBot', width: "50px" },
+        { title: this.$t('coordinates'), align: 'start', key: 'coordinates', width: "50px" },
         { title: this.$t('plane'), align: 'start', key: 'plane', width: "150px" },
-        { title: this.$t('visibility'), align: 'start', key: 'visibility', width: "50px" },
+        { title: this.$t('visibility'), align: 'start', key: 'visibility', width: "100px" },
         { title: this.$t('description'), align: 'start', key: 'description', width: "150px" },
-        { title: this.$tc('editor', 1), align: 'start', key: 'editor', width: "50px" },
+        { title: this.$tc('editor', 1), align: 'start', key: 'editor', width: "100px" },
         { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
-        { title: this.$t('syncStatus'), align: 'start', key: 'status', width: "100px"}
+        { title: this.$t('syncStatus'), align: 'start', key: 'status', width: "50px"}
       ],
     };
   },
@@ -469,7 +398,6 @@ export default {
       
       // if no queries are present, return all places
       if (queries.length === 0 || (queries.length === 1 && queries[0] === '')) {
-        console.log(this.places)
         return this.places;
       } else {
         // filter places by all query filters
@@ -508,6 +436,17 @@ export default {
       this.places = await fromOfflineDB
         .getAllObjectsWithID(curActivityID, 'Activity', 'Places', 'places')
         .catch(err => console.error(err));
+
+        if (this.places.length > 0) {
+          for (var i=0; i<this.places.length; i++) {
+            if (this.places[i].coordinates != '') {
+              var coordinates = await fromOfflineDB.getObject(this.places[i].coordinates, 'Coordinates', 'coordinates');
+              
+              this.places[i].coordsCount = coordinates.coords.length;
+          }
+        }
+      }
+    
       this.places.sort((a, b) => (a.placeNumber > b.placeNumber) ? 1 : -1);
     },
 

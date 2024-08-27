@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 19.08.2024 11:01:06
+ * Last Modified: 19.08.2024 16:52:07
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -126,208 +126,183 @@
           </v-data-table-virtual>
 
           <!-- POSITIONS LIST COMPLETE -->
-            <v-data-table-virtual
-              fixed-header
-              v-show="showAllInfo"
-              :items="filteredPositions" 
-              :height="getTableHeight"
-              :headers="fullHeaders"
-              :sort-by="[{ key: 'positionNumber', order: 'desc' }]">
+          <v-data-table-virtual
+            fixed-header
+            v-show="showAllInfo"
+            :items="filteredPositions" 
+            :height="getTableHeight"
+            :headers="fullHeaders"
+            :sort-by="[{ key: 'positionNumber', order: 'desc' }]">
 
-              <template v-slot:item="{ item, index }">
-                <tr v-on:click="handleRowClick(item._id)" 
-                  @mouseenter="setHoveredRow(index, true)"
-                  @mouseleave="setHoveredRow(index, false)">
+            <template v-slot:item="{ item, index }">
+              <tr v-on:click="handleRowClick(item._id)" 
+                @mouseenter="setHoveredRow(index, true)"
+                @mouseleave="setHoveredRow(index, false)">
 
-                  <!-- PLACE NUMBER -->
+                <!-- PLACE NUMBER -->
+                <td :style="getRowStyle(index)">
+                  <v-list-item-title class="pl-4">
+                    {{ item.positionNumber }}
+                  </v-list-item-title>
+                </td>
+
+                <!-- SUB NUMBER -->
+                <td :style="getRowStyle(index)">
+                  <v-list-item-title>
+                    {{ item.subNumber }}
+                  </v-list-item-title>
+                </td>
+
+                <!-- TITLE -->
+                <td class="py-2" :style="getRowStyle(index)">
+                  <v-list-item-title
+                    v-if="item.title.length > 0"
+                    style="min-width:200px" 
+                    class="text-wrap">
+                    {{ item.title }}
+                  </v-list-item-title>
+
+                  <v-list-item-title 
+                    v-if="item.title.length == 0" style="color:dimgrey;">
+                    -
+                  </v-list-item-title>
+                </td>
+
+                <!-- DATING -->
                   <td :style="getRowStyle(index)">
-                    <v-list-item-title class="pl-4">
-                      {{ item.positionNumber }}
-                    </v-list-item-title>
-                  </td>
-
-                  <!-- SUB NUMBER -->
-                  <td :style="getRowStyle(index)">
-                    <v-list-item-title>
-                      {{ item.subNumber }}
-                    </v-list-item-title>
-                  </td>
-
-                  <!-- TITLE -->
-                  <td class="py-2" :style="getRowStyle(index)">
-                    <v-list-item-title
-                      v-if="item.title.length > 0"
-                      style="min-width:200px" 
-                      class="text-wrap">
-                      {{ item.title }}
+                    <v-list-item-title 
+                      v-if="item.dating">
+                      {{ item.dating }}
                     </v-list-item-title>
 
                     <v-list-item-title 
-                      v-if="item.title.length == 0" style="color:dimgrey;">
+                      v-if="!item.dating" style="color:dimgrey;">
                       -
                     </v-list-item-title>
                   </td>
 
-                  <!-- DATING -->
-                    <td :style="getRowStyle(index)">
-                      <v-list-item-title 
-                        v-if="item.dating">
-                        {{ item.dating }}
-                      </v-list-item-title>
+                <!-- COORDINATES COUNT -->
+                <td :style="getRowStyle(index)">
+                  <v-list-item-title 
+                    v-if="item.coordinates != ''">
+                    {{ item.coordsCount + " " +  $t('coordinates') }} 
+                  </v-list-item-title>
 
-                      <v-list-item-title 
-                        v-if="!item.dating" style="color:dimgrey;">
-                        -
-                      </v-list-item-title>
-                    </td>
+                  <v-list-item-title style="color:dimgrey;" v-else>
+                    -
+                  </v-list-item-title>
+                </td>
 
-                  <!-- RIGHT VALUES -->
-                  <td :style="getRowStyle(index)" class="align-right">
+                <!-- PLANE -->
+                <td :style="getRowStyle(index)">
+                  <v-list-item-title 
+                    v-if="item.count != ''" class="text-wrap">
+                    {{ item.count || '-' }}
+                  </v-list-item-title>
+                  <v-list-item-title 
+                    v-if="item.count == ''" style="color:dimgrey;">
+                    -
+                  </v-list-item-title>
+                </td>
+
+                <!-- WEIGHT -->
+                <td :style="getRowStyle(index)">
+                  <v-list-item-title 
+                    v-if="item.weight != ''" class="text-wrap">
+                    {{ item.weight || '-' }}
+                  </v-list-item-title>
+                  <v-list-item-title 
+                    v-if="item.weight == ''" style="color:dimgrey;">
+                    -
+                  </v-list-item-title>
+                </td>
+
+                <!-- MATERIAL -->
+                  <td :style="getRowStyle(index)">
                     <v-list-item-title 
-                      v-if="item.right">
-                      {{ item.right }}
+                      v-if="item.material != ''" class="text-wrap">
+                      {{ item.material || '-' }}
                     </v-list-item-title>
-
                     <v-list-item-title 
-                      v-if="!item.right" style="color:dimgrey;">
+                      v-if="item.material == ''" style="color:dimgrey;">
                       -
                     </v-list-item-title>
                   </td>
 
-                  <!-- UP VALUES -->
-                  <td :style="getRowStyle(index)" class="align-right">
-                    <v-list-item-title v-if="item.up">
-                      {{ item.up }}
-                    </v-list-item-title>
+                <!-- DESCRIPTION -->
+                <td :style="getRowStyle(index)">
+                  <v-list-item-title class="text-wrap" style="max-width:200px">
+                    {{ item.description }}
+                  </v-list-item-title>
+                  <v-list-item-title 
+                    v-if="item.description == ''" style="color:dimgrey;">
+                    -
+                  </v-list-item-title>
+                </td>
 
-                    <v-list-item-title 
-                      v-if="!item.up" style="color:dimgrey;">
-                      -
-                    </v-list-item-title>
-                  </td>
+                <!-- EDITOR -->
+                <td :style="getRowStyle(index)">
+                  <v-list-item-title
+                    v-if="item.editor != ''">
+                    {{ item.editor }}
+                  </v-list-item-title>
+                  <v-list-item-title 
+                    v-if="item.editor == ''" style="color:dimgrey;">
+                    -
+                  </v-list-item-title>
+                </td>
 
-                  <!-- HEIGHT -->
-                    <td :style="getRowStyle(index)" class="align-right">
-                      <v-list-item-title v-if="item.height">
-                        {{ item.up }}
-                      </v-list-item-title>
+                <!-- DATE -->
+                <td :style="getRowStyle(index)">
+                  <v-list-item-title>
+                    {{ item.date}}
+                  </v-list-item-title>
+                </td>
 
-                      <v-list-item-title 
-                        v-if="!item.height" style="color:dimgrey;">
-                        -
-                      </v-list-item-title>
-                    </td>
+                <!-- IS SEPARATE -->
+                <td :style="getRowStyle(index)">
+                  <v-list-item-title 
+                    v-if="item.isSeparate">
+                    &cross;
+                  </v-list-item-title>
 
-                  <!-- PLANE -->
-                  <td :style="getRowStyle(index)">
-                    <v-list-item-title 
-                      v-if="item.count != ''" class="text-wrap">
-                      {{ item.count || '-' }}
-                    </v-list-item-title>
-                    <v-list-item-title 
-                      v-if="item.count == ''" style="color:dimgrey;">
-                      -
-                    </v-list-item-title>
-                  </td>
+                  <v-list-item-title 
+                    v-if="!item.isSeparate" style="color:dimgrey;">
+                    -
+                  </v-list-item-title>
+                </td>
 
-                  <!-- WEIGHT -->
-                  <td :style="getRowStyle(index)">
-                    <v-list-item-title 
-                      v-if="item.weight != ''" class="text-wrap">
-                      {{ item.weight || '-' }}
-                    </v-list-item-title>
-                    <v-list-item-title 
-                      v-if="item.weight == ''" style="color:dimgrey;">
-                      -
-                    </v-list-item-title>
-                  </td>
-
-                  <!-- WEIGHT -->
-                    <td :style="getRowStyle(index)">
-                      <v-list-item-title 
-                        v-if="item.material != ''" class="text-wrap">
-                        {{ item.material || '-' }}
-                      </v-list-item-title>
-                      <v-list-item-title 
-                        v-if="item.material == ''" style="color:dimgrey;">
-                        -
-                      </v-list-item-title>
-                    </td>
-
-                  <!-- DESCRIPTION -->
-                  <td :style="getRowStyle(index)">
-                    <v-list-item-title class="text-wrap">
-                      {{ item.description }}
-                    </v-list-item-title>
-                    <v-list-item-title 
-                      v-if="item.description == ''" style="color:dimgrey;">
-                      -
-                    </v-list-item-title>
-                  </td>
-
-                  <!-- EDITOR -->
-                  <td :style="getRowStyle(index)">
-                    <v-list-item-title
-                      v-if="item.editor != ''">
-                      {{ item.editor }}
-                    </v-list-item-title>
-                    <v-list-item-title 
-                      v-if="item.editor == ''" style="color:dimgrey;">
-                      -
-                    </v-list-item-title>
-                  </td>
-
-                  <!-- DATE -->
-                  <td :style="getRowStyle(index)">
-                    <v-list-item-title>
-                      {{ item.date}}
-                    </v-list-item-title>
-                  </td>
-
-                  <!-- IS SEPARATE -->
-                  <td :style="getRowStyle(index)">
-                    <v-list-item-title 
-                      v-if="item.isSeparate">
-                      &cross;
-                    </v-list-item-title>
-
-                    <v-list-item-title 
-                      v-if="!item.isSeparate" style="color:dimgrey;">
-                      -
-                    </v-list-item-title>
-                  </td>
-
-                  <!-- SYNC STATUS -->
-                  <td :style="getRowStyle(index)">
-                    <v-list-item>
-                      <v-btn 
-                        icon 
-                        variant="text"
-                        v-if="item.lastSync > 0">
-                          <v-tooltip 
-                            activator="parent"
-                            location="bottom">
-                            {{ this.$t('lastSync') + new Date(item.lastSync).toLocaleString() }}
-                          </v-tooltip>
-                          <v-icon>mdi-cloud-check</v-icon>
-                      </v-btn>
-                      <v-btn 
-                        icon 
-                        variant="text"      
-                        v-else>
-                          <v-tooltip 
-                            activator="parent"
-                            location="bottom">
-                              {{ $t('onlyLocal') }}
-                          </v-tooltip>
-                          <v-icon>mdi-cloud-off-outline</v-icon>
-                      </v-btn>
-                    </v-list-item>
-                  </td>
-                  <v-divider></v-divider>
-                </tr>
-              </template>
-            </v-data-table-virtual>
+                <!-- SYNC STATUS -->
+                <td :style="getRowStyle(index)">
+                  <v-list-item>
+                    <v-btn 
+                      icon 
+                      variant="text"
+                      v-if="item.lastSync > 0">
+                      <v-tooltip 
+                        activator="parent"
+                        location="bottom">
+                        {{ this.$t('lastSync') + new Date(item.lastSync).toLocaleString() }}
+                      </v-tooltip>
+                      <v-icon>mdi-cloud-check</v-icon>
+                    </v-btn>
+                    <v-btn 
+                      icon 
+                      variant="text"      
+                      v-else>
+                        <v-tooltip 
+                          activator="parent"
+                          location="bottom">
+                            {{ $t('onlyLocal') }}
+                        </v-tooltip>
+                        <v-icon>mdi-cloud-off-outline</v-icon>
+                    </v-btn>
+                  </v-list-item>
+                </td>
+                <v-divider></v-divider>
+              </tr>
+            </template>
+          </v-data-table-virtual>
         </v-card>
         <v-spacer></v-spacer>
     </v-row>
@@ -441,9 +416,7 @@ export default {
         },
         { title: this.$tc('title', 2), align: 'start', key: 'title' },
         { title: this.$t('dating'), align: 'start', key: 'dating' },
-        { title: this.$t('right'), align: 'start', key: 'right' },
-        { title: this.$t('up'), align: 'start', key: 'up' },
-        { title: this.$t('height'), align: 'start', key: 'height' },
+        { title: this.$t('coordinates'), align: 'start', key: 'coordinates' },
         { title: this.$t('count'), align: 'start', key: 'count' },
         { title: this.$t('weight'), align: 'start', key: 'weight' },
         { title: this.$t('material'), align: 'start', key: 'material' },
@@ -519,6 +492,18 @@ export default {
       this.positions = await fromOfflineDB
         .getAllObjectsWithID(curPlaceID, 'Place', 'Positions', 'positions')
         .catch(err => console.error(err));
+
+      if (this.positions.length > 0) {
+        for (var i=0; i<this.positions.length; i++) {
+          if (this.positions[i].coordinates != '') {
+            var coordinates = await fromOfflineDB.getObject(this.positions[i].coordinates, 'Coordinates', 'coordinates');
+              
+            this.positions[i].coordsCount = coordinates.coords.length;
+          }
+        }
+      }
+
+
     },
 
     /**
