@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 04.04.2024 13:58:54
+ * Last Modified: 27.08.2024 11:09:23
  * Modified By: Julian Hardtung
  * 
  * Description: `general information` input module for places/positions
@@ -50,7 +50,7 @@
                 v-model="object.hasSubNumber">
               </v-checkbox>
             </template>
-            Check, if the position should have a dedicated subNumber.
+            {{ $t('checkIfSubNumber') }}
           </v-tooltip>
         </v-col>
 
@@ -67,28 +67,13 @@
                   :label="$t('isSeparate')">
                 </v-checkbox>
               </template>
-              Check, if the position should be saved with a separate
-              subNumber, <br>even though the information is similar to the 
-                          previous position.
+              <span v-html="$t('checkIfSeperateSubNumber')"></span>
             </v-tooltip>
         </v-col>
-
-        <!-- <v-col cols="2" class="pa-0">
-          <v-card class="pa-4 ma-2 mr-3" color="accent">
-          <div 
-            class="text-h6 text-center" 
-            :label="$t('date')">
-            {{ object.date }}
-          </div>
-          <div class="text-body-2 text-grey text-center">
-            {{ $t('date') }}
-          </div>
-        </v-card>
-        </v-col> -->
+        
         <v-spacer></v-spacer>
 
         <v-col cols="2">
-
           <v-text-field
             hide-details
             color="primary" 
@@ -127,8 +112,7 @@
             :items="editorItemsSecondProp" 
             :label="$tc('editor', 1) + ' *'" 
             :hide-no-data="false" 
-            v-model="object.editor"
-            :hint="$tc('please_input', 2, { msg: 'Ansprache von' })">
+            v-model="object.editor">
 
             <template v-slot:no-data>
               <v-list-item>

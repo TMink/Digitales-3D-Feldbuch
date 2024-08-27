@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 19.08.2024 10:26:04
+ * Last Modified: 27.08.2024 10:59:41
  * Modified By: Julian Hardtung
  * 
  * Description: english translations
@@ -172,6 +172,9 @@ export default {
   getBackup: "Getting your files",
   createBackup: "Collecting your files",
   forgotPassword: "Forgot password",
+  checkIfSubNumber: "Check, if the position should have a dedicated subNumber.",
+  checkIfSeperateSubNumber:
+    "Check, if the position should be saved with a separate subNumber, <br/>even though the information is the same to the previous position.",
   downloadInfoText:
     "If you are planning on using this fieldbook without an active internet connection, you should download the desktop client.",
   addToYourAccount: "Add to your account",

@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 19.08.2024 10:25:53
+ * Last Modified: 27.08.2024 10:58:54
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -173,6 +173,8 @@ export default {
   getBackup: "Ihre Daten werden geladen",
   createBackup: "Ihre Daten werden gesammelt",
   forgotPassword: "Passwort vergessen",
+  checkIfSubNumber: "Ankreuzen, wenn die Position eine eigene Unternummer haben soll.",
+  checkIfSeperateSubNumber: "Ankreuzen, wenn die Position mit einer eigenen Unternummer gespeichert werden soll, <br/>selbst wenn die Daten der vorherigen Position gleichen.",
   downloadInfoText:
     "Wenn du planst das Feldbuch ohne eine aktive Internetverbindung zu nutzen, solltest du das Desktop Programm herunterladen.",
   addToYourAccount: "Zu deinem Account hinzufügen",
