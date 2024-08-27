@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 23.04.2024 14:25:10
+ * Last Modified: 27.08.2024 11:39:27
  * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
@@ -297,8 +297,6 @@ export default {
       ],
       searchQuery: '',
       hoveredRow: -1,
-      titles: [],
-      datings: [],
       is_required: [v => !!v || 'Pflichtfeld'],
       tickLabels: {
         3: this.$t('veryGood'),
@@ -338,8 +336,6 @@ export default {
    * Initialize data from localDB to the reactive Vue.js data
    */
   async created() {
-    this.titles = JSON.parse(import.meta.env.VITE_TITLES);
-    this.datings = JSON.parse(import.meta.env.VITE_DATINGS);
 
     await fromOfflineDB.syncLocalDBs()
       .catch(err => console.error(err));
@@ -374,7 +370,7 @@ export default {
       customTitles.push(element.item)
     });
 
-    var lvrTitles = JSON.parse(import.meta.env.VITE_TITLES);
+    var lvrTitles = JSON.parse(import.meta.env.VITE_PLACE_TITLES);
     this.titlesList = await lvrTitles.concat(customTitles);
 
     await this.setAppBarTitle()
