@@ -2,7 +2,7 @@
  * Created Date: 23.01.2024 13:09:11
  * Author: Tobias Mink
  * 
- * Last Modified: 27.08.2024 12:56:25
+ * Last Modified: 27.08.2024 14:20:30
  * Modified By: Julian Hardtung
  * 
  * Description: A Collection of initialisation functions, which will be called
@@ -133,8 +133,8 @@ export class Initialisations {
     stTool.brushToCutWith.brush.material.side = DoubleSide;
     stTool.brushToCutWith.brush.material.premultipliedAlpha = 
       stTool.brushToCutWithParams.material.premultipliedAlpha;
-    stTool.brushToCutWith.brush.material.color.set( 
-      stTool.brushToCutWith.brushColor )
+    stTool.brushToCutWith.brush.material.color
+      .set( stTool.brushToCutWith.brushColor )
     stTool.brushToCutWith.brush.receiveShadow = 
       stTool.brushToCutWithParams.material.receiveShadow;
     stTool.brushToCutWith.brush.visible = 
@@ -143,13 +143,13 @@ export class Initialisations {
     scene.add( stTool.brushToCutWith.brush );
     /* Create material map for transparent to opaque variants */
     let mat;
-	  mat = stTool.brushToCutWith.brush.material.clone();
-	  mat.side = FrontSide;
-	  mat.opacity = stTool.brushToCutWithParams.mat.opacity;
-	  mat.transparent = stTool.brushToCutWithParams.mat.transparent;
-	  mat.depthWrite = stTool.brushToCutWithParams.mat.depthWrite;
+    mat = stTool.brushToCutWith.brush.material.clone();
+    mat.side = FrontSide;
+    mat.opacity = stTool.brushToCutWithParams.mat.opacity;
+    mat.transparent = stTool.brushToCutWithParams.mat.transparent;
+    mat.depthWrite = stTool.brushToCutWithParams.mat.depthWrite;
     mat.name = stTool.brushToCutWithParams.mat.name
-	  stTool.materialMap.set( stTool.brushToCutWith.brush.material, mat );
+    stTool.materialMap.set( stTool.brushToCutWith.brush.material, mat );
     
     /* ## Initialize brushesOfObjects ## */
     /* Create a brush for every object in scene, so that every object can be 
@@ -170,7 +170,7 @@ export class Initialisations {
       brush.scale.setScalar( 1 );
       stTool.brushesOfObjects.push( {
         brush: brush,
-	      brushColor: stTool.brushesOfObjectsParams.colors[idx],
+        brushColor: stTool.brushesOfObjectsParams.colors[idx],
         resultBrush: stTool.brushesOfObjectsParams.resultBrush,
         originalMaterial: stTool.brushesOfObjectsParams.originalMaterial
       } );
@@ -182,19 +182,20 @@ export class Initialisations {
     /* Initialize brush materials */
     stTool.brushesOfObjects.forEach( brush => {
       brush.brush.material.opacity = 
-        stTool.brushesOfObjectsParams.material.opacity;
-	    brush.brush.material.transparent = 
+        stTool.brushesOfObjectsParams.material.opa
+        
+      brush.brush.material.transparent = 
         stTool.brushesOfObjectsParams.material.transparent;
-	    brush.brush.material.depthWrite = 
+      brush.brush.material.depthWrite = 
         stTool.brushesOfObjectsParams.material.depthWrite;
-	    brush.brush.material.polygonOffset = 
+      brush.brush.material.polygonOffset = 
         stTool.brushesOfObjectsParams.material.polygonOffset;
-	    brush.brush.material.polygonOffsetFactor = 
+      brush.brush.material.polygonOffsetFactor = 
         stTool.brushesOfObjectsParams.material.polygonOffsetFactor;
-	    brush.brush.material.polygonOffsetUnits = 
+      brush.brush.material.polygonOffsetUnits = 
         stTool.brushesOfObjectsParams.material.polygonOffsetUnits;
-	    brush.brush.material.side = DoubleSide;
-	    brush.brush.material.premultipliedAlpha = 
+      brush.brush.material.side = DoubleSide;
+      brush.brush.material.premultipliedAlpha = 
         stTool.brushesOfObjectsParams.material.premultipliedAlpha;
       brush.brush.material.color.set( brush.brushColor )
       brush.brush.receiveShadow = 
