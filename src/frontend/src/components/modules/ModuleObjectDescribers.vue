@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 04.04.2024 14:34:43
+ * Last Modified: 27.08.2024 10:37:18
  * Modified By: Julian Hardtung
  * 
  * Description: `object descriptors` input module for positions
@@ -30,28 +30,29 @@
       <v-row v-if="object.modulePreset.objectDescribers" no-gutters style="padding-top:37px" >
         <v-col cols="3">
 
-          <v-text-field 
+          <v-number-input
           color="primary" 
           hide-details
           class="pr-3 pb-2"
+          :min="0"
+          controlVariant="stacked"
           :label="$t('count')"  
-          v-model="object.count"
-          @keypress="filterAllNonNumeric(event)" 
-          :hint="$tc('please_input', 2, { msg: 'Anzahl' })">
-        </v-text-field>
+          v-model="object.count">
+        </v-number-input>
       </v-col>
       <v-divider vertical class="mt-n3"/>
       <v-col cols="3">
 
-        <v-text-field
+        <v-number-input
         color="primary" 
-        :label="$t('weight')" 
+        :label="$t('weight') + ' in g'" 
         hide-details
         class="px-3 pb-2"
-        v-model="object.weight"
-        @keypress="filterNonNumeric(event)" 
-        :hint="$tc('please_input', 2, { msg: 'Gewicht' })">
-      </v-text-field>
+        :min="0"
+        controlVariant="stacked"
+        :inset="false"
+        v-model="object.weight">
+      </v-number-input>
     </v-col>
     <v-divider vertical class="mt-n3"/>
     <v-col cols="6">
@@ -139,39 +140,6 @@ export default {
     this.object = this.objectProp;
     this.showModule = this.objectProp.modulePreset.findTypes;
   },
-
-  methods: {
-    /**
-     * Prevents the input of non numeric values 
-     * @param {*} evt 
-     */
-    filterAllNonNumeric(evt) {
-      evt = (evt) ? evt : window.event;
-      let expect = evt.target.value.toString() + evt.key.toString();
-
-      if (!/^[0-9]*$/.test(expect)) {
-        evt.preventDefault();
-      } else {
-        return true;
-      }
-    },
-
-    /**
-     * Prevents the input of non numeric values 
-     * (allows one single `,` or `.` for float values)
-     * @param {*} evt 
-     */
-    filterNonNumeric(evt) {
-      evt = (evt) ? evt : window.event;
-      let expect = evt.target.value.toString() + evt.key.toString();
-
-      if (!/^[-+]?[0-9]*[,.]?[0-9]*$/.test(expect)) {
-        evt.preventDefault();
-      } else {
-        return true;
-      }
-    },
-  }
 
 }
 
