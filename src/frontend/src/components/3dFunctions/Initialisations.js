@@ -2,8 +2,8 @@
  * Created Date: 23.01.2024 13:09:11
  * Author: Tobias Mink
  * 
- * Last Modified: 18.04.2024 15:53:47
- * Modified By: Tobias Mink
+ * Last Modified: 27.08.2024 12:56:25
+ * Modified By: Julian Hardtung
  * 
  * Description: A Collection of initialisation functions, which will be called
  *              in the mounted function in 3DView.js. This includes the creation
@@ -112,7 +112,7 @@ export class Initialisations {
     /* Create parameter entry */
     stTool.brushToCutWith = {
       brush: brushToCutWith,
-	    brushColor: stTool.brushToCutWithParams.color,
+      brushColor: stTool.brushToCutWithParams.color,
       attached: stTool.brushToCutWithParams.attached
     }
     /* Update brushesOfObjects */
@@ -120,18 +120,18 @@ export class Initialisations {
     /* Initialize brush materials */
     stTool.brushToCutWith.brush.material.opacity = 
       stTool.brushToCutWithParams.material.opacity;
-	  stTool.brushToCutWith.brush.material.transparent = 
+    stTool.brushToCutWith.brush.material.transparent = 
       stTool.brushToCutWithParams.material.transparent;
-	  stTool.brushToCutWith.brush.material.depthWrite = 
+    stTool.brushToCutWith.brush.material.depthWrite = 
       stTool.brushToCutWithParams.material.depthWrite;
-	  stTool.brushToCutWith.brush.material.polygonOffset = 
+    stTool.brushToCutWith.brush.material.polygonOffset = 
       stTool.brushToCutWithParams.material.polygonOffset;
-	  stTool.brushToCutWith.brush.material.polygonOffsetFactor = 
+    stTool.brushToCutWith.brush.material.polygonOffsetFactor = 
       stTool.brushToCutWithParams.material.polygonOffsetFactor;
-	  stTool.brushToCutWith.brush.material.polygonOffsetUnits = 
+    stTool.brushToCutWith.brush.material.polygonOffsetUnits = 
       stTool.brushToCutWithParams.material.polygonOffsetUnits;
-	  stTool.brushToCutWith.brush.material.side = DoubleSide;
-	  stTool.brushToCutWith.brush.material.premultipliedAlpha = 
+    stTool.brushToCutWith.brush.material.side = DoubleSide;
+    stTool.brushToCutWith.brush.material.premultipliedAlpha = 
       stTool.brushToCutWithParams.material.premultipliedAlpha;
     stTool.brushToCutWith.brush.material.color.set( 
       stTool.brushToCutWith.brushColor )
@@ -471,11 +471,11 @@ export class Initialisations {
     ;
 
     new TWEEN.Tween(icosahedron.rotation)
-  		.to({ x: "-" + (Math.PI/2) * 9}, 14000)
+      .to({ x: "-" + (Math.PI/2) * 9}, 14000)
       .delay(1000)
-			.repeat(Infinity)
-			.easing(TWEEN.Easing.Cubic.Out)
-			.start()
+      .repeat(Infinity)
+      .easing(TWEEN.Easing.Cubic.Out)
+      .start()
 		;
 
     new TWEEN.Tween(icosahedron.scale)
@@ -592,10 +592,10 @@ export class Initialisations {
     
 
     new TWEEN.Tween(icosahedron.rotation)
-  		.to({ y: "-" + (Math.PI/2) * 9}, 120000)
-			.repeat(Infinity)
-			.easing(TWEEN.Easing.Cubic.Out)
-			.start()
+      .to({ y: "-" + (Math.PI/2) * 9}, 120000)
+      .repeat(Infinity)
+      .easing(TWEEN.Easing.Cubic.Out)
+      .start()
 		;
 
     
