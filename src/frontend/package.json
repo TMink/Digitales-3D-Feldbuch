@@ -1,7 +1,7 @@
 {
   "name": "fieldbook",
   "productName": "Digitales 3D-Feldbuch",
-  "version": "2.0.3",
+  "version": "2.1.0",
   "license": "MPL-2.0",
   "author": "FieldbookDevs",
   "description": "A 3d fieldbook for documentation of archeological excavations",
