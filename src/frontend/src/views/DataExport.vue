@@ -2,7 +2,7 @@
  * Created Date: 26.06.2023 15:10:20
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.08.2024 14:40:19
+ * Last Modified: 28.08.2024 14:03:46
  * Modified By: Julian Hardtung
  * 
  * Description: export all (or only specified) data to .pdf or .csv
@@ -448,6 +448,15 @@ export default {
           activityNumber = activityNumber.activityNumber;
         }
         place.activity = activityNumber;
+
+        if (place.coordinates != '') {
+          var fullCoordinates = await fromOfflineDB
+            .getObject(place.coordinates, 'Coordinates', 'coordinates')
+            .catch(err => console.error(err));
+
+          place.coordinates = fullCoordinates.coords.length.toString() + " " + this.$t('coordinates');
+          //place.coordinates = JSON.parse(fullCoordinates.coords);
+        } 
       }
 
     },
@@ -466,7 +475,9 @@ export default {
       var placeId = '';
       var placeNumber = '';
 
+      console.log(this.positions)
       for (var position of this.positions) {
+        console.log("iuhgöuhikjgköhujhkiöjul")
         // get and set the placeNumber of the current Position
         if (placeId != position.placeID) {
           placeId = position.placeID;
@@ -488,9 +499,19 @@ export default {
             activityNumber = tempActivity.activityNumber;
           }
         }
+        
+        // get and set the coordinatesCount of the current Position
+        if (position.coordinates != '') {
+          var fullCoordinates = await fromOfflineDB
+            .getObject(position.coordinates, 'Coordinates', 'coordinates')
+            .catch(err => console.error(err));
+          
+          position.coordinates = fullCoordinates.coords.length.toString() 
+                                  + " " + this.$t('coordinates');
+        } 
+        
         position.place = placeNumber;
         position.activity = activityNumber;
-        console.log(position)
       }
     },
 
@@ -653,6 +674,8 @@ export default {
       cursor.splice(index, 1);
       index = cursor.indexOf("_id");
       cursor.splice(index, 1);
+
+
       if( filename == "activitylist" ) {
         index = cursor.indexOf("camera");
         cursor.splice(index, 1);
@@ -859,12 +882,13 @@ export default {
               { content: 'Datierung' },
               { content: 'KeinBefund' },
               { content: 'RestBefund' },
-              { content: 'Rechts' },
+              { content: 'Koordinaten'},
+              /* { content: 'Rechts' },
               { content: 'Rechts bis' },
               { content: 'Hoch' },
               { content: 'Hoch bis' },
               { content: 'TiefeOK' },
-              { content: 'TiefeUK' },
+              { content: 'TiefeUK' }, */
               { content: 'Planum' },
               { content: 'Profil' },
               { content: 'Sichtbarkeit' }
@@ -879,12 +903,13 @@ export default {
             { header: 'Datierung', dataKey: 'dating' },
             { header: 'KeinBefund', dataKey: 'noFinding' },
             { header: 'RestBefund', dataKey: 'restFinding' },
-            { header: 'Rechts', dataKey: 'right' },
+            { header: 'Koordinaten', dataKey: 'coordinates.length + " " + this.$t("coordinates")' },
+            /* { header: 'Rechts', dataKey: 'right' },
             { header: 'Rechts bis', dataKey: 'rightTo' },
             { header: 'Hoch', dataKey: 'up' },
             { header: 'Hoch bis', dataKey: 'upTo' },
             { header: 'TiefeOK', dataKey: 'depthTop' },
-            { header: 'TiefeUK', dataKey: 'depthBot' },
+            { header: 'TiefeUK', dataKey: 'depthBot' }, */
             { header: 'Planum', dataKey: 'plane' },
             { header: 'Profil', dataKey: 'profile' },
             { header: 'Sichtbarkeit', dataKey: 'visibility' },
@@ -927,9 +952,10 @@ export default {
                   { content: 'Ansprache'},
                   { content: 'Bearbeiter' },
                   { content: 'Beschreibung' },
-                  { content: 'Rechts' },
+                  { content: 'Koordinaten' },
+                  /* { content: 'Rechts' },
                   { content: 'Hoch' },
-                  { content: 'Höhe' },
+                  { content: 'Höhe' }, */
                   { content: 'Datierung' },
                   { content: 'Anzahl' },
                   { content: 'Gewicht' },
@@ -942,9 +968,10 @@ export default {
                 { header: 'Ansprache', dataKey: 'title' },
                 { header: 'Bearbeiter', dataKey: 'editor' },
                 { header: 'Beschreibung', dataKey: 'description' },
-                { header: 'Rechts', dataKey: 'right' },
+                { header: 'Koordinaten', dataKey: 'coordinates' },
+                /* { header: 'Rechts', dataKey: 'right' },
                 { header: 'Hoch', dataKey: 'up' },
-                { header: 'Höhe', dataKey: 'height' },
+                { header: 'Höhe', dataKey: 'height' }, */
                 { header: 'Datierung', dataKey: 'dating' },
                 { header: 'Anzahl', dataKey: 'count' },
                 { header: 'Gewicht', dataKey: 'weight' },
@@ -990,12 +1017,13 @@ export default {
           { header: 'Datierung', dataKey: 'dating' },
           { header: 'KeinBefund', dataKey: 'noFinding' },
           { header: 'RestBefund', dataKey: 'restFinding' },
-          { header: 'Rechts', dataKey: 'right' },
+          { header: 'Koordinaten', dataKey: 'coordinates' },
+          /* { header: 'Rechts', dataKey: 'right' },
           { header: 'Rechts bis', dataKey: 'rightTo' },
           { header: 'Hoch', dataKey: 'up' },
           { header: 'Hoch bis', dataKey: 'upTo' },
           { header: 'TiefeOK', dataKey: 'depthTop' },
-          { header: 'TiefeUK', dataKey: 'depthBot' },
+          { header: 'TiefeUK', dataKey: 'depthBot' }, */
           { header: 'Planum', dataKey: 'plane' },
           { header: 'Profil', dataKey: 'profile' },
           { header: 'Sichtbar', dataKey: 'visibility' },
@@ -1038,9 +1066,10 @@ export default {
           { header: 'Stellennr', dataKey: 'place' },
           { header: 'Posnr', dataKey: 'positionNumber' },
           { header: 'Unternr', dataKey: 'subNumber' },
-          { header: 'Rechts', dataKey: 'right' },
+          { header: 'Koordinaten', dataKey: 'coordinates'},
+          /* { header: 'Rechts', dataKey: 'right' },
           { header: 'Hoch', dataKey: 'up' },
-          { header: 'Hoehe', dataKey: 'height' },
+          { header: 'Hoehe', dataKey: 'height' }, */
           { header: 'Anzahl', dataKey: 'count' },
           { header: 'Gewicht', dataKey: 'weight' },
           { header: 'Material', dataKey: 'material' },
