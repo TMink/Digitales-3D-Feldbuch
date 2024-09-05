@@ -662,6 +662,11 @@ export default {
      */
      createCSV(data, filename) {
       const items = toRaw(data);
+
+      if (items.length == 0) {
+        return;
+      }
+      
       const replacer = (key, value) => value === null ? '' : value;
       const cursor = Object.keys(items[0]);
       let header = null;
@@ -675,7 +680,7 @@ export default {
       cursor.splice(index, 1);
 
 
-      if( filename == "activitylist" ) {
+      if (filename == "activitylist") {
         index = cursor.indexOf("camera");
         cursor.splice(index, 1);
 
@@ -683,7 +688,11 @@ export default {
         let index2 = header.indexOf( "activityNumber" )
         header[ index2 ] = "activity"
       }
-      if( filename == "placeslist" ) {
+
+      if (filename == "placeslist") {
+
+        this.exportCoordsFile(data);
+
         index = cursor.indexOf("activity");
         cursor.splice(index, 1);
         index = cursor.indexOf("modulePreset");
@@ -697,7 +706,11 @@ export default {
         index2 = header.indexOf( "placeNumber" )
         header[ index2 ] = "place"
       }
-      if( filename == "positionslist" ) {
+
+      if (filename == "positionslist") {
+
+        this.exportCoordsFile(data);
+
         index = cursor.indexOf("activity");
         cursor.splice(index, 1);
         index = cursor.indexOf("place");
@@ -728,6 +741,43 @@ export default {
       var blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
       // save .csv file
       saveAs(blob, filename + ".csv");
+    },
+
+    /**
+     * Exports coordinates to a .csv file
+     * @param {[Object]} data 
+     */
+    exportCoordsFile(data) {
+
+      for (var i=0; i<data.length; i++) {
+        if (data[i].coordinates == '') {
+          continue;
+        }
+
+        let items = data[i].coordinates;
+
+        const replacer = (key, value) => value === null ? '' : value;
+        const cursor = Object.keys(items[0]);
+        let header = JSON.parse(JSON.stringify(cursor))
+        let filename = '';
+
+        if (data[i].positionNumber != undefined) {
+          filename = data[i].activity + '_' + data[i].place + '_' + data[i].positionNumber + '_coordinates';
+        } else {
+          filename = data[i].activity + '_' + data[i].placeNumber + '_coordinates';
+        }
+
+        // build ',' or ';' separated string
+        const csv = [header.join(this.separator), ...items.map(row => 
+          cursor.map(fieldName => JSON.stringify(row[fieldName], replacer))
+            .join(this.separator))
+        ].join('\r\n')
+
+        // create ',' or ';' separated blob
+        var blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+        // save .csv file
+        saveAs(blob, filename + ".csv");
+      }
     },
     
     /**
