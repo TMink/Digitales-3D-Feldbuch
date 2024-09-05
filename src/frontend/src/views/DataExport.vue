@@ -454,7 +454,7 @@ export default {
             .getObject(place.coordinates, 'Coordinates', 'coordinates')
             .catch(err => console.error(err));
 
-          place.coordinates = fullCoordinates.coords.length.toString() + " " + this.$t('coordinates');
+          place.coordinates = fullCoordinates.coords;
           //place.coordinates = JSON.parse(fullCoordinates.coords);
         } 
       }
@@ -475,9 +475,7 @@ export default {
       var placeId = '';
       var placeNumber = '';
 
-      console.log(this.positions)
       for (var position of this.positions) {
-        console.log("iuhgöuhikjgköhujhkiöjul")
         // get and set the placeNumber of the current Position
         if (placeId != position.placeID) {
           placeId = position.placeID;
@@ -506,8 +504,9 @@ export default {
             .getObject(position.coordinates, 'Coordinates', 'coordinates')
             .catch(err => console.error(err));
           
-          position.coordinates = fullCoordinates.coords.length.toString() 
-                                  + " " + this.$t('coordinates');
+          position.coordinates = fullCoordinates.coords;
+          /* position.coordinates = fullCoordinates.coords.length.toString() 
+                                  + " " + this.$t('coordinates'); */
         } 
         
         position.place = placeNumber;
@@ -666,7 +665,7 @@ export default {
       const replacer = (key, value) => value === null ? '' : value;
       const cursor = Object.keys(items[0]);
       let header = null;
-
+      
       // remove unwanted fields
       let index = cursor.indexOf("lastSync");
       cursor.splice(index, 1);
@@ -883,12 +882,7 @@ export default {
               { content: 'KeinBefund' },
               { content: 'RestBefund' },
               { content: 'Koordinaten'},
-              /* { content: 'Rechts' },
-              { content: 'Rechts bis' },
-              { content: 'Hoch' },
-              { content: 'Hoch bis' },
-              { content: 'TiefeOK' },
-              { content: 'TiefeUK' }, */
+
               { content: 'Planum' },
               { content: 'Profil' },
               { content: 'Sichtbarkeit' }
@@ -904,12 +898,6 @@ export default {
             { header: 'KeinBefund', dataKey: 'noFinding' },
             { header: 'RestBefund', dataKey: 'restFinding' },
             { header: 'Koordinaten', dataKey: 'coordinates.length + " " + this.$t("coordinates")' },
-            /* { header: 'Rechts', dataKey: 'right' },
-            { header: 'Rechts bis', dataKey: 'rightTo' },
-            { header: 'Hoch', dataKey: 'up' },
-            { header: 'Hoch bis', dataKey: 'upTo' },
-            { header: 'TiefeOK', dataKey: 'depthTop' },
-            { header: 'TiefeUK', dataKey: 'depthBot' }, */
             { header: 'Planum', dataKey: 'plane' },
             { header: 'Profil', dataKey: 'profile' },
             { header: 'Sichtbarkeit', dataKey: 'visibility' },
@@ -953,9 +941,6 @@ export default {
                   { content: 'Bearbeiter' },
                   { content: 'Beschreibung' },
                   { content: 'Koordinaten' },
-                  /* { content: 'Rechts' },
-                  { content: 'Hoch' },
-                  { content: 'Höhe' }, */
                   { content: 'Datierung' },
                   { content: 'Anzahl' },
                   { content: 'Gewicht' },
@@ -969,9 +954,6 @@ export default {
                 { header: 'Bearbeiter', dataKey: 'editor' },
                 { header: 'Beschreibung', dataKey: 'description' },
                 { header: 'Koordinaten', dataKey: 'coordinates' },
-                /* { header: 'Rechts', dataKey: 'right' },
-                { header: 'Hoch', dataKey: 'up' },
-                { header: 'Höhe', dataKey: 'height' }, */
                 { header: 'Datierung', dataKey: 'dating' },
                 { header: 'Anzahl', dataKey: 'count' },
                 { header: 'Gewicht', dataKey: 'weight' },
@@ -1018,12 +1000,6 @@ export default {
           { header: 'KeinBefund', dataKey: 'noFinding' },
           { header: 'RestBefund', dataKey: 'restFinding' },
           { header: 'Koordinaten', dataKey: 'coordinates' },
-          /* { header: 'Rechts', dataKey: 'right' },
-          { header: 'Rechts bis', dataKey: 'rightTo' },
-          { header: 'Hoch', dataKey: 'up' },
-          { header: 'Hoch bis', dataKey: 'upTo' },
-          { header: 'TiefeOK', dataKey: 'depthTop' },
-          { header: 'TiefeUK', dataKey: 'depthBot' }, */
           { header: 'Planum', dataKey: 'plane' },
           { header: 'Profil', dataKey: 'profile' },
           { header: 'Sichtbar', dataKey: 'visibility' },
@@ -1067,9 +1043,6 @@ export default {
           { header: 'Posnr', dataKey: 'positionNumber' },
           { header: 'Unternr', dataKey: 'subNumber' },
           { header: 'Koordinaten', dataKey: 'coordinates'},
-          /* { header: 'Rechts', dataKey: 'right' },
-          { header: 'Hoch', dataKey: 'up' },
-          { header: 'Hoehe', dataKey: 'height' }, */
           { header: 'Anzahl', dataKey: 'count' },
           { header: 'Gewicht', dataKey: 'weight' },
           { header: 'Material', dataKey: 'material' },
