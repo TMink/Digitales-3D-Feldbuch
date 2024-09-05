@@ -235,6 +235,12 @@
           console.error(error);
         }
     
+        for (var i=0; i<records.length; i++) {
+          if (records[i].Code == '\r') {
+            records[i].Code = '';
+          }
+        }
+
         return records;
       },
 
