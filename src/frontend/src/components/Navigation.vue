@@ -259,6 +259,7 @@ export default {
       navbar_items: [
         { link: "/", title: this.$t('home') },
         { link: "/3dview", title: this.$t('threeD_view') },
+        { link: "/stratitool", title: this.$t('Stratigraphie-Tool') },
         /* { link: "/onlineSync", title: this.$t('online_sync') }, */
       ],
       initDone: false,

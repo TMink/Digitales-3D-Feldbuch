@@ -2,8 +2,8 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.12.2023 12:30:00
- * Modified By: Julian Hardtung
+ * Last Modified: 23.09.2024 10:35:12
+ * Modified By: Tobias Mink
  * 
  * Description: Router paths to the different vue pages
  */
@@ -22,6 +22,7 @@ import DataBackup from "@/components/DataBackup.vue";
 import LandingPage from "@/views/LandingPage.vue";
 import LoginPage from "@/views/LoginPage.vue";
 import RegistrationPage from "@/views/RegistrationPage.vue";
+import StratiTool from "@/views/StratiTool.vue";
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -90,6 +91,11 @@ const router = createRouter({
       path: "/registration",
       name: "RegistrationPage",
       component: RegistrationPage,
+    },
+    {
+      path: "/StratiTool",
+      name: "Stratification-Tool",
+      component: StratiTool
     },
   ],
 });
