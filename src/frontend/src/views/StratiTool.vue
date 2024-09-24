@@ -80,6 +80,7 @@
   import { VueFlow, useVueFlow } from '@vue-flow/core'
   import { Background } from '@vue-flow/background'
 
+  import * as THREE from 'three';
 
   import Navigation from '../components/Navigation.vue';
 
@@ -140,7 +141,32 @@
     document.getElementById("canvas").setAttribute("width", window.innerWidth - (document.getElementById("infobereich").offsetWidth*2+16))
     function resizeCanvas() {
       document.getElementById("canvas").setAttribute("width", window.innerWidth - (document.getElementById("infobereich").offsetWidth*2+16))
+      renderer.setPixelRatio(canvas.devicePixelratio)
     }
+      
+    /**
+     * 3D-Editor
+     */
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera( 45, canvas.clientWidth / canvas.clientHeight, 0.01, 2000 );
+    const renderer = new THREE.WebGLRenderer({
+      canvas: canvas,
+      antialias: true
+    });
+    renderer.setPixelRatio( canvas.devicePixelratio )
+    renderer.setClearColor( 0x263238, 1);
+    const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+    const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+    const cube = new THREE.Mesh( geometry, material );
+    scene.add( cube );
+
+    camera.position.z = 5;
+    function animate() {
+	    renderer.render( scene, camera );
+      cube.rotation.x += 0.01;
+      cube.rotation.y += 0.01;
+    }
+    renderer.setAnimationLoop( animate );
   })
 </script>
 
