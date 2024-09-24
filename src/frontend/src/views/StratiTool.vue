@@ -76,6 +76,10 @@
 
 <script setup>
   import { ref, onMounted } from 'vue'
+  import { useWindowSize } from 'vue-window-size';
+  import { VueFlow, useVueFlow } from '@vue-flow/core'
+  import { Background } from '@vue-flow/background'
+
 
   import Navigation from '../components/Navigation.vue';
 
@@ -84,7 +88,51 @@
   const windowHeight = height;
   const windowWidth = width;
 
-export default{
+  const nodes = ref([
+    {
+      id: '1',
+      type: 'input',
+      position: { x: 250, y: 5 },
+      data: { label: 'Node 1' },
+    },
+    { 
+      id: '2', 
+      position: { x: 100, y: 100 },
+      data: { label: 'Node 2' }
+    },
+    { 
+      id: '3', 
+      type: 'output', 
+      position: { x: 400, y: 200 },
+      data: { label: 'Node 3' },
+    },
+    {
+      id: '4',
+      position: { x: 400, y: 200 },
+      data: { label: 'Node 4', },
+      class: "custom",
+    },
+  ])
+
+  const edges = ref([
+    { 
+      id: 'e1->2',
+      source: '1', 
+      target: '2',
+    },
+    { 
+      id: 'e2->3',
+      source: '2', 
+      target: '3', 
+      animated: true,
+    },
+  ])
+
+  const { onNodeDragStop } = useVueFlow()
+  onNodeDragStop(({ event, nodes, node }) => {
+    console.log('Node Drag Stop', { event, nodes, node })
+  })
+
   // Everything after mounted
   onMounted(() => {  
     // resize canvas
@@ -102,4 +150,17 @@ export default {
 }
 </script>
 
-</script>
+<style>
+/* these are necessary styles for vue flow */
+@import '@vue-flow/core/dist/style.css';
+
+/* Custom node example */
+.custom {
+    background: rgb(201, 184, 201);
+    color: white;
+    border: 1px solid purple;
+    border-radius: 4px;
+    box-shadow: 0 0 0 1px purple;
+    padding: 8px;
+}
+</style>
