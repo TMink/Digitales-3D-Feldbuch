@@ -2,7 +2,7 @@
  Created Date: 23.09.2024 10:14:23
  Author: Tobias Mink
  
- Last Modified: 26.09.2024 15:03:45
+ Last Modified: 26.09.2024 15:34:26
  Modified By: Tobias Mink
  
  Description: 
@@ -40,11 +40,11 @@
             <v-card class="pl-3 border-lg d-flex align-center " height="100px" width="100%">
               <v-card class="pl-2 pt-2" height="53px" style="border: 1px solid #fff;">
                 <v-slide-group multiple style="width: 1200px;" >
-                  <v-slide-group-item v-for="n in nodesCache.nodesLoaded" :key="n" v-slot="{ toggle }">
-                    <v-btn @click="toggle" v-if="n.data.class == 'Deposit'" color="green" :text="n.data.label" ></v-btn>
+                  <v-slide-group-item v-for="n in nodesCache.nodes" :key="n" v-slot="{ toggle }">
+                    <v-btn @click="toggle" v-if="n.type == 'deposit'" color="green" :text="n.data.label" ></v-btn>
                   </v-slide-group-item>
-                  <v-slide-group-item v-for="n in nodesCache.nodesLoaded" :key="n">
-                    <v-btn v-if="n.data.class == 'Interface'" color="brown" rounded :text="n.data.label"></v-btn>
+                  <v-slide-group-item v-for="n in nodesCache.nodes" :key="n">
+                    <v-btn v-if="n.type == 'interface'" color="brown" rounded :text="n.data.label"></v-btn>
                   </v-slide-group-item>
                 </v-slide-group>
               </v-card>
@@ -58,8 +58,8 @@
             <canvas id="canvas" class="border-lg" :height="windowHeight - 320" style="position:absolute; z-index: 1; opacity: 1;"></canvas>
             <v-card id="graph" class="dnd-flow border-lg" @drop="onDrop" :height="windowHeight - 312" width="100%" style="position:relative; z-index: 2; opacity: 1;">
               <VueFlow @dragover="onDragOver" @dragleave="onDragLeave" :nodeTypes="nodeTypes" deleteKeyCode="Backspace" :zoomOnDoubleClick=false>
-                <SaveRestoreControls/>
-                <MiniMap :node-color="nodeColor" maskColor="#171C23" style="background-color:#27303d;"></MiniMap>
+                <!-- <SaveRestoreControls/> -->
+                <!-- <MiniMap :node-color="nodeColor" maskColor="#171C23" style="background-color:#27303d;"></MiniMap> -->
                 <DropzoneBackground :style="{ backgroundColor: isDragOver ? '#1e81b0' : 'transparent', transition: 'background-color 0.2s ease', }">
                   <p v-if="isDragOver">Drop here</p>
                 </DropzoneBackground>
@@ -108,7 +108,7 @@
   import DepositNode from '../components/graph-editor-components/CustomNodes/DepositNode.vue';
   import DepositNodeClicked from '../components/graph-editor-components/CustomNodes/DepositNodeClicked.vue';
   import InterfaceNode from '../components/graph-editor-components/CustomNodes/InterfaceNode.vue';
-import InterfaceNodeClicked from '../components/graph-editor-components/CustomNodes/InterfaceNodeClicked.vue';
+  import InterfaceNodeClicked from '../components/graph-editor-components/CustomNodes/InterfaceNodeClicked.vue';
 
   const nodeTypes = {
     deposit: markRaw(DepositNode),
@@ -117,7 +117,7 @@ import InterfaceNodeClicked from '../components/graph-editor-components/CustomNo
     interface_clicked: markRaw(InterfaceNodeClicked)
   }
 
-  const { onConnect, addEdges, onNodeClick, onPaneClick, getNodes } = useVueFlow()
+  const { onConnect, addEdges, onNodeClick, onPaneClick, getNodes, onNodesChange, toObject } = useVueFlow()
   const { onDragOver, onDrop, onDragLeave, isDragOver } = useDragAndDrop()
 
   const nodes = ref([])
@@ -138,7 +138,17 @@ import InterfaceNodeClicked from '../components/graph-editor-components/CustomNo
   }
   
   // cache for unit-nodes-data
-  const nodesCache = reactive({ nodesLoaded: [] })
+  const nodesCache = reactive({nodes: [] })
+
+  onNodesChange((changes) => {
+    if( Object.hasOwn( changes[0], 'item' ) ) {
+      if( changes[0].type == 'add' ) {
+        console.log("Add new node")
+        nodesCache.nodes.push({id: changes[0].item.id, type: changes[0].item.type, data: changes[0].item.data})
+        console.log(changes[0].item.data)
+      }
+    }
+  })
 
   // Retriev data about the window height and width
   const { width, height } = useWindowSize();
