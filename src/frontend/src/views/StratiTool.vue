@@ -117,11 +117,9 @@
     interface_clicked: markRaw(InterfaceNodeClicked)
   }
 
-  const { onConnect, addEdges, onNodeClick, onPaneClick, getNodes, onNodesChange, toObject } = useVueFlow()
+  const { onConnect, addEdges, onNodeClick, onPaneClick, getNodes, onNodesChange } = useVueFlow()
   const { onDragOver, onDrop, onDragLeave, isDragOver } = useDragAndDrop()
-
-  const nodes = ref([])
-  const edges = ref([])
+  
   onConnect(addEdges)
   
   /**
@@ -156,6 +154,7 @@
   const windowWidth = width;
 
   onNodeClick( (params) => {
+    console.log("Hello")
     if( getNodes.value.length != 0 ) {
       for( const[_, value] of Object.entries(getNodes.value) ) {
         if( value.type == "deposit_clicked" ) {
