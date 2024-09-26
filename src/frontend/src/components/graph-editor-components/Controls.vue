@@ -2,7 +2,7 @@
  Created Date: 25.09.2024 19:43:34
  Author: Tobias Mink
  
- Last Modified: 25.09.2024 20:40:35
+ Last Modified: 26.09.2024 14:47:04
  Modified By: Tobias Mink
  
  Description: 
@@ -24,7 +24,6 @@
 
     if (flow) {
       fromObject(flow)
-      this.$root.vtoast.show({ message: 'Matrix wiederhergestellt' });
     }
   }
 </script>
