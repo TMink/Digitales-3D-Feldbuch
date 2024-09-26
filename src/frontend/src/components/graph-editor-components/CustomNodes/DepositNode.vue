@@ -2,7 +2,7 @@
  Created Date: 26.09.2024 12:53:27
  Author: Tobias Mink
  
- Last Modified: 26.09.2024 14:43:21
+ Last Modified: 26.09.2024 14:56:49
  Modified By: Tobias Mink
  
  Description: 
@@ -33,18 +33,7 @@ const props = defineProps(['data', 'type'])
     text-align: center;
     color: black;
     background-color:rgb(30, 154, 30);
-    border: 1px solid #fff;
-    border-radius: 0%;
-  }
- 
-  .deposit_clicked {
-    height: 100px;
-    width: 100px;
-    line-height: 100px;
-    text-align: center;
-    color: black;
-    background-color:rgb(30, 154, 30);
-    border: 1px solid #fff;
+    border: 1px solid #ffffff;
     border-radius: 0%;
   }
 </style>

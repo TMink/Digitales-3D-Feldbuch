@@ -2,7 +2,7 @@
  Created Date: 26.09.2024 14:11:44
  Author: Tobias Mink
  
- Last Modified: 26.09.2024 14:15:34
+ Last Modified: 26.09.2024 14:56:39
  Modified By: Tobias Mink
  
  Description: 
@@ -33,7 +33,7 @@ const props = defineProps(['data', 'type'])
     text-align: center;
     color: black;
     background-color:rgb(30, 154, 30);
-    border: 3px solid #fff;
+    border: 3px solid #ffffff;
     border-radius: 0%;
   }
 </style>
