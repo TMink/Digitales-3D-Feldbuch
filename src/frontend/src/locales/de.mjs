@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.08.2024 14:41:56
+ * Last Modified: 27.09.2024 12:24:28
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -25,6 +25,9 @@ export default {
   position_id: "Positions ID",
   texture: "Textur",
   image: "Bild | Bilder",
+  findDrawing: "Fundzeichnung",
+  excavationDrawing: "Grabungszeichnung",
+  photo: "Foto | Fotos",
   imageOverview: "Bildübersicht",
   picture: "Bild | Bilder",
   model: "3D-Modell | 3D-Modelle",
@@ -32,6 +35,8 @@ export default {
   changes: "Änderung | Änderungen",
   file: "Datei",
   code: "Code",
+  archiveNumber: "Ortsarchivnummer | Ortsarchiv-Nr.",
+  actNumber: "Aktivitäts-Nr. | Akt-Nr.",
   placeNumber: "Stellen-Nr.",
   posNumber: "Positionsnummer | Pos-Nr.",
   subNumber: "Unternummer | Unter-Nr.",
@@ -54,6 +59,8 @@ export default {
   isSeparate: "Trennen",
   plane: "Planum",
   profile: "Profil",
+  sample: "Probe | Proben",
+  find: "Fund | Funde | Befunde | Befund",
   visibility: "Sichtbarkeit",
   drawing: "Zeichnung | Zeichnungen",
   editor: "Bearbeiter",
@@ -70,7 +77,7 @@ export default {
   objectSelection: "Objektauswalhl",
   tools: "Tools",
   general: "Allgemein",
-  title: "Titel | Ansprache",
+  title: "Titel | Ansprache | Kurzansprache",
   cookies: "Cookies",
   number: "Nummer | Nr.",
   year: "Jahr",
@@ -86,7 +93,7 @@ export default {
   cancel: "Abbrechen",
   search: "Suche",
   yes: "Ja",
-  no: "Nein",
+  no: "Nein | Kein | Keine",
   to: "bis",
   gaussKrueger: "Gauss-Krüger-Koordinaten",
   confirm: "Bestätigen",
@@ -129,6 +136,21 @@ export default {
   annotationMode: "Annotationsmodus",
   measureMode: "Messungsmodus",
   cuttingMode: "Schneidemodus",
+  areaDescr: "Ortsbeschreibung",
+  activityDuration: "Aktivitätsdauer",
+  from: "von",
+  to: "bis",
+  siteDirector: "Grabungsleitung",
+  excavationFirm: "Grabungsfirma",
+  doneAction: "Durchgeführte Maßnahme",
+  conditionsProspection: "Bedingungen Prospektion",
+  landUsage: "Geländenutzung",
+  historical: "Historisch",
+  current: "Aktuell",
+  groundType: "Bodenart",
+  topography: "Topographie",
+  archiveMaterial: "Archivmaterial",
+  misc: "Sonstiges",
 
   // Phrases
   addMsg: "Neue {msg} hinzufügen",
@@ -224,4 +246,9 @@ export default {
   measureDescription: "Halte X gedrückt und klicke auf zwei Punkte, um ihre Distanz zu messen.",
   cuttingDescription: "Verschiebe die Steuerung in der 3D-Ansicht, um das Modell zu schneiden.",
   chooseModelDescription: "Wähle ein Modell aus, um die Editieroptionen anzzuzeigen.",
+  filledByLVR: "Wird vom LVR-ABR ausgefüllt.",
+  chooseMax: "Wähle maximal {number} aus",
+  resultOfAction: "Ergebnis der Maßnahme",
+  maxPlaceNumber: "höchste vergebene Stellennummer",
+  findsDocumented: "nur ankreuzen, wenn archäologische Befunde dokumentiert wurden",
 };

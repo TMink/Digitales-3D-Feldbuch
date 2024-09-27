@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.08.2024 14:40:56
+ * Last Modified: 26.09.2024 12:57:32
  * Modified By: Julian Hardtung
  * 
  * Description: english translations
@@ -25,6 +25,9 @@ export default {
   position_id: "Position ID",
   texture: "Texture",
   image: "Image | Images",
+  findDrawing: "Find Drawing",
+  excavationDrawing: "Excavation Drawing",
+  photo: "Photo | Photos",
   imageOverview: "Image Overview",
   picture: "Picture | Pictures",
   model: "3D-Model | 3D-Models",
@@ -32,6 +35,8 @@ export default {
   change: "Change | Changes",
   file: "File",
   code: "Code",
+  archiveNumber: "Local Archive Number | Local Archive Nr.",
+  actNumber: "Activity-Nr. | Act-Nr.",
   placeNumber: "Place Nr.",
   posNumber: "Positionsnumber | Pos-Nr.",
   subNumber: "Subnumber | Sub-Nr.",
@@ -54,6 +59,8 @@ export default {
   isSeparate: "Is Separate",
   plane: "Plane",
   profile: "Profile",
+  sample: "Sample | Samples",
+  find: "Find | Finds | Finding | Findings",
   visibility: "Visibility",
   drawing: "Drawing | Drawings",
   editor: "Editor | Editors",
@@ -70,7 +77,7 @@ export default {
   objectSelection: "Object Selection",
   tools: "Tools",
   general: "General",
-  title: "Title | Title",
+  title: "Title | Title | Short Title",
   cookies: "Cookies",
   number: "Number | Nr.",
   year: "Year",
@@ -129,6 +136,21 @@ export default {
   annotationMode: "Annotation Mode",
   measureMode: "Measure Mode",
   cuttingMode: "Cutting Mode",
+  areaDescr: "Area Description",
+  activityDuration: "Activity Duration",
+  from: "from",
+  to: "to",
+  siteDirector: "Site Director",
+  excavationFirm: "Excavation Firm",
+  doneAction: "Action Done",
+  conditionsProspection: "Conditions Prospection",
+  landUsage: "Land Usage",
+  historical: "Historical",
+  current: "Current",
+  groundType: "Ground Type",
+  topography: "Topography",
+  archiveMaterial: "Archive Material",
+  misc: "Miscellaneous",
 
   // Phrases
   addMsg: "Add new {msg}",
@@ -222,4 +244,9 @@ export default {
   measureDescription: "Hold X and click on two points to measure their distance.",
   cuttingDescription: "Move the controls within the 3d-view to cut the model.",
   chooseModelDescription: "Choose a model to show all edit functions.",
+  filledByLVR: "Is filled by the LVR-ABR.",
+  chooseMax: "Choose max {number}",
+  resultOfAction: "Result of the Measure",
+  maxPlaceNumber: "highest assigned place number",
+  findsDocumented: "only tick, if archeological findings were documented",
 };
