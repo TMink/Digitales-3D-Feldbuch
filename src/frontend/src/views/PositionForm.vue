@@ -111,7 +111,6 @@ export default {
     ModuleViewer,
     Navigation
   },
-  emits: ['view'],
   /**
    * Reactive Vue.js data
    */

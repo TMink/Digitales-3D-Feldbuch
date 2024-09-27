@@ -293,7 +293,6 @@ export default {
    * Retrieve data from IndexedDB
    */
   async created() {
-    this.$emit("view", this.$t('overview', { msg: this.$tc('activity', 2) }));
     await fromOfflineDB.syncLocalDBs()
       .catch(err => console.error(err));
     await this.updateActivitiesFull()

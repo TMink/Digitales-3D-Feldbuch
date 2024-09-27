@@ -358,8 +358,6 @@ export default {
     AddButton,
   },
   
-  emits: ['view'],
-
   setup() {
     const { width, height } = useWindowSize();
     const userStore = useUserStore();
@@ -434,7 +432,6 @@ export default {
    * Initialize data from localDB to the reactive Vue.js data
    */
   async created() {
-    this.$emit("view", this.$t('overview', { msg: this.$tc('position', 2) }));
     await fromOfflineDB.syncLocalDBs()
       .catch(err => console.error(err));
     await this.updatePositions()

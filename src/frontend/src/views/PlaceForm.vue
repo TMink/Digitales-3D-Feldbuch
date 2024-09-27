@@ -176,7 +176,6 @@ export default {
     ModelForm,
     FieldbookDrawingCanvas,
   },
-  emits: ['view'],
   setup() {
     const { width, height } = useWindowSize();
     return {

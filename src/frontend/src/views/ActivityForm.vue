@@ -495,7 +495,6 @@ export default {
     ModuleViewer,
     ModelForm,
   },
-  emits: ['view'],
   setup() {
     const { width, height } = useWindowSize();
     var year = new Date().getFullYear();
