@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.09.2024 12:24:28
+ * Last Modified: 27.09.2024 17:38:32
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -171,7 +171,8 @@ export default {
   current_selection: "Aktuelle Auswahl",
   confirm_del: "Möchten Sie wirklich {object} {object_nr} löschen?",
   confirmDelCoords: "Möchten Sie wirklich die importierten Koordinaten löschen?",
-  overview: "{msg} Übersicht",
+  overview: "{msg}übersicht",
+  detailPage: "{msg}details | {msg}sdetails",
   addNewPreset: "Neues Preset hinzufügen",
   existingPresets: "Bestehende Presets",
   selectedPreset: "Ausgewähltes Preset",
