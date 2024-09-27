@@ -10,7 +10,7 @@
 
 <template>
   <div id="wrapper">
-    <Navigation active_tab_prop="1" />
+    <Navigation ref="navigationRef" active_tab_prop="1" />
     <v-row class="pt-2">
       <v-spacer></v-spacer>
       <v-card class="pa-4" :min-width="windowWidth * 0.55" variant="text">
@@ -377,6 +377,9 @@ export default {
     }
   },
 
+  mounted() {
+    this.$refs.navigationRef.onViewChange(this.$t('overview', { msg: this.$tc('place', 2) }))
+  },
 
   computed: {
     /**

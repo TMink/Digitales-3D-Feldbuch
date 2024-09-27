@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.08.2024 13:40:35
+ * Last Modified: 27.09.2024 17:54:05
  * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
@@ -10,7 +10,7 @@
  -->
 
 <template>
-  <Navigation active_tab_prop="1"/>
+  <Navigation ref="navigationRef" active_tab_prop="1"/>
   <v-container fluid>
     <v-row no-gutters>
       <v-col cols="2">
@@ -374,6 +374,11 @@ export default {
     this.hasUnsavedChanges = false;
   },
 
+  mounted() {
+    //this.setAppBarTitle()
+    this.$refs.navigationRef.onViewChange(this.$tc('detailPage',1, { msg: this.$tc('place', 2)}))
+  },
+
   watch: {
     'place': {
       handler: 'handlePlaceChange',
@@ -621,7 +626,7 @@ export default {
         .getObject(plID, 'Places', 'places')
         .catch(err => console.error(err));
 
-      this.$emit("view", activity.activityNumber + ' ' + place.placeNumber);
+      this.$refs.navigationRef.onViewChange(activity.activityNumber + '_' + place.placeNumber)
     },
 
     /**

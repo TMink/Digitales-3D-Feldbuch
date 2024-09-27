@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.08.2024 13:39:17
+ * Last Modified: 27.09.2024 17:42:44
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -10,7 +10,7 @@
 
 <template>
   <div id="wrapper">
-    <Navigation active_tab_prop="2" />
+    <Navigation ref="navigationRef" active_tab_prop="2" />
     <v-row class="pt-2">
         <v-spacer></v-spacer>
         <v-card class="pa-4" :min-width="windowWidth * 0.55" variant="text">
@@ -437,6 +437,10 @@ export default {
     await this.updatePositions()
       .catch(err => console.error(err));
     this.setShowAllInfoSwitch();
+  },
+
+  mounted() {
+    this.$refs.navigationRef.onViewChange(this.$tc('overview',1, { msg: this.$tc('position', 2)}))
   },
 
   computed: {

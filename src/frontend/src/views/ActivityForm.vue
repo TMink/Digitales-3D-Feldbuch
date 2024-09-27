@@ -10,7 +10,7 @@
  -->
 
 <template>
-  <Navigation active_tab_prop="1"/>
+  <Navigation ref="navigationRef" active_tab_prop="0"/>
   <v-container fluid>
     <v-row no-gutters>
       <v-col cols="2">
@@ -504,6 +504,11 @@ export default {
       curYear: year,
     };
   },
+
+  mounted() {
+    this.$refs.navigationRef.onViewChange(this.$tc('detailPage',2, { msg: this.$tc('activity', 1)}))
+  },
+
   /**
    * Reactive Vue.js data
    */

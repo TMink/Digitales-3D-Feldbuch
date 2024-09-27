@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.08.2024 13:37:36
+ * Last Modified: 27.09.2024 17:42:08
  * Modified By: Julian Hardtung
  * 
  * Description: input page for positions data 
@@ -10,7 +10,7 @@
  -->
 
 <template>
-  <Navigation active_tab_prop="2" />
+  <Navigation ref="navigationRef" active_tab_prop="2" />
   <v-container fluid>
     <v-row no-gutters>
       <!-- SIDE TABS -->
@@ -265,6 +265,11 @@ export default {
 
     this.componentHasLoaded = true;
   },
+
+  mounted() {
+    this.$refs.navigationRef.onViewChange(this.$tc('detailPage', 2, { msg: this.$tc('position', 1)}))
+  },
+
   methods: {
     /**
      * TODO

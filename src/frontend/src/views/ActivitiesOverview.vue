@@ -10,7 +10,7 @@
 
 <template>
   <div id="wrapper">
-    <Navigation active_tab_prop="0" />
+    <Navigation ref="navigationRef" active_tab_prop="0" />
 
     <OnlineImport />
 
@@ -298,6 +298,11 @@ export default {
     await this.updateActivitiesFull()
       .catch(err => console.error(err));
   },
+
+  mounted() {
+    this.$refs.navigationRef.onViewChange(this.$t('overview', { msg: this.$tc('activity', 2) }))
+  },
+  
   methods: {
     /**
      * Get all activities from IndexedDb and Backend
