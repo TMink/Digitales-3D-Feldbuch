@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.08.2024 13:39:42
+ * Last Modified: 27.09.2024 17:42:37
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -47,18 +47,18 @@
           :sort-by="[{ key: 'placeNumber', order: 'desc' }]">
 
           <template v-slot:item="{ item, index }">
-            <tr v-on:click="handleRowClick(item._id)" 
+            <tr 
               @mouseenter="setHoveredRow(index, true)"
               @mouseleave="setHoveredRow(index, false)">
               <!-- PLACE NUMBER -->
-              <td :style="getRowStyle(index)">
+              <td v-on:click="handleRowClick(item._id, false)" :style="getRowStyle(index)">
                 <v-list-item-title class="pl-4">
                   {{ item.placeNumber }}
                 </v-list-item-title>
               </td>
 
               <!-- TITLE -->
-              <td :style="getRowStyle(index)">
+              <td v-on:click="handleRowClick(item._id, false)" :style="getRowStyle(index)">
                 <div v-if="item.placeNumber > 1">
                   <v-list-item-title v-if="item.title.length > 0" 
                     style="min-width:200px" class="text-wrap">
@@ -78,14 +78,14 @@
               </td>
 
               <!-- DATE -->
-              <td :style="getRowStyle(index)">
+              <td v-on:click="handleRowClick(item._id, false)" :style="getRowStyle(index)">
                 <v-list-item-title>
                   {{ item.date || '-' }}
                 </v-list-item-title>
               </td>
 
               <!-- SYNC STATUS -->
-              <td :style="getRowStyle(index)">
+              <td v-on:click="handleRowClick(item._id, false)" :style="getRowStyle(index)">
                 <v-list-item>
                   <v-btn icon variant="text" v-if="item.lastSync > 0">
                     <v-tooltip activator="parent" location="bottom">
@@ -101,6 +101,16 @@
                   </v-btn>
                 </v-list-item>
               </td>
+
+              <td v-on:click="handleRowClick(item._id, true)" 
+                style="cursor:default">
+                <v-btn 
+                  class="ma-2" 
+                  color="primary" >
+                  <v-icon class="pr-2">mdi-pencil</v-icon>
+                  {{ $t('edit') }}
+                </v-btn>
+              </td>
             </tr>
           </template>
         </v-data-table-virtual>
@@ -112,7 +122,7 @@
           :sort-by="[{ key: 'placeNumber', order: 'desc' }]">
 
           <template v-slot:item="{ item, index }">
-            <tr v-on:click="handleRowClick(item._id)" 
+            <tr v-on:click="handleRowClick(item._id, false)" 
               @mouseenter="setHoveredRow(index, true)"
               @mouseleave="setHoveredRow(index, false)">
 
@@ -331,7 +341,8 @@ export default {
         },
         { title: this.$tc('title',2), align: 'start', key: 'title' },
         { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
-        { title: this.$t('syncStatus'), align: 'start', key: 'status', width: "100px"}
+        { title: this.$t('syncStatus'), align: 'start', key: 'status', width: "100px"},
+        { title: '', sortable: false, key: 'actions', width: "100px"}
       ],
       fullHeaders: [
         {
@@ -629,11 +640,13 @@ export default {
      * 
      * @param {String} placeID 
      */
-    handleRowClick(placeID) {
-      if (this.toggleDuplicate) {
+    handleRowClick(placeID, edit) {
+      if (edit) {
+        this.moveToPlace(placeID);
+      } else if (this.toggleDuplicate) {
         this.duplicatePlace(placeID);
       } else {
-        this.moveToPlace(placeID);
+        this.setPlace(placeID);
       }
     },
 
@@ -648,6 +661,15 @@ export default {
       
       this.generalStore.setCurrentObject(placeID, 'place');
       this.$router.push({ name: 'PlaceCreation', params: { placeID: placeID } })
+    },
+
+    setPlace(placeID) {
+      if (this.generalStore.getCurrentObject('place') !== placeID) {
+        this.generalStore.setCurrentObject(null, "position");
+      }
+      
+      this.generalStore.setCurrentObject(placeID, 'place');
+      this.$router.push({ name: 'PositionsOverview'})
     },
 
     /**
@@ -734,7 +756,6 @@ export default {
         this.hoveredRow = -1;
       }
     },
-
   }
 }
 
