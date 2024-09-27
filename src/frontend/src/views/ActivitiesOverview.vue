@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.08.2024 15:11:27
+ * Last Modified: 27.09.2024 13:49:18
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -399,7 +399,8 @@ export default {
       }
 
       this.$generalStore.setCurrentObject(activityID, "activity");
-      this.$router.push({ name: 'PlacesOverview' });
+      //this.$router.push({ name: 'PlacesOverview' });
+      this.$router.push({ name: 'ActivityCreation', params: {activityID} });
     },
 
     /**
@@ -441,7 +442,7 @@ export default {
         newActivity.number = newActivityNumber;
       }
       newActivity.activityNumber = newActivity.branchOffice
-        + " " + newActivity.year
+        + "_" + newActivity.year
         + "/" + newActivity.number;
 
       this.activities.push(newActivity);
@@ -474,7 +475,40 @@ export default {
           lastChanged: Date.now(),
           lastSync: rawActivity.lastSync,
           editor: rawActivity.editor,
-          camera: null
+          camera: null,
+
+          archiveNumber: '',
+          title: '',
+          right: '',
+          rightTo: '',
+          up: '',
+          upTo: '',
+          areaDescr: '',
+          dateFrom: '',
+          dateTo: '',
+          siteDirector: '',
+          excavationFirm: '',
+          doneThing: '',
+          landUsageHist: '',
+          histLandUsageYear: 0,
+          landUsageCur: '',
+          conditions: '',
+          groundType: [],
+          topography: [],
+          archiveMaterial: {
+            photos: false,
+            findDrawings: false,
+            excavationDrawings: false,
+            misc: false,
+            no: false
+          },
+          material: {
+            find: false,
+            sample: false,
+            no: false
+          },
+          maxPlaceNumber: 0,
+          findsDocumented: '',
         }
 
         // add new activity to current authenticated user 
