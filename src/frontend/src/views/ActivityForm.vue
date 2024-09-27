@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.09.2024 15:07:36
+ * Last Modified: 27.09.2024 17:50:50
  * Modified By: Julian Hardtung
  * 
  * Description: input page for activity data 
@@ -46,12 +46,32 @@
               <v-row class="align-center pt-4">
                 <!-- ACT_NUMBER + ARCHIVE_NUMBER + SHORT TITLE -->
                 <v-col cols="4">
-                  <v-text-field
-                    class="py-2"
-                    color="primary"
-                    :label="$tc('actNumber', 2)"
-                    v-model="activity.activityNumber">
-                  </v-text-field>
+                  <!-- <v-text-field
+                      class="py-2"
+                      color="primary"
+                      :label="$tc('actNumber', 2)"
+                      v-model="activity.activityNumber">
+                    </v-text-field> -->
+                  <v-row no-gutters>
+                    <v-text-field
+                      class="pr-1"
+                      color="primary"
+                      :label="$t('branchOffice')"
+                      v-model="activity.branchOffice">
+                    </v-text-field>
+                    <v-text-field
+                      class="px-1"
+                      color="primary"
+                      :label="$t('year')"
+                      v-model="activity.year">
+                    </v-text-field>
+                    <v-text-field
+                      class="pl-1"
+                      color="primary"
+                      :label="$t('number')"
+                      v-model="activity.number">
+                    </v-text-field>
+                  </v-row>
                   <v-text-field
                     color="primary"
                     :label="$tc('archiveNumber', 2)"
@@ -675,9 +695,7 @@ export default {
       var foundDoneThings = this.doneThings.filter(function(item) {return item.title === data.doneThing});
       this.doneThingModel = foundDoneThings[0];
 
-      console.log(this.landUsage)
       var foundLandUsageHist = this.landUsage.filter(function(item) {return item.title === data.landUsageHist});
-      console.log(foundLandUsageHist[0])
       this.landUsageHistModel = foundLandUsageHist[0];
 
       var foundLandUsageCur = this.landUsage.filter(function(item) {return item.title === data.landUsageCur});
@@ -686,19 +704,14 @@ export default {
       var foundTitle = this.titlesList.filter(function(item) {return item.title === data.title});
       this.titleModel = foundTitle[0];
 
-      console.log(this.datingsList)
-      console.log(data.dating)
       var foundDating = this.datingsList.filter(function(item) {return item.title === data.dating});
-      console.log(foundDating[0])
       this.datingModel = foundDating[0];
-      console.log(this.datingModel)
     },
 
     /**
      * Save a place to local storage for the current activity
      */
     async saveActivity() {
-      console.log(this.activity)
       //convert from vue proxy to JSON object
       const inputActivity = toRaw(this.activity);
       //inputPlace.date = new Date().toLocaleDateString("de-DE");
@@ -713,14 +726,14 @@ export default {
       if (this.landUsageCurModel != '' && this.landUsageCurModel != undefined){
         inputActivity.landUsageCur = this.landUsageCurModel.title;
       }
-      
       if (this.titleModel != '' && this.titleModel != undefined){
         inputActivity.title = this.titleModel.title;
       }
-       
       if (this.datingModel != '' && this.datingModel != undefined){
         inputActivity.dating = this.datingModel.title;
-      } 
+      }
+
+      inputActivity.activityNumber = this.updateActivityNumber(inputActivity.branchOffice, inputActivity.year, inputActivity.number);
 
       await fromOfflineDB.updateObject(inputActivity, 'Activities', 'activities')
         .catch(err => console.error(err));
@@ -730,6 +743,7 @@ export default {
       this.updateAutoFillList('titles', this.activity.title, this.titlesList);
 
       this.$root.vtoast.show({ message: this.$t('saveSuccess') });
+      this.$router.push({ name: "ActivitiesOverview" });
     },
 
         /**
@@ -846,8 +860,6 @@ export default {
       var place = await fromOfflineDB
         .getObject(plID, 'Places', 'places')
         .catch(err => console.error(err));
-
-      this.$emit("view", activity.activityNumber + ' ' + place.placeNumber);
     },
 
     getTitleHint() {
@@ -864,6 +876,11 @@ export default {
       }
 
       return;
+    },
+
+    
+    updateActivityNumber(branchOffice, year, number) {
+      return branchOffice + "_" + year + "_" + number;
     },
 
     /**

@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.09.2024 13:49:18
+ * Last Modified: 27.09.2024 17:31:06
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -43,111 +43,20 @@
                   </v-list-item>
                 </v-col>
 
-                <!-- v v v v v ACTIVITY EDIT v v v v v -->
-                <v-col id="editActivity" v-else>
-                  <v-row no-gutters class="justify-center">
-
-                    <v-col id="activityBranchOffice" cols="4" class="px-2 py-4">
-                      <v-text-field 
-                        counter
-                        hide-details
-                        color="primary" 
-                        :label="$t('branchOffice')" 
-                        :rules="[rules.required]"
-                        v-model="activity.branchOffice">
-                      </v-text-field>
-                    </v-col>
-
-                    <v-col id="activityYear" min-width="300px" cols="2" class="px-2 py-4">
-                      <v-text-field 
-                        counter
-                        hide-details
-                        :label="$t('year')"  
-                        maxlength="4" 
-                        color="primary" 
-                        v-model="activity.year"
-                        :rules="[rules.required]"
-                        @keypress="filterNonNumeric(event)">
-                      </v-text-field>
-                    </v-col>
-
-                    <v-col id="activityNumber" cols="2" class="px-2 py-4">
-                      <v-text-field 
-                        counter 
-                        hide-details
-                        maxlength="4" 
-                        :label="$t('number')" 
-                        color="primary" 
-                        v-model="activity.number"
-                        :rules="[rules.required]"
-                        @keypress="filterNonNumeric(event)">
-                      </v-text-field>
-                    </v-col>
-                  </v-row>
-                </v-col>
-
                 <!-- v v v v v ACTIVITY OPTIONS v v v v v -->
-                <div v-if="!activity.edit">
-                  <v-btn 
-                    class="ma-1" 
-                    color="primary" 
-                    v-on:click="activity.edit = !activity.edit">
-                    <v-icon class="pr-2">mdi-pencil</v-icon>
-                    {{ $t('edit') }}
-                    <v-tooltip 
-                      v-if="$generalStore.getShowTooltips()" 
-                      activator="parent" 
-                      location="bottom"
-                      :text="$t('editPhrase', { msg: $tc('activity', 1) + ' ' + activity.activityNumber })">
-                    </v-tooltip>
-                  </v-btn>
-
-                  <v-btn 
-                    color="error" 
-                    class="ma-1" 
-                    v-on:click="confirmDeletion(activity)">
-                    <v-icon class="pr-2">mdi-delete</v-icon>
-                    {{ $t('delete') }}
-                    <v-tooltip 
-                      v-if="$generalStore.getShowTooltips()" 
-                      activator="parent" 
-                      location="bottom"
-                      :text="$t('deletePhrase', { msg: $tc('activity', 1) + ' ' + activity.activityNumber })">
-                    </v-tooltip>
-                  </v-btn>
-                </div>
-
-                <!-- v v v v v ACTIVITY EDIT SAVE/CANCEL v v v v v -->
-                <div v-else>
-                  <!-- SAVE -->
-                  <v-btn
-                    class="ma-1" 
-                    color="success"
-                    v-on:click="saveActivity(activity)">
-                    <v-icon class="pr-2">mdi-content-save-all</v-icon>
-                    {{ $t('save') }}
-                    <v-tooltip 
-                      v-if="$generalStore.getShowTooltips()" 
-                      activator="parent" 
-                      location="bottom"
-                      :text="$t('savePhrase', { msg: $tc('activity', 1) + ' ' + activity.activityNumber })">
-                    </v-tooltip>
-                  </v-btn>
-                  <!-- CANCEL -->
-                  <v-btn
-                    class="ma-1"
-                    color="error" 
-                    v-on:click="closeActivityEdit(activity)">
-                    <v-icon class="pr-2">mdi-close-circle</v-icon>
-                    {{ $t('cancel') }}
-                    <v-tooltip 
-                      v-if="$generalStore.getShowTooltips()" 
-                      activator="parent" 
-                      location="bottom"
-                      :text="$t('cancelPhrase', { msg: $tc('activity', 1) + ' ' + activity.activityNumber })">
-                    </v-tooltip>
-                  </v-btn>
-                </div>
+                <v-btn 
+                  class="ma-1" 
+                  color="primary" 
+                  v-on:click="openActivity(activity._id)">
+                  <v-icon class="pr-2">mdi-pencil</v-icon>
+                  {{ $t('edit') }}
+                  <v-tooltip 
+                    v-if="$generalStore.getShowTooltips()" 
+                    activator="parent" 
+                    location="bottom"
+                    :text="$t('editPhrase', { msg: $tc('activity', 1) + ' ' + activity.activityNumber })">
+                  </v-tooltip>
+                </v-btn>
 
                 <!-- v v v v v ACTIVITY EDITORS/CLOUD SYNC STATUS v v v v v -->
                 <v-btn icon class="ml-2" variant="text"
@@ -403,9 +312,22 @@ export default {
       }
 
       this.$generalStore.setCurrentObject(activityID, "activity");
+      this.$router.push({ name: 'PlacesOverview' });
+      //this.$router.push({ name: 'ActivityCreation', params: {activityID} });
+    },
+
+    async openActivity(activityID) {
+      if (this.$generalStore.getCurrentObject('activity') !== activityID) {
+        this.$generalStore.setCurrentObject(null, "place");
+        this.$generalStore.setCurrentObject(null, "position");
+      }
+
+      this.$generalStore.setCurrentObject(activityID, "activity");
       //this.$router.push({ name: 'PlacesOverview' });
       this.$router.push({ name: 'ActivityCreation', params: {activityID} });
     },
+
+
 
     /**
      * Closes the activity edit mask and removes 
@@ -450,6 +372,7 @@ export default {
         + "/" + newActivity.number;
 
       this.activities.push(newActivity);
+      this.saveActivity(newActivity)
     },
 
     /**
