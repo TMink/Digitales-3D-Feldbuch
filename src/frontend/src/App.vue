@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.09.2024 17:48:45
+ * Last Modified: 30.09.2024 18:08:20
  * Modified By: Julian Hardtung
  * 
  * Description: main entry point for the fieldbook + 
@@ -20,7 +20,7 @@
 
     <!-- Main Content -->
     <v-main>
-      <router-view @view="onViewChange"></router-view>
+      <router-view></router-view>
     </v-main>
 
     <!-- App Footer -->

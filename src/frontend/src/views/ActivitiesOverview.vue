@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.09.2024 17:31:06
+ * Last Modified: 30.09.2024 18:14:40
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -184,7 +184,6 @@ export default {
       userStore,
     }
   },
-  emits: ['view'],
   data() {
     return {
       activities: [],
