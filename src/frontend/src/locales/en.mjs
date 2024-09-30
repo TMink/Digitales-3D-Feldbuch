@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.09.2024 17:34:20
+ * Last Modified: 30.09.2024 18:21:14
  * Modified By: Julian Hardtung
  * 
  * Description: english translations
@@ -118,6 +118,7 @@ export default {
   registration: "Sign Up",
   lastSync: "Last Sync: ",
   login: "Sign In",
+  loginPage: "Sign In",
   logout: "Sign Out",
   username: "Username",
   password: "Password",
@@ -151,6 +152,7 @@ export default {
   topography: "Topography",
   archiveMaterial: "Archive Material",
   misc: "Miscellaneous",
+  stratiTool: "Stratigraphy-Tool",
 
   // Phrases
   addMsg: "Add new {msg}",
@@ -250,4 +252,5 @@ export default {
   resultOfAction: "Result of the Measure",
   maxPlaceNumber: "highest assigned place number",
   findsDocumented: "only tick, if archeological findings were documented",
+  exportPlacesCatalog: "export places catalog",
 };

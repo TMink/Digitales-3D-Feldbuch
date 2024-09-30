@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.09.2024 17:38:32
+ * Last Modified: 30.09.2024 18:21:01
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -118,6 +118,7 @@ export default {
   registration: "Account erstellen",
   lastSync: "Zuletzt Synchronisiert: ",
   login: "Einloggen",
+  loginPage: "Login",
   logout: "Ausloggen",
   username: "Benutzername",
   password: "Passwort",
@@ -151,6 +152,7 @@ export default {
   topography: "Topographie",
   archiveMaterial: "Archivmaterial",
   misc: "Sonstiges",
+  stratiTool: "Stratigraphie-Tool",
 
   // Phrases
   addMsg: "Neue {msg} hinzufügen",
@@ -252,4 +254,5 @@ export default {
   resultOfAction: "Ergebnis der Maßnahme",
   maxPlaceNumber: "höchste vergebene Stellennummer",
   findsDocumented: "nur ankreuzen, wenn archäologische Befunde dokumentiert wurden",
+  exportPlacesCatalog: "Stellenkatalog exportieren",
 };

@@ -2,7 +2,7 @@
  * Created Date: 29.11.2023 01:45:44
  * Author: Julian Hardtung
  * 
- * Last Modified: 29.03.2024 14:33:31
+ * Last Modified: 30.09.2024 18:22:06
  * Modified By: Julian Hardtung
  * 
  * Description: Vue component for user registration
@@ -10,7 +10,7 @@
 
 <template>
   <div id="wrapper">
-    <Navigation active_tab_prop="-1" />
+    <Navigation ref="navigationRef" active_tab_prop="-1" />
 
     <v-img cover :height="getHeight()"
       src="assets/background/Background_Landingpage.jpg">
@@ -108,7 +108,7 @@ export default {
     };
 
   },
-  emits: ['view'],
+  
   data() {
     return {
       visible: false,
@@ -128,6 +128,9 @@ export default {
   async created() {
     await fromOfflineDB.syncLocalDBs()
       .catch(err => console.error(err));
+  },
+  mounted() {
+      this.$refs.navigationRef.onViewChange(this.$t('registration'))
   },
   methods: {
 

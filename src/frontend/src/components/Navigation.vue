@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 25.07.2024 14:30:04
+ * Last Modified: 30.09.2024 18:06:31
  * Modified By: Julian Hardtung
  * 
  * Description: Vue component with navigation-bar and extendable side-bar
@@ -259,7 +259,7 @@ export default {
       navbar_items: [
         { link: "/", title: this.$t('home') },
         { link: "/3dview", title: this.$t('threeD_view') },
-        { link: "/stratitool", title: this.$t('Stratigraphie-Tool') },
+        { link: "/stratitool", title: this.$t('stratiTool') },
         /* { link: "/onlineSync", title: this.$t('online_sync') }, */
       ],
       initDone: false,
