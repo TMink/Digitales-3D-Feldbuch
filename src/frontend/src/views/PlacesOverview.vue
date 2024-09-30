@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.09.2024 17:42:37
+ * Last Modified: 30.09.2024 16:55:51
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -214,6 +214,13 @@
                 </v-list-item-title>
               </td>
 
+              <!-- DATING -->
+              <td :style="getRowStyle(index)">
+                <v-list-item-title>
+                  {{ item.dating || '-' }}
+                </v-list-item-title>
+              </td>
+
               <!-- EDITOR -->
               <td :style="getRowStyle(index)">
                 <v-list-item-title v-if="item.editor != ''">
@@ -359,6 +366,7 @@ export default {
         { title: this.$t('plane'), align: 'start', key: 'plane', width: "150px" },
         { title: this.$t('visibility'), align: 'start', key: 'visibility', width: "100px" },
         { title: this.$t('description'), align: 'start', key: 'description', width: "150px" },
+        { title: this.$tc('dating', 1), align: 'start', key: 'dating', width: "100px" },
         { title: this.$tc('editor', 1), align: 'start', key: 'editor', width: "100px" },
         { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
         { title: this.$t('syncStatus'), align: 'start', key: 'status', width: "50px"}
