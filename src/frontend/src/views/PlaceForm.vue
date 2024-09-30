@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.09.2024 17:54:05
+ * Last Modified: 30.09.2024 17:05:13
  * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
@@ -387,7 +387,6 @@ export default {
   },
 
   methods: {
-
     async getEmittedData(data) {
       switch (data[0]) {
         /* Module: Coordinates */
@@ -400,7 +399,8 @@ export default {
 
         /* Module: Dating */
         case 'dating':
-          this.place.dating = data[1];
+          this.place.datCode = data[1].datCode;
+          this.place.dating = data[1].title;
           break;
         case 'modulePreset.dating':
           this.place.modulePreset.dating = data[1];
@@ -453,7 +453,7 @@ export default {
           break;
 
         default:
-          console.log('Cant specify emitted data: ' + data[0])
+          console.err('Cant specify emitted data: ' + data[0])
       }
     },
 
@@ -488,7 +488,7 @@ export default {
       this.$root.vtoast.show({ message: this.$t('saveSuccess') });
     },
 
-        /**
+    /**
      * Removes a place from the IndexedDB and the Cookies
      */
      async deletePlace() {

@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 27.08.2024 12:27:12
+ * Last Modified: 30.09.2024 17:06:19
  * Modified By: Julian Hardtung
  * 
  * Description: `dating` input module for places/positions
@@ -28,11 +28,12 @@
 
 			<v-combobox 
         v-if="showModule"
-				hide-details 
+				persistent-hint
+        :hint="getDatingHint()" 
 				counter 
 				color="primary" 
 				style="padding-top: 45px" 
-				:items="datings"
+				:items="filledDatingsList"
 				:label="$t('dating')" 
 				:hide-no-data="false" 
 				v-model="dating">
@@ -50,6 +51,7 @@
 </template>
 
 <script>
+import { toRaw } from 'vue'
 
 export default {
 	props: {
@@ -60,9 +62,35 @@ export default {
 
 	emits: ['dataToModuleViewer'],
 
+  setup(props) {
+    var propRaw = toRaw(props);
+    
+    var lvrDatings = JSON.parse(import.meta.env.VITE_DATINGS_FULL);
+    var filledDatingsList = lvrDatings.concat(propRaw.datingItemsSecondProp);
+
+    var datingRef = '';
+    if (propRaw.datingProp == '') {
+      var emptyDating = filledDatingsList.filter(function(item) {
+        return item.title === 'Datierung unbekannt';
+      });
+      datingRef = emptyDating[0];
+    } else {
+      var foundDating = filledDatingsList.filter(function(item) {
+        return item.title === propRaw.datingProp;
+      });
+      datingRef = foundDating[0]
+    }
+    
+    return {
+      filledDatingsList,
+      datingRef
+    }
+
+  },
+
 	data() {
 		return {
-			datings: [],
+      datCode: '',
 			dating: null,
 			pathNames: null,
       showModule: true,
@@ -70,20 +98,9 @@ export default {
 	},
 
 	watch: {
-    showModuleProp: function(showModuleBool) {
-      this.showModule = showModuleBool;
-    },
-    datingProp: function(datingPropData) {
-        this.dating = datingPropData;
-    },
-    datingItemsSecondProp: function(datings) {
-      var lvrDatings = JSON.parse(import.meta.env.VITE_DATINGS);
-      this.datings = lvrDatings.concat(datings);
-    },
 		"dating": {
 			handler: function () {
 				if (this.dating != null) {
-					/* Send data back to ModuleViewer.vue */
 					this.$emit("dataToModuleViewer", ['dating', this.dating]);
 				}
 			}
@@ -97,12 +114,18 @@ export default {
     },
 	},
 
-	async created() {
-		//this.datings = JSON.parse(import.meta.env.VITE_DATINGS);
-		this.dating = this.datingProp;
-    this.showModule = this.showModuleProp;
-	},
+  mounted() {
+    this.dating = this.datingRef;
+  },
 
+  methods: {
+    getDatingHint() {
+      if (this.dating != undefined) {
+        return this.$t('from') + ': ' + this.dating.start + ' ' + this.$t('to') + ': ' + this.dating.end;
+      }
+      return;
+    },
+  }
 }
 
 </script>

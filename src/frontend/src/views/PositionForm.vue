@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.09.2024 17:42:08
+ * Last Modified: 30.09.2024 17:00:13
  * Modified By: Julian Hardtung
  * 
  * Description: input page for positions data 
@@ -310,7 +310,8 @@ export default {
 
         /* Module: Dating */
         case 'dating':
-          this.position.dating = data[1];
+          this.position.datCode = data[1].datCode
+          this.position.dating = data[1].title;
           break;
         case 'modulePreset.dating':
           this.position.modulePreset.dating = data[1];

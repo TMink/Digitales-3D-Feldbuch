@@ -556,6 +556,7 @@ export default {
         placeNumber: '',
 
         title: '',
+        datCode: '',
         dating: '',
         noFinding: false,
         restFinding: false,
