@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 01.10.2024 16:34:10
+ * Last Modified: 01.10.2024 17:07:08
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -11,14 +11,13 @@
 <template>
   <div id="wrapper">
     <Navigation ref="navigationRef" active_tab_prop="0" />
-
     <OnlineImport />
 
+    <!--------------- TOOLBAR --------------->
     <v-row class="pt-2">
       <v-spacer></v-spacer>
       <v-card class="pa-4" :min-width="windowWidth * 0.35" variant="text">
         <v-row no-gutters class="align-center pa-2">
-
           <!-- ACTIVITIES SEARCH -->
           <v-text-field v-model="searchQuery" append-icon="mdi-magnify" 
             :label="this.$t('search')" single-line
@@ -29,155 +28,155 @@
       <v-spacer></v-spacer>
     </v-row>
 
+    <!--------------- MAIN TABLE --------------->
     <v-row>
       <v-spacer></v-spacer>
-      <!-- ACTIVITIES TABLE SMALL -->
-        <v-card class="pt-2" :min-width="windowWidth * 0.55">
-          <v-data-table-virtual v-show="!showAllInfo" 
-            fixed-header 
-            :items="utils.filteredObjects(activities, searchQuery, 'activity')" 
-            :height="utils.getTableHeight(activities, windowHeight)"
-            :headers="headers">
+      <v-card class="pt-2" :min-width="windowWidth * 0.55">
+        <v-data-table-virtual v-show="!showAllInfo" 
+          :headers="headers" fixed-header
+          :items="utils.filteredObjects(activities, searchQuery, 'activity')" 
+          :height="utils.getTableHeight(activities, windowHeight)">
 
-            <template v-slot:item="{ item, index }">
-              <tr 
-                @mouseenter="setHoveredRow(index, true)"
-                @mouseleave="setHoveredRow(index, false)">
-                <v-tooltip 
-                  activator="parent"
-                  location="bottom"
-                  v-if="generalStore.getShowTooltips()">
-                  {{ $t('editPhrase', {msg: $t('activity')})}}
-                </v-tooltip>
-                <!-- PLACE NUMBER -->
-                <td v-on:click="handleRowClick(item._id, true)" 
-                  :style="utils.getRowStyle(index, hoveredRow)">
-                  <v-list-item-title class="pl-3">
-                    {{ item.branchOffice }}
-                  </v-list-item-title>
-                </td>
+          <template v-slot:item="{ item, index }">
+            <tr 
+              @mouseenter="setHoveredRow(index, true)"
+              @mouseleave="setHoveredRow(index, false)">
+              <!-- TOOLTIP -->
+              <v-tooltip 
+                activator="parent"
+                location="bottom"
+                v-if="generalStore.getShowTooltips()">
+                {{ $t('editPhrase', {msg: $t('activity')}) }}
+              </v-tooltip>
 
-                <!-- YEAR -->
-                <td v-on:click="handleRowClick(item._id, true)" 
-                  :style="utils.getRowStyle(index, hoveredRow)">
-                  <v-list-item-title class="pl-3">
-                    {{ item.year || '-' }}
-                  </v-list-item-title>
-                </td>
+              <!-- PLACE NUMBER -->
+              <td v-on:click="handleRowClick(item._id, true)" 
+                :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title class="pl-3">
+                  {{ item.branchOffice }}
+                </v-list-item-title>
+              </td>
 
-                <!-- NUMBER -->
-                <td v-on:click="handleRowClick(item._id, true)" 
-                  :style="utils.getRowStyle(index, hoveredRow)">
-                  <v-list-item-title class="pl-3" style="min-width:200px">
-                    {{ item.number || '-' }}
-                  </v-list-item-title>
-                </td>
+              <!-- YEAR -->
+              <td v-on:click="handleRowClick(item._id, true)" 
+                :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title class="pl-3">
+                  {{ item.year || '-' }}
+                </v-list-item-title>
+              </td>
 
-                <td v-on:click="handleRowClick(item._id, true)" 
-                  :style="utils.getRowStyle(index, hoveredRow)">
-                  <v-space></v-space>
-                </td>
-                
-                <!-- SYNC STATUS -->
-                 <td>
-                  <v-btn icon variant="text" v-if="item.lastSync > 0">
-                    <v-tooltip activator="parent" location="bottom">
-                      {{ this.$t('lastSync') + new Date(item.lastSync).toLocaleString() }}
-                    </v-tooltip>
-                    <v-icon>mdi-cloud-check</v-icon>
-                  </v-btn>
-                  <v-btn icon variant="text" v-else>
-                    <v-tooltip activator="parent" location="bottom">
-                      {{ $t('onlyLocal') }}
-                    </v-tooltip>
-                    <v-icon>mdi-cloud-off-outline</v-icon>
-                  </v-btn>
+              <!-- NUMBER -->
+              <td v-on:click="handleRowClick(item._id, true)" 
+                :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title class="pl-3" style="min-width:200px">
+                  {{ item.number || '-' }}
+                </v-list-item-title>
+              </td>
 
-                  <!-- v v v v v ACTIVITY EDITORS/CLOUD SYNC STATUS v v v v v -->
-                  <v-btn icon class="ml-2" variant="text"
-                    v-if="item.editor.length > 0"
-                    v-on:click="openAddEditorDialog(item)">
-                    <v-tooltip 
-                      activator="parent"
-                      location="bottom"
-                      max-width="150px">
+              <td v-on:click="handleRowClick(item._id, true)" 
+                :style="utils.getRowStyle(index, hoveredRow)">
+                <v-space></v-space>
+              </td>
+              
+              <!-- v v v SYNC STATUS v v v -->
+                <td>
+                <v-btn icon variant="text" v-if="item.lastSync > 0">
+                  <v-tooltip activator="parent" location="bottom">
+                    {{ this.$t('lastSync') + new Date(item.lastSync).toLocaleString() }}
+                  </v-tooltip>
+                  <v-icon>mdi-cloud-check</v-icon>
+                </v-btn>
+                <v-btn icon variant="text" v-else>
+                  <v-tooltip activator="parent" location="bottom">
+                    {{ $t('onlyLocal') }}
+                  </v-tooltip>
+                  <v-icon>mdi-cloud-off-outline</v-icon>
+                </v-btn>
 
-                      <v-list 
-                        class="mx-n3">
-                        <v-list-subheader>
-                          {{ this.$tc('editor', 2) }}:
-                        </v-list-subheader>
-                        <v-list-item
-                          class="d-flex justify-center"
-                          density="compact"
-                          v-for="editor in item.editor"
-                          :key="editor">
-                          {{ editor }}
-                        </v-list-item>
-                        <v-divider></v-divider>
-                        <p class="text-center pt-1">
+                <!-- v v v ACTIVITY EDITORS/CLOUD SYNC STATUS v v v -->
+                <v-btn icon class="ml-2" variant="text"
+                  v-if="item.editor.length > 0"
+                  v-on:click="openAddEditorDialog(item)">
+                  <!-- TOOLTIP -->
+                  <v-tooltip 
+                    activator="parent"
+                    location="bottom"
+                    max-width="150px">
+                    <v-list class="mx-n3">
+                      <v-list-subheader>
+                        {{ this.$tc('editor', 2) }}:
+                      </v-list-subheader>
+                      <v-list-item
+                        class="d-flex justify-center"
+                        density="compact"
+                        v-for="editor in item.editor"
+                        :key="editor">
+                        {{ editor }}
+                      </v-list-item>
+                      <v-divider></v-divider>
+                      <p class="text-center pt-1">
+                        {{ this.$t('addOtherEditor') }}
+                      </p>
+                    </v-list>
+                  </v-tooltip>
+                  <v-icon>mdi-account-check</v-icon>
+                </v-btn>
 
-                          {{ this.$t('addOtherEditor') }}
-                        </p>
-                      </v-list>
-                    </v-tooltip>
-                    <v-icon>mdi-account-check</v-icon>
-                  </v-btn>
-
-                  <v-btn icon class="ml-2" variant="text" v-else
-                    v-on:click="addEditor(item)">
-                    <v-tooltip v-if="userStore.authenticated"
+                <v-btn icon class="ml-2" variant="text" v-else
+                  v-on:click="addEditor(item)">
+                  <v-tooltip v-if="userStore.authenticated"
+                    activator="parent"
+                    location="bottom">
+                    {{ $t('clickToAddToYourAccount') }}
+                  </v-tooltip>
+                  <v-tooltip v-else
                       activator="parent"
                       location="bottom">
-                      {{ $t('clickToAddToYourAccount') }}
+                      {{ $t('noAccount') }}
                     </v-tooltip>
-                    <v-tooltip v-else
-                        activator="parent"
-                        location="bottom">
-                        {{ $t('noAccount') }}
-                      </v-tooltip>
-                    <v-icon>mdi-account-off-outline</v-icon>
-                  </v-btn>
+                  <v-icon>mdi-account-off-outline</v-icon>
+                </v-btn>
 
-                  <!-- EDIT -->
-                  <v-btn 
-                    v-on:click="handleRowClick(item._id, false)"
-                    style="margin-left: 3px;margin-top: 10px;margin-bottom: 10px;" 
-                    color="secondary"
-                    variant="outlined">
-                    <v-icon class="pr-2">mdi-arrow-right-bold</v-icon>
-                    {{ $tc('place', 2) }}
-                  </v-btn>
-                </td>
-              </tr>
-            </template>
-          </v-data-table-virtual>
-        </v-card>
+                <!-- EDIT -->
+                <v-btn 
+                  v-on:click="handleRowClick(item._id, false)"
+                  style="margin-left: 3px;margin-top: 10px;margin-bottom: 10px;" 
+                  color="secondary"
+                  variant="outlined">
+                  <v-icon class="pr-2">mdi-arrow-right-bold</v-icon>
+                  {{ $tc('place', 2) }}
+                </v-btn>
+              </td>
+            </tr>
+          </template>
+        </v-data-table-virtual>
+      </v-card>
       <v-spacer></v-spacer>
     </v-row>
 
+    <!--------------- ADD BUTTON --------------->
     <v-row>
       <v-spacer></v-spacer>
       <AddButton v-on:click="addActivity()" prop_object="activity" />
       <v-spacer></v-spacer>
     </v-row>
 
-    <!-- ADD EDITOR DIALOG -->
+    <!--------------- ADD EDITOR DIALOG --------------->
     <v-dialog v-model="addEditorDialog" :max-width="550" style="z-index: 3;" @keydown.esc="cancelAddEditor()">
       <v-card>
         <v-toolbar dark color="success" dense flat>
           <v-toolbar-title>
             {{ $t('addEditorToActivity') }}
           </v-toolbar-title>
-          </v-toolbar>
-          <v-text-field label="Username" v-model="newEditorName"></v-text-field>
-          <v-card-actions class="pt-0">
-            <v-spacer></v-spacer>
-            <v-btn icon color="success"  @click="confirmAddEditor()"><v-icon>mdi-check-circle</v-icon></v-btn>
-            <v-btn icon color="error" @click="cancelAddEditor()"><v-icon>mdi-close-circle</v-icon></v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+        </v-toolbar>
+        <v-text-field label="Username" v-model="newEditorName"></v-text-field>
+        <v-card-actions class="pt-0">
+          <v-spacer></v-spacer>
+          <v-btn icon color="success"  @click="confirmAddEditor()"><v-icon>mdi-check-circle</v-icon></v-btn>
+          <v-btn icon color="error" @click="cancelAddEditor()"><v-icon>mdi-close-circle</v-icon></v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
   </div>
 </template>
@@ -350,7 +349,7 @@ export default {
     
     
     /**
-     * Sets the currently selected activity into the cookies
+     * Opens the placesOverview of the clicked activity
      * @param {String} activityID 
      */
     async openPlacesOverview(activityID) {

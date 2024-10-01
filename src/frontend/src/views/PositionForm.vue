@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 30.09.2024 18:52:52
+ * Last Modified: 01.10.2024 16:46:14
  * Modified By: Julian Hardtung
  * 
  * Description: input page for positions data 
@@ -115,15 +115,12 @@ export default {
   },
 
   async setup() {
-
     var route = useRoute()
-    
     const positionID = route.path.split("/").pop();
 
     const data = await fromOfflineDB
       .getObject(positionID, 'Positions', 'positions')
       .catch(err => console.error(err));
-        console.log(data)
     return {
       position: data,
     };
@@ -149,12 +146,14 @@ export default {
       editorsList: [],
     }
   },
+  
   watch: {
     'position': {
       handler: 'handlePositionChange',
       deep: true,
     },
   },
+
   /**
    * Check if there are unsaved changes to the position 
    * before leaving the PositionForm

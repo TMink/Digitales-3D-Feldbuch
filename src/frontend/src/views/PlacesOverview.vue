@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 01.10.2024 16:36:09
+ * Last Modified: 01.10.2024 17:08:06
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -11,6 +11,8 @@
 <template>
   <div id="wrapper">
     <Navigation ref="navigationRef" active_tab_prop="1" />
+
+    <!--------------- TOOLBAR --------------->
     <v-row class="pt-2">
       <v-spacer></v-spacer>
       <v-card class="pa-4" :min-width="windowWidth * 0.55" variant="text">
@@ -36,24 +38,30 @@
 
     <v-row>
       <v-spacer></v-spacer>
-
-      <!-- PLACES TABLE SMALL -->
+      <!--------------- PLACES TABLE SMALL --------------->
       <v-card class="pt-2" :min-width="windowWidth * 0.55">
         <v-data-table-virtual v-show="!showAllInfo" 
-          fixed-header 
+          fixed-header :headers="headers"
           :items="utils.filteredObjects(places, searchQuery, 'place')" 
           :height="utils.getTableHeight(places, windowHeight)"
-          :headers="headers"
           :sort-by="[{ key: 'placeNumber', order: 'desc' }]">
 
           <template v-slot:item="{ item, index }">
             <tr 
               @mouseenter="setHoveredRow(index, true)"
               @mouseleave="setHoveredRow(index, false)">
+              <!-- TOOLTIP -->
+              <v-tooltip 
+                activator="parent"
+                location="bottom"
+                v-if="generalStore.getShowTooltips()">
+                {{ $t('editPhrase', {msg: $t('place')}) }}
+              </v-tooltip>
+
               <!-- PLACE NUMBER -->
               <td v-on:click="handleRowClick(item._id, false)" 
                 :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title class="pl-4">
+                <v-list-item-title class="pl-3">
                   {{ item.placeNumber }}
                 </v-list-item-title>
               </td>
@@ -83,7 +91,7 @@
               <td v-on:click="handleRowClick(item._id, false)" 
                 :style="utils.getRowStyle(index, hoveredRow)">
                 <v-list-item-title>
-                  {{ item.date || '-' }}
+                  {{ item.date }}
                 </v-list-item-title>
               </td>
 
@@ -104,8 +112,7 @@
 
                 <v-btn 
                   style="margin-left: 3px;margin-top: 10px;margin-bottom: 10px;"  
-                  color="secondary"
-                  variant="outlined">
+                  color="secondary" variant="outlined">
                   <v-icon class="pr-2">mdi-arrow-right-bold</v-icon>
                   {{ $tc('position', 2) }}
                 </v-btn>
@@ -114,11 +121,11 @@
           </template>
         </v-data-table-virtual>
 
-        <!-- PLACES LIST COMPLETE -->
-        <v-data-table-virtual fixed-header v-show="showAllInfo" 
+        <!--------------- PLACES LIST COMPLETE --------------->
+        <v-data-table-virtual v-show="showAllInfo" 
+          fixed-header :headers="fullHeaders"
           :items="utils.filteredObjects(places, searchQuery)" 
           :height="utils.getTableHeight(places, windowHeight)"
-          :headers="fullHeaders"
           :sort-by="[{ key: 'placeNumber', order: 'desc' }]">
 
           <template v-slot:item="{ item, index }">
@@ -129,7 +136,7 @@
               <!-- PLACE NUMBER -->
               <td v-on:click="handleRowClick(item._id, true)"
                 :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title class="pl-4">
+                <v-list-item-title class="pl-3">
                   {{ item.placeNumber }}
                 </v-list-item-title>
               </td>
@@ -279,6 +286,7 @@
       <v-spacer></v-spacer>
     </v-row>
 
+    <!--------------- ADD BUTTON + DUPLICATE SWITCH --------------->
     <v-row class="align-center">
       <v-spacer></v-spacer>
       <AddButton v-on:click="addPlace()" prop_object="place" />
@@ -333,6 +341,7 @@ export default {
     Navigation,
     AddButton,
   },
+  
   setup() {
     const { width, height } = useWindowSize();
     const userStore = useUserStore();
@@ -627,15 +636,15 @@ export default {
       } else if (this.toggleDuplicate) {
         this.duplicatePlace(placeID);
       } else {
-        this.moveToPlace(placeID);
+        this.openPlace(placeID);
       }
     },
 
     /**
-     * Routes to the place form of `placeID`
+     * Opens the place so all it's data fields can be filled
      * @param {String} placeID 
      */
-    moveToPlace(placeID) {
+    openPlace(placeID) {
       if (this.generalStore.getCurrentObject('place') !== placeID) {
         this.generalStore.setCurrentObject(null, "position");
       }
@@ -644,6 +653,10 @@ export default {
       this.$router.push({ name: 'PlaceCreation', params: { placeID: placeID } })
     },
 
+    /**
+     * Opens the positionsOverview of the clicked place
+     * @param placeID 
+     */
     openPositionsOverview(placeID) {
       if (this.generalStore.getCurrentObject('place') !== placeID) {
         this.generalStore.setCurrentObject(null, "position");

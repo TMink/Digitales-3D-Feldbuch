@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 30.09.2024 18:02:04
+ * Last Modified: 01.10.2024 16:45:40
  * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
@@ -180,15 +180,13 @@ export default {
   async setup() {
     const { width, height } = useWindowSize();
 
-    var route = useRoute()
-    console.log(route.path);
-    
+    var route = useRoute()    
     const placeID = route.path.split("/").pop();
 
     const data = await fromOfflineDB
       .getObject(placeID, 'Places', 'places')
       .catch(err => console.error(err));
-        console.log(data)
+      
     return {
       place: data,
       windowWidth: width,
