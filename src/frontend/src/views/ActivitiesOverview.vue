@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 30.09.2024 18:14:40
+ * Last Modified: 01.10.2024 16:34:10
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -14,129 +14,153 @@
 
     <OnlineImport />
 
-    <v-row class="pt-4">
+    <v-row class="pt-2">
       <v-spacer></v-spacer>
-      <v-form class="w-75 pa-4">
-        <v-card>
-          <v-list class="pa-0">
-            <!-- v v v v v EMPTY ACTIVITY LIST v v v v v -->
-            <v-list-subheader v-if="activities.length === 0">
-              {{ $t('not_created_yet', { object: $tc('activity', 2) }) }}
-            </v-list-subheader>
+      <v-card class="pa-4" :min-width="windowWidth * 0.35" variant="text">
+        <v-row no-gutters class="align-center pa-2">
 
-            <template v-for="(activity, i) in activities" :key="activity">
-              <v-row no-gutters class="align-center">
-
-                <!-- v v v v v ACTIVITY LIST v v v v v -->
-                <v-col v-if="!activity.edit" >
-                  <v-list-item 
-                    class="pa-4 mr-2" v-on:click="setActivity(activity._id)">
-                    <v-list-item-title class="ma-4 text-center">
-                      {{ activity.activityNumber }}
-                    </v-list-item-title>
-                    <v-tooltip 
-                      v-if="$generalStore.getShowTooltips()" 
-                      activator="parent" 
-                      location="bottom"
-                      :text="$t('openPhrase', { msg: $tc('activity', 1) + ' ' + activity.activityNumber })">
-                    </v-tooltip>
-                  </v-list-item>
-                </v-col>
-
-                <!-- v v v v v ACTIVITY OPTIONS v v v v v -->
-                <v-btn 
-                  class="ma-1" 
-                  color="primary" 
-                  v-on:click="openActivity(activity._id)">
-                  <v-icon class="pr-2">mdi-pencil</v-icon>
-                  {{ $t('edit') }}
-                  <v-tooltip 
-                    v-if="$generalStore.getShowTooltips()" 
-                    activator="parent" 
-                    location="bottom"
-                    :text="$t('editPhrase', { msg: $tc('activity', 1) + ' ' + activity.activityNumber })">
-                  </v-tooltip>
-                </v-btn>
-
-                <!-- v v v v v ACTIVITY EDITORS/CLOUD SYNC STATUS v v v v v -->
-                <v-btn icon class="ml-2" variant="text"
-                  v-if="activity.editor.length > 0"
-                  v-on:click="openAddEditorDialog(activity)">
-                  <v-tooltip 
-                    activator="parent"
-                    location="bottom"
-                    max-width="150px">
-
-                    <v-list 
-                      class="mx-n3">
-                      <v-list-subheader>
-                        {{ this.$tc('editor', 2) }}:
-                      </v-list-subheader>
-                      <v-list-item
-                        class="d-flex justify-center"
-                        density="compact"
-                        v-for="editor in activity.editor"
-                        :key="editor">
-                        {{ editor }}
-                      </v-list-item>
-                      <v-divider></v-divider>
-                      <p class="text-center pt-1">
-
-                        {{ this.$t('addOtherEditor') }}
-                      </p>
-                    </v-list>
-                  </v-tooltip>
-                  <v-icon>mdi-account-check</v-icon>
-                </v-btn>
-
-                <v-btn icon class="ml-2" variant="text" v-else
-                v-on:click="addEditor(activity)">
-                  
-                  <v-tooltip v-if="userStore.authenticated"
-                    activator="parent"
-                    location="bottom">
-                    {{ $t('clickToAddToYourAccount') }}
-                  </v-tooltip>
-                  <v-tooltip v-else
-                      activator="parent"
-                      location="bottom">
-                      {{ $t('noAccount') }}
-                    </v-tooltip>
-                  <v-icon>mdi-account-off-outline</v-icon>
-                </v-btn>
-                
-                <!-- SYNC STATUS -->
-                <v-btn icon class="mr-2 non-clickable" variant="text"
-                  v-if="activity.lastSync > 0">
-                  <v-tooltip 
-                    activator="parent"
-                    location="bottom">
-                    {{ this.$t('lastSync') + new Date(activity.lastSync).toLocaleString() }}
-                  </v-tooltip>
-                  <v-icon>mdi-cloud-check</v-icon>
-                </v-btn>
-
-                <v-btn icon class="mr-2 non-clickable" variant="text" v-else>
-                  <v-tooltip 
-                    activator="parent"
-                    location="bottom">
-                    {{ $t('onlyLocal') }}
-                  </v-tooltip>
-                  <v-icon>mdi-cloud-off-outline</v-icon>
-                </v-btn>
-              </v-row>
-
-              <v-divider v-if="i !== activities.length - 1"></v-divider>
-            </template>
-            <ConfirmDialog ref="confirm" />
-
-          </v-list>
-        </v-card>
-      </v-form>
+          <!-- ACTIVITIES SEARCH -->
+          <v-text-field v-model="searchQuery" append-icon="mdi-magnify" 
+            :label="this.$t('search')" single-line
+            hide-details color="primary">
+          </v-text-field>
+        </v-row>
+      </v-card>
       <v-spacer></v-spacer>
     </v-row>
 
-    <AddButton v-on:click="addActivity()" prop_object="activity" />
+    <v-row>
+      <v-spacer></v-spacer>
+      <!-- ACTIVITIES TABLE SMALL -->
+        <v-card class="pt-2" :min-width="windowWidth * 0.55">
+          <v-data-table-virtual v-show="!showAllInfo" 
+            fixed-header 
+            :items="utils.filteredObjects(activities, searchQuery, 'activity')" 
+            :height="utils.getTableHeight(activities, windowHeight)"
+            :headers="headers">
+
+            <template v-slot:item="{ item, index }">
+              <tr 
+                @mouseenter="setHoveredRow(index, true)"
+                @mouseleave="setHoveredRow(index, false)">
+                <v-tooltip 
+                  activator="parent"
+                  location="bottom"
+                  v-if="generalStore.getShowTooltips()">
+                  {{ $t('editPhrase', {msg: $t('activity')})}}
+                </v-tooltip>
+                <!-- PLACE NUMBER -->
+                <td v-on:click="handleRowClick(item._id, true)" 
+                  :style="utils.getRowStyle(index, hoveredRow)">
+                  <v-list-item-title class="pl-3">
+                    {{ item.branchOffice }}
+                  </v-list-item-title>
+                </td>
+
+                <!-- YEAR -->
+                <td v-on:click="handleRowClick(item._id, true)" 
+                  :style="utils.getRowStyle(index, hoveredRow)">
+                  <v-list-item-title class="pl-3">
+                    {{ item.year || '-' }}
+                  </v-list-item-title>
+                </td>
+
+                <!-- NUMBER -->
+                <td v-on:click="handleRowClick(item._id, true)" 
+                  :style="utils.getRowStyle(index, hoveredRow)">
+                  <v-list-item-title class="pl-3" style="min-width:200px">
+                    {{ item.number || '-' }}
+                  </v-list-item-title>
+                </td>
+
+                <td v-on:click="handleRowClick(item._id, true)" 
+                  :style="utils.getRowStyle(index, hoveredRow)">
+                  <v-space></v-space>
+                </td>
+                
+                <!-- SYNC STATUS -->
+                 <td>
+                  <v-btn icon variant="text" v-if="item.lastSync > 0">
+                    <v-tooltip activator="parent" location="bottom">
+                      {{ this.$t('lastSync') + new Date(item.lastSync).toLocaleString() }}
+                    </v-tooltip>
+                    <v-icon>mdi-cloud-check</v-icon>
+                  </v-btn>
+                  <v-btn icon variant="text" v-else>
+                    <v-tooltip activator="parent" location="bottom">
+                      {{ $t('onlyLocal') }}
+                    </v-tooltip>
+                    <v-icon>mdi-cloud-off-outline</v-icon>
+                  </v-btn>
+
+                  <!-- v v v v v ACTIVITY EDITORS/CLOUD SYNC STATUS v v v v v -->
+                  <v-btn icon class="ml-2" variant="text"
+                    v-if="item.editor.length > 0"
+                    v-on:click="openAddEditorDialog(item)">
+                    <v-tooltip 
+                      activator="parent"
+                      location="bottom"
+                      max-width="150px">
+
+                      <v-list 
+                        class="mx-n3">
+                        <v-list-subheader>
+                          {{ this.$tc('editor', 2) }}:
+                        </v-list-subheader>
+                        <v-list-item
+                          class="d-flex justify-center"
+                          density="compact"
+                          v-for="editor in item.editor"
+                          :key="editor">
+                          {{ editor }}
+                        </v-list-item>
+                        <v-divider></v-divider>
+                        <p class="text-center pt-1">
+
+                          {{ this.$t('addOtherEditor') }}
+                        </p>
+                      </v-list>
+                    </v-tooltip>
+                    <v-icon>mdi-account-check</v-icon>
+                  </v-btn>
+
+                  <v-btn icon class="ml-2" variant="text" v-else
+                    v-on:click="addEditor(item)">
+                    <v-tooltip v-if="userStore.authenticated"
+                      activator="parent"
+                      location="bottom">
+                      {{ $t('clickToAddToYourAccount') }}
+                    </v-tooltip>
+                    <v-tooltip v-else
+                        activator="parent"
+                        location="bottom">
+                        {{ $t('noAccount') }}
+                      </v-tooltip>
+                    <v-icon>mdi-account-off-outline</v-icon>
+                  </v-btn>
+
+                  <!-- EDIT -->
+                  <v-btn 
+                    v-on:click="handleRowClick(item._id, false)"
+                    style="margin-left: 3px;margin-top: 10px;margin-bottom: 10px;" 
+                    color="secondary"
+                    variant="outlined">
+                    <v-icon class="pr-2">mdi-arrow-right-bold</v-icon>
+                    {{ $tc('place', 2) }}
+                  </v-btn>
+                </td>
+              </tr>
+            </template>
+          </v-data-table-virtual>
+        </v-card>
+      <v-spacer></v-spacer>
+    </v-row>
+
+    <v-row>
+      <v-spacer></v-spacer>
+      <AddButton v-on:click="addActivity()" prop_object="activity" />
+      <v-spacer></v-spacer>
+    </v-row>
 
     <!-- ADD EDITOR DIALOG -->
     <v-dialog v-model="addEditorDialog" :max-width="550" style="z-index: 3;" @keydown.esc="cancelAddEditor()">
@@ -163,11 +187,13 @@ import Navigation from '../components/Navigation.vue'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 import AddButton from '../components/AddButton.vue'
 import OnlineImport from '../components/OnlineImport.vue'
+import { useWindowSize } from 'vue-window-size';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
 import { fromBackend } from '../ConnectionToBackend.js'
 import { toRaw } from 'vue'
 import { useUserStore } from '../Authentication.js';
-
+import { generalDataStore } from '../ConnectionToLocalStorage.js';
+import { utils } from '../utils.js';
 
 export default {
   name: 'ActivitiesOverview',
@@ -177,13 +203,21 @@ export default {
     AddButton,
     OnlineImport
   },
+  
   setup() {
+    const { width, height } = useWindowSize();
     const userStore = useUserStore();
+    const generalStore = generalDataStore();
 
     return {
+      windowWidth: width,
+      windowHeight: height,
       userStore,
+      generalStore,
+      utils
     }
   },
+  
   data() {
     return {
       activities: [],
@@ -194,9 +228,24 @@ export default {
       reject: null,
       rules: {
         required: value => !!value || 'Required.',
-      }
+      },
+      hoveredRow: -1,
+      searchQuery: '',
+      headers: [
+        {
+          title: this.$t('branchOffice'),
+          align: 'start',
+          sortable: true,
+          key: 'branchOffice',
+        },
+        { title: this.$t('year'), align: 'start', key: 'year' },
+        { title: this.$t('number'), align: 'start', key: 'number'},
+        { title: '', sortable: false, align: 'end', key: 'actions'},
+        { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status', width: '250px'},
+      ],
     };
   },
+
   /**
    * Retrieve data from IndexedDB
    */
@@ -304,7 +353,7 @@ export default {
      * Sets the currently selected activity into the cookies
      * @param {String} activityID 
      */
-    async setActivity(activityID) {
+    async openPlacesOverview(activityID) {
       if (this.$generalStore.getCurrentObject('activity') !== activityID) {
         this.$generalStore.setCurrentObject(null, "place");
         this.$generalStore.setCurrentObject(null, "position");
@@ -312,9 +361,12 @@ export default {
 
       this.$generalStore.setCurrentObject(activityID, "activity");
       this.$router.push({ name: 'PlacesOverview' });
-      //this.$router.push({ name: 'ActivityCreation', params: {activityID} });
     },
 
+    /**
+     * Opens an activity
+     * @param activityID 
+     */
     async openActivity(activityID) {
       if (this.$generalStore.getCurrentObject('activity') !== activityID) {
         this.$generalStore.setCurrentObject(null, "place");
@@ -322,11 +374,8 @@ export default {
       }
 
       this.$generalStore.setCurrentObject(activityID, "activity");
-      //this.$router.push({ name: 'PlacesOverview' });
       this.$router.push({ name: 'ActivityCreation', params: {activityID} });
     },
-
-
 
     /**
      * Closes the activity edit mask and removes 
@@ -464,29 +513,7 @@ export default {
       }
       await this.updateActivities()
         .catch(err => console.error(err));
-      console.log(this.$root)
       this.$root.vtoast.show({ message: this.$t('saveSuccess') });
-    },
-
-    /**
-     * Removes an activity from IndexedDB and Cookies
-     * @param {Object} activity 
-     */
-     async deleteActivity(activity) {
-      this.$generalStore.setCurrentObject(null, "activity");
-      this.$generalStore.setCurrentObject(null, "place");
-      this.$generalStore.setCurrentObject(null, "position");
-
-      var activityIndex = this.activities.indexOf(activity);
-
-      if (activityIndex != -1) {
-        this.activities.splice(activityIndex, 1);
-      }
-      
-      await fromOfflineDB
-        .deleteCascade(activity._id, 'activity', 'Activities', 'activities')
-        .catch(err => console.error(err));
-      this.$router.go();
     },
 
     /**
@@ -560,38 +587,37 @@ export default {
       this.$root.vtoast.show({ message: this.$t('syncSuccess') });
     },
 
+    
+
     /**
-     * Opens the confirmation dialog for deletion
-     * @param {Object} activity 
+     * Update the hoveredRow based on the isHovered flag.
+     *
+     * @param {number} index - The index of the row being hovered.
+     * @param {boolean} isHovered - Indicates if the row is being hovered 
+     *                              (true) or not (false).
      */
-    async confirmDeletion(activity) {
-      if (
-        await this.$refs.confirm.open(
-          this.$t('confirm'),
-          this.$t('confirm_del', {
-              object: this.$tc('activity', 1), 
-              object_nr: activity.activityNumber }),
-        ).catch(err => console.error(err))
-      ) {
-        this.deleteActivity(activity);
+    setHoveredRow(index, isHovered) {
+      if (isHovered) {
+        this.hoveredRow = index;
+      } else if (this.hoveredRow === index) {
+        this.hoveredRow = -1;
       }
     },
 
     /**
-      * Prevents the input of non numeric values 
-      * @param {*} evt 
-      */
-    filterNonNumeric(evt) {
-      evt = (evt) ? evt : window.event;
-      let expect = evt.target.value.toString() + evt.key.toString();
-
-      if (!/^[0-9]*$/.test(expect)) {
-        evt.preventDefault();
+     * Handle a click to a row of the activitiesTable.
+     * Either moves to a Place or duplicates it, 
+     * depending on if the duplicateSwitch is toggled or not.
+     * 
+     * @param {String} activityID 
+     */
+    handleRowClick(activityID, edit) {
+      if (edit) {
+        this.openActivity(activityID);
       } else {
-        return true;
+        this.openPlacesOverview(activityID);
       }
     },
-
   }
 }
 </script>
@@ -607,6 +633,14 @@ export default {
 .non-clickable {
   cursor: default; /* Change cursor to indicate non-clickable */
   /* pointer-events: none; */ /* Disable pointer events */
+}
+
+td {
+  padding: 6px !important;
+}
+
+th {
+  padding: 6px !important;
 }
 </style>
   

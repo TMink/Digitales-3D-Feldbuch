@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 30.09.2024 17:05:13
+ * Last Modified: 30.09.2024 18:02:04
  * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
@@ -41,7 +41,7 @@
           <!-- Tab item 'GENERAL' -->
           <v-window-item value="one">
             <ModuleViewer ref="moduleViewerRef" :datingItemsFirstProp="datingsList" :editorItemsFirstProp="editorsList"
-              :titleItemsFirstProp="titlesList" @dataToPlaceForm="getEmittedData($event)" />
+              :titleItemsFirstProp="titlesList" :objectProp="place" @dataToPlaceForm="getEmittedData($event)" />
           </v-window-item>
 
           <!-- Tab item 'pictures' -->
@@ -164,6 +164,7 @@ import ConfirmDialog from '../components/ConfirmDialog.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { toRaw } from 'vue';
 import { useWindowSize } from 'vue-window-size';
+import { useRoute } from 'vue-router';
 
 export default {
 
@@ -176,9 +177,20 @@ export default {
     ModelForm,
     FieldbookDrawingCanvas,
   },
-  setup() {
+  async setup() {
     const { width, height } = useWindowSize();
+
+    var route = useRoute()
+    console.log(route.path);
+    
+    const placeID = route.path.split("/").pop();
+
+    const data = await fromOfflineDB
+      .getObject(placeID, 'Places', 'places')
+      .catch(err => console.error(err));
+        console.log(data)
     return {
+      place: data,
       windowWidth: width,
       windowHeight: height,
     };
@@ -223,55 +235,6 @@ export default {
         writeMode: false,
         backgroundImage: null,
         oldBackgroundImage: null,
-      },
-      place: {
-        _id: '',
-        activityID: '',
-        placeNumber: '',
-        profile: '',
-        drawing: '',
-        positions: [],
-        images: [],
-        models: [],
-        lines: [],
-        annotations: [],
-        lastChanged: '',
-        lastSync: 0,
-
-        /* Coordinates */
-        coordinates: '',
-
-        /* Dating */
-        dating: '',
-
-        /* FindTypes */
-        noFinding: false,
-        restFinding: false,
-
-        /* General */
-        description: '',
-        editor: '',
-        date: '',
-        title: '',
-
-        /* Plane */
-        plane: '',
-
-        /* Technical */
-        technical: '',
-
-        /* Visibility */
-        visibility: '',
-
-        modulePreset: {
-          general: true,
-          coordinates: true,
-          dating: true,
-          findTypes: true,
-          plane: true,
-          technical: false,
-          visibility: true,
-        }
       },
       headers: [
         {

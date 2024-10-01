@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 30.09.2024 17:00:13
+ * Last Modified: 30.09.2024 18:52:52
  * Modified By: Julian Hardtung
  * 
  * Description: input page for positions data 
@@ -45,6 +45,7 @@
           <!-- CARD 1 ModuleViewer -->
           <v-window-item value="one">
             <ModuleViewer
+              :objectProp="position"
               :updateListFirstProp="position.testBool"
               :datingItemsFirstProp="datingsList"
               :titleItemsFirstProp="titlesList"
@@ -101,6 +102,7 @@ import ModelForm from '../components/ModelForm.vue';
 import ModuleViewer from '../components/ModuleViewer.vue';
 import Navigation from '../components/Navigation.vue';
 import { toRaw } from 'vue';
+import { useRoute } from 'vue-router';
 
 export default {
   name: 'PositionCreation',
@@ -111,48 +113,27 @@ export default {
     ModuleViewer,
     Navigation
   },
+
+  async setup() {
+
+    var route = useRoute()
+    
+    const positionID = route.path.split("/").pop();
+
+    const data = await fromOfflineDB
+      .getObject(positionID, 'Positions', 'positions')
+      .catch(err => console.error(err));
+        console.log(data)
+    return {
+      position: data,
+    };
+  },
+
   /**
    * Reactive Vue.js data
    */
   data() {
     return {
-      position: {
-        _id: '',
-        placeID: '',
-        dating: '',
-        isSeparate: false,
-        
-        /* Coordinates */
-        coordinates: '',
-        
-        /* General */
-        description: '',
-        editor: '',
-        date: '',
-        title: '',
-        positionNumber: '',
-        hasSubNumber: false,
-        subNumber: '',
-        
-        /* ObjectDescriber */
-        material: '',
-        weight: '',
-        count: '',
-        
-        images: [],
-        models: [],
-        lastChanged: Date.now(),
-        lastSync: 0,
-        testBool: false,
-
-        modulePreset: {
-          general: true,
-          coordinates: true,
-          dating: true,
-          objectDescribers: true,
-          technical: false,
-        }
-      },
       materials: [],
       titles: [],
       datings: [],
@@ -306,6 +287,9 @@ export default {
           break;
         case 'subNumber':
           this.position.subNumber = data[1];
+          break;
+        case 'isSeparate':
+          this.position.isSeparate = data[1];
           break;
 
         /* Module: Dating */

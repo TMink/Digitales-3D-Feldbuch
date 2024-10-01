@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 30.09.2024 17:01:50
+ * Last Modified: 01.10.2024 16:41:13
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -46,12 +46,12 @@
         <v-spacer></v-spacer>
 
         <!-- POSITIONS LIST -->
-        <v-card class="pt-2" :min-width="windowWidth * 0.65">
+        <v-card class="pt-2" :min-width="windowWidth * 0.55">
           <v-data-table-virtual
             v-show="!showAllInfo"
-            :items="filteredPositions"
+            :items="utils.filteredObjects(positions, searchQuery, 'position')"
             fixed-header
-            :height="getTableHeight"
+            :height="utils.getTableHeight(positions, windowHeight)"
             :headers="headers"
             :sort-by="[{ key: 'positionNumber', order: 'desc' }]">
 
@@ -61,21 +61,25 @@
                   @mouseleave="setHoveredRow(index, false)">
 
                   <!-- POSITION NUMBER -->
-                  <td :style="getRowStyle(index)">
+                  <td :style="utils.getRowStyle(index, hoveredRow)">
                     <v-list-item-title class="pl-4">
                       {{ item.positionNumber }}
                     </v-list-item-title>
                   </td>
 
                   <!-- SUB NUMBER -->
-                  <td :style="getRowStyle(index)">
-                    <v-list-item-title class="pl-4">
+                  <td :style="utils.getRowStyle(index, hoveredRow)">
+                    <v-list-item-title v-if="item.subNumber.length != 0">
                       {{ item.subNumber }}
+                    </v-list-item-title>
+                    <v-list-item-title v-if="item.subNumber.length == 0" 
+                      style="color:dimgrey;">
+                      -
                     </v-list-item-title>
                   </td>
 
                   <!-- TITLE -->
-                  <td :style="getRowStyle(index)">
+                  <td :style="utils.getRowStyle(index, hoveredRow)">
                     <v-list-item-title v-if="item.title.length > 0"
                       style="min-width:200px" class="text-wrap">
                       {{ item.title }}
@@ -88,14 +92,14 @@
                   </td>
 
                   <!-- DATE -->
-                  <td :style="getRowStyle(index)">
+                  <td :style="utils.getRowStyle(index, hoveredRow)">
                     <v-list-item-title>
-                      {{ item.date || '-' }}
+                      {{ item.date }}
                     </v-list-item-title>
                   </td>
 
                   <!-- SYNC STATUS -->
-                  <td :style="getRowStyle(index)">
+                  <td>
                     <v-list-item>
                       <v-btn 
                         icon 
@@ -129,8 +133,8 @@
           <v-data-table-virtual
             fixed-header
             v-show="showAllInfo"
-            :items="filteredPositions" 
-            :height="getTableHeight"
+            :items="utils.filteredObjects(positions, searchQuery, 'position')" 
+            :height="utils.getTableHeight(positions, windowHeight)"
             :headers="fullHeaders"
             :sort-by="[{ key: 'positionNumber', order: 'desc' }]">
 
@@ -140,21 +144,25 @@
                 @mouseleave="setHoveredRow(index, false)">
 
                 <!-- PLACE NUMBER -->
-                <td :style="getRowStyle(index)">
+                <td :style="utils.getRowStyle(index, hoveredRow)">
                   <v-list-item-title class="pl-4">
                     {{ item.positionNumber }}
                   </v-list-item-title>
                 </td>
 
                 <!-- SUB NUMBER -->
-                <td :style="getRowStyle(index)">
-                  <v-list-item-title>
+                <td :style="utils.getRowStyle(index, hoveredRow)">
+                  <v-list-item-title v-if="item.subNumber.length != 0">
                     {{ item.subNumber }}
                   </v-list-item-title>
+                  <v-list-item-title v-if="item.subNumber.length == 0" 
+                      style="color:dimgrey;">
+                      -
+                    </v-list-item-title>
                 </td>
 
                 <!-- TITLE -->
-                <td class="py-2" :style="getRowStyle(index)">
+                <td class="py-2" :style="utils.getRowStyle(index, hoveredRow)">
                   <v-list-item-title
                     v-if="item.title.length > 0"
                     style="min-width:200px" 
@@ -169,7 +177,7 @@
                 </td>
 
                 <!-- DATING -->
-                  <td :style="getRowStyle(index)">
+                  <td :style="utils.getRowStyle(index, hoveredRow)">
                     <v-list-item-title 
                       v-if="item.dating">
                       {{ item.dating }}
@@ -182,7 +190,7 @@
                   </td>
 
                 <!-- COORDINATES COUNT -->
-                <td :style="getRowStyle(index)">
+                <td :style="utils.getRowStyle(index, hoveredRow)">
                   <v-list-item-title 
                     v-if="item.coordinates != ''">
                     {{ item.coordsCount + " " +  $t('coordinates') }} 
@@ -194,7 +202,7 @@
                 </td>
 
                 <!-- PLANE -->
-                <td :style="getRowStyle(index)">
+                <td :style="utils.getRowStyle(index, hoveredRow)">
                   <v-list-item-title 
                     v-if="item.count != ''" class="text-wrap">
                     {{ item.count || '-' }}
@@ -206,7 +214,7 @@
                 </td>
 
                 <!-- WEIGHT -->
-                <td :style="getRowStyle(index)">
+                <td :style="utils.getRowStyle(index, hoveredRow)">
                   <v-list-item-title 
                     v-if="item.weight != ''" class="text-wrap">
                     {{ item.weight || '-' }}
@@ -218,7 +226,7 @@
                 </td>
 
                 <!-- MATERIAL -->
-                  <td :style="getRowStyle(index)">
+                  <td :style="utils.getRowStyle(index, hoveredRow)">
                     <v-list-item-title 
                       v-if="item.material != ''" class="text-wrap">
                       {{ item.material || '-' }}
@@ -230,7 +238,7 @@
                   </td>
 
                 <!-- DESCRIPTION -->
-                <td :style="getRowStyle(index)">
+                <td :style="utils.getRowStyle(index, hoveredRow)">
                   <v-list-item-title class="text-wrap" style="max-width:200px">
                     {{ item.description }}
                   </v-list-item-title>
@@ -241,7 +249,7 @@
                 </td>
 
                 <!-- EDITOR -->
-                <td :style="getRowStyle(index)">
+                <td :style="utils.getRowStyle(index, hoveredRow)">
                   <v-list-item-title
                     v-if="item.editor != ''">
                     {{ item.editor }}
@@ -253,14 +261,14 @@
                 </td>
 
                 <!-- DATE -->
-                <td :style="getRowStyle(index)">
+                <td :style="utils.getRowStyle(index, hoveredRow)">
                   <v-list-item-title>
                     {{ item.date}}
                   </v-list-item-title>
                 </td>
 
                 <!-- IS SEPARATE -->
-                <td :style="getRowStyle(index)">
+                <td :style="utils.getRowStyle(index, hoveredRow)">
                   <v-list-item-title 
                     v-if="item.isSeparate">
                     &cross;
@@ -273,7 +281,7 @@
                 </td>
 
                 <!-- SYNC STATUS -->
-                <td :style="getRowStyle(index)">
+                <td>
                   <v-list-item>
                     <v-btn 
                       icon 
@@ -350,6 +358,7 @@ import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { fromBackend } from '../ConnectionToBackend.js'
 import { useWindowSize } from 'vue-window-size';
 import { useUserStore } from '../Authentication';
+import { utils } from '../utils.js';
 
 export default {
   name: 'PositionsOverview',
@@ -365,6 +374,7 @@ export default {
       windowWidth: width,
       windowHeight: height,
       userStore,
+      utils
     };
   },
 
@@ -397,7 +407,7 @@ export default {
         },
         { title: this.$tc('title', 2), align: 'start', key: 'title' },
         { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
-        { title: this.$t('syncStatus'), align: 'start', key: 'status', width: "100px"}
+        { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status', width: "100px"}
       ],
       fullHeaders: [
         {
@@ -422,7 +432,7 @@ export default {
         { title: this.$tc('editor', 1), align: 'start', key: 'editor' },
         { title: this.$t('date'), align: 'start', key: 'date' },
         { title: this.$t('isSeparate'), align: 'start', key: 'isSeparate' },
-        { title: this.$t('syncStatus'), align: 'start', key: 'status', width: "100px"}
+        { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status'}
       ],
       toggleDuplicate: false,
     };
@@ -441,46 +451,6 @@ export default {
 
   mounted() {
     this.$refs.navigationRef.onViewChange(this.$tc('overview',1, { msg: this.$tc('position', 2)}))
-  },
-
-  computed: {
-    /**
-     * Returns an array of filtered positions based on the search query.
-     *
-     * @returns {Array} The filtered array of positions that match the search query.
-     * If the search query is empty or invalid, it returns all positions.
-     */
-    filteredPositions() {
-      // split searchQuery to query array and escape special characters
-      const queries = this.searchQuery.trim().toLowerCase().split(/\s+/).map(this.escapeRegExp);
-
-      // if no queries are present, return all positions
-      if (queries.length === 0 || (queries.length === 1 && queries[0] === '')) {
-        return this.positions;
-      } else {
-        // filter positions by all query filters
-        // (positions have to fulfill every query filter)
-        return this.positions.filter(item => {
-          return queries.every(query => {
-            return this.doesItemMatchQuery(item, query);
-          });
-        });
-      }
-    },
-
-    getTableHeight() {
-      // Calculate the required table height based on the number of items
-      const numberOfRows = this.positions.length > 0 ? this.positions.length : 1;
-      const headerHeight = 56;
-      const rowHeight = 69;
-      const totalTableHeight = numberOfRows * rowHeight + headerHeight;
-
-      if (totalTableHeight > (this.windowHeight - 390)) {
-        return this.windowHeight - 390;
-      }
-
-      return totalTableHeight + "px";
-    },
   },
 
   methods: {
@@ -612,7 +582,7 @@ export default {
       if (this.toggleDuplicate) {
         this.duplicatePosition(positionID);
       } else {
-        this.moveToPosition(positionID);
+        this.openPosition(positionID);
       }
     },
 
@@ -621,7 +591,7 @@ export default {
      * 
      * @param {String} positionID 
      */
-    moveToPosition(positionID) {
+    openPosition(positionID) {
       if (positionID !== 'new') {
         this.$generalStore.setCurrentObject(positionID, 'position');
       }
@@ -630,10 +600,7 @@ export default {
     },
 
     /**
-     * DUPLICATE FUNCTION FROM ADDPOSITION.VUE
-     * TODO: REMOVE UND JUST USE THE EXISTING FUNCTION
-     *       MAYBE OVER PROPS 
-     *                --> CAN YOU CALL FUNCTIONS OVER PROPS???
+     * Adds a new position with default data to the system
      */
     async addPosition() {
       var curPlaceID = this.$generalStore.getCurrentObject('place');
@@ -707,59 +674,6 @@ export default {
     },
 
     /**
-     * Escapes special characters in a given string to treat 
-     * them as literal characters.
-     *
-     * @param {string} string - The input string to be escaped.
-     * @returns {string} The escaped string with special characters replaced 
-     *  by their escape sequences.
-     */
-    escapeRegExp(string) {
-      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    },
-
-    /**
-     * Checks if an item matches a given query by performing 
-     * a case-insensitive search.
-     *
-     * @param {Object} item - The item to be matched against the query.
-     * @param {string} query - The search query to be used for matching.
-     * @returns {boolean} True if the item matches the query; otherwise, false.
-     *
-     */
-    doesItemMatchQuery(item, query) {
-      const re = new RegExp(query, 'i');
-      return (
-        item.positionNumber.toString().match(re) ||
-        item.title.match(re) ||
-        item.date.match(re)
-      );
-    },
-
-    /**
-     * Get the style for the row at the specified index. 
-     * Furthermore get the currentTheme from Cookies and decide which colorattribute to use.
-     *
-     * @param {number} index The index of the row
-     * @returns {Object} An object containing row style properties
-     */
-     getRowStyle(index) {
-      var currentTheme = this.$generalStore.getTheme();
-      if (currentTheme !== 'fieldbook_light') {
-        return {
-          cursor: 'pointer',
-          padding: '8px 16px',
-          backgroundColor: this.hoveredRow === index ? '#2f3845' : 'transparent'
-        }
-      } 
-      return {
-        cursor: 'pointer',
-        padding: '8px 16px',
-        backgroundColor: this.hoveredRow === index ? '#F6F6F6' : 'transparent'
-      }
-    },
-
-    /**
      * Update the hoveredRow based on the isHovered flag.
      *
      * @param {number} index - The index of the row being hovered.
@@ -778,15 +692,6 @@ export default {
 </script>
 
 <style scoped>
-#wrapper {
-  height: 100%;
-}
-.positionItem {
-  border-top: 2px solid black;
-  border-bottom: 2px solid black;
-  background-color: rgb(221, 221, 221);
-}
-
 td {
   padding: 6px !important;
 }
@@ -794,10 +699,4 @@ td {
 th {
   padding: 6px !important;
 }
-
-table tr>td:last-child {
-  border-bottom: 5px solid #b82828;
-  background: lightgray
-}
-
 </style>
