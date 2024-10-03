@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 01.10.2024 17:07:08
+ * Last Modified: 03.10.2024 17:16:17
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -32,7 +32,7 @@
     <v-row>
       <v-spacer></v-spacer>
       <v-card class="pt-2" :min-width="windowWidth * 0.55">
-        <v-data-table-virtual v-show="!showAllInfo" 
+        <v-data-table-virtual 
           :headers="headers" fixed-header
           :items="utils.filteredObjects(activities, searchQuery, 'activity')" 
           :height="utils.getTableHeight(activities, windowHeight)">
@@ -75,7 +75,7 @@
 
               <td v-on:click="handleRowClick(item._id, true)" 
                 :style="utils.getRowStyle(index, hoveredRow)">
-                <v-space></v-space>
+                <v-spacer></v-spacer>
               </td>
               
               <!-- v v v SYNC STATUS v v v -->
@@ -415,7 +415,7 @@ export default {
         newActivity.number = newActivityNumber;
       }
       newActivity.activityNumber = newActivity.branchOffice
-        + "_" + newActivity.year
+        + " " + newActivity.year
         + "/" + newActivity.number;
 
       this.activities.push(newActivity);
@@ -506,8 +506,6 @@ export default {
           var activityID = await fromOfflineDB
             .addObject(newActivity, 'Activities', 'activities')
             .catch(err => console.error(err));
-          //TODO: rework the onlineSync workflow
-          //await fromOfflineDB.addObject({ _id: activityID, object: 'activities' }, 'Changes', 'created');
         }
       }
       await this.updateActivities()
@@ -622,13 +620,7 @@ export default {
 </script>
   
 <style scoped>
-#test {
-  text-align: center;
-}
 
-.wrap-text {
-  -webkit-line-clamp: unset !important;
-}
 .non-clickable {
   cursor: default; /* Change cursor to indicate non-clickable */
   /* pointer-events: none; */ /* Disable pointer events */

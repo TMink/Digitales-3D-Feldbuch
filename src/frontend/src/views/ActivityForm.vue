@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.09.2024 17:50:50
+ * Last Modified: 02.10.2024 16:01:59
  * Modified By: Julian Hardtung
  * 
  * Description: input page for activity data 
@@ -880,7 +880,7 @@ export default {
 
     
     updateActivityNumber(branchOffice, year, number) {
-      return branchOffice + "_" + year + "_" + number;
+      return branchOffice + " " + year + "/" + number;
     },
 
     /**
