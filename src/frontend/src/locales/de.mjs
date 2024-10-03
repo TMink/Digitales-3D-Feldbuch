@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 30.09.2024 18:21:01
+ * Last Modified: 03.10.2024 17:20:40
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -90,6 +90,7 @@ export default {
   online_sync: "Online Sync",
   lastEdited: "Zuletzt bearbeitet",
   save: "Speichern",
+  import: "Importieren",
   cancel: "Abbrechen",
   search: "Suche",
   yes: "Ja",
@@ -169,6 +170,7 @@ export default {
   title_of: "Titel des {msg}",
   input: "{msg}eingabe",
   showAll: "Alle Infos anzeigen",
+  showAllCoords: "Alle Koordinaten anzeigen",
   not_created_yet: "Bisher wurden keine {object} erstellt!",
   current_selection: "Aktuelle Auswahl",
   confirm_del: "Möchten Sie wirklich {object} {object_nr} löschen?",

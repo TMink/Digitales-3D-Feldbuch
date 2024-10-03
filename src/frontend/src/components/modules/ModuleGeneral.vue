@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 27.08.2024 12:18:13
+ * Last Modified: 30.09.2024 18:53:32
  * Modified By: Julian Hardtung
  * 
  * Description: `general information` input module for places/positions
@@ -304,6 +304,14 @@ export default {
         if ( this.object.subNumber != null && this.type == 'positions' ) {
           /* Send data back to ModuleViewer.vue */
           this.$emit("dataToModuleViewer", ['subNumber', this.object.subNumber]);
+        }
+      }
+    },
+    "object.isSeparate": {
+      handler: function () {
+        if ( this.object.isSeparate != null && this.type == 'positions' ) {
+          /* Send data back to ModuleViewer.vue */
+          this.$emit("dataToModuleViewer", ['isSeparate', this.object.isSeparate]);
         }
       }
     },

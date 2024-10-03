@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 30.09.2024 18:21:14
+ * Last Modified: 03.10.2024 17:20:48
  * Modified By: Julian Hardtung
  * 
  * Description: english translations
@@ -90,6 +90,7 @@ export default {
   online_sync: "Online Sync",
   lastEdited: "Last Edited",
   save: "Save",
+  import: "Import",
   cancel: "Cancel",
   search: "Search",
   yes: "Yes",
@@ -169,6 +170,7 @@ export default {
   title_of: "title of the {msg}",
   input: "{msg} Input",
   showAll: "Show all info",
+  showAllCoords: "Show all coordinates",
   not_created_yet: "No {object} has been created yet!",
   current_selection: "Current Selection",
   confirm_del: "Do you really want to delete {object} {object_nr}?",

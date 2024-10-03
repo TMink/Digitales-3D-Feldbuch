@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 01.10.2024 16:46:14
+ * Last Modified: 03.10.2024 17:25:38
  * Modified By: Julian Hardtung
  * 
  * Description: input page for positions data 
@@ -258,6 +258,15 @@ export default {
     getEmitedData(data) {
       switch (data[0]) {
         /* Module: Coordinates */
+        case 'right':
+          this.position.right = data[1];
+          break;
+        case 'up':
+          this.position.up = data[1];
+          break;
+        case 'depthTop':
+          this.position.height = data[1];
+          break;
         case 'coordinates':
           this.position.coordinates = data[1];
           break;
@@ -381,7 +390,6 @@ export default {
           newEditor.item = toRaw(item);
         }
       } else if ( item != '' ) {
-        console.log( item );
         newEditor._id = String(Date.now());
         newEditor.item = toRaw(item);
       }
