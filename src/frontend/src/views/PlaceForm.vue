@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 03.10.2024 16:55:18
+ * Last Modified: 07.10.2024 19:20:47
  * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
@@ -434,6 +434,8 @@ export default {
         default:
           console.err('Cant specify emitted data: ' + data[0])
       }
+
+      this.handlePlaceChange();
     },
 
     /**

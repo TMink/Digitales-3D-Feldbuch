@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 03.10.2024 17:25:38
+ * Last Modified: 07.10.2024 14:43:11
  * Modified By: Julian Hardtung
  * 
  * Description: input page for positions data 
@@ -326,6 +326,8 @@ export default {
         default:
           console.log( 'Cant specify emitted data: ' + data[0] );
       }
+
+      this.handlePositionChange();
     },
     /**
      * Update reactive Vue.js place data

@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 02.10.2024 16:01:59
+ * Last Modified: 07.10.2024 14:57:22
  * Modified By: Julian Hardtung
  * 
  * Description: input page for activity data 
@@ -672,6 +672,8 @@ export default {
       .catch(err => console.error(err));
     await this.updateActivity()
       .catch(err => console.error(err));
+
+    this.componentHasLoaded = true;
   },
 
   watch: {
