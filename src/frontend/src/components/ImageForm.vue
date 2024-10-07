@@ -2,7 +2,7 @@
  * Created Date: 06.07.2023 13:22:10
  * Author: Julian Hardtung
  * 
- * Last Modified: 23.04.2024 12:38:45
+ * Last Modified: 07.10.2024 15:17:14
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for images of places/positions
@@ -491,7 +491,9 @@ export default {
 
       const posNumber = this.position.positionNumber.toString().padStart(4, '0');
 
-      var autoTitle = curActivity.activityNumber
+      var autoTitle = curActivity.branchOffice 
+        + '_' + curActivity.year
+        + '_' + curActivity.number
         + '_' + placeNumber
         + '_' + posNumber;
 
