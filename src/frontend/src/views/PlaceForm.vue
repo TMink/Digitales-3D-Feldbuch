@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 07.10.2024 19:20:47
+ * Last Modified: 08.10.2024 13:53:34
  * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
@@ -183,6 +183,8 @@ export default {
     var route = useRoute()    
     const placeID = route.path.split("/").pop();
 
+    await fromOfflineDB.syncLocalDBs()
+      .catch(err => console.error(err));
     const data = await fromOfflineDB
       .getObject(placeID, 'Places', 'places')
       .catch(err => console.error(err));
