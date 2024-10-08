@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 01.10.2024 17:08:06
+ * Last Modified: 08.10.2024 13:34:57
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -59,7 +59,7 @@
               </v-tooltip>
 
               <!-- PLACE NUMBER -->
-              <td v-on:click="handleRowClick(item._id, false)" 
+              <td v-on:click="handleRowClick(item._id, true)" 
                 :style="utils.getRowStyle(index, hoveredRow)">
                 <v-list-item-title class="pl-3">
                   {{ item.placeNumber }}
@@ -67,12 +67,12 @@
               </td>
 
               <!-- TITLE -->
-              <td v-on:click="handleRowClick(item._id, false)" 
+              <td v-on:click="handleRowClick(item._id, true)" 
                 :style="utils.getRowStyle(index, hoveredRow)">
                 <div v-if="item.placeNumber > 1">
                   <v-list-item-title v-if="item.title.length > 0" 
                     style="min-width:200px" class="text-wrap">
-                    {{ item.title }}
+                    {{ item.title.join('; ') }}
                   </v-list-item-title>
 
                   <v-list-item-title v-if="item.title.length == 0" 
@@ -88,7 +88,7 @@
               </td>
 
               <!-- DATE -->
-              <td v-on:click="handleRowClick(item._id, false)" 
+              <td v-on:click="handleRowClick(item._id, true)" 
                 :style="utils.getRowStyle(index, hoveredRow)">
                 <v-list-item-title>
                   {{ item.date }}
@@ -111,6 +111,7 @@
                 </v-btn>
 
                 <v-btn 
+                  v-on:click="handleRowClick(item._id, false)"
                   style="margin-left: 3px;margin-top: 10px;margin-bottom: 10px;"  
                   color="secondary" variant="outlined">
                   <v-icon class="pr-2">mdi-arrow-right-bold</v-icon>
@@ -272,6 +273,7 @@
                 </v-btn>
 
                 <v-btn 
+                  v-on:click="handleRowClick(item._id, false)"
                   style="margin-left: 3px;margin-top: 10px;margin-bottom: 10px;" 
                   color="secondary"
                   variant="outlined">
@@ -630,13 +632,13 @@ export default {
      * 
      * @param {String} placeID 
      */
-    handleRowClick(placeID, edit) {
-      if (edit) {
-        this.openPositionsOverview(placeID);
+    handleRowClick(placeID, isEdit) {
+      if (isEdit) {
+        this.openPlace(placeID);
       } else if (this.toggleDuplicate) {
         this.duplicatePlace(placeID);
       } else {
-        this.openPlace(placeID);
+        this.openPositionsOverview(placeID);
       }
     },
 
