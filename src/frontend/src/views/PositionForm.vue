@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 07.10.2024 14:43:11
+ * Last Modified: 13.10.2024 12:38:51
  * Modified By: Julian Hardtung
  * 
  * Description: input page for positions data 
@@ -117,6 +117,9 @@ export default {
   async setup() {
     var route = useRoute()
     const positionID = route.path.split("/").pop();
+
+    await fromOfflineDB.syncLocalDBs()
+      .catch(err => console.error(err));
 
     const data = await fromOfflineDB
       .getObject(positionID, 'Positions', 'positions')
