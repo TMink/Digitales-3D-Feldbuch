@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 01.10.2024 17:23:52
+ * Last Modified: 09.10.2024 13:55:58
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -596,7 +596,7 @@ export default {
         count: '',
         weight: '',
         material: '',
-        title: '',
+        title: [],
         description: '',
         datCode: '',
         dating: '',

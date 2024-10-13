@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 27.08.2024 12:27:10
+ * Last Modified: 13.10.2024 16:59:26
  * Modified By: Julian Hardtung
  * 
  * Description: `plane` input module for places
@@ -28,10 +28,11 @@
 
     <v-textarea 
       v-if="this.showModule"
-      rows="2"
+      rows="3"
+      no-resize
       counter 
-      style="margin-top:23px"
-      hide-details
+      style="margin-top:15px; margin-bottom: -10px;"
+      maxlength="254"
       color="primary" 
       v-model="plane"
       :label="$t('plane')">

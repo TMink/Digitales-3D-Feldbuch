@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.10.2024 13:34:57
+ * Last Modified: 09.10.2024 14:43:27
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -546,7 +546,7 @@ export default {
         activityID: acID,
         placeNumber: '',
 
-        title: '',
+        title: [],
         datCode: '',
         dating: '',
         noFinding: false,

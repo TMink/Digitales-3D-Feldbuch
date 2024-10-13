@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 03.10.2024 17:45:49
+ * Last Modified: 13.10.2024 16:38:50
  * Modified By: Julian Hardtung
  * 
  * Description: `coordinates` input module for places/positions
@@ -96,7 +96,8 @@
               <v-text-field 
                 class="pr-2"
                 hide-details 
-                color="primary" 
+                color="primary"
+                maxlength="8" 
                 density="compact" 
                 v-model="object.right"
                 :label="$t('right')" 
@@ -106,7 +107,8 @@
                 v-if="type == 'places'"
                 class="pr-2"
                 hide-details 
-                color="primary" 
+                color="primary"
+                maxlength="8" 
                 density="compact"
                 :label="$t('rightTo')"
                 v-model="object.rightTo" 
@@ -121,8 +123,9 @@
               <v-text-field 
                 class="px-2"
                 hide-details 
-                color="primary" 
-                density="compact" 
+                color="primary"
+                maxlength="8" 
+                density="compact"
                 :label="$t('up')"
                 v-model="object.up" 
                 @keypress="filterNonNumeric(event)">
@@ -132,8 +135,9 @@
                 v-if="type == 'places'"
                 class="px-2"
                 hide-details 
-                color="primary" 
-                density="compact" 
+                color="primary"
+                maxlength="8" 
+                density="compact"
                 :label="$t('upTo')"
                 v-model="object.upTo" 
                 @keypress="filterNonNumeric(event)">
@@ -147,8 +151,9 @@
               <v-text-field 
                 class="pl-2"
                 hide-details 
-                color="primary" 
-                density="compact" 
+                color="primary"
+                maxlength="8" 
+                density="compact"
                 :label="$t('depthTop')"
                 v-model="object.depthTop" 
                 @keypress="filterNonNumeric(event)">
@@ -157,9 +162,10 @@
               <v-text-field 
                 v-if="type == 'places'"
                 class="pl-2"
-                hide-details 
-                color="primary" 
-                density="compact" 
+                hide-details
+                color="primary"
+                maxlength="8"
+                density="compact"
                 :label="$t('depthBot')"
                 v-model="object.depthBot" 
                 @keypress="filterNonNumeric(event)">
@@ -253,7 +259,7 @@
         }
       },
       "object.upTo": {
-        handler: function() {
+        handler: function() {          
           if ( this.object.upTo != null && this.type == 'places' ) {
             /* Send data back to ModuleViewer.vue */
             this.$emit("dataToModuleViewer", [ 'upTo', this.object.upTo ]);

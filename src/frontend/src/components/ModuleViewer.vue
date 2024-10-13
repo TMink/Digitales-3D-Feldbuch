@@ -2,7 +2,7 @@
  * Created Date: 06.09.2023 17:19:12
  * Author: Julian Hardtung
  * 
- * Last Modified: 30.09.2024 18:57:54
+ * Last Modified: 13.10.2024 17:03:12
  * Modified By: Julian Hardtung
  * 
  * Description: input module viewer that shows all modules that are 
@@ -11,6 +11,7 @@
 
  <template>
   <v-container fluid class="pa-0 ma-0"> 
+    <v-form ref="form">
     <div v-if="pathObject == 'places' && this.object.placeNumber == 1">
       <ModuleTechnical v-if='this.object.placeNumber == 1'
       :objectProp="object"
@@ -64,6 +65,7 @@
 
       </v-col>        
     </v-row>
+    </v-form>
   </v-container>
 </template>
   
@@ -138,9 +140,15 @@ export default {
       .catch(err => console.error(err));
     const path = this.$route.path;
     this.getPathNamesAndID(path);
+
+    this.validate()
   },
   
   methods: {
+
+    async validate () {
+      const { valid } = await this.$refs.form.validate()
+    },
 
     async updateObject() {
       

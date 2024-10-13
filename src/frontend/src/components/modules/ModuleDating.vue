@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 30.09.2024 17:06:19
+ * Last Modified: 13.10.2024 17:06:49
  * Modified By: Julian Hardtung
  * 
  * Description: `dating` input module for places/positions
@@ -30,14 +30,13 @@
         v-if="showModule"
 				persistent-hint
         :hint="getDatingHint()" 
-				counter 
-				color="primary" 
+        :rules="datingRules"
+				color="primary"
+        hide-selected  
 				style="padding-top: 45px" 
 				:items="filledDatingsList"
-				:label="$t('dating')" 
-				:hide-no-data="false" 
+				:label="$t('dating') + ' *'"  
 				v-model="dating">
-
 				<template v-slot:no-data>
 					<v-list-item>
 						<v-list-item-title>
@@ -67,19 +66,12 @@ export default {
     
     var lvrDatings = JSON.parse(import.meta.env.VITE_DATINGS_FULL);
     var filledDatingsList = lvrDatings.concat(propRaw.datingItemsSecondProp);
-
+    
     var datingRef = '';
-    if (propRaw.datingProp == '') {
-      var emptyDating = filledDatingsList.filter(function(item) {
-        return item.title === 'Datierung unbekannt';
-      });
-      datingRef = emptyDating[0];
-    } else {
-      var foundDating = filledDatingsList.filter(function(item) {
-        return item.title === propRaw.datingProp;
-      });
-      datingRef = foundDating[0]
-    }
+    var foundDating = filledDatingsList.filter(function(item) {
+      return item.title === propRaw.datingProp;
+    });
+    datingRef = foundDating[0]
     
     return {
       filledDatingsList,
@@ -91,9 +83,16 @@ export default {
 	data() {
 		return {
       datCode: '',
-			dating: null,
+			dating: '',
 			pathNames: null,
       showModule: true,
+
+      datingRules: [
+        value => {
+          if (value != null) return true
+          return this.$t('isMandatory', {msg: this.$t('dating')})
+        }
+      ]
 		}
 	},
 

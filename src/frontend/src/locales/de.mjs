@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 03.10.2024 17:20:40
+ * Last Modified: 13.10.2024 16:54:36
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -257,4 +257,6 @@ export default {
   maxPlaceNumber: "höchste vergebene Stellennummer",
   findsDocumented: "nur ankreuzen, wenn archäologische Befunde dokumentiert wurden",
   exportPlacesCatalog: "Stellenkatalog exportieren",
+  isMandatory: "{msg} ist ein Pflichtfeld",
+  invalidDate: "Datum ist nicht valide",
 };

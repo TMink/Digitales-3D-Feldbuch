@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 27.08.2024 12:27:11
+ * Last Modified: 13.10.2024 17:00:30
  * Modified By: Julian Hardtung
  * 
  * Description: `find types` input module for places
@@ -27,7 +27,7 @@
     <v-divider></v-divider>
 
     <v-row v-if="object.modulePreset.findTypes" no-gutters class="mt-4">
-      <v-col cols="6">
+      <v-col cols="6" class="pr-2">
         <v-checkbox
           color="primary"
           persistent-hint 
@@ -37,7 +37,7 @@
         </v-checkbox>
       </v-col>
 
-      <v-col cols="6">
+      <v-col cols="6" class="pr-5">
         <v-checkbox 
           persistent-hint 
           color="secondary"
