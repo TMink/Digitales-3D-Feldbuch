@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 13.10.2024 16:54:46
+ * Last Modified: 15.10.2024 16:13:58
  * Modified By: Julian Hardtung
  * 
  * Description: english translations
@@ -154,6 +154,10 @@ export default {
   archiveMaterial: "Archive Material",
   misc: "Miscellaneous",
   stratiTool: "Stratigraphy-Tool",
+  placesCatalog: "Places Catalog",
+  photoList: "Image List (Places)",
+  photoDirectory: "Photo Directory",
+  findingSampleData: "Finding-/Sampledata",
 
   // Phrases
   addMsg: "Add new {msg}",
@@ -254,7 +258,9 @@ export default {
   resultOfAction: "Result of the Measure",
   maxPlaceNumber: "highest assigned place number",
   findsDocumented: "only tick, if archeological findings were documented",
-  exportPlacesCatalog: "export places catalog",
   isMandatory: " {msg} is a mandatory field",
   invalidDate: "not a valid date",
+  placesCatalogExportDescr: "Select all activities whose places should be exported.",
+  fulfillsBodeonRequirements: "Fulfills Bodeon-Requirements",
+  mandatoryFieldNotFilled: "Mandatory data was not entered yet",
 };

@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.10.2024 13:55:58
+ * Last Modified: 15.10.2024 16:37:45
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -48,7 +48,7 @@
       <v-spacer></v-spacer>
 
       <!-- POSITIONS LIST -->
-      <v-card class="pt-2" :min-width="windowWidth * 0.55">
+      <v-card class="pt-2" :min-width="windowWidth * 0.6">
         <v-data-table-virtual
           v-show="!showAllInfo"
           :items="utils.filteredObjects(positions, searchQuery, 'position')"
@@ -84,7 +84,7 @@
               <td :style="utils.getRowStyle(index, hoveredRow)">
                 <v-list-item-title v-if="item.title.length > 0"
                   style="min-width:200px" class="text-wrap">
-                  {{ item.title }}
+                  {{ item.title.join('; ') }}
                 </v-list-item-title>
                 <v-list-item-title v-if="item.title.length == 0" 
                   style="color:dimgrey;">
@@ -117,6 +117,20 @@
                       {{ $t('onlyLocal') }}
                   </v-tooltip>
                   <v-icon>mdi-cloud-off-outline</v-icon>
+                </v-btn>
+
+                <!-- BODEON CONFORM -->
+                <v-btn icon color="success" variant="text" v-if="isBodeonValid(item)">
+                  <v-tooltip activator="parent" location="bottom">
+                     {{ $t('fulfillsBodeonRequirements') }}
+                  </v-tooltip>
+                  <v-icon>mdi-check-circle</v-icon>
+                </v-btn>
+                <v-btn color="primary" icon variant="text" v-else>
+                  <v-tooltip activator="parent" location="bottom">
+                     {{ $t('mandatoryFieldNotFilled') }}
+                  </v-tooltip>
+                  <v-icon>mdi-alert-circle</v-icon>
                 </v-btn>
               </td>
             </tr>
@@ -161,7 +175,7 @@
                   v-if="item.title.length > 0"
                   style="min-width:200px" 
                   class="text-wrap">
-                  {{ item.title }}
+                  {{ item.title.join('; ') }}
                 </v-list-item-title>
                 <v-list-item-title 
                   v-if="item.title.length == 0" style="color:dimgrey;">
@@ -286,6 +300,20 @@
                   </v-tooltip>
                   <v-icon>mdi-cloud-off-outline</v-icon>
                 </v-btn>
+
+                <!-- BODEON CONFORM -->
+                <v-btn icon color="success" variant="text" v-if="isBodeonValid(item)">
+                  <v-tooltip activator="parent" location="bottom">
+                     {{ $t('fulfillsBodeonRequirements') }}
+                  </v-tooltip>
+                  <v-icon>mdi-check-circle</v-icon>
+                </v-btn>
+                <v-btn color="primary" icon variant="text" v-else>
+                  <v-tooltip activator="parent" location="bottom">
+                     {{ $t('mandatoryFieldNotFilled') }}
+                  </v-tooltip>
+                  <v-icon>mdi-alert-circle</v-icon>
+                </v-btn>
               </td>
               <v-divider></v-divider>
             </tr>
@@ -382,7 +410,7 @@ export default {
         },
         { title: this.$tc('title', 2), align: 'start', key: 'title' },
         { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
-        { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status', width: "100px"}
+        { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status', width: "110px"}
       ],
       fullHeaders: [
         {
@@ -660,6 +688,18 @@ export default {
       } else if (this.hoveredRow === index) {
         this.hoveredRow = -1;
       }
+    },
+
+    /**
+     * Checks if data of a position is valid for potential BODEON import
+     * (are all mandatory fields properly filled?)
+     * @param position 
+     */
+    isBodeonValid(position) {
+      if (position.title.length != 0 && position.dating != '') {
+        return true;
+      }
+      return false;
     },
   }
 }

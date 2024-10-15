@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.10.2024 14:43:27
+ * Last Modified: 15.10.2024 16:35:23
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -39,7 +39,7 @@
     <v-row>
       <v-spacer></v-spacer>
       <!--------------- PLACES TABLE SMALL --------------->
-      <v-card class="pt-2" :min-width="windowWidth * 0.55">
+      <v-card class="pt-2" :min-width="windowWidth * 0.6">
         <v-data-table-virtual v-show="!showAllInfo" 
           fixed-header :headers="headers"
           :items="utils.filteredObjects(places, searchQuery, 'place')" 
@@ -110,6 +110,21 @@
                   <v-icon>mdi-cloud-off-outline</v-icon>
                 </v-btn>
 
+                <!-- BODEON CONFORM -->
+                <v-btn icon color="success" variant="text" v-if="isBodeonValid(item)">
+                  <v-tooltip activator="parent" location="bottom">
+                     {{ $t('fulfillsBodeonRequirements') }}
+                  </v-tooltip>
+                  <v-icon>mdi-check-circle</v-icon>
+                </v-btn>
+                <v-btn color="primary" icon variant="text" v-else>
+                  <v-tooltip activator="parent" location="bottom">
+                     {{ $t('mandatoryFieldNotFilled') }}
+                  </v-tooltip>
+                  <v-icon>mdi-alert-circle</v-icon>
+                </v-btn>
+
+                <!-- OPEN POSITION  -->
                 <v-btn 
                   v-on:click="handleRowClick(item._id, false)"
                   style="margin-left: 3px;margin-top: 10px;margin-bottom: 10px;"  
@@ -147,7 +162,7 @@
               :style="utils.getRowStyle(index, hoveredRow)">
                 <div v-if="item.placeNumber > 1">
                   <v-list-item-title v-if="item.title.length > 0" class="text-wrap">
-                    {{ item.title }}
+                    {{ item.title.join('; ') }}
                   </v-list-item-title>
 
                   <v-list-item-title style="color:dimgrey;" v-else>
@@ -272,6 +287,20 @@
                   <v-icon>mdi-cloud-off-outline</v-icon>
                 </v-btn>
 
+                <!-- BODEON CONFORM -->
+                <v-btn icon color="success" variant="text" v-if="isBodeonValid(item)">
+                  <v-tooltip activator="parent" location="bottom">
+                     {{ $t('fulfillsBodeonRequirements') }}
+                  </v-tooltip>
+                  <v-icon>mdi-check-circle</v-icon>
+                </v-btn>
+                <v-btn color="primary" icon variant="text" v-else>
+                  <v-tooltip activator="parent" location="bottom">
+                     {{ $t('mandatoryFieldNotFilled') }}
+                  </v-tooltip>
+                  <v-icon>mdi-alert-circle</v-icon>
+                </v-btn>
+
                 <v-btn 
                   v-on:click="handleRowClick(item._id, false)"
                   style="margin-left: 3px;margin-top: 10px;margin-bottom: 10px;" 
@@ -377,7 +406,7 @@ export default {
         },
         { title: this.$tc('title',2), align: 'start', key: 'title' },
         { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
-        { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status', width: "220px"},
+        { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status', width: "260px"},
       ],
       fullHeaders: [
         {
@@ -397,7 +426,7 @@ export default {
         { title: this.$tc('dating', 1), align: 'start', key: 'dating', width: "100px" },
         { title: this.$tc('editor', 1), align: 'start', key: 'editor', width: "100px" },
         { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
-        { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status', width: "220px"},
+        { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status', width: "260px"},
       ],
     };
   },
@@ -695,6 +724,18 @@ export default {
       } else if (this.hoveredRow === index) {
         this.hoveredRow = -1;
       }
+    },
+
+    /**
+     * Checks if data of a place is valid for potential BODEON import
+     * (are all mandatory fields properly filled?)
+     * @param place 
+     */
+    isBodeonValid(place) {
+      if (place.title.length != 0 && place.dating != '') {
+        return true;
+      }
+      return false;
     },
   }
 }
