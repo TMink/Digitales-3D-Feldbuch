@@ -2,7 +2,7 @@
  Created Date: 23.09.2024 10:14:23
  Author: Tobias Mink
  
- Last Modified: 16.10.2024 15:55:11
+ Last Modified: 16.10.2024 17:59:53
  Modified By: Tobias Mink
  
  Description: 
@@ -186,7 +186,7 @@
               <v-row no-gutters>
                 
                 <!-- 3D-Editor Tools -->
-                <v-card width="100%" height="100%" style="position: absolute; z-index: 1;">
+                <v-card width="100%" height="100%" style="position: absolute; z-index: 1; opacity: 1;">
                   <v-row no-gutters>
                     
                     <!-- Unit List -->
@@ -229,7 +229,7 @@
                 </v-card>
 
                 <!-- Graph-Editor Tools -->
-                <v-card id="graphEditorTools" width="100%" style="position: absolute; z-index: 0;">
+                <v-card id="graphEditorTools" width="100%" style="position: absolute; z-index: 1; opacity: 1;">
                   <v-row no-gutters>
                     
                     <!-- Unit creation -->
@@ -262,13 +262,14 @@
                     
                   </v-row>
                 </v-card>
+                
               </v-row>
             </v-card>
           </v-row>
   
           <!-- Editoren -->
           <v-row no-gutters style="width:fit-content;">
-            <canvas id="canvas" class="tile" :height="windowHeight - 328" :width="windowWidth - 825" style="position:absolute; z-index: 1; opacity: 1;"></canvas>
+            <canvas id="canvas" class="tile" :height="windowHeight - 328" :width="windowWidth - 825" style="position:absolute; z-index: 0; opacity: 1;"></canvas>
             <v-card id="graph" class="dnd-flow plato" @drop="onDrop" :height="windowHeight - 320" :width="windowWidth - 817" style="position:relative; z-index: 0; opacity: 1;" >
               <VueFlow :maxZoom="1" :minZoom="0.2" :connectOnClick=false @dragover="onDragOver" @dragleave="onDragLeave" :nodeTypes="nodeTypes" deleteKeyCode="Backspace" :zoomOnDoubleClick=false>
                 <template #edge-custom="customEdgeProps">
@@ -384,6 +385,36 @@
                             </v-col>
                           </v-row>
                         </v-card>
+
+                        <!-- Unit Model -->
+                        <v-card class="py-2 mb-3 infobereich__attributes_type" width="100%">
+                          <v-row no-gutters class="py-0" align-content="center">
+                            <v-card class="pl-3 pb-1 infobereich__attributes_type_title" elevation=0>Type:</v-card>
+                          </v-row>
+                          <v-row no-gutters class="pr-2 pl-1">
+                            <v-btn icon color="primary" @click="createAddModelDialog = true">
+                                <v-icon>mdi-close-circle</v-icon>
+                            </v-btn>
+                            <v-dialog v-model="createAddModelDialog" max-width="800" persistent>
+                              <v-card class="pa-4">
+                                <v-card-title>{{ $t('add', { msg: $t('model') }) }}</v-card-title>
+
+                                <v-text-field v-model="modelTitle" :label="$t('title')" :hint="$t('please_input', { msg: $t('title_of', { msg: $t('model') }) })"/>
+
+                                <v-file-input show-size accept=".glb" v-model="model" :label="$t('input', { msg: $t('model') })"/>
+
+                                <v-card-actions class="justify-center">
+                                  <v-btn icon color="success" v-on:click="addModel()">
+                                    <v-icon>mdi-content-save-all</v-icon>
+                                  </v-btn>
+                                  <v-btn icon color="primary" @click="createAddModelDialog = false">
+                                    <v-icon>mdi-close-circle</v-icon>
+                                  </v-btn>
+                                </v-card-actions>
+                              </v-card>
+                            </v-dialog>
+                          </v-row>
+                        </v-card>
                           
                         <!-- Unit Beziehungen -->
                         <v-card class="py-2 mb-3 infobereich__attributes_relations" width="100%">
@@ -441,7 +472,7 @@
 
 <script setup>
   import * as THREE from 'three';
-  import { onMounted, onUnmounted, markRaw, ref, watch, } from 'vue';
+  import { onMounted, onUnmounted, markRaw, ref, watch, toRaw} from 'vue';
   import { useWindowSize } from 'vue-window-size';
   import { VueFlow, useVueFlow, MarkerType } from '@vue-flow/core';
   import * as img from 'html-to-image';
@@ -486,6 +517,9 @@
   var currentProcessingStep = ref(0); // int
   var processStepBackButtonDisabled = ref(true) // boolean
   var processStepForwardButtonDisabled = ref(true) // boolean
+  var createAddModelDialog = ref(false) // boolean
+  var modelTitle = ref("") // string
+  var model = ref(null)
 
   /**
    * [-------------------------------------------------------------------------]
@@ -557,7 +591,7 @@
    * ================>>>> saves the current processing step <<<<================
    * 
    */
-  watch( nodeDropped, hasBeenDropped => {
+  watch(nodeDropped, hasBeenDropped => {
     if( hasBeenDropped ){
       saveProcessingStep("addNewNode");
       nodeDropped.value = false;
@@ -601,12 +635,12 @@
         nodesInGraph[a].data.nodeStyle = "clicked_" + nodesInGraph[a].type;
         nodesInGraph[a].data.selected = true;
       } else {
+        console.log("Test")
         nodesInGraph[a].data.nodeStyle = "notClicked_" + nodesInGraph[a].type;
         nodesInGraph[a].data.selected = false;
       }
     }
   })
-
 
 
 
@@ -1163,6 +1197,7 @@
   function clearInfoCard() {
     selectedNodeID = "";
     nodeSearchedFor.value = "";
+    console.log("Test at Clear")
     infoCardDisabled.value = true
     document.getElementById("infoCard").style.opacity = "0.5";
 
@@ -1930,10 +1965,12 @@
     if( graph.style.opacity == "1" ) {
       graph.style.opacity = "0"
       graph.style.zIndex = "0"
+      graphEditorTools.style.opacity = "0"
       graphEditorTools.style.zIndex = "0"
     } else {
       graph.style.opacity = "1"
       graph.style.zIndex = "1"
+      graphEditorTools.style.opacity = "1"
       graphEditorTools.style.zIndex = "1"
     }
   }
@@ -2089,18 +2126,14 @@
         fillInfoCard(nodesInGraph[a])
         
         changeUnitsListsButtonStyle( nodesInGraph[a].id, 'selected' )
+        console.log("Test at Fill")
         nodesInGraph[a].data.nodeStyle = "clicked_" + nodesInGraph[a].type;
         nodesInGraph[a].data.selected = true;
-      } else if( nodesInGraph[a].id == nodeID && nodesInGraph[a].data.selected ){
-        clearInfoCard()
-        
+      } else {
         changeUnitsListsButtonStyle( nodesInGraph[a].id, 'notSelected' )
         nodesInGraph[a].data.nodeStyle = "notClicked_" + nodesInGraph[a].type;
         nodesInGraph[a].data.selected = false;
-      } else {
-        nodesInGraph[a].data.nodeStyle = "notClicked_" + nodesInGraph[a].type;
-        nodesInGraph[a].data.selected = false;
-      } 
+      }
     }
   }
 
@@ -2119,6 +2152,59 @@
       const button = document.getElementById(buttonID)
       button.style = "border: 4px; border-style: double; border-color: #1C2128; background-color: #2a394f;"
     }
+  }
+
+
+
+
+
+  /**
+   * 
+   */
+  async function modelToArrayBuffer(rawData) {
+    const output = await new Promise((resolve) => {
+      let reader = new FileReader();
+      let f = rawData;
+
+      reader.onload = e => {
+        const modelString = e.target.result
+        resolve(modelString)
+      }
+
+      reader.readAsArrayBuffer(f);
+    });
+    return output;
+  }
+
+
+
+
+  /**
+   * 
+   */
+  async function addModel() {
+    // add modelID to the object array of all models
+    const newModelID = String(Date.now());
+
+    // new model data
+    const newModel = {
+      _id: newModelID,
+      title: modelTitle.value,
+      model: await modelToArrayBuffer(toRaw(model.value)),
+      color: '#ffffff',
+      opacity: 1,
+      coordinates: null,
+      scale: null,
+      rotation: null,
+      loaderType: model.value.name.split('.')[1]
+    }
+
+    console.log(newModel)
+
+    // hide model creation dialog
+    createAddModelDialog.value = false;
+
+    // add model to IndexedDB
   }
 
 
