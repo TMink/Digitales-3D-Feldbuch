@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Tobias Mink
  * 
- * Last Modified: 27.08.2024 11:58:14
+ * Last Modified: 16.10.2024 16:27:40
  * Modified By: Julian Hardtung
  * 
  * Description: Helper API for manipulating the IndexedDB
@@ -464,7 +464,7 @@ export default class ConnectionToOfflineDB {
    */
   async getLastAddedPosition() {
     const generalStore = generalDataStore();
-    var curPlaceID = generalStore.getCurrentObject('place');
+    var curPlaceID = generalStore.getCurrentObject("place");
     var curPlace = await this.getObject(curPlaceID, "Places", "places")
       .catch((err) => console.error(err));
     var lastPosID = curPlace.positions[curPlace.positions.length - 1];
@@ -516,23 +516,24 @@ export default class ConnectionToOfflineDB {
 
     //if logged in, online, and not synced yet, sync new object to backend
     if (userStore.authenticated && (await isOnline()) && data.lastSync < data.lastChanged) {
-      if (localDBName == 'Images' || localDBName == 'Models') {
+      if (localDBName == "Images" || localDBName == "Models") {
         data = await fromBackend
           .uploadFormData(data, "post", storeName)
           .catch((err) => console.error(err));
       } else {
         data = await fromBackend.postData(storeName, data)
-        .catch((err) => console.error(err));
+          .catch((err) => console.error(err));
       }
     }
 
     var res = await this.updateIndexedDBObject(data, localDBName, storeName)
       .catch((err) => console.error(err));
+      
     return res;
   }
 
   /**
-   * Updates an object from IndexedDB 
+   * Updates an object from IndexedDB
    * and uploads changes to backend (if logged in and online)
    * @param {Int} data
    *    Data object, which will be updated
@@ -545,20 +546,19 @@ export default class ConnectionToOfflineDB {
     const userStore = useUserStore();
 
     //if logged in and online, sync new object to backend
-    if (userStore.authenticated && (await isOnline()) 
-        && data.lastChanged > data.lastSync) {
+    if (userStore.authenticated && (await isOnline()) && data.lastChanged > data.lastSync) {
       data = await fromBackend.uploadObject(storeName, data)
-        .catch((err) => console.error(err));
+      .catch((err) => console.error(err));
     }
     await this.updateIndexedDBObject(data, localDBName, storeName)
-      .catch((err) => console.error(err));
+    .catch((err) => console.error(err));
   }
 
   /**
    * Temporary function for only updating an object without uploading it to backend
-   * @param {Object} data 
+   * @param {Object} data
    * @param {String} localDBName
-   * @returns 
+   * @returns
    */
   async updateIndexedDBObject(data, localDBName, storeName) {
     var localDB = this.getLocalDBFromName(localDBName);
@@ -570,18 +570,17 @@ export default class ConnectionToOfflineDB {
       };
 
       trans.onerror = (_e) => {
-        console.error(_e)
+        console.error(_e);
       };
       const store = trans.objectStore(storeName);
       store.put(data);
     });
   }
 
-
   /**
    * Post all subsequent data ob an object to the backend
-   * @param {String} subdomain 
-   * @param {Object} data 
+   * @param {String} subdomain
+   * @param {Object} data
    */
   async postObjectCascade(subdomain, data) {
     // upload data
@@ -603,7 +602,7 @@ export default class ConnectionToOfflineDB {
             var curPlace = await fromOfflineDB
               .getObject(place_id, "Places", "places")
               .catch((err) => console.error(err));
-              
+
             await this.postObjectCascade("places", curPlace)
               .catch((err) => console.error(err));
           }
@@ -636,7 +635,7 @@ export default class ConnectionToOfflineDB {
               var uploadedImage = await fromBackend
                 .uploadFormData(curImage, "post", "images")
                 .catch((err) => console.error(err));
-              
+
               await this.updateIndexedDBObject(uploadedImage, "Images", "images")
                 .catch((err) => console.error(err));
             }
@@ -647,7 +646,7 @@ export default class ConnectionToOfflineDB {
             var curModel = await fromOfflineDB
               .getObject(model_id, "Models", "positions")
               .catch((err) => console.error(err));
-              
+
             var uploadedModel = await fromBackend
               .uploadFormData(curModel, "post", "models")
               .catch((err) => console.error(err));
@@ -722,8 +721,11 @@ export default class ConnectionToOfflineDB {
   }
 
   /**
-   * @param {String} objectID
+   *
+   * @param {String} _id
    *    ID of the currently selected place
+   * @param {String} selection
+   *    name of the object (activity, place, position)
    * @param {String} localDBName
    *    Database name
    * @param {String} storeName
@@ -734,7 +736,7 @@ export default class ConnectionToOfflineDB {
     const context = this;
     var object = await this.getObject(_id.toString(), localDBName, storeName)
       .catch((err) => console.error(err));
-    
+
     await new Promise(async function (resolve, _reject) {
       const trans = localDB.transaction(storeName, "readwrite");
       trans.oncomplete = (_e) => {
