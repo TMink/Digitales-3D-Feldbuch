@@ -2,7 +2,6 @@
  * Created Date: 24.09.2024 14:53:58
  * Author: Tobias Mink
  * 
- * Last Modified: 26.09.2024 14:35:42
  * Modified By: Tobias Mink
  * 
  * Description: 
@@ -11,7 +10,6 @@
 import { useVueFlow } from '@vue-flow/core'
 import { ref, watch } from 'vue'
 
-let id = 0
 
 /**
  * @returns {string} - A unique id.
@@ -34,15 +32,12 @@ const state = {
 }
 
 export default function useDragAndDrop() {
-  const { draggedType, isDragOver, isDragging } = state
 
-  const { addNodes, screenToFlowCoordinate, onNodesInitialized, updateNode } = useVueFlow()
 
   watch(isDragging, (dragging) => {
     document.body.style.userSelect = dragging ? 'none' : ''
   })
 
-  function onDragStart(event, type) {
     if (event.dataTransfer) {
       event.dataTransfer.setData('application/vueflow', type)
       event.dataTransfer.effectAllowed = 'move'
@@ -95,13 +90,10 @@ export default function useDragAndDrop() {
 
     const nodeId = getId()
 
-    console.log(draggedType.value)
-
     const newNode = {
       id: nodeId,
       type: draggedType.value,
       position,
-      data: { label: draggedType.value }
     }
 
     /**

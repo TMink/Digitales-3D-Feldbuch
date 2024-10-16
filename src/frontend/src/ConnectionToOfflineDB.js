@@ -2,8 +2,6 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Tobias Mink
  * 
- * Last Modified: 27.08.2024 11:58:14
- * Modified By: Julian Hardtung
  * 
  * Description: Helper API for manipulating the IndexedDB
  */

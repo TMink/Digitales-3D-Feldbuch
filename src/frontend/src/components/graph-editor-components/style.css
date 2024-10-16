@@ -44,11 +44,8 @@
   stroke: var(--vf-connection-path);
 }
 
-.vue-flow__node {
   cursor: grab;
-}
 
-.vue-flow__node.selectable:focus,
   .vue-flow__node.selectable:focus-visible {
      outline: none;
    }
@@ -66,7 +63,6 @@
   color: var(--vf-node-text);
   background-color: var(--vf-node-bg);
   border-color: var(--vf-node-color);
-}
 
 .vue-flow__node-default.selected,
   .vue-flow__node-default.selected:hover,
