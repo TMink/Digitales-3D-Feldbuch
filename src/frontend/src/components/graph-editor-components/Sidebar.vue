@@ -62,4 +62,37 @@ function changeColorBack(params) {
 </template>
 
 <style>
+  .deposit__dragable {
+    height: 30px;
+    width: 30px;
+    line-height: 15px; 
+    text-align: center; 
+    color: black; 
+    background-color:#1e9a1e; 
+    /* background-color:rgb(30, 154, 30);  */
+    border: 2px solid #ffffff; 
+    border-radius: 10%; 
+    padding: 6px;
+  }
+
+  .deposit__dragable_name {
+    color: #32d132
+  }
+
+  .interface__dragable {
+    height: 30px;
+    width: 30px;
+    line-height: 19px; 
+    text-align: center; 
+    color: black; 
+    background-color:#ac6c18; 
+    /* background-color:rgb(172, 108, 24);  */
+    border: 2px solid #ffffff; 
+    border-radius: 100%; 
+    padding: 7%;
+  }
+
+  .interface__dragable_name {
+    color: #f8a840
+  }
 </style>
