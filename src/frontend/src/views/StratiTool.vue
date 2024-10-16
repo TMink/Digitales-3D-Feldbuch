@@ -217,6 +217,29 @@
             </v-card>
           </v-row>
   
+          <!-- Editoren -->
+          <v-row no-gutters style="width:fit-content;">
+            <canvas id="canvas" class="tile" :height="windowHeight - 328" :width="windowWidth - 825" style="position:absolute; z-index: 1; opacity: 1;"></canvas>
+            <v-card id="graph" class="dnd-flow plato" @drop="onDrop" :height="windowHeight - 320" :width="windowWidth - 817" style="position:relative; z-index: 1; opacity: 1;" >
+              <VueFlow :maxZoom="1" :minZoom="0.2" :connectOnClick=false @dragover="onDragOver" @dragleave="onDragLeave" :nodeTypes="nodeTypes" deleteKeyCode="Backspace" :zoomOnDoubleClick=false>
+                <template #edge-custom="customEdgeProps">
+                  <CustomEdge
+                    :id="customEdgeProps.id"
+                    :source-x="customEdgeProps.sourceX"
+                    :source-y="customEdgeProps.sourceY"
+                    :target-x="customEdgeProps.targetX"
+                    :target-y="customEdgeProps.targetY"
+                    :source-position="customEdgeProps.sourcePosition"
+                    :target-position="customEdgeProps.targetPosition"
+                    :data="customEdgeProps.data"
+                    :marker-end="customEdgeProps.markerEnd"
+                    :style="customEdgeProps.style"
+                  />
+                </template>
+                <DropzoneBackground :style="{ backgroundColor: isDragOver ? '#1e81b0' : 'transparent', transition: 'background-color 0.2s ease', }">
+                  <p v-if="isDragOver">Drop here</p>
+                </DropzoneBackground>
+              </VueFlow>
             </v-card>
           </v-row>
   /**                                 Watcher
