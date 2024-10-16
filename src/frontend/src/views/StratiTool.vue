@@ -390,6 +390,53 @@
   </div>
 </template>
 
+  const handleStyles = {
+    deposit: {
+      default: {
+        top_middle: "height: 8px; width: 18px; border: 2px; border-style: solid; border-color: #FFFFFF; border-radius: 0%;",
+        bottom_middle: "height: 8px; width: 18px; border: 2px; border-style: solid; border-color: #FFFFFF; border-radius: 0%;",
+        left_middle: "height: 18px; width: 8px; border: 2px; border-style: solid; border-color: #FFFFFF; border-radius: 0%;",
+        right_middle: "height: 18px; width: 8px; border: 2px; border-style: solid; border-color: #FFFFFF; border-radius: 0%;"
+      },
+      isValid: {
+        top_middle: "height: 10px; width: 30px; border: 2px; border-style: solid; border-color: #00ff44; border-radius: 0%;",
+        bottom_middle: "height: 10px; width: 30px; border: 2px; border-style: solid; border-color: #00ff44; border-radius: 0%;",
+        left_middle: "height: 30px; width: 10px; border: 2px; border-style: solid; border-color: #00ff44; border-radius: 0%;",
+        right_middle: "height: 30px; width: 10px; border: 2px; border-style: solid; border-color: #00ff44; border-radius: 0%;"
+      },
+      isNotValid: {
+        top_middle: "height: 10px; width: 30px; border: 2px; border-style: solid; border-color: #fc030f; border-radius: 0%;",
+        bottom_middle: "height: 10px; width: 30px; border: 2px; border-style: solid; border-color: #fc030f; border-radius: 0%;",
+        left_middle: "height: 30px; width: 10px; border: 2px; border-style: solid; border-color: #fc030f; border-radius: 0%;",
+        right_middle: "height: 30px; width: 10px; border: 2px; border-style: solid; border-color: #fc030f; border-radius: 0%;"
+      },
+    },
+    interface: {
+      default: {
+        top_middle: "height: 8px; width: 18px; border: 2px; border-style: solid; border-color: #FFFFFF; border-radius: 0%; border-top-left-radius: 100%; border-top-right-radius: 100%;",
+        bottom_middle: "height: 8px; width: 18px; border: 2px; border-style: solid; border-color: #FFFFFF; border-radius: 0%; border-bottom-left-radius: 100%; border-bottom-right-radius: 100%;",
+        left_middle: "height: 18px; width: 8px; border: 2px; border-style: solid; border-color: #FFFFFF; border-radius: 0%; border-bottom-left-radius: 100%; border-top-left-radius: 100%;",
+        right_middle: "height: 18px; width: 8px; border: 2px; border-style: solid; border-color: #FFFFFF; border-radius: 0%; border-bottom-right-radius: 100%; border-top-right-radius: 100%;"
+      },
+      isValid: {
+        top_middle: "height: 10px; width: 30px; border: 2px; border-style: solid; border-color: #00ff44; border-radius: 0%; border-top-left-radius: 100%; border-top-right-radius: 100%;",
+        bottom_middle: "height: 10px; width: 30px; border: 2px; border-style: solid; border-color: #00ff44; border-radius: 0%; border-bottom-left-radius: 100%; border-bottom-right-radius: 100%;",
+        left_middle: "height: 30px; width: 10px; border: 2px; border-style: solid; border-color: #00ff44; border-radius: 0%; border-bottom-left-radius: 100%; border-top-left-radius: 100%;",
+        right_middle: "height: 30px; width: 10px; border: 2px; border-style: solid; border-color: #00ff44; border-radius: 0%; border-bottom-right-radius: 100%; border-top-right-radius: 100%;"
+      },
+      isNotValid: {
+        top_middle: "height: 10px; width: 30px; border: 2px; border-style: solid; border-color: #fc030f; border-radius: 0%; border-top-left-radius: 100%; border-top-right-radius: 100%;",
+        bottom_middle: "height: 10px; width: 30px; border: 2px; border-style: solid; border-color: #fc030f; border-radius: 0%; border-bottom-left-radius: 100%; border-bottom-right-radius: 100%;",
+        left_middle: "height: 30px; width: 10px; border: 2px; border-style: solid; border-color: #fc030f; border-radius: 0%; border-bottom-left-radius: 100%; border-top-left-radius: 100%;",
+        right_middle: "height: 30px; width: 10px; border: 2px; border-style: solid; border-color: #fc030f; border-radius: 0%; border-bottom-right-radius: 100%; border-top-right-radius: 100%;"
+      },
+    }
+  }
+
+
+
+
+
   /**                                 Watcher
    * /=========================================================================\
    * Saves the current state of the graph, after adding a new unit.
