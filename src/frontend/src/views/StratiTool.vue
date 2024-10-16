@@ -1218,6 +1218,20 @@
 
 
 
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Adjusts the current viewport so that the specified node is in the center.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * @param nodeID - 
+   */
+  function zoomToNode( nodeID ) {
+    fitView({
+      nodes: [ nodeID ],
+      duration: 1000,
+      padding: 1
+    })
+  }
 
 
 
@@ -1708,16 +1722,74 @@
   }
   
 
+  
 
+  
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Updates the description of a node.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * ================>>>> saves the current processing step <<<<================
+   * =====>>> type: updateDescription
+   * 
+   * @param {} input - 
+   */
+  function updateDescription( input ) {
     if( getNodes.value.length != 0 ) {
       for( const[_, value] of Object.entries(getNodes.value) ) {
+        if( value.data.selected ) {
+          value.data.description = input
         }
       }
+      
+      saveProcessingStep( "updateDescription" )
     }
+  }
+
   
+
+  
+  
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Updates the type of a node.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * ================>>>> saves the current processing step <<<<================
+   * =====>>> type: updateType
+   * 
+   * @param {} newType - 
+   */
+  function updateType( newType ) {
     if( getNodes.value.length != 0 ) {
+      for( const[_, node] of Object.entries(getNodes.value) ) {
+        if( node.id == selectedNodeID ) {
+          node.type = newType
+          node.data.nodeStyle = "clicked_" + newType
         }
       }
+      
+      saveProcessingStep( "updateType" )
+    }
+  }
+
+  
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * TODO
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  function getHelp() {
+    // TODO
+  }
+
+
+
+  
+  
   /**
    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
    * TODO
@@ -1869,9 +1941,25 @@
 
 
 
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Converts a boolean to the contextual equivalent string.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * ** 
    * 
+   * @param {} connection -
+   * @returns {string} The contextual equivalent string.
    */
+  function getValidStatus(connection) { 
+    if( connection ){
+      return 'isValid'
     }
+    return 'isNotValid'
+  }
+
+
+
+
+
   /**                              Vue-Livecycle
    * /:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\
    * Equivalent semantic to mounted in <script>.
