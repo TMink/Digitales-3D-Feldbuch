@@ -199,12 +199,52 @@
                   </v-card>
                 </v-col>
                 
+                <!-- Unit Search -->
+                <v-col>
+                  <v-card class="px-5 units__base" variant="text">
+                    <v-col class="pa-0" align="center">
+                      <v-card class="pt-1 mb-1" variant="text">
+                        <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
+                          Unit suchen
+                        </v-card-title>
+                      </v-card>
+                      <v-combobox class="mb-2" style="height: 52px; width: 250px" hide-selected :items="nodesInUnitSearch" persistent-hint :hide-no-data="true" v-model="nodeSearchedFor"></v-combobox>
+                    </v-col>
+                  </v-card>
+                </v-col>
+                
               </v-row>
             </v-card>
           </v-row>
   
             </v-card>
           </v-row>
+  /**                                 Watcher
+   * /=========================================================================\
+   * Zooms in on the node that was searched for.
+   * \=========================================================================/
+   * 
+   */
+  watch(nodeSearchedFor, userInput => {
+    const nodesInGraph = getNodes.value;
+    const nodesInGraphLength = nodesInGraph.length;
+    for( let a = 0; a < nodesInGraphLength; a++ ){
+      if( nodesInGraph[a].data.label == userInput ){
+        zoomToNode(nodesInGraph[a].id);
+        fillInfoCard(nodesInGraph[a]);
+        nodesInGraph[a].data.nodeStyle = "clicked_" + nodesInGraph[a].type;
+        nodesInGraph[a].data.selected = true;
+      } else {
+        nodesInGraph[a].data.nodeStyle = "notClicked_" + nodesInGraph[a].type;
+        nodesInGraph[a].data.selected = false;
+      }
+    }
+  })
+
+
+
+
+
   
   /**
    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -248,6 +288,25 @@
    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
    * Loads a previous state of the graph and restores its effects on
    * subcomponents of other components of the system.
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Adjusts the current viewport so that the specified node is in the center.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * @param nodeID - 
+   */
+  function zoomToNode( nodeID ) {
+    fitView({
+      nodes: [ nodeID ],
+      duration: 1000,
+      padding: 1
+    })
+  }
+
+
+
+
+
    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
    * ---------->>>> Creates new index for next node to be created <<<<----------
    * 
