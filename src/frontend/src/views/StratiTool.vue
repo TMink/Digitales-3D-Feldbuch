@@ -135,6 +135,46 @@
                   </v-card>
                 </v-col>
                 
+                <!-- Switch processing steps -->
+                <v-col>
+                  <v-card class="px-5 py-0 units__base" variant="text">
+                    <v-col class="pa-0" align="center">
+                      
+                      <!-- Subcomponent title -->
+                      <v-card class="pt-1" variant="text">
+                        <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
+                          Arbeitsschritte wechseln
+                        </v-card-title>
+                      </v-card>
+                      <v-card class="pt-2 nodes" variant="text" width="100%">
+                        <v-row no-gutters class="mb-4 d-flex justify-center">
+                            
+                          <!-- Back -->
+                          <v-col cols="1">
+                            <v-card variant="text">
+                              <v-card-text class="pa-0" style="text-align: center; line-height: 100%;">
+                                zurück
+                              </v-card-text>
+                            </v-card>
+                            <v-btn :disabled="processStepBackButtonDisabled" variant="text" width="25%" height="40%" icon="mdi-arrow-u-left-top" @click="goProcessingStepBack()"></v-btn>
+                          </v-col>
+                            
+                          <!-- Forward -->
+                          <v-col cols="1">
+                            <v-card variant="text">
+                              <v-card-text class="pa-0" style="text-align: center; line-height: 100%;">
+                                vor
+                              </v-card-text>
+                            </v-card>
+                            <v-btn :disabled="processStepForwardButtonDisabled" variant="text" width="25%" height="40%" icon="mdi-arrow-u-right-top" @click="goProcessingStepForward()"></v-btn>
+                          </v-col>
+                            
+                        </v-row>
+                      </v-card>
+                    </v-col>
+                                   
+                  </v-card>
+                </v-col>
                 
               </v-row>
             </v-card>   
@@ -143,6 +183,143 @@
             </v-card>
           </v-row>
   
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Stores the type of last action taken by the user and the current state of 
+   * the graph.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * @param {string} changeType - Type of last action taken by the user
+   */
+  function saveProcessingStep( changeType ) {
+    if( changeType == "onSave" ) {
+      processingSteps.value.push( { type: changeType, step: JSON.stringify(toObject()) } );
+      currentProcessingStep.value = currentProcessingStep.value + 1;
+    } else {
+      // Wenn der aktuell ausgewählte Bearbeitungsschritt nicht der neuste ist, lösche alle die danach kamen und speicher den neuen und deaktiviere den Vor-Button
+      if( currentProcessingStep.value != processingSteps.value.length && !alreadyCut ) {
+        alreadyCut = true;
+        processingSteps.value = processingSteps.value.slice( 0, currentProcessingStep.value )
+        processingSteps.value.push( { type: changeType, step: JSON.stringify(toObject()) } );
+        currentProcessingStep.value = currentProcessingStep.value + 1
+      } 
+      // Sonst speicher den neuen Bearbeitungsschritt und zähle den aktuellen Bearbeitungsschritt eins hoch
+      else {
+        alreadyCut = false
+        processingSteps.value.push( { type: changeType, step: JSON.stringify(toObject()) } );
+        currentProcessingStep.value = currentProcessingStep.value + 1;
+      }
+    }
+    // Sollte mehr als nur ein Bearbeitungsschritt vorhanden sein, blende den Button ein
+    if( currentProcessingStep.value > 1 ) {
+      processStepBackButtonDisabled.value = false;
+    }
+    processStepForwardButtonDisabled.value = true;
+  }
+
+
+  
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Loads a previous state of the graph and restores its effects on
+   * subcomponents of other components of the system.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * ---------->>>> Creates new index for next node to be created <<<<----------
+   * 
+   */
+  function goProcessingStepBack() {
+    clearInfoCard()
+    nodesInUnitSearch.value = [];
+
+    currentProcessingStep.value = currentProcessingStep.value - 1
+    const parsedProcessingStep = JSON.parse( processingSteps.value[currentProcessingStep.value - 1].step )
+    
+    if( ( currentProcessingStep.value > 1 ) && ( processingSteps.value[ currentProcessingStep.value - 1 ].type == "addNewNode" ) ) {
+      const lastNodeID = parsedProcessingStep.nodes[parsedProcessingStep.nodes.length - 1].id
+      fromObject(parsedProcessingStep)
+      
+      updateNode(lastNodeID, (node) => ({
+        position: { x: node.position.x - node.dimensions.width / 2, y: node.position.y - node.dimensions.height / 2 }
+      }))
+    } else {
+      fromObject(parsedProcessingStep)
+    }
+    
+    processStepForwardButtonDisabled.value = false
+    if( currentProcessingStep.value == 1 ) {
+      processStepBackButtonDisabled.value = true
+    }
+
+    for( const[_, node] of Object.entries(getNodes.value) ) {
+      if( node.data.selected == true ) {
+        fillInfoCard(node)
+      }
+
+      nodesInUnitSearch.value.push(node.data.label)
+    }
+
+    createNewIndexForNextNode()
+  }
+
+
+
+
+  
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Loads an advanced state of the graph and restores its effects to
+   * subcomponents of other components of the system.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * ---------->>>> Creates new index for next node to be created <<<<----------
+   * 
+   */
+  function goProcessingStepForward() {
+    clearInfoCard()
+    nodesInUnitSearch.value = [];
+
+    // Vermerke den neuen aktuellen Bearbeitungsschritt
+    currentProcessingStep.value = currentProcessingStep.value + 1
+    // Lade den aktuell ausgewählten Bearbeitungsstand
+    console.log("Go forward and load: " + processingSteps.value[currentProcessingStep.value - 1].type)
+    const parsedProcessingStep = JSON.parse( processingSteps.value[currentProcessingStep.value - 1].step )
+    
+    if( processingSteps.value[ currentProcessingStep.value - 1 ].type == "addNewNode" ) {
+      const lastNodeID = parsedProcessingStep.nodes[ parsedProcessingStep.nodes.length - 1 ].id
+      fromObject(parsedProcessingStep)
+      
+      updateNode(lastNodeID, (node) => ({
+        position: { x: node.position.x - 100 / 2, y: node.position.y - 100 / 2 }
+      }))
+    } else {
+      fromObject(parsedProcessingStep)
+    }
+    
+    // Blende den Zurück-Button ein
+    processStepBackButtonDisabled.value = false
+    // Blende den Vor-Button aus, wenn der aktuelle Bearbeitungsschritt der Letzte ist
+    if( currentProcessingStep.value == processingSteps.value.length ) {
+      processStepForwardButtonDisabled.value = true
+    }
+
+    for( const[_, node] of Object.entries(getNodes.value) ) {
+      // Ive a node was selected, open the info card and fill it
+      if( node.data.selected == true ) {
+        fillInfoCard(node)
+      }
+
+      // Fill drop down menu of unit search
+      nodesInUnitSearch.value.push(node.data.label)
+    }
+
+    createNewIndexForNextNode()
+  }
+  
+
+
+
+
   
 
   
