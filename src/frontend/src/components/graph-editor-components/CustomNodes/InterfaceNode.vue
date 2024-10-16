@@ -64,4 +64,29 @@ function testForValidConnection(connection) {
 </template>
 
 <style>
+.clicked_interface {
+  height: 100px;
+  width: 100px;
+  line-height: 100px;
+  text-align: center; 
+  color: black; 
+  background-color:rgb(172, 108, 24); 
+  border: 2px solid #ffffff; 
+  border-radius: 100%; 
+  padding: 7%; 
+  box-shadow: 0 0 0 6px #ebb60b;
+} 
+  
+.notClicked_interface {
+  height: 100px; 
+  width: 100px; 
+  line-height: 100px; 
+  text-align: center; 
+  color: black; 
+  background-color:rgb(172, 108, 24); 
+  border: 2px solid #ffffff; 
+  border-radius: 100%; 
+  padding: 7%;
+}
+
 </style>

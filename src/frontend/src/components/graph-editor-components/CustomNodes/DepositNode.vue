@@ -64,4 +64,28 @@ function testForValidConnection(connection) {
 </template>
 
 <style>
+.clicked_deposit {
+  height: 100px; 
+  width: 100px; 
+  line-height: 100px; 
+  text-align: center; 
+  color: black; 
+  background-color:rgb(30, 154, 30); 
+  border: 2px solid #ffffff; 
+  border-radius: 10%; 
+  padding: 6px; 
+  box-shadow: 0 0 0 6px #88fd82;
+}
+
+.notClicked_deposit {
+  height: 100px; 
+  width: 100px; 
+  line-height: 86px; 
+  text-align: center; 
+  color: black; 
+  background-color:rgb(30, 154, 30); 
+  border: 2px solid #ffffff; 
+  border-radius: 10%; 
+  padding: 6px;
+}
 </style>
