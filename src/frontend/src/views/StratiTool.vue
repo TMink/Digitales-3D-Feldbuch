@@ -252,6 +252,14 @@
               <v-btn class="pa-7 px-14 button" v-on:click="changeEditor">Modus wechsel</v-btn>
             </v-card>
           </v-row>
+  
+          <!-- Placeholder -->
+          <v-row no-gutters style="width:fit-content;">
+            <v-card class="d-flex align-center justify-center tile" height="100" width="400">
+              
+            </v-card>
+          </v-row>
+            
   /**                                 Watcher
    * /=========================================================================\
    * Zooms in on the node that was searched for.
