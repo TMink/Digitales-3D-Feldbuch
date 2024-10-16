@@ -2,6 +2,7 @@
  Created Date: 23.09.2024 10:14:23
  Author: Tobias Mink
  
+ Last Modified: 16.10.2024 05:31:32
  Modified By: Tobias Mink
  
  Description: 
@@ -10,25 +11,45 @@
 <template>
   <div id="wrapper">
     <Navigation active_tab_prop="2" />
+    <v-card class="pa-1 background">
+      <v-row no-gutters style="width:fit-content;">
+          
+        <!-- > > > > > > Left < < < < < < -->
+        <div>
             </v-card>  
           </v-row>
+  
             </v-card>
+        </div>
+          
+        <!-- > > > > > > Middle < < < < < < -->
+        <div>
+          
             </v-card>   
           </v-row>
+  
             </v-card>
           </v-row>
+  
                 <DropzoneBackground :style="{ backgroundColor: isDragOver ? '#1e81b0' : 'transparent', transition: 'background-color 0.2s ease', }">
                   <p v-if="isDragOver">Drop here</p>
                 </DropzoneBackground>
               </VueFlow>
             </v-card>
           </v-row>
+        </div>
+  
+        <!-- > > > > > > Right < < < < < < -->
+        <div>
           </v-row>
             </v-card>
           </v-row>
             </v-card>
           </v-row>
+        </div>
+        
       </v-row>
+    </v-card>
   </div>
 </template>
 
