@@ -30,6 +30,23 @@
             </v-card>  
           </v-row>
   
+          <!-- Module -->
+          <v-row no-gutters style="width: fit-content">
+            <v-card class="pa-1 hollow" :height="windowHeight - 220" width="400">
+                <v-card height="92" class="pa-2 tile d-flex align-center justify-center">
+                  <v-row no-gutters>
+                    <v-col cols="3" class="d-flex align-center justify-center">
+                      <v-btn variant="text" width="50%" height="100%" icon="mdi-arrow-left-bold" @click="changeModuleLeft()"></v-btn>
+                    </v-col>
+                    <v-col cols="6">
+                      <v-card-title width="100%" height="100%" class="d-flex align-center justify-center">{{ aktiveModuleName }}</v-card-title>
+                    </v-col>
+                    <v-col cols="3" class="d-flex align-center justify-center">
+                      <v-btn variant="text" width="50%" height="100%" icon="mdi-arrow-right-bold" @click="changeModuelRight()"></v-btn>
+                    </v-col>
+                  </v-row>
+                </v-card>
+                </v-card>
             </v-card>
         </div>
           
