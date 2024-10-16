@@ -2,7 +2,7 @@
  * Created Date: 06.09.2023 17:19:12
  * Author: Julian Hardtung
  * 
- * Last Modified: 13.10.2024 17:03:12
+ * Last Modified: 16.10.2024 15:52:24
  * Modified By: Julian Hardtung
  * 
  * Description: input module viewer that shows all modules that are 
@@ -27,8 +27,10 @@
         @dataToModuleViewer="sendData($event)"/>
 
       <v-col cols="6">
-        <ModuleCoordinates
-        :objectProp="object"
+        <ModuleDating
+        :datingProp="object.dating"
+        :showModuleProp="object.modulePreset.dating"
+        :datingItemsSecondProp="datingItemsFirstProp"
         @dataToModuleViewer="sendData($event)"/>
 
       <ModuleVisibility
@@ -52,10 +54,8 @@
       </v-col>
 
       <v-col cols="6">
-        <ModuleDating
-        :datingProp="object.dating"
-        :showModuleProp="object.modulePreset.dating"
-        :datingItemsSecondProp="datingItemsFirstProp"
+        <ModuleCoordinates
+        :objectProp="object"
         @dataToModuleViewer="sendData($event)"/>
         
         <ModuleFindTypes
