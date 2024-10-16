@@ -390,6 +390,22 @@
   </div>
 </template>
 
+  /**
+   * [-------------------------------------------------------------------------]
+   * [----------------------- Non-Reactive Variables --------------------------]
+   * [-------------------------------------------------------------------------]
+   */
+  const { width, height } = useWindowSize();
+  const windowHeight = height;
+  const windowWidth = width;
+  var selectedNodeID = "";
+  var connectionInProgress = false;
+  var idOfCurrentStratiTool = "";
+  var alreadyCut = false;
+  const nodeTypes = {
+    deposit: markRaw(DepositNode),
+    interface: markRaw(InterfaceNode)
+  }
   const handleStyles = {
     deposit: {
       default: {
