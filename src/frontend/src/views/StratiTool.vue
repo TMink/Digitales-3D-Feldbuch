@@ -392,6 +392,22 @@
 
   /**                                 Watcher
    * /=========================================================================\
+   * Changes the currently displayed module of the module component.
+   * \=========================================================================/
+   * 
+   */
+  watch(aktiveModuleName, switchedToModule => {
+    document.getElementById("screenshot_module").style.zIndex = 0;
+    document.getElementById("group_module").style.zIndex = 0;
+    document.getElementById("view_module").style.zIndex = 0;
+    document.getElementById("exp/imp_module").style.zIndex = 0;
+    document.getElementById("filter_module").style.zIndex = 0;
+    document.getElementById("timemodel_module").style.zIndex = 0;
+    document.getElementById(switchedToModule.toLowerCase() + "_module").style.zIndex = 1;
+  })
+  
+  /**                                 Watcher
+   * /=========================================================================\
    * Zooms in on the node that was searched for.
    * \=========================================================================/
    * 
