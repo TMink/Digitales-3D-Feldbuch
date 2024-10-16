@@ -260,6 +260,136 @@
             </v-card>
           </v-row>
             
+          <!-- Infobereich -->
+          <v-row no-gutters style="width:fit-content;">
+            <v-card class="pa-1 hollow" :height="windowHeight - 320" width="400">
+              <v-card :disabled="infoCardDisabled" id="infoCard" class="pa-2 infobereich__base" height="100%" width="100%">
+                <v-col class="pa-0">
+                    
+                  <!-- Unit Titel -->
+                  <v-row no-gutters class="pb-2" align-content="center">
+                    <v-card class="infobereich__titel_default" width="100%" height="50">
+                      <v-card-title class="justify-center">{{ nodeTitle }}</v-card-title>
+                    </v-card>
+                  </v-row>
+                    
+                  <!-- Unit Bild -->
+                  <v-row no-gutters class="pb-3">
+                    <v-card class="pa-2 infobereich__image_outside" width="100%" height="300">
+                      <v-card class="infobereich__image_inside" width="100%" height="272">{{  }}</v-card>
+                    </v-card>
+                  </v-row>
+                    
+                  <!-- Unit Attribute -->
+                  <v-row no-gutters class="pb-3">
+                    <v-card class="py-0 infobreich__attributes_base_default" :max-height="windowHeight - 795" width="100%">
+                      <v-list class="py-1 pa-1 infobereich__attributes_list" max-height="100%">
+                          
+                        <!-- UnitName -->
+                        <v-card class="py-2 mb-3 infobereich__attributes_name" width="100%">
+                          <v-row no-gutters class="py-0" align-content="center">
+                            <v-card class="pl-3 pb-1 infobereich__attributes_name_title" elevation=0>Name:</v-card>
+                          </v-row>
+                          <v-row no-gutters class="pr-3 px-2">
+                            <v-col class="px-1" cols="10">
+                              <v-text-field class="infobereich__attributes_name_text-field" hide-details height="100%" v-model="nodeTitle"></v-text-field>
+                            </v-col>
+                            <v-col cols="2">
+                              <v-btn class="infobereich__attributes_name_button" height="100%" min-width="0" @click="updateTitle(nodeTitle)">
+                                <v-icon icon="mdi-content-save" size="Large"></v-icon>
+                              </v-btn>
+                            </v-col>
+                          </v-row>
+                        </v-card>
+                          
+                        <!-- Unit Type -->
+                        <v-card class="py-2 mb-3 infobereich__attributes_type" width="100%">
+                          <v-row no-gutters class="py-0" align-content="center">
+                            <v-card class="pl-3 pb-1 infobereich__attributes_type_title" elevation=0>Type:</v-card>
+                          </v-row>
+                          <v-row no-gutters class="pr-2 pl-1">
+                            <v-btn-toggle class="px-10" v-model="nodeType">
+                              <v-btn class="mr-2 infobereich__attributes_type_title_button" width="110" @click="updateType('deposit')">
+                                Deposit
+                              </v-btn>
+                              <v-btn class="infobereich__attributes_type_title_button" width="110" @click="updateType('interface')">
+                                Interface
+                              </v-btn>
+                            </v-btn-toggle>
+                          </v-row>
+                        </v-card>
+                          
+                        <!-- Unit Beschreibung -->
+                        <v-card class="py-2 mb-3 infobereich__attributes_description" width="100%">
+                          <v-row no-gutters class="py-0" align-content="center">
+                            <v-card class="pl-3 pb-1 infobereich__attributes_description_title" elevation=0>Beschreibung:</v-card>
+                          </v-row>
+                          <v-row no-gutters class="pr-3 pl-2">
+                            <v-col class="px-1" cols="10">
+                              <v-textarea class="infobereich__attributes_description_textarea" no-resize hide-details v-model="nodeDescription"></v-textarea>
+                            </v-col>
+                            <v-col cols="2">
+                              <v-btn class="infobereich__attributes_description_button" height="100%" min-width="0" @click="updateDescription(nodeDescription)">
+                                <v-icon icon="mdi-content-save" size="Large"></v-icon>
+                              </v-btn>
+                            </v-col>
+                          </v-row>
+                        </v-card>
+                          
+                        <!-- Unit Beziehungen -->
+                        <v-card class="py-2 mb-3 infobereich__attributes_relations" width="100%">
+                          <v-row no-gutters class="py-0" align-content="center">
+                            <v-card class="pl-3 pb-1 infobereich__attributes_relations_title" elevation=0>Stratigraphische Beziehungen:</v-card>
+                          </v-row>
+                          <v-row no-gutters class="px-2">
+                            <v-list class="px-2 infobereich__attributes_relations_list" height="200" min-width="100%" max-width="100%">
+                              <v-list-item class="mb-7 pb-0 px-0" max-height="0" v-for="n in nodeRelations" :key="n">
+                                <v-row no-gutters height="fit-content">
+                                    <v-card class="pa-2 infobereich__attributes_relations_list_item" width="87%" height="70">
+                                      Mit: {{ n.targetLabel }}<br>Art: {{ n.type }}
+                                    </v-card>
+                                    <v-btn class="infobereich__attributes_relations_list_button" height="70" min-width="0" max-width="0">
+                                      <v-icon icon="mdi-delete-empty" size="Large" @click="deleteEdge( n.id, n.sourceID, n.targetID )"></v-icon>
+                                    </v-btn>
+                                </v-row>
+                              </v-list-item>
+                            </v-list>
+                          </v-row>
+                        </v-card>
+                          
+                          <!-- Gruppenzugehörigkeit -->
+                        <v-card class="py-2 infobereich__attributes_groups" width="100%">
+                          <v-row no-gutters class="py-0" align-content="center">
+                            <v-card class="pl-3 pb-1 infobereich__attributes_groups_title" elevation=0>Unit Gruppenzugehörigkeit:</v-card>
+                          </v-row>
+                          <v-row no-gutters class="pr-4 pl-1">
+                            <v-list class="px-2 infobereich__attributes_groups_list" height="200" min-width="100%" max-width="100%">
+                              <v-list-item class="pb-0 px-0" min-height="0" v-for="n in 10" :key="n">
+                                <v-btn class="infobereich__attributes_groups_list_button" width="100%">Beispielgruppe</v-btn>
+                              </v-list-item>
+                            </v-list>
+                          </v-row>
+                        </v-card>
+                        
+                      </v-list>
+                    </v-card>
+                  </v-row>
+                  
+                  <!-- Unit löschen -->
+                  <v-row no-gutters>
+                    <v-btn class="infobereich__delete_unit_button" height="50" width="100%" @click="deleteNode()">Unit Löschen</v-btn>
+                  </v-row>
+                </v-col>
+              </v-card>
+            </v-card>
+          </v-row>
+        </div>
+        
+      </v-row>
+    </v-card>
+  </div>
+</template>
+
   /**                                 Watcher
    * /=========================================================================\
    * Zooms in on the node that was searched for.
@@ -287,6 +417,151 @@
 
 
   
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Creates a new index-number for next node to be created.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  function createNewIndexForNextNode() {
+    if( getNodes.value.length != 0 ) {
+      const numbers = [];
+      const nodesInGraph = getNodes.value
+      const nodesInGraphLength = nodesInGraph.length
+      const rangeToCheck = { start: 10, length: 3 }
+      
+      for( let a = 0; a < nodesInGraphLength; a++ ){
+        if( nodesInGraph[a].data.label.substring(0, 9) == "Neue Unit" ){
+          const checkedNumbers = checkNumbers(rangeToCheck, nodesInGraph[a].data.label, nodesInGraph[a].data.label.length)
+          numbers.push( checkedNumbers )
+        }
+      }
+      
+      let highestNumber = Math.max( ...numbers );
+      highestNumber++;
+      const highestNumberAsString = highestNumber.toString();
+      
+      if( highestNumberAsString !== -Infinity ){
+        highestDefaultCount.value = highestNumberAsString;
+      } else {
+        highestDefaultCount.value = "0";
+      }
+    } else {
+      highestDefaultCount.value = "0"
+    }
+  }
+
+
+
+
+  
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Checks the last digits of a node within a given range. If they represent 
+   * a number, it will be returned. Otherwise a '0' is returned by default.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * @param {{ start: int, length: int }} rangeToCheck - 
+   * @param {string} label -
+   * @param {number} labelLength -
+   * @returns {number} The index-number of the node
+   */
+  function checkNumbers(rangeToCheck, label, labelLength) {
+    let startPosition = rangeToCheck.start;
+    const numbersToCheck = []
+    
+    for( let a = 0; a < rangeToCheck.length; a++ ){
+      if( labelLength < (startPosition + 1) ) {
+        const numberSubstringAsInt = parseInt( label.substring( startPosition, startPosition + 1 ) )
+        numbersToCheck.push( !isNaN(numberSubstringAsInt) )
+      } else {
+        break;
+      }
+      startPosition++;
+    }
+
+    const checker = arr => arr.every(n => n === true);
+    if( checker(numbersToCheck) ){
+      return parseInt( label.substring( rangeToCheck.start, labelLength ) )
+    }
+    return 0;
+  }
+
+
+
+
+  
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Fills the individual subcomponents of the infoCard with information from a 
+   * node.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * @param { {computePosition: {x: int, y: int, z: int}, connectable: any, data: {description: string, findingID: string, groupIDs: array<string>, label: string, nodeStyle: string, relations: array<{edgeID: string, id: string, relationType: string, sourceID: string, targetID: string}>, selected: boolean, styles: {bottom_middle: string, left_middle: string, right_middle: string, top_middle: string}, validConnections: {bottom_middle: boolean, left_middle: boolean, right_middle: boolean, top_middle: boolean}, volumeID: string}, dimensions: {width: int, height: int}, draggable: any, events: any, focusable: any, handleBounds: {source: array, target: array , id: string, initialized: boolean, isParent: boolean, parentNode: any, position: {x: int, y: int}, resizing: boolean, selectable: any, selected: boolean, type: string}, id: string, initialized: boolean, isParent: boolean, parentNode: any, position: {x: int, y: int}, resizing: boolean, selectable: any, type: string} } node - A node from the graph
+   */
+  function fillInfoCard(node) {
+    // Note the id of the currently selected node and activate the InfoCard
+    selectedNodeID = node.id
+    infoCardDisabled.value = false
+    document.getElementById("infoCard").style.opacity = "1";
+    
+    // Fill the fields of the infocard with ...
+    // ... the title, ... 
+    nodeTitle.value = node.id
+    // ... description, ...
+    nodeDescription.value = node.data.description
+    // ... type ... 
+    if( node.type == "deposit" ) {
+      nodeType.value = 0;
+    } else {
+      nodeType.value = 1;
+    }
+    // ... and relations of the node.
+    for( const relation of node.data.relations ) {
+      const targetNode = getNodes.value.find( obj => { return obj.id == relation.id } )
+      if( relation.id == targetNode.id ) {
+        nodeRelations.value.push( { 
+          id: relation.edgeID,
+          type: relation.relationType, 
+          targetLabel: targetNode.data.label,
+          sourceID: relation.sourceID,
+          targetID: relation.targetID
+        } )
+      }
+    }
+  }
+
+
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Sets the InfoCard to the default state and resets global variables that 
+   * were related to the previously selected node.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  function clearInfoCard() {
+    selectedNodeID = "";
+    nodeSearchedFor.value = "";
+    infoCardDisabled.value = true
+    document.getElementById("infoCard").style.opacity = "0.5";
+
+    // node title
+    nodeTitle.value = "";
+    // node description
+    nodeDescription.value = "";
+    // node type
+    nodeType.value = -1;
+    // node relations
+    nodeRelations.value = [];
+  }
+
+
+
+
+
   /**
    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
    * Stores the type of last action taken by the user and the current state of 
@@ -329,25 +604,6 @@
    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
    * Loads a previous state of the graph and restores its effects on
    * subcomponents of other components of the system.
-  /**
-   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-   * Adjusts the current viewport so that the specified node is in the center.
-   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-   * 
-   * @param nodeID - 
-   */
-  function zoomToNode( nodeID ) {
-    fitView({
-      nodes: [ nodeID ],
-      duration: 1000,
-      padding: 1
-    })
-  }
-
-
-
-
-
    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
    * ---------->>>> Creates new index for next node to be created <<<<----------
    * 
@@ -443,18 +699,494 @@
 
 
 
-  
 
-  
 
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Creates a new default node with given parameters.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * @param {any} param - Parameters for the edge to be created
+   * @returns { {id: string, source: string, target, string, sourceHandle: string, targetHandle: string, type: string, markerEnd: any, style: {strokeWidth: string, strike: string}} }
+   */
+  function getDefaultEdge(param) {
+    return {
+      id: param.target + " -> " + param.source,
+      source: param.source,
+      target: param.target,
+
+      sourceHandle: param.sourceHandle,
+      targetHandle: param.targetHandle,
+
+      type: 'custom',
+      markerEnd: MarkerType.ArrowClosed,
+      style: {
+        strokeWidth: '4px',
+        stroke: '#ffffff',
+      },
+    }
   }
+
+
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Adjusts the parameter of the default Edge.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * @param { {id: string, source: string, target, string, sourceHandle: string, targetHandle: string, type: string, markerEnd: any, style: {strokeWidth: string, strike: string}} } newEdge - 
+   * @param param - Parameters for the edge to be created
+   */
+  function adjustDefaultEdge(newEdge, param) {
+    newEdge.source = param.target;
+    newEdge.target = param.source;
+    newEdge.sourceHandle = param.targetHandle;
+    newEdge.targetHandle = param.sourceHandle;
+  }
+
+
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Removes a duplicate edge between two nodes.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * @param param - Parameters for the edge to be created
+   */
+  function removeDuplicateEdge(param) {
+    const edgesInGraph = getEdges.value;
+    const edgesInGraphlength = edgesInGraph.length;
+    for( let a = 0; a < edgesInGraphlength; a++ ){
+      if( ((edgesInGraph[a].target == param.source && edgesInGraph[a].source == param.target) || (edgesInGraph[a].target == param.target && edgesInGraph[a].source == param.source)) && (edgesInGraph[a].sourceHandle == 'left_middle' || edgesInGraph[a].sourceHandle == 'right_middle') ){
+        removeEdges(edgesInGraph[a].id);
+        break;
+      }
+    }
+  }
+
+
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Adds a new entry to a node's collection of entries about all relations with 
+   * other nodes.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   *  
+   * @param type -
+   * @param sourceNodeID -
+   * @param targetNodeID -
+   * @param relations -
+   * @param relationType -
+   * @param edgeID -
+   */
+  function addNewRelationEntryToNode(type, sourceNodeID, targetNodeID, relations, relationType, edgeID) {
+    switch( type ){
+      case 'source':
+        relations.push({
+          id: targetNodeID,
+          relationType: relationType,
+          edgeID: edgeID,
+          sourceID: sourceNodeID,
+          targetID: targetNodeID,
+        })
+        break;
+      case 'target':
+        relations.push({
+          id: sourceNodeID,
+          relationType: relationType,
+          edgeID: edgeID,
+          sourceID: sourceNodeID,
+          targetID: targetNodeID,
+        })
+        break;
+      default:
+        console.log("ERROR")
+    }
+  }
+
+
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Adds a new relation to the relations-subcomponent of the InfoCard.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * @param nodesInGraph -
+   * @param sourceNodeID -
+   * @param targetNodeID -
+   */
+  function updateRelationsSubComponent(nodesInGraph, sourceNodeID, targetNodeID) {
+    const selectedNodeRelations = nodesInGraph[ nodesInGraph.map( (x) => {return x.id} ).indexOf( selectedNodeID ) ].data.relations;
+    const selectedNodeRelationsLength = selectedNodeRelations.length;
+    const nodesInGraphLength = nodesInGraph.length;
+    nodeRelations.value = [];
+    
+    for( let a = 0; a < selectedNodeRelationsLength; a++ ){
+      nodes: for( let b = 0; b < nodesInGraphLength; b++ ){
+        if( selectedNodeRelations[a].id == nodesInGraph[b].id ) {
+          nodeRelations.value.push({
+            id: selectedNodeRelations[a].edgeID,
+            type: selectedNodeRelations[a].relationType,
+            targetLabel: nodesInGraph[b].data.label,
+            sourceID: sourceNodeID,
+            targetID: targetNodeID,
+          });
+          break nodes;
+        }
+      }
+    }
+  }
+
+
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Checks whether the new edge is already noted as an entry in the node.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * @param {Array<{edgeID: string, id: string, relationType: string, sourceID: string, targetID: string}>} allRelations
+   * @param {string} targetNodeId
+   * @param {string} targetNodeRelationtype 
+   * @returns {boolean} Whether an entry for this relation already exists
+   */
+  function searchForEntry( relations, nodeID, nodeRelationType ) {
+    const relationsLength = relations.length;
+    if( relations.length ){
+      for( let a = 0; a < relationsLength; a++ ) {
+        if( relations[a].id == nodeID && relations[a].relationType == nodeRelationType ) {
+          return true;
+        }
+      }
+    }
+  }
+
+
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Goes through all the nodes that came stratigraphically after the start node 
+   * and checks which would not be suitable for the type of relation to be 
+   * created according to the rules of stratigraphy.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * @param {} relations -
+   * @param {} nodeID -
+   * @param {} nonValidNodes - 
+   * @returns {array<string>} - Ids of the non-matching nodes
+   */
+  function checkRelationsAfter( relations, nodeID, nonValidNodes ) {
+    let nonValid = nonValidNodes
+    
+    if( relations.length > 0 ) {
+      const nodesInGraph = getNodes.value
+      const nodesInGraphLength = nodesInGraph.length
+      const relationslength = relations.length
+      for( let a = 0; a < relationslength; a++ ) {
+        if( (relations[a].relationType == 'after' || relations[a].relationType == 'korrelation') && !nonValid.includes(relations[a].id)){
+          nonValid.push(relations[a].id)
+          nodes: for( let b = 0; b < nodesInGraphLength; b++ ){
+            if( nodesInGraph[b].id == relations[a].id ) {
+              const nonValidIDs = checkRelationsAfter( nodesInGraph[b].data.relations, nodeID, nonValid)
+              nonValid.push(... nonValidIDs );
+              nonValid = [ ...new Set(nonValid) ]
+              break nodes;
+            }
+          }
+        }
+      }
+    }
+    return nonValid
+  }
+
+
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Goes through all the nodes that came stratigraphically before the start 
+   * node and checks which would not be suitable for the type of relation to be 
+   * created according to the rules of stratigraphy.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * @param {} relations - 
+   * @param {} nodeID - 
+   * @param {} nonValidNodes - 
+   * @returns {array<string>} - Ids of the non-matching nodes
+   */
+  function checkRelationsBefore( relations, nodeID, nonValidNodes ) {
+    let nonValid = nonValidNodes
+    
+    if( relations.length > 0 ) {
+      const relationsLength = relations.length
+      const nodesInGraph = getNodes.value
+      const nodesInGraphLength = nodesInGraph.length
+      for( let a = 0; a < relationsLength; a++ ){
+        if( (relations[a].relationType == 'before' || relations[a].relationType == 'korrelation') && !nonValid.includes(relations[a].id)){
+          nonValid.push(relations[a].id)
+          nodes: for( let b = 0; b < nodesInGraphLength; b++ ) {
+            if( nodesInGraph[b].id == relations[a].id ) {
+              const nonValidIDs = checkRelationsBefore( nodesInGraph[b].data.relations, nodeID, nonValid)
+              nonValid.push(... nonValidIDs );
+              nonValid = [ ...new Set(nonValid) ]
+              break nodes;
+            }
+          }
+        }
+      }
+    }
+    return nonValid
+  }
+
+
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Goes through all the nodes that are stratigraphically correlating with the
+   * start node and checks which would not be suitable for the type of relation 
+   * to be created according to the rules of stratigraphy.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * @param {} relations - 
+   * @param {} nodeID - 
+   * @param {} nonValidNodes - 
+   * @returns {array<array<string>, array<string>>} 
+   */
+  function checkRelationsCorrelating( relations, nodeID, nonValidNodes ) {
+    let nonValid = nonValidNodes;
+    const toBeDeleted = [];
+    
+    if( relations.length > 0 ) {
+      const relationsLength = relations.length;
+      const nodesInGraph = getNodes.value;
+      const nodesInGraphLength = nodesInGraph.length;
+      for( let a = 0; a < relationsLength; a++ ){
+        if( relations[a].relationType == 'before' && !nonValid.includes(relations[a].id) ){
+          nonValid.push(relations[a].id)
+          nodes: for( let b = 0; b < nodesInGraphLength; b++ ){
+            if( nodesInGraph[b].id == relations[a].id ) {
+              const nonValidIDs = checkRelationsBefore( nodesInGraph[b].data.relations, nodeID, nonValid )
+              nonValid.push(... nonValidIDs );
+              nonValid = [ ...new Set(nonValid) ]
+              break nodes;
+            }
+          }
+        } else if( relations[a].relationType == 'after' && !nonValid.includes(relations[a].id) ){
+          nonValid.push( relations[a].id )
+          nodes: for( let b = 0; b < nodesInGraphLength; b++ ){
+            if( nodesInGraph[b].id == relations[a].id ) {
+              const nonValidIDs = checkRelationsAfter( nodesInGraph[b].data.relations, nodeID, nonValid )
+              nonValid.push(... nonValidIDs );
+              nonValid = [ ...new Set(nonValid) ];
+              break nodes;
+            }
+          }
+        } else if( relations[a].relationType == 'korrelation' && !nonValid.includes(relations[a].id) ){
+          nonValid.push(relations[a].id)
+          nodes: for( let b = 0; b < nodesInGraphLength; b++ ){
+            if( nodesInGraph[b].id == relations[a].id ) {
+              const nonValidIDs = checkRelationsCorrelating( nodesInGraph[b].data.relations, nodeID, nonValid )
+              const relationsOfNodeLength = nodesInGraph[b].data.relations.length
+              for( let c = 0; c < relationsOfNodeLength; c++ ){
+                if( nodesInGraph[b].data.relations[c].id == nodeID ){
+                  toBeDeleted.push(relations[a].id)
+                }
+              }
+              toBeDeleted.push(...nonValidIDs[1])
+              nonValid.push(...nonValidIDs[0] );
+              nonValid = [...new Set(nonValid)]
+              break nodes;
+            }
+          }
+        }
+      }
+    }
+    return [nonValid, toBeDeleted]
+  }
+
+  
+
+
+  
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Reduces the non valid ids by the ids of all nodes that are connected to the
+   * source node via a correlation relationship and are therefore in a row.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * @param {} nonValidNodes - 
+   * @param {} nodeID - 
+   * @returns {array<string>} 
+   */
+  function reduceNonValidIDsByRowIDs(nonValidNodes, nodeID) {
+    const newNonValidNodes = nonValidNodes[0];
+    let toBeDeleted = nonValidNodes[1];
+    toBeDeleted.push(... getNodesInARow(nonValidNodes[1], nodeID, []))
+    toBeDeleted = [...new Set(toBeDeleted)]
+    
+    const toBeDeletedLength = toBeDeleted.length;
+    for( let a = 0; a < toBeDeletedLength; a++ ){
+      const index = newNonValidNodes.indexOf( toBeDeleted[a] )
+      newNonValidNodes.splice( index, 1 )
+    }
+    
+    return newNonValidNodes
+  }
+
+  
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Gets all nodes that are in a row via correlation relations. Starting 
+   * from the source node.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * @param {} nextLookAt - 
+   * @param {} nodeID - 
+   * @param {} toBeDeleted - 
+   * @returns {array<string>} 
+   */
+  function getNodesInARow(nextLookAt, nodeID, toBeDeleted) {
+    const forNextStep = [];
+
+    const nodesInGraph = getNodes.value;
+    const nodesInGraphLength = nodesInGraph.length;
+    for( let a = 0; a < nodesInGraphLength; a++ ){
+      if( nextLookAt.includes(nodesInGraph[a].id) && nodesInGraph[a].id != nodeID ){
+        toBeDeleted.push( nodesInGraph[a].id );
+        const relationsLength = nodesInGraph[a].data.relations.length
+        for( let b = 0; b < relationsLength; b++ ){
+          if( nodesInGraph[a].data.relations[b].relationType == "korrelation" && nodesInGraph[a].data.relations[b].id != nodeID && !toBeDeleted.includes(nodesInGraph[a].data.relations[b].id) ){
+            toBeDeleted.push( nodesInGraph[a].data.relations[b].id )
+            forNextStep.push( nodesInGraph[a].data.relations[b].id )
+            getNodesInARow( forNextStep, nodeID, toBeDeleted)
+          }
+        }
+      }
+    }
+    toBeDeleted = [...new Set(toBeDeleted)]
+    return toBeDeleted
+  }
+
+  
+
+
+  
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Deletes a node and the associated entries for relations from other nodes in
+   * the graph.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * ================>>>> saves the current processing step <<<<================
+   * =====>>> type: deleteNode
+   * 
+   */
+  function deleteNode() {
+    for( const[_, value] of Object.entries(getNodes.value) ) {
+      if( value.data.selected ) {
+        
+        if( nodesInUnitSearch.value.includes( value.data.label ) ) {
+          const index = nodesInUnitSearch.value.indexOf(value.data.label);
+          nodesInUnitSearch.value.splice(index, 1);
+        }
+        
+        removeNodes(value.id)
+      }
+      else {
+        value.data.relations.forEach( ( relation, idx ) => {
+          if( relation.id == selectedNodeID ) {
+            value.data.relations.splice(idx, 1);
+          }
+        })
+      }
+    }
+    clearInfoCard()
+    
+    saveProcessingStep( "deleteNode" )
+  }
+
+
+
+  
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Deletes an edge and its associated entries in the graph
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * ================>>>> saves the current processing step <<<<================
+   * ====>>> type: deleteEdge
+   * 
+   * @param {} edgeID -
+   * @param {} sourceID -
+   * @param {} targetID - 
+   */
+  function deleteEdge( edgeID, sourceID, targetID ) {
+    for( const[_, nodeInGraph] of Object.entries(getNodes.value) ) {
+      if( nodeInGraph.id == sourceID || nodeInGraph.id == targetID ){
+        nodeInGraph.data.relations.forEach( (relation, idx) => {
+          if( relation.edgeID == edgeID ){
+            nodeInGraph.data.relations.splice( idx, 1 );
+          }
+        } )
+      }
+    }
+    nodeRelations.value.forEach( ( relation, idx ) => {
+      if( relation.id == edgeID ) {
+        nodeRelations.value.splice( idx, 1 );
+      }
+    } )
+    removeEdges( edgeID )
+
+    saveProcessingStep( "deleteEdge" )
+  }
+
+  
 
   
   
   /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Updates the label of a node and the entry in the unit search subcomponent.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * ================>>>> saves the current processing step <<<<================
+   * =====>>> type: updateTitle
    * 
-   * 
+   * @param {} input - 
    */
+  function updateTitle( input ) {
+    if( getNodes.value.length != 0 ) {
+      for( const[_, node] of Object.entries(getNodes.value) ) {
+        if( node.data.selected ) {
+          if( nodeSearchedFor.value == node.data.label ) {
+            nodeSearchedFor.value = input
+          }
+          const index = nodesInUnitSearch.value.indexOf(node.data.label);
+          nodesInUnitSearch.value.splice(index, 1);
+          nodesInUnitSearch.value.push(input)
+          node.data.label = input
+        }
+      }
+      
+      saveProcessingStep( "updateTitle" )
     }
   }
   
