@@ -392,6 +392,20 @@
 
   /**                                 Watcher
    * /=========================================================================\
+   * Saves the current state of the graph, after adding a new unit.
+   * \=========================================================================/
+   * ================>>>> saves the current processing step <<<<================
+   * 
+   */
+  watch( nodeDropped, hasBeenDropped => {
+    if( hasBeenDropped ){
+      saveProcessingStep("addNewNode");
+      nodeDropped.value = false;
+    }
+  } )
+  
+  /**                                 Watcher
+   * /=========================================================================\
    * Changes the currently displayed module of the module component.
    * \=========================================================================/
    * 
