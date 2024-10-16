@@ -2,14 +2,14 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 13.10.2024 16:57:23
+ * Last Modified: 16.10.2024 15:53:29
  * Modified By: Julian Hardtung
  * 
  * Description: `general information` input module for places/positions
  -->
 
 <template>
-  <v-col lg="12" class="mb-4">
+  <v-col lg="12" class="mb-2">
 
     <!-- POSITIONS -->
     <v-card class="pa-4"

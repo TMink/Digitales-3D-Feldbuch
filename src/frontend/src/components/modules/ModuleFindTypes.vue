@@ -2,14 +2,14 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 13.10.2024 17:00:30
+ * Last Modified: 16.10.2024 16:01:59
  * Modified By: Julian Hardtung
  * 
  * Description: `find types` input module for places
  -->
 
 <template>
-  <v-card class="mb-4 mr-2 pb-4 px-4">
+  <v-card class="mb-2 pb-2 px-4">
     <v-row no-gutters class="pt-2">
       <h2 class="text-h6 font-weight-medium pt-2">
         {{ $t('findType') }}
@@ -26,7 +26,7 @@
 
     <v-divider></v-divider>
 
-    <v-row v-if="object.modulePreset.findTypes" no-gutters class="mt-4">
+    <v-row v-if="object.modulePreset.findTypes" no-gutters class="mt-4 pb-2">
       <v-col cols="6" class="pr-2">
         <v-checkbox
           color="primary"

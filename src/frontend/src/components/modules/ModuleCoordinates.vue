@@ -2,14 +2,14 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 13.10.2024 16:38:50
+ * Last Modified: 16.10.2024 15:58:18
  * Modified By: Julian Hardtung
  * 
  * Description: `coordinates` input module for places/positions
  -->
 
 <template>
-  <v-card class="mb-4 mr-2 pb-4 px-4">
+  <v-card class="mb-2 pb-4 px-4">
     <v-row no-gutters class="pt-2">
       <h2 class="text-h6 font-weight-medium pt-2">
         {{ $t('coordinates') }}

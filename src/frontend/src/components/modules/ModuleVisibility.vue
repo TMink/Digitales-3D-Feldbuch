@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 27.08.2024 12:27:09
+ * Last Modified: 16.10.2024 16:00:14
  * Modified By: Julian Hardtung
  * 
  * Description: `visibility` input module for places
@@ -10,7 +10,7 @@
 
 <template>
   <!-- <v-col> -->
-    <v-card class="mb-4 mr-2 pb-4 px-4">
+    <v-card class="mb-2 mr-2 pb-2 px-4">
       <v-row no-gutters class="pt-2">
         <h2 class="text-h6 font-weight-medium pt-2">
           {{ $t('visibility') }}
@@ -34,8 +34,7 @@
         tick-size="4" 
         :ticks="tickLabels" 
         show-ticks="always" 
-        class="px-2"
-        style="padding-top:31px; padding-bottom:12px"
+        class="px-2 pt-4 pb-1"
         track-color="primary"
         thumb-color="secondary" 
         v-model="visibility" 

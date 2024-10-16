@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 27.08.2024 12:24:01
+ * Last Modified: 16.10.2024 16:07:50
  * Modified By: Julian Hardtung
  * 
  * Description: `object descriptors` input module for positions
@@ -10,7 +10,7 @@
 
 <template>
   <!-- CARD 3 COUNT -->
-    <v-card class="mb-4 mr-2 pb-4 px-4">
+    <v-card class="mb-4 mr-2 pb-2 px-4">
       <v-row no-gutters class="pt-2">
         <h2 class="text-h6 font-weight-medium pt-2">
           {{ $t('objectDescribers') }}
@@ -27,9 +27,8 @@
 
       <v-divider></v-divider>
       
-      <v-row v-if="object.modulePreset.objectDescribers" no-gutters style="padding-top:37px" >
+      <v-row v-if="object.modulePreset.objectDescribers" no-gutters class="pt-3">
         <v-col cols="3">
-
           <v-number-input
           color="primary" 
           hide-details
