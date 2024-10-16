@@ -1896,6 +1896,16 @@
     }
     renderer.setAnimationLoop( animate );
   })
+
+  /**                               Vue-Livecycle
+   * /:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\
+   * Equivalent semantic to unmounted in <script>.
+   * \:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::/
+   * 
+   */
+  onUnmounted(async() => {
+    saveGraph()
+  })
 </script>
 
 <script>
