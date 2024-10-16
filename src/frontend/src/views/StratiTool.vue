@@ -180,6 +180,15 @@
             </v-card>   
           </v-row>
   
+          <!-- Units -->
+          <v-row no-gutters style="width:fit-content">
+            <v-card class="tile" height="100px" :width="windowWidth - 816">
+              <v-row no-gutters>
+                
+              </v-row>
+            </v-card>
+          </v-row>
+  
             </v-card>
           </v-row>
   
