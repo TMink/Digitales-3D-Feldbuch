@@ -191,7 +191,42 @@
 
 
   
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Switch to a module further to the left.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  function changeModuleLeft() {
+    const index = modulesNames.value.indexOf( aktiveModuleName.value );
+    if( index == 0 ) {
+      aktiveModuleName.value = modulesNames.value[modulesNames.value.length - 1]
+    } else {
+      aktiveModuleName.value = modulesNames.value[index - 1]
     }
+  }
+  
+
+
+  
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Switch to a module further to the right.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  function changeModuelRight() {
+    const index = modulesNames.value.indexOf( aktiveModuleName.value );
+    if( index == (modulesNames.value.length - 1) ) {
+      aktiveModuleName.value = modulesNames.value[0]
+    } else {
+      aktiveModuleName.value = modulesNames.value[index + 1]
+    }
+  }
+
+
+
 
   /**
    * 
