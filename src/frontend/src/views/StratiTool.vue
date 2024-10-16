@@ -185,6 +185,20 @@
             <v-card class="tile" height="100px" :width="windowWidth - 816">
               <v-row no-gutters>
                 
+                <!-- Unit creation -->
+                <v-col>
+                  <v-card class="px-5 py-0 units__base" variant="text">
+                    <v-col class="pa-0" align="center">
+                      <v-card class="pt-1 mb-1" variant="text">
+                        <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
+                          Neue Unit erstellen
+                        </v-card-title>
+                      </v-card>
+                      <Sidebar :highestDefaultCount="highestDefaultCount"/>
+                    </v-col>
+                  </v-card>
+                </v-col>
+                
               </v-row>
             </v-card>
           </v-row>
