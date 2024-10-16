@@ -392,6 +392,27 @@
 
   /**
    * [-------------------------------------------------------------------------]
+   * [------------------------- Reactive Variables ----------------------------]
+   * [-------------------------------------------------------------------------]
+   */
+  var nodeTitle = ref(""); // string
+  var nodeType = ref(-1); // int
+  var nodeDescription = ref(""); // string
+  var nodesInUnitSearch = ref([]); // array<string>
+  var nodeSearchedFor = ref(""); // string
+  var nodeRelations = ref([]); // array<{ id: string, type: string, targetLabel: string, sourceID: string, targetID: string }>
+  var highestDefaultCount = ref("0"); // string
+  var infoCardDisabled = ref(true); // boolean
+  var modulesNames = ref(["Screenshot", "Group", "View", "Exp/Imp", "Filter", "Timemodel"]); // array<string>
+  var aktiveModuleName = ref("Screenshot"); // string
+  var imageFileName = ref(""); // string
+  var processingSteps = ref([]); // array<{ type: string, step: string }>
+  var currentProcessingStep = ref(0); // int
+  var processStepBackButtonDisabled = ref(true) // boolean
+  var processStepForwardButtonDisabled = ref(true) // boolean
+
+  /**
+   * [-------------------------------------------------------------------------]
    * [----------------------- Non-Reactive Variables --------------------------]
    * [-------------------------------------------------------------------------]
    */
