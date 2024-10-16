@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Tobias Mink
  * 
- * Last Modified: 16.10.2024 16:27:40
+ * Last Modified: 16.10.2024 16:29:48
  * Modified By: Julian Hardtung
  * 
  * Description: Helper API for manipulating the IndexedDB
@@ -951,6 +951,12 @@ const offlineDBAutoFillLists = {
   storeNames: ["editors", "editor", "materials", "titles", "datings"],
 }
 
+const offlineDBStratiTool = {
+  name: "StratiToolDB",
+  version: 1,
+  storeNames: ["stratiTool"]
+}
+
 const fromOfflineDB = new ConnectionToOfflineDB([
   offlineDBModels,
   offlineDBActivities,
@@ -964,4 +970,5 @@ const fromOfflineDB = new ConnectionToOfflineDB([
   offlineDBAnnotations,
   offlineDBModulePresets,
   offlineDBAutoFillLists,
+  offlineDBStratiTool,
 ]);
