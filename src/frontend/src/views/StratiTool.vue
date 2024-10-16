@@ -2,7 +2,7 @@
  Created Date: 23.09.2024 10:14:23
  Author: Tobias Mink
  
- Last Modified: 16.10.2024 06:11:09
+ Last Modified: 16.10.2024 06:25:13
  Modified By: Tobias Mink
  
  Description: 
@@ -443,12 +443,12 @@
    * [-------------------------------------------------------------------------]
    */
   const { width, height } = useWindowSize();
-  const windowHeight = height;
-  const windowWidth = width;
-  var selectedNodeID = "";
-  var connectionInProgress = false;
-  var idOfCurrentStratiTool = "";
-  var alreadyCut = false;
+  const windowHeight = height; // int
+  const windowWidth = width; // int
+  var selectedNodeID = ""; // string
+  var connectionInProgress = false; // boolean
+  var idOfCurrentStratiTool = ""; // string
+  var alreadyCut = false; // boolean
   const nodeTypes = {
     deposit: markRaw(DepositNode),
     interface: markRaw(InterfaceNode)
