@@ -46,6 +46,35 @@
                     </v-col>
                   </v-row>
                 </v-card>
+                <v-card class="pa-1 hollow" :height="windowHeight - 328">
+                  <!-- Screenshot -->
+                  <v-card id="screenshot_module" class="pa-2 screenshot_module__base" :height="windowHeight - 345" width="367" style="position:absolute; z-index: 1; opacity: 1;">
+                    <v-card variant="text" width="100%">
+                      <!-- Image name -->
+                      <v-text>Dateiname:</v-text>
+                      <v-text-field hide-details class="pa-1 mb-5" v-model="imageFileName"></v-text-field>
+
+                      <!-- Image format -->
+                      <v-text>Dateinformat:</v-text>
+                      <v-row no-gutters style="height: 50px;">
+                        <v-col class="px-1">
+                          <v-btn class="infobereich__attributes_type_title_button" width="100%" height="100%" @click="takeScreenshot('png')">
+                            PNG
+                          </v-btn>
+                        </v-col>
+                        <v-col class="px-1">
+                          <v-btn class="infobereich__attributes_type_title_button" width="100%" height="100%" @click="takeScreenshot('jpeg')">
+                            JPEG
+                          </v-btn>
+                        </v-col>
+                        <v-col class="px-1">
+                          <v-btn class="infobereich__attributes_type_title_button" width="100%" height="100%" @click="takeScreenshot('svg')">
+                            SVG
+                          </v-btn>
+                        </v-col>
+                      </v-row>
+                    </v-card>
+                  </v-card>
                 </v-card>
             </v-card>
         </div>
@@ -99,6 +128,66 @@
   }
 
   
+
+
+  
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Filter for SVG images.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * @param { {computePosition: {x: int, y: int, z: int}, connectable: any, data: {description: string, findingID: string, groupIDs: array<string>, label: string, nodeStyle: string, relations: array<{edgeID: string, id: string, relationType: string, sourceID: string, targetID: string}>, selected: boolean, styles: {bottom_middle: string, left_middle: string, right_middle: string, top_middle: string}, validConnections: {bottom_middle: boolean, left_middle: boolean, right_middle: boolean, top_middle: boolean}, volumeID: string}, dimensions: {width: int, height: int}, draggable: any, events: any, focusable: any, handleBounds: {source: array, target: array , id: string, initialized: boolean, isParent: boolean, parentNode: any, position: {x: int, y: int}, resizing: boolean, selectable: any, selected: boolean, type: string}, id: string, initialized: boolean, isParent: boolean, parentNode: any, position: {x: int, y: int}, resizing: boolean, selectable: any, type: string} } node - A node from the graph
+   */
+  function filter (node) {
+    return (node.tagName !== 'i');
+  }
+  
+
+
+  
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Creates an image from the graph as PNG, JPEG or SVG.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * @param {string} format - Format in which the image should be created.
+   */
+  function takeScreenshot(format) {
+    switch( format ) {
+      case 'png':
+        img
+          .toPng(document.getElementById('graph'))
+          .then(function (dataUrl) {
+            var link = document.createElement('a');
+            link.download = imageFileName.value + '.png';
+            link.href = dataUrl;
+            link.click();
+          });
+        break;
+      case 'jpeg':
+        img
+          .toJpeg(document.getElementById('graph'), { quality: 1 })
+          .then(function (dataUrl) {
+            var link = document.createElement('a');
+            link.download = imageFileName.value + '.jpeg';
+            link.href = dataUrl;
+            link.click();
+          });
+        break;
+      case 'svg':
+        img
+          .toSvg(document.getElementById('graph'), { filter: filter })
+          .then(function (dataUrl) {
+            var link = document.createElement('a');
+            link.download = imageFileName.value + '.svg';
+            link.href = dataUrl;
+            link.click();
+          });
+        break;
+    }
+  }
+
 
 
   
