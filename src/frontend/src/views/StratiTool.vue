@@ -1872,6 +1872,14 @@
    * 
    */
     }
+  /**                              Vue-Livecycle
+   * /:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\
+   * Equivalent semantic to mounted in <script>.
+   * \:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::/
+   * 
+   */
+  onMounted(async () => {
+    const canvas = document.getElementById("canvas")
     /**
      * 3D-Editor
      */
