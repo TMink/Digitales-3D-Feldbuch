@@ -75,8 +75,34 @@
                       </v-row>
                     </v-card>
                   </v-card>
+                  
+                  <!-- Group -->
+                  <v-card id="group_module" class="pa-2 group_module__base d-flex align-center justify-center" :height="windowHeight - 345" width="367" style="position:absolute; z-index: 0; opacity: 1;">
+                    <img src="@/components/graph-editor-components/Images/work_in_progress_background.jpg" height="1010">
+                  </v-card>
+
+                  <!-- View -->
+                  <v-card id="view_module" class="pa-2 view_module__base d-flex align-center justify-center" :height="windowHeight - 345" width="367" style="position:absolute; z-index: 0; opacity: 1;">
+                    <img src="@/components/graph-editor-components/Images/work_in_progress_background.jpg" height="1010">
+                  </v-card>
+
+                  <!-- Exp/Imp -->
+                  <v-card id="exp/imp_module" class="pa-2 exp-imp_module__base d-flex align-center justify-center" :height="windowHeight - 345" width="367" style="position:absolute; z-index: 0; opacity: 1;">
+                    <img src="@/components/graph-editor-components/Images/work_in_progress_background.jpg" height="1010">
+                  </v-card>
+
+                  <!-- Filter -->
+                  <v-card id="filter_module" class="pa-2 filter_module__base d-flex align-center justify-center" :height="windowHeight - 345" width="367" style="position:absolute; z-index: 0; opacity: 1;">
+                    <img src="@/components/graph-editor-components/Images/work_in_progress_background.jpg" height="1010">
+                  </v-card>
+                  
+                  <!-- Timemodel -->
+                  <v-card id="timemodel_module" class="pa-2 timemodel_module__base d-flex align-center justify-center" :height="windowHeight - 345" width="367" style="position:absolute; z-index: 0; opacity: 1;">
+                    <img src="@/components/graph-editor-components/Images/work_in_progress_background.jpg" height="1010">
+                  </v-card>
                 </v-card>
             </v-card>
+          </v-row>  
         </div>
           
         <!-- > > > > > > Middle < < < < < < -->
