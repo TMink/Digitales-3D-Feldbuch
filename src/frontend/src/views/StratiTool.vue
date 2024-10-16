@@ -2,7 +2,7 @@
  Created Date: 23.09.2024 10:14:23
  Author: Tobias Mink
  
- Last Modified: 16.10.2024 06:25:13
+ Last Modified: 16.10.2024 15:55:11
  Modified By: Tobias Mink
  
  Description: 
@@ -115,7 +115,7 @@
                 
                 <!-- Manuell save -->
                 <v-col>
-                  <v-card class="px-5 py-0 units__base" variant="text">
+                  <v-card class="px-5 py-0 units__graph_base" variant="text">
                     <v-col class="pa-0" align="center">
 
                       <!-- Subcomponent title -->
@@ -137,7 +137,7 @@
                 
                 <!-- Switch processing steps -->
                 <v-col>
-                  <v-card class="px-5 py-0 units__base" variant="text">
+                  <v-card class="px-5 py-0 units__graph_base" variant="text">
                     <v-col class="pa-0" align="center">
                       
                       <!-- Subcomponent title -->
@@ -179,40 +179,89 @@
               </v-row>
             </v-card>   
           </v-row>
-  
+          
           <!-- Units -->
           <v-row no-gutters style="width:fit-content">
             <v-card class="tile" height="100px" :width="windowWidth - 816">
               <v-row no-gutters>
                 
-                <!-- Unit creation -->
-                <v-col>
-                  <v-card class="px-5 py-0 units__base" variant="text">
-                    <v-col class="pa-0" align="center">
-                      <v-card class="pt-1 mb-1" variant="text">
-                        <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
-                          Neue Unit erstellen
-                        </v-card-title>
+                <!-- 3D-Editor Tools -->
+                <v-card width="100%" height="100%" style="position: absolute; z-index: 1;">
+                  <v-row no-gutters>
+                    
+                    <!-- Unit List -->
+                    <v-col>
+                      <v-card class="px-5 py-0 units__3d_base" variant="text" height="92">
+                        <v-col class="pa-0" align="center">
+                          <v-card class="pt-1 mb-1" variant="text">
+                            <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
+                              Auflistung aller Units
+                            </v-card-title>
+                          </v-card>
+                          <v-slide-group show-arrows="always">
+                            <v-row justify="center" align="center" class="my-2" no-gutters>
+                              <v-slide-group-item v-for="n in nodesInUnitList" :key="n">
+                                <v-btn :id=n.id class="mx-1 units__3d_list_button_notClicked" rounded v-on:click="fillInfoCard3d(n.id)">
+                                  {{ n.label }}
+                                </v-btn>
+                              </v-slide-group-item>
+                            </v-row>
+                          </v-slide-group>
+                        </v-col>
                       </v-card>
-                      <Sidebar :highestDefaultCount="highestDefaultCount"/>
                     </v-col>
-                  </v-card>
-                </v-col>
-                
-                <!-- Unit Search -->
-                <v-col>
-                  <v-card class="px-5 units__base" variant="text">
-                    <v-col class="pa-0" align="center">
-                      <v-card class="pt-1 mb-1" variant="text">
-                        <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
-                          Unit suchen
-                        </v-card-title>
+                    
+                    <!-- Next Tool -->
+                    <!-- <v-col>
+                      <v-card class="px-5 py-0 units__3d_base" variant="text">
+                        <v-col class="pa-0" align="center">
+                          <v-card class="pt-1 mb-1" variant="text">
+                            <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
+                              Auflistung aller Units2
+                            </v-card-title>
+                          </v-card>
+                          <Sidebar :highestDefaultCount="highestDefaultCount"/>
+                        </v-col>
                       </v-card>
-                      <v-combobox class="mb-2" style="height: 52px; width: 250px" hide-selected :items="nodesInUnitSearch" persistent-hint :hide-no-data="true" v-model="nodeSearchedFor"></v-combobox>
+                    </v-col> -->
+                    
+                  </v-row>
+                </v-card>
+
+                <!-- Graph-Editor Tools -->
+                <v-card id="graphEditorTools" width="100%" style="position: absolute; z-index: 0;">
+                  <v-row no-gutters>
+                    
+                    <!-- Unit creation -->
+                    <v-col>
+                      <v-card id="unitCreation" class="px-5 py-0 units__graph_base" variant="text">
+                        <v-col class="pa-0" align="center">
+                          <v-card class="pt-1 mb-1" variant="text">
+                            <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
+                              Neue Unit erstellen
+                            </v-card-title>
+                          </v-card>
+                          <Sidebar :highestDefaultCount="highestDefaultCount"/>
+                        </v-col>
+                      </v-card>
                     </v-col>
-                  </v-card>
-                </v-col>
-                
+                      
+                    <!-- Unit Search -->
+                    <v-col>
+                      <v-card class="px-5 units__graph_base" variant="text">
+                        <v-col class="pa-0" align="center">
+                          <v-card class="pt-1 mb-1" variant="text">
+                            <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
+                              Unit suchen
+                            </v-card-title>
+                          </v-card>
+                          <v-combobox class="mb-2" style="height: 52px; width: 250px" hide-selected :items="nodesInUnitSearch" persistent-hint :hide-no-data="true" v-model="nodeSearchedFor"></v-combobox>
+                        </v-col>
+                      </v-card>
+                    </v-col>
+                    
+                  </v-row>
+                </v-card>
               </v-row>
             </v-card>
           </v-row>
@@ -220,7 +269,7 @@
           <!-- Editoren -->
           <v-row no-gutters style="width:fit-content;">
             <canvas id="canvas" class="tile" :height="windowHeight - 328" :width="windowWidth - 825" style="position:absolute; z-index: 1; opacity: 1;"></canvas>
-            <v-card id="graph" class="dnd-flow plato" @drop="onDrop" :height="windowHeight - 320" :width="windowWidth - 817" style="position:relative; z-index: 1; opacity: 1;" >
+            <v-card id="graph" class="dnd-flow plato" @drop="onDrop" :height="windowHeight - 320" :width="windowWidth - 817" style="position:relative; z-index: 0; opacity: 1;" >
               <VueFlow :maxZoom="1" :minZoom="0.2" :connectOnClick=false @dragover="onDragOver" @dragleave="onDragLeave" :nodeTypes="nodeTypes" deleteKeyCode="Backspace" :zoomOnDoubleClick=false>
                 <template #edge-custom="customEdgeProps">
                   <CustomEdge
@@ -425,6 +474,7 @@
   var nodeType = ref(-1); // int
   var nodeDescription = ref(""); // string
   var nodesInUnitSearch = ref([]); // array<string>
+  var nodesInUnitList = ref([]); // array<string>
   var nodeSearchedFor = ref(""); // string
   var nodeRelations = ref([]); // array<{ id: string, type: string, targetLabel: string, sourceID: string, targetID: string }>
   var highestDefaultCount = ref("0"); // string
@@ -541,8 +591,13 @@
     const nodesInGraphLength = nodesInGraph.length;
     for( let a = 0; a < nodesInGraphLength; a++ ){
       if( nodesInGraph[a].data.label == userInput ){
+        if( selectedNodeID != "" ) {
+          changeUnitsListsButtonStyle( selectedNodeID, "notSelected" );
+        }
         zoomToNode(nodesInGraph[a].id);
         fillInfoCard(nodesInGraph[a]);
+
+        changeUnitsListsButtonStyle( nodesInGraph[a].id, "selected" )
         nodesInGraph[a].data.nodeStyle = "clicked_" + nodesInGraph[a].type;
         nodesInGraph[a].data.selected = true;
       } else {
@@ -602,6 +657,7 @@
             fillInfoCard(nodesInGraph[a]);
           }
           nodesInUnitSearch.value.push(nodesInGraph[a].data.label);
+          nodesInUnitList.value.push({ id: nodesInGraph[a].id, label: nodesInGraph[a].data.label });
         }
       }
     } else {
@@ -808,9 +864,13 @@
     const nodesInGraphLength = nodesInGraph.length;
     for( let a = 0; a < nodesInGraphLength; a++ ){
       if( nodesInGraph[a].id == params.node.id ) {
+        if( selectedNodeID != "" ) {
+          changeUnitsListsButtonStyle( selectedNodeID, "notSelected" )
+        }
         clearInfoCard()
         fillInfoCard(nodesInGraph[a])
-          
+        
+        changeUnitsListsButtonStyle( nodesInGraph[a].id, "selected" )
         nodesInGraph[a].data.nodeStyle = "clicked_" + nodesInGraph[a].type;
         nodesInGraph[a].data.selected = true;
       } else {
@@ -841,6 +901,9 @@
       for( let a = 0; a < nodesInGraphLength; a++ ){
         if( nodesInGraph[a].id == selectedNodeID ) {
           clearInfoCard()
+          
+          const button = document.getElementById(nodesInGraph[a].id)
+          button.style = "border: 4px; border-style: double; border-color: #1C2128; background-color: #2a394f;"
           nodesInGraph[a].data.nodeStyle = "notClicked_" + nodesInGraph[a].type;
           nodesInGraph[a].data.selected = false;
           break;
@@ -866,6 +929,24 @@
     if( Object.hasOwn( changes[0], 'item' ) ){
       if( changes[0].type == "add" ){
         nodesInUnitSearch.value.push(changes[0].item.data.label)
+        nodesInUnitList.value.push({ id: changes[0].item.id, label: changes[0].item.data.label });
+      }
+    } else if( changes[0].type == "remove") {
+      const nodesInUnitListLength = nodesInUnitList.value.length
+      for( let b = 0; b < nodesInUnitListLength; b++ ){
+        if( nodesInUnitList.value[b].id == changes[0].id ){
+          if( nodesInUnitSearch.value.includes(nodesInUnitList.value[b].label) ) {
+            let index = nodesInUnitSearch.value.indexOf(nodesInUnitList.value[b].label);
+            nodesInUnitSearch.value.splice(index, 1);
+          }
+          nodesInUnitList.value.splice(b, 1)
+          break;
+        }
+      }
+
+      const nodesInGraphLength = getNodes.value.length
+      if( nodesInGraphLength == 0 ){
+        highestDefaultCount.value = '0'
       }
     }
   })
@@ -953,7 +1034,7 @@
   
 
 
-
+  
   /**
    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
    * Creates a new index-number for next node to be created.
@@ -1044,7 +1125,7 @@
     
     // Fill the fields of the infocard with ...
     // ... the title, ... 
-    nodeTitle.value = node.id
+    nodeTitle.value = node.data.label
     // ... description, ...
     nodeDescription.value = node.data.description
     // ... type ... 
@@ -1148,6 +1229,7 @@
   function goProcessingStepBack() {
     clearInfoCard()
     nodesInUnitSearch.value = [];
+    nodesInUnitList.value = []
 
     currentProcessingStep.value = currentProcessingStep.value - 1
     const parsedProcessingStep = JSON.parse( processingSteps.value[currentProcessingStep.value - 1].step )
@@ -1174,6 +1256,7 @@
       }
 
       nodesInUnitSearch.value.push(node.data.label)
+      nodesInUnitList.value.push({ id: node.id, label: node.data.label });
     }
 
     createNewIndexForNextNode()
@@ -1194,6 +1277,7 @@
   function goProcessingStepForward() {
     clearInfoCard()
     nodesInUnitSearch.value = [];
+    nodesInUnitList.value = [];
 
     // Vermerke den neuen aktuellen Bearbeitungsschritt
     currentProcessingStep.value = currentProcessingStep.value + 1
@@ -1227,6 +1311,7 @@
 
       // Fill drop down menu of unit search
       nodesInUnitSearch.value.push(node.data.label)
+      nodesInUnitList.value.push({ id: node.id, label: node.data.label });
     }
 
     createNewIndexForNextNode()
@@ -1654,12 +1739,6 @@
   function deleteNode() {
     for( const[_, value] of Object.entries(getNodes.value) ) {
       if( value.data.selected ) {
-        
-        if( nodesInUnitSearch.value.includes( value.data.label ) ) {
-          const index = nodesInUnitSearch.value.indexOf(value.data.label);
-          nodesInUnitSearch.value.splice(index, 1);
-        }
-        
         removeNodes(value.id)
       }
       else {
@@ -1727,12 +1806,25 @@
     if( getNodes.value.length != 0 ) {
       for( const[_, node] of Object.entries(getNodes.value) ) {
         if( node.data.selected ) {
+          // Update Unit-Search textfield (Graph-Editor)
           if( nodeSearchedFor.value == node.data.label ) {
             nodeSearchedFor.value = input
           }
+          
+          // Update Unit-Search Drop-Down (Graph-Editor)
           const index = nodesInUnitSearch.value.indexOf(node.data.label);
           nodesInUnitSearch.value.splice(index, 1);
           nodesInUnitSearch.value.push(input)
+
+          // Update Unit-list (3D-Editor)
+          const nodesInUnitListLength = nodesInUnitList.value.length
+          console.log(nodesInUnitListLength)
+          for( let b = 0; b < nodesInUnitListLength; b++ ){
+            if( nodesInUnitList.value[b].id == node.id ){
+              nodesInUnitList.value[b].label = input;
+            }
+          }
+          
           node.data.label = input
         }
       }
@@ -1833,13 +1925,16 @@
   function changeEditor() {
     const canvas = document.getElementById("canvas")
     const graph = document.getElementById("graph")
+    const graphEditorTools = document.getElementById("graphEditorTools")
 
     if( graph.style.opacity == "1" ) {
       graph.style.opacity = "0"
       graph.style.zIndex = "0"
+      graphEditorTools.style.zIndex = "0"
     } else {
       graph.style.opacity = "1"
       graph.style.zIndex = "1"
+      graphEditorTools.style.zIndex = "1"
     }
   }
 
@@ -1976,8 +2071,55 @@
     return 'isNotValid'
   }
 
+  
 
 
+  /**
+   * 
+   */
+  function fillInfoCard3d(nodeID) {
+    const nodesInGraph = getNodes.value
+    const nodesInGraphLength = nodesInGraph.length
+    for( let a = 0; a < nodesInGraphLength; a++ ){
+      if( nodesInGraph[a].id == nodeID && !nodesInGraph[a].data.selected ){
+        if( selectedNodeID != "" ) {
+          changeUnitsListsButtonStyle( selectedNodeID, 'notSelected' )
+        }
+        clearInfoCard()
+        fillInfoCard(nodesInGraph[a])
+        
+        changeUnitsListsButtonStyle( nodesInGraph[a].id, 'selected' )
+        nodesInGraph[a].data.nodeStyle = "clicked_" + nodesInGraph[a].type;
+        nodesInGraph[a].data.selected = true;
+      } else if( nodesInGraph[a].id == nodeID && nodesInGraph[a].data.selected ){
+        clearInfoCard()
+        
+        changeUnitsListsButtonStyle( nodesInGraph[a].id, 'notSelected' )
+        nodesInGraph[a].data.nodeStyle = "notClicked_" + nodesInGraph[a].type;
+        nodesInGraph[a].data.selected = false;
+      } else {
+        nodesInGraph[a].data.nodeStyle = "notClicked_" + nodesInGraph[a].type;
+        nodesInGraph[a].data.selected = false;
+      } 
+    }
+  }
+
+  
+
+
+
+  /**
+   * 
+   */
+  function changeUnitsListsButtonStyle(buttonID, mode) {
+    if( mode === 'selected' ) {
+      const button = document.getElementById(buttonID)
+      button.style = "border: 4px; border-style: double; border-color: #1C2128; background-color: #485b7a;"
+    } else if( mode === 'notSelected' ){
+      const button = document.getElementById(buttonID)
+      button.style = "border: 4px; border-style: double; border-color: #1C2128; background-color: #2a394f;"
+    }
+  }
 
 
   /**                              Vue-Livecycle
@@ -1998,7 +2140,7 @@
       antialias: true
     });
     renderer.setPixelRatio( canvas.devicePixelratio )
-    renderer.setClearColor( 0x263238, 1);
+    renderer.setClearColor( 0x28303d, 1);
     const geometry = new THREE.BoxGeometry( 1, 1, 1 );
     const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
     const cube = new THREE.Mesh( geometry, material );
@@ -2080,7 +2222,36 @@ export default {
  *
  */
 
-.units__base {
+/**
+ * < < < 3D-Editor > > >
+ */
+
+.units__3d_base {
+  border: 2px;
+  border-style: outset;
+  border-color: #171C23;
+  background-color: #303d52
+}
+
+.units__3d_list_button_notClicked {
+  border: 4px;
+  border-style: double;
+  border-color: #1C2128;
+  background-color: #2a394f;
+}
+
+.units__3d_list_button_clicked {
+  border: 4px;
+  border-style: double;
+  border-color: #1C2128;
+  background-color: #485b7a;
+}
+ 
+/**
+ * < < < Graph-Editor > > >
+ */
+
+.units__graph_base {
   border: 2px;
   border-style: outset;
   border-color: #171C23;
