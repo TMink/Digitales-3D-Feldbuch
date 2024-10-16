@@ -16,6 +16,17 @@
           
         <!-- > > > > > > Left < < < < < < -->
         <div>
+          <!-- Glossar & Hilfe -->
+          <v-row no-gutters style="width: fit-content">
+            <v-card class="d-flex align-center justify-center tile" height="100" width="400">
+              <v-row no-gutters>
+                <v-col class="d-flex align-center justify-center">
+                  <v-btn class="button" width="150" height="50" v-on:click="openGlossar">Glossar</v-btn>
+                </v-col>
+                <v-col class="d-flex align-center justify-center">
+                    <v-btn class="button" width="150" height="50" v-on:click="getHelp">Hilfe</v-btn>
+                </v-col>
+              </v-row>
             </v-card>  
           </v-row>
   
@@ -60,6 +71,20 @@
     if( getNodes.value.length != 0 ) {
         }
       }
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * TODO
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   *
+   */
+  function openGlossar() {
+    // TODO
+  }
+
+  
+
+
+  
     }
 
   /**
