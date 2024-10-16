@@ -2,7 +2,7 @@
  Created Date: 23.09.2024 10:14:23
  Author: Tobias Mink
  
- Last Modified: 16.10.2024 05:31:32
+ Last Modified: 16.10.2024 06:11:09
  Modified By: Tobias Mink
  
  Description: 
@@ -242,6 +242,16 @@
               </VueFlow>
             </v-card>
           </v-row>
+        </div>
+  
+        <!-- > > > > > > Right < < < < < < -->
+        <div>
+          <!-- Modus Wechseln -->
+          <v-row no-gutters style="width:fit-content;">
+            <v-card class="d-flex align-center justify-center tile" height="100" width="400">
+              <v-btn class="pa-7 px-14 button" v-on:click="changeEditor">Modus wechsel</v-btn>
+            </v-card>
+          </v-row>
   /**                                 Watcher
    * /=========================================================================\
    * Zooms in on the node that was searched for.
@@ -441,9 +451,6 @@
   }
   
 
-      }
-    }
-
 
     if( getNodes.value.length != 0 ) {
       for( const[_, value] of Object.entries(getNodes.value) ) {
@@ -468,6 +475,28 @@
 
 
   
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Switches between both editors, showing one and hiding the other.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  function changeEditor() {
+    const canvas = document.getElementById("canvas")
+    const graph = document.getElementById("graph")
+
+    if( graph.style.opacity == "1" ) {
+      graph.style.opacity = "0"
+      graph.style.zIndex = "0"
+    } else {
+      graph.style.opacity = "1"
+      graph.style.zIndex = "1"
+    }
+  }
+
+
+  
+
   /**
    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
    * Filter for SVG images.
