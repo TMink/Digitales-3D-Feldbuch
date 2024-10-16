@@ -113,6 +113,28 @@
             <v-card class="tile" height="100px" :width="windowWidth - 816">
               <v-row no-gutters>
                 
+                <!-- Manuell save -->
+                <v-col>
+                  <v-card class="px-5 py-0 units__base" variant="text">
+                    <v-col class="pa-0" align="center">
+
+                      <!-- Subcomponent title -->
+                      <v-card class="pt-1" variant="text">
+                        <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
+                          Harris-Matrix Speichern
+                        </v-card-title>
+                      </v-card>
+                      
+                      <!-- Save -->
+                      <v-card class="pt-1 my-3" height="fit-content" variant="text">
+                        <v-btn width="100%" @click="saveGraph()">
+                          Speichern
+                        </v-btn>
+                      </v-card>
+                    </v-col>
+                  </v-card>
+                </v-col>
+                
                 
               </v-row>
             </v-card>   
@@ -262,7 +284,23 @@
 
 
   /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Manually save the graph.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
    * 
+   */
+  async function saveGraph() {
+    if( idOfCurrentStratiTool != "" ) {
+      await fromOfflineDB.updateIndexedDBObject({ _id: idOfCurrentStratiTool, graph: { processingSteps: JSON.parse(JSON.stringify(processingSteps.value)), currentProcessingStep: currentProcessingStep.value } }, "StratiToolDB", "stratiTool")
+    } else {
+      await fromOfflineDB.addObject({ _id: String(Date.now()), graph: { processingSteps: JSON.parse(JSON.stringify(processingSteps.value)), currentProcessingStep: currentProcessingStep.value } }, "StratiToolDB", "stratiTool")
+    }
+  }
+
+
+
+
+
    * 
    */
     }
