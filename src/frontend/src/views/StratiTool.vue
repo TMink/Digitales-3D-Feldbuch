@@ -390,6 +390,12 @@
   </div>
 </template>
 
+  // Get functions from vueFlow
+  const { updateNode, onInit, fromObject, toObject, removeNodes, fitView, getEdges, removeEdges, onConnect, addEdges, onNodeClick, onPaneClick, getNodes, onNodesChange, onPaneMouseLeave, onConnectStart, onConnectEnd, onNodeMouseEnter, onNodeMouseLeave} = useVueFlow()
+  // Get functions from Drag and Drop
+  const { onDragOver, onDrop, onDragLeave, isDragOver, nodeDropped } = useDragAndDrop()
+
+
   /**
    * [-------------------------------------------------------------------------]
    * [------------------------- Reactive Variables ----------------------------]
