@@ -2031,5 +2031,303 @@ export default {
 </script>
 
 <style>
+@import '@vue-flow/core/dist/style.css';
 @import '../components/graph-editor-components/style.css';
+
+/**
+ *
+ * > > > > > > Universal < < < < < <
+ *
+ */
+
+.background {
+  background-color: #171C23;
+}
+
+.hollow {
+  border: 4px;
+  border-style: ridge;
+  border-color: #171C23;
+  background-color: #171C23;
+}
+
+.tile {
+  border: 4px;
+  border-style: ridge;
+  border-color: #171C23;
+  background-color: #303d52
+}
+
+.button {
+  border: 5px;
+  border-style: double;
+  border-color: #1C2128;
+  text-align: center;
+  line-height: 0px;
+  background-color: #485b7a;
+}
+
+.plato {
+  border: 4px;
+  border-style: ridge;
+  border-color: #171C23;
+  background-color: #28303d;
+}
+
+/**
+ *
+ * > > > > > > Units < < < < < <
+ *
+ */
+
+.units__base {
+  border: 2px;
+  border-style: outset;
+  border-color: #171C23;
+  background-color: #303d52
+}
+
+/**
+ *
+ * > > > > > > Module < < < < < <
+ *
+ */
+
+.screenshot_module__base {
+  border: 4px;
+  border-style: ridge;
+  border-color: #0d2953;
+  background-color: #2a4375;
+  opacity: 0.5;
+}
+
+.group_module__base {
+  border: 4px;
+  border-style: ridge;
+  border-color: #0d2953;
+  background-color: #2a4375;
+  opacity: 0.5;
+}
+
+.view_module__base {
+  border: 4px;
+  border-style: ridge;
+  border-color: #0d2953;
+  background-color: #2a4375;
+  opacity: 0.5;
+}
+
+.exp-imp_module__base {
+  border: 4px;
+  border-style: ridge;
+  border-color: #0d2953;
+  background-color: #2a4375;
+  opacity: 0.5;
+}
+
+.filter_module__base {
+  border: 4px;
+  border-style: ridge;
+  border-color: #0d2953;
+  background-color: #2a4375;
+  opacity: 0.5;
+}
+
+.timemodel_module__base {
+  border: 4px;
+  border-style: ridge;
+  border-color: #0d2953;
+  background-color: #2a4375;
+  opacity: 0.5;
+}
+ 
+/**
+ *
+ * > > > > > > Infobereich < < < < < <
+ *
+ */
+
+.infobereich__base {
+  border: 4px;
+  border-style: ridge;
+  border-color: #0d2953;
+  background-color: #2a4375;
+  opacity: 0.5;
+}
+
+.infobereich__title {
+  text-align: center;
+  line-height: 37px;
+}
+
+.infobreich__attributes {
+  background-color: #485c7b;
+}
+
+.infobereich__attributes_list {
+  border: 6px;
+  border-style: ridge;
+  border-color: #0d2953;
+  background-color: #677893;
+}
+
+.infobereich__image_outside {
+  border: 6px;
+  border-style: ridge;
+  border-color: #0d2953;
+  background-color: #677893;
+}
+
+.infobereich__image_inside {
+  border: 3px; 
+  border-style: ridge;
+  border-radius: 2%;
+  border-color: #0d2953;
+  text-align: center;
+  background-color: #779fe1
+}
+
+.infobereich__attributes_name {
+  border: 5px;
+  border-style: ridge;
+  border-color: #0d2953;
+  background-color: #3c557d;
+}
+
+.infobereich__attributes_name_title {
+  background-color: #3c557d;
+}
+
+.infobereich__attributes_name_text-field {
+  border: 1px; 
+  border-style: solid; 
+  border-color: #0d2953;
+  background-color: #3c557d;
+}
+
+.infobereich__attributes_name_button {
+  border: 4px;
+  border-style: double;
+  border-color: #1C2128;
+  background-color: #485b7a;
+}
+
+.infobereich__attributes_type {
+  border: 5px;
+  border-style: ridge;
+  border-color: #0d2953;
+  background-color: #3c557d;
+}
+
+.infobereich__attributes_type_title {
+  background-color: #3c557d;
+}
+
+.infobereich__attributes_type_title_button {
+  border: 4px;
+  border-style: double;
+  border-color: #1C2128;
+  background-color: #485b7a;
+}
+
+.infobereich__attributes_description {
+  border: 5px;
+  border-style: ridge;
+  border-color: #0d2953;
+  background-color: #3c557d;
+}
+
+.infobereich__attributes_description_title {
+  background-color: #3c557d;
+}
+
+.infobereich__attributes_description_textarea {
+  border: 1px;
+  border-style: solid;
+  border-color: #0d2953;
+  background-color: #3c557d;
+}
+
+.infobereich__attributes_description_button {
+  border: 4px;
+  border-style: double;
+  border-color: #1C2128;
+  background-color: #485b7a;
+}
+
+.infobereich__attributes_relations {
+  border: 5px;
+  border-style: ridge;
+  border-color: #0d2953;
+  background-color: #3c557d;
+}
+
+.infobereich__attributes_relations_title {
+  background-color: #3c557d;
+}
+
+.infobereich__attributes_relations_list {
+  border: 2px;
+  border-style: ridge;
+  border-radius: 1%;
+  border-color: #0d2953;
+  background-color: #3c557d;
+}
+
+.infobereich__attributes_relations_list_item {
+  border: 2px;
+  border-style: solid;
+  border-radius: 1%;
+  border-color: #0d2953;
+  background-color: #3c557d;
+}
+
+.infobereich__attributes_relations_list_button {
+  border: 2px;
+  border-style: double;
+  border-color: #1C2128;
+  background-color: #af1313;
+}
+
+.infobereich__attributes_groups {
+  border: 5px;
+  border-style: ridge;
+  border-color: #0d2953;
+  background-color: #3c557d;
+}
+
+.infobereich__attributes_groups_title {
+  background-color: #3c557d;
+}
+
+.infobereich__attributes_groups_list {
+  border: 2px;
+  border-style: ridge;
+  border-radius: 1%;
+  border-color: #0d2953;
+  background-color: #3c557d;
+}
+
+.infobereich__attributes_groups_list_item {
+  border: 2px;
+  border-style: solid;
+  border-radius: 1%;
+  border-color: #0d2953;
+  background-color: #3c557d;
+}
+
+.infobereich__attributes_groups_list_button {
+  border: 2px;
+  border-style: double;
+  border-color: #1C2128;
+  background-color: #3c557d;
+}
+
+.infobereich__delete_unit_button {
+  border: 4px;
+  border-style: solid;
+  border-color: #1C2128;
+  background-color:#af1313;
+}
+
 </style>
