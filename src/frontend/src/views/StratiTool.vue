@@ -31,27 +31,7 @@
             </v-card>
           </v-row>
   
-                <DropzoneBackground :style="{ backgroundColor: isDragOver ? '#1e81b0' : 'transparent', transition: 'background-color 0.2s ease', }">
-                  <p v-if="isDragOver">Drop here</p>
-                </DropzoneBackground>
-              </VueFlow>
-            </v-card>
-          </v-row>
-        </div>
   
-        <!-- > > > > > > Right < < < < < < -->
-        <div>
-          </v-row>
-            </v-card>
-          </v-row>
-            </v-card>
-          </v-row>
-        </div>
-        
-      </v-row>
-    </v-card>
-  </div>
-</template>
 
   
 
