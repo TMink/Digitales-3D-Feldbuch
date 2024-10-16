@@ -390,6 +390,26 @@
   </div>
 </template>
 
+<script setup>
+  import * as THREE from 'three';
+  import { onMounted, onUnmounted, markRaw, ref, watch, } from 'vue';
+  import { useWindowSize } from 'vue-window-size';
+  import { VueFlow, useVueFlow, MarkerType } from '@vue-flow/core';
+  import * as img from 'html-to-image';
+  
+  import Sidebar from '../components/graph-editor-components/Sidebar.vue';
+  import Navigation from '../components/Navigation.vue';
+  import useDragAndDrop from '../components/graph-editor-components/useDnD.js';
+  import DropzoneBackground from '../components/graph-editor-components/DropzoneBackground.vue';
+  import CustomEdge from '../components/graph-editor-components/CustomEdges/CustomEdge.vue';
+  import DepositNode from '../components/graph-editor-components/CustomNodes/DepositNode.vue';
+  import InterfaceNode from '../components/graph-editor-components/CustomNodes/InterfaceNode.vue';
+  
+  import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
+  
+  // Sync with IndexedDB
+  await fromOfflineDB.syncLocalDBs();
+  
   // Get functions from vueFlow
   const { updateNode, onInit, fromObject, toObject, removeNodes, fitView, getEdges, removeEdges, onConnect, addEdges, onNodeClick, onPaneClick, getNodes, onNodesChange, onPaneMouseLeave, onConnectStart, onConnectEnd, onNodeMouseEnter, onNodeMouseLeave} = useVueFlow()
   // Get functions from Drag and Drop
@@ -1216,8 +1236,6 @@
 
 
 
-
-
   /**
    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
    * Adjusts the current viewport so that the specified node is in the center.
@@ -1232,6 +1250,8 @@
       padding: 1
     })
   }
+
+
 
 
 
