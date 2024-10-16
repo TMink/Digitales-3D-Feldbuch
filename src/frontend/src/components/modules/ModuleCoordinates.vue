@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 27.08.2024 13:35:58
+ * Last Modified: 13.10.2024 16:38:50
  * Modified By: Julian Hardtung
  * 
  * Description: `coordinates` input module for places/positions
@@ -28,19 +28,21 @@
     <v-divider/>
     
     <div v-if="object.modulePreset.coordinates">
+
       <v-row v-show="!showCoords" class="pt-4 pb-2 align-center">
         <v-file-input 
+        class="pt-3"
           v-model="coordinatesFile"
-          accept=".txt, .csv" 
-          class="pt-6"
+          accept=".txt, .csv"
           label=".txt-Datei mit Koordinaten aus Tachymeter oder ähnlichem auswählen">
         </v-file-input>
         <v-btn
-          class="ma-3 ml-4" 
-          color="success"
+          class="ma-3 mb-4 ml-4" 
+          variant="outlined"
+          color="secondary"
           v-on:click="saveCoordinates(coordinatesFile)">
-          <v-icon class="pr-2">mdi-content-save-all</v-icon>
-          {{ $t('save') }}
+          <v-icon class="pr-2">mdi-import</v-icon>
+          {{ $t('import') }}
           <v-tooltip 
             v-if="$generalStore.getShowTooltips()" 
             activator="parent" 
@@ -49,20 +51,20 @@
           </v-tooltip>
         </v-btn>
       </v-row>
-      <v-row no-gutters v-show="showCoords">
-        <v-col>
-          <v-data-table-virtual 
-                fixed-header
-                density="compact" 
-                :items="coordinatesList.coords" 
-                height="150px" 
-                :headers="coordHeaders">
-          </v-data-table-virtual>
-          
-          <v-row no-gutters>
+      <v-row no-gutters v-show="showCoords" class="py-3">
+        <v-col> 
+          <v-row v-show="showCoords" no-gutters class="align-center">
+            <v-card-text v-if="coordinatesList != []"></v-card-text>
+            {{  coordinatesList.coords.length }} Koordinaten importiert
             <v-spacer></v-spacer>
-            <v-btn
-              class="mt-3 d-flex justify-end" 
+            <v-switch
+              color="secondary"
+              hide-details
+              v-model="showFullCoordList"
+              :label="$t('showAllCoords')">
+            </v-switch>
+            <v-spacer></v-spacer>
+            <v-btn 
               color="error"
               v-on:click="confirmDeletion()">
               <v-icon class="pr-2">mdi-delete</v-icon>
@@ -75,8 +77,101 @@
               </v-tooltip>
             </v-btn>
           </v-row>
+
+          <v-data-table-virtual 
+            v-if="showFullCoordList"
+            fixed-header
+            class="mb-n5"
+            density="compact" 
+            :items="coordinatesList.coords" 
+            height="150px" 
+            :headers="coordHeaders">
+          </v-data-table-virtual>
+          
         </v-col>
       </v-row>
+      <v-row v-if="!showFullCoordList" no-gutters>
+            <!-- RIGHT -->
+            <v-col lg="4">
+              <v-text-field 
+                class="pr-2"
+                hide-details 
+                color="primary"
+                maxlength="8" 
+                density="compact" 
+                v-model="object.right"
+                :label="$t('right')" 
+                @keypress="filterNonNumeric(event)">
+              </v-text-field>
+              <v-text-field 
+                v-if="type == 'places'"
+                class="pr-2"
+                hide-details 
+                color="primary"
+                maxlength="8" 
+                density="compact"
+                :label="$t('rightTo')"
+                v-model="object.rightTo" 
+                @keypress="filterNonNumeric(event)">
+              </v-text-field>
+            </v-col>
+
+            <v-divider vertical class="mt-1"/>
+
+            <!-- UP -->
+            <v-col lg="4">
+              <v-text-field 
+                class="px-2"
+                hide-details 
+                color="primary"
+                maxlength="8" 
+                density="compact"
+                :label="$t('up')"
+                v-model="object.up" 
+                @keypress="filterNonNumeric(event)">
+              </v-text-field>
+
+              <v-text-field 
+                v-if="type == 'places'"
+                class="px-2"
+                hide-details 
+                color="primary"
+                maxlength="8" 
+                density="compact"
+                :label="$t('upTo')"
+                v-model="object.upTo" 
+                @keypress="filterNonNumeric(event)">
+              </v-text-field>
+            </v-col>
+
+            <v-divider vertical class="mt-1"/>
+
+            <!-- DEPTH -->
+            <v-col lg="4">
+              <v-text-field 
+                class="pl-2"
+                hide-details 
+                color="primary"
+                maxlength="8" 
+                density="compact"
+                :label="$t('depthTop')"
+                v-model="object.depthTop" 
+                @keypress="filterNonNumeric(event)">
+              </v-text-field>
+
+              <v-text-field 
+                v-if="type == 'places'"
+                class="pl-2"
+                hide-details
+                color="primary"
+                maxlength="8"
+                density="compact"
+                :label="$t('depthBot')"
+                v-model="object.depthBot" 
+                @keypress="filterNonNumeric(event)">
+              </v-text-field>
+            </v-col>
+          </v-row>
     </div>
 
   </v-card>
@@ -102,11 +197,27 @@
 
     data () {
       return {
-        object: '',
+        height: '',
+        heightTo: '',
+        north: '',
+        northTo: '',
+        east: '',
+        eastTo: '',
+        object: {
+          right: '',
+          rightTo: '',
+          up: '',
+          upTo: '',
+          depthTop: '',
+          depthBot: '',
+        },
         type: null,
         coordinatesFile: null,
-        coordinatesList: [],
+        coordinatesList: {
+          coords: []
+        },
         showCoords: false,
+        showFullCoordList: false,
         coordHeaders: 
         [
           { title: 'PtNr', align: 'start', key: 'PtNr' },
@@ -122,6 +233,54 @@
       objectProp: async function(objectPropData) {
         this.object = objectPropData;
         await this.updateCoordinates();
+      },
+      "object.right": {
+        handler: function() {
+          if ( this.object.right != null ) {
+            /* Send data back to ModuleViewer.vue */
+            this.$emit("dataToModuleViewer", [ 'right', this.object.right ]);
+          }
+        }
+      },
+      "object.rightTo": {
+        handler: function() {
+          if ( this.object.rightTo != null && this.type == 'places') {
+            /* Send data back to ModuleViewer.vue */
+            this.$emit("dataToModuleViewer", [ 'rightTo', this.object.rightTo ]);
+          }
+        }
+      },
+      "object.up": {
+        handler: function() {
+          if ( this.object.up != null ) {
+            /* Send data back to ModuleViewer.vue */
+            this.$emit("dataToModuleViewer", [ 'up', this.object.up ]);
+          }
+        }
+      },
+      "object.upTo": {
+        handler: function() {          
+          if ( this.object.upTo != null && this.type == 'places' ) {
+            /* Send data back to ModuleViewer.vue */
+            this.$emit("dataToModuleViewer", [ 'upTo', this.object.upTo ]);
+          }
+        }
+      },
+      "object.depthBot": {
+        handler: function() {
+          if ( this.object.depthBot != null && this.type == 'places' ) {
+            /* Send data back to ModuleViewer.vue */
+            this.$emit("dataToModuleViewer", [ 'depthBot', this.object.depthBot ]);
+          }
+        }
+      },
+      "object.depthTop": {
+        handler: function() {
+          if ( this.object.depthTop != null) {
+            /* Send data back to ModuleViewer.vue */
+            this.$emit("dataToModuleViewer", [ 'depthTop', this.object.depthTop ]);
+          }
+        }
       },
       "object.coordinates": {
         handler: function() {
@@ -144,6 +303,11 @@
     async created() {
       this.type = this.getType(this.$route.path);
       this.object = this.objectProp;
+      await this.updateCoordinates();
+
+      if (this.type == 'positions'){
+        this.object.depthTop = this.objectProp.height;
+      }
     },
 
     methods: {
@@ -250,6 +414,8 @@
       async saveCoordinates() {
         var coordinates = await this.parseFile().catch(err => console.error(err));
 
+        this.calcCoordRegion(coordinates);
+
         var coordsInput = {
           _id: String(Date.now()),
           coords: coordinates,
@@ -280,6 +446,59 @@
         this.$root.vtoast.show({ message: this.$t('saveSuccess')});
       },
 
+
+      /**
+       * Calculates the bounds that include all imported coordinates
+       * (so max/min: right, up, depth values)
+       * @param coordinates 
+       */
+      calcCoordRegion(coordinates) {
+        var height=9999999999.9;
+        var heightTo=0.0;
+        var north=9999999999.9;
+        var northTo=0.0;
+        var east=9999999999.9;
+        var eastTo=0.0;
+
+        for(var i=0; i<coordinates.length; i++) {
+          var curHeight = parseFloat(coordinates[i].Höhe);
+          var curNorth = parseFloat(coordinates[i].Nord);
+          var curEast = parseFloat(coordinates[i].Ost);
+          
+          if (curHeight != '' && height > curHeight ){
+            height = curHeight;
+          }
+          if (curNorth != '' && north > curNorth){
+            north = curNorth;
+          }
+          if (curEast != '' && east > curEast){
+            east = curEast;
+          } 
+        
+          if (this.type == 'places') {
+            if (curHeight != '' && heightTo < curHeight) {
+              heightTo = curHeight;
+            }
+            if (curNorth != '' && northTo < curNorth) {
+              northTo = curNorth;
+            }
+            if (curEast != '' && eastTo < curEast) {
+              eastTo = curEast;
+            }
+          }
+        }
+
+        this.object.right = east;
+        this.object.up = north;
+        this.object.depthTop = height;
+        
+        if (this.type == 'places') {
+          this.object.rightTo = eastTo;
+          this.object.upTo = northTo;
+          this.object.depthBot = heightTo;
+        }
+      },
+
       /**
        * Deletes coordinates and updates the connected place/position
        */
@@ -293,7 +512,15 @@
         await fromOfflineDB.updateObject(updatedObject, capitalized, this.type)
 
         await fromOfflineDB.deleteObject(this.coordinatesList, 'Coordinates', 'coordinates')
-        this.coordinatesList = [];
+        this.coordinatesList.coords = [];
+        this.coordinatesFile = null;
+        this.object.right = '';
+        this.object.rightTo = '';
+        this.object.up = '';
+        this.object.upTo = '';
+        this.object.depthTop = '';
+        this.object.depthBot = '';
+        this.showFullCoordList = false;
         this.showCoords = false;
       },
 

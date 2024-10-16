@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.08.2024 12:23:23
+ * Last Modified: 30.09.2024 18:08:20
  * Modified By: Julian Hardtung
  * 
  * Description: main entry point for the fieldbook + 
@@ -20,7 +20,7 @@
 
     <!-- Main Content -->
     <v-main>
-      <router-view @view="onViewChange"></router-view>
+      <router-view></router-view>
     </v-main>
 
     <!-- App Footer -->
@@ -54,29 +54,15 @@ export default {
       generalStore
     }
   },
-  props: {
-    active_tab_prop: String
-  },
+
   data: function () {
     return {
-      active_tab: '0',
       placeIsSet: false,
       placeID: '',
       activityIsSet: false,
       activityID: '',
       positionIsSet: false,
       positionID: '',
-      backbutton_link: '',
-      navdrawer: false,
-      toolbar_title: this.$t('fieldbook'),
-      path_reload: 0,
-      navbar_items: [
-        { link: "/", title: this.$t('overview', { msg: this.$tc('activity', 2) }) },
-        { link: "/3dview", title: this.$t('threeD_view') },
-        { link: "/stratitool", title: this.$t('Stratigraphie-Tool') },
-        /* { link: "/onlineSync", title: this.$t('online_sync') }, */
-      ],
-
     }
   },
 
@@ -118,10 +104,6 @@ export default {
   methods: {
     goback() {
       this.$router.go(-1);
-    },
-    onViewChange(title) {
-      this.toolbar_title = title;
-      this.path_reload += 1;
     },
 
     async clearLocalData() {
@@ -226,18 +208,6 @@ export default {
       dbs.forEach(db => { window.indexedDB.deleteDatabase(db.name) })
       this.deleteCookies();
       this.$router.go();
-    },
-
-    changePage: function (routeName) {
-      this.$router.push({ name: routeName })
-        .catch(error => {
-          if (
-            error.name !== 'NavigationDuplicated' &&
-            !error.message.includes('Avoided redundant navigation to current location')
-          ) {
-            console.log(error)
-          }
-        })
     },
   }
 }

@@ -2,8 +2,8 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 23.09.2024 10:35:12
- * Modified By: Tobias Mink
+ * Last Modified: 24.09.2024 13:14:40
+ * Modified By: Julian Hardtung
  * 
  * Description: Router paths to the different vue pages
  */
@@ -11,6 +11,7 @@
 
 import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router'
 import ActivitiesOverview from "@/views/ActivitiesOverview.vue";
+import ActivityForm from '../views/ActivityForm.vue';
 import PlacesOverview from "@/views/PlacesOverview.vue";
 import PlaceForm from "@/views/PlaceForm.vue";
 import PositionsOverview from "@/views/PositionsOverview.vue";
@@ -41,6 +42,7 @@ const router = createRouter({
     {
       path: "/activities/:activityID",
       name: "ActivityCreation",
+      component: ActivityForm,
     },
     {
       path: "/positions",

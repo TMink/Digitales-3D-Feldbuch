@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.08.2024 13:40:35
+ * Last Modified: 08.10.2024 13:53:34
  * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
@@ -10,7 +10,7 @@
  -->
 
 <template>
-  <Navigation active_tab_prop="1"/>
+  <Navigation ref="navigationRef" active_tab_prop="1"/>
   <v-container fluid>
     <v-row no-gutters>
       <v-col cols="2">
@@ -41,7 +41,7 @@
           <!-- Tab item 'GENERAL' -->
           <v-window-item value="one">
             <ModuleViewer ref="moduleViewerRef" :datingItemsFirstProp="datingsList" :editorItemsFirstProp="editorsList"
-              :titleItemsFirstProp="titlesList" @dataToPlaceForm="getEmittedData($event)" />
+              :titleItemsFirstProp="titlesList" :objectProp="place" @dataToPlaceForm="getEmittedData($event)" />
           </v-window-item>
 
           <!-- Tab item 'pictures' -->
@@ -164,6 +164,7 @@ import ConfirmDialog from '../components/ConfirmDialog.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { toRaw } from 'vue';
 import { useWindowSize } from 'vue-window-size';
+import { useRoute } from 'vue-router';
 
 export default {
 
@@ -176,10 +177,20 @@ export default {
     ModelForm,
     FieldbookDrawingCanvas,
   },
-  emits: ['view'],
-  setup() {
+  async setup() {
     const { width, height } = useWindowSize();
+
+    var route = useRoute()    
+    const placeID = route.path.split("/").pop();
+
+    await fromOfflineDB.syncLocalDBs()
+      .catch(err => console.error(err));
+    const data = await fromOfflineDB
+      .getObject(placeID, 'Places', 'places')
+      .catch(err => console.error(err));
+      
     return {
+      place: data,
       windowWidth: width,
       windowHeight: height,
     };
@@ -224,55 +235,6 @@ export default {
         writeMode: false,
         backgroundImage: null,
         oldBackgroundImage: null,
-      },
-      place: {
-        _id: '',
-        activityID: '',
-        placeNumber: '',
-        profile: '',
-        drawing: '',
-        positions: [],
-        images: [],
-        models: [],
-        lines: [],
-        annotations: [],
-        lastChanged: '',
-        lastSync: 0,
-
-        /* Coordinates */
-        coordinates: '',
-
-        /* Dating */
-        dating: '',
-
-        /* FindTypes */
-        noFinding: false,
-        restFinding: false,
-
-        /* General */
-        description: '',
-        editor: '',
-        date: '',
-        title: '',
-
-        /* Plane */
-        plane: '',
-
-        /* Technical */
-        technical: '',
-
-        /* Visibility */
-        visibility: '',
-
-        modulePreset: {
-          general: true,
-          coordinates: true,
-          dating: true,
-          findTypes: true,
-          plane: true,
-          technical: false,
-          visibility: true,
-        }
       },
       headers: [
         {
@@ -375,6 +337,11 @@ export default {
     this.hasUnsavedChanges = false;
   },
 
+  mounted() {
+    //this.setAppBarTitle()
+    this.$refs.navigationRef.onViewChange(this.$tc('detailPage',1, { msg: this.$tc('place', 2)}))
+  },
+
   watch: {
     'place': {
       handler: 'handlePlaceChange',
@@ -383,10 +350,27 @@ export default {
   },
 
   methods: {
-
     async getEmittedData(data) {
       switch (data[0]) {
         /* Module: Coordinates */
+        case 'right':
+          this.place.right = data[1];
+          break;
+        case 'rightTo':
+          this.place.rightTo = data[1];
+          break;
+        case 'up':
+          this.place.up = data[1];
+          break;
+        case 'upTo':
+          this.place.upTo = data[1];
+          break;
+        case 'depthTop':
+          this.place.depthTop = data[1];
+          break;
+        case 'depthBot':
+          this.place.depthBot = data[1];
+          break;
         case 'coordinates':
           this.place.coordinates = data[1];
           break;
@@ -396,7 +380,8 @@ export default {
 
         /* Module: Dating */
         case 'dating':
-          this.place.dating = data[1];
+          this.place.datCode = data[1].datCode;
+          this.place.dating = data[1].title;
           break;
         case 'modulePreset.dating':
           this.place.modulePreset.dating = data[1];
@@ -449,8 +434,10 @@ export default {
           break;
 
         default:
-          console.log('Cant specify emitted data: ' + data[0])
+          console.err('Cant specify emitted data: ' + data[0])
       }
+
+      this.handlePlaceChange();
     },
 
     /**
@@ -484,7 +471,7 @@ export default {
       this.$root.vtoast.show({ message: this.$t('saveSuccess') });
     },
 
-        /**
+    /**
      * Removes a place from the IndexedDB and the Cookies
      */
      async deletePlace() {
@@ -622,7 +609,7 @@ export default {
         .getObject(plID, 'Places', 'places')
         .catch(err => console.error(err));
 
-      this.$emit("view", activity.activityNumber + ' ' + place.placeNumber);
+      this.$refs.navigationRef.onViewChange(activity.activityNumber + '_' + place.placeNumber)
     },
 
     /**

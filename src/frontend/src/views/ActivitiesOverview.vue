@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.08.2024 15:11:27
+ * Last Modified: 03.10.2024 17:16:17
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -10,169 +10,111 @@
 
 <template>
   <div id="wrapper">
-    <Navigation active_tab_prop="0" />
-
+    <Navigation ref="navigationRef" active_tab_prop="0" />
     <OnlineImport />
 
-    <v-row class="pt-4">
+    <!--------------- TOOLBAR --------------->
+    <v-row class="pt-2">
       <v-spacer></v-spacer>
-      <v-form class="w-75 pa-4">
-        <v-card>
-          <v-list class="pa-0">
-            <!-- v v v v v EMPTY ACTIVITY LIST v v v v v -->
-            <v-list-subheader v-if="activities.length === 0">
-              {{ $t('not_created_yet', { object: $tc('activity', 2) }) }}
-            </v-list-subheader>
+      <v-card class="pa-4" :min-width="windowWidth * 0.35" variant="text">
+        <v-row no-gutters class="align-center pa-2">
+          <!-- ACTIVITIES SEARCH -->
+          <v-text-field v-model="searchQuery" append-icon="mdi-magnify" 
+            :label="this.$t('search')" single-line
+            hide-details color="primary">
+          </v-text-field>
+        </v-row>
+      </v-card>
+      <v-spacer></v-spacer>
+    </v-row>
 
-            <template v-for="(activity, i) in activities" :key="activity">
-              <v-row no-gutters class="align-center">
+    <!--------------- MAIN TABLE --------------->
+    <v-row>
+      <v-spacer></v-spacer>
+      <v-card class="pt-2" :min-width="windowWidth * 0.55">
+        <v-data-table-virtual 
+          :headers="headers" fixed-header
+          :items="utils.filteredObjects(activities, searchQuery, 'activity')" 
+          :height="utils.getTableHeight(activities, windowHeight)">
 
-                <!-- v v v v v ACTIVITY LIST v v v v v -->
-                <v-col v-if="!activity.edit" >
-                  <v-list-item 
-                    class="pa-4 mr-2" v-on:click="setActivity(activity._id)">
-                    <v-list-item-title class="ma-4 text-center">
-                      {{ activity.activityNumber }}
-                    </v-list-item-title>
-                    <v-tooltip 
-                      v-if="$generalStore.getShowTooltips()" 
-                      activator="parent" 
-                      location="bottom"
-                      :text="$t('openPhrase', { msg: $tc('activity', 1) + ' ' + activity.activityNumber })">
-                    </v-tooltip>
-                  </v-list-item>
-                </v-col>
+          <template v-slot:item="{ item, index }">
+            <tr 
+              @mouseenter="setHoveredRow(index, true)"
+              @mouseleave="setHoveredRow(index, false)">
+              <!-- TOOLTIP -->
+              <v-tooltip 
+                activator="parent"
+                location="bottom"
+                v-if="generalStore.getShowTooltips()">
+                {{ $t('editPhrase', {msg: $t('activity')}) }}
+              </v-tooltip>
 
-                <!-- v v v v v ACTIVITY EDIT v v v v v -->
-                <v-col id="editActivity" v-else>
-                  <v-row no-gutters class="justify-center">
+              <!-- PLACE NUMBER -->
+              <td v-on:click="handleRowClick(item._id, true)" 
+                :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title class="pl-3">
+                  {{ item.branchOffice }}
+                </v-list-item-title>
+              </td>
 
-                    <v-col id="activityBranchOffice" cols="4" class="px-2 py-4">
-                      <v-text-field 
-                        counter
-                        hide-details
-                        color="primary" 
-                        :label="$t('branchOffice')" 
-                        :rules="[rules.required]"
-                        v-model="activity.branchOffice">
-                      </v-text-field>
-                    </v-col>
+              <!-- YEAR -->
+              <td v-on:click="handleRowClick(item._id, true)" 
+                :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title class="pl-3">
+                  {{ item.year || '-' }}
+                </v-list-item-title>
+              </td>
 
-                    <v-col id="activityYear" min-width="300px" cols="2" class="px-2 py-4">
-                      <v-text-field 
-                        counter
-                        hide-details
-                        :label="$t('year')"  
-                        maxlength="4" 
-                        color="primary" 
-                        v-model="activity.year"
-                        :rules="[rules.required]"
-                        @keypress="filterNonNumeric(event)">
-                      </v-text-field>
-                    </v-col>
+              <!-- NUMBER -->
+              <td v-on:click="handleRowClick(item._id, true)" 
+                :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title class="pl-3" style="min-width:200px">
+                  {{ item.number || '-' }}
+                </v-list-item-title>
+              </td>
 
-                    <v-col id="activityNumber" cols="2" class="px-2 py-4">
-                      <v-text-field 
-                        counter 
-                        hide-details
-                        maxlength="4" 
-                        :label="$t('number')" 
-                        color="primary" 
-                        v-model="activity.number"
-                        :rules="[rules.required]"
-                        @keypress="filterNonNumeric(event)">
-                      </v-text-field>
-                    </v-col>
-                  </v-row>
-                </v-col>
+              <td v-on:click="handleRowClick(item._id, true)" 
+                :style="utils.getRowStyle(index, hoveredRow)">
+                <v-spacer></v-spacer>
+              </td>
+              
+              <!-- v v v SYNC STATUS v v v -->
+                <td>
+                <v-btn icon variant="text" v-if="item.lastSync > 0">
+                  <v-tooltip activator="parent" location="bottom">
+                    {{ this.$t('lastSync') + new Date(item.lastSync).toLocaleString() }}
+                  </v-tooltip>
+                  <v-icon>mdi-cloud-check</v-icon>
+                </v-btn>
+                <v-btn icon variant="text" v-else>
+                  <v-tooltip activator="parent" location="bottom">
+                    {{ $t('onlyLocal') }}
+                  </v-tooltip>
+                  <v-icon>mdi-cloud-off-outline</v-icon>
+                </v-btn>
 
-                <!-- v v v v v ACTIVITY OPTIONS v v v v v -->
-                <div v-if="!activity.edit">
-                  <v-btn 
-                    class="ma-1" 
-                    color="primary" 
-                    v-on:click="activity.edit = !activity.edit">
-                    <v-icon class="pr-2">mdi-pencil</v-icon>
-                    {{ $t('edit') }}
-                    <v-tooltip 
-                      v-if="$generalStore.getShowTooltips()" 
-                      activator="parent" 
-                      location="bottom"
-                      :text="$t('editPhrase', { msg: $tc('activity', 1) + ' ' + activity.activityNumber })">
-                    </v-tooltip>
-                  </v-btn>
-
-                  <v-btn 
-                    color="error" 
-                    class="ma-1" 
-                    v-on:click="confirmDeletion(activity)">
-                    <v-icon class="pr-2">mdi-delete</v-icon>
-                    {{ $t('delete') }}
-                    <v-tooltip 
-                      v-if="$generalStore.getShowTooltips()" 
-                      activator="parent" 
-                      location="bottom"
-                      :text="$t('deletePhrase', { msg: $tc('activity', 1) + ' ' + activity.activityNumber })">
-                    </v-tooltip>
-                  </v-btn>
-                </div>
-
-                <!-- v v v v v ACTIVITY EDIT SAVE/CANCEL v v v v v -->
-                <div v-else>
-                  <!-- SAVE -->
-                  <v-btn
-                    class="ma-1" 
-                    color="success"
-                    v-on:click="saveActivity(activity)">
-                    <v-icon class="pr-2">mdi-content-save-all</v-icon>
-                    {{ $t('save') }}
-                    <v-tooltip 
-                      v-if="$generalStore.getShowTooltips()" 
-                      activator="parent" 
-                      location="bottom"
-                      :text="$t('savePhrase', { msg: $tc('activity', 1) + ' ' + activity.activityNumber })">
-                    </v-tooltip>
-                  </v-btn>
-                  <!-- CANCEL -->
-                  <v-btn
-                    class="ma-1"
-                    color="error" 
-                    v-on:click="closeActivityEdit(activity)">
-                    <v-icon class="pr-2">mdi-close-circle</v-icon>
-                    {{ $t('cancel') }}
-                    <v-tooltip 
-                      v-if="$generalStore.getShowTooltips()" 
-                      activator="parent" 
-                      location="bottom"
-                      :text="$t('cancelPhrase', { msg: $tc('activity', 1) + ' ' + activity.activityNumber })">
-                    </v-tooltip>
-                  </v-btn>
-                </div>
-
-                <!-- v v v v v ACTIVITY EDITORS/CLOUD SYNC STATUS v v v v v -->
+                <!-- v v v ACTIVITY EDITORS/CLOUD SYNC STATUS v v v -->
                 <v-btn icon class="ml-2" variant="text"
-                  v-if="activity.editor.length > 0"
-                  v-on:click="openAddEditorDialog(activity)">
+                  v-if="item.editor.length > 0"
+                  v-on:click="openAddEditorDialog(item)">
+                  <!-- TOOLTIP -->
                   <v-tooltip 
                     activator="parent"
                     location="bottom"
                     max-width="150px">
-
-                    <v-list 
-                      class="mx-n3">
+                    <v-list class="mx-n3">
                       <v-list-subheader>
                         {{ this.$tc('editor', 2) }}:
                       </v-list-subheader>
                       <v-list-item
                         class="d-flex justify-center"
                         density="compact"
-                        v-for="editor in activity.editor"
+                        v-for="editor in item.editor"
                         :key="editor">
                         {{ editor }}
                       </v-list-item>
                       <v-divider></v-divider>
                       <p class="text-center pt-1">
-
                         {{ this.$t('addOtherEditor') }}
                       </p>
                     </v-list>
@@ -181,8 +123,7 @@
                 </v-btn>
 
                 <v-btn icon class="ml-2" variant="text" v-else
-                v-on:click="addEditor(activity)">
-                  
+                  v-on:click="addEditor(item)">
                   <v-tooltip v-if="userStore.authenticated"
                     activator="parent"
                     location="bottom">
@@ -195,56 +136,47 @@
                     </v-tooltip>
                   <v-icon>mdi-account-off-outline</v-icon>
                 </v-btn>
-                
-                <!-- SYNC STATUS -->
-                <v-btn icon class="mr-2 non-clickable" variant="text"
-                  v-if="activity.lastSync > 0">
-                  <v-tooltip 
-                    activator="parent"
-                    location="bottom">
-                    {{ this.$t('lastSync') + new Date(activity.lastSync).toLocaleString() }}
-                  </v-tooltip>
-                  <v-icon>mdi-cloud-check</v-icon>
+
+                <!-- EDIT -->
+                <v-btn 
+                  v-on:click="handleRowClick(item._id, false)"
+                  style="margin-left: 3px;margin-top: 10px;margin-bottom: 10px;" 
+                  color="secondary"
+                  variant="outlined">
+                  <v-icon class="pr-2">mdi-arrow-right-bold</v-icon>
+                  {{ $tc('place', 2) }}
                 </v-btn>
-
-                <v-btn icon class="mr-2 non-clickable" variant="text" v-else>
-                  <v-tooltip 
-                    activator="parent"
-                    location="bottom">
-                    {{ $t('onlyLocal') }}
-                  </v-tooltip>
-                  <v-icon>mdi-cloud-off-outline</v-icon>
-                </v-btn>
-              </v-row>
-
-              <v-divider v-if="i !== activities.length - 1"></v-divider>
-            </template>
-            <ConfirmDialog ref="confirm" />
-
-          </v-list>
-        </v-card>
-      </v-form>
+              </td>
+            </tr>
+          </template>
+        </v-data-table-virtual>
+      </v-card>
       <v-spacer></v-spacer>
     </v-row>
 
-    <AddButton v-on:click="addActivity()" prop_object="activity" />
+    <!--------------- ADD BUTTON --------------->
+    <v-row>
+      <v-spacer></v-spacer>
+      <AddButton v-on:click="addActivity()" prop_object="activity" />
+      <v-spacer></v-spacer>
+    </v-row>
 
-    <!-- ADD EDITOR DIALOG -->
+    <!--------------- ADD EDITOR DIALOG --------------->
     <v-dialog v-model="addEditorDialog" :max-width="550" style="z-index: 3;" @keydown.esc="cancelAddEditor()">
       <v-card>
         <v-toolbar dark color="success" dense flat>
           <v-toolbar-title>
             {{ $t('addEditorToActivity') }}
           </v-toolbar-title>
-          </v-toolbar>
-          <v-text-field label="Username" v-model="newEditorName"></v-text-field>
-          <v-card-actions class="pt-0">
-            <v-spacer></v-spacer>
-            <v-btn icon color="success"  @click="confirmAddEditor()"><v-icon>mdi-check-circle</v-icon></v-btn>
-            <v-btn icon color="error" @click="cancelAddEditor()"><v-icon>mdi-close-circle</v-icon></v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+        </v-toolbar>
+        <v-text-field label="Username" v-model="newEditorName"></v-text-field>
+        <v-card-actions class="pt-0">
+          <v-spacer></v-spacer>
+          <v-btn icon color="success"  @click="confirmAddEditor()"><v-icon>mdi-check-circle</v-icon></v-btn>
+          <v-btn icon color="error" @click="cancelAddEditor()"><v-icon>mdi-close-circle</v-icon></v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
   </div>
 </template>
@@ -254,11 +186,13 @@ import Navigation from '../components/Navigation.vue'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 import AddButton from '../components/AddButton.vue'
 import OnlineImport from '../components/OnlineImport.vue'
+import { useWindowSize } from 'vue-window-size';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js'
 import { fromBackend } from '../ConnectionToBackend.js'
 import { toRaw } from 'vue'
 import { useUserStore } from '../Authentication.js';
-
+import { generalDataStore } from '../ConnectionToLocalStorage.js';
+import { utils } from '../utils.js';
 
 export default {
   name: 'ActivitiesOverview',
@@ -268,14 +202,21 @@ export default {
     AddButton,
     OnlineImport
   },
+  
   setup() {
+    const { width, height } = useWindowSize();
     const userStore = useUserStore();
+    const generalStore = generalDataStore();
 
     return {
+      windowWidth: width,
+      windowHeight: height,
       userStore,
+      generalStore,
+      utils
     }
   },
-  emits: ['view'],
+  
   data() {
     return {
       activities: [],
@@ -286,19 +227,38 @@ export default {
       reject: null,
       rules: {
         required: value => !!value || 'Required.',
-      }
+      },
+      hoveredRow: -1,
+      searchQuery: '',
+      headers: [
+        {
+          title: this.$t('branchOffice'),
+          align: 'start',
+          sortable: true,
+          key: 'branchOffice',
+        },
+        { title: this.$t('year'), align: 'start', key: 'year' },
+        { title: this.$t('number'), align: 'start', key: 'number'},
+        { title: '', sortable: false, align: 'end', key: 'actions'},
+        { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status', width: '250px'},
+      ],
     };
   },
+
   /**
    * Retrieve data from IndexedDB
    */
   async created() {
-    this.$emit("view", this.$t('overview', { msg: this.$tc('activity', 2) }));
     await fromOfflineDB.syncLocalDBs()
       .catch(err => console.error(err));
     await this.updateActivitiesFull()
       .catch(err => console.error(err));
   },
+
+  mounted() {
+    this.$refs.navigationRef.onViewChange(this.$t('overview', { msg: this.$tc('activity', 2) }))
+  },
+  
   methods: {
     /**
      * Get all activities from IndexedDb and Backend
@@ -389,10 +349,10 @@ export default {
     
     
     /**
-     * Sets the currently selected activity into the cookies
+     * Opens the placesOverview of the clicked activity
      * @param {String} activityID 
      */
-    async setActivity(activityID) {
+    async openPlacesOverview(activityID) {
       if (this.$generalStore.getCurrentObject('activity') !== activityID) {
         this.$generalStore.setCurrentObject(null, "place");
         this.$generalStore.setCurrentObject(null, "position");
@@ -400,6 +360,20 @@ export default {
 
       this.$generalStore.setCurrentObject(activityID, "activity");
       this.$router.push({ name: 'PlacesOverview' });
+    },
+
+    /**
+     * Opens an activity
+     * @param activityID 
+     */
+    async openActivity(activityID) {
+      if (this.$generalStore.getCurrentObject('activity') !== activityID) {
+        this.$generalStore.setCurrentObject(null, "place");
+        this.$generalStore.setCurrentObject(null, "position");
+      }
+
+      this.$generalStore.setCurrentObject(activityID, "activity");
+      this.$router.push({ name: 'ActivityCreation', params: {activityID} });
     },
 
     /**
@@ -445,6 +419,7 @@ export default {
         + "/" + newActivity.number;
 
       this.activities.push(newActivity);
+      this.saveActivity(newActivity)
     },
 
     /**
@@ -474,7 +449,40 @@ export default {
           lastChanged: Date.now(),
           lastSync: rawActivity.lastSync,
           editor: rawActivity.editor,
-          camera: null
+          camera: null,
+
+          archiveNumber: '',
+          title: '',
+          right: '',
+          rightTo: '',
+          up: '',
+          upTo: '',
+          areaDescr: '',
+          dateFrom: '',
+          dateTo: '',
+          siteDirector: '',
+          excavationFirm: '',
+          doneThing: '',
+          landUsageHist: '',
+          histLandUsageYear: 0,
+          landUsageCur: '',
+          conditions: '',
+          groundType: [],
+          topography: [],
+          archiveMaterial: {
+            photos: false,
+            findDrawings: false,
+            excavationDrawings: false,
+            misc: false,
+            no: false
+          },
+          material: {
+            find: false,
+            sample: false,
+            no: false
+          },
+          maxPlaceNumber: 0,
+          findsDocumented: '',
         }
 
         // add new activity to current authenticated user 
@@ -498,35 +506,11 @@ export default {
           var activityID = await fromOfflineDB
             .addObject(newActivity, 'Activities', 'activities')
             .catch(err => console.error(err));
-          //TODO: rework the onlineSync workflow
-          //await fromOfflineDB.addObject({ _id: activityID, object: 'activities' }, 'Changes', 'created');
         }
       }
       await this.updateActivities()
         .catch(err => console.error(err));
-      console.log(this.$root)
       this.$root.vtoast.show({ message: this.$t('saveSuccess') });
-    },
-
-    /**
-     * Removes an activity from IndexedDB and Cookies
-     * @param {Object} activity 
-     */
-     async deleteActivity(activity) {
-      this.$generalStore.setCurrentObject(null, "activity");
-      this.$generalStore.setCurrentObject(null, "place");
-      this.$generalStore.setCurrentObject(null, "position");
-
-      var activityIndex = this.activities.indexOf(activity);
-
-      if (activityIndex != -1) {
-        this.activities.splice(activityIndex, 1);
-      }
-      
-      await fromOfflineDB
-        .deleteCascade(activity._id, 'activity', 'Activities', 'activities')
-        .catch(err => console.error(err));
-      this.$router.go();
     },
 
     /**
@@ -600,53 +584,54 @@ export default {
       this.$root.vtoast.show({ message: this.$t('syncSuccess') });
     },
 
+    
+
     /**
-     * Opens the confirmation dialog for deletion
-     * @param {Object} activity 
+     * Update the hoveredRow based on the isHovered flag.
+     *
+     * @param {number} index - The index of the row being hovered.
+     * @param {boolean} isHovered - Indicates if the row is being hovered 
+     *                              (true) or not (false).
      */
-    async confirmDeletion(activity) {
-      if (
-        await this.$refs.confirm.open(
-          this.$t('confirm'),
-          this.$t('confirm_del', {
-              object: this.$tc('activity', 1), 
-              object_nr: activity.activityNumber }),
-        ).catch(err => console.error(err))
-      ) {
-        this.deleteActivity(activity);
+    setHoveredRow(index, isHovered) {
+      if (isHovered) {
+        this.hoveredRow = index;
+      } else if (this.hoveredRow === index) {
+        this.hoveredRow = -1;
       }
     },
 
     /**
-      * Prevents the input of non numeric values 
-      * @param {*} evt 
-      */
-    filterNonNumeric(evt) {
-      evt = (evt) ? evt : window.event;
-      let expect = evt.target.value.toString() + evt.key.toString();
-
-      if (!/^[0-9]*$/.test(expect)) {
-        evt.preventDefault();
+     * Handle a click to a row of the activitiesTable.
+     * Either moves to a Place or duplicates it, 
+     * depending on if the duplicateSwitch is toggled or not.
+     * 
+     * @param {String} activityID 
+     */
+    handleRowClick(activityID, edit) {
+      if (edit) {
+        this.openActivity(activityID);
       } else {
-        return true;
+        this.openPlacesOverview(activityID);
       }
     },
-
   }
 }
 </script>
   
 <style scoped>
-#test {
-  text-align: center;
-}
 
-.wrap-text {
-  -webkit-line-clamp: unset !important;
-}
 .non-clickable {
   cursor: default; /* Change cursor to indicate non-clickable */
   /* pointer-events: none; */ /* Disable pointer events */
+}
+
+td {
+  padding: 6px !important;
+}
+
+th {
+  padding: 6px !important;
 }
 </style>
   

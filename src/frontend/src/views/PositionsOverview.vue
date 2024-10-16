@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.08.2024 13:39:17
+ * Last Modified: 15.10.2024 16:37:45
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -10,324 +10,335 @@
 
 <template>
   <div id="wrapper">
-    <Navigation active_tab_prop="2" />
+    <Navigation ref="navigationRef" active_tab_prop="2" />
+
+    <!--------------- TOOLBAR --------------->
     <v-row class="pt-2">
-        <v-spacer></v-spacer>
-        <v-card class="pa-4" :min-width="windowWidth * 0.55" variant="text">
-          <v-row no-gutters class="align-center pa-2">
+      <v-spacer></v-spacer>
+      <v-card class="pa-4" :min-width="windowWidth * 0.55" variant="text">
+        <v-row no-gutters class="align-center pa-2">
 
-            <!-- SHOW ALL SWITCH-->
-            <div class="d-flex justify-end">
-              <v-switch
-                class="px-3" 
-                v-model="showAllInfo"
-                hide-details 
-                :label="this.$t('showAll')"
-                color="secondary">
-              </v-switch>
-            </div>
-          
-            <v-divider vertical class="ml-2 mr-6" />
-            <!-- PLACES SEARCH -->
-            <v-text-field 
-              v-model="searchQuery" 
-              append-icon="mdi-magnify" 
-              :label="this.$t('search')" 
-              single-line 
-              hide-details
-              color="primary">
-            </v-text-field>
-          </v-row>
-        </v-card>
-        <v-spacer></v-spacer>
-      </v-row>
+          <!-- SHOW ALL SWITCH-->
+          <div class="d-flex justify-end">
+            <v-switch
+              class="px-3" 
+              v-model="showAllInfo"
+              hide-details 
+              :label="this.$t('showAll')"
+              color="secondary">
+            </v-switch>
+          </div>
+        
+          <v-divider vertical class="ml-2 mr-6" />
+          <!-- PLACES SEARCH -->
+          <v-text-field 
+            v-model="searchQuery" 
+            append-icon="mdi-magnify" 
+            :label="this.$t('search')" 
+            single-line 
+            hide-details
+            color="primary">
+          </v-text-field>
+        </v-row>
+      </v-card>
+      <v-spacer></v-spacer>
+    </v-row>
 
-      <v-row>
-        <v-spacer></v-spacer>
+    <v-row>
+      <v-spacer></v-spacer>
 
-        <!-- POSITIONS LIST -->
-        <v-card class="pt-2" :min-width="windowWidth * 0.65">
-          <v-data-table-virtual
-            v-show="!showAllInfo"
-            :items="filteredPositions"
-            fixed-header
-            :height="getTableHeight"
-            :headers="headers"
-            :sort-by="[{ key: 'positionNumber', order: 'desc' }]">
+      <!-- POSITIONS LIST -->
+      <v-card class="pt-2" :min-width="windowWidth * 0.6">
+        <v-data-table-virtual
+          v-show="!showAllInfo"
+          :items="utils.filteredObjects(positions, searchQuery, 'position')"
+          fixed-header
+          :height="utils.getTableHeight(positions, windowHeight)"
+          :headers="headers"
+          :sort-by="[{ key: 'positionNumber', order: 'desc' }]">
 
-            <template v-slot:item="{ item, index }">
-              <tr v-on:click="handleRowClick(item._id)"
-                  @mouseenter="setHoveredRow(index, true)"
-                  @mouseleave="setHoveredRow(index, false)">
-
-                  <!-- POSITION NUMBER -->
-                  <td :style="getRowStyle(index)">
-                    <v-list-item-title class="pl-4">
-                      {{ item.positionNumber }}
-                    </v-list-item-title>
-                  </td>
-
-                  <!-- SUB NUMBER -->
-                  <td :style="getRowStyle(index)">
-                    <v-list-item-title class="pl-4">
-                      {{ item.subNumber }}
-                    </v-list-item-title>
-                  </td>
-
-                  <!-- TITLE -->
-                  <td :style="getRowStyle(index)">
-                    <v-list-item-title v-if="item.title.length > 0"
-                      style="min-width:200px" class="text-wrap">
-                      {{ item.title }}
-                    </v-list-item-title>
-
-                    <v-list-item-title v-if="item.title.length == 0" 
-                      style="color:dimgrey;">
-                      -
-                    </v-list-item-title>
-                  </td>
-
-                  <!-- DATE -->
-                  <td :style="getRowStyle(index)">
-                    <v-list-item-title>
-                      {{ item.date || '-' }}
-                    </v-list-item-title>
-                  </td>
-
-                  <!-- SYNC STATUS -->
-                  <td :style="getRowStyle(index)">
-                    <v-list-item>
-                      <v-btn 
-                        icon 
-                        variant="text"
-                        v-if="item.lastSync > 0">
-                          <v-tooltip 
-                            activator="parent"
-                            location="bottom">
-                            {{ this.$t('lastSync') + new Date(item.lastSync).toLocaleString() }}
-                          </v-tooltip>
-                          <v-icon>mdi-cloud-check</v-icon>
-                      </v-btn>
-                      <v-btn 
-                        icon 
-                        variant="text"      
-                        v-else>
-                          <v-tooltip 
-                            activator="parent"
-                            location="bottom">
-                              {{ $t('onlyLocal') }}
-                          </v-tooltip>
-                          <v-icon>mdi-cloud-off-outline</v-icon>
-                      </v-btn>
-                    </v-list-item>
-                  </td>
-              </tr>
-            </template>
-          </v-data-table-virtual>
-
-          <!-- POSITIONS LIST COMPLETE -->
-          <v-data-table-virtual
-            fixed-header
-            v-show="showAllInfo"
-            :items="filteredPositions" 
-            :height="getTableHeight"
-            :headers="fullHeaders"
-            :sort-by="[{ key: 'positionNumber', order: 'desc' }]">
-
-            <template v-slot:item="{ item, index }">
-              <tr v-on:click="handleRowClick(item._id)" 
+          <template v-slot:item="{ item, index }">
+            <tr v-on:click="handleRowClick(item._id)"
                 @mouseenter="setHoveredRow(index, true)"
                 @mouseleave="setHoveredRow(index, false)">
 
-                <!-- PLACE NUMBER -->
-                <td :style="getRowStyle(index)">
-                  <v-list-item-title class="pl-4">
-                    {{ item.positionNumber }}
-                  </v-list-item-title>
-                </td>
+              <!-- POSITION NUMBER -->
+              <td :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title class="pl-4">
+                  {{ item.positionNumber }}
+                </v-list-item-title>
+              </td>
 
-                <!-- SUB NUMBER -->
-                <td :style="getRowStyle(index)">
-                  <v-list-item-title>
-                    {{ item.subNumber }}
-                  </v-list-item-title>
-                </td>
+              <!-- SUB NUMBER -->
+              <td :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title v-if="item.subNumber.length != 0">
+                  {{ item.subNumber }}
+                </v-list-item-title>
+                <v-list-item-title v-if="item.subNumber.length == 0" 
+                  style="color:dimgrey;">
+                  -
+                </v-list-item-title>
+              </td>
 
-                <!-- TITLE -->
-                <td class="py-2" :style="getRowStyle(index)">
-                  <v-list-item-title
-                    v-if="item.title.length > 0"
-                    style="min-width:200px" 
-                    class="text-wrap">
-                    {{ item.title }}
-                  </v-list-item-title>
+              <!-- TITLE -->
+              <td :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title v-if="item.title.length > 0"
+                  style="min-width:200px" class="text-wrap">
+                  {{ item.title.join('; ') }}
+                </v-list-item-title>
+                <v-list-item-title v-if="item.title.length == 0" 
+                  style="color:dimgrey;">
+                  -
+                </v-list-item-title>
+              </td>
 
-                  <v-list-item-title 
-                    v-if="item.title.length == 0" style="color:dimgrey;">
-                    -
-                  </v-list-item-title>
-                </td>
+              <!-- DATE -->
+              <td :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title>
+                  {{ item.date }}
+                </v-list-item-title>
+              </td>
 
-                <!-- DATING -->
-                  <td :style="getRowStyle(index)">
-                    <v-list-item-title 
-                      v-if="item.dating">
-                      {{ item.dating }}
-                    </v-list-item-title>
+              <!-- SYNC STATUS -->
+              <td>
+                <v-btn icon variant="text" v-if="item.lastSync > 0"
+                  class="my-1">
+                    <v-tooltip 
+                      activator="parent"
+                      location="bottom">
+                      {{ this.$t('lastSync') + new Date(item.lastSync).toLocaleString() }}
+                    </v-tooltip>
+                    <v-icon>mdi-cloud-check</v-icon>
+                </v-btn>
+                <v-btn icon variant="text" class="my-1" v-else>
+                  <v-tooltip 
+                    activator="parent"
+                    location="bottom">
+                      {{ $t('onlyLocal') }}
+                  </v-tooltip>
+                  <v-icon>mdi-cloud-off-outline</v-icon>
+                </v-btn>
 
-                    <v-list-item-title 
-                      v-if="!item.dating" style="color:dimgrey;">
-                      -
-                    </v-list-item-title>
-                  </td>
+                <!-- BODEON CONFORM -->
+                <v-btn icon color="success" variant="text" v-if="isBodeonValid(item)">
+                  <v-tooltip activator="parent" location="bottom">
+                     {{ $t('fulfillsBodeonRequirements') }}
+                  </v-tooltip>
+                  <v-icon>mdi-check-circle</v-icon>
+                </v-btn>
+                <v-btn color="primary" icon variant="text" v-else>
+                  <v-tooltip activator="parent" location="bottom">
+                     {{ $t('mandatoryFieldNotFilled') }}
+                  </v-tooltip>
+                  <v-icon>mdi-alert-circle</v-icon>
+                </v-btn>
+              </td>
+            </tr>
+          </template>
+        </v-data-table-virtual>
 
-                <!-- COORDINATES COUNT -->
-                <td :style="getRowStyle(index)">
-                  <v-list-item-title 
-                    v-if="item.coordinates != ''">
-                    {{ item.coordsCount + " " +  $t('coordinates') }} 
-                  </v-list-item-title>
+        <!-- POSITIONS LIST COMPLETE -->
+        <v-data-table-virtual
+          fixed-header
+          v-show="showAllInfo"
+          :items="utils.filteredObjects(positions, searchQuery, 'position')" 
+          :height="utils.getTableHeight(positions, windowHeight)"
+          :headers="fullHeaders"
+          :sort-by="[{ key: 'positionNumber', order: 'desc' }]">
 
-                  <v-list-item-title style="color:dimgrey;" v-else>
-                    -
-                  </v-list-item-title>
-                </td>
+          <template v-slot:item="{ item, index }">
+            <tr v-on:click="handleRowClick(item._id)" 
+              @mouseenter="setHoveredRow(index, true)"
+              @mouseleave="setHoveredRow(index, false)">
 
-                <!-- PLANE -->
-                <td :style="getRowStyle(index)">
-                  <v-list-item-title 
-                    v-if="item.count != ''" class="text-wrap">
-                    {{ item.count || '-' }}
-                  </v-list-item-title>
-                  <v-list-item-title 
-                    v-if="item.count == ''" style="color:dimgrey;">
-                    -
-                  </v-list-item-title>
-                </td>
+              <!-- PLACE NUMBER -->
+              <td :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title class="pl-4">
+                  {{ item.positionNumber }}
+                </v-list-item-title>
+              </td>
 
-                <!-- WEIGHT -->
-                <td :style="getRowStyle(index)">
-                  <v-list-item-title 
-                    v-if="item.weight != ''" class="text-wrap">
-                    {{ item.weight || '-' }}
-                  </v-list-item-title>
-                  <v-list-item-title 
-                    v-if="item.weight == ''" style="color:dimgrey;">
-                    -
-                  </v-list-item-title>
-                </td>
+              <!-- SUB NUMBER -->
+              <td :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title v-if="item.subNumber.length != 0">
+                  {{ item.subNumber }}
+                </v-list-item-title>
+                <v-list-item-title v-if="item.subNumber.length == 0" 
+                  style="color:dimgrey;">
+                  -
+                </v-list-item-title>
+              </td>
 
-                <!-- MATERIAL -->
-                  <td :style="getRowStyle(index)">
-                    <v-list-item-title 
-                      v-if="item.material != ''" class="text-wrap">
-                      {{ item.material || '-' }}
-                    </v-list-item-title>
-                    <v-list-item-title 
-                      v-if="item.material == ''" style="color:dimgrey;">
-                      -
-                    </v-list-item-title>
-                  </td>
+              <!-- TITLE -->
+              <td class="py-2" :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title
+                  v-if="item.title.length > 0"
+                  style="min-width:200px" 
+                  class="text-wrap">
+                  {{ item.title.join('; ') }}
+                </v-list-item-title>
+                <v-list-item-title 
+                  v-if="item.title.length == 0" style="color:dimgrey;">
+                  -
+                </v-list-item-title>
+              </td>
 
-                <!-- DESCRIPTION -->
-                <td :style="getRowStyle(index)">
-                  <v-list-item-title class="text-wrap" style="max-width:200px">
-                    {{ item.description }}
-                  </v-list-item-title>
-                  <v-list-item-title 
-                    v-if="item.description == ''" style="color:dimgrey;">
-                    -
-                  </v-list-item-title>
-                </td>
+              <!-- DATING -->
+              <td :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title 
+                  v-if="item.dating">
+                  {{ item.dating }}
+                </v-list-item-title>
+                <v-list-item-title 
+                  v-if="!item.dating" style="color:dimgrey;">
+                  -
+                </v-list-item-title>
+              </td>
 
-                <!-- EDITOR -->
-                <td :style="getRowStyle(index)">
-                  <v-list-item-title
-                    v-if="item.editor != ''">
-                    {{ item.editor }}
-                  </v-list-item-title>
-                  <v-list-item-title 
-                    v-if="item.editor == ''" style="color:dimgrey;">
-                    -
-                  </v-list-item-title>
-                </td>
+              <!-- COORDINATES COUNT -->
+              <td :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title 
+                  v-if="item.coordinates != ''">
+                  {{ item.coordsCount + " " +  $t('coordinates') }} 
+                </v-list-item-title>
+                <v-list-item-title style="color:dimgrey;" v-else>
+                  -
+                </v-list-item-title>
+              </td>
 
-                <!-- DATE -->
-                <td :style="getRowStyle(index)">
-                  <v-list-item-title>
-                    {{ item.date}}
-                  </v-list-item-title>
-                </td>
+              <!-- PLANE -->
+              <td :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title 
+                  v-if="item.count != ''" class="text-wrap">
+                  {{ item.count || '-' }}
+                </v-list-item-title>
+                <v-list-item-title 
+                  v-if="item.count == ''" style="color:dimgrey;">
+                  -
+                </v-list-item-title>
+              </td>
 
-                <!-- IS SEPARATE -->
-                <td :style="getRowStyle(index)">
-                  <v-list-item-title 
-                    v-if="item.isSeparate">
-                    &cross;
-                  </v-list-item-title>
+              <!-- WEIGHT -->
+              <td :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title 
+                  v-if="item.weight != ''" class="text-wrap">
+                  {{ item.weight || '-' }}
+                </v-list-item-title>
+                <v-list-item-title 
+                  v-if="item.weight == ''" style="color:dimgrey;">
+                  -
+                </v-list-item-title>
+              </td>
 
-                  <v-list-item-title 
-                    v-if="!item.isSeparate" style="color:dimgrey;">
-                    -
-                  </v-list-item-title>
-                </td>
+              <!-- MATERIAL -->
+              <td :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title 
+                  v-if="item.material != ''" class="text-wrap">
+                  {{ item.material || '-' }}
+                </v-list-item-title>
+                <v-list-item-title 
+                  v-if="item.material == ''" style="color:dimgrey;">
+                  -
+                </v-list-item-title>
+              </td>
 
-                <!-- SYNC STATUS -->
-                <td :style="getRowStyle(index)">
-                  <v-list-item>
-                    <v-btn 
-                      icon 
-                      variant="text"
-                      v-if="item.lastSync > 0">
-                      <v-tooltip 
-                        activator="parent"
-                        location="bottom">
-                        {{ this.$t('lastSync') + new Date(item.lastSync).toLocaleString() }}
-                      </v-tooltip>
-                      <v-icon>mdi-cloud-check</v-icon>
-                    </v-btn>
-                    <v-btn 
-                      icon 
-                      variant="text"      
-                      v-else>
-                        <v-tooltip 
-                          activator="parent"
-                          location="bottom">
-                            {{ $t('onlyLocal') }}
-                        </v-tooltip>
-                        <v-icon>mdi-cloud-off-outline</v-icon>
-                    </v-btn>
-                  </v-list-item>
-                </td>
-                <v-divider></v-divider>
-              </tr>
-            </template>
-          </v-data-table-virtual>
-        </v-card>
-        <v-spacer></v-spacer>
+              <!-- DESCRIPTION -->
+              <td :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title class="text-wrap" style="max-width:200px">
+                  {{ item.description }}
+                </v-list-item-title>
+                <v-list-item-title 
+                  v-if="item.description == ''" style="color:dimgrey;">
+                  -
+                </v-list-item-title>
+              </td>
+
+              <!-- EDITOR -->
+              <td :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title
+                  v-if="item.editor != ''">
+                  {{ item.editor }}
+                </v-list-item-title>
+                <v-list-item-title 
+                  v-if="item.editor == ''" style="color:dimgrey;">
+                  -
+                </v-list-item-title>
+              </td>
+
+              <!-- DATE -->
+              <td :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title>
+                  {{ item.date}}
+                </v-list-item-title>
+              </td>
+
+              <!-- IS SEPARATE -->
+              <td :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title 
+                  v-if="item.isSeparate">
+                  &cross;
+                </v-list-item-title>
+                <v-list-item-title 
+                  v-if="!item.isSeparate" style="color:dimgrey;">
+                  -
+                </v-list-item-title>
+              </td>
+
+              <!-- SYNC STATUS -->
+              <td>
+                <v-btn icon variant="text" v-if="item.lastSync > 0" class="my-1">
+                  <v-tooltip activator="parent" location="bottom">
+                    {{ this.$t('lastSync') + new Date(item.lastSync).toLocaleString() }}
+                  </v-tooltip>
+                  <v-icon>mdi-cloud-check</v-icon>
+                </v-btn>
+                <v-btn icon variant="text" v-else class="my-1">
+                  <v-tooltip 
+                    activator="parent"
+                    location="bottom">
+                      {{ $t('onlyLocal') }}
+                  </v-tooltip>
+                  <v-icon>mdi-cloud-off-outline</v-icon>
+                </v-btn>
+
+                <!-- BODEON CONFORM -->
+                <v-btn icon color="success" variant="text" v-if="isBodeonValid(item)">
+                  <v-tooltip activator="parent" location="bottom">
+                     {{ $t('fulfillsBodeonRequirements') }}
+                  </v-tooltip>
+                  <v-icon>mdi-check-circle</v-icon>
+                </v-btn>
+                <v-btn color="primary" icon variant="text" v-else>
+                  <v-tooltip activator="parent" location="bottom">
+                     {{ $t('mandatoryFieldNotFilled') }}
+                  </v-tooltip>
+                  <v-icon>mdi-alert-circle</v-icon>
+                </v-btn>
+              </td>
+              <v-divider></v-divider>
+            </tr>
+          </template>
+        </v-data-table-virtual>
+      </v-card>
+      <v-spacer></v-spacer>
     </v-row>
 
+    <!--------------- ADD BUTTON + DUPLICATE SWITCH --------------->
     <v-row class="align-center">
       <v-spacer></v-spacer>
-        <AddButton @click="addPosition()"/>
+      <AddButton @click="addPosition()"/>
 
       <!-- DUPLICATE SWITCH -->
-      <v-switch
-          class="pl-5"
-          v-model="toggleDuplicate"
-          hide-details
-          color="secondary">
-          <template v-slot:prepend>
-            <v-icon color="warning">mdi-content-duplicate</v-icon>
-          </template>
+      <v-switch class="pl-5" hide-details 
+        v-model="toggleDuplicate" color="secondary">
+        <template v-slot:prepend>
+          <v-icon color="warning">mdi-content-duplicate</v-icon>
+        </template>
       </v-switch>
 
       <!-- Duplicate Snackbar - stays activated as long as switch value is true -->
-      <v-snackbar 
-        color="warning" 
-        timeout="-1" 
-        v-model="toggleDuplicate" 
-        location="bottom">
+      <v-snackbar color="warning" timeout="-1" 
+        v-model="toggleDuplicate" location="bottom">
         <v-row no-gutters>
           <v-icon start>mdi-content-duplicate</v-icon>
           <v-col>
@@ -350,6 +361,7 @@ import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { fromBackend } from '../ConnectionToBackend.js'
 import { useWindowSize } from 'vue-window-size';
 import { useUserStore } from '../Authentication';
+import { utils } from '../utils.js';
 
 export default {
   name: 'PositionsOverview',
@@ -358,8 +370,6 @@ export default {
     AddButton,
   },
   
-  emits: ['view'],
-
   setup() {
     const { width, height } = useWindowSize();
     const userStore = useUserStore();
@@ -367,6 +377,7 @@ export default {
       windowWidth: width,
       windowHeight: height,
       userStore,
+      utils
     };
   },
 
@@ -399,7 +410,7 @@ export default {
         },
         { title: this.$tc('title', 2), align: 'start', key: 'title' },
         { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
-        { title: this.$t('syncStatus'), align: 'start', key: 'status', width: "100px"}
+        { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status', width: "110px"}
       ],
       fullHeaders: [
         {
@@ -424,7 +435,7 @@ export default {
         { title: this.$tc('editor', 1), align: 'start', key: 'editor' },
         { title: this.$t('date'), align: 'start', key: 'date' },
         { title: this.$t('isSeparate'), align: 'start', key: 'isSeparate' },
-        { title: this.$t('syncStatus'), align: 'start', key: 'status', width: "100px"}
+        { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status'}
       ],
       toggleDuplicate: false,
     };
@@ -434,7 +445,6 @@ export default {
    * Initialize data from localDB to the reactive Vue.js data
    */
   async created() {
-    this.$emit("view", this.$t('overview', { msg: this.$tc('position', 2) }));
     await fromOfflineDB.syncLocalDBs()
       .catch(err => console.error(err));
     await this.updatePositions()
@@ -442,44 +452,8 @@ export default {
     this.setShowAllInfoSwitch();
   },
 
-  computed: {
-    /**
-     * Returns an array of filtered positions based on the search query.
-     *
-     * @returns {Array} The filtered array of positions that match the search query.
-     * If the search query is empty or invalid, it returns all positions.
-     */
-    filteredPositions() {
-      // split searchQuery to query array and escape special characters
-      const queries = this.searchQuery.trim().toLowerCase().split(/\s+/).map(this.escapeRegExp);
-
-      // if no queries are present, return all positions
-      if (queries.length === 0 || (queries.length === 1 && queries[0] === '')) {
-        return this.positions;
-      } else {
-        // filter positions by all query filters
-        // (positions have to fulfill every query filter)
-        return this.positions.filter(item => {
-          return queries.every(query => {
-            return this.doesItemMatchQuery(item, query);
-          });
-        });
-      }
-    },
-
-    getTableHeight() {
-      // Calculate the required table height based on the number of items
-      const numberOfRows = this.positions.length > 0 ? this.positions.length : 1;
-      const headerHeight = 56;
-      const rowHeight = 69;
-      const totalTableHeight = numberOfRows * rowHeight + headerHeight;
-
-      if (totalTableHeight > (this.windowHeight - 390)) {
-        return this.windowHeight - 390;
-      }
-
-      return totalTableHeight + "px";
-    },
+  mounted() {
+    this.$refs.navigationRef.onViewChange(this.$tc('overview',1, { msg: this.$tc('position', 2)}))
   },
 
   methods: {
@@ -611,7 +585,7 @@ export default {
       if (this.toggleDuplicate) {
         this.duplicatePosition(positionID);
       } else {
-        this.moveToPosition(positionID);
+        this.openPosition(positionID);
       }
     },
 
@@ -620,7 +594,7 @@ export default {
      * 
      * @param {String} positionID 
      */
-    moveToPosition(positionID) {
+    openPosition(positionID) {
       if (positionID !== 'new') {
         this.$generalStore.setCurrentObject(positionID, 'position');
       }
@@ -629,10 +603,7 @@ export default {
     },
 
     /**
-     * DUPLICATE FUNCTION FROM ADDPOSITION.VUE
-     * TODO: REMOVE UND JUST USE THE EXISTING FUNCTION
-     *       MAYBE OVER PROPS 
-     *                --> CAN YOU CALL FUNCTIONS OVER PROPS???
+     * Adds a new position with default data to the system
      */
     async addPosition() {
       var curPlaceID = this.$generalStore.getCurrentObject('place');
@@ -653,8 +624,9 @@ export default {
         count: '',
         weight: '',
         material: '',
-        title: '',
+        title: [],
         description: '',
+        datCode: '',
         dating: '',
         editor: '',
         date: new Date().toLocaleDateString("de-DE"),
@@ -689,7 +661,6 @@ export default {
       this.updatePositions();
     },
 
-
     /**
      * Set the toggleAllInfo switch state depending on VueCookies
      */
@@ -702,59 +673,6 @@ export default {
      */
     toggleAllInfo() {
       this.$generalStore.toggleShowAllPosInfo(this.showAllInfo);
-    },
-
-    /**
-     * Escapes special characters in a given string to treat 
-     * them as literal characters.
-     *
-     * @param {string} string - The input string to be escaped.
-     * @returns {string} The escaped string with special characters replaced 
-     *  by their escape sequences.
-     */
-    escapeRegExp(string) {
-      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    },
-
-    /**
-     * Checks if an item matches a given query by performing 
-     * a case-insensitive search.
-     *
-     * @param {Object} item - The item to be matched against the query.
-     * @param {string} query - The search query to be used for matching.
-     * @returns {boolean} True if the item matches the query; otherwise, false.
-     *
-     */
-    doesItemMatchQuery(item, query) {
-      const re = new RegExp(query, 'i');
-      return (
-        item.positionNumber.toString().match(re) ||
-        item.title.match(re) ||
-        item.date.match(re)
-      );
-    },
-
-    /**
-     * Get the style for the row at the specified index. 
-     * Furthermore get the currentTheme from Cookies and decide which colorattribute to use.
-     *
-     * @param {number} index The index of the row
-     * @returns {Object} An object containing row style properties
-     */
-     getRowStyle(index) {
-      var currentTheme = this.$generalStore.getTheme();
-      if (currentTheme !== 'fieldbook_light') {
-        return {
-          cursor: 'pointer',
-          padding: '8px 16px',
-          backgroundColor: this.hoveredRow === index ? '#2f3845' : 'transparent'
-        }
-      } 
-      return {
-        cursor: 'pointer',
-        padding: '8px 16px',
-        backgroundColor: this.hoveredRow === index ? '#F6F6F6' : 'transparent'
-      }
     },
 
     /**
@@ -771,20 +689,23 @@ export default {
         this.hoveredRow = -1;
       }
     },
+
+    /**
+     * Checks if data of a position is valid for potential BODEON import
+     * (are all mandatory fields properly filled?)
+     * @param position 
+     */
+    isBodeonValid(position) {
+      if (position.title.length != 0 && position.dating != '') {
+        return true;
+      }
+      return false;
+    },
   }
 }
 </script>
 
 <style scoped>
-#wrapper {
-  height: 100%;
-}
-.positionItem {
-  border-top: 2px solid black;
-  border-bottom: 2px solid black;
-  background-color: rgb(221, 221, 221);
-}
-
 td {
   padding: 6px !important;
 }
@@ -792,10 +713,4 @@ td {
 th {
   padding: 6px !important;
 }
-
-table tr>td:last-child {
-  border-bottom: 5px solid #b82828;
-  background: lightgray
-}
-
 </style>

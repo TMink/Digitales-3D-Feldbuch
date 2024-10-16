@@ -2,7 +2,7 @@
  * Created Date: 06.09.2023 17:19:12
  * Author: Julian Hardtung
  * 
- * Last Modified: 24.03.2024 19:22:27
+ * Last Modified: 13.10.2024 17:03:12
  * Modified By: Julian Hardtung
  * 
  * Description: input module viewer that shows all modules that are 
@@ -11,10 +11,12 @@
 
  <template>
   <v-container fluid class="pa-0 ma-0"> 
-
-    <ModuleTechnical v-if='this.object.placeNumber == 1'
+    <v-form ref="form">
+    <div v-if="pathObject == 'places' && this.object.placeNumber == 1">
+      <ModuleTechnical v-if='this.object.placeNumber == 1'
       :objectProp="object"
       @dataToModuleViewer="sendData($event)"/>
+    </div>
       
     <v-row no-gutters v-else >
 
@@ -63,6 +65,7 @@
 
       </v-col>        
     </v-row>
+    </v-form>
   </v-container>
 </template>
   
@@ -80,6 +83,8 @@ import ModuleObjectDescribers from '../components/modules/ModuleObjectDescribers
 import ModuleTechnical from './modules/ModuleTechnical.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB';
 import { useWindowSize } from 'vue-window-size';
+import { toRaw } from 'vue'
+import { useRoute } from 'vue-router';
 
 export default {
 
@@ -97,15 +102,27 @@ export default {
   emits: ['dataToPlaceForm'],
 
   props: {
+    objectProp: Object,
     datingItemsFirstProp: Array,
     editorItemsFirstProp: Array,
     materialItemsFirstProp: Array,
     titleItemsFirstProp: Array,
   },
   
-  setup() {
+  setup(props) {
     const { width, height } = useWindowSize();
+
+    
+    var propRaw = toRaw(props);
+
+    var route = useRoute()
+    
+    var objectPropRaw = propRaw.objectProp;
+    const object = route.path.split("/", 2).pop();
+    
     return {
+      pathObject: object,
+      object: objectPropRaw,
       windowWidth: width,
       windowHeight: height,
     };
@@ -113,20 +130,6 @@ export default {
   
   data() {
     return {
-      object: {
-        dating: '',
-        technical: '',
-        modulePreset: {
-          coordinates: true,
-          dating: true,
-          findTypes: true,
-          general: true,
-          objectDescribers: true,
-          plane: true,
-          visibility: true,
-          technical: false,
-        }
-      },
       pathNames: null,
       _id: null,
     }
@@ -137,12 +140,15 @@ export default {
       .catch(err => console.error(err));
     const path = this.$route.path;
     this.getPathNamesAndID(path);
-    this.object = await fromOfflineDB
-      .getObject(this._id, this.pathNames.db, this.pathNames.os)
-      .catch(err => console.error(err));
+
+    this.validate()
   },
   
   methods: {
+
+    async validate () {
+      const { valid } = await this.$refs.form.validate()
+    },
 
     async updateObject() {
       

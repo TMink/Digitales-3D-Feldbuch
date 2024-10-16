@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.08.2024 13:39:42
+ * Last Modified: 15.10.2024 16:35:23
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -10,7 +10,9 @@
 
 <template>
   <div id="wrapper">
-    <Navigation active_tab_prop="1" />
+    <Navigation ref="navigationRef" active_tab_prop="1" />
+
+    <!--------------- TOOLBAR --------------->
     <v-row class="pt-2">
       <v-spacer></v-spacer>
       <v-card class="pa-4" :min-width="windowWidth * 0.55" variant="text">
@@ -36,33 +38,41 @@
 
     <v-row>
       <v-spacer></v-spacer>
-
-      <!-- PLACES TABLE SMALL -->
-      <v-card class="pt-2" :min-width="windowWidth * 0.65">
+      <!--------------- PLACES TABLE SMALL --------------->
+      <v-card class="pt-2" :min-width="windowWidth * 0.6">
         <v-data-table-virtual v-show="!showAllInfo" 
-          fixed-header 
-          :items="filteredPlaces" 
-          :height="getTableHeight"
-          :headers="headers"
+          fixed-header :headers="headers"
+          :items="utils.filteredObjects(places, searchQuery, 'place')" 
+          :height="utils.getTableHeight(places, windowHeight)"
           :sort-by="[{ key: 'placeNumber', order: 'desc' }]">
 
           <template v-slot:item="{ item, index }">
-            <tr v-on:click="handleRowClick(item._id)" 
+            <tr 
               @mouseenter="setHoveredRow(index, true)"
               @mouseleave="setHoveredRow(index, false)">
+              <!-- TOOLTIP -->
+              <v-tooltip 
+                activator="parent"
+                location="bottom"
+                v-if="generalStore.getShowTooltips()">
+                {{ $t('editPhrase', {msg: $t('place')}) }}
+              </v-tooltip>
+
               <!-- PLACE NUMBER -->
-              <td :style="getRowStyle(index)">
-                <v-list-item-title class="pl-4">
+              <td v-on:click="handleRowClick(item._id, true)" 
+                :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title class="pl-3">
                   {{ item.placeNumber }}
                 </v-list-item-title>
               </td>
 
               <!-- TITLE -->
-              <td :style="getRowStyle(index)">
+              <td v-on:click="handleRowClick(item._id, true)" 
+                :style="utils.getRowStyle(index, hoveredRow)">
                 <div v-if="item.placeNumber > 1">
                   <v-list-item-title v-if="item.title.length > 0" 
                     style="min-width:200px" class="text-wrap">
-                    {{ item.title }}
+                    {{ item.title.join('; ') }}
                   </v-list-item-title>
 
                   <v-list-item-title v-if="item.title.length == 0" 
@@ -78,56 +88,81 @@
               </td>
 
               <!-- DATE -->
-              <td :style="getRowStyle(index)">
+              <td v-on:click="handleRowClick(item._id, true)" 
+                :style="utils.getRowStyle(index, hoveredRow)">
                 <v-list-item-title>
-                  {{ item.date || '-' }}
+                  {{ item.date }}
                 </v-list-item-title>
               </td>
 
               <!-- SYNC STATUS -->
-              <td :style="getRowStyle(index)">
-                <v-list-item>
-                  <v-btn icon variant="text" v-if="item.lastSync > 0">
-                    <v-tooltip activator="parent" location="bottom">
-                      {{ this.$t('lastSync') + new Date(item.lastSync).toLocaleString() }}
-                    </v-tooltip>
-                    <v-icon>mdi-cloud-check</v-icon>
-                  </v-btn>
-                  <v-btn icon variant="text" v-else>
-                    <v-tooltip activator="parent" location="bottom">
-                      {{ $t('onlyLocal') }}
-                    </v-tooltip>
-                    <v-icon>mdi-cloud-off-outline</v-icon>
-                  </v-btn>
-                </v-list-item>
+              <td>
+                <v-btn icon variant="text" v-if="item.lastSync > 0">
+                  <v-tooltip activator="parent" location="bottom">
+                    {{ this.$t('lastSync') + new Date(item.lastSync).toLocaleString() }}
+                  </v-tooltip>
+                  <v-icon>mdi-cloud-check</v-icon>
+                </v-btn>
+                <v-btn icon variant="text" v-else>
+                  <v-tooltip activator="parent" location="bottom">
+                    {{ $t('onlyLocal') }}
+                  </v-tooltip>
+                  <v-icon>mdi-cloud-off-outline</v-icon>
+                </v-btn>
+
+                <!-- BODEON CONFORM -->
+                <v-btn icon color="success" variant="text" v-if="isBodeonValid(item)">
+                  <v-tooltip activator="parent" location="bottom">
+                     {{ $t('fulfillsBodeonRequirements') }}
+                  </v-tooltip>
+                  <v-icon>mdi-check-circle</v-icon>
+                </v-btn>
+                <v-btn color="primary" icon variant="text" v-else>
+                  <v-tooltip activator="parent" location="bottom">
+                     {{ $t('mandatoryFieldNotFilled') }}
+                  </v-tooltip>
+                  <v-icon>mdi-alert-circle</v-icon>
+                </v-btn>
+
+                <!-- OPEN POSITION  -->
+                <v-btn 
+                  v-on:click="handleRowClick(item._id, false)"
+                  style="margin-left: 3px;margin-top: 10px;margin-bottom: 10px;"  
+                  color="secondary" variant="outlined">
+                  <v-icon class="pr-2">mdi-arrow-right-bold</v-icon>
+                  {{ $tc('position', 2) }}
+                </v-btn>
               </td>
             </tr>
           </template>
         </v-data-table-virtual>
 
-        <!-- PLACES LIST COMPLETE -->
-        <v-data-table-virtual fixed-header v-show="showAllInfo" 
-          :items="filteredPlaces" :height="getTableHeight"
-          :headers="fullHeaders"
+        <!--------------- PLACES LIST COMPLETE --------------->
+        <v-data-table-virtual v-show="showAllInfo" 
+          fixed-header :headers="fullHeaders"
+          :items="utils.filteredObjects(places, searchQuery)" 
+          :height="utils.getTableHeight(places, windowHeight)"
           :sort-by="[{ key: 'placeNumber', order: 'desc' }]">
 
           <template v-slot:item="{ item, index }">
-            <tr v-on:click="handleRowClick(item._id)" 
+            <tr 
               @mouseenter="setHoveredRow(index, true)"
               @mouseleave="setHoveredRow(index, false)">
 
               <!-- PLACE NUMBER -->
-              <td :style="getRowStyle(index)">
-                <v-list-item-title class="pl-4">
+              <td v-on:click="handleRowClick(item._id, true)"
+                :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title class="pl-3">
                   {{ item.placeNumber }}
                 </v-list-item-title>
               </td>
 
               <!-- TITLE -->
-              <td class="py-2" :style="getRowStyle(index)">
+              <td v-on:click="handleRowClick(item._id, true)"
+              :style="utils.getRowStyle(index, hoveredRow)">
                 <div v-if="item.placeNumber > 1">
                   <v-list-item-title v-if="item.title.length > 0" class="text-wrap">
-                    {{ item.title }}
+                    {{ item.title.join('; ') }}
                   </v-list-item-title>
 
                   <v-list-item-title style="color:dimgrey;" v-else>
@@ -141,7 +176,8 @@
               </td>
 
               <!-- NO FINDING -->
-              <td :style="getRowStyle(index)">
+              <td v-on:click="handleRowClick(item._id, true)"
+                :style="utils.getRowStyle(index, hoveredRow)">
                 <v-list-item-title class="pl-4" v-if="item.noFinding">
                   &cross;
                 </v-list-item-title>
@@ -152,7 +188,8 @@
               </td>
 
               <!-- REST FINDING -->
-              <td :style="getRowStyle(index)">
+              <td v-on:click="handleRowClick(item._id, true)"
+                :style="utils.getRowStyle(index, hoveredRow)">
                 <v-list-item-title class="pl-4" v-if="item.restFinding">
                   &cross;
                 </v-list-item-title>
@@ -163,7 +200,8 @@
               </td>
 
               <!-- COORDINATES COUNT -->
-              <td :style="getRowStyle(index)">
+              <td v-on:click="handleRowClick(item._id, true)"
+                :style="utils.getRowStyle(index, hoveredRow)">
                 <v-list-item-title v-if="item.coordinates != ''">
                   {{ item.coordsCount + " " +  $t('coordinates')}} 
                 </v-list-item-title>
@@ -173,7 +211,8 @@
               </td>
 
               <!-- PLANE -->
-              <td :style="getRowStyle(index)">
+              <td v-on:click="handleRowClick(item._id, true)"
+                :style="utils.getRowStyle(index, hoveredRow)">
                 <v-list-item-title v-if="item.plane != ''" 
                   class="text-wrap pl-3">
                   {{ item.plane || '-' }}
@@ -184,7 +223,8 @@
               </td>
 
               <!-- VISIBILITY -->
-              <td :style="getRowStyle(index)">
+              <td v-on:click="handleRowClick(item._id, true)"
+                :style="utils.getRowStyle(index, hoveredRow)">
                 <v-list-item-title v-if="item.visibility != null">
                   {{ $tc('visibilities', item.visibility) }}
                 </v-list-item-title>
@@ -194,7 +234,8 @@
               </td>
 
               <!-- DESCRIPTION -->
-              <td :style="getRowStyle(index)">
+              <td v-on:click="handleRowClick(item._id, true)"
+                :style="utils.getRowStyle(index, hoveredRow)">
                 <v-list-item-title class="text-wrap">
                   {{ item.description }}
                 </v-list-item-title>
@@ -204,8 +245,17 @@
                 </v-list-item-title>
               </td>
 
+              <!-- DATING -->
+              <td v-on:click="handleRowClick(item._id, true)"
+                :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title>
+                  {{ item.dating || '-' }}
+                </v-list-item-title>
+              </td>
+
               <!-- EDITOR -->
-              <td :style="getRowStyle(index)">
+              <td v-on:click="handleRowClick(item._id, true)"
+                :style="utils.getRowStyle(index, hoveredRow)">
                 <v-list-item-title v-if="item.editor != ''">
                   {{ item.editor || '-' }}
                 </v-list-item-title>
@@ -215,28 +265,50 @@
               </td>
 
               <!-- DATE -->
-              <td :style="getRowStyle(index)">
+              <td v-on:click="handleRowClick(item._id, true)"
+                :style="utils.getRowStyle(index, hoveredRow)">
                 <v-list-item-title>
                   {{ item.date || '-' }}
                 </v-list-item-title>
               </td>
 
               <!-- SYNC STATUS -->
-              <td :style="getRowStyle(index)">
-                <v-list-item>
-                  <v-btn icon variant="text" v-if="item.lastSync > 0">
-                    <v-tooltip activator="parent" location="bottom">
-                      {{ this.$t('lastSync') + new Date(item.lastSync).toLocaleString() }}
-                    </v-tooltip>
-                    <v-icon>mdi-cloud-check</v-icon>
-                  </v-btn>
-                  <v-btn icon variant="text" v-else>
-                    <v-tooltip activator="parent" location="bottom">
-                      {{ $t('onlyLocal') }}
-                    </v-tooltip>
-                    <v-icon>mdi-cloud-off-outline</v-icon>
-                  </v-btn>
-                </v-list-item>
+              <td>
+                <v-btn icon variant="text" v-if="item.lastSync > 0">
+                  <v-tooltip activator="parent" location="bottom">
+                    {{ this.$t('lastSync') + new Date(item.lastSync).toLocaleString() }}
+                  </v-tooltip>
+                  <v-icon>mdi-cloud-check</v-icon>
+                </v-btn>
+                <v-btn icon variant="text" v-else>
+                  <v-tooltip activator="parent" location="bottom">
+                    {{ $t('onlyLocal') }}
+                  </v-tooltip>
+                  <v-icon>mdi-cloud-off-outline</v-icon>
+                </v-btn>
+
+                <!-- BODEON CONFORM -->
+                <v-btn icon color="success" variant="text" v-if="isBodeonValid(item)">
+                  <v-tooltip activator="parent" location="bottom">
+                     {{ $t('fulfillsBodeonRequirements') }}
+                  </v-tooltip>
+                  <v-icon>mdi-check-circle</v-icon>
+                </v-btn>
+                <v-btn color="primary" icon variant="text" v-else>
+                  <v-tooltip activator="parent" location="bottom">
+                     {{ $t('mandatoryFieldNotFilled') }}
+                  </v-tooltip>
+                  <v-icon>mdi-alert-circle</v-icon>
+                </v-btn>
+
+                <v-btn 
+                  v-on:click="handleRowClick(item._id, false)"
+                  style="margin-left: 3px;margin-top: 10px;margin-bottom: 10px;" 
+                  color="secondary"
+                  variant="outlined">
+                  <v-icon class="pr-2">mdi-arrow-right-bold</v-icon>
+                  {{ $tc('position', 2) }}
+                </v-btn>
               </td>
             </tr>
           </template>
@@ -245,6 +317,7 @@
       <v-spacer></v-spacer>
     </v-row>
 
+    <!--------------- ADD BUTTON + DUPLICATE SWITCH --------------->
     <v-row class="align-center">
       <v-spacer></v-spacer>
       <AddButton v-on:click="addPlace()" prop_object="place" />
@@ -290,6 +363,7 @@ import { fromBackend } from '../ConnectionToBackend.js'
 import { useWindowSize } from 'vue-window-size';
 import { useUserStore } from '../Authentication';
 import { generalDataStore } from '../ConnectionToLocalStorage.js'
+import { utils } from '../utils.js';
 
 
 export default {
@@ -298,7 +372,7 @@ export default {
     Navigation,
     AddButton,
   },
-  emits: ['view'],
+  
   setup() {
     const { width, height } = useWindowSize();
     const userStore = useUserStore();
@@ -308,7 +382,8 @@ export default {
       windowWidth: width,
       windowHeight: height,
       userStore,
-      generalStore
+      generalStore,
+      utils
     };
   },
 
@@ -326,13 +401,12 @@ export default {
         {
           title: this.$t('placeNumber'),
           align: 'start',
-          sortable: true,
           key: 'placeNumber',
           width: "50px"
         },
         { title: this.$tc('title',2), align: 'start', key: 'title' },
         { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
-        { title: this.$t('syncStatus'), align: 'start', key: 'status', width: "100px"}
+        { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status', width: "260px"},
       ],
       fullHeaders: [
         {
@@ -349,9 +423,10 @@ export default {
         { title: this.$t('plane'), align: 'start', key: 'plane', width: "150px" },
         { title: this.$t('visibility'), align: 'start', key: 'visibility', width: "100px" },
         { title: this.$t('description'), align: 'start', key: 'description', width: "150px" },
+        { title: this.$tc('dating', 1), align: 'start', key: 'dating', width: "100px" },
         { title: this.$tc('editor', 1), align: 'start', key: 'editor', width: "100px" },
         { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
-        { title: this.$t('syncStatus'), align: 'start', key: 'status', width: "50px"}
+        { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status', width: "260px"},
       ],
     };
   },
@@ -366,7 +441,6 @@ export default {
    * Retrieve data from IndexedDB
    */
   async created() {
-    this.$emit("view", this.$t('overview', { msg: this.$tc('place', 2) }));
     await fromOfflineDB.syncLocalDBs()
       .catch(err => console.error(err));
     await this.updatePlaces()
@@ -379,50 +453,8 @@ export default {
     }
   },
 
-
-  computed: {
-    /**
-     * Returns an array of filtered places based on the search query.
-     *
-     * @returns {Array} The filtered array of places that match the search query.
-     * If the search query is empty or invalid, it returns all places.
-     */
-    filteredPlaces() {
-      // split searchQuery to query array and escape special characters
-      const queries = this.searchQuery.trim().toLowerCase().split(/\s+/).map(this.escapeRegExp);
-      
-      if (this.places.length == 0) {
-        console.log("just return")
-        return;
-      }
-      
-      // if no queries are present, return all places
-      if (queries.length === 0 || (queries.length === 1 && queries[0] === '')) {
-        return this.places;
-      } else {
-        // filter places by all query filters
-        // (places have to fulfill every query filter)
-        return this.places.filter(item => {
-          return queries.every(query => {
-            return this.doesItemMatchQuery(item, query);
-          });
-        });
-      }
-    },
-
-    getTableHeight() {
-      // Calculate the required table height based on the number of items
-      const numberOfRows = this.places.length > 0 ? this.places.length : 1;
-      const headerHeight = 56;
-      const rowHeight = 69;
-      const totalTableHeight = numberOfRows * rowHeight + headerHeight;
-
-      if (totalTableHeight > (this.windowHeight - 390)) {
-        return this.windowHeight - 390;
-      }
-
-      return totalTableHeight + "px";
-    }
+  mounted() {
+    this.$refs.navigationRef.onViewChange(this.$t('overview', { msg: this.$tc('place', 2) }))
   },
 
   methods: {
@@ -543,7 +575,8 @@ export default {
         activityID: acID,
         placeNumber: '',
 
-        title: '',
+        title: [],
+        datCode: '',
         dating: '',
         noFinding: false,
         restFinding: false,
@@ -628,25 +661,40 @@ export default {
      * 
      * @param {String} placeID 
      */
-    handleRowClick(placeID) {
-      if (this.toggleDuplicate) {
+    handleRowClick(placeID, isEdit) {
+      if (isEdit) {
+        this.openPlace(placeID);
+      } else if (this.toggleDuplicate) {
         this.duplicatePlace(placeID);
       } else {
-        this.moveToPlace(placeID);
+        this.openPositionsOverview(placeID);
       }
     },
 
     /**
-     * Routes to the place form of `placeID`
+     * Opens the place so all it's data fields can be filled
      * @param {String} placeID 
      */
-    moveToPlace(placeID) {
+    openPlace(placeID) {
       if (this.generalStore.getCurrentObject('place') !== placeID) {
         this.generalStore.setCurrentObject(null, "position");
       }
       
       this.generalStore.setCurrentObject(placeID, 'place');
       this.$router.push({ name: 'PlaceCreation', params: { placeID: placeID } })
+    },
+
+    /**
+     * Opens the positionsOverview of the clicked place
+     * @param placeID 
+     */
+    openPositionsOverview(placeID) {
+      if (this.generalStore.getCurrentObject('place') !== placeID) {
+        this.generalStore.setCurrentObject(null, "position");
+      }
+      
+      this.generalStore.setCurrentObject(placeID, 'place');
+      this.$router.push({ name: 'PositionsOverview'})
     },
 
     /**
@@ -661,62 +709,6 @@ export default {
      */
     toggleAllInfo() {
       this.generalStore.toggleShowAllPlaceInfo(this.showAllInfo);
-    },
-
-    /**
-     * Escapes special characters in a given string to treat 
-     * them as literal characters.
-     *
-     * @param {string} string - The input string to be escaped.
-     * @returns {string} The escaped string with special characters replaced 
-     *  by their escape sequences.
-     */
-    escapeRegExp(string) {
-      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    },
-
-    /**
-     * Checks if an item matches a given query by performing 
-     * a case-insensitive search.
-     *
-     * @param {Object} item - The item to be matched against the query.
-     * @param {string} query - The search query to be used for matching.
-     * @returns {boolean} True if the item matches the query; otherwise, false.
-     *
-     */
-    doesItemMatchQuery(item, query) {
-      const re = new RegExp(query, 'i');
-      return (
-        item.placeNumber.toString().match(re) ||
-        item.title.match(re) ||
-        item.description.match(re) ||
-        item.editor.match(re) ||
-        item.date.match(re)
-      );
-    },
-
-    /**
-     * Get the style for the row at the specified index. 
-     * Furthermore get the currentTheme from Cookies and decide which colorattribute to use.
-     *
-     * @param {number} index The index of the row
-     * @returns {Object} An object containing row style properties
-     */
-    getRowStyle(index) {
-      var currentTheme = this.generalStore.getTheme()
-      if (currentTheme !== 'fieldbook_light') {
-        
-        return {
-          cursor: 'pointer',
-          padding: '8px 16px',
-          backgroundColor: this.hoveredRow === index ? '#2f3845' : 'transparent'
-        }
-      } 
-      return {
-        cursor: 'pointer',
-        padding: '8px 16px',
-        backgroundColor: this.hoveredRow === index ? '#F6F6F6' : 'transparent'
-      }
     },
     
     /**
@@ -734,6 +726,17 @@ export default {
       }
     },
 
+    /**
+     * Checks if data of a place is valid for potential BODEON import
+     * (are all mandatory fields properly filled?)
+     * @param place 
+     */
+    isBodeonValid(place) {
+      if (place.title.length != 0 && place.dating != '') {
+        return true;
+      }
+      return false;
+    },
   }
 }
 

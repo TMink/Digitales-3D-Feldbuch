@@ -2,7 +2,7 @@
  * Created Date: 29.11.2023 01:45:54
  * Author: Julian Hardtung
  * 
- * Last Modified: 02.04.2024 13:10:11
+ * Last Modified: 30.09.2024 18:20:38
  * Modified By: Julian Hardtung
  * 
  * Description: Vue component for user login
@@ -11,7 +11,7 @@
 
 <template>
   <div id="wrapper">
-    <Navigation active_tab_prop="-1" />
+    <Navigation ref="navigationRef" active_tab_prop="-1" />
 
     <v-img cover :height="getHeight()"
       src="assets/background/Background_Landingpage.jpg">
@@ -117,7 +117,6 @@ export default {
     };
 
   },
-  emits: ['view'],
   data() {
     return {
       visible: false,
@@ -129,6 +128,11 @@ export default {
       },
     };
   },
+
+  mounted() {
+      this.$refs.navigationRef.onViewChange(this.$t('loginPage'))
+  },
+
   methods: {
     /**
      * Routes to the registration page

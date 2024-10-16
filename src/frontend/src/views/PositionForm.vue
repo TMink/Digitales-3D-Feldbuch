@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.08.2024 13:37:36
+ * Last Modified: 13.10.2024 12:38:51
  * Modified By: Julian Hardtung
  * 
  * Description: input page for positions data 
@@ -10,7 +10,7 @@
  -->
 
 <template>
-  <Navigation active_tab_prop="2" />
+  <Navigation ref="navigationRef" active_tab_prop="2" />
   <v-container fluid>
     <v-row no-gutters>
       <!-- SIDE TABS -->
@@ -45,6 +45,7 @@
           <!-- CARD 1 ModuleViewer -->
           <v-window-item value="one">
             <ModuleViewer
+              :objectProp="position"
               :updateListFirstProp="position.testBool"
               :datingItemsFirstProp="datingsList"
               :titleItemsFirstProp="titlesList"
@@ -101,6 +102,7 @@ import ModelForm from '../components/ModelForm.vue';
 import ModuleViewer from '../components/ModuleViewer.vue';
 import Navigation from '../components/Navigation.vue';
 import { toRaw } from 'vue';
+import { useRoute } from 'vue-router';
 
 export default {
   name: 'PositionCreation',
@@ -111,49 +113,27 @@ export default {
     ModuleViewer,
     Navigation
   },
-  emits: ['view'],
+
+  async setup() {
+    var route = useRoute()
+    const positionID = route.path.split("/").pop();
+
+    await fromOfflineDB.syncLocalDBs()
+      .catch(err => console.error(err));
+
+    const data = await fromOfflineDB
+      .getObject(positionID, 'Positions', 'positions')
+      .catch(err => console.error(err));
+    return {
+      position: data,
+    };
+  },
+
   /**
    * Reactive Vue.js data
    */
   data() {
     return {
-      position: {
-        _id: '',
-        placeID: '',
-        dating: '',
-        isSeparate: false,
-        
-        /* Coordinates */
-        coordinates: '',
-        
-        /* General */
-        description: '',
-        editor: '',
-        date: '',
-        title: '',
-        positionNumber: '',
-        hasSubNumber: false,
-        subNumber: '',
-        
-        /* ObjectDescriber */
-        material: '',
-        weight: '',
-        count: '',
-        
-        images: [],
-        models: [],
-        lastChanged: Date.now(),
-        lastSync: 0,
-        testBool: false,
-
-        modulePreset: {
-          general: true,
-          coordinates: true,
-          dating: true,
-          objectDescribers: true,
-          technical: false,
-        }
-      },
       materials: [],
       titles: [],
       datings: [],
@@ -169,12 +149,14 @@ export default {
       editorsList: [],
     }
   },
+  
   watch: {
     'position': {
       handler: 'handlePositionChange',
       deep: true,
     },
   },
+
   /**
    * Check if there are unsaved changes to the position 
    * before leaving the PositionForm
@@ -266,6 +248,11 @@ export default {
 
     this.componentHasLoaded = true;
   },
+
+  mounted() {
+    this.$refs.navigationRef.onViewChange(this.$tc('detailPage', 2, { msg: this.$tc('position', 1)}))
+  },
+
   methods: {
     /**
      * TODO
@@ -274,6 +261,15 @@ export default {
     getEmitedData(data) {
       switch (data[0]) {
         /* Module: Coordinates */
+        case 'right':
+          this.position.right = data[1];
+          break;
+        case 'up':
+          this.position.up = data[1];
+          break;
+        case 'depthTop':
+          this.position.height = data[1];
+          break;
         case 'coordinates':
           this.position.coordinates = data[1];
           break;
@@ -303,10 +299,14 @@ export default {
         case 'subNumber':
           this.position.subNumber = data[1];
           break;
+        case 'isSeparate':
+          this.position.isSeparate = data[1];
+          break;
 
         /* Module: Dating */
         case 'dating':
-          this.position.dating = data[1];
+          this.position.datCode = data[1].datCode
+          this.position.dating = data[1].title;
           break;
         case 'modulePreset.dating':
           this.position.modulePreset.dating = data[1];
@@ -329,6 +329,8 @@ export default {
         default:
           console.log( 'Cant specify emitted data: ' + data[0] );
       }
+
+      this.handlePositionChange();
     },
     /**
      * Update reactive Vue.js place data
@@ -393,7 +395,6 @@ export default {
           newEditor.item = toRaw(item);
         }
       } else if ( item != '' ) {
-        console.log( item );
         newEditor._id = String(Date.now());
         newEditor.item = toRaw(item);
       }

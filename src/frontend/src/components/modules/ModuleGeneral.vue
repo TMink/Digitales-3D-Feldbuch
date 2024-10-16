@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 27.08.2024 12:18:13
+ * Last Modified: 13.10.2024 16:57:23
  * Modified By: Julian Hardtung
  * 
  * Description: `general information` input module for places/positions
@@ -10,6 +10,8 @@
 
 <template>
   <v-col lg="12" class="mb-4">
+
+    <!-- POSITIONS -->
     <v-card class="pa-4"
       v-if="type == 'positions'">
       <h2 class="text-h6 font-weight-medium pb-1">
@@ -21,7 +23,7 @@
           <v-text-field 
             color="primary" 
             :label="$tc('posNumber', 2) + ' *'" 
-            maxlength="6" 
+            maxlength="5" 
             hide-details 
             v-model="object.positionNumber" 
             @keypress="filterAllNonNumeric(event)">
@@ -75,19 +77,22 @@
 
         <v-col cols="2">
           <v-text-field
-            hide-details
-            color="primary" 
-            :hide-no-data="false" 
+            color="primary"
+            :rules="dateRules"
             :label="$t('date')"
+            maxlength="10" 
             v-model="object.date">
           </v-text-field>
         </v-col>
       </v-row>
 
-      <v-row class="pt-2">
+      <v-row>
         <v-col lg="4">
           <v-combobox
-            hide-selected 
+            multiple
+            chips
+            closable-chips
+            :rules="titleRules"
             color="primary" 
             :items="titleItems"
             persistent-hint
@@ -106,11 +111,9 @@
 
           <v-combobox
             class="pt-4"
-            hide-selected
             color="primary" 
-            persistent-hint
             :items="editorItemsSecondProp" 
-            :label="$tc('editor', 1) + ' *'" 
+            :label="$tc('editor', 1)" 
             :hide-no-data="false" 
             v-model="object.editor">
 
@@ -127,8 +130,8 @@
         <v-col lg="8">
           <v-textarea 
             rows="5" 
-            no-resize 
-            hide-details
+            maxlength="254"
+            counter="254"
             color="primary" 
             :label="$t('description')" 
             v-model="object.description">
@@ -137,6 +140,7 @@
       </v-row>
     </v-card>
 
+    <!-- PLACES -->
     <v-card class="pa-4" v-if="type == 'places'">
       <h2 class="text-h6 font-weight-medium pb-1">
         {{ $t('generalInformation') }}
@@ -146,10 +150,13 @@
         <v-col lg="4">
           <v-combobox
             hide-selected 
+            multiple
+            chips
+            closable-chips
+            :rules="titleRules"
             color="primary" 
             :items="titleItems" 
-            persistent-hint
-            :label="$tc('title', 2)" 
+            :label="$tc('title', 2) + ' *'" 
             :hide-no-data="false" 
             v-model="object.title">
 
@@ -166,8 +173,9 @@
             class="pt-1" 
             no-resize 
             hide-selected 
+            :rules="dateRules"
             color="primary"
-            persistent-hint
+            maxlength="10"
             :hide-no-data="false" 
             :label="$t('date')" 
             v-model="object.date">
@@ -177,7 +185,6 @@
             hide-selected
             class="pt-1"
             color="primary" 
-            persistent-hint
             :items="editorItemsSecondProp" 
             :label="$tc('editor', 1)" 
             :hide-no-data="false" 
@@ -196,8 +203,9 @@
 
         <v-col lg="8">
           <v-textarea 
-            rows="8" 
-            hide-details
+            rows="8"
+            maxlength="254"
+            counter="254" 
             color="primary" 
             v-model="object.description" 
             :label="$t('description')">
@@ -209,6 +217,9 @@
 </template>
 
 <script>
+
+import { toRaw } from 'vue';
+
 export default {
 		
 	props: {
@@ -226,7 +237,7 @@ export default {
         description: null,
         editor: null,
         date: null,
-        title: null,
+        title: [],
 
         positionNumber: null,
         hasSubNumber: null,
@@ -234,6 +245,28 @@ export default {
       },
       titleItems: [],
       editorItems: [],
+
+      titleRules: [
+        value => {
+          if (value.length > 0) return true
+          return this.$t('isMandatory', {msg: this.$tc('title', 2)})
+        }
+      ],
+      dateRules: [
+        value => {
+          if (!isNaN(new Date(value))) {
+            return true;
+          } else {
+            let dateArray = value.split(".");
+            let flippedDate = `${dateArray[2]}.${dateArray[1]}.${dateArray[0]}`;
+
+            if (!isNaN(new Date(flippedDate))) {
+              return true;
+            }
+          }
+          return this.$t('invalidDate')
+        }
+      ],
     }
   },
 
@@ -275,11 +308,13 @@ export default {
     },
     "object.title": {
       handler: function () {
-        if ( this.object.title != null ) {
+        if (toRaw(this.object.title).join('; ').length > 254) {
+          this.$nextTick(() => this.object.title.pop())
+        }
+        
+        if ( this.object.title != [] ) {
           /* Send data back to ModuleViewer.vue */
-          this.$emit("dataToModuleViewer", ['title', this.object.title]);
-        } else {
-          this.$emit("dataToModuleViewer", ['title', '']);
+          this.$emit("dataToModuleViewer", ['title', toRaw(this.object.title)]);
         }
       }
     },
@@ -304,6 +339,14 @@ export default {
         if ( this.object.subNumber != null && this.type == 'positions' ) {
           /* Send data back to ModuleViewer.vue */
           this.$emit("dataToModuleViewer", ['subNumber', this.object.subNumber]);
+        }
+      }
+    },
+    "object.isSeparate": {
+      handler: function () {
+        if ( this.object.isSeparate != null && this.type == 'positions' ) {
+          /* Send data back to ModuleViewer.vue */
+          this.$emit("dataToModuleViewer", ['isSeparate', this.object.isSeparate]);
         }
       }
     },
