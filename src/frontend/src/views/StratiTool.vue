@@ -536,7 +536,404 @@
 
 
 
+  /**                            Vue-flow function
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Called when the page is initialized. Loads all existing system data, if 
+   * available. If no data is available, a new processing step with the type 
+   * "init" is created.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * ================>>>> saves the current processing step <<<<================
+   * =====>>> type: init
+   * 
+   */
+  onInit(async() => {
+    const getData = await fromOfflineDB.getAllObjects("StratiToolDB", "stratiTool");
+    
+    if( getData.length > 0 ){
+      idOfCurrentStratiTool = getData[0]._id;
+      processingSteps.value = getData[0].graph.processingSteps;
+      currentProcessingStep.value = getData[0].graph.currentProcessingStep;
   
+      if( processingSteps.value.length > 0 ){
+        const parsedProcessingStep = JSON.parse(processingSteps.value[currentProcessingStep.value - 1].step);
+
+        if( currentProcessingStep.value > 1 && (processingSteps.value[currentProcessingStep.value - 1].type === "addNewNode") ){
+          const lastNodeID = parsedProcessingStep.nodes[parsedProcessingStep.nodes.length - 1].id;
+          fromObject(parsedProcessingStep);
+          updateNode(lastNodeID, (node) => ({
+            position: {x: node.position.x - node.dimensions.width / 2, y: node.position.y - node.dimensions.height / 2},
+          }));
+        }
+        else {
+          fromObject(parsedProcessingStep);
+        }
+
+        if( currentProcessingStep.value > 1 ){
+          processStepBackButtonDisabled.value = false;
+        }
+        if( currentProcessingStep.value < processingSteps.value.length ){
+          processStepForwardButtonDisabled.value = false;
+        }
+        
+        const nodesInGraph = getNodes.value;
+        const nodesInGraphLength = nodesInGraph.length;
+        for( let a = 0; a < nodesInGraphLength; a++ ){
+          if( nodesInGraph[a].data.selected === true ){
+            fillInfoCard(nodesInGraph[a]);
+          }
+          nodesInUnitSearch.value.push(nodesInGraph[a].data.label);
+        }
+      }
+    } else {
+      saveProcessingStep("init");
+    }
+  })
+
+
+
+
+
+  /**                            Vue-flow function
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Called after adding an edge. Updates the entries of the sourceNode and 
+   * targetNode by the relation just created and updates existing korrelation-
+   * relations if they were created between the same nodes. Also dynamically 
+   * adjusts the entry of the relation displayed in the InfoCard, if the 
+   * sourceNode or targetNode should be the currently selected node.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * ================>>>> saves the current processing step <<<<================
+   * =====>>> type: addNewEdge
+   * 
+   */
+  onConnect((param) => {
+    const nodesInGraph = getNodes.value;
+    const sourceNodeRelations = nodesInGraph[nodesInGraph.map((x) => {return x.id}).indexOf(param.source)].data.relations;
+    const targetNodeRelations = nodesInGraph[nodesInGraph.map((x) => {return x.id}).indexOf(param.target)].data.relations;
+    const relationPerHandle = {
+      'top_middle': 'before',
+      'bottom_middle': 'after',
+      'left_middle': 'korrelation',
+      'right_middle': 'korrelation',
+    };
+    const sourceRelationType = relationPerHandle[param.sourceHandle];
+    const targetRelationType = relationPerHandle[param.targetHandle];
+
+    // Create default edge and adjust if necessary
+    const newEdge = getDefaultEdge(param);
+    if( param.targetHandle === 'top_middle' ) {
+      adjustDefaultEdge(newEdge, param)
+    }
+
+    // Create an entry of the new relation for both nodes and add the edge to the graph.
+    const entryExists = searchForEntry(sourceNodeRelations, param.target, sourceRelationType)
+    if( !entryExists ){
+      addNewRelationEntryToNode('source', param.source, param.target, sourceNodeRelations, targetRelationType, newEdge.id);
+      addNewRelationEntryToNode('target', param.source, param.target, targetNodeRelations, sourceRelationType, newEdge.id);
+      addEdges([newEdge]);
+    }
+    // Edge case: If there is already a correlation-relation between the nodes, 
+    // delete it and create the new one. This case occurs when the handles of 
+    // the source and target nodes are swapped.
+    else if( entryExists && (param.sourceHandle == 'left_middle' || param.sourceHandle == 'right_middle') ){
+      removeDuplicateEdge(param)
+      addEdges([newEdge]);
+    }
+
+    // Edge Case: If the currently selected node is part of the created 
+    // relation, the relations-sub-component must be updated. Otherwise it will 
+    // only be updated when the node is selected again.
+    if( selectedNodeID !== "" ){
+      updateRelationsSubComponent(nodesInGraph, param.source, param.target)
+    }
+    
+    saveProcessingStep("addNewEdge");
+  })
+
+  
+
+  
+
+  /**                            Vue-flow function
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Called at the start of a connection event. Checks all other nodes in the 
+   * graph to see whether they would be suitable for a connection according to 
+   * the rules of stratigraphy, depending on the selected handel of the source 
+   * node.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  onConnectStart((params) => {
+    connectionInProgress = true;
+
+    const nodesInGraph = getNodes.value;
+    const nodesInGraphLength = nodesInGraph.length;
+    for( let a = 0; a < nodesInGraphLength; a++ ){
+      const nonValidNodes = []
+      const nonValidAfterReduction = []
+      if( nodesInGraph[a].id == params.nodeId ) {
+        nodesInGraph[a].data.validConnections.top_middle = false;
+        nodesInGraph[a].data.validConnections.bottom_middle = false;
+        nodesInGraph[a].data.validConnections.left_middle = false;
+        nodesInGraph[a].data.validConnections.right_middle = false;
+        
+        switch( params.handleId ){
+          case 'top_middle':
+            nonValidNodes.push( ...checkRelationsBefore(nodesInGraph[a].data.relations, nodesInGraph[a].id, []));
+            for( let b = 0; b < nodesInGraphLength; b++ ){
+              if( nodesInGraph[b].id != params.nodeId ) {
+                nodesInGraph[b].data.validConnections.top_middle = false;
+                nodesInGraph[b].data.validConnections.left_middle = false;
+                nodesInGraph[b].data.validConnections.right_middle = false;
+                if( nonValidNodes.includes(nodesInGraph[b].id) ){
+                  nodesInGraph[b].data.validConnections.bottom_middle = false;
+                }
+              }
+            }
+            break;
+          case 'bottom_middle':
+            nonValidNodes.push( ...checkRelationsAfter( nodesInGraph[a].data.relations, nodesInGraph[a].id, [] ) );
+            for( let b = 0; b < nodesInGraphLength; b++ ){
+              if( nodesInGraph[b].id != params.nodeId ) {
+                nodesInGraph[b].data.validConnections.bottom_middle = false;
+                nodesInGraph[b].data.validConnections.left_middle = false;
+                nodesInGraph[b].data.validConnections.right_middle = false;
+                if( nonValidNodes.includes(nodesInGraph[b].id) ){
+                  nodesInGraph[b].data.validConnections.top_middle = false;
+                }
+              }
+            }
+            break;
+          case 'left_middle':
+            nonValidNodes.push(...checkRelationsCorrelating( nodesInGraph[a].data.relations, nodesInGraph[a].id, [] ) );
+            nonValidAfterReduction.push(...reduceNonValidIDsByRowIDs(nonValidNodes, nodesInGraph[a].id))
+            for( let b = 0; b < nodesInGraphLength; b++ ){
+              if( nodesInGraph[b].id != params.nodeId ) {
+                nodesInGraph[b].data.validConnections.top_middle = false;
+                nodesInGraph[b].data.validConnections.bottom_middle = false;
+                nodesInGraph[b].data.validConnections.left_middle = false;
+                if( nonValidAfterReduction.includes(nodesInGraph[b].id) ){
+                  nodesInGraph[b].data.validConnections.left_middle = false;
+                  nodesInGraph[b].data.validConnections.right_middle = false;
+                }
+              }
+            }
+            break;
+          case 'right_middle':
+            nonValidNodes.push( ...checkRelationsCorrelating( nodesInGraph[a].data.relations, nodesInGraph[a].id, [] ) );
+            nonValidAfterReduction.push( ...reduceNonValidIDsByRowIDs(nonValidNodes) )
+            for( let b = 0; b < nodesInGraphLength; b++ ){
+              if( nodesInGraph[b].id != params.nodeId ) {
+                nodesInGraph[b].data.validConnections.top_middle = false;
+                nodesInGraph[b].data.validConnections.bottom_middle = false;
+                nodesInGraph[b].data.validConnections.right_middle = false;
+                if( nonValidAfterReduction.includes(nodesInGraph[b].id) ){
+                  nodesInGraph[b].data.validConnections.left_middle = false;
+                  nodesInGraph[b].data.validConnections.right_middle = false;
+                }
+              }
+            }
+            break;
+          default:
+            console.log("Somethings gone wrong")
+        }
+        break;
+      }
+    }
+  })
+
+
+
+
+
+  /**                            Vue-flow function
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Called at the end of a connection event. Resets the restrictions set by 
+   * the oneConnectStart function.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  onConnectEnd(() => {
+    connectionInProgress = false;
+    
+    const nodesInGraph = getNodes.value;
+    const nodesInGraphLength = nodesInGraph.length
+    for( let a = 0; a < nodesInGraphLength; a++ ){
+      nodesInGraph[a].data.validConnections.top_middle = true;
+      nodesInGraph[a].data.validConnections.bottom_middle = true;
+      nodesInGraph[a].data.validConnections.left_middle = true;
+      nodesInGraph[a].data.validConnections.right_middle = true;
+      nodesInGraph[a].data.styles.top_middle = handleStyles[nodesInGraph[a].type].default.top_middle;
+      nodesInGraph[a].data.styles.bottom_middle = handleStyles[nodesInGraph[a].type].default.bottom_middle;
+      nodesInGraph[a].data.styles.left_middle = handleStyles[nodesInGraph[a].type].default.left_middle;
+      nodesInGraph[a].data.styles.right_middle = handleStyles[nodesInGraph[a].type].default.right_middle;
+    }
+  })
+
+
+
+
+
+  /**                            Vue-flow function
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Called on a pointer-click event on a node. Resets the info card and fills 
+   * it with the data of the selected node. Also adjusts the style of the node 
+   * and resets that of the previously selected node, if there was on.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * ================>>>> saves the current processing step <<<<================
+   * =====>>> type: nodeClicked
+   * 
+   */
+  onNodeClick( (params) => {
+    const nodesInGraph = getNodes.value;
+    const nodesInGraphLength = nodesInGraph.length;
+    for( let a = 0; a < nodesInGraphLength; a++ ){
+      if( nodesInGraph[a].id == params.node.id ) {
+        clearInfoCard()
+        fillInfoCard(nodesInGraph[a])
+          
+        nodesInGraph[a].data.nodeStyle = "clicked_" + nodesInGraph[a].type;
+        nodesInGraph[a].data.selected = true;
+      } else {
+        nodesInGraph[a].data.nodeStyle = "notClicked_" + nodesInGraph[a].type;
+        nodesInGraph[a].data.selected = false;
+      } 
+    }
+    saveProcessingStep( "nodeClicked" )
+  })
+
+
+
+
+
+  /**                            Vue-flow function
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Called on a pointer click event on the pane. Resets the style of the 
+   * selected node back to its default appearance.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * ================>>>> saves the current processing step <<<<================
+   * =====>>> type: paneClicked
+   * 
+   */
+  onPaneClick( () => {
+    if( getNodes.value.length != 0 ) {
+      const nodesInGraph = getNodes.value;
+      const nodesInGraphLength = nodesInGraph.length;
+      for( let a = 0; a < nodesInGraphLength; a++ ){
+        if( nodesInGraph[a].id == selectedNodeID ) {
+          clearInfoCard()
+          nodesInGraph[a].data.nodeStyle = "notClicked_" + nodesInGraph[a].type;
+          nodesInGraph[a].data.selected = false;
+          break;
+        }
+      }
+      
+      saveProcessingStep( "paneClicked" )
+    }
+  })
+
+
+
+
+
+  /**                            Vue-flow function
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Called after adding/changing a node in the graph. Adds the label of the 
+   * newly created node to the unit-search sub-component.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  onNodesChange((changes) => {
+    if( Object.hasOwn( changes[0], 'item' ) ){
+      if( changes[0].type == "add" ){
+        nodesInUnitSearch.value.push(changes[0].item.data.label)
+      }
+    }
+  })
+  
+
+
+
+  
+  /**                            Vue-flow function
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Called when the pointer hovers over a node in the graph. While creating a 
+   * new relation, updates the style of the node's handels while hovering over 
+   * it. The chosen style depends on whether the node is suitable for a the new 
+   * relation with the source node's handel, or not.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  onNodeMouseEnter((param) => {
+    if( connectionInProgress ) {
+      const nodesInGraph = getNodes.value;
+      const nodesInGraphLength = nodesInGraph.length;
+      for( let a = 0; a < nodesInGraphLength; a++ ){
+        if( param.node.id === nodesInGraph[a].id ) {
+          const validStatusTopMiddle = getValidStatus(param.node.data.validConnections.top_middle)
+          nodesInGraph[a].data.styles.top_middle = handleStyles[param.node.type][validStatusTopMiddle].top_middle
+          
+          const validStatusBotomMiddle = getValidStatus(param.node.data.validConnections.bottom_middle)
+          nodesInGraph[a].data.styles.bottom_middle = handleStyles[param.node.type][validStatusBotomMiddle].bottom_middle
+          
+          const validStatusLeftMiddle = getValidStatus(param.node.data.validConnections.left_middle)
+          nodesInGraph[a].data.styles.left_middle = handleStyles[param.node.type][validStatusLeftMiddle].left_middle
+          
+          const validStatusRightMiddle = getValidStatus(param.node.data.validConnections.right_middle)
+          nodesInGraph[a].data.styles.right_middle = handleStyles[param.node.type][validStatusRightMiddle].right_middle
+          break;
+        }
+      }
+    }
+  })
+
+
+
+
+
+  /**                            Vue-flow function
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Called when the pointer stops hovering a node. While creating a new 
+   * relation, updates the style of the node over which the mouse pointer was 
+   * last hovered.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  onNodeMouseLeave((param) => {
+    if( connectionInProgress ) {
+      const nodesInGraph = getNodes.value;
+      const nodesInGraphLength = nodesInGraph.length;
+      for( let a = 0; a < nodesInGraphLength; a++ ){
+        if( param.node.id == nodesInGraph[a].id ) {
+          nodesInGraph[a].data.styles.top_middle = handleStyles[param.node.type].default.top_middle;
+          nodesInGraph[a].data.styles.bottom_middle = handleStyles[param.node.type].default.bottom_middle;
+          nodesInGraph[a].data.styles.left_middle = handleStyles[param.node.type].default.left_middle;
+          nodesInGraph[a].data.styles.right_middle = handleStyles[param.node.type].default.right_middle;
+          break;
+        }
+      }
+    }
+  })
+
+
+
+  
+
+  /**                            Vue-flow function
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Called when the pointer leaves the pane. Updates the index for the next 
+   * node that is created.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * ---------->>>> Creates new index for next node to be created <<<<----------
+   * 
+   */
+  onPaneMouseLeave(() => {
+    createNewIndexForNextNode()
+  })
+
+  
+
+
+
   /**
    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
    * Creates a new index-number for next node to be created.
