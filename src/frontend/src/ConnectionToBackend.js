@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.08.2024 12:19:13
+ * Last Modified: 18.10.2024 10:14:36
  * Modified By: Julian Hardtung
  * 
  * Description: Helper API to the backend server
@@ -124,7 +124,7 @@ class ConnectionToBackend {
     } else {
       if (subdomain == "images" || subdomain == "models") {
         newData = await this.uploadFormData(data, "put", subdomain).catch((err) =>
-          console.err(err)
+          console.error(err)
         );
       } else {
         newData = await this.putData(subdomain, data).catch((err) => console.error(err));
