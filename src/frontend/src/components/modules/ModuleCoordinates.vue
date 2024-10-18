@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 16.10.2024 15:58:18
+ * Last Modified: 18.10.2024 14:09:12
  * Modified By: Julian Hardtung
  * 
  * Description: `coordinates` input module for places/positions
@@ -183,7 +183,7 @@
   import { fromOfflineDB } from '../../ConnectionToOfflineDB';
   import { toRaw } from "vue";
   import ConfirmDialog from '../../components/ConfirmDialog.vue';
-
+  
   export default {
       
     components: {

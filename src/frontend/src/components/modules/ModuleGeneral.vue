@@ -2,24 +2,22 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 16.10.2024 15:53:29
+ * Last Modified: 18.10.2024 14:28:13
  * Modified By: Julian Hardtung
  * 
  * Description: `general information` input module for places/positions
  -->
 
 <template>
-  <v-col lg="12" class="mb-2">
-
     <!-- POSITIONS -->
-    <v-card class="pa-4"
+    <v-card class="pa-4 mb-2 mr-2"
       v-if="type == 'positions'">
       <h2 class="text-h6 font-weight-medium pb-1">
         {{ $t('generalInformation') }}
       </h2>
       <v-divider/>
       <v-row class="align-center pt-4">
-        <v-col cols="2">
+        <v-col cols="3">
           <v-text-field 
             color="primary" 
             :label="$tc('posNumber', 2) + ' *'" 
@@ -30,7 +28,7 @@
           </v-text-field>
         </v-col>
 
-        <v-col cols="2">
+        <v-col cols="3">
           <v-text-field 
             hide-details 
             color="primary" 
@@ -41,41 +39,38 @@
           </v-text-field>
         </v-col>
 
-        <v-col cols="2">
+        <v-col class="justify-start">
+
+        <v-tooltip location="bottom">
+          <template v-slot:activator="{ props }">
+            <v-checkbox 
+              class="justify-start"
+              hide-details 
+              v-bind="props"
+              :label="$t('hasSubNumber')" 
+              color="secondary" 
+              v-model="object.hasSubNumber">
+            </v-checkbox>
+          </template>
+          {{ $t('checkIfSubNumber') }}
+        </v-tooltip>
+
           <v-tooltip location="bottom">
             <template v-slot:activator="{ props }">
               <v-checkbox 
-                hide-details 
                 v-bind="props"
-                :label="$t('hasSubNumber')" 
-                color="secondary" 
-                v-model="object.hasSubNumber">
+                hide-details 
+                v-model="object.isSeparate" 
+                color="primary"
+                :disabled="!object.hasSubNumber" 
+                :label="$t('isSeparate')">
               </v-checkbox>
             </template>
-            {{ $t('checkIfSubNumber') }}
+            <span v-html="$t('checkIfSeperateSubNumber')"></span>
           </v-tooltip>
         </v-col>
-
-        <v-col cols="2">
-          <v-tooltip location="bottom">
-              <template v-slot:activator="{ props }">
-                <v-checkbox 
-                  class="pl-4" 
-                  v-bind="props"
-                  hide-details 
-                  v-model="object.isSeparate" 
-                  color="primary"
-                  :disabled="!object.hasSubNumber" 
-                  :label="$t('isSeparate')">
-                </v-checkbox>
-              </template>
-              <span v-html="$t('checkIfSeperateSubNumber')"></span>
-            </v-tooltip>
-        </v-col>
         
-        <v-spacer></v-spacer>
-
-        <v-col cols="2">
+        <v-col class="justify-end" cols="3">
           <v-text-field
             color="primary"
             :rules="dateRules"
@@ -87,7 +82,7 @@
       </v-row>
 
       <v-row>
-        <v-col lg="4">
+        <v-col>
           <v-combobox
             multiple
             chips
@@ -96,7 +91,7 @@
             color="primary" 
             :items="titleItems"
             persistent-hint
-            :label="$tc('title', 2) + ' *'" 
+            :label="$tc('title', 1) + ' *'" 
             :hide-no-data="false" 
             v-model="object.title">
 
@@ -126,28 +121,17 @@
             </template>
           </v-combobox>
         </v-col>
-
-        <v-col lg="8">
-          <v-textarea 
-            rows="5" 
-            maxlength="254"
-            counter="254"
-            color="primary" 
-            :label="$t('description')" 
-            v-model="object.description">
-          </v-textarea>
-        </v-col>
       </v-row>
     </v-card>
 
     <!-- PLACES -->
-    <v-card class="pa-4" v-if="type == 'places'">
+    <v-card class="mb-2 mr-2 pa-4" v-if="type == 'places'">
       <h2 class="text-h6 font-weight-medium pb-1">
         {{ $t('generalInformation') }}
       </h2>
       <v-divider/>
       <v-row class="pt-4">
-        <v-col lg="4">
+        <v-col>
           <v-combobox
             hide-selected 
             multiple
@@ -183,6 +167,7 @@
 
           <v-combobox
             hide-selected
+            hide-details
             class="pt-1"
             color="primary" 
             :items="editorItemsSecondProp" 
@@ -198,22 +183,10 @@
               </v-list-item>
             </template>
           </v-combobox>
-
         </v-col>
 
-        <v-col lg="8">
-          <v-textarea 
-            rows="8"
-            maxlength="254"
-            counter="254" 
-            color="primary" 
-            v-model="object.description" 
-            :label="$t('description')">
-          </v-textarea>
-        </v-col>
       </v-row>
     </v-card>
-  </v-col>
 </template>
 
 <script>
@@ -234,7 +207,6 @@ export default {
     return {
       type: null,
       object: {
-        description: null,
         editor: null,
         date: null,
         title: [],
@@ -249,7 +221,7 @@ export default {
       titleRules: [
         value => {
           if (value.length > 0) return true
-          return this.$t('isMandatory', {msg: this.$tc('title', 2)})
+          return this.$t('isMandatory', {msg: this.$tc('title', 1)})
         }
       ],
       dateRules: [
@@ -277,14 +249,6 @@ export default {
     titleItemsSecondProp: function(titles) {
       var lvrTitles = JSON.parse(import.meta.env.VITE_TITLES);
       this.titleItems = lvrTitles.concat(titles);
-    },
-    "object.description": {
-      handler: function () {
-        if ( this.object.description != null ) {
-          /* Send data back to ModuleViewer.vue */
-          this.$emit("dataToModuleViewer", ['description', this.object.description]);
-        }
-      }
     },
     "object.editor": {
       handler: function () {

@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.10.2024 16:35:23
+ * Last Modified: 18.10.2024 14:25:49
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -237,9 +237,9 @@
               <td v-on:click="handleRowClick(item._id, true)"
                 :style="utils.getRowStyle(index, hoveredRow)">
                 <v-list-item-title class="text-wrap">
-                  {{ item.description }}
+                  {{ item.comment }}
                 </v-list-item-title>
-                <v-list-item-title v-if="item.description == ''" 
+                <v-list-item-title v-if="item.comment == ''" 
                   style="color:dimgrey;">
                   -
                 </v-list-item-title>
@@ -422,7 +422,7 @@ export default {
         { title: this.$t('coordinates'), align: 'start', key: 'coordinates', width: "50px" },
         { title: this.$t('plane'), align: 'start', key: 'plane', width: "150px" },
         { title: this.$t('visibility'), align: 'start', key: 'visibility', width: "100px" },
-        { title: this.$t('description'), align: 'start', key: 'description', width: "150px" },
+        { title: this.$t('comment'), align: 'start', key: 'comment', width: "150px" },
         { title: this.$tc('dating', 1), align: 'start', key: 'dating', width: "100px" },
         { title: this.$tc('editor', 1), align: 'start', key: 'editor', width: "100px" },
         { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
@@ -584,7 +584,7 @@ export default {
         profile: '',
         visibility: null,
         drawing: '',
-        description: '',
+        comment: '',
         editor: '',
         date: new Date().toLocaleDateString("de-DE"),
         technical: '',
@@ -600,7 +600,9 @@ export default {
           dating: true,
           findTypes: true,
           plane: true,
+          profile: true,
           visibility: true,
+          comment: true,
           technical: false,
         },
         lastChanged: Date.now(),

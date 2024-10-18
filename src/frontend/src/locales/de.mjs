@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.10.2024 16:14:14
+ * Last Modified: 18.10.2024 14:13:55
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -70,6 +70,7 @@ export default {
   moderate: "Mäßig",
   bad: "Schlecht",
   description: "Beschreibung",
+  comment: "Kommentar",
   text: "Text",
   line: "Linie",
   opacity: "Deckkraft",

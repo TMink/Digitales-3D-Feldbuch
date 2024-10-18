@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.10.2024 16:13:58
+ * Last Modified: 18.10.2024 10:04:23
  * Modified By: Julian Hardtung
  * 
  * Description: english translations
@@ -70,6 +70,7 @@ export default {
   moderate: "Moderate",
   bad: "Bad",
   description: "Description",
+  comment: "Comment",
   text: "Text",
   line: "Line",
   opacity: "Opacity",

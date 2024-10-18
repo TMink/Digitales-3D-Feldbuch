@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 13.10.2024 12:38:51
+ * Last Modified: 18.10.2024 14:25:06
  * Modified By: Julian Hardtung
  * 
  * Description: input page for positions data 
@@ -278,9 +278,6 @@ export default {
           break;
 
         /* Module: General */
-        case 'description':             
-          this.position.description = data[1];
-          break;
         case 'editor':
           this.position.editor = data[1];
           break;
@@ -310,6 +307,14 @@ export default {
           break;
         case 'modulePreset.dating':
           this.position.modulePreset.dating = data[1];
+          break;
+
+        /* Module: Comment */
+        case 'comment':
+          this.position.comment = data[1];
+          break;
+        case 'modulePreset.comment':
+          this.position.modulePreset.comment = data[1];
           break;
 
         /* Module: ObjectDescriber */

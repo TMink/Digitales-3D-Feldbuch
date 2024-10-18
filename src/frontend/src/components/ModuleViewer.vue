@@ -2,7 +2,7 @@
  * Created Date: 06.09.2023 17:19:12
  * Author: Julian Hardtung
  * 
- * Last Modified: 16.10.2024 15:52:24
+ * Last Modified: 18.10.2024 14:28:21
  * Modified By: Julian Hardtung
  * 
  * Description: input module viewer that shows all modules that are 
@@ -20,48 +20,60 @@
       
     <v-row no-gutters v-else >
 
-      <ModuleGeneral
-        :objectProp="object"
-        :titleItemsSecondProp="titleItemsFirstProp"
-        :editorItemsSecondProp="editorItemsFirstProp"
-        @dataToModuleViewer="sendData($event)"/>
-
       <v-col cols="6">
+        <ModuleGeneral
+          :objectProp="object"
+          :titleItemsSecondProp="titleItemsFirstProp"
+          :editorItemsSecondProp="editorItemsFirstProp"
+          @dataToModuleViewer="sendData($event)"/>
+
         <ModuleDating
-        :datingProp="object.dating"
-        :showModuleProp="object.modulePreset.dating"
-        :datingItemsSecondProp="datingItemsFirstProp"
-        @dataToModuleViewer="sendData($event)"/>
+          :datingProp="object.dating"
+          :showModuleProp="object.modulePreset.dating"
+          :datingItemsSecondProp="datingItemsFirstProp"
+          @dataToModuleViewer="sendData($event)"/>
 
-      <ModuleVisibility
-        v-if="$route.path.substring($route.path.indexOf('/') + 1, $route.path.lastIndexOf('/')) == 'places'"
-        :visibilityProp="object.visibility"
-        :showModuleProp="object.modulePreset.visibility"
-        @dataToModuleViewer="sendData($event)"/>
+        <ModuleVisibility
+          v-if="$route.path.substring($route.path.indexOf('/') + 1, $route.path.lastIndexOf('/')) == 'places'"
+          :visibilityProp="object.visibility"
+          :showModuleProp="object.modulePreset.visibility"
+          @dataToModuleViewer="sendData($event)"/>
 
-      <ModulePlane
-        v-if="$route.path.substring($route.path.indexOf('/') + 1, $route.path.lastIndexOf('/')) == 'places'"
-        :planeProp="object.plane"
-        :showModuleProp="object.modulePreset.plane"
-        @dataToModuleViewer="sendData($event)"/>
-
-      <ModuleObjectDescribers
-        v-if="$route.path.substring($route.path.indexOf('/') + 1, $route.path.lastIndexOf('/')) == 'positions'"
-        :objectProp="object"
-        :materialItemsSecondProp="materialItemsFirstProp"
-        @dataToModuleViewer="sendData($event)"/>
+        <ModuleFindTypes
+          v-if="$route.path.substring($route.path.indexOf('/') + 1, $route.path.lastIndexOf('/')) == 'places'"
+          :objectProp="object"
+          @dataToModuleViewer="sendData($event)"/>
 
       </v-col>
 
       <v-col cols="6">
+
         <ModuleCoordinates
-        :objectProp="object"
-        @dataToModuleViewer="sendData($event)"/>
-        
-        <ModuleFindTypes
-        v-if="$route.path.substring($route.path.indexOf('/') + 1, $route.path.lastIndexOf('/')) == 'places'"
-        :objectProp="object"
-        @dataToModuleViewer="sendData($event)"/>
+          :objectProp="object"
+          @dataToModuleViewer="sendData($event)"/>
+
+        <ModulePlane
+          v-if="$route.path.substring($route.path.indexOf('/') + 1, $route.path.lastIndexOf('/')) == 'places'"
+          :planeProp="object.plane"
+          :showModuleProp="object.modulePreset.plane"
+          @dataToModuleViewer="sendData($event)"/>
+
+        <ModuleProfile
+          v-if="$route.path.substring($route.path.indexOf('/') + 1, $route.path.lastIndexOf('/')) == 'places'"
+          :profileProp="object.profile"
+          :showModuleProp="object.modulePreset.profile"
+          @dataToModuleViewer="sendData($event)"/>
+
+        <ModuleComment
+          :commentProp="object.comment"
+          :showModuleProp="object.modulePreset.comment"
+          @dataToModuleViewer="sendData($event)"/>
+
+        <ModuleObjectDescribers
+          v-if="$route.path.substring($route.path.indexOf('/') + 1, $route.path.lastIndexOf('/')) == 'positions'"
+          :objectProp="object"
+          :materialItemsSecondProp="materialItemsFirstProp"
+          @dataToModuleViewer="sendData($event)"/>
 
       </v-col>        
     </v-row>
@@ -81,6 +93,8 @@ import ModulePlane from '../components/modules/ModulePlane.vue';
 import ModuleDating from '../components/modules/ModuleDating.vue';
 import ModuleObjectDescribers from '../components/modules/ModuleObjectDescribers.vue';
 import ModuleTechnical from './modules/ModuleTechnical.vue';
+import ModuleComment from './modules/ModuleComment.vue';
+import ModuleProfile from './modules/ModuleProfile.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB';
 import { useWindowSize } from 'vue-window-size';
 import { toRaw } from 'vue'
@@ -97,6 +111,8 @@ export default {
     ModuleDating,
     ModuleObjectDescribers,
     ModuleTechnical,
+    ModuleProfile,
+    ModuleComment
 },
 
   emits: ['dataToPlaceForm'],

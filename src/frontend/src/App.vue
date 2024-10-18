@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 30.09.2024 18:08:20
+ * Last Modified: 18.10.2024 14:18:09
  * Modified By: Julian Hardtung
  * 
  * Description: main entry point for the fieldbook + 
@@ -150,11 +150,14 @@ export default {
         general: true,
         coordinates: true,
         dating: true,
+        comment: true,
 
         //place specific
         plane: true,
+        profile: true,
         findTypes: true,
         visibility: true,
+
 
         //position specific
         objectDescribers: false,
@@ -177,6 +180,7 @@ export default {
         general: true,
         coordinates: true,
         dating: true,
+        comment: true,
 
         //place specific
         plane: false,

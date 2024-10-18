@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 15.10.2024 16:37:45
+ * Last Modified: 18.10.2024 14:35:28
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -242,13 +242,13 @@
                 </v-list-item-title>
               </td>
 
-              <!-- DESCRIPTION -->
+              <!-- COMMENT -->
               <td :style="utils.getRowStyle(index, hoveredRow)">
                 <v-list-item-title class="text-wrap" style="max-width:200px">
-                  {{ item.description }}
+                  {{ item.comment }}
                 </v-list-item-title>
                 <v-list-item-title 
-                  v-if="item.description == ''" style="color:dimgrey;">
+                  v-if="item.comment == ''" style="color:dimgrey;">
                   -
                 </v-list-item-title>
               </td>
@@ -431,7 +431,7 @@ export default {
         { title: this.$t('count'), align: 'start', key: 'count' },
         { title: this.$t('weight'), align: 'start', key: 'weight' },
         { title: this.$t('material'), align: 'start', key: 'material' },
-        { title: this.$t('description'), align: 'start', key: 'description' },
+        { title: this.$t('comment'), align: 'start', key: 'comment' },
         { title: this.$tc('editor', 1), align: 'start', key: 'editor' },
         { title: this.$t('date'), align: 'start', key: 'date' },
         { title: this.$t('isSeparate'), align: 'start', key: 'isSeparate' },
@@ -621,11 +621,11 @@ export default {
         positionNumber: '',
         subNumber: '',
         coordinates: '',
-        count: '',
-        weight: '',
+        count: 0,
+        weight: 0,
         material: '',
         title: [],
-        description: '',
+        comment: '',
         datCode: '',
         dating: '',
         editor: '',
@@ -638,6 +638,7 @@ export default {
         modulePreset: {
           coordinates: true,
           dating: true,
+          comment: true,
           objectDescribers: true,
           technical: false,
         },

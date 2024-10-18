@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.10.2024 13:53:34
+ * Last Modified: 18.10.2024 14:30:03
  * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
@@ -351,6 +351,7 @@ export default {
 
   methods: {
     async getEmittedData(data) {
+
       switch (data[0]) {
         /* Module: Coordinates */
         case 'right':
@@ -399,9 +400,6 @@ export default {
           break;
 
         /* Module: General */
-        case 'description':
-          this.place.description = data[1];
-          break;
         case 'editor':
           this.place.editor = data[1];
           break;
@@ -420,6 +418,22 @@ export default {
           this.place.modulePreset.plane = data[1];
           break;
 
+        /* Module: Profile */
+        case 'profile':
+          this.place.profile = data[1];
+          break;
+        case 'modulePreset.profile':
+          this.place.modulePreset.profile = data[1];
+          break;
+
+        /* Module: Comment */
+        case 'comment':
+          this.place.comment = data[1];
+          break;
+        case 'modulePreset.comment':
+          this.place.modulePreset.comment = data[1];
+          break;
+
         /* Module: Technical */
         case 'technical':
           this.place.technical = data[1]
@@ -434,7 +448,7 @@ export default {
           break;
 
         default:
-          console.err('Cant specify emitted data: ' + data[0])
+          console.error('Cant specify emitted data: ' + data[0])
       }
 
       this.handlePlaceChange();
@@ -457,6 +471,7 @@ export default {
     async savePlace() {
       //convert from vue proxy to JSON object
       const inputPlace = toRaw(this.place);
+
       //inputPlace.date = new Date().toLocaleDateString("de-DE");
       inputPlace.lastChanged = Date.now();
 
