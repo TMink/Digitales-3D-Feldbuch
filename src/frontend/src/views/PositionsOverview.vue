@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 18.10.2024 14:35:28
+ * Last Modified: 21.10.2024 17:34:56
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -640,7 +640,6 @@ export default {
           dating: true,
           comment: true,
           objectDescribers: true,
-          technical: false,
         },
         lastChanged: Date.now(),
         lastSync: 0

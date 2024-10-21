@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 18.10.2024 14:25:49
+ * Last Modified: 21.10.2024 17:34:51
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -69,21 +69,14 @@
               <!-- TITLE -->
               <td v-on:click="handleRowClick(item._id, true)" 
                 :style="utils.getRowStyle(index, hoveredRow)">
-                <div v-if="item.placeNumber > 1">
-                  <v-list-item-title v-if="item.title.length > 0" 
-                    style="min-width:200px" class="text-wrap">
-                    {{ item.title.join('; ') }}
-                  </v-list-item-title>
+                <v-list-item-title v-if="item.title.length > 0" 
+                  style="min-width:200px" class="text-wrap">
+                  {{ item.title.join('; ') }}
+                </v-list-item-title>
 
-                  <v-list-item-title v-if="item.title.length == 0" 
-                    style="color:dimgrey;">
-                    -
-                  </v-list-item-title>
-                </div>
-
-                <v-list-item-title v-if="item.placeNumber == 1" 
-                  style="color:#C4A484;">
-                  {{ $t('technical') }}
+                <v-list-item-title v-if="item.title.length == 0" 
+                  style="color:dimgrey;">
+                  -
                 </v-list-item-title>
               </td>
 
@@ -160,18 +153,12 @@
               <!-- TITLE -->
               <td v-on:click="handleRowClick(item._id, true)"
               :style="utils.getRowStyle(index, hoveredRow)">
-                <div v-if="item.placeNumber > 1">
-                  <v-list-item-title v-if="item.title.length > 0" class="text-wrap">
-                    {{ item.title.join('; ') }}
-                  </v-list-item-title>
+                <v-list-item-title v-if="item.title.length > 0" class="text-wrap">
+                  {{ item.title.join('; ') }}
+                </v-list-item-title>
 
-                  <v-list-item-title style="color:dimgrey;" v-else>
-                    -
-                  </v-list-item-title>
-                </div>
-                <v-list-item-title v-if="item.placeNumber == 1" 
-                  style="color:#C4A484;">
-                  {{ $t('technical') }}
+                <v-list-item-title style="color:dimgrey;" v-else>
+                  -
                 </v-list-item-title>
               </td>
 
@@ -426,7 +413,7 @@ export default {
         { title: this.$tc('dating', 1), align: 'start', key: 'dating', width: "100px" },
         { title: this.$tc('editor', 1), align: 'start', key: 'editor', width: "100px" },
         { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
-        { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status', width: "260px"},
+        { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status', width: "270px"},
       ],
     };
   },
@@ -446,11 +433,6 @@ export default {
     await this.updatePlaces()
       .catch(err => console.error(err));
     this.setShowAllInfoSwitch();
-    
-    // Init first place as technical place
-    if (this.places.length == 0) {
-      this.addPlace();
-    }
   },
 
   mounted() {
@@ -587,7 +569,6 @@ export default {
         comment: '',
         editor: '',
         date: new Date().toLocaleDateString("de-DE"),
-        technical: '',
         coordinates: '',
 
         positions: [],
@@ -603,7 +584,6 @@ export default {
           profile: true,
           visibility: true,
           comment: true,
-          technical: false,
         },
         lastChanged: Date.now(),
         lastSync: 0
@@ -612,8 +592,6 @@ export default {
       // set new placeNumber
       if (this.places.length == 0) {
         newPlace.placeNumber = 1;
-
-        //set place to technical place if it is the 1. place
       } else {
         const placeNumbers = await fromOfflineDB
           .getPropertiesWithID(acID, 'place', 'placeNumber', 'Places', 'places')

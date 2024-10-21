@@ -2,7 +2,7 @@
  * Created Date: 06.09.2023 17:19:12
  * Author: Julian Hardtung
  * 
- * Last Modified: 18.10.2024 14:28:21
+ * Last Modified: 21.10.2024 17:29:56
  * Modified By: Julian Hardtung
  * 
  * Description: input module viewer that shows all modules that are 
@@ -12,13 +12,7 @@
  <template>
   <v-container fluid class="pa-0 ma-0"> 
     <v-form ref="form">
-    <div v-if="pathObject == 'places' && this.object.placeNumber == 1">
-      <ModuleTechnical v-if='this.object.placeNumber == 1'
-      :objectProp="object"
-      @dataToModuleViewer="sendData($event)"/>
-    </div>
-      
-    <v-row no-gutters v-else >
+    <v-row no-gutters>
 
       <v-col cols="6">
         <ModuleGeneral

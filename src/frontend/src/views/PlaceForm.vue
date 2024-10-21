@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 18.10.2024 14:30:03
+ * Last Modified: 21.10.2024 17:33:52
  * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
@@ -432,11 +432,6 @@ export default {
           break;
         case 'modulePreset.comment':
           this.place.modulePreset.comment = data[1];
-          break;
-
-        /* Module: Technical */
-        case 'technical':
-          this.place.technical = data[1]
           break;
 
         /* Module: Visibility */
