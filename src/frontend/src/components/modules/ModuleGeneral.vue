@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 18.10.2024 14:28:13
+ * Last Modified: 21.10.2024 15:17:40
  * Modified By: Julian Hardtung
  * 
  * Description: `general information` input module for places/positions
@@ -89,7 +89,7 @@
             closable-chips
             :rules="titleRules"
             color="primary" 
-            :items="titleItems"
+            :items="titleItemsPos"
             persistent-hint
             :label="$tc('title', 1) + ' *'" 
             :hide-no-data="false" 
@@ -139,7 +139,7 @@
             closable-chips
             :rules="titleRules"
             color="primary" 
-            :items="titleItems" 
+            :items="titleItemsPlace" 
             :label="$tc('title', 2) + ' *'" 
             :hide-no-data="false" 
             v-model="object.title">
@@ -215,7 +215,8 @@ export default {
         hasSubNumber: null,
         subNumber: null,
       },
-      titleItems: [],
+      titleItemsPos: [],
+      titleItemsPlace: [],
       editorItems: [],
 
       titleRules: [
@@ -247,8 +248,10 @@ export default {
         this.object = datingPropData;
     },
     titleItemsSecondProp: function(titles) {
-      var lvrTitles = JSON.parse(import.meta.env.VITE_TITLES);
-      this.titleItems = lvrTitles.concat(titles);
+      var lvrTitlesPos = JSON.parse(import.meta.env.VITE_TITLES);
+      var lvrTitlesPlace = JSON.parse(import.meta.env.VITE_PLACE_TITLES);
+      this.titleItemsPos = lvrTitlesPos.concat(titles);
+      this.titleItemsPlace = lvrTitlesPlace.concat(titles);
     },
     "object.editor": {
       handler: function () {
