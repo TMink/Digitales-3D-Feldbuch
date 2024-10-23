@@ -2,7 +2,7 @@
  Created Date: 23.09.2024 10:14:23
  Author: Tobias Mink
  
- Last Modified: 23.10.2024 16:41:50
+ Last Modified: 23.10.2024 17:13:51
  Modified By: Tobias Mink
  
  Description: 
@@ -127,7 +127,7 @@
                       
                       <!-- Save -->
                       <v-card class="pt-1 my-3" height="fit-content" variant="text">
-                        <v-btn width="100%" @click="saveGraph()">
+                        <v-btn width="100%" @click="saveAll()">
                           Speichern
                         </v-btn>
                       </v-card>
@@ -703,6 +703,7 @@
       idOfCurrentStratiTool = getData[0]._id;
       allProcessingSteps.value = getData[0].graph.allProcessingSteps;
       currentProcessingStep.value = getData[0].graph.currentProcessingStep;
+      allModelsInGraph.value = getData[0].threeD.allModels;
   
       if( allProcessingSteps.value.length > 0 ){
         const parsedProcessingStep = JSON.parse(allProcessingSteps.value[currentProcessingStep.value - 1].step);
@@ -2134,14 +2135,41 @@
    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
    * 
    */
-  async function saveGraph() {
+  async function saveAll() {
     if( idOfCurrentStratiTool != "" ) {
-      await fromOfflineDB.updateIndexedDBObject({ _id: idOfCurrentStratiTool, graph: { allProcessingSteps: JSON.parse(JSON.stringify(allProcessingSteps.value)), currentProcessingStep: currentProcessingStep.value } }, "StratiToolDB", "stratiTool")
+      const parsedModels = parseModelData( allModelsInGraph.value )
+      await fromOfflineDB.updateIndexedDBObject({ _id: idOfCurrentStratiTool, graph: {allProcessingSteps: JSON.parse(JSON.stringify(allProcessingSteps.value)), currentProcessingStep: currentProcessingStep.value}, threeD: {allModels: parsedModels}}, "StratiToolDB", "stratiTool" );
     } else {
-      await fromOfflineDB.addObject({ _id: String(Date.now()), graph: { allProcessingSteps: JSON.parse(JSON.stringify(allProcessingSteps.value)), currentProcessingStep: currentProcessingStep.value } }, "StratiToolDB", "stratiTool")
+      const parsedModels = parseModelData( allModelsInGraph.value )
+      await fromOfflineDB.addObject( {_id: String( Date.now() ), graph: {allProcessingSteps: JSON.parse(JSON.stringify(allProcessingSteps.value)), currentProcessingStep: currentProcessingStep.value}, threeD: {allModels: parsedModels}}, "StratiToolDB", "stratiTool" );
     }
   }
+  
 
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Parses the data of all models that are in the graph in order to be able to 
+   * transfer them to the IndexedDB.
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * @param {array<Object>} allModels
+   * @returns {array<Object>} Parsed input array 
+   */
+  function parseModelData(allModels) {
+    const separateModelData = []
+    const allModelsLength = allModels.length
+    for( let a = 0; a < allModelsLength; a++ ){
+      separateModelData.push( allModels[a].model )
+    }
+    const parsedModels = JSON.parse(JSON.stringify(allModels))
+    for( let a = 0; a < allModelsLength; a++ ){
+      parsedModels[a].model = separateModelData[a]
+    }
+    return parsedModels
+  }
 
 
 
@@ -2165,6 +2193,9 @@
 
 
   /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
    * 
    */
   function fillInfoCard3d(nodeID) {
@@ -2194,6 +2225,9 @@
 
 
   /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
    * 
    */
   function changeUnitsListsButtonStyle(buttonID, mode) {
@@ -2211,6 +2245,9 @@
 
 
   /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
    * 
    */
   async function modelToArrayBuffer(rawData) {
@@ -2232,6 +2269,9 @@
 
 
   /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
    * 
    */
   async function addModel() {
@@ -2252,14 +2292,12 @@
       nodeID: selectedNodeID,
     }
 
-    console.log(newModel)
-
     // hide model creation dialog
     createAddModelDialog.value = false;
 
     // add model to local data
-    allModelsInGraph.value.push(newModel)
-    selectedNodeModelName.value = newModel.title
+    allModelsInGraph.value.push(newModel);
+    selectedNodeModelName.value = newModel.title;
 
     // add model to IndexedDB
   }
@@ -2305,7 +2343,7 @@
    * 
    */
   onUnmounted(async() => {
-    saveGraph()
+    saveAll()
   })
 </script>
 
