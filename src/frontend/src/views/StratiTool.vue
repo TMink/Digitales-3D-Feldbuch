@@ -2,7 +2,7 @@
  Created Date: 23.09.2024 10:14:23
  Author: Tobias Mink
  
- Last Modified: 16.10.2024 17:59:53
+ Last Modified: 23.10.2024 11:52:03
  Modified By: Tobias Mink
  
  Description: 
@@ -519,7 +519,8 @@
   var processStepForwardButtonDisabled = ref(true) // boolean
   var createAddModelDialog = ref(false) // boolean
   var modelTitle = ref("") // string
-  var model = ref(null)
+  var model = ref(null) // null
+  var currentMode = ref("graph") // string
 
   /**
    * [-------------------------------------------------------------------------]
@@ -634,8 +635,7 @@
         changeUnitsListsButtonStyle( nodesInGraph[a].id, "selected" )
         nodesInGraph[a].data.nodeStyle = "clicked_" + nodesInGraph[a].type;
         nodesInGraph[a].data.selected = true;
-      } else {
-        console.log("Test")
+      } else if( selectedNodeID != "" && currentMode != "3d" ) {
         nodesInGraph[a].data.nodeStyle = "notClicked_" + nodesInGraph[a].type;
         nodesInGraph[a].data.selected = false;
       }
@@ -1967,11 +1967,13 @@
       graph.style.zIndex = "0"
       graphEditorTools.style.opacity = "0"
       graphEditorTools.style.zIndex = "0"
+      currentMode = "3d"
     } else {
       graph.style.opacity = "1"
       graph.style.zIndex = "1"
       graphEditorTools.style.opacity = "1"
       graphEditorTools.style.zIndex = "1"
+      currentMode = "graph"
     }
   }
 
