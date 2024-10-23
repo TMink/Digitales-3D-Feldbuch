@@ -2,7 +2,7 @@
  Created Date: 23.09.2024 10:14:23
  Author: Tobias Mink
  
- Last Modified: 23.10.2024 16:34:16
+ Last Modified: 23.10.2024 16:41:50
  Modified By: Tobias Mink
  
  Description: 
@@ -520,7 +520,9 @@
   var selectedNodeNewModel = ref(null) // null
   var selectedNodeModelName = ref("Noch kein Model hinzugefügt") // string
 
+  /** > > > > > > ---- < < < < < < **/
   /** > > > > > > Left < < < < < < **/
+  /** > > > > > > ---- < < < < < < **/
   // ----Component----> Glossar
   // ----Component----> Help
   // ----Component----> Modules
@@ -529,10 +531,12 @@
   // ----> Screenshot-Tool (Graph-Editor)
   var imageFileName = ref(""); // string
   
+  /** > > > > > > ------ < < < < < < **/
   /** > > > > > > Middle < < < < < < **/
+  /** > > > > > > ------ < < < < < < **/
   // ----Component----> Harris-Matrices
   // -Subcomponent-> Save Harris-Matrix
-  // ----Component----> Switch processing steps
+  // -Subcomponent-> Switch processing steps
   var allProcessingSteps = ref([]); // array<{ type: string, step: string }>
   var currentProcessingStep = ref(0); // int
   var processStepBackButtonDisabled = ref(true) // boolean
@@ -547,7 +551,9 @@
   var unitListContent = ref([]); // array<string>
   // ----Component----> Editoren
 
+  /** > > > > > > ----- < < < < < < **/
   /** > > > > > > Right < < < < < < **/
+  /** > > > > > > ----- < < < < < < **/
   // ----Component----> Modus wechseln
   var currentMode = ref("graph") // string
   // ----Component----> Placeholder
