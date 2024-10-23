@@ -2,7 +2,7 @@
  * Created Date: 06.09.2023 17:19:12
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.10.2024 17:29:56
+ * Last Modified: 22.10.2024 11:38:24
  * Modified By: Julian Hardtung
  * 
  * Description: input module viewer that shows all modules that are 
@@ -86,7 +86,6 @@ import ModuleFindTypes from '../components/modules/ModuleFindTypes.vue';
 import ModulePlane from '../components/modules/ModulePlane.vue';
 import ModuleDating from '../components/modules/ModuleDating.vue';
 import ModuleObjectDescribers from '../components/modules/ModuleObjectDescribers.vue';
-import ModuleTechnical from './modules/ModuleTechnical.vue';
 import ModuleComment from './modules/ModuleComment.vue';
 import ModuleProfile from './modules/ModuleProfile.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB';
@@ -104,7 +103,6 @@ export default {
     ModulePlane,
     ModuleDating,
     ModuleObjectDescribers,
-    ModuleTechnical,
     ModuleProfile,
     ModuleComment
 },
