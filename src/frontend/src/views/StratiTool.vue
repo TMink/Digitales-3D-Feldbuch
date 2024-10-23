@@ -2,7 +2,7 @@
  Created Date: 23.09.2024 10:14:23
  Author: Tobias Mink
  
- Last Modified: 23.10.2024 11:52:03
+ Last Modified: 23.10.2024 16:34:16
  Modified By: Tobias Mink
  
  Description: 
@@ -39,7 +39,7 @@
                       <v-btn variant="text" width="50%" height="100%" icon="mdi-arrow-left-bold" @click="changeModuleLeft()"></v-btn>
                     </v-col>
                     <v-col cols="6">
-                      <v-card-title width="100%" height="100%" class="d-flex align-center justify-center">{{ aktiveModuleName }}</v-card-title>
+                      <v-card-title width="100%" height="100%" class="d-flex align-center justify-center">{{ graphAktiveModuleName }}</v-card-title>
                     </v-col>
                     <v-col cols="3" class="d-flex align-center justify-center">
                       <v-btn variant="text" width="50%" height="100%" icon="mdi-arrow-right-bold" @click="changeModuelRight()"></v-btn>
@@ -200,7 +200,7 @@
                           </v-card>
                           <v-slide-group show-arrows="always">
                             <v-row justify="center" align="center" class="my-2" no-gutters>
-                              <v-slide-group-item v-for="n in nodesInUnitList" :key="n">
+                              <v-slide-group-item v-for="n in unitListContent" :key="n">
                                 <v-btn :id=n.id class="mx-1 units__3d_list_button_notClicked" rounded v-on:click="fillInfoCard3d(n.id)">
                                   {{ n.label }}
                                 </v-btn>
@@ -220,7 +220,7 @@
                               Auflistung aller Units2
                             </v-card-title>
                           </v-card>
-                          <Sidebar :highestDefaultCount="highestDefaultCount"/>
+                          <Sidebar :highestIndexOfDefaultNode="highestIndexOfDefaultNode"/>
                         </v-col>
                       </v-card>
                     </v-col> -->
@@ -241,7 +241,7 @@
                               Neue Unit erstellen
                             </v-card-title>
                           </v-card>
-                          <Sidebar :highestDefaultCount="highestDefaultCount"/>
+                          <Sidebar :highestIndexOfDefaultNode="highestIndexOfDefaultNode"/>
                         </v-col>
                       </v-card>
                     </v-col>
@@ -255,7 +255,7 @@
                               Unit suchen
                             </v-card-title>
                           </v-card>
-                          <v-combobox class="mb-2" style="height: 52px; width: 250px" hide-selected :items="nodesInUnitSearch" persistent-hint :hide-no-data="true" v-model="nodeSearchedFor"></v-combobox>
+                          <v-combobox class="mb-2" style="height: 52px; width: 250px" hide-selected :items="unitSearchDopDownMenueContent" persistent-hint :hide-no-data="true" v-model="unitSearchInput"></v-combobox>
                         </v-col>
                       </v-card>
                     </v-col>
@@ -319,7 +319,7 @@
                   <!-- Unit Titel -->
                   <v-row no-gutters class="pb-2" align-content="center">
                     <v-card class="infobereich__titel_default" width="100%" height="50">
-                      <v-card-title class="justify-center">{{ nodeTitle }}</v-card-title>
+                      <v-card-title class="justify-center">{{ selectedNodeName }}</v-card-title>
                     </v-card>
                   </v-row>
                     
@@ -342,10 +342,10 @@
                           </v-row>
                           <v-row no-gutters class="pr-3 px-2">
                             <v-col class="px-1" cols="10">
-                              <v-text-field class="infobereich__attributes_name_text-field" hide-details height="100%" v-model="nodeTitle"></v-text-field>
+                              <v-text-field class="infobereich__attributes_name_text-field" hide-details height="100%" v-model="selectedNodeName"></v-text-field>
                             </v-col>
                             <v-col cols="2">
-                              <v-btn class="infobereich__attributes_name_button" height="100%" min-width="0" @click="updateTitle(nodeTitle)">
+                              <v-btn class="infobereich__attributes_name_button" height="100%" min-width="0" @click="updateTitle(selectedNodeName)">
                                 <v-icon icon="mdi-content-save" size="Large"></v-icon>
                               </v-btn>
                             </v-col>
@@ -358,7 +358,7 @@
                             <v-card class="pl-3 pb-1 infobereich__attributes_type_title" elevation=0>Type:</v-card>
                           </v-row>
                           <v-row no-gutters class="pr-2 pl-1">
-                            <v-btn-toggle class="px-10" v-model="nodeType">
+                            <v-btn-toggle class="px-10" v-model="selectedNodeType">
                               <v-btn class="mr-2 infobereich__attributes_type_title_button" width="110" @click="updateType('deposit')">
                                 Deposit
                               </v-btn>
@@ -376,10 +376,10 @@
                           </v-row>
                           <v-row no-gutters class="pr-3 pl-2">
                             <v-col class="px-1" cols="10">
-                              <v-textarea class="infobereich__attributes_description_textarea" no-resize hide-details v-model="nodeDescription"></v-textarea>
+                              <v-textarea class="infobereich__attributes_description_textarea" no-resize hide-details v-model="selectedNodeDescription"></v-textarea>
                             </v-col>
                             <v-col cols="2">
-                              <v-btn class="infobereich__attributes_description_button" height="100%" min-width="0" @click="updateDescription(nodeDescription)">
+                              <v-btn class="infobereich__attributes_description_button" height="100%" min-width="0" @click="updateDescription(selectedNodeDescription)">
                                 <v-icon icon="mdi-content-save" size="Large"></v-icon>
                               </v-btn>
                             </v-col>
@@ -389,19 +389,26 @@
                         <!-- Unit Model -->
                         <v-card class="py-2 mb-3 infobereich__attributes_type" width="100%">
                           <v-row no-gutters class="py-0" align-content="center">
-                            <v-card class="pl-3 pb-1 infobereich__attributes_type_title" elevation=0>Type:</v-card>
+                            <v-card class="pl-3 pb-1 infobereich__attributes_type_title" elevation=0>Model:</v-card>
                           </v-row>
-                          <v-row no-gutters class="pr-2 pl-1">
-                            <v-btn icon color="primary" @click="createAddModelDialog = true">
-                                <v-icon>mdi-close-circle</v-icon>
+                          <v-row no-gutters class="px-3 pb-1">
+                            <v-card  variant="text">
+                              <v-card-subtitle class="px-0">
+                                Name: {{ selectedNodeModelName }}
+                              </v-card-subtitle>
+                            </v-card>
+                          </v-row>
+                          <v-row no-gutters class="px-3">
+                            <v-btn class="infobereich__attributes_description_button" height="40" min-width="100%" @click="createAddModelDialog = true">
+                              Modell ändern
                             </v-btn>
                             <v-dialog v-model="createAddModelDialog" max-width="800" persistent>
                               <v-card class="pa-4">
                                 <v-card-title>{{ $t('add', { msg: $t('model') }) }}</v-card-title>
 
-                                <v-text-field v-model="modelTitle" :label="$t('title')" :hint="$t('please_input', { msg: $t('title_of', { msg: $t('model') }) })"/>
+                                <v-text-field v-model="selectedNodeNewModelName" :label="$t('title')" :hint="$t('please_input', { msg: $t('title_of', { msg: $t('model') }) })"/>
 
-                                <v-file-input show-size accept=".glb" v-model="model" :label="$t('input', { msg: $t('model') })"/>
+                                <v-file-input show-size accept=".glb" v-model="selectedNodeNewModel" :label="$t('input', { msg: $t('model') })"/>
 
                                 <v-card-actions class="justify-center">
                                   <v-btn icon color="success" v-on:click="addModel()">
@@ -423,7 +430,7 @@
                           </v-row>
                           <v-row no-gutters class="px-2">
                             <v-list class="px-2 infobereich__attributes_relations_list" height="200" min-width="100%" max-width="100%">
-                              <v-list-item class="mb-7 pb-0 px-0" max-height="0" v-for="n in nodeRelations" :key="n">
+                              <v-list-item class="mb-7 pb-0 px-0" max-height="0" v-for="n in selectedNodeRelations" :key="n">
                                 <v-row no-gutters height="fit-content">
                                     <v-card class="pa-2 infobereich__attributes_relations_list_item" width="87%" height="70">
                                       Mit: {{ n.targetLabel }}<br>Art: {{ n.type }}
@@ -501,26 +508,53 @@
    * [------------------------- Reactive Variables ----------------------------]
    * [-------------------------------------------------------------------------]
    */
-  var nodeTitle = ref(""); // string
-  var nodeType = ref(-1); // int
-  var nodeDescription = ref(""); // string
-  var nodesInUnitSearch = ref([]); // array<string>
-  var nodesInUnitList = ref([]); // array<string>
-  var nodeSearchedFor = ref(""); // string
-  var nodeRelations = ref([]); // array<{ id: string, type: string, targetLabel: string, sourceID: string, targetID: string }>
-  var highestDefaultCount = ref("0"); // string
-  var infoCardDisabled = ref(true); // boolean
-  var modulesNames = ref(["Screenshot", "Group", "View", "Exp/Imp", "Filter", "Timemodel"]); // array<string>
-  var aktiveModuleName = ref("Screenshot"); // string
+  // +++ Generally +++
+  var allModelsInGraph = ref([]) // array<object>
+
+  // +++ SelectedNode +++
+  var selectedNodeName = ref(""); // string
+  var selectedNodeType = ref(-1); // int
+  var selectedNodeDescription = ref(""); // string
+  var selectedNodeRelations = ref([]); // array<{ id: string, type: string, targetLabel: string, sourceID: string, targetID: string }>
+  var selectedNodeNewModelName = ref("") // string
+  var selectedNodeNewModel = ref(null) // null
+  var selectedNodeModelName = ref("Noch kein Model hinzugefügt") // string
+
+  /** > > > > > > Left < < < < < < **/
+  // ----Component----> Glossar
+  // ----Component----> Help
+  // ----Component----> Modules
+  var graphModuleNames = ref(["Screenshot", "Group", "View", "Exp/Imp", "Filter", "Timemodel"]); // array<string>
+  var graphAktiveModuleName = ref("Screenshot"); // string
+  // ----> Screenshot-Tool (Graph-Editor)
   var imageFileName = ref(""); // string
-  var processingSteps = ref([]); // array<{ type: string, step: string }>
+  
+  /** > > > > > > Middle < < < < < < **/
+  // ----Component----> Harris-Matrices
+  // -Subcomponent-> Save Harris-Matrix
+  // ----Component----> Switch processing steps
+  var allProcessingSteps = ref([]); // array<{ type: string, step: string }>
   var currentProcessingStep = ref(0); // int
   var processStepBackButtonDisabled = ref(true) // boolean
   var processStepForwardButtonDisabled = ref(true) // boolean
-  var createAddModelDialog = ref(false) // boolean
-  var modelTitle = ref("") // string
-  var model = ref(null) // null
+  // ----Component----> Units
+  // -Subcomponent-> Unit Create (Graph-Editor)
+  var highestIndexOfDefaultNode = ref("0"); // string
+  // -Subcomponent-> Unit Search (Graph-Editor)
+  var unitSearchInput = ref(""); // string
+  var unitSearchDopDownMenueContent = ref([]); // array<string>
+  // -Subcomponent-> Unit List (3D-Editor)
+  var unitListContent = ref([]); // array<string>
+  // ----Component----> Editoren
+
+  /** > > > > > > Right < < < < < < **/
+  // ----Component----> Modus wechseln
   var currentMode = ref("graph") // string
+  // ----Component----> Placeholder
+  // ----Component----> Infobereich
+  var infoCardDisabled = ref(true); // boolean
+  var createAddModelDialog = ref(false) // boolean
+  
 
   /**
    * [-------------------------------------------------------------------------]
@@ -597,7 +631,7 @@
       saveProcessingStep("addNewNode");
       nodeDropped.value = false;
     }
-  } )
+  })
   
   /**                                 Watcher
    * /=========================================================================\
@@ -605,7 +639,7 @@
    * \=========================================================================/
    * 
    */
-  watch(aktiveModuleName, switchedToModule => {
+  watch(graphAktiveModuleName, switchedToModule => {
     document.getElementById("screenshot_module").style.zIndex = 0;
     document.getElementById("group_module").style.zIndex = 0;
     document.getElementById("view_module").style.zIndex = 0;
@@ -621,7 +655,7 @@
    * \=========================================================================/
    * 
    */
-  watch(nodeSearchedFor, userInput => {
+  watch(unitSearchInput, userInput => {
     const nodesInGraph = getNodes.value;
     const nodesInGraphLength = nodesInGraph.length;
     for( let a = 0; a < nodesInGraphLength; a++ ){
@@ -642,6 +676,7 @@
     }
   })
 
+  
 
 
 
@@ -660,13 +695,13 @@
     
     if( getData.length > 0 ){
       idOfCurrentStratiTool = getData[0]._id;
-      processingSteps.value = getData[0].graph.processingSteps;
+      allProcessingSteps.value = getData[0].graph.allProcessingSteps;
       currentProcessingStep.value = getData[0].graph.currentProcessingStep;
   
-      if( processingSteps.value.length > 0 ){
-        const parsedProcessingStep = JSON.parse(processingSteps.value[currentProcessingStep.value - 1].step);
+      if( allProcessingSteps.value.length > 0 ){
+        const parsedProcessingStep = JSON.parse(allProcessingSteps.value[currentProcessingStep.value - 1].step);
 
-        if( currentProcessingStep.value > 1 && (processingSteps.value[currentProcessingStep.value - 1].type === "addNewNode") ){
+        if( currentProcessingStep.value > 1 && (allProcessingSteps.value[currentProcessingStep.value - 1].type === "addNewNode") ){
           const lastNodeID = parsedProcessingStep.nodes[parsedProcessingStep.nodes.length - 1].id;
           fromObject(parsedProcessingStep);
           updateNode(lastNodeID, (node) => ({
@@ -680,7 +715,7 @@
         if( currentProcessingStep.value > 1 ){
           processStepBackButtonDisabled.value = false;
         }
-        if( currentProcessingStep.value < processingSteps.value.length ){
+        if( currentProcessingStep.value < allProcessingSteps.value.length ){
           processStepForwardButtonDisabled.value = false;
         }
         
@@ -690,8 +725,8 @@
           if( nodesInGraph[a].data.selected === true ){
             fillInfoCard(nodesInGraph[a]);
           }
-          nodesInUnitSearch.value.push(nodesInGraph[a].data.label);
-          nodesInUnitList.value.push({ id: nodesInGraph[a].id, label: nodesInGraph[a].data.label });
+          unitSearchDopDownMenueContent.value.push(nodesInGraph[a].data.label);
+          unitListContent.value.push({ id: nodesInGraph[a].id, label: nodesInGraph[a].data.label });
         }
       }
     } else {
@@ -962,25 +997,25 @@
   onNodesChange((changes) => {
     if( Object.hasOwn( changes[0], 'item' ) ){
       if( changes[0].type == "add" ){
-        nodesInUnitSearch.value.push(changes[0].item.data.label)
-        nodesInUnitList.value.push({ id: changes[0].item.id, label: changes[0].item.data.label });
+        unitSearchDopDownMenueContent.value.push(changes[0].item.data.label)
+        unitListContent.value.push({ id: changes[0].item.id, label: changes[0].item.data.label });
       }
     } else if( changes[0].type == "remove") {
-      const nodesInUnitListLength = nodesInUnitList.value.length
+      const nodesInUnitListLength = unitListContent.value.length
       for( let b = 0; b < nodesInUnitListLength; b++ ){
-        if( nodesInUnitList.value[b].id == changes[0].id ){
-          if( nodesInUnitSearch.value.includes(nodesInUnitList.value[b].label) ) {
-            let index = nodesInUnitSearch.value.indexOf(nodesInUnitList.value[b].label);
-            nodesInUnitSearch.value.splice(index, 1);
+        if( unitListContent.value[b].id == changes[0].id ){
+          if( unitSearchDopDownMenueContent.value.includes(unitListContent.value[b].label) ) {
+            let index = unitSearchDopDownMenueContent.value.indexOf(unitListContent.value[b].label);
+            unitSearchDopDownMenueContent.value.splice(index, 1);
           }
-          nodesInUnitList.value.splice(b, 1)
+          unitListContent.value.splice(b, 1)
           break;
         }
       }
 
       const nodesInGraphLength = getNodes.value.length
       if( nodesInGraphLength == 0 ){
-        highestDefaultCount.value = '0'
+        highestIndexOfDefaultNode.value = '0'
       }
     }
   })
@@ -1094,12 +1129,12 @@
       const highestNumberAsString = highestNumber.toString();
       
       if( highestNumberAsString !== -Infinity ){
-        highestDefaultCount.value = highestNumberAsString;
+        highestIndexOfDefaultNode.value = highestNumberAsString;
       } else {
-        highestDefaultCount.value = "0";
+        highestIndexOfDefaultNode.value = "0";
       }
     } else {
-      highestDefaultCount.value = "0"
+      highestIndexOfDefaultNode.value = "0"
     }
   }
 
@@ -1157,22 +1192,29 @@
     infoCardDisabled.value = false
     document.getElementById("infoCard").style.opacity = "1";
     
-    // Fill the fields of the infocard with ...
-    // ... the title, ... 
-    nodeTitle.value = node.data.label
-    // ... description, ...
-    nodeDescription.value = node.data.description
-    // ... type ... 
+    // node title
+    selectedNodeName.value = node.data.label
+    // node description
+    selectedNodeDescription.value = node.data.description
+    // node type
     if( node.type == "deposit" ) {
-      nodeType.value = 0;
+      selectedNodeType.value = 0;
     } else {
-      nodeType.value = 1;
+      selectedNodeType.value = 1;
     }
+    // node model
+    const modelsInGraphLength = allModelsInGraph.value.length
+    for( let a = 0; a < modelsInGraphLength; a++){
+      if( allModelsInGraph.value[a].nodeID == node.id ){
+        selectedNodeModelName.value = allModelsInGraph.value[a].title;
+      }
+    }
+
     // ... and relations of the node.
     for( const relation of node.data.relations ) {
       const targetNode = getNodes.value.find( obj => { return obj.id == relation.id } )
       if( relation.id == targetNode.id ) {
-        nodeRelations.value.push( { 
+        selectedNodeRelations.value.push( { 
           id: relation.edgeID,
           type: relation.relationType, 
           targetLabel: targetNode.data.label,
@@ -1196,19 +1238,20 @@
    */
   function clearInfoCard() {
     selectedNodeID = "";
-    nodeSearchedFor.value = "";
-    console.log("Test at Clear")
+    unitSearchInput.value = "";
     infoCardDisabled.value = true
     document.getElementById("infoCard").style.opacity = "0.5";
 
     // node title
-    nodeTitle.value = "";
+    selectedNodeName.value = "";
     // node description
-    nodeDescription.value = "";
+    selectedNodeDescription.value = "";
     // node type
-    nodeType.value = -1;
+    selectedNodeType.value = -1;
     // node relations
-    nodeRelations.value = [];
+    selectedNodeRelations.value = [];
+    // node model
+    selectedNodeModelName.value = ""
   }
 
 
@@ -1225,20 +1268,20 @@
    */
   function saveProcessingStep( changeType ) {
     if( changeType == "onSave" ) {
-      processingSteps.value.push( { type: changeType, step: JSON.stringify(toObject()) } );
+      allProcessingSteps.value.push( { type: changeType, step: JSON.stringify(toObject()) } );
       currentProcessingStep.value = currentProcessingStep.value + 1;
     } else {
       // Wenn der aktuell ausgewählte Bearbeitungsschritt nicht der neuste ist, lösche alle die danach kamen und speicher den neuen und deaktiviere den Vor-Button
-      if( currentProcessingStep.value != processingSteps.value.length && !alreadyCut ) {
+      if( currentProcessingStep.value != allProcessingSteps.value.length && !alreadyCut ) {
         alreadyCut = true;
-        processingSteps.value = processingSteps.value.slice( 0, currentProcessingStep.value )
-        processingSteps.value.push( { type: changeType, step: JSON.stringify(toObject()) } );
+        allProcessingSteps.value = allProcessingSteps.value.slice( 0, currentProcessingStep.value )
+        allProcessingSteps.value.push( { type: changeType, step: JSON.stringify(toObject()) } );
         currentProcessingStep.value = currentProcessingStep.value + 1
       } 
       // Sonst speicher den neuen Bearbeitungsschritt und zähle den aktuellen Bearbeitungsschritt eins hoch
       else {
         alreadyCut = false
-        processingSteps.value.push( { type: changeType, step: JSON.stringify(toObject()) } );
+        allProcessingSteps.value.push( { type: changeType, step: JSON.stringify(toObject()) } );
         currentProcessingStep.value = currentProcessingStep.value + 1;
       }
     }
@@ -1263,13 +1306,13 @@
    */
   function goProcessingStepBack() {
     clearInfoCard()
-    nodesInUnitSearch.value = [];
-    nodesInUnitList.value = []
+    unitSearchDopDownMenueContent.value = [];
+    unitListContent.value = []
 
     currentProcessingStep.value = currentProcessingStep.value - 1
-    const parsedProcessingStep = JSON.parse( processingSteps.value[currentProcessingStep.value - 1].step )
+    const parsedProcessingStep = JSON.parse( allProcessingSteps.value[currentProcessingStep.value - 1].step )
     
-    if( ( currentProcessingStep.value > 1 ) && ( processingSteps.value[ currentProcessingStep.value - 1 ].type == "addNewNode" ) ) {
+    if( ( currentProcessingStep.value > 1 ) && ( allProcessingSteps.value[ currentProcessingStep.value - 1 ].type == "addNewNode" ) ) {
       const lastNodeID = parsedProcessingStep.nodes[parsedProcessingStep.nodes.length - 1].id
       fromObject(parsedProcessingStep)
       
@@ -1290,8 +1333,8 @@
         fillInfoCard(node)
       }
 
-      nodesInUnitSearch.value.push(node.data.label)
-      nodesInUnitList.value.push({ id: node.id, label: node.data.label });
+      unitSearchDopDownMenueContent.value.push(node.data.label)
+      unitListContent.value.push({ id: node.id, label: node.data.label });
     }
 
     createNewIndexForNextNode()
@@ -1311,16 +1354,16 @@
    */
   function goProcessingStepForward() {
     clearInfoCard()
-    nodesInUnitSearch.value = [];
-    nodesInUnitList.value = [];
+    unitSearchDopDownMenueContent.value = [];
+    unitListContent.value = [];
 
     // Vermerke den neuen aktuellen Bearbeitungsschritt
     currentProcessingStep.value = currentProcessingStep.value + 1
     // Lade den aktuell ausgewählten Bearbeitungsstand
-    console.log("Go forward and load: " + processingSteps.value[currentProcessingStep.value - 1].type)
-    const parsedProcessingStep = JSON.parse( processingSteps.value[currentProcessingStep.value - 1].step )
+    console.log("Go forward and load: " + allProcessingSteps.value[currentProcessingStep.value - 1].type)
+    const parsedProcessingStep = JSON.parse( allProcessingSteps.value[currentProcessingStep.value - 1].step )
     
-    if( processingSteps.value[ currentProcessingStep.value - 1 ].type == "addNewNode" ) {
+    if( allProcessingSteps.value[ currentProcessingStep.value - 1 ].type == "addNewNode" ) {
       const lastNodeID = parsedProcessingStep.nodes[ parsedProcessingStep.nodes.length - 1 ].id
       fromObject(parsedProcessingStep)
       
@@ -1334,7 +1377,7 @@
     // Blende den Zurück-Button ein
     processStepBackButtonDisabled.value = false
     // Blende den Vor-Button aus, wenn der aktuelle Bearbeitungsschritt der Letzte ist
-    if( currentProcessingStep.value == processingSteps.value.length ) {
+    if( currentProcessingStep.value == allProcessingSteps.value.length ) {
       processStepForwardButtonDisabled.value = true
     }
 
@@ -1345,8 +1388,8 @@
       }
 
       // Fill drop down menu of unit search
-      nodesInUnitSearch.value.push(node.data.label)
-      nodesInUnitList.value.push({ id: node.id, label: node.data.label });
+      unitSearchDopDownMenueContent.value.push(node.data.label)
+      unitListContent.value.push({ id: node.id, label: node.data.label });
     }
 
     createNewIndexForNextNode()
@@ -1501,12 +1544,12 @@
     const selectedNodeRelations = nodesInGraph[ nodesInGraph.map( (x) => {return x.id} ).indexOf( selectedNodeID ) ].data.relations;
     const selectedNodeRelationsLength = selectedNodeRelations.length;
     const nodesInGraphLength = nodesInGraph.length;
-    nodeRelations.value = [];
+    selectedNodeRelations.value = [];
     
     for( let a = 0; a < selectedNodeRelationsLength; a++ ){
       nodes: for( let b = 0; b < nodesInGraphLength; b++ ){
         if( selectedNodeRelations[a].id == nodesInGraph[b].id ) {
-          nodeRelations.value.push({
+          selectedNodeRelations.value.push({
             id: selectedNodeRelations[a].edgeID,
             type: selectedNodeRelations[a].relationType,
             targetLabel: nodesInGraph[b].data.label,
@@ -1814,9 +1857,9 @@
         } )
       }
     }
-    nodeRelations.value.forEach( ( relation, idx ) => {
+    selectedNodeRelations.value.forEach( ( relation, idx ) => {
       if( relation.id == edgeID ) {
-        nodeRelations.value.splice( idx, 1 );
+        selectedNodeRelations.value.splice( idx, 1 );
       }
     } )
     removeEdges( edgeID )
@@ -1842,21 +1885,21 @@
       for( const[_, node] of Object.entries(getNodes.value) ) {
         if( node.data.selected ) {
           // Update Unit-Search textfield (Graph-Editor)
-          if( nodeSearchedFor.value == node.data.label ) {
-            nodeSearchedFor.value = input
+          if( unitSearchInput.value == node.data.label ) {
+            unitSearchInput.value = input
           }
           
           // Update Unit-Search Drop-Down (Graph-Editor)
-          const index = nodesInUnitSearch.value.indexOf(node.data.label);
-          nodesInUnitSearch.value.splice(index, 1);
-          nodesInUnitSearch.value.push(input)
+          const index = unitSearchDopDownMenueContent.value.indexOf(node.data.label);
+          unitSearchDopDownMenueContent.value.splice(index, 1);
+          unitSearchDopDownMenueContent.value.push(input);
 
           // Update Unit-list (3D-Editor)
-          const nodesInUnitListLength = nodesInUnitList.value.length
+          const nodesInUnitListLength = unitListContent.value.length
           console.log(nodesInUnitListLength)
           for( let b = 0; b < nodesInUnitListLength; b++ ){
-            if( nodesInUnitList.value[b].id == node.id ){
-              nodesInUnitList.value[b].label = input;
+            if( unitListContent.value[b].id == node.id ){
+              unitListContent.value[b].label = input;
             }
           }
           
@@ -1979,6 +2022,7 @@
 
 
   
+  
 
   /**
    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -2037,6 +2081,7 @@
     }
   }
 
+  
 
 
   
@@ -2047,11 +2092,11 @@
    * 
    */
   function changeModuleLeft() {
-    const index = modulesNames.value.indexOf( aktiveModuleName.value );
+    const index = graphModuleNames.value.indexOf( graphAktiveModuleName.value );
     if( index == 0 ) {
-      aktiveModuleName.value = modulesNames.value[modulesNames.value.length - 1]
+      graphAktiveModuleName.value = graphModuleNames.value[graphModuleNames.value.length - 1]
     } else {
-      aktiveModuleName.value = modulesNames.value[index - 1]
+      graphAktiveModuleName.value = graphModuleNames.value[index - 1]
     }
   }
   
@@ -2066,11 +2111,11 @@
    * 
    */
   function changeModuelRight() {
-    const index = modulesNames.value.indexOf( aktiveModuleName.value );
-    if( index == (modulesNames.value.length - 1) ) {
-      aktiveModuleName.value = modulesNames.value[0]
+    const index = graphModuleNames.value.indexOf( graphAktiveModuleName.value );
+    if( index == (graphModuleNames.value.length - 1) ) {
+      graphAktiveModuleName.value = graphModuleNames.value[0]
     } else {
-      aktiveModuleName.value = modulesNames.value[index + 1]
+      graphAktiveModuleName.value = graphModuleNames.value[index + 1]
     }
   }
 
@@ -2085,9 +2130,9 @@
    */
   async function saveGraph() {
     if( idOfCurrentStratiTool != "" ) {
-      await fromOfflineDB.updateIndexedDBObject({ _id: idOfCurrentStratiTool, graph: { processingSteps: JSON.parse(JSON.stringify(processingSteps.value)), currentProcessingStep: currentProcessingStep.value } }, "StratiToolDB", "stratiTool")
+      await fromOfflineDB.updateIndexedDBObject({ _id: idOfCurrentStratiTool, graph: { allProcessingSteps: JSON.parse(JSON.stringify(allProcessingSteps.value)), currentProcessingStep: currentProcessingStep.value } }, "StratiToolDB", "stratiTool")
     } else {
-      await fromOfflineDB.addObject({ _id: String(Date.now()), graph: { processingSteps: JSON.parse(JSON.stringify(processingSteps.value)), currentProcessingStep: currentProcessingStep.value } }, "StratiToolDB", "stratiTool")
+      await fromOfflineDB.addObject({ _id: String(Date.now()), graph: { allProcessingSteps: JSON.parse(JSON.stringify(allProcessingSteps.value)), currentProcessingStep: currentProcessingStep.value } }, "StratiToolDB", "stratiTool")
     }
   }
 
@@ -2128,7 +2173,6 @@
         fillInfoCard(nodesInGraph[a])
         
         changeUnitsListsButtonStyle( nodesInGraph[a].id, 'selected' )
-        console.log("Test at Fill")
         nodesInGraph[a].data.nodeStyle = "clicked_" + nodesInGraph[a].type;
         nodesInGraph[a].data.selected = true;
       } else {
@@ -2191,20 +2235,25 @@
     // new model data
     const newModel = {
       _id: newModelID,
-      title: modelTitle.value,
-      model: await modelToArrayBuffer(toRaw(model.value)),
+      title: selectedNodeNewModelName.value,
+      model: await modelToArrayBuffer(toRaw(selectedNodeNewModel.value)),
       color: '#ffffff',
       opacity: 1,
       coordinates: null,
       scale: null,
       rotation: null,
-      loaderType: model.value.name.split('.')[1]
+      loaderType: selectedNodeNewModel.value.name.split('.')[1],
+      nodeID: selectedNodeID,
     }
 
     console.log(newModel)
 
     // hide model creation dialog
     createAddModelDialog.value = false;
+
+    // add model to local data
+    allModelsInGraph.value.push(newModel)
+    selectedNodeModelName.value = newModel.title
 
     // add model to IndexedDB
   }
