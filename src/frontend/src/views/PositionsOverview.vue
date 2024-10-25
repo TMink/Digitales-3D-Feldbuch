@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.10.2024 17:34:56
+ * Last Modified: 25.10.2024 16:42:02
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -58,9 +58,21 @@
           :sort-by="[{ key: 'positionNumber', order: 'desc' }]">
 
           <template v-slot:item="{ item, index }">
+
+            <!--###################### POSITION ROW ######################-->
             <tr v-on:click="handleRowClick(item._id)"
                 @mouseenter="setHoveredRow(index, true)"
-                @mouseleave="setHoveredRow(index, false)">
+                @mouseleave="setHoveredRow(index, false)"
+                v-if="item.posType == 'position'">
+
+              <td>
+                <v-btn color="secondary" icon variant="text">
+                  <v-tooltip activator="parent" location="bottom">
+                    {{ $t('Fund/Befund') }}
+                  </v-tooltip>
+                  <v-icon>mdi-book-open-variant-outline</v-icon>
+                </v-btn>
+              </td>
 
               <!-- POSITION NUMBER -->
               <td :style="utils.getRowStyle(index, hoveredRow)">
@@ -134,10 +146,96 @@
                 </v-btn>
               </td>
             </tr>
+
+            <!--###################### IMAGE ROW ######################-->
+            <tr v-on:click="handleRowClick(item._id)"
+                @mouseenter="setHoveredRow(index, true)"
+                @mouseleave="setHoveredRow(index, false)"
+                v-if="item.posType == 'image'">
+
+                <td>
+                  <v-btn color="secondary" icon variant="text">
+                    <v-tooltip activator="parent" location="bottom">
+                      {{ $t('image') }}
+                    </v-tooltip>
+                    <v-icon>mdi-image-outline</v-icon>
+                  </v-btn>
+                </td>
+
+              <!-- POSITION NUMBER -->
+              <td :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title class="pl-4">
+                  {{ item.positionNumber }}
+                </v-list-item-title>
+              </td>
+
+              <td :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title 
+                style="color:dimgrey;">
+                -
+              </v-list-item-title>
+            </td>
+            
+            <!-- PHOTOGRAPHER -->
+              <td :style="utils.getRowStyle(index, hoveredRow)" style="padding: 0px !important">
+                <v-img height="80px" width="100px"
+                  cover rounded
+                  :src="item.image">
+                  <template v-slot:placeholder>
+                  <v-card variant="tonal" 
+                    class="d-flex align-center justify-center fill-height">
+                    <v-icon size="x-large" icon="mdi-image-area"></v-icon>
+                  </v-card> 
+                </template>
+                </v-img>
+              </td>
+
+              <!-- DATE -->
+              <td :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title>
+                  {{ item.date }}
+                </v-list-item-title>
+              </td>
+
+              <!-- SYNC STATUS -->
+              <td>
+                <v-btn icon variant="text" v-if="item.lastSync > 0"
+                  class="my-1">
+                    <v-tooltip 
+                      activator="parent"
+                      location="bottom">
+                      {{ this.$t('lastSync') + new Date(item.lastSync).toLocaleString() }}
+                    </v-tooltip>
+                    <v-icon>mdi-cloud-check</v-icon>
+                </v-btn>
+                <v-btn icon variant="text" class="my-1" v-else>
+                  <v-tooltip 
+                    activator="parent"
+                    location="bottom">
+                      {{ $t('onlyLocal') }}
+                  </v-tooltip>
+                  <v-icon>mdi-cloud-off-outline</v-icon>
+                </v-btn>
+
+                <!-- BODEON CONFORM -->
+                <v-btn icon color="success" variant="text" v-if="isBodeonValid(item)">
+                  <v-tooltip activator="parent" location="bottom">
+                     {{ $t('fulfillsBodeonRequirements') }}
+                  </v-tooltip>
+                  <v-icon>mdi-check-circle</v-icon>
+                </v-btn>
+                <v-btn color="primary" icon variant="text" v-else>
+                  <v-tooltip activator="parent" location="bottom">
+                     {{ $t('mandatoryFieldNotFilled') }}
+                  </v-tooltip>
+                  <v-icon>mdi-alert-circle</v-icon>
+                </v-btn>
+              </td>
+            </tr>
           </template>
         </v-data-table-virtual>
 
-        <!-- POSITIONS LIST COMPLETE -->
+        <!--###################### POSITIONS LIST COMPLETE ######################-->
         <v-data-table-virtual
           fixed-header
           v-show="showAllInfo"
@@ -149,7 +247,8 @@
           <template v-slot:item="{ item, index }">
             <tr v-on:click="handleRowClick(item._id)" 
               @mouseenter="setHoveredRow(index, true)"
-              @mouseleave="setHoveredRow(index, false)">
+              @mouseleave="setHoveredRow(index, false)"
+              v-if="item.posType == 'position'">
 
               <!-- PLACE NUMBER -->
               <td :style="utils.getRowStyle(index, hoveredRow)">
@@ -171,6 +270,12 @@
 
               <!-- TITLE -->
               <td class="py-2" :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title
+                  v-if="item.posType == 'image'"
+                  style="min-width:200px" 
+                  class="text-wrap">
+                  {{ item.title }}
+                </v-list-item-title>
                 <v-list-item-title
                   v-if="item.title.length > 0"
                   style="min-width:200px" 
@@ -317,6 +422,68 @@
               </td>
               <v-divider></v-divider>
             </tr>
+
+            <tr v-on:click="handleRowClick(item._id)" 
+              @mouseenter="setHoveredRow(index, true)"
+              @mouseleave="setHoveredRow(index, false)"
+              v-if="item.posType == 'image'">
+
+              <!-- POS NUMBER -->
+              <td :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title class="pl-4">
+                  {{ item.positionNumber }}
+                </v-list-item-title>
+              </td>
+
+              <!-- COMMENT -->
+              <td :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title class="text-wrap" style="max-width:200px">
+                  {{ item.comment }}
+                </v-list-item-title>
+                <v-list-item-title 
+                  v-if="item.comment == ''" style="color:dimgrey;">
+                  -
+                </v-list-item-title>
+              </td>
+
+              <!-- PHOTOGRAPHER -->
+              <td :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title
+                  v-if="item.editor != ''">
+                  {{ item.editor }}
+                </v-list-item-title>
+                <v-list-item-title 
+                  v-if="item.editor == ''" style="color:dimgrey;">
+                  -
+                </v-list-item-title>
+              </td>
+
+              <!-- DATE -->
+              <td :style="utils.getRowStyle(index, hoveredRow)">
+                <v-list-item-title>
+                  {{ item.date}}
+                </v-list-item-title>
+              </td>
+
+              <!-- SYNC STATUS -->
+              <td>
+                <v-btn icon variant="text" v-if="item.lastSync > 0" class="my-1">
+                  <v-tooltip activator="parent" location="bottom">
+                    {{ this.$t('lastSync') + new Date(item.lastSync).toLocaleString() }}
+                  </v-tooltip>
+                  <v-icon>mdi-cloud-check</v-icon>
+                </v-btn>
+                <v-btn icon variant="text" v-else class="my-1">
+                  <v-tooltip 
+                    activator="parent"
+                    location="bottom">
+                      {{ $t('onlyLocal') }}
+                  </v-tooltip>
+                  <v-icon>mdi-cloud-off-outline</v-icon>
+                </v-btn>
+              </td>
+              <v-divider></v-divider>
+            </tr>
           </template>
         </v-data-table-virtual>
       </v-card>
@@ -325,31 +492,56 @@
 
     <!--------------- ADD BUTTON + DUPLICATE SWITCH --------------->
     <v-row class="align-center">
-      <v-spacer></v-spacer>
-      <AddButton @click="addPosition()"/>
+      <v-col class="text-end">
+        <v-btn-toggle variant="outlined" divided 
+        v-model="addToggle">
+          <v-btn class="text-center" icon="mdi-book-open-outline">
+            <v-icon></v-icon>
+            <v-tooltip activator="parent" location="bottom">
+              {{ $t('find') }}
+            </v-tooltip>
+          </v-btn>
+          <v-btn icon="mdi-image">
+            <v-icon></v-icon>
+            <v-tooltip activator="parent" location="bottom">
+              {{ $t('image') }}
+            </v-tooltip>
+          </v-btn>
+          <v-btn icon="mdi-file-question" disabled></v-btn>
+          <v-btn icon="mdi-file-question" disabled></v-btn>
+        </v-btn-toggle>
 
-      <!-- DUPLICATE SWITCH -->
-      <v-switch class="pl-5" hide-details 
-        v-model="toggleDuplicate" color="secondary">
-        <template v-slot:prepend>
-          <v-icon color="warning">mdi-content-duplicate</v-icon>
-        </template>
-      </v-switch>
+        <AddButton class="text-end" @click="addObject()"/>
+      </v-col>
 
-      <!-- Duplicate Snackbar - stays activated as long as switch value is true -->
-      <v-snackbar color="warning" timeout="-1" 
-        v-model="toggleDuplicate" location="bottom">
-        <v-row no-gutters>
-          <v-icon start>mdi-content-duplicate</v-icon>
-          <v-col>
-            {{ $t('duplicationMode') }}
-            <v-card-subtitle class="px-0">
-              {{ $t('duplicationDescription', {msg: $t('position')}) }}
-            </v-card-subtitle>
-          </v-col>
-        </v-row>
-      </v-snackbar>
-      <v-spacer></v-spacer>
+      <v-divider vertical class="my-2"/>
+      
+      <v-col>
+        <v-card-subtitle>
+          {{ $t('duplicationMode') }}
+        </v-card-subtitle>
+        <!-- DUPLICATE SWITCH -->
+        <v-switch class="pl-5" hide-details 
+          v-model="toggleDuplicate" color="secondary">
+          <template v-slot:prepend>
+            <v-icon color="warning">mdi-content-duplicate</v-icon>
+          </template>
+        </v-switch>
+
+        <!-- Duplicate Snackbar - stays activated as long as switch value is true -->
+        <v-snackbar color="warning" timeout="-1" 
+          v-model="toggleDuplicate" location="bottom">
+          <v-row no-gutters>
+            <v-icon start>mdi-content-duplicate</v-icon>
+            <v-col>
+              {{ $t('duplicationModeActive') }}
+              <v-card-subtitle class="px-0">
+                {{ $t('duplicationDescription', {msg: $t('position')}) }}
+              </v-card-subtitle>
+            </v-col>
+          </v-row>
+        </v-snackbar>
+      </v-col>
     </v-row>
   </div>
 </template>
@@ -394,6 +586,7 @@ export default {
       showAllInfo: false,
       hoveredRow: -1,
       headers: [
+        { title: '', sortable: false, key: 'posType', width: '50px' },
         {
           title: this.$tc('posNumber', 2),
           align: 'start',
@@ -438,6 +631,7 @@ export default {
         { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status'}
       ],
       toggleDuplicate: false,
+      addToggle: 0,
     };
   },
 
@@ -468,10 +662,16 @@ export default {
         .catch(err => console.error(err));
 
       if (this.positions.length > 0) {
-        for (var i=0; i<this.positions.length; i++) {
+        for (let i=0; i<this.positions.length; i++) {
+          if (this.positions[i].posType == 'image') {
+            if (this.positions[i].image != '') {
+              this.positions[i].image = await utils.textureToBase64([this.positions[i].image]);
+            }
+            continue;
+          }
+          
           if (this.positions[i].coordinates != '') {
             var coordinates = await fromOfflineDB.getObject(this.positions[i].coordinates, 'Coordinates', 'coordinates');
-              
             this.positions[i].coordsCount = coordinates.coords.length;
           }
         }
@@ -602,6 +802,20 @@ export default {
       this.$router.push({ name: 'PositionCreation', params: { positionID: positionID } })
     },
 
+    addObject() {
+      if (this.addToggle == 0) {
+        this.addPosition();
+      } else if (this.addToggle == 1) {
+        this.addImage();
+      } else if (this.addToggle == 2) {
+        console.log("TODO: add a third object")
+      } else if (this.addToggle == 3) {
+        console.log("TODO: add a fourth object")
+      } else {
+
+      }
+    },
+
     /**
      * Adds a new position with default data to the system
      */
@@ -619,6 +833,8 @@ export default {
         _id: newPositionID,
         placeID: curPlaceID,
         positionNumber: '',
+        posType: 'position',
+
         subNumber: '',
         coordinates: '',
         count: 0,
@@ -661,6 +877,53 @@ export default {
       this.updatePositions();
     },
 
+    async addImage() {
+      var curPlaceID = this.$generalStore.getCurrentObject('place');
+      var curPlace = await fromOfflineDB
+        .getObject(curPlaceID, "Places", "places")
+        .catch(err => console.error(err));
+      var newPositionID = String(Date.now());
+
+      curPlace.positions.push(newPositionID);
+      curPlace.lastChanged = Date.now();
+
+      const newImage = {
+        _id: newPositionID,
+        placeID: curPlaceID,
+        positionNumber: '',
+        posType: 'image',
+
+        editor: '',
+        date: new Date().toLocaleDateString("de-DE"),
+        comment: '',
+        
+        image: '',
+        modulePreset: {
+          coordinates: false,
+          dating: false,
+          comment: false,
+          objectDescribers: false,
+        },
+        lastChanged: Date.now(),
+        lastSync: 0
+      };
+
+      if (this.positions.length == 0) {
+        newImage.positionNumber = 1;
+      } else {
+        var lastPosNumber = await fromOfflineDB.getLastAddedPosition()
+          .catch(err => console.error(err));
+        newImage.positionNumber = lastPosNumber + 1;
+      }
+      
+      await fromOfflineDB.updateObject(curPlace, 'Places', 'places')
+        .catch(err => console.error(err));
+      await fromOfflineDB.addObject(newImage, "Positions", "positions")
+        .catch(err => console.error(err));
+    
+      this.updatePositions();
+    },
+
     /**
      * Set the toggleAllInfo switch state depending on VueCookies
      */
@@ -696,7 +959,15 @@ export default {
      * @param position 
      */
     isBodeonValid(position) {
-      if (position.title.length != 0 && position.dating != '') {
+      if (position.posType == 'position' 
+        && position.title.length != 0 
+        && position.dating != ''){
+          return true;
+      } else if (position.posType == 'image'
+        && position.editor != ''
+        && position.comment != ''
+        && position.date != ''
+      ) {
         return true;
       }
       return false;

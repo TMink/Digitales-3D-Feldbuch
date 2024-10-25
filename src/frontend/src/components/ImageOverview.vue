@@ -2,7 +2,7 @@
  * Created Date: 09.01.2024 11:33:59
  * Author: Julian Hardtung
  * 
- * Last Modified: 27.08.2024 12:30:03
+ * Last Modified: 25.10.2024 16:30:26
  * Modified By: Julian Hardtung
  * 
  * Description: lists all images of a place
@@ -23,25 +23,36 @@
   <v-row no-gutters class="align-center mx-n2">
     <v-col xl="3" md="4" sm="6" v-for="(item, i) in images" :key="item">
       <v-card class="pa-2 my-2 ma-1">
-        <v-card-title> Nr. {{ item.imageNumber }} </v-card-title>
-        <v-card-subtitle> {{ item.title }} </v-card-subtitle>
+        <v-row no-gutters class="align-center">
+          <v-card-title> Nr. {{ item.positionNumber }} </v-card-title>
+          <v-spacer/>
+          <v-card-subtitle class="justify-end"> {{ item.date }} </v-card-subtitle>
+        </v-row>
+        <v-chip class="ml-2" color="secondary" density="compact"> {{ item.editor || '-' }} </v-chip>
+        <v-card-subtitle class="pt-2"> {{ item.comment || '-' }} </v-card-subtitle>
 
         <v-img 
-          cover height="200" 
+          cover height="200px" 
           class="ma-2 my-4" 
           :src="item.image" 
           style="cursor: zoom-in" 
           v-on:click="openImage(i)">
+          <template v-slot:placeholder>
+            <v-card variant="tonal" 
+              class="d-flex align-center justify-center fill-height">
+              <v-icon size="x-large" icon="mdi-image-area"></v-icon>
+            </v-card> 
+          </template>
         </v-img>
 
         <v-row no-gutters>
           <v-spacer />
-          <v-btn color="primary" class="mr-2" v-on:click="editImage(item)">
-            <v-icon>mdi-pencil</v-icon>
-          </v-btn>
-
-          <v-btn color="error" v-on:click="deleteImage(item)">
-            <v-icon>mdi-delete</v-icon>
+          <v-btn v-bind="props" class="mr-2" variant="outlined" 
+            @click="routeToImage(item)">
+            {{ $t('openPhrase', {msg: $t('image')})}}
+            <v-icon class="pl-2">
+              mdi-open-in-new
+            </v-icon>
           </v-btn>
         </v-row>
       </v-card>
@@ -57,6 +68,12 @@
         v-for="(item, i) in images" 
         :key="i" 
         :src="item.image">
+        <template v-slot:placeholder>
+            <v-card color="surface"
+              class="d-flex align-center justify-center fill-height">
+              <v-icon size="x-large" icon="mdi-image-area"></v-icon>
+            </v-card> 
+          </template>
       </v-carousel-item>
     </v-carousel>
   </v-dialog>
@@ -104,18 +121,15 @@ export default {
       var allPositions = await fromOfflineDB
         .getAllObjectsFromArray(curPlace.positions, 'Positions', 'positions')
         .catch(err => console.error(err));
-      var allImages = [];
 
-      allPositions.forEach(curPos => {
-        if (curPos.images.length > 0) {
-          curPos.images.forEach(imagesID => {
-            allImages.push(imagesID);
-          });
+      for (let i=0; i<allPositions.length; i++) {
+        if (allPositions[i].posType == 'image') {
+          if (allPositions[i].image != '') {
+            allPositions[i].image = await utils.textureToBase64([allPositions[i].image]);
+          }
+          this.images.push(allPositions[i]);
         }
-      });
-      this.images = await fromOfflineDB
-        .getAllObjectsFromArray(allImages, 'Images', 'images')
-        .catch(err => console.error(err));
+      }
     },
 
     /**
@@ -125,6 +139,10 @@ export default {
     editImage(image) {
       this.$generalStore.setCurrentObject(image.positionID, 'position');
       this.$router.push({ name: 'PositionCreation', params: { positionID: image.positionID } });
+    },
+
+    routeToImage(image) {
+       this.$router.push({ name: 'PositionCreation', params: { positionID: image._id } })
     },
 
     /**

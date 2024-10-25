@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 01.10.2024 15:17:26
+ * Last Modified: 25.10.2024 16:29:31
  * Modified By: Julian Hardtung
  * 
  * Description: file with reusable util functions
@@ -39,17 +39,18 @@ class UtilsClass {
       return;
     }
 
-    // if no queries are present, return all activities
+    // if no queries are present, return all objects
     if (queries.length === 0 || (queries.length === 1 && queries[0] === "")) {
       return objects;
     } else {
-      // filter activities by all query filters
-      // (activities have to fulfill every query filter)
-      return objects.filter((item) => {
+      // filter objects by all query filters
+      // (objects have to fulfill every query filter)
+      let filteredObjects =  objects.filter((item) => {
         return queries.every((query) => {
           return this.doesItemMatchQuery(item, query, objectType);
         });
       });
+      return filteredObjects;
     }
   }
 
@@ -80,11 +81,20 @@ class UtilsClass {
         || item.date.match(re)
       );
     } else if (objectType == 'position') {
-      return (
-        item.positionNumber.toString().match(re) 
-        || item.title.match(re) 
-        || item.date.match(re)
-      );
+      if (item.posType == 'position') {
+        return (
+          item.positionNumber.toString().match(re) 
+          || item.title.some(str => str.match(re)) 
+          || item.date.match(re)
+        );
+      } else if (item.posType == 'image') {
+        return (
+          item.positionNumber.toString().match(re) ||
+          item.editor.match(re) ||
+          item.comment.match(re) ||
+          item.date.match(re)
+        );
+      }
     }
   }
 
@@ -145,6 +155,25 @@ class UtilsClass {
       return true;
     }
   }
+
+  /**
+     * Change texture data to base64
+     * @param {*} rawData 
+     */
+    async textureToBase64(rawData) {
+      const output = await new Promise((resolve) => {
+
+        let reader = new FileReader();
+        let f = rawData[0];
+        reader.onload = e => {
+          const b64 = e.target.result
+          resolve(b64)
+        }
+        reader.readAsDataURL(f);
+
+      });
+      return output;
+    },
 }
 
 const utils = new UtilsClass();

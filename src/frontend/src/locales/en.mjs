@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 18.10.2024 10:04:23
+ * Last Modified: 25.10.2024 14:06:24
  * Modified By: Julian Hardtung
  * 
  * Description: english translations
@@ -64,6 +64,7 @@ export default {
   visibility: "Visibility",
   drawing: "Drawing | Drawings",
   editor: "Editor | Editors",
+  photographer: "Photographer",
   adressOf: "Adress Of",
   veryGood: "Very Good",
   good: "Good",
@@ -159,6 +160,7 @@ export default {
   photoList: "Image List (Places)",
   photoDirectory: "Photo Directory",
   findingSampleData: "Finding-/Sampledata",
+  open: "Open",
 
   // Phrases
   addMsg: "Add new {msg}",
@@ -201,7 +203,8 @@ export default {
   emptyFile: "The file doesn't contain any data",
   wrongFormat: "The data is in the wrong format.",
   syncSuccess: "Data upload successful",
-  duplicationMode: "Duplicationmode activated",
+  duplicationMode: "Duplicationmode",
+  duplicationModeActive: "Duplicationmode active",
   getBackup: "Getting your files",
   createBackup: "Collecting your files",
   forgotPassword: "Forgot password",
@@ -264,4 +267,5 @@ export default {
   placesCatalogExportDescr: "Select all activities whose places should be exported.",
   fulfillsBodeonRequirements: "Fulfills Bodeon-Requirements",
   mandatoryFieldNotFilled: "Mandatory data was not entered yet",
+  continueExport: "Continue export?",
 };

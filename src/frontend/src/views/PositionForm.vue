@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 18.10.2024 14:25:06
+ * Last Modified: 25.10.2024 16:37:45
  * Modified By: Julian Hardtung
  * 
  * Description: input page for positions data 
@@ -51,7 +51,7 @@
               :titleItemsFirstProp="titlesList"
               :materialItemsFirstProp="materialsList"
               :editorItemsFirstProp="editorsList"
-              @dataToPlaceForm="getEmitedData($event)"/>
+              @dataToPlaceForm="getEmittedData($event)"/>
           </v-window-item>
 
           <!-- TAB ITEM 'IMAGES' -->
@@ -255,10 +255,11 @@ export default {
 
   methods: {
     /**
-     * TODO
+     * Takes emitted Data from inputModules and assignes 
+     * them to the corresponding positionData
      * @param {*} data 
      */
-    getEmitedData(data) {
+    getEmittedData(data) {
       switch (data[0]) {
         /* Module: Coordinates */
         case 'right':
@@ -331,12 +332,18 @@ export default {
           this.position.modulePreset.objectDescribers = data[1];
           break;
 
+        /* Module: Image */
+        case 'image':
+          this.position.image = data[1];
+          break;
+
         default:
           console.log( 'Cant specify emitted data: ' + data[0] );
       }
 
       this.handlePositionChange();
     },
+    
     /**
      * Update reactive Vue.js place data
      */
@@ -376,7 +383,9 @@ export default {
       this.updateAutoFillList( 'datings', this.position.dating, this.datingsList );
       this.updateAutoFillList( 'titles', this.position.title, this.titlesList );
       this.updateAutoFillList( 'materials', this.position.material, this.materialsList );
-      this.updateAutoFillList( 'editors', this.position.editor, this.editorsList );
+      if (this.position.editor != '') {
+        this.updateAutoFillList( 'editors', this.position.editor, this.editorsList );
+      }
       
       this.$root.vtoast.show({ message: this.$t('saveSuccess')});
     },
@@ -442,6 +451,7 @@ export default {
         this.deletePosition();
       }
     },
+    
     /**
      * Opens the confirmation dialog for leaving the form
      */

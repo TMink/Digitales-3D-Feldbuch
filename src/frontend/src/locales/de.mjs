@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 18.10.2024 14:13:55
+ * Last Modified: 25.10.2024 14:06:14
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -64,6 +64,7 @@ export default {
   visibility: "Sichtbarkeit",
   drawing: "Zeichnung | Zeichnungen",
   editor: "Bearbeiter",
+  photographer: "Fotograf",
   adressOf: "Ansprache Von",
   veryGood: "Sehr gut",
   good: "Gut",
@@ -159,6 +160,7 @@ export default {
   photoList: "Fotoliste (Stellen)",
   photoDirectory: "Foto-Verzeichnis",
   findingSampleData: "Fund-/Probedaten",
+  open: "Öffnen",
 
   // Phrases
   addMsg: "Neue {msg} hinzufügen",
@@ -202,7 +204,8 @@ export default {
   emptyFile: "Die angegebene Datei enthält keine Daten.",
   wrongFormat: "Die Daten sind im falschen Format.",
   syncSuccess: "Hochladen der Daten erfolgreich",
-  duplicationMode: "Duplikationsmodus aktiviert",
+  duplicationMode: "Duplikationsmodus",
+  duplicationModeActive: "Duplikationsmodus aktiviert",
   getBackup: "Ihre Daten werden geladen",
   createBackup: "Ihre Daten werden gesammelt",
   forgotPassword: "Passwort vergessen",
@@ -267,4 +270,5 @@ export default {
   placesCatalogExportDescr: "Markiere alle Aktivitäten, dessen Stellen exportiert werden sollen.",
   fulfillsBodeonRequirements: "Erfüllt Bodeon-Anforderungen",
   mandatoryFieldNotFilled: "Pflichtfelder wurden noch nicht eingetragen",
+  continueExport: "Weiter exportieren?",
 };
