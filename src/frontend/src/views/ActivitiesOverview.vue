@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 03.10.2024 17:16:17
+ * Last Modified: 25.10.2024 15:16:00
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -399,7 +399,7 @@ export default {
 
       const newActivity = {
         activityNumber: '',
-        branchOffice: 'Platzhalter',
+        branchOffice: 'XX',
         year: new Date().getFullYear(),
         number: '0001',
         places: [],
