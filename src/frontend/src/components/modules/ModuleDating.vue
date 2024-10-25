@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 16.10.2024 15:59:22
+ * Last Modified: 22.10.2024 12:39:26
  * Modified By: Julian Hardtung
  * 
  * Description: `dating` input module for places/positions
@@ -88,10 +88,10 @@ export default {
       showModule: true,
 
       datingRules: [
-        value => {
+        /* value => {
           if (value != null) return true
           return this.$t('isMandatory', {msg: this.$t('dating')})
-        }
+        } */
       ]
 		}
 	},
