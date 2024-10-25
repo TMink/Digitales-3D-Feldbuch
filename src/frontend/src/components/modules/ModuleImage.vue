@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 25.10.2024 16:30:41
+ * Last Modified: 25.10.2024 17:02:51
  * Modified By: Julian Hardtung
  * 
  * Description: `comment` input module for places
@@ -102,6 +102,7 @@
 <script>
 
 import { useWindowSize } from 'vue-window-size';
+import { utils } from '../../utils';
 
 /**
  * Methods overview:

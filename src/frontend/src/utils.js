@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 25.10.2024 16:29:31
+ * Last Modified: 25.10.2024 16:58:58
  * Modified By: Julian Hardtung
  * 
  * Description: file with reusable util functions
@@ -173,7 +173,7 @@ class UtilsClass {
 
       });
       return output;
-    },
+    }
 }
 
 const utils = new UtilsClass();

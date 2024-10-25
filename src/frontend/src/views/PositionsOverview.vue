@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 25.10.2024 16:42:02
+ * Last Modified: 25.10.2024 17:01:35
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -176,18 +176,22 @@
               </v-list-item-title>
             </td>
             
-            <!-- PHOTOGRAPHER -->
+            <!-- PHOTO -->
               <td :style="utils.getRowStyle(index, hoveredRow)" style="padding: 0px !important">
-                <v-img height="80px" width="100px"
+                <v-row no-gutters>
+                  <v-spacer></v-spacer>
+                  <v-img height="50px"
                   cover rounded
                   :src="item.image">
                   <template v-slot:placeholder>
-                  <v-card variant="tonal" 
+                    <v-card variant="tonal" 
                     class="d-flex align-center justify-center fill-height">
                     <v-icon size="x-large" icon="mdi-image-area"></v-icon>
                   </v-card> 
                 </template>
-                </v-img>
+              </v-img>
+              <v-spacer></v-spacer>
+            </v-row>  
               </td>
 
               <!-- DATE -->

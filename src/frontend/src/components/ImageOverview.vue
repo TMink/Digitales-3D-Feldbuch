@@ -2,7 +2,7 @@
  * Created Date: 09.01.2024 11:33:59
  * Author: Julian Hardtung
  * 
- * Last Modified: 25.10.2024 16:30:26
+ * Last Modified: 25.10.2024 17:03:35
  * Modified By: Julian Hardtung
  * 
  * Description: lists all images of a place
@@ -82,6 +82,7 @@
 <script>
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { toRaw } from 'vue';
+import { utils } from '../utils.js';
 
 export default {
   name: "ImageOverview",
