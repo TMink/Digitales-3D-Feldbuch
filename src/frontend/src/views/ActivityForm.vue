@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 07.10.2024 14:57:22
+ * Last Modified: 25.10.2024 14:53:20
  * Modified By: Julian Hardtung
  * 
  * Description: input page for activity data 
@@ -23,7 +23,7 @@
             <v-btn rounded="0" v-on:click="cancelActivity" color="primary">
               {{ $t('cancel') }}
             </v-btn>
-            <v-btn rounded="0" color="error" v-on:click="confirmDeletion(place)">
+            <v-btn rounded="0" color="error" v-on:click="confirmDeletion(activity)">
               {{ $t('delete') }}
             </v-btn>
 
@@ -56,6 +56,7 @@
                     <v-text-field
                       class="pr-1"
                       color="primary"
+                      maxlength="2"
                       :label="$t('branchOffice')"
                       v-model="activity.branchOffice">
                     </v-text-field>
