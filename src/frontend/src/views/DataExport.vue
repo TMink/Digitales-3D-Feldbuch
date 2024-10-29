@@ -980,10 +980,144 @@ export default {
     ################################################# */
     
     async exportFindingSampleData(zip){
-      console.log("Export Fund-/Probedaten");
+      const placesToExport = await this.getPlacesToExport();
+      const activitiesCount = placesToExport.length;
+      var findDataArray = [];
+      
+      // go through all activities
+      for (let i=0; i<activitiesCount; i++) {
+        const placesCount = placesToExport[i].length;
+        
+        // go through all places within each activity
+        for (let j=0; j<placesCount; j++) {
+          //go through all positions and retrieve the finds from those positions
+          const findsOfPlace = await this.getFindsFromPlace(placesToExport[i][j]);
+
+          // skip if there ar no finds in this place
+          if (findsOfPlace == undefined) {
+            continue;
+          }
+
+          // translate all finds
+          const translatedFinds = this.translateFindsArray(findsOfPlace,
+                                          placesToExport[i][j].activityNumber, 
+                                          placesToExport[i][j].placeNumber);
+
+          if (translatedFinds.length == 0) {
+            continue;
+          }
+          
+          if (findDataArray.length == 0) {
+            findDataArray = translatedFinds;
+          } else {
+            findDataArray = findDataArray.concat(translatedFinds)
+          }
+        }
+        this.addFindDataToZip(zip, findDataArray);
+      }
     },
 
+    async getFindsFromPlace(place){
+      if (place.positions.length == 0) {
+        this.addErrorMessage(
+            place.activityNumber + " " + place.placeNumber,
+            "This place has no positions to export.",
+            place._id, "place", "notify");
+        return;
+      }
 
+      //get all positions in this place
+      const positionsOfPlace = await fromOfflineDB
+        .getAllObjectsFromArray(place.positions, 'Positions', 'positions')
+        .catch((err) => console.error(err));
+        
+      //filter out all positions that are not images
+      const findPositions = positionsOfPlace.filter((position) => position.posType == 'position');
+      
+      if (findPositions.length == 0) {
+        this.addErrorMessage(
+          place.activityNumber + " " + place.placeNumber,
+          "This place has no finds to export.",
+          place._id, "place", "notify");
+        return;
+      }
+      
+      return findPositions;
+    },
+
+    translateFindsArray(findsArrayEng, activityNumber, placeNumber) {
+      var findsArrayGer = [];
+
+      findsArrayEng.forEach(curFindsOfPlace => {
+        const translatedFind = this.translateFindHeadersToBODEON(curFindsOfPlace, activityNumber, placeNumber);
+        if (translatedFind != undefined) {
+          findsArrayGer.push(translatedFind)
+        } 
+      })
+
+      return findsArrayGer;
+    },
+
+    translateFindHeadersToBODEON(findENG, activityNumber, placeNumber) {
+      //check if all BODEON required fields are filled
+      if (activityNumber.length == 0
+        || placeNumber == 0
+        || findENG.positionNumber == 0
+        || (findENG.hasSubNumber == true && findENG.subNumber == 0)
+        || findENG.title.length == 0
+        || findENG.dating.length == 0
+      ) {
+        this.addErrorMessage(activityNumber + " " + placeNumber + " " + findENG.positionNumber,
+          "Required field for this find is not filled",
+          findENG._id, "position", "warn");
+        return;
+      }
+      
+      //translate headers to the german BODEON terms
+      var findGer = {
+        Aktivitaet: activityNumber,
+        StellenNR: placeNumber,
+        PosNr: findENG.positionNumber,
+        Unternr: findENG.subNumber,
+        Rechts: findENG.right,
+        Hoch: findENG.up,
+        Hoehe: findENG.height,
+        Anzahl: findENG.count,
+        Gewicht: findENG.weight,
+        ObjKuerzel: '',
+        Material: findENG.material,
+        Ansprache: findENG.title,
+        Kommentar: findENG.description,
+        Datkode: '',
+        Datierung: findENG.dating,
+        AnspracheVon: findENG.editor,
+        Datum: findENG.date,
+      }
+
+      return findGer;
+    },
+
+    addFindDataToZip(zip, findsOfPlace) {
+      const replacer = (key, value) => value === null ? '' : value;
+      const cursor = Object.keys(findsOfPlace[0]);
+      const header = JSON.parse(JSON.stringify(cursor));  
+
+      console.log(findsOfPlace)
+      console.log("_________________________")
+      // prepare file data
+      const csv = [header.join(this.separator), ...findsOfPlace.map(row => 
+        cursor.map(fieldName => JSON.stringify(row[fieldName], replacer))
+          .join(this.separator))
+      ].join('\r\n')
+
+      //prepare filename
+      const activityNumber = findsOfPlace[0].Aktivitaet;
+      const activityFileName = this.getActivityFileName(activityNumber);
+      const findsFilename = activityFileName + '/' + activityFileName + "_Fundliste.csv";
+
+      //add to zip
+      zip.file(findsFilename, csv);
+    },
 
     /**
      * Opens the confirmation dialog if the export should continue 
@@ -1444,10 +1578,24 @@ export default {
      * @param id ID of the place or position
      * @param {'place' | 'position' } objectType
      */
-    openObject(id, objectType) {
+    async openObject(id, objectType) {
       if (objectType == 'place') {
+        const curPlace = await fromOfflineDB.getObject(id, 'Places', 'places')
+          .catch(err => {console.error(err)})
+
+        this.$generalStore.setCurrentObject(curPlace.activityID, "activity");
+        this.$generalStore.setCurrentObject(curPlace._id, "place");
         this.$router.push({ name: 'PlaceCreation', params: { placeID: id } })
       } else if (objectType == 'position') {
+
+        const curPos = await fromOfflineDB.getObject(id, 'Positions', 'positions');
+        const curPlace = await fromOfflineDB.getObject(curPos.placeID, 'Places', 'places')
+          .catch(err => {console.error(err)})
+
+        this.$generalStore.setCurrentObject(curPlace.activityID, "activity");
+        this.$generalStore.setCurrentObject(curPos.placeID, "place");
+        this.$generalStore.setCurrentObject(curPos._id, "position");
+
         this.$router.push({ name: 'PositionCreation', params: { positionID: id } })
       } else {  
         console.error('No valid objectType for opening an object was provided.')
