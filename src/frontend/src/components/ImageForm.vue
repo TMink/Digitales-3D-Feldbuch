@@ -2,7 +2,7 @@
  * Created Date: 06.07.2023 13:22:10
  * Author: Julian Hardtung
  * 
- * Last Modified: 25.10.2024 16:30:31
+ * Last Modified: 29.10.2024 13:19:13
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for images of places/positions
@@ -205,6 +205,7 @@ import AddButton from '../components/AddButton.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { useWindowSize } from 'vue-window-size';
 import { toRaw } from 'vue';
+import { utils } from '../utils.js';
 
 export default {
   name: "ImageForm",

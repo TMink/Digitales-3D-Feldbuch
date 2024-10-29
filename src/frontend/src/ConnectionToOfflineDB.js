@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Tobias Mink
  * 
- * Last Modified: 16.10.2024 16:29:48
+ * Last Modified: 29.10.2024 13:21:20
  * Modified By: Julian Hardtung
  * 
  * Description: Helper API for manipulating the IndexedDB
@@ -765,12 +765,12 @@ export default class ConnectionToOfflineDB {
           }
           /* Delete all attached coordinates */
           if (object.coordinates != "") {
-            var coords = await context
+            var placeCoords = await context
               .getObject(object.coordinates, "Coordinates", "coordinates")
               .catch((err) => console.error(err));
 
             await fromOfflineDB
-              .deleteObject(coords, "Coordinates", "coordinates")
+              .deleteObject(placeCoords, "Coordinates", "coordinates")
               .catch((err) => console.error(err));
           }
           /* Delete all attached models */
@@ -815,12 +815,12 @@ export default class ConnectionToOfflineDB {
         case "position":
           /* Delete all attached coordinates */
           if (object.coordinates != "") {
-            var coords = await context
+            var posCoords = await context
               .getObject(object.coordinates, "Coordinates", "coordinates")
               .catch((err) => console.error(err));
 
             await fromOfflineDB
-              .deleteObject(coords, "Coordinates", "coordinates")
+              .deleteObject(posCoords, "Coordinates", "coordinates")
               .catch((err) => console.error(err));
           }
           /* Delete all attached images */

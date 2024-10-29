@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 25.10.2024 14:06:24
+ * Last Modified: 29.10.2024 13:23:58
  * Modified By: Julian Hardtung
  * 
  * Description: english translations
@@ -92,12 +92,10 @@ export default {
   online_sync: "Online Sync",
   lastEdited: "Last Edited",
   save: "Save",
-  import: "Import",
   cancel: "Cancel",
   search: "Search",
   yes: "Yes",
   no: "No",
-  to: "bis",
   gaussKrueger: "Gauss-Krueger-Coordinates",
   confirm: "Confirm",
   pdf_export: "PDF Export",
@@ -105,7 +103,6 @@ export default {
   data_backup: "Data Backup",
   adminArea: "Admin Area",
   export: "Export",
-  exportObject: "Export {object}",
   dataFormat: "Data Format",
   separator: "Separator",
   objectSeparated: "{object} separated",
@@ -262,6 +259,7 @@ export default {
   resultOfAction: "Result of the Measure",
   maxPlaceNumber: "highest assigned place number",
   findsDocumented: "only tick, if archeological findings were documented",
+  exportObject: "Export {msg}",
   isMandatory: " {msg} is a mandatory field",
   invalidDate: "not a valid date",
   placesCatalogExportDescr: "Select all activities whose places should be exported.",

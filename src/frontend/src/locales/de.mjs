@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 25.10.2024 14:06:14
+ * Last Modified: 29.10.2024 13:23:51
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -97,7 +97,6 @@ export default {
   search: "Suche",
   yes: "Ja",
   no: "Nein | Kein | Keine",
-  to: "bis",
   gaussKrueger: "Gauss-Krüger-Koordinaten",
   confirm: "Bestätigen",
   pdf_export: "PDF Export",
@@ -105,14 +104,12 @@ export default {
   data_backup: "Datensicherung",
   adminArea: "Adminbereich",
   export: "Exportieren",
-  exportObject: "{object} Exportieren",
   dataFormat: "Dateiformat",
   separator: "Separator",
   objectSeparated: "{object} getrennt",
   comma: "Komma",
   semicolon: "Semikolon",
   backup: "Backup",
-  import: "Import",
   hasSubNumber: "Hat Unter-Nr.",
   data_import: "Data Import",
   technical: "Technische Stelle",
