@@ -2,7 +2,7 @@
  * Created Date: 26.06.2023 15:10:20
  * Author: Julian Hardtung
  * 
- * Last Modified: 28.10.2024 19:00:16
+ * Last Modified: 29.10.2024 13:11:44
  * Modified By: Julian Hardtung
  * 
  * Description: export all (or only specified) data to .pdf or .csv
@@ -177,70 +177,77 @@
   </v-dialog>
 
   <v-dialog 
-  v-model="confirmDialog" 
-  :max-width="windowWidth/2.5" style="z-index: 3;" 
-  @keydown.esc="cancel"
-  @afterLeave="onExportDialogClosed">
+    v-model="confirmDialog" 
+    :max-width="windowWidth/2.5" style="z-index: 3;" 
+    @keydown.esc="cancel"
+    @afterLeave="onExportDialogClosed">
     <v-card>
-        <v-toolbar dark color="warning" dense flat>
-            <v-toolbar-title>Exportfehler</v-toolbar-title>
-        </v-toolbar>
-        <v-card-subtitle class="text-wrap pa-4">
-          Bei den exportierten Daten sind ein oder mehrere Pflichtfelder nicht ausgefüllt.<br> Soll der Export vortgesetzt werden, obwohl die resultierenden Daten nicht valide für einen Bodeon-Import sind?
-        </v-card-subtitle>
+      <v-toolbar dark color="warning" dense flat>
+          <v-toolbar-title>Exportfehler</v-toolbar-title>
+      </v-toolbar>
+      <v-card-subtitle class="text-wrap pa-4">
+        Bei den exportierten Daten sind ein oder mehrere Pflichtfelder nicht ausgefüllt.<br> Soll der Export vortgesetzt werden, obwohl die resultierenden Daten nicht valide für einen Bodeon-Import sind?
+      </v-card-subtitle>
 
-         <v-list>
-          <v-list-item style="padding-left: 0px"
-            v-for="item in errorMessageArray"
-            :key="item.title">
-            <v-row style="padding-left: 0px" no-gutters>
-              <v-row no-gutters class="justify-start align-center">
-                  <v-col cols="9">
-                <v-card variant="tonal">
-                  <v-row no-gutters class="justify-start align-center">
-                    <v-card-text class="pr-0">
-                      {{ $t(item.objectType)}}
-                    </v-card-text>
-                    <v-card-text class="px-0 mx-0">
-                      {{ item.title }}
-                    </v-card-text>
-                    <v-spacer></v-spacer>
-                    <v-card-subtitle>
-                      {{ item.subtitle }}
-                    </v-card-subtitle>
-                  </v-row>
-                </v-card>
-              </v-col>
-                <v-btn v-if="item.errType == 'warn'" @click="openObject(item.objectID, item.objectType)" 
-                  variant="outlined" color="secondary" class="ml-4"> 
-                  {{ $t('open') }}
-                  <v-icon class="pl-1">mdi-open-in-new</v-icon>
-                </v-btn>
-              </v-row>
+      <v-switch 
+        color="secondary" 
+        v-model="showNotifyErrors" 
+        class="px-3" 
+        label="Zeige nur kritische Fehler, die einen BODEON-Import verhindern.">
+      </v-switch>
+
+      <v-list>
+        <v-list-item style="padding-left: 0px"
+          v-for="item in filterErrorMessages()"
+          :key="item.title">
+          <v-row style="padding-left: 0px" no-gutters>
+            <v-row no-gutters class="justify-start align-center">
+                <v-col cols="9">
+              <v-card variant="tonal">
+                <v-row no-gutters class="justify-start align-center">
+                  <v-card-text class="pr-0">
+                    {{ $t(item.objectType) }}
+                  </v-card-text>
+                  <v-card-text class="px-0 mx-0">
+                    {{ item.title }}
+                  </v-card-text>
+                  <v-spacer></v-spacer>
+                  <v-card-subtitle>
+                    {{ item.subtitle }}
+                  </v-card-subtitle>
+                </v-row>
+              </v-card>
+            </v-col>
+              <v-btn v-if="item.errType == 'warn'" @click="openObject(item.objectID, item.objectType)" 
+                variant="outlined" color="secondary" class="ml-4"> 
+                {{ $t('open') }}
+                <v-icon class="pl-1">mdi-open-in-new</v-icon>
+              </v-btn>
             </v-row>
-            <template v-slot:prepend>
-              <v-btn icon flat v-if="item.errType == 'notify'" >
-                <v-icon>mdi-help-circle</v-icon>
-                  <v-tooltip activator="parent" location="bottom"
-                  text="Ein Problem beim Export, aber kann so in BODEON importiert werden.">
-                </v-tooltip>
-            </v-btn>
-            <v-btn icon flat v-if="item.errType == 'warn'" >
-              <v-icon color="warning">mdi-alert-circle</v-icon>
+          </v-row>
+          <template v-slot:prepend>
+            <v-btn icon flat v-if="item.errType == 'notify'" >
+              <v-icon>mdi-help-circle</v-icon>
                 <v-tooltip activator="parent" location="bottom"
-                text="Diese Daten können so nicht in BODEON importiert werden.">
+                text="Ein Problem beim Export, aber kann so in BODEON importiert werden.">
               </v-tooltip>
-            </v-btn>
-          </template>
-          </v-list-item>
-        </v-list>
-        <v-card-actions class="pt-0">
-            <v-spacer></v-spacer>
-            <v-btn icon color="success"  @click="agree"><v-icon>mdi-check-circle</v-icon></v-btn>
-            <v-btn icon color="error" @click="cancel"><v-icon>mdi-close-circle</v-icon></v-btn>
-        </v-card-actions>
+          </v-btn>
+          <v-btn icon flat v-if="item.errType == 'warn'" >
+            <v-icon color="warning">mdi-alert-circle</v-icon>
+              <v-tooltip activator="parent" location="bottom"
+              text="Diese Daten können so nicht in BODEON importiert werden.">
+            </v-tooltip>
+          </v-btn>
+        </template>
+        </v-list-item>
+      </v-list>
+      <v-card-actions class="pt-0">
+          <v-spacer></v-spacer>
+          <v-btn icon color="success"  @click="agree"><v-icon>mdi-check-circle</v-icon></v-btn>
+          <v-btn icon color="error" @click="cancel"><v-icon>mdi-close-circle</v-icon></v-btn>
+      </v-card-actions>
     </v-card>
-</v-dialog>
+  </v-dialog>
 
 
 
@@ -308,6 +315,7 @@ export default {
       findingDampleDataDialog: false,
 
       allDialog: false,
+      showNotifyErrors: true,
 
       resolve: null,
       reject: null,
@@ -597,7 +605,7 @@ export default {
 
         const activityFileName = this.getActivityFileName(translatedItems[i][0].Aktivitaet);
         const placeFileName = this.getPlaceFileName(translatedItems[i][0].Aktivitaet, translatedItems[i][0].StellenNR);
-        zip.file(activityFileName + "/" + placeFileName + "/" + placeFileName + "_stellenkatalog.csv", csv);
+        zip.file(activityFileName + "/" + placeFileName + "_stellenkatalog.csv", csv);
       }
     },
 
@@ -832,8 +840,16 @@ export default {
         .getAllObjectsFromArray(place.positions, 'Positions', 'positions')
         .catch((err) => console.error(err));
         
-      //filter out all positions that are not images
-      const imagePositions = positionsOfPlace.filter((position) => position.posType == 'image');
+      //filter out all positions that are not images or have no imagefile
+      const imagePositions = positionsOfPlace.filter((position) => {
+        if (position.image == '') {
+          this.addErrorMessage(
+            place.activityNumber + " " + place.placeNumber + " " + position.positionNumber,
+            "This position has no imagefile to export.",
+            position._id, "position", "warn");
+        }
+        return position.posType == 'image' && position.image != ''
+        });
       
       if (imagePositions.length == 0) {
         this.addErrorMessage(
@@ -1608,6 +1624,12 @@ export default {
     onExportDialogClosed() {
       this.errorMessageArray = []
     },
+
+    filterErrorMessages() {
+      return this.errorMessageArray.filter(error => 
+        error.errType == 'warn' 
+        || (!this.showNotifyErrors && error.errType == 'notify'))
+    }
     
   }
 }
