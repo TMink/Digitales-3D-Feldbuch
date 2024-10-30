@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 29.10.2024 13:23:58
+ * Last Modified: 30.10.2024 17:15:38
  * Modified By: Julian Hardtung
  * 
  * Description: english translations
@@ -266,4 +266,5 @@ export default {
   fulfillsBodeonRequirements: "Fulfills Bodeon-Requirements",
   mandatoryFieldNotFilled: "Mandatory data was not entered yet",
   continueExport: "Continue export?",
+  addToPhoto: "Use as image in this position",
 };

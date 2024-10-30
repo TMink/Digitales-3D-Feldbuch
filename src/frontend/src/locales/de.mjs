@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 29.10.2024 13:23:51
+ * Last Modified: 30.10.2024 17:15:25
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -60,7 +60,7 @@ export default {
   plane: "Planum",
   profile: "Profil",
   sample: "Probe | Proben",
-  find: "Fund | Funde | Befunde | Befund",
+  find: "Fund | Funde | Befund | Befunde",
   visibility: "Sichtbarkeit",
   drawing: "Zeichnung | Zeichnungen",
   editor: "Bearbeiter",
@@ -268,4 +268,5 @@ export default {
   fulfillsBodeonRequirements: "Erfüllt Bodeon-Anforderungen",
   mandatoryFieldNotFilled: "Pflichtfelder wurden noch nicht eingetragen",
   continueExport: "Weiter exportieren?",
+  addToPhoto: "Als Bild in dieser Position nutzen",
 };

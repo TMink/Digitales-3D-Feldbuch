@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 25.10.2024 16:37:45
+ * Last Modified: 30.10.2024 16:56:44
  * Modified By: Julian Hardtung
  * 
  * Description: input page for positions data 
@@ -20,11 +20,8 @@
             <v-tab value="one" rounded="0">
               {{ $t('general') }}
             </v-tab>
-            <v-tab value="two" rounded="0">
-              {{ $tc('picture', 2) }}
-            </v-tab>
-            <v-tab value="four" rounded="0">
-              {{ $tc('model', 2) }}
+            <v-tab v-if="position.posType = 'drawing'" value="two" rounded="0">
+              {{ $tc('drawing', 1) }}
             </v-tab>
             <v-btn rounded="0" color="success" v-on:click="savePosition()">
               {{ $t('save') }}
@@ -54,12 +51,10 @@
               @dataToPlaceForm="getEmittedData($event)"/>
           </v-window-item>
 
-          <!-- TAB ITEM 'IMAGES' -->
           <v-window-item value="two">
-            <ImageForm :position_prop="position"/>
+            <ModuleDrawing :objectProp="position"/>
           </v-window-item>
 
-          <!-- Tab item 'MODELS' -->
           <v-window-item value="four">
             <ModelForm 
               object_type="Positions" 
@@ -103,6 +98,7 @@ import ModuleViewer from '../components/ModuleViewer.vue';
 import Navigation from '../components/Navigation.vue';
 import { toRaw } from 'vue';
 import { useRoute } from 'vue-router';
+import ModuleDrawing from '../components/modules/ModuleDrawing.vue';
 
 export default {
   name: 'PositionCreation',
@@ -111,7 +107,8 @@ export default {
     ImageForm,
     ModelForm,
     ModuleViewer,
-    Navigation
+    Navigation,
+    ModuleDrawing
   },
 
   async setup() {

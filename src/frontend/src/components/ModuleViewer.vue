@@ -2,7 +2,7 @@
  * Created Date: 06.09.2023 17:19:12
  * Author: Julian Hardtung
  * 
- * Last Modified: 25.10.2024 16:39:08
+ * Last Modified: 30.10.2024 16:25:05
  * Modified By: Julian Hardtung
  * 
  * Description: input module viewer that shows all modules that are 
@@ -12,15 +12,16 @@
  <template>
   <v-container fluid class="pa-0 ma-0"> 
     <v-form ref="form">
-      <v-row v-if="object.posType == 'image'">
-        <v-col >
-        <ModuleImage
-          :objectProp="object"
-          :editorItemsSecondProp="editorItemsFirstProp"
-          @dataToModuleViewer="sendData($event)"/>
-      </v-col>  
+      <v-row v-if="object.posType == 'image' || object.posType == 'drawing'">
+        <v-col>
+          <ModuleImage
+            :objectProp="object"
+            :editorItemsSecondProp="editorItemsFirstProp"
+            @dataToModuleViewer="sendData($event)"/>
+        </v-col>  
       </v-row>
-    <v-row no-gutters v-else>      
+
+    <v-row no-gutters v-if="object.posType == 'position'">      
       <v-col cols="6">
         <ModuleGeneral
           :objectProp="object"
@@ -96,6 +97,7 @@ import ModuleObjectDescribers from '../components/modules/ModuleObjectDescribers
 import ModuleComment from './modules/ModuleComment.vue';
 import ModuleProfile from './modules/ModuleProfile.vue';
 import ModuleImage from './modules/ModuleImage.vue';
+import ModuleDrawing from './modules/ModuleDrawing.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB';
 import { useWindowSize } from 'vue-window-size';
 import { toRaw } from 'vue'
@@ -113,7 +115,8 @@ export default {
     ModuleObjectDescribers,
     ModuleProfile,
     ModuleComment,
-    ModuleImage
+    ModuleImage,
+    ModuleDrawing
 },
 
   emits: ['dataToPlaceForm'],

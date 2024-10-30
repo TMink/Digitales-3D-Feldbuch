@@ -2,8 +2,8 @@
  * Created Date: 06.03.2024 16:25:57
  * Author: Methusshan Elankumaran
  * 
- * Last Modified: 17.03.2024 18:31:22
- * Modified By: Methusshan Elankumaran
+ * Last Modified: 30.10.2024 17:12:43
+ * Modified By: Julian Hardtung
  * 
  * Description: canvas component for technical drawings
  -->
@@ -105,6 +105,7 @@ export default defineComponent({
         vm.backgroundContext = vm.backgroundCanvas.getContext("2d");
         vm.canvasStates[-1] = vm.fieldbookContext.getImageData(0, 0, this.canvasWidth, this.canvasHeight);
     },
+
     methods: {
         addBackgroundImage(imageSrc, imageWidth, imageHeight) {
             var image = new Image();
@@ -385,8 +386,9 @@ export default defineComponent({
             var newContext = newCanvas.getContext('2d');
             newCanvas.width = this.canvasWidth;
             newCanvas.height = this.canvasHeight;
+            newContext.drawImage(this.backgroundCanvas, 0, 0)
             newContext.drawImage(this.fieldbookCanvas, 0, 0);
-            newContext.fillStyle = "#fff"
+            //newContext.fillStyle = "#fff"
             newContext.globalCompositeOperation = "destination-over";
             newContext.rect(0, 0, this.canvasWidth, this.canvasHeight);
             newContext.fill();
@@ -409,7 +411,7 @@ export default defineComponent({
 }
 
 #backgroundCanvas {
-    background-color: #fff;
+    background-color: white;
     margin-top: 10px;
 }
 

@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 25.10.2024 17:01:35
+ * Last Modified: 30.10.2024 16:40:15
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -57,185 +57,15 @@
           :headers="headers"
           :sort-by="[{ key: 'positionNumber', order: 'desc' }]">
 
-          <template v-slot:item="{ item, index }">
+          <template v-slot:item="{ item }">
 
             <!--###################### POSITION ROW ######################-->
-            <tr v-on:click="handleRowClick(item._id)"
-                @mouseenter="setHoveredRow(index, true)"
-                @mouseleave="setHoveredRow(index, false)"
-                v-if="item.posType == 'position'">
-
-              <td>
-                <v-btn color="secondary" icon variant="text">
-                  <v-tooltip activator="parent" location="bottom">
-                    {{ $t('Fund/Befund') }}
-                  </v-tooltip>
-                  <v-icon>mdi-book-open-variant-outline</v-icon>
-                </v-btn>
-              </td>
-
-              <!-- POSITION NUMBER -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title class="pl-4">
-                  {{ item.positionNumber }}
-                </v-list-item-title>
-              </td>
-
-              <!-- SUB NUMBER -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title v-if="item.subNumber.length != 0">
-                  {{ item.subNumber }}
-                </v-list-item-title>
-                <v-list-item-title v-if="item.subNumber.length == 0" 
-                  style="color:dimgrey;">
-                  -
-                </v-list-item-title>
-              </td>
-
-              <!-- TITLE -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title v-if="item.title.length > 0"
-                  style="min-width:200px" class="text-wrap">
-                  {{ item.title.join('; ') }}
-                </v-list-item-title>
-                <v-list-item-title v-if="item.title.length == 0" 
-                  style="color:dimgrey;">
-                  -
-                </v-list-item-title>
-              </td>
-
-              <!-- DATE -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title>
-                  {{ item.date }}
-                </v-list-item-title>
-              </td>
-
-              <!-- SYNC STATUS -->
-              <td>
-                <v-btn icon variant="text" v-if="item.lastSync > 0"
-                  class="my-1">
-                    <v-tooltip 
-                      activator="parent"
-                      location="bottom">
-                      {{ this.$t('lastSync') + new Date(item.lastSync).toLocaleString() }}
-                    </v-tooltip>
-                    <v-icon>mdi-cloud-check</v-icon>
-                </v-btn>
-                <v-btn icon variant="text" class="my-1" v-else>
-                  <v-tooltip 
-                    activator="parent"
-                    location="bottom">
-                      {{ $t('onlyLocal') }}
-                  </v-tooltip>
-                  <v-icon>mdi-cloud-off-outline</v-icon>
-                </v-btn>
-
-                <!-- BODEON CONFORM -->
-                <v-btn icon color="success" variant="text" v-if="isBodeonValid(item)">
-                  <v-tooltip activator="parent" location="bottom">
-                     {{ $t('fulfillsBodeonRequirements') }}
-                  </v-tooltip>
-                  <v-icon>mdi-check-circle</v-icon>
-                </v-btn>
-                <v-btn color="primary" icon variant="text" v-else>
-                  <v-tooltip activator="parent" location="bottom">
-                     {{ $t('mandatoryFieldNotFilled') }}
-                  </v-tooltip>
-                  <v-icon>mdi-alert-circle</v-icon>
-                </v-btn>
-              </td>
-            </tr>
+            <PositionTableRow v-if="item.posType == 'position'" 
+              @clicked-row="handleRowClick" :item="item"/>
 
             <!--###################### IMAGE ROW ######################-->
-            <tr v-on:click="handleRowClick(item._id)"
-                @mouseenter="setHoveredRow(index, true)"
-                @mouseleave="setHoveredRow(index, false)"
-                v-if="item.posType == 'image'">
-
-                <td>
-                  <v-btn color="secondary" icon variant="text">
-                    <v-tooltip activator="parent" location="bottom">
-                      {{ $t('image') }}
-                    </v-tooltip>
-                    <v-icon>mdi-image-outline</v-icon>
-                  </v-btn>
-                </td>
-
-              <!-- POSITION NUMBER -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title class="pl-4">
-                  {{ item.positionNumber }}
-                </v-list-item-title>
-              </td>
-
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title 
-                style="color:dimgrey;">
-                -
-              </v-list-item-title>
-            </td>
-            
-            <!-- PHOTO -->
-              <td :style="utils.getRowStyle(index, hoveredRow)" style="padding: 0px !important">
-                <v-row no-gutters>
-                  <v-spacer></v-spacer>
-                  <v-img height="50px"
-                  cover rounded
-                  :src="item.image">
-                  <template v-slot:placeholder>
-                    <v-card variant="tonal" 
-                    class="d-flex align-center justify-center fill-height">
-                    <v-icon size="x-large" icon="mdi-image-area"></v-icon>
-                  </v-card> 
-                </template>
-              </v-img>
-              <v-spacer></v-spacer>
-            </v-row>  
-              </td>
-
-              <!-- DATE -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title>
-                  {{ item.date }}
-                </v-list-item-title>
-              </td>
-
-              <!-- SYNC STATUS -->
-              <td>
-                <v-btn icon variant="text" v-if="item.lastSync > 0"
-                  class="my-1">
-                    <v-tooltip 
-                      activator="parent"
-                      location="bottom">
-                      {{ this.$t('lastSync') + new Date(item.lastSync).toLocaleString() }}
-                    </v-tooltip>
-                    <v-icon>mdi-cloud-check</v-icon>
-                </v-btn>
-                <v-btn icon variant="text" class="my-1" v-else>
-                  <v-tooltip 
-                    activator="parent"
-                    location="bottom">
-                      {{ $t('onlyLocal') }}
-                  </v-tooltip>
-                  <v-icon>mdi-cloud-off-outline</v-icon>
-                </v-btn>
-
-                <!-- BODEON CONFORM -->
-                <v-btn icon color="success" variant="text" v-if="isBodeonValid(item)">
-                  <v-tooltip activator="parent" location="bottom">
-                     {{ $t('fulfillsBodeonRequirements') }}
-                  </v-tooltip>
-                  <v-icon>mdi-check-circle</v-icon>
-                </v-btn>
-                <v-btn color="primary" icon variant="text" v-else>
-                  <v-tooltip activator="parent" location="bottom">
-                     {{ $t('mandatoryFieldNotFilled') }}
-                  </v-tooltip>
-                  <v-icon>mdi-alert-circle</v-icon>
-                </v-btn>
-              </td>
-            </tr>
+            <ImageTableRow v-if="item.posType == 'image' || item.posType == 'drawing'" 
+              @clicked-row="handleRowClick" :item="item"/>
           </template>
         </v-data-table-virtual>
 
@@ -248,246 +78,14 @@
           :headers="fullHeaders"
           :sort-by="[{ key: 'positionNumber', order: 'desc' }]">
 
-          <template v-slot:item="{ item, index }">
-            <tr v-on:click="handleRowClick(item._id)" 
-              @mouseenter="setHoveredRow(index, true)"
-              @mouseleave="setHoveredRow(index, false)"
-              v-if="item.posType == 'position'">
+          <template v-slot:item="{ item }">
+            <!--##################### POSITION ROW FULL ####################-->
+            <PositionTableRowFull v-if="item.posType == 'position'" 
+              @clicked-row="handleRowClick" :item="item"/>
 
-              <!-- PLACE NUMBER -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title class="pl-4">
-                  {{ item.positionNumber }}
-                </v-list-item-title>
-              </td>
-
-              <!-- SUB NUMBER -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title v-if="item.subNumber.length != 0">
-                  {{ item.subNumber }}
-                </v-list-item-title>
-                <v-list-item-title v-if="item.subNumber.length == 0" 
-                  style="color:dimgrey;">
-                  -
-                </v-list-item-title>
-              </td>
-
-              <!-- TITLE -->
-              <td class="py-2" :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title
-                  v-if="item.posType == 'image'"
-                  style="min-width:200px" 
-                  class="text-wrap">
-                  {{ item.title }}
-                </v-list-item-title>
-                <v-list-item-title
-                  v-if="item.title.length > 0"
-                  style="min-width:200px" 
-                  class="text-wrap">
-                  {{ item.title.join('; ') }}
-                </v-list-item-title>
-                <v-list-item-title 
-                  v-if="item.title.length == 0" style="color:dimgrey;">
-                  -
-                </v-list-item-title>
-              </td>
-
-              <!-- DATING -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title 
-                  v-if="item.dating">
-                  {{ item.dating }}
-                </v-list-item-title>
-                <v-list-item-title 
-                  v-if="!item.dating" style="color:dimgrey;">
-                  -
-                </v-list-item-title>
-              </td>
-
-              <!-- COORDINATES COUNT -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title 
-                  v-if="item.coordinates != ''">
-                  {{ item.coordsCount + " " +  $t('coordinates') }} 
-                </v-list-item-title>
-                <v-list-item-title style="color:dimgrey;" v-else>
-                  -
-                </v-list-item-title>
-              </td>
-
-              <!-- PLANE -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title 
-                  v-if="item.count != ''" class="text-wrap">
-                  {{ item.count || '-' }}
-                </v-list-item-title>
-                <v-list-item-title 
-                  v-if="item.count == ''" style="color:dimgrey;">
-                  -
-                </v-list-item-title>
-              </td>
-
-              <!-- WEIGHT -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title 
-                  v-if="item.weight != ''" class="text-wrap">
-                  {{ item.weight || '-' }}
-                </v-list-item-title>
-                <v-list-item-title 
-                  v-if="item.weight == ''" style="color:dimgrey;">
-                  -
-                </v-list-item-title>
-              </td>
-
-              <!-- MATERIAL -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title 
-                  v-if="item.material != ''" class="text-wrap">
-                  {{ item.material || '-' }}
-                </v-list-item-title>
-                <v-list-item-title 
-                  v-if="item.material == ''" style="color:dimgrey;">
-                  -
-                </v-list-item-title>
-              </td>
-
-              <!-- COMMENT -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title class="text-wrap" style="max-width:200px">
-                  {{ item.comment }}
-                </v-list-item-title>
-                <v-list-item-title 
-                  v-if="item.comment == ''" style="color:dimgrey;">
-                  -
-                </v-list-item-title>
-              </td>
-
-              <!-- EDITOR -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title
-                  v-if="item.editor != ''">
-                  {{ item.editor }}
-                </v-list-item-title>
-                <v-list-item-title 
-                  v-if="item.editor == ''" style="color:dimgrey;">
-                  -
-                </v-list-item-title>
-              </td>
-
-              <!-- DATE -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title>
-                  {{ item.date}}
-                </v-list-item-title>
-              </td>
-
-              <!-- IS SEPARATE -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title 
-                  v-if="item.isSeparate">
-                  &cross;
-                </v-list-item-title>
-                <v-list-item-title 
-                  v-if="!item.isSeparate" style="color:dimgrey;">
-                  -
-                </v-list-item-title>
-              </td>
-
-              <!-- SYNC STATUS -->
-              <td>
-                <v-btn icon variant="text" v-if="item.lastSync > 0" class="my-1">
-                  <v-tooltip activator="parent" location="bottom">
-                    {{ this.$t('lastSync') + new Date(item.lastSync).toLocaleString() }}
-                  </v-tooltip>
-                  <v-icon>mdi-cloud-check</v-icon>
-                </v-btn>
-                <v-btn icon variant="text" v-else class="my-1">
-                  <v-tooltip 
-                    activator="parent"
-                    location="bottom">
-                      {{ $t('onlyLocal') }}
-                  </v-tooltip>
-                  <v-icon>mdi-cloud-off-outline</v-icon>
-                </v-btn>
-
-                <!-- BODEON CONFORM -->
-                <v-btn icon color="success" variant="text" v-if="isBodeonValid(item)">
-                  <v-tooltip activator="parent" location="bottom">
-                     {{ $t('fulfillsBodeonRequirements') }}
-                  </v-tooltip>
-                  <v-icon>mdi-check-circle</v-icon>
-                </v-btn>
-                <v-btn color="primary" icon variant="text" v-else>
-                  <v-tooltip activator="parent" location="bottom">
-                     {{ $t('mandatoryFieldNotFilled') }}
-                  </v-tooltip>
-                  <v-icon>mdi-alert-circle</v-icon>
-                </v-btn>
-              </td>
-              <v-divider></v-divider>
-            </tr>
-
-            <tr v-on:click="handleRowClick(item._id)" 
-              @mouseenter="setHoveredRow(index, true)"
-              @mouseleave="setHoveredRow(index, false)"
-              v-if="item.posType == 'image'">
-
-              <!-- POS NUMBER -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title class="pl-4">
-                  {{ item.positionNumber }}
-                </v-list-item-title>
-              </td>
-
-              <!-- COMMENT -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title class="text-wrap" style="max-width:200px">
-                  {{ item.comment }}
-                </v-list-item-title>
-                <v-list-item-title 
-                  v-if="item.comment == ''" style="color:dimgrey;">
-                  -
-                </v-list-item-title>
-              </td>
-
-              <!-- PHOTOGRAPHER -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title
-                  v-if="item.editor != ''">
-                  {{ item.editor }}
-                </v-list-item-title>
-                <v-list-item-title 
-                  v-if="item.editor == ''" style="color:dimgrey;">
-                  -
-                </v-list-item-title>
-              </td>
-
-              <!-- DATE -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title>
-                  {{ item.date}}
-                </v-list-item-title>
-              </td>
-
-              <!-- SYNC STATUS -->
-              <td>
-                <v-btn icon variant="text" v-if="item.lastSync > 0" class="my-1">
-                  <v-tooltip activator="parent" location="bottom">
-                    {{ this.$t('lastSync') + new Date(item.lastSync).toLocaleString() }}
-                  </v-tooltip>
-                  <v-icon>mdi-cloud-check</v-icon>
-                </v-btn>
-                <v-btn icon variant="text" v-else class="my-1">
-                  <v-tooltip 
-                    activator="parent"
-                    location="bottom">
-                      {{ $t('onlyLocal') }}
-                  </v-tooltip>
-                  <v-icon>mdi-cloud-off-outline</v-icon>
-                </v-btn>
-              </td>
-              <v-divider></v-divider>
-            </tr>
+            <!--##################### IMAGE ROW FULL ####################-->
+            <ImageTableRowFull v-if="item.posType == 'image' || item.posType == 'drawing'" 
+              @clicked-row="handleRowClick" :item="item"/>
           </template>
         </v-data-table-virtual>
       </v-card>
@@ -502,7 +100,7 @@
           <v-btn class="text-center" icon="mdi-book-open-outline">
             <v-icon></v-icon>
             <v-tooltip activator="parent" location="bottom">
-              {{ $t('find') }}
+              {{ $tc('find', 0) }}
             </v-tooltip>
           </v-btn>
           <v-btn icon="mdi-image">
@@ -511,7 +109,12 @@
               {{ $t('image') }}
             </v-tooltip>
           </v-btn>
-          <v-btn icon="mdi-file-question" disabled></v-btn>
+          <v-btn icon="mdi-draw">
+            <v-icon></v-icon>
+            <v-tooltip activator="parent" location="bottom">
+              {{ $tc('drawing', 1) }}
+            </v-tooltip>
+          </v-btn>
           <v-btn icon="mdi-file-question" disabled></v-btn>
         </v-btn-toggle>
 
@@ -558,12 +161,20 @@ import { fromBackend } from '../ConnectionToBackend.js'
 import { useWindowSize } from 'vue-window-size';
 import { useUserStore } from '../Authentication';
 import { utils } from '../utils.js';
+import ImageTableRow from '../components/ImageTableRow.vue';
+import PositionTableRow from '../components/PositionTableRow.vue';
+import PositionTableRowFull from '../components/PositionTableRowFull.vue';
+import ImageTableRowFull from '../components/ImageTableRowFull.vue';
 
 export default {
   name: 'PositionsOverview',
   components: {
     Navigation,
     AddButton,
+    ImageTableRow,
+    ImageTableRowFull,
+    PositionTableRow,
+    PositionTableRowFull
   },
   
   setup() {
@@ -610,6 +221,7 @@ export default {
         { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status', width: "110px"}
       ],
       fullHeaders: [
+        { title: '', sortable: false, key: 'posType', width: '50px' },
         {
           title: this.$tc('posNumber', 2),
           align: 'start',
@@ -622,7 +234,7 @@ export default {
           sortable: true,
           key: 'subNumber',
         },
-        { title: this.$tc('title', 2), align: 'start', key: 'title' },
+        { title: this.$tc('title', 1), align: 'start', key: 'title' },
         { title: this.$t('dating'), align: 'start', key: 'dating' },
         { title: this.$t('coordinates'), align: 'start', key: 'coordinates' },
         { title: this.$t('count'), align: 'start', key: 'count' },
@@ -631,7 +243,7 @@ export default {
         { title: this.$t('comment'), align: 'start', key: 'comment' },
         { title: this.$tc('editor', 1), align: 'start', key: 'editor' },
         { title: this.$t('date'), align: 'start', key: 'date' },
-        { title: this.$t('isSeparate'), align: 'start', key: 'isSeparate' },
+        /* { title: this.$t('isSeparate'), align: 'start', key: 'isSeparate' }, */
         { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status'}
       ],
       toggleDuplicate: false,
@@ -667,7 +279,8 @@ export default {
 
       if (this.positions.length > 0) {
         for (let i=0; i<this.positions.length; i++) {
-          if (this.positions[i].posType == 'image') {
+          if (this.positions[i].posType == 'image'
+          || this.positions[i].posType == 'drawing') {
             if (this.positions[i].image != '') {
               this.positions[i].image = await utils.textureToBase64([this.positions[i].image]);
             }
@@ -812,11 +425,11 @@ export default {
       } else if (this.addToggle == 1) {
         this.addImage();
       } else if (this.addToggle == 2) {
-        console.log("TODO: add a third object")
+        console.log("ADD DRAWING")
+        this.addDrawing();
       } else if (this.addToggle == 3) {
-        console.log("TODO: add a fourth object")
-      } else {
-
+        console.log("ADD 3D-MODEL")
+        this.addModel();
       }
     },
 
@@ -926,6 +539,57 @@ export default {
         .catch(err => console.error(err));
     
       this.updatePositions();
+    },
+
+    async addDrawing() {
+      var curPlaceID = this.$generalStore.getCurrentObject('place');
+      var curPlace = await fromOfflineDB
+        .getObject(curPlaceID, "Places", "places")
+        .catch(err => console.error(err));
+      var newPositionID = String(Date.now());
+
+      curPlace.positions.push(newPositionID);
+      curPlace.lastChanged = Date.now();
+
+      const newImage = {
+        _id: newPositionID,
+        placeID: curPlaceID,
+        positionNumber: '',
+        posType: 'drawing',
+
+        editor: '',
+        date: new Date().toLocaleDateString("de-DE"),
+        comment: '',
+        
+        image: '',
+        modulePreset: {
+          coordinates: false,
+          dating: false,
+          comment: false,
+          objectDescribers: false,
+        },
+        lastChanged: Date.now(),
+        lastSync: 0
+      };
+
+      if (this.positions.length == 0) {
+        newImage.positionNumber = 1;
+      } else {
+        var lastPosNumber = await fromOfflineDB.getLastAddedPosition()
+          .catch(err => console.error(err));
+        newImage.positionNumber = lastPosNumber + 1;
+      }
+      
+      await fromOfflineDB.updateObject(curPlace, 'Places', 'places')
+        .catch(err => console.error(err));
+      await fromOfflineDB.addObject(newImage, "Positions", "positions")
+        .catch(err => console.error(err));
+    
+      this.updatePositions();
+    },
+
+    async addModel() {
+      console.log("ADD MODEL")
     },
 
     /**

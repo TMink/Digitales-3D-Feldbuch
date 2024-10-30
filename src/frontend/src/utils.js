@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 25.10.2024 16:58:58
+ * Last Modified: 30.10.2024 11:36:51
  * Modified By: Julian Hardtung
  * 
  * Description: file with reusable util functions
@@ -45,7 +45,7 @@ class UtilsClass {
     } else {
       // filter objects by all query filters
       // (objects have to fulfill every query filter)
-      let filteredObjects =  objects.filter((item) => {
+      let filteredObjects = objects.filter((item) => {
         return queries.every((query) => {
           return this.doesItemMatchQuery(item, query, objectType);
         });
@@ -55,7 +55,7 @@ class UtilsClass {
   }
 
   /**
-   * Checks if an item matches a given query by performing 
+   * Checks if an item matches a given query by performing
    * a case-insensitive search.
    *
    * @param {Object} item - The item to be matched against the query.
@@ -64,30 +64,30 @@ class UtilsClass {
    *
    */
   doesItemMatchQuery(item, query, objectType) {
-    const re = new RegExp(query, 'i');
+    const re = new RegExp(query, "i");
 
-    if (objectType == 'activity') {
-        return (
-          item.branchOffice.match(re) 
-          || item.year.toString().match(re) 
-          || item.number.toString().match(re)
-        );
-    } else if (objectType == 'place') {
+    if (objectType == "activity") {
       return (
-        item.placeNumber.toString().match(re) 
-        || item.title.match(re) 
-        || item.description.match(re) 
-        || item.editor.match(re) 
-        || item.date.match(re)
+        item.branchOffice.match(re) ||
+        item.year.toString().match(re) ||
+        item.number.toString().match(re)
       );
-    } else if (objectType == 'position') {
-      if (item.posType == 'position') {
+    } else if (objectType == "place") {
+      return (
+        item.placeNumber.toString().match(re) ||
+        item.title.match(re) ||
+        item.description.match(re) ||
+        item.editor.match(re) ||
+        item.date.match(re)
+      );
+    } else if (objectType == "position") {
+      if (item.posType == "position") {
         return (
-          item.positionNumber.toString().match(re) 
-          || item.title.some(str => str.match(re)) 
-          || item.date.match(re)
+          item.positionNumber.toString().match(re) ||
+          item.title.some((str) => str.match(re)) ||
+          item.date.match(re)
         );
-      } else if (item.posType == 'image') {
+      } else if (item.posType == "image") {
         return (
           item.positionNumber.toString().match(re) ||
           item.editor.match(re) ||
@@ -157,23 +157,21 @@ class UtilsClass {
   }
 
   /**
-     * Change texture data to base64
-     * @param {*} rawData 
-     */
-    async textureToBase64(rawData) {
-      const output = await new Promise((resolve) => {
-
-        let reader = new FileReader();
-        let f = rawData[0];
-        reader.onload = e => {
-          const b64 = e.target.result
-          resolve(b64)
-        }
-        reader.readAsDataURL(f);
-
-      });
-      return output;
-    }
+   * Change texture data to base64
+   * @param {*} rawData
+   */
+  async textureToBase64(rawData) {
+    const output = await new Promise((resolve) => {
+      let reader = new FileReader();
+      let f = rawData[0];
+      reader.onload = (e) => {
+        const b64 = e.target.result;
+        resolve(b64);
+      };
+      reader.readAsDataURL(f);
+    });
+    return output;
+  }
 }
 
 const utils = new UtilsClass();
