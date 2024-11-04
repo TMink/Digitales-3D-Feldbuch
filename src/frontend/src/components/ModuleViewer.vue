@@ -2,7 +2,7 @@
  * Created Date: 06.09.2023 17:19:12
  * Author: Julian Hardtung
  * 
- * Last Modified: 30.10.2024 16:25:05
+ * Last Modified: 04.11.2024 18:32:58
  * Modified By: Julian Hardtung
  * 
  * Description: input module viewer that shows all modules that are 
@@ -122,7 +122,10 @@ export default {
   emits: ['dataToPlaceForm'],
 
   props: {
-    objectProp: Object,
+    objectProp: {
+      type: Object,
+      default: () => ({})
+    },
     datingItemsFirstProp: Array,
     editorItemsFirstProp: Array,
     materialItemsFirstProp: Array,

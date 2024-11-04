@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 30.10.2024 17:15:25
+ * Last Modified: 04.11.2024 14:15:12
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -158,6 +158,7 @@ export default {
   photoDirectory: "Foto-Verzeichnis",
   findingSampleData: "Fund-/Probedaten",
   open: "Öffnen",
+  backgroundImage: "Hintergrundbild",
 
   // Phrases
   addMsg: "Neue {msg} hinzufügen",

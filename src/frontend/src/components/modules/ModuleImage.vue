@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 25.10.2024 17:02:51
+ * Last Modified: 04.11.2024 18:35:00
  * Modified By: Julian Hardtung
  * 
  * Description: `comment` input module for places
@@ -67,11 +67,12 @@
             </v-textarea>
 
             <v-file-input 
+              v-if="object.posType == 'image'"
               show-size 
               v-model="object.image"
               @change="onFileSelected" 
               prepend-icon="mdi-camera"
-              accept="image/png, image/jpeg, image/bmp"
+              accept="image/png, image/jpeg, image/bmp, image/tiff"
               :label="$t('input', { msg: $t('image') })  + ' *'">
             </v-file-input>
           </v-col>
@@ -84,7 +85,7 @@
                 :height="windowWidth/3.5"
                 aspect-ratio="1/1"
                 cover
-                :src="imageModel">
+                :src="objectProp.image">
                 <template v-slot:placeholder>
                   <v-card variant="tonal" 
                     class="d-flex align-center justify-center fill-height">
@@ -102,7 +103,6 @@
 <script>
 
 import { useWindowSize } from 'vue-window-size';
-import { utils } from '../../utils';
 
 /**
  * Methods overview:
@@ -110,7 +110,10 @@ import { utils } from '../../utils';
 export default {
 
   props: {
-    objectProp: Object,
+    objectProp: {
+      type: Object,
+      default: () => ({}),
+    },
     editorItemsSecondProp: Array,
     showModuleProp: Boolean,
 	},
@@ -132,7 +135,6 @@ export default {
    */
   data() {
     return {
-      imageModel: null,
       object: {
         editor: '',
         date: '',
@@ -165,7 +167,6 @@ export default {
     "object.editor": {
       handler: function () {
         if ( this.object.editor != null ) {
-          /* Send data back to ModuleViewer.vue */
           this.$emit("dataToModuleViewer", ['editor', this.object.editor]);
         } else if ( this.object.editor == null ) {
           this.$emit("dataToModuleViewer", ['editor', '']);
@@ -175,7 +176,6 @@ export default {
     "object.image": {
       handler: async function () {
         if ( this.object.image != null ) {
-          /* Send data back to ModuleViewer.vue */
           this.$emit("dataToModuleViewer", ['image', this.object.image]);
         } else if ( this.object.image == null ) {
           this.$emit("dataToModuleViewer", ['image', '']);
@@ -185,7 +185,6 @@ export default {
     "object.date": {
       handler: function () {
         if ( this.object.date != null ) {
-          /* Send data back to ModuleViewer.vue */
           this.$emit("dataToModuleViewer", ['date', this.object.date]);
         } else {
           this.$emit("dataToModuleViewer", ['date', '']);
@@ -204,10 +203,6 @@ export default {
   async created() {
     this.object = this.objectProp;
 
-    if (this.object.image != '') {
-      this.imageModel = await utils.textureToBase64([this.object.image]);
-    }
-
     this.showModule = this.showModuleProp;
   },
 
@@ -224,7 +219,7 @@ export default {
 
         // When file is read, set the imageUrl to the result
         reader.onload = (e) => {
-          this.imageModel = e.target.result;
+          this.objectProp.image = e.target.result;
         };
         // Read the file as a data URL
         reader.readAsDataURL(file);

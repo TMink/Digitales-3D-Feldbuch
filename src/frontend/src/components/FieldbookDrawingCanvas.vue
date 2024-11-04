@@ -2,7 +2,7 @@
  * Created Date: 06.03.2024 16:25:57
  * Author: Methusshan Elankumaran
  * 
- * Last Modified: 30.10.2024 17:12:43
+ * Last Modified: 04.11.2024 18:23:49
  * Modified By: Julian Hardtung
  * 
  * Description: canvas component for technical drawings
@@ -102,27 +102,32 @@ export default defineComponent({
             vm.endDrawing();
         })
         vm.backgroundCanvas = document.getElementById("backgroundCanvas");
-        vm.backgroundContext = vm.backgroundCanvas.getContext("2d");
+        vm.backgroundContext = vm.backgroundCanvas.getContext("2d", {alpha: false});
         vm.canvasStates[-1] = vm.fieldbookContext.getImageData(0, 0, this.canvasWidth, this.canvasHeight);
-    },
+      
+        this.getBgColor();
+      },
 
     methods: {
         addBackgroundImage(imageSrc, imageWidth, imageHeight) {
-            var image = new Image();
-            image.src = imageSrc;
-            var vm = this;
-            vm.width = imageWidth;
-            vm.height = imageHeight
+          this.backgroundImage = imageSrc;
+          this.getBgColor();
+          var image = new Image();
+          image.src = imageSrc;
+          var vm = this;
+          vm.width = imageWidth;
+          vm.height = imageHeight
 
-            image.onload = function () {
-                vm.backgroundContext.clearRect(0, 0, imageWidth, imageHeight);
-                vm.backgroundContext.globalAlpha = 0.5;
-                vm.backgroundContext.drawImage(image, 0, 0, imageWidth, imageHeight);
-            }
+          image.onload = function () {
+              vm.backgroundContext.clearRect(0, 0, imageWidth, imageHeight);
+              vm.backgroundContext.globalAlpha = 0.5;
+              vm.backgroundContext.drawImage(image, 0, 0, imageWidth, imageHeight);
+          }
         },
 
         removeBackground(){
             this.backgroundContext.clearRect(0, 0, this.width, this.height);
+            this.backgroundContext.backgroundColor = "#fff"
         },
 
         startDrawing(e) {
@@ -360,25 +365,25 @@ export default defineComponent({
             })
 
 
-            /**
+      /**
        * Prints the value of the inputfield on the cancas and deletes the input-fields
        * 
        * @param {*} Input Inputfield containing the string to be printed
        * @param {*} vm this-Instance of the PlaceForm-Component 
        * */
-            async function drawText(input, btn, vm, e) {
-                if (input.value != "") {
-                    var lineheight = vm.fontSize + 5;
-                    var lines = input.value.split('\n');
+        async function drawText(input, btn, vm, e) {
+            if (input.value != "") {
+                var lineheight = vm.fontSize + 5;
+                var lines = input.value.split('\n');
 
-                    for (var i = 0; i < lines.length; i++)
-                        await vm.fieldbookContext.fillText(lines[i], e.offsetX + 13, e.offsetY + 30 + (i * lineheight));
-                }
-                input.remove();
-                btn.remove();
-                vm.textfieldCreated = false;
-                vm.addState();
+                for (var i = 0; i < lines.length; i++)
+                    await vm.fieldbookContext.fillText(lines[i], e.offsetX + 13, e.offsetY + 30 + (i * lineheight));
             }
+            input.remove();
+            btn.remove();
+            vm.textfieldCreated = false;
+            vm.addState();
+        }
         },
 
         addWhiteBackgroundToImage() {
@@ -388,7 +393,7 @@ export default defineComponent({
             newCanvas.height = this.canvasHeight;
             newContext.drawImage(this.backgroundCanvas, 0, 0)
             newContext.drawImage(this.fieldbookCanvas, 0, 0);
-            //newContext.fillStyle = "#fff"
+            /* newContext.fillStyle = "#fff" */
             newContext.globalCompositeOperation = "destination-over";
             newContext.rect(0, 0, this.canvasWidth, this.canvasHeight);
             newContext.fill();
@@ -397,6 +402,16 @@ export default defineComponent({
 
         getFontStyle() {
             return this.fontSize + "px " + this.fontFamily;
+        },
+
+        getBgColor() {
+          const bg = document.getElementById("backgroundCanvas");
+
+          if (this.backgroundImage == null) {
+            bg.style.backgroundColor =  "#fff";
+          } else {
+            bg.style.backgroundColor = "";
+          }
         }
     }
 })
@@ -411,8 +426,7 @@ export default defineComponent({
 }
 
 #backgroundCanvas {
-    background-color: white;
-    margin-top: 10px;
+  margin-top: 10px;
 }
 
 canvas {

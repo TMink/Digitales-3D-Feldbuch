@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 30.10.2024 16:40:15
+ * Last Modified: 04.11.2024 18:16:53
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -282,7 +282,7 @@ export default {
           if (this.positions[i].posType == 'image'
           || this.positions[i].posType == 'drawing') {
             if (this.positions[i].image != '') {
-              this.positions[i].image = await utils.textureToBase64([this.positions[i].image]);
+              //this.positions[i].image = await utils.textureToBase64([this.positions[i].image]);
             }
             continue;
           }
