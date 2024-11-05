@@ -2,7 +2,7 @@
  * Created Date: 29.10.2024 13:57:08
  * Author: Julian Hardtung
  * 
- * Last Modified: 04.11.2024 18:15:47
+ * Last Modified: 05.11.2024 11:19:24
  * Modified By: Julian Hardtung
  * 
  * Description: 
@@ -24,21 +24,16 @@
         <v-btn @click.prevent="$refs.FieldbookDrawingCanvas.undo()" variant="flat" icon="mdi-undo" rounded="0"></v-btn>
         <v-btn @click.prevent="$refs.FieldbookDrawingCanvas.redo()" variant="flat" icon="mdi-redo" rounded="0"></v-btn>
         <v-btn @click.prevent="onToolbarClick('clear')" variant="flat" icon="mdi-trash-can-outline" rounded="0"></v-btn>
-        <!-- <v-btn @click.prevent="backgroundDialog = true" variant="flat" icon="mdi-image" rounded="0"></v-btn>
-        <v-btn @click.prevent="onToolbarClick('removeBackground')" variant="flat" icon="mdi-image-remove" rounded="0"></v-btn> -->
+        
         <v-divider vertical class="px-1 mr-1"></v-divider>
-        <!-- <v-col cols="2">
 
-          <v-card variant="outlined"> -->
-            <v-file-input class="pa-1" :label="$t('backgroundImage')" 
-            density="compact" hide-details 
-            @click:clear="revertBackground()" 
-            @change="setBackgroundImage($event)" 
-            prepend-icon="mdi-image"
-              accept="image/tiff, image/jpeg">
-            </v-file-input>
-          <!-- </v-card>
-        </v-col> -->
+        <v-file-input class="pa-1" :label="$t('backgroundImage')" 
+          density="compact" hide-details 
+          @click:clear="revertBackground()" 
+          @change="setBackgroundImage($event)" 
+          prepend-icon="mdi-image"
+          accept="image/tiff, image/jpeg">
+        </v-file-input>
 
 
         <v-divider vertical class="px-1"></v-divider>

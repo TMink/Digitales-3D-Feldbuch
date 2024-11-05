@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 30.10.2024 16:56:44
+ * Last Modified: 05.11.2024 13:18:49
  * Modified By: Julian Hardtung
  * 
  * Description: input page for positions data 
@@ -20,7 +20,7 @@
             <v-tab value="one" rounded="0">
               {{ $t('general') }}
             </v-tab>
-            <v-tab v-if="position.posType = 'drawing'" value="two" rounded="0">
+            <v-tab v-if="position.posType == 'drawing'" value="two" rounded="0">
               {{ $tc('drawing', 1) }}
             </v-tab>
             <v-btn rounded="0" color="success" v-on:click="savePosition()">
@@ -43,7 +43,6 @@
           <v-window-item value="one">
             <ModuleViewer
               :objectProp="position"
-              :updateListFirstProp="position.testBool"
               :datingItemsFirstProp="datingsList"
               :titleItemsFirstProp="titlesList"
               :materialItemsFirstProp="materialsList"
@@ -52,10 +51,12 @@
           </v-window-item>
 
           <v-window-item value="two">
-            <ModuleDrawing :objectProp="position"/>
+            <ModuleDrawing
+            :objectProp="position"
+            @use-drawing="updateDrawingImage"/>
           </v-window-item>
 
-          <v-window-item value="four">
+          <v-window-item value="three">
             <ModelForm 
               object_type="Positions" 
               :object_prop="position"/>
@@ -92,19 +93,19 @@
  */
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import ConfirmDialog from '../components/ConfirmDialog.vue';
-import ImageForm from '../components/ImageForm.vue';
 import ModelForm from '../components/ModelForm.vue';
 import ModuleViewer from '../components/ModuleViewer.vue';
 import Navigation from '../components/Navigation.vue';
 import { toRaw } from 'vue';
 import { useRoute } from 'vue-router';
 import ModuleDrawing from '../components/modules/ModuleDrawing.vue';
+import { reactive } from 'vue';
 
 export default {
   name: 'PositionCreation',
+
   components: {
     ConfirmDialog,
-    ImageForm,
     ModelForm,
     ModuleViewer,
     Navigation,
@@ -118,11 +119,18 @@ export default {
     await fromOfflineDB.syncLocalDBs()
       .catch(err => console.error(err));
 
-    const data = await fromOfflineDB
+      
+    const position = reactive(await fromOfflineDB
       .getObject(positionID, 'Positions', 'positions')
-      .catch(err => console.error(err));
+      .catch(err => console.error(err)));
+
+    const updateDrawingImage = (newData) => {
+      Object.assign(position, newData);
+    };
+
     return {
-      position: data,
+      position,
+      updateDrawingImage
     };
   },
 
@@ -243,6 +251,10 @@ export default {
     var lvrTitles = JSON.parse(import.meta.env.VITE_TITLES);
     this.titlesList = await lvrTitles.concat(customTitles);
 
+    /* const currentPosID = this.$generalStore.getCurrentObject('position');
+    this.testPosition = await fromOfflineDB
+      .getObject(currentPosID, 'Positions', 'positions')
+      .catch(err => console.error(err)); */
     this.componentHasLoaded = true;
   },
 
@@ -334,6 +346,11 @@ export default {
           this.position.image = data[1];
           break;
 
+        /* Module: Model */
+        case 'model':
+          this.position.model = data[1];
+          break;
+
         default:
           console.log( 'Cant specify emitted data: ' + data[0] );
       }
@@ -387,6 +404,13 @@ export default {
       this.$root.vtoast.show({ message: this.$t('saveSuccess')});
     },
 
+
+    /** 
+     * Updatesd the autofill lists in case a user has entered a new term
+     * @param storeName 
+     * @param item 
+     * @param itemList 
+     */
     async updateAutoFillList( storeName, item, itemList) {
       const newEditor = {};
 
