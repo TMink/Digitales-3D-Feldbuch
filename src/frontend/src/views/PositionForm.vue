@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 05.11.2024 13:18:49
+ * Last Modified: 05.11.2024 13:45:18
  * Modified By: Julian Hardtung
  * 
  * Description: input page for positions data 
@@ -502,7 +502,7 @@ export default {
         await fromOfflineDB.updateObject(place, 'Places', 'places')
           .catch(err => console.error(err));
       }
-
+    console.log(rawPosition)
       // Delete the position itself
       await fromOfflineDB
         .deleteCascade( rawPosition._id, 'position', 'Positions', 'positions' )

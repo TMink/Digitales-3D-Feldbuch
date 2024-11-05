@@ -2,7 +2,7 @@
  * Created Date: 06.09.2023 17:19:12
  * Author: Julian Hardtung
  * 
- * Last Modified: 04.11.2024 18:32:58
+ * Last Modified: 05.11.2024 13:36:18
  * Modified By: Julian Hardtung
  * 
  * Description: input module viewer that shows all modules that are 
@@ -15,6 +15,14 @@
       <v-row v-if="object.posType == 'image' || object.posType == 'drawing'">
         <v-col>
           <ModuleImage
+            :objectProp="object"
+            :editorItemsSecondProp="editorItemsFirstProp"
+            @dataToModuleViewer="sendData($event)"/>
+        </v-col>  
+      </v-row>
+      <v-row v-if="object.posType == 'model'">
+        <v-col>
+          <ModuleModel
             :objectProp="object"
             :editorItemsSecondProp="editorItemsFirstProp"
             @dataToModuleViewer="sendData($event)"/>
@@ -98,6 +106,7 @@ import ModuleComment from './modules/ModuleComment.vue';
 import ModuleProfile from './modules/ModuleProfile.vue';
 import ModuleImage from './modules/ModuleImage.vue';
 import ModuleDrawing from './modules/ModuleDrawing.vue';
+import ModuleModel from './modules/ModuleModel.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB';
 import { useWindowSize } from 'vue-window-size';
 import { toRaw } from 'vue'
@@ -116,7 +125,8 @@ export default {
     ModuleProfile,
     ModuleComment,
     ModuleImage,
-    ModuleDrawing
+    ModuleDrawing,
+    ModuleModel
 },
 
   emits: ['dataToPlaceForm'],

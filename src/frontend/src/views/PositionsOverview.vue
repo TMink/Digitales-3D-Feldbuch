@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 04.11.2024 18:16:53
+ * Last Modified: 05.11.2024 13:50:50
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -64,7 +64,7 @@
               @clicked-row="handleRowClick" :item="item"/>
 
             <!--###################### IMAGE ROW ######################-->
-            <ImageTableRow v-if="item.posType == 'image' || item.posType == 'drawing'" 
+            <ImageTableRow v-if="item.posType == 'image' || item.posType == 'drawing' || item.posType == 'model'" 
               @clicked-row="handleRowClick" :item="item"/>
           </template>
         </v-data-table-virtual>
@@ -115,7 +115,12 @@
               {{ $tc('drawing', 1) }}
             </v-tooltip>
           </v-btn>
-          <v-btn icon="mdi-file-question" disabled></v-btn>
+          <v-btn icon="mdi-cube-outline" >
+            <v-icon></v-icon>
+            <v-tooltip activator="parent" location="bottom">
+              {{ $tc('model', 1) }}
+            </v-tooltip>
+          </v-btn>
         </v-btn-toggle>
 
         <AddButton class="text-end" @click="addObject()"/>
@@ -287,7 +292,7 @@ export default {
             continue;
           }
           
-          if (this.positions[i].coordinates != '') {
+          if (this.positions[i].coordinates != null && this.positions[i].coordinates != '') {
             var coordinates = await fromOfflineDB.getObject(this.positions[i].coordinates, 'Coordinates', 'coordinates');
             this.positions[i].coordsCount = coordinates.coords.length;
           }
@@ -590,6 +595,57 @@ export default {
 
     async addModel() {
       console.log("ADD MODEL")
+      var curPlaceID = this.$generalStore.getCurrentObject('place');
+      var curPlace = await fromOfflineDB
+        .getObject(curPlaceID, "Places", "places")
+        .catch(err => console.error(err));
+      var newPositionID = String(Date.now());
+
+      curPlace.positions.push(newPositionID);
+      curPlace.lastChanged = Date.now();
+
+      const newModel = {
+        _id: newPositionID,
+        placeID: curPlaceID,
+        positionNumber: '',
+        posType: 'model',
+
+        editor: '',
+        date: new Date().toLocaleDateString("de-DE"),
+        comment: '',
+        
+        model: '',
+        modulePreset: {
+          coordinates: false,
+          dating: false,
+          comment: false,
+          objectDescribers: false,
+        },
+        lastChanged: Date.now(),
+        lastSync: 0,
+
+        color: '#ffffff',
+        opacity: 1,
+        coordinates: null,
+        scale: null,
+        rotation: null,
+        loaderType: null//this.model.model[0].name.split('.')[1]
+      };
+
+      if (this.positions.length == 0) {
+        newModel.positionNumber = 1;
+      } else {
+        var lastPosNumber = await fromOfflineDB.getLastAddedPosition()
+          .catch(err => console.error(err));
+        newModel.positionNumber = lastPosNumber + 1;
+      }
+      
+      await fromOfflineDB.updateObject(curPlace, 'Places', 'places')
+        .catch(err => console.error(err));
+      await fromOfflineDB.addObject(newModel, "Positions", "positions")
+        .catch(err => console.error(err));
+    
+      this.updatePositions();
     },
 
     /**
