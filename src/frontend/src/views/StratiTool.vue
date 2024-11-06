@@ -2425,49 +2425,12 @@ export default {
 }
 </script>
 
-<style>
-@import '@vue-flow/core/dist/style.css';
-@import '../components/graph-editor-components/style.css';
 
-/**
- *
- * > > > > > > Universal < < < < < <
- *
- */
 
-.background {
-  background-color: #171C23;
-}
 
-.hollow {
-  border: 4px;
-  border-style: ridge;
-  border-color: #171C23;
-  background-color: #171C23;
-}
 
-.tile {
-  border: 4px;
-  border-style: ridge;
-  border-color: #171C23;
-  background-color: #303d52
-}
 
-.button {
-  border: 5px;
-  border-style: double;
-  border-color: #1C2128;
-  text-align: center;
-  line-height: 0px;
-  background-color: #485b7a;
-}
 
-.plato {
-  border: 4px;
-  border-style: ridge;
-  border-color: #171C23;
-  background-color: #28303d;
-  async function importData(){
 
     let parsedData = []
 
@@ -2520,6 +2483,60 @@ export default {
     saveAs(blob, filename + ".json");
   }
 
+<style>
+@import '@vue-flow/core/dist/style.css';
+@import '../components/graph-editor-components/style.css';
+
+/**
+ *
+ * > > > > > > Universal < < < < < <
+ *
+ */
+
+.background {
+  background-color: #171C23;
+}
+
+.hollow {
+  border: 4px;
+  border-style: ridge;
+  border-color: #171C23;
+  background-color: #171C23;
+}
+
+.tile {
+  border: 4px;
+  border-style: ridge;
+  border-color: #171C23;
+  background-color: #303d52
+}
+
+.button {
+  border: 5px;
+  border-style: double;
+  border-color: #1C2128;
+  text-align: center;
+  line-height: 0px;
+  background-color: #485b7a;
+}
+
+.plato {
+  border: 4px;
+  border-style: ridge;
+  border-color: #171C23;
+  background-color: #28303d;
+}
+
+.visible {
+  position: absolute;
+  z-index: 1; 
+  opacity: 1;
+}
+
+.notVisible {
+  position: absolute;
+  z-index: 0; 
+  opacity: 0;
 }
 
 /**
