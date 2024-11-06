@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 21.10.2024 15:17:40
+ * Last Modified: 22.10.2024 12:39:16
  * Modified By: Julian Hardtung
  * 
  * Description: `general information` input module for places/positions
@@ -220,10 +220,10 @@ export default {
       editorItems: [],
 
       titleRules: [
-        value => {
+        /* value => {
           if (value.length > 0) return true
           return this.$t('isMandatory', {msg: this.$tc('title', 1)})
-        }
+        } */
       ],
       dateRules: [
         value => {

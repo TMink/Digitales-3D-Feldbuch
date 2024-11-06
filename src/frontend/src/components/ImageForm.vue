@@ -2,7 +2,7 @@
  * Created Date: 06.07.2023 13:22:10
  * Author: Julian Hardtung
  * 
- * Last Modified: 07.10.2024 15:17:14
+ * Last Modified: 29.10.2024 13:19:13
  * Modified By: Julian Hardtung
  * 
  * Description: list and input form for images of places/positions
@@ -205,6 +205,7 @@ import AddButton from '../components/AddButton.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { useWindowSize } from 'vue-window-size';
 import { toRaw } from 'vue';
+import { utils } from '../utils.js';
 
 export default {
   name: "ImageForm",
@@ -286,7 +287,7 @@ export default {
       if (this.temp_editing_img.length == 0) {
         rawImage.image = this.backup_image;
       } else {
-        rawImage.image = await this.textureToBase64(this.temp_editing_img)
+        rawImage.image = await utils.textureToBase64(this.temp_editing_img)
           .catch(err => console.error(err));
       }
 
@@ -357,7 +358,7 @@ export default {
         _id: newImageID,
         imageNumber: imageNumber,
         title: rawImage.title,
-        image: await this.textureToBase64([imageFile])
+        image: await utils.textureToBase64([imageFile])
           .catch(err => console.error(err)),
         lastChanged: Date.now(),
         lastSync: 0
@@ -395,25 +396,6 @@ export default {
       this.image.title = '';
       this.image.image = [];
       this.temp_editing_img = [];
-    },
-
-    /**
-     * Change texture data to base64
-     * @param {*} rawData 
-     */
-    async textureToBase64(rawData) {
-      const output = await new Promise((resolve) => {
-
-        let reader = new FileReader();
-        let f = rawData[0];
-        reader.onload = e => {
-          const b64 = e.target.result
-          resolve(b64)
-        }
-        reader.readAsDataURL(f);
-
-      });
-      return output;
     },
 
     dataURLtoFile(dataurl, filename) {

@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.10.2024 17:33:52
+ * Last Modified: 30.10.2024 17:20:38
  * Modified By: Julian Hardtung
  * 
  * Description: input page for places data 
@@ -18,8 +18,6 @@
           <v-tabs v-model="tab" direction="vertical" color="primary">
             <v-tab value="one" rounded="0"> {{ $t('general') }} </v-tab>
             <v-tab value="three" rounded="0"> {{ $t('imageOverview') }} </v-tab>
-            <v-tab class="hideable" value="four" rounded="0"> {{ $tc('technicalDrawing', 2) }} </v-tab>
-            <v-tab class="hideable" value="five" rounded="0"> {{ $tc('model', 2) }} </v-tab>
             <v-btn rounded="0" v-on:click="savePlace()" color="success">
               {{ $t('save') }}
             </v-btn>
@@ -49,97 +47,6 @@
             <ImageOverview :object_id="place._id" />
           </v-window-item>
 
-          <!-- Tab item 'technical drawing' -->
-          <v-window-item value="four">
-            <v-dialog persistent overlay-color="black" v-model="backgroundDialog">
-              <v-card class="pa-4">
-                <v-card-title>Set Background Image</v-card-title>
-                <v-file-input @change="setBackgroundImage($event)" prepend-icon="mdi-image"
-                  accept="image/png"></v-file-input>
-                <v-btn @click.prevent="saveBackground()">Save</v-btn>
-                <v-btn @click.prevent="revertBackground()">Cancel</v-btn>
-              </v-card>
-            </v-dialog>
-
-            <v-card>
-              
-              <v-toolbar :height="50" color="surface" density="default">
-                <v-card-title>{{ $t('technicalDrawing')}}</v-card-title>
-                <v-divider vertical></v-divider>
-                <v-btn @click="onToolbarClick('pen')" variant="flat" v-bind:color="canvasSettings.mode ==='pen' ? 'success' : 'none'" icon="mdi-pencil" rounded="0"></v-btn>
-                <v-btn @click="onToolbarClick('eraser')" variant="flat" v-bind:color="canvasSettings.mode ==='eraser' ? 'success' : 'none'" icon="mdi-eraser" rounded="0"></v-btn>
-                <v-btn @click.prevent="onToolbarClick('text')" variant="flat" v-bind:color="canvasSettings.mode === 'text' ? 'success' : 'none'" icon="mdi-format-text" rounded="0"></v-btn>
-                <v-btn @click="onToolbarClick('shape')" variant="flat" v-bind:color=" canvasSettings.mode != 'pen' && canvasSettings.mode != 'eraser' 
-                        && canvasSettings.mode != 'text' && canvasSettings.mode != 'none' ? 'success' : 'none'" icon="mdi-shape" rounded="0"></v-btn>
-                <v-btn @click="onToolbarClick('colorPicker')" icon="mdi-palette" rounded="0"></v-btn>
-                <v-btn @click="onToolbarClick('lineWidth')" icon="mdi-minus" rounded="0"></v-btn>
-                <v-btn @click.prevent="$refs.FieldbookDrawingCanvas.undo()" icon="mdi-undo" rounded="0"></v-btn>
-                <v-btn @click.prevent="$refs.FieldbookDrawingCanvas.redo()" icon="mdi-redo" rounded="0"></v-btn>
-                <v-btn @click.prevent="onToolbarClick('clear')" icon="mdi-trash-can-outline" rounded="0"></v-btn>
-                <v-btn @click.prevent="backgroundDialog = true" icon="mdi-image" rounded="0"></v-btn>
-                <v-btn @click.prevent="onToolbarClick('removeBackground')" icon="mdi-image-remove" rounded="0"></v-btn>
-              </v-toolbar>
-            </v-card>
-            <div style="position:relative">
-              <v-expand-transition>
-                <v-color-picker class="mt-2" style="position:absolute; left:430px; z-index: 1;"
-                  v-show="canvasSettings.colorPickerVisible" v-model="canvasSettings.color"></v-color-picker>
-              </v-expand-transition>
-
-              <v-card class="mt-2" style="position:absolute; left: 480px; z-index: 1;" :width="600">
-                <v-expand-transition>
-                  <v-slider v-model="canvasSettings.lineWidth" :min="1" :max="10" :step="1"
-                    v-show="canvasSettings.lineWidthVisible" show-ticks="always"
-                    :ticks="canvasSettings.lineTicks"></v-slider>
-                </v-expand-transition>
-              </v-card>
-
-              <v-expand-transition>
-                <v-card class="mt-2" row v-show="canvasSettings.textModeVisible"
-                  style="position: absolute; left: 330px; z-index: 1;">
-                  <v-layout>
-                    <v-card :width="200" class="mx-2"><v-select :label="$t('fontFamily')" v-model="canvasSettings.selectedFont"
-                        :items="canvasSettings.fonts"></v-select></v-card>
-                    <v-card :width="200" class="mx-2"><v-select :label="$t('fontSize')"
-                        v-model="canvasSettings.selectedFontSize" :items="canvasSettings.fontSizes"></v-select></v-card>
-                  </v-layout>
-                </v-card>
-              </v-expand-transition>
-
-              <v-expand-transition>
-                <v-card class="mt-2" row v-show="canvasSettings.shapeModeVisible"
-                  style="position: absolute; left: 380px; z-index: 1;">
-                  <v-layout>
-                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'line'" v-bind:color="canvasSettings.mode === 'line' ? 'success' : 'none'" icon="mdi-minus" rounded="0"></v-btn></v-card>
-                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'dotted-line'" v-bind:color="canvasSettings.mode === 'dotted-line' ? 'success' : 'none'" icon="mdi-dots-horizontal" rounded="0"></v-btn></v-card>
-                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'circle'" v-bind:color="canvasSettings.mode === 'circle' ? 'success' : 'none'" icon="mdi-circle-outline" rounded="0"></v-btn></v-card>
-                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'rectangle'" v-bind:color="canvasSettings.mode === 'rectangle' ? 'success' : 'none'" icon="mdi-square-outline" rounded="0"></v-btn></v-card>
-                    <v-card class="mx-2"><v-btn @click="canvasSettings.mode = 'triangle'" v-bind:color="canvasSettings.mode === 'triangle' ? 'success' : 'none'" icon="mdi-triangle-outline"  rounded="0"></v-btn></v-card>
-                    <v-card class="mx-2" :height="50"><v-checkbox :label="$t('fill')" v-model="canvasSettings.filled" icon="mdi-triangle-outline" rounded="0"></v-checkbox></v-card>
-                  </v-layout>
-                </v-card>
-              </v-expand-transition>
-
-              <FieldbookDrawingCanvas ref="FieldbookDrawingCanvas" :canvasWidth="canvasSettings.width"
-                :canvasHeight="canvasSettings.height" :lineWidth="canvasSettings.lineWidth"
-                :color="canvasSettings.color" :mode="canvasSettings.mode" :fontFamily="canvasSettings.selectedFont" 
-                :fontSize="canvasSettings.selectedFontSize" :filled="canvasSettings.filled">
-              </FieldbookDrawingCanvas>
-            </div>
-            <v-row justify="end">
-              <v-col class="text-left mt-2">
-                <v-btn @click="downloadImage()" color="success">
-                  <v-icon>mdi-download</v-icon>
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-window-item>
-
-          <!-- Tab item 'models' -->
-          <v-window-item value="five">
-            <ModelForm :object_prop="place" object_type="Places">
-            </ModelForm>
-          </v-window-item>
         </v-window>
       </v-col>
     </v-row>
@@ -159,7 +66,6 @@ import Navigation from '../components/Navigation.vue';
 import ImageOverview from '../components/ImageOverview.vue';
 import ModuleViewer from '../components/ModuleViewer.vue';
 import ModelForm from '../components/ModelForm.vue';
-import FieldbookDrawingCanvas from "../components/FieldbookDrawingCanvas.vue";
 import ConfirmDialog from '../components/ConfirmDialog.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { toRaw } from 'vue';
@@ -175,7 +81,6 @@ export default {
     ImageOverview,
     ModuleViewer,
     ModelForm,
-    FieldbookDrawingCanvas,
   },
   async setup() {
     const { width, height } = useWindowSize();
@@ -204,38 +109,6 @@ export default {
       tab: null,
       backgroundDialog: false,
 
-      canvasSettings: {
-        width: 1200,
-        height: 800,
-        backgroundColor: "#fff",
-        colorPickerVisible: false,
-        lineWidthVisible: false,
-        textModeVisible: false,
-        shapeModeVisible: false,
-        color: "#000",
-        mode: "none",
-        filled: false,
-        lineWidth: 3,
-        lineTicks: {
-          1: "1",
-          2: "2",
-          3: "3",
-          4: "4",
-          5: "5",
-          6: "6",
-          7: "7",
-          8: "8",
-          9: "9",
-          10: "10",
-        },
-        fonts: ["Arial", "Serif", "Verdana", "Tahoma", "Georgia", "Courier New"],
-        fontSizes: [16, 20, 24, 28, 32, 40, 44, 52],
-        selectedFont: "Arial",
-        selectedFontSize: 20,
-        writeMode: false,
-        backgroundImage: null,
-        oldBackgroundImage: null,
-      },
       headers: [
         {
           title: this.$t('posNumber'),
@@ -651,103 +524,6 @@ export default {
         return true;
       }
     },
-
-
-    /**
-     * Changes the status of variables related to the toolbar, if clicked.
-     * 
-     * @param {string} toolType - Defines the pressed button of the toolbar
-     * */
-    onToolbarClick(toolType) {
-      if (toolType == "pen" || toolType == "eraser") {
-
-        this.canvasSettings.mode = toolType == "eraser" ? "eraser" : "pen";
-        this.canvasSettings.lineWidthVisible = false;
-        this.canvasSettings.textModeVisible = false;
-        this.canvasSettings.colorPickerVisible = false;
-        this.canvasSettings.shapeModeVisible = false;
-      }
-      if (toolType == "colorPicker") {
-        this.canvasSettings.lineWidthVisible = false;
-        this.canvasSettings.textModeVisible = false;
-        this.canvasSettings.shapeModeVisible = false;
-        this.canvasSettings.colorPickerVisible = !this.canvasSettings.colorPickerVisible;
-      }
-      if (toolType == "lineWidth") {
-        this.canvasSettings.colorPickerVisible = false;
-        this.canvasSettings.textModeVisible = false;
-        this.canvasSettings.shapeModeVisible = false;
-        this.canvasSettings.lineWidthVisible = !this.canvasSettings.lineWidthVisible;
-      }
-      if (toolType == "text") {
-        this.canvasSettings.mode = "text"
-        this.canvasSettings.lineWidthVisible = false;
-        this.canvasSettings.colorPickerVisible = false;
-        this.canvasSettings.shapeModeVisible = false;
-        this.canvasSettings.textModeVisible = !this.canvasSettings.textModeVisible;
-      }
-      if (toolType == "clear") {
-        this.$refs.FieldbookDrawingCanvas.clearCanvas();
-      }
-      if (toolType == "shape") {
-        this.canvasSettings.lineWidthVisible = false;
-        this.canvasSettings.textModeVisible = false;
-        this.canvasSettings.colorPickerVisible = false;
-        this.canvasSettings.shapeModeVisible = !this.canvasSettings.shapeModeVisible;
-      }
-      if(toolType == "removeBackground"){
-        this.$refs.FieldbookDrawingCanvas.removeBackground();
-      }
-    },
-
-    /**
-     * Converts the base64-output of the Vue-Drawing-Canvas to an Imagefile, which can be downloaded.
-     * */
-    downloadImage() {
-      const link = document.createElement('a');
-      link.href = this.$refs.FieldbookDrawingCanvas.addWhiteBackgroundToImage().toDataURL();
-      link.target = '_blank';
-      link.download = `${Date.now()}.png`
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    },
-
-    async setBackgroundImage(event) {
-      let URL = window.URL;
-      this.canvasSettings.backgroundImage = URL.createObjectURL(event.target.files[0]);
-    },
-
-    async saveBackground() {
-      this.backgroundDialog = false;
-      await this.setCanvasSize(this.canvasSettings.backgroundImage)
-      await this.$refs.FieldbookDrawingCanvas.addBackgroundImage(this.canvasSettings.backgroundImage, this.canvasSettings.width, this.canvasSettings.height);
-      this.canvasSettings.oldBackgroundImage = { ...this.canvasSettings.backgroundImage};
-      console.log(this.canvasSettings.backgroundImage)
-    },
-
-    async setCanvasSize(url) {
-      var thisInstance = this;
-      var img = new Image();
-      img.src = url;
-      await img.decode().then(() => {
-        if (img.width > 1200) {
-          const compression = img.width / 1200;
-          img.width /= compression;
-          img.height /= compression;
-        }
-        thisInstance.canvasSettings.width = img.width;
-        thisInstance.canvasSettings.height = img.height;
-      })
-    },
-
-    async revertBackground() {
-      if (this.oldBackgroundImage) {
-        this.canvasSettings.backgroundImage = {...this.canvasSettings.oldBackgroundImage};
-      }
-      this.backgroundDialog = false;
-      console.log(this.canvasSettings.backgroundImage)
-    }
 
   }
 };

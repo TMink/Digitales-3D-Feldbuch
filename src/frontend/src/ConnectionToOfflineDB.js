@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Tobias Mink
  * 
- * Last Modified: 16.10.2024 16:29:48
+ * Last Modified: 05.11.2024 13:49:50
  * Modified By: Julian Hardtung
  * 
  * Description: Helper API for manipulating the IndexedDB
@@ -765,12 +765,12 @@ export default class ConnectionToOfflineDB {
           }
           /* Delete all attached coordinates */
           if (object.coordinates != "") {
-            var coords = await context
+            var placeCoords = await context
               .getObject(object.coordinates, "Coordinates", "coordinates")
               .catch((err) => console.error(err));
 
             await fromOfflineDB
-              .deleteObject(coords, "Coordinates", "coordinates")
+              .deleteObject(placeCoords, "Coordinates", "coordinates")
               .catch((err) => console.error(err));
           }
           /* Delete all attached models */
@@ -814,29 +814,28 @@ export default class ConnectionToOfflineDB {
 
         case "position":
           /* Delete all attached coordinates */
-          if (object.coordinates != "") {
-            var coords = await context
+          if (object.coordinates != null && object.coordinates != "" ) {
+            var posCoords = await context
               .getObject(object.coordinates, "Coordinates", "coordinates")
               .catch((err) => console.error(err));
 
             await fromOfflineDB
-              .deleteObject(coords, "Coordinates", "coordinates")
+              .deleteObject(posCoords, "Coordinates", "coordinates")
               .catch((err) => console.error(err));
           }
           /* Delete all attached images */
-          if (object.images.length != 0) {
-            for (var n = 0; n < object.images.length; n++) {
+          /* if (object.image.length != 0) {
               var image = await context
-                .getObject(object.images[n].toString(), "Images", "images")
+                .getObject(object.image.toString(), "Images", "images")
                 .catch((err) => console.error(err));
 
               await fromOfflineDB
                 .deleteObject(image, "Images", "images")
                 .catch((err) => console.error(err));
             }
-          }
+          } */
           /* Delete all attached models */
-          if (object.models.length != 0) {
+          /* if (object.models.length != 0) {
             for (var o = 0; o < object.models.length; o++) {
               var modelPos = await context
                 .getObject(object.models[o].toString(), "Models", "positions")
@@ -846,7 +845,7 @@ export default class ConnectionToOfflineDB {
                 .deleteObject(modelPos, "Models", "positions")
                 .catch((err) => console.error(err));
             }
-          }
+          } */
           break;
 
         default:

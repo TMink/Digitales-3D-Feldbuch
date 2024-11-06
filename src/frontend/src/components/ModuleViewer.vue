@@ -2,7 +2,7 @@
  * Created Date: 06.09.2023 17:19:12
  * Author: Julian Hardtung
  * 
- * Last Modified: 22.10.2024 11:38:24
+ * Last Modified: 05.11.2024 13:36:18
  * Modified By: Julian Hardtung
  * 
  * Description: input module viewer that shows all modules that are 
@@ -12,8 +12,24 @@
  <template>
   <v-container fluid class="pa-0 ma-0"> 
     <v-form ref="form">
-    <v-row no-gutters>
+      <v-row v-if="object.posType == 'image' || object.posType == 'drawing'">
+        <v-col>
+          <ModuleImage
+            :objectProp="object"
+            :editorItemsSecondProp="editorItemsFirstProp"
+            @dataToModuleViewer="sendData($event)"/>
+        </v-col>  
+      </v-row>
+      <v-row v-if="object.posType == 'model'">
+        <v-col>
+          <ModuleModel
+            :objectProp="object"
+            :editorItemsSecondProp="editorItemsFirstProp"
+            @dataToModuleViewer="sendData($event)"/>
+        </v-col>  
+      </v-row>
 
+    <v-row no-gutters v-if="object.posType == 'position'">      
       <v-col cols="6">
         <ModuleGeneral
           :objectProp="object"
@@ -88,6 +104,9 @@ import ModuleDating from '../components/modules/ModuleDating.vue';
 import ModuleObjectDescribers from '../components/modules/ModuleObjectDescribers.vue';
 import ModuleComment from './modules/ModuleComment.vue';
 import ModuleProfile from './modules/ModuleProfile.vue';
+import ModuleImage from './modules/ModuleImage.vue';
+import ModuleDrawing from './modules/ModuleDrawing.vue';
+import ModuleModel from './modules/ModuleModel.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB';
 import { useWindowSize } from 'vue-window-size';
 import { toRaw } from 'vue'
@@ -104,13 +123,19 @@ export default {
     ModuleDating,
     ModuleObjectDescribers,
     ModuleProfile,
-    ModuleComment
+    ModuleComment,
+    ModuleImage,
+    ModuleDrawing,
+    ModuleModel
 },
 
   emits: ['dataToPlaceForm'],
 
   props: {
-    objectProp: Object,
+    objectProp: {
+      type: Object,
+      default: () => ({})
+    },
     datingItemsFirstProp: Array,
     editorItemsFirstProp: Array,
     materialItemsFirstProp: Array,

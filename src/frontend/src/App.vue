@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 18.10.2024 14:18:09
+ * Last Modified: 21.10.2024 17:33:26
  * Modified By: Julian Hardtung
  * 
  * Description: main entry point for the fieldbook + 
@@ -117,36 +117,10 @@ export default {
      */
     async initIndexedDB() {
 
-      var technicalPlace = {
-        _id: String(Date.now()),
-        title: 'Technical Place',
-
-        technical: true,
-        general: false,
-        coordinates: false,
-        dating: false,
-
-        //place specific
-        plane: false,
-        findTypes: false,
-        visibility: false,
-        positionslist: false,
-
-        //position specific
-        objectDescribers: false,
-
-        //can be edited?
-        canEdit: false
-      }
-
-      await fromOfflineDB.addObject(technicalPlace, 'ModulePresets', 'places')
-        .catch(err => console.error(err));
-
       var allPlaceModules = {
         _id: String(Date.now()),
         title: 'ALL Place Modules',
 
-        technical: false,
         general: true,
         coordinates: true,
         dating: true,
@@ -174,8 +148,6 @@ export default {
       var allPosModules = {
         _id: String(Date.now()),
         title: 'ALL Pos. Modules',
-
-        technical: false,
 
         general: true,
         coordinates: true,

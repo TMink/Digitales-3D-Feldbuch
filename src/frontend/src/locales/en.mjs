@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 18.10.2024 10:04:23
+ * Last Modified: 04.11.2024 14:15:23
  * Modified By: Julian Hardtung
  * 
  * Description: english translations
@@ -64,6 +64,7 @@ export default {
   visibility: "Visibility",
   drawing: "Drawing | Drawings",
   editor: "Editor | Editors",
+  photographer: "Photographer",
   adressOf: "Adress Of",
   veryGood: "Very Good",
   good: "Good",
@@ -91,12 +92,10 @@ export default {
   online_sync: "Online Sync",
   lastEdited: "Last Edited",
   save: "Save",
-  import: "Import",
   cancel: "Cancel",
   search: "Search",
   yes: "Yes",
   no: "No",
-  to: "bis",
   gaussKrueger: "Gauss-Krueger-Coordinates",
   confirm: "Confirm",
   pdf_export: "PDF Export",
@@ -104,7 +103,6 @@ export default {
   data_backup: "Data Backup",
   adminArea: "Admin Area",
   export: "Export",
-  exportObject: "Export {object}",
   dataFormat: "Data Format",
   separator: "Separator",
   objectSeparated: "{object} separated",
@@ -159,6 +157,8 @@ export default {
   photoList: "Image List (Places)",
   photoDirectory: "Photo Directory",
   findingSampleData: "Finding-/Sampledata",
+  open: "Open",
+  backgroundImage: "Background Image",
 
   // Phrases
   addMsg: "Add new {msg}",
@@ -201,7 +201,8 @@ export default {
   emptyFile: "The file doesn't contain any data",
   wrongFormat: "The data is in the wrong format.",
   syncSuccess: "Data upload successful",
-  duplicationMode: "Duplicationmode activated",
+  duplicationMode: "Duplicationmode",
+  duplicationModeActive: "Duplicationmode active",
   getBackup: "Getting your files",
   createBackup: "Collecting your files",
   forgotPassword: "Forgot password",
@@ -259,9 +260,12 @@ export default {
   resultOfAction: "Result of the Measure",
   maxPlaceNumber: "highest assigned place number",
   findsDocumented: "only tick, if archeological findings were documented",
+  exportObject: "Export {msg}",
   isMandatory: " {msg} is a mandatory field",
   invalidDate: "not a valid date",
   placesCatalogExportDescr: "Select all activities whose places should be exported.",
   fulfillsBodeonRequirements: "Fulfills Bodeon-Requirements",
   mandatoryFieldNotFilled: "Mandatory data was not entered yet",
+  continueExport: "Continue export?",
+  addToPhoto: "Use as image in this position",
 };

@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 03.10.2024 17:16:17
+ * Last Modified: 29.10.2024 13:17:32
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -183,7 +183,6 @@
   
 <script>
 import Navigation from '../components/Navigation.vue'
-import ConfirmDialog from '../components/ConfirmDialog.vue'
 import AddButton from '../components/AddButton.vue'
 import OnlineImport from '../components/OnlineImport.vue'
 import { useWindowSize } from 'vue-window-size';
@@ -198,7 +197,6 @@ export default {
   name: 'ActivitiesOverview',
   components: {
     Navigation,
-    ConfirmDialog,
     AddButton,
     OnlineImport
   },
@@ -399,7 +397,7 @@ export default {
 
       const newActivity = {
         activityNumber: '',
-        branchOffice: 'Platzhalter',
+        branchOffice: 'XX',
         year: new Date().getFullYear(),
         number: '0001',
         places: [],

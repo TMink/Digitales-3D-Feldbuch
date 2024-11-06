@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 01.10.2024 15:17:26
+ * Last Modified: 30.10.2024 11:36:51
  * Modified By: Julian Hardtung
  * 
  * Description: file with reusable util functions
@@ -39,22 +39,23 @@ class UtilsClass {
       return;
     }
 
-    // if no queries are present, return all activities
+    // if no queries are present, return all objects
     if (queries.length === 0 || (queries.length === 1 && queries[0] === "")) {
       return objects;
     } else {
-      // filter activities by all query filters
-      // (activities have to fulfill every query filter)
-      return objects.filter((item) => {
+      // filter objects by all query filters
+      // (objects have to fulfill every query filter)
+      let filteredObjects = objects.filter((item) => {
         return queries.every((query) => {
           return this.doesItemMatchQuery(item, query, objectType);
         });
       });
+      return filteredObjects;
     }
   }
 
   /**
-   * Checks if an item matches a given query by performing 
+   * Checks if an item matches a given query by performing
    * a case-insensitive search.
    *
    * @param {Object} item - The item to be matched against the query.
@@ -63,28 +64,37 @@ class UtilsClass {
    *
    */
   doesItemMatchQuery(item, query, objectType) {
-    const re = new RegExp(query, 'i');
+    const re = new RegExp(query, "i");
 
-    if (objectType == 'activity') {
+    if (objectType == "activity") {
+      return (
+        item.branchOffice.match(re) ||
+        item.year.toString().match(re) ||
+        item.number.toString().match(re)
+      );
+    } else if (objectType == "place") {
+      return (
+        item.placeNumber.toString().match(re) ||
+        item.title.match(re) ||
+        item.description.match(re) ||
+        item.editor.match(re) ||
+        item.date.match(re)
+      );
+    } else if (objectType == "position") {
+      if (item.posType == "position") {
         return (
-          item.branchOffice.match(re) 
-          || item.year.toString().match(re) 
-          || item.number.toString().match(re)
+          item.positionNumber.toString().match(re) ||
+          item.title.some((str) => str.match(re)) ||
+          item.date.match(re)
         );
-    } else if (objectType == 'place') {
-      return (
-        item.placeNumber.toString().match(re) 
-        || item.title.match(re) 
-        || item.description.match(re) 
-        || item.editor.match(re) 
-        || item.date.match(re)
-      );
-    } else if (objectType == 'position') {
-      return (
-        item.positionNumber.toString().match(re) 
-        || item.title.match(re) 
-        || item.date.match(re)
-      );
+      } else if (item.posType == "image") {
+        return (
+          item.positionNumber.toString().match(re) ||
+          item.editor.match(re) ||
+          item.comment.match(re) ||
+          item.date.match(re)
+        );
+      }
     }
   }
 
@@ -144,6 +154,23 @@ class UtilsClass {
     } else {
       return true;
     }
+  }
+
+  /**
+   * Change texture data to base64
+   * @param {*} rawData
+   */
+  async textureToBase64(rawData) {
+    const output = await new Promise((resolve) => {
+      let reader = new FileReader();
+      let f = rawData[0];
+      reader.onload = (e) => {
+        const b64 = e.target.result;
+        resolve(b64);
+      };
+      reader.readAsDataURL(f);
+    });
+    return output;
   }
 }
 

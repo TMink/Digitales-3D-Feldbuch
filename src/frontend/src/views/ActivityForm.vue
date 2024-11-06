@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 07.10.2024 14:57:22
+ * Last Modified: 29.10.2024 13:24:26
  * Modified By: Julian Hardtung
  * 
  * Description: input page for activity data 
@@ -23,7 +23,7 @@
             <v-btn rounded="0" v-on:click="cancelActivity" color="primary">
               {{ $t('cancel') }}
             </v-btn>
-            <v-btn rounded="0" color="error" v-on:click="confirmDeletion(place)">
+            <v-btn rounded="0" color="error" v-on:click="confirmDeletion(activity)">
               {{ $t('delete') }}
             </v-btn>
 
@@ -56,6 +56,7 @@
                     <v-text-field
                       class="pr-1"
                       color="primary"
+                      maxlength="2"
                       :label="$t('branchOffice')"
                       v-model="activity.branchOffice">
                     </v-text-field>
@@ -499,8 +500,6 @@
  *  cancelPlace     - Cancels all not already saved actions
  */
 import Navigation from '../components/Navigation.vue';
-import ModuleViewer from '../components/ModuleViewer.vue';
-import ModelForm from '../components/ModelForm.vue';
 import ConfirmDialog from '../components/ConfirmDialog.vue';
 import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
 import { toRaw } from 'vue';
@@ -512,9 +511,8 @@ export default {
   components: {
     Navigation,
     ConfirmDialog,
-    ModuleViewer,
-    ModelForm,
   },
+  
   setup() {
     const { width, height } = useWindowSize();
     var year = new Date().getFullYear();
@@ -624,7 +622,6 @@ export default {
       doneThingModel: '',
       landUsageHistModel: '',
       landUsageCurModel: '',
-      groundTypeModel: '',
       titleModel: '',
       datingModel: '',
       testMaterial: [],

@@ -2,14 +2,14 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 16.10.2024 15:54:40
+ * Last Modified: 18.10.2024 14:42:27
  * Modified By: Julian Hardtung
  * 
  * Description: `plane` input module for places
  -->
 
 <template>
-  <v-card class="mb-2 mr-2 pb-2 px-4">
+  <v-card class="mb-2 pb-2 px-4">
     <v-row no-gutters class="pt-2">
       <h2 class="text-h6 font-weight-medium pt-2">
         {{ $t('plane') }}

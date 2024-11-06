@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 18.10.2024 14:13:55
+ * Last Modified: 04.11.2024 14:15:12
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -60,10 +60,11 @@ export default {
   plane: "Planum",
   profile: "Profil",
   sample: "Probe | Proben",
-  find: "Fund | Funde | Befunde | Befund",
+  find: "Fund | Funde | Befund | Befunde",
   visibility: "Sichtbarkeit",
   drawing: "Zeichnung | Zeichnungen",
   editor: "Bearbeiter",
+  photographer: "Fotograf",
   adressOf: "Ansprache Von",
   veryGood: "Sehr gut",
   good: "Gut",
@@ -96,7 +97,6 @@ export default {
   search: "Suche",
   yes: "Ja",
   no: "Nein | Kein | Keine",
-  to: "bis",
   gaussKrueger: "Gauss-Krüger-Koordinaten",
   confirm: "Bestätigen",
   pdf_export: "PDF Export",
@@ -104,14 +104,12 @@ export default {
   data_backup: "Datensicherung",
   adminArea: "Adminbereich",
   export: "Exportieren",
-  exportObject: "{object} Exportieren",
   dataFormat: "Dateiformat",
   separator: "Separator",
   objectSeparated: "{object} getrennt",
   comma: "Komma",
   semicolon: "Semikolon",
   backup: "Backup",
-  import: "Import",
   hasSubNumber: "Hat Unter-Nr.",
   data_import: "Data Import",
   technical: "Technische Stelle",
@@ -159,6 +157,8 @@ export default {
   photoList: "Fotoliste (Stellen)",
   photoDirectory: "Foto-Verzeichnis",
   findingSampleData: "Fund-/Probedaten",
+  open: "Öffnen",
+  backgroundImage: "Hintergrundbild",
 
   // Phrases
   addMsg: "Neue {msg} hinzufügen",
@@ -202,7 +202,8 @@ export default {
   emptyFile: "Die angegebene Datei enthält keine Daten.",
   wrongFormat: "Die Daten sind im falschen Format.",
   syncSuccess: "Hochladen der Daten erfolgreich",
-  duplicationMode: "Duplikationsmodus aktiviert",
+  duplicationMode: "Duplikationsmodus",
+  duplicationModeActive: "Duplikationsmodus aktiviert",
   getBackup: "Ihre Daten werden geladen",
   createBackup: "Ihre Daten werden gesammelt",
   forgotPassword: "Passwort vergessen",
@@ -267,4 +268,6 @@ export default {
   placesCatalogExportDescr: "Markiere alle Aktivitäten, dessen Stellen exportiert werden sollen.",
   fulfillsBodeonRequirements: "Erfüllt Bodeon-Anforderungen",
   mandatoryFieldNotFilled: "Pflichtfelder wurden noch nicht eingetragen",
+  continueExport: "Weiter exportieren?",
+  addToPhoto: "Als Bild in dieser Position nutzen",
 };

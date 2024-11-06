@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.10.2024 17:34:56
+ * Last Modified: 05.11.2024 13:50:50
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -57,87 +57,19 @@
           :headers="headers"
           :sort-by="[{ key: 'positionNumber', order: 'desc' }]">
 
-          <template v-slot:item="{ item, index }">
-            <tr v-on:click="handleRowClick(item._id)"
-                @mouseenter="setHoveredRow(index, true)"
-                @mouseleave="setHoveredRow(index, false)">
+          <template v-slot:item="{ item }">
 
-              <!-- POSITION NUMBER -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title class="pl-4">
-                  {{ item.positionNumber }}
-                </v-list-item-title>
-              </td>
+            <!--###################### POSITION ROW ######################-->
+            <PositionTableRow v-if="item.posType == 'position'" 
+              @clicked-row="handleRowClick" :item="item"/>
 
-              <!-- SUB NUMBER -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title v-if="item.subNumber.length != 0">
-                  {{ item.subNumber }}
-                </v-list-item-title>
-                <v-list-item-title v-if="item.subNumber.length == 0" 
-                  style="color:dimgrey;">
-                  -
-                </v-list-item-title>
-              </td>
-
-              <!-- TITLE -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title v-if="item.title.length > 0"
-                  style="min-width:200px" class="text-wrap">
-                  {{ item.title.join('; ') }}
-                </v-list-item-title>
-                <v-list-item-title v-if="item.title.length == 0" 
-                  style="color:dimgrey;">
-                  -
-                </v-list-item-title>
-              </td>
-
-              <!-- DATE -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title>
-                  {{ item.date }}
-                </v-list-item-title>
-              </td>
-
-              <!-- SYNC STATUS -->
-              <td>
-                <v-btn icon variant="text" v-if="item.lastSync > 0"
-                  class="my-1">
-                    <v-tooltip 
-                      activator="parent"
-                      location="bottom">
-                      {{ this.$t('lastSync') + new Date(item.lastSync).toLocaleString() }}
-                    </v-tooltip>
-                    <v-icon>mdi-cloud-check</v-icon>
-                </v-btn>
-                <v-btn icon variant="text" class="my-1" v-else>
-                  <v-tooltip 
-                    activator="parent"
-                    location="bottom">
-                      {{ $t('onlyLocal') }}
-                  </v-tooltip>
-                  <v-icon>mdi-cloud-off-outline</v-icon>
-                </v-btn>
-
-                <!-- BODEON CONFORM -->
-                <v-btn icon color="success" variant="text" v-if="isBodeonValid(item)">
-                  <v-tooltip activator="parent" location="bottom">
-                     {{ $t('fulfillsBodeonRequirements') }}
-                  </v-tooltip>
-                  <v-icon>mdi-check-circle</v-icon>
-                </v-btn>
-                <v-btn color="primary" icon variant="text" v-else>
-                  <v-tooltip activator="parent" location="bottom">
-                     {{ $t('mandatoryFieldNotFilled') }}
-                  </v-tooltip>
-                  <v-icon>mdi-alert-circle</v-icon>
-                </v-btn>
-              </td>
-            </tr>
+            <!--###################### IMAGE ROW ######################-->
+            <ImageTableRow v-if="item.posType == 'image' || item.posType == 'drawing' || item.posType == 'model'" 
+              @clicked-row="handleRowClick" :item="item"/>
           </template>
         </v-data-table-virtual>
 
-        <!-- POSITIONS LIST COMPLETE -->
+        <!--###################### POSITIONS LIST COMPLETE ######################-->
         <v-data-table-virtual
           fixed-header
           v-show="showAllInfo"
@@ -146,177 +78,14 @@
           :headers="fullHeaders"
           :sort-by="[{ key: 'positionNumber', order: 'desc' }]">
 
-          <template v-slot:item="{ item, index }">
-            <tr v-on:click="handleRowClick(item._id)" 
-              @mouseenter="setHoveredRow(index, true)"
-              @mouseleave="setHoveredRow(index, false)">
+          <template v-slot:item="{ item }">
+            <!--##################### POSITION ROW FULL ####################-->
+            <PositionTableRowFull v-if="item.posType == 'position'" 
+              @clicked-row="handleRowClick" :item="item"/>
 
-              <!-- PLACE NUMBER -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title class="pl-4">
-                  {{ item.positionNumber }}
-                </v-list-item-title>
-              </td>
-
-              <!-- SUB NUMBER -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title v-if="item.subNumber.length != 0">
-                  {{ item.subNumber }}
-                </v-list-item-title>
-                <v-list-item-title v-if="item.subNumber.length == 0" 
-                  style="color:dimgrey;">
-                  -
-                </v-list-item-title>
-              </td>
-
-              <!-- TITLE -->
-              <td class="py-2" :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title
-                  v-if="item.title.length > 0"
-                  style="min-width:200px" 
-                  class="text-wrap">
-                  {{ item.title.join('; ') }}
-                </v-list-item-title>
-                <v-list-item-title 
-                  v-if="item.title.length == 0" style="color:dimgrey;">
-                  -
-                </v-list-item-title>
-              </td>
-
-              <!-- DATING -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title 
-                  v-if="item.dating">
-                  {{ item.dating }}
-                </v-list-item-title>
-                <v-list-item-title 
-                  v-if="!item.dating" style="color:dimgrey;">
-                  -
-                </v-list-item-title>
-              </td>
-
-              <!-- COORDINATES COUNT -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title 
-                  v-if="item.coordinates != ''">
-                  {{ item.coordsCount + " " +  $t('coordinates') }} 
-                </v-list-item-title>
-                <v-list-item-title style="color:dimgrey;" v-else>
-                  -
-                </v-list-item-title>
-              </td>
-
-              <!-- PLANE -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title 
-                  v-if="item.count != ''" class="text-wrap">
-                  {{ item.count || '-' }}
-                </v-list-item-title>
-                <v-list-item-title 
-                  v-if="item.count == ''" style="color:dimgrey;">
-                  -
-                </v-list-item-title>
-              </td>
-
-              <!-- WEIGHT -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title 
-                  v-if="item.weight != ''" class="text-wrap">
-                  {{ item.weight || '-' }}
-                </v-list-item-title>
-                <v-list-item-title 
-                  v-if="item.weight == ''" style="color:dimgrey;">
-                  -
-                </v-list-item-title>
-              </td>
-
-              <!-- MATERIAL -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title 
-                  v-if="item.material != ''" class="text-wrap">
-                  {{ item.material || '-' }}
-                </v-list-item-title>
-                <v-list-item-title 
-                  v-if="item.material == ''" style="color:dimgrey;">
-                  -
-                </v-list-item-title>
-              </td>
-
-              <!-- COMMENT -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title class="text-wrap" style="max-width:200px">
-                  {{ item.comment }}
-                </v-list-item-title>
-                <v-list-item-title 
-                  v-if="item.comment == ''" style="color:dimgrey;">
-                  -
-                </v-list-item-title>
-              </td>
-
-              <!-- EDITOR -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title
-                  v-if="item.editor != ''">
-                  {{ item.editor }}
-                </v-list-item-title>
-                <v-list-item-title 
-                  v-if="item.editor == ''" style="color:dimgrey;">
-                  -
-                </v-list-item-title>
-              </td>
-
-              <!-- DATE -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title>
-                  {{ item.date}}
-                </v-list-item-title>
-              </td>
-
-              <!-- IS SEPARATE -->
-              <td :style="utils.getRowStyle(index, hoveredRow)">
-                <v-list-item-title 
-                  v-if="item.isSeparate">
-                  &cross;
-                </v-list-item-title>
-                <v-list-item-title 
-                  v-if="!item.isSeparate" style="color:dimgrey;">
-                  -
-                </v-list-item-title>
-              </td>
-
-              <!-- SYNC STATUS -->
-              <td>
-                <v-btn icon variant="text" v-if="item.lastSync > 0" class="my-1">
-                  <v-tooltip activator="parent" location="bottom">
-                    {{ this.$t('lastSync') + new Date(item.lastSync).toLocaleString() }}
-                  </v-tooltip>
-                  <v-icon>mdi-cloud-check</v-icon>
-                </v-btn>
-                <v-btn icon variant="text" v-else class="my-1">
-                  <v-tooltip 
-                    activator="parent"
-                    location="bottom">
-                      {{ $t('onlyLocal') }}
-                  </v-tooltip>
-                  <v-icon>mdi-cloud-off-outline</v-icon>
-                </v-btn>
-
-                <!-- BODEON CONFORM -->
-                <v-btn icon color="success" variant="text" v-if="isBodeonValid(item)">
-                  <v-tooltip activator="parent" location="bottom">
-                     {{ $t('fulfillsBodeonRequirements') }}
-                  </v-tooltip>
-                  <v-icon>mdi-check-circle</v-icon>
-                </v-btn>
-                <v-btn color="primary" icon variant="text" v-else>
-                  <v-tooltip activator="parent" location="bottom">
-                     {{ $t('mandatoryFieldNotFilled') }}
-                  </v-tooltip>
-                  <v-icon>mdi-alert-circle</v-icon>
-                </v-btn>
-              </td>
-              <v-divider></v-divider>
-            </tr>
+            <!--##################### IMAGE ROW FULL ####################-->
+            <ImageTableRowFull v-if="item.posType == 'image' || item.posType == 'drawing'" 
+              @clicked-row="handleRowClick" :item="item"/>
           </template>
         </v-data-table-virtual>
       </v-card>
@@ -325,31 +94,66 @@
 
     <!--------------- ADD BUTTON + DUPLICATE SWITCH --------------->
     <v-row class="align-center">
-      <v-spacer></v-spacer>
-      <AddButton @click="addPosition()"/>
+      <v-col class="text-end">
+        <v-btn-toggle variant="outlined" divided 
+        v-model="addToggle">
+          <v-btn class="text-center" icon="mdi-book-open-outline">
+            <v-icon></v-icon>
+            <v-tooltip activator="parent" location="bottom">
+              {{ $tc('find', 0) }}
+            </v-tooltip>
+          </v-btn>
+          <v-btn icon="mdi-image">
+            <v-icon></v-icon>
+            <v-tooltip activator="parent" location="bottom">
+              {{ $t('image') }}
+            </v-tooltip>
+          </v-btn>
+          <v-btn icon="mdi-draw">
+            <v-icon></v-icon>
+            <v-tooltip activator="parent" location="bottom">
+              {{ $tc('drawing', 1) }}
+            </v-tooltip>
+          </v-btn>
+          <v-btn icon="mdi-cube-outline" >
+            <v-icon></v-icon>
+            <v-tooltip activator="parent" location="bottom">
+              {{ $tc('model', 1) }}
+            </v-tooltip>
+          </v-btn>
+        </v-btn-toggle>
 
-      <!-- DUPLICATE SWITCH -->
-      <v-switch class="pl-5" hide-details 
-        v-model="toggleDuplicate" color="secondary">
-        <template v-slot:prepend>
-          <v-icon color="warning">mdi-content-duplicate</v-icon>
-        </template>
-      </v-switch>
+        <AddButton class="text-end" @click="addObject()"/>
+      </v-col>
 
-      <!-- Duplicate Snackbar - stays activated as long as switch value is true -->
-      <v-snackbar color="warning" timeout="-1" 
-        v-model="toggleDuplicate" location="bottom">
-        <v-row no-gutters>
-          <v-icon start>mdi-content-duplicate</v-icon>
-          <v-col>
-            {{ $t('duplicationMode') }}
-            <v-card-subtitle class="px-0">
-              {{ $t('duplicationDescription', {msg: $t('position')}) }}
-            </v-card-subtitle>
-          </v-col>
-        </v-row>
-      </v-snackbar>
-      <v-spacer></v-spacer>
+      <v-divider vertical class="my-2"/>
+      
+      <v-col>
+        <v-card-subtitle>
+          {{ $t('duplicationMode') }}
+        </v-card-subtitle>
+        <!-- DUPLICATE SWITCH -->
+        <v-switch class="pl-5" hide-details 
+          v-model="toggleDuplicate" color="secondary">
+          <template v-slot:prepend>
+            <v-icon color="warning">mdi-content-duplicate</v-icon>
+          </template>
+        </v-switch>
+
+        <!-- Duplicate Snackbar - stays activated as long as switch value is true -->
+        <v-snackbar color="warning" timeout="-1" 
+          v-model="toggleDuplicate" location="bottom">
+          <v-row no-gutters>
+            <v-icon start>mdi-content-duplicate</v-icon>
+            <v-col>
+              {{ $t('duplicationModeActive') }}
+              <v-card-subtitle class="px-0">
+                {{ $t('duplicationDescription', {msg: $t('position')}) }}
+              </v-card-subtitle>
+            </v-col>
+          </v-row>
+        </v-snackbar>
+      </v-col>
     </v-row>
   </div>
 </template>
@@ -362,12 +166,20 @@ import { fromBackend } from '../ConnectionToBackend.js'
 import { useWindowSize } from 'vue-window-size';
 import { useUserStore } from '../Authentication';
 import { utils } from '../utils.js';
+import ImageTableRow from '../components/ImageTableRow.vue';
+import PositionTableRow from '../components/PositionTableRow.vue';
+import PositionTableRowFull from '../components/PositionTableRowFull.vue';
+import ImageTableRowFull from '../components/ImageTableRowFull.vue';
 
 export default {
   name: 'PositionsOverview',
   components: {
     Navigation,
     AddButton,
+    ImageTableRow,
+    ImageTableRowFull,
+    PositionTableRow,
+    PositionTableRowFull
   },
   
   setup() {
@@ -394,6 +206,7 @@ export default {
       showAllInfo: false,
       hoveredRow: -1,
       headers: [
+        { title: '', sortable: false, key: 'posType', width: '50px' },
         {
           title: this.$tc('posNumber', 2),
           align: 'start',
@@ -413,6 +226,7 @@ export default {
         { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status', width: "110px"}
       ],
       fullHeaders: [
+        { title: '', sortable: false, key: 'posType', width: '50px' },
         {
           title: this.$tc('posNumber', 2),
           align: 'start',
@@ -425,7 +239,7 @@ export default {
           sortable: true,
           key: 'subNumber',
         },
-        { title: this.$tc('title', 2), align: 'start', key: 'title' },
+        { title: this.$tc('title', 1), align: 'start', key: 'title' },
         { title: this.$t('dating'), align: 'start', key: 'dating' },
         { title: this.$t('coordinates'), align: 'start', key: 'coordinates' },
         { title: this.$t('count'), align: 'start', key: 'count' },
@@ -434,10 +248,11 @@ export default {
         { title: this.$t('comment'), align: 'start', key: 'comment' },
         { title: this.$tc('editor', 1), align: 'start', key: 'editor' },
         { title: this.$t('date'), align: 'start', key: 'date' },
-        { title: this.$t('isSeparate'), align: 'start', key: 'isSeparate' },
+        /* { title: this.$t('isSeparate'), align: 'start', key: 'isSeparate' }, */
         { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status'}
       ],
       toggleDuplicate: false,
+      addToggle: 0,
     };
   },
 
@@ -468,10 +283,17 @@ export default {
         .catch(err => console.error(err));
 
       if (this.positions.length > 0) {
-        for (var i=0; i<this.positions.length; i++) {
-          if (this.positions[i].coordinates != '') {
+        for (let i=0; i<this.positions.length; i++) {
+          if (this.positions[i].posType == 'image'
+          || this.positions[i].posType == 'drawing') {
+            if (this.positions[i].image != '') {
+              //this.positions[i].image = await utils.textureToBase64([this.positions[i].image]);
+            }
+            continue;
+          }
+          
+          if (this.positions[i].coordinates != null && this.positions[i].coordinates != '') {
             var coordinates = await fromOfflineDB.getObject(this.positions[i].coordinates, 'Coordinates', 'coordinates');
-              
             this.positions[i].coordsCount = coordinates.coords.length;
           }
         }
@@ -602,6 +424,20 @@ export default {
       this.$router.push({ name: 'PositionCreation', params: { positionID: positionID } })
     },
 
+    addObject() {
+      if (this.addToggle == 0) {
+        this.addPosition();
+      } else if (this.addToggle == 1) {
+        this.addImage();
+      } else if (this.addToggle == 2) {
+        console.log("ADD DRAWING")
+        this.addDrawing();
+      } else if (this.addToggle == 3) {
+        console.log("ADD 3D-MODEL")
+        this.addModel();
+      }
+    },
+
     /**
      * Adds a new position with default data to the system
      */
@@ -619,6 +455,8 @@ export default {
         _id: newPositionID,
         placeID: curPlaceID,
         positionNumber: '',
+        posType: 'position',
+
         subNumber: '',
         coordinates: '',
         count: 0,
@@ -661,6 +499,155 @@ export default {
       this.updatePositions();
     },
 
+    async addImage() {
+      var curPlaceID = this.$generalStore.getCurrentObject('place');
+      var curPlace = await fromOfflineDB
+        .getObject(curPlaceID, "Places", "places")
+        .catch(err => console.error(err));
+      var newPositionID = String(Date.now());
+
+      curPlace.positions.push(newPositionID);
+      curPlace.lastChanged = Date.now();
+
+      const newImage = {
+        _id: newPositionID,
+        placeID: curPlaceID,
+        positionNumber: '',
+        posType: 'image',
+
+        editor: '',
+        date: new Date().toLocaleDateString("de-DE"),
+        comment: '',
+        
+        image: '',
+        modulePreset: {
+          coordinates: false,
+          dating: false,
+          comment: false,
+          objectDescribers: false,
+        },
+        lastChanged: Date.now(),
+        lastSync: 0
+      };
+
+      if (this.positions.length == 0) {
+        newImage.positionNumber = 1;
+      } else {
+        var lastPosNumber = await fromOfflineDB.getLastAddedPosition()
+          .catch(err => console.error(err));
+        newImage.positionNumber = lastPosNumber + 1;
+      }
+      
+      await fromOfflineDB.updateObject(curPlace, 'Places', 'places')
+        .catch(err => console.error(err));
+      await fromOfflineDB.addObject(newImage, "Positions", "positions")
+        .catch(err => console.error(err));
+    
+      this.updatePositions();
+    },
+
+    async addDrawing() {
+      var curPlaceID = this.$generalStore.getCurrentObject('place');
+      var curPlace = await fromOfflineDB
+        .getObject(curPlaceID, "Places", "places")
+        .catch(err => console.error(err));
+      var newPositionID = String(Date.now());
+
+      curPlace.positions.push(newPositionID);
+      curPlace.lastChanged = Date.now();
+
+      const newImage = {
+        _id: newPositionID,
+        placeID: curPlaceID,
+        positionNumber: '',
+        posType: 'drawing',
+
+        editor: '',
+        date: new Date().toLocaleDateString("de-DE"),
+        comment: '',
+        
+        image: '',
+        modulePreset: {
+          coordinates: false,
+          dating: false,
+          comment: false,
+          objectDescribers: false,
+        },
+        lastChanged: Date.now(),
+        lastSync: 0
+      };
+
+      if (this.positions.length == 0) {
+        newImage.positionNumber = 1;
+      } else {
+        var lastPosNumber = await fromOfflineDB.getLastAddedPosition()
+          .catch(err => console.error(err));
+        newImage.positionNumber = lastPosNumber + 1;
+      }
+      
+      await fromOfflineDB.updateObject(curPlace, 'Places', 'places')
+        .catch(err => console.error(err));
+      await fromOfflineDB.addObject(newImage, "Positions", "positions")
+        .catch(err => console.error(err));
+    
+      this.updatePositions();
+    },
+
+    async addModel() {
+      console.log("ADD MODEL")
+      var curPlaceID = this.$generalStore.getCurrentObject('place');
+      var curPlace = await fromOfflineDB
+        .getObject(curPlaceID, "Places", "places")
+        .catch(err => console.error(err));
+      var newPositionID = String(Date.now());
+
+      curPlace.positions.push(newPositionID);
+      curPlace.lastChanged = Date.now();
+
+      const newModel = {
+        _id: newPositionID,
+        placeID: curPlaceID,
+        positionNumber: '',
+        posType: 'model',
+
+        editor: '',
+        date: new Date().toLocaleDateString("de-DE"),
+        comment: '',
+        
+        model: '',
+        modulePreset: {
+          coordinates: false,
+          dating: false,
+          comment: false,
+          objectDescribers: false,
+        },
+        lastChanged: Date.now(),
+        lastSync: 0,
+
+        color: '#ffffff',
+        opacity: 1,
+        coordinates: null,
+        scale: null,
+        rotation: null,
+        loaderType: null//this.model.model[0].name.split('.')[1]
+      };
+
+      if (this.positions.length == 0) {
+        newModel.positionNumber = 1;
+      } else {
+        var lastPosNumber = await fromOfflineDB.getLastAddedPosition()
+          .catch(err => console.error(err));
+        newModel.positionNumber = lastPosNumber + 1;
+      }
+      
+      await fromOfflineDB.updateObject(curPlace, 'Places', 'places')
+        .catch(err => console.error(err));
+      await fromOfflineDB.addObject(newModel, "Positions", "positions")
+        .catch(err => console.error(err));
+    
+      this.updatePositions();
+    },
+
     /**
      * Set the toggleAllInfo switch state depending on VueCookies
      */
@@ -696,7 +683,15 @@ export default {
      * @param position 
      */
     isBodeonValid(position) {
-      if (position.title.length != 0 && position.dating != '') {
+      if (position.posType == 'position' 
+        && position.title.length != 0 
+        && position.dating != ''){
+          return true;
+      } else if (position.posType == 'image'
+        && position.editor != ''
+        && position.comment != ''
+        && position.date != ''
+      ) {
         return true;
       }
       return false;
