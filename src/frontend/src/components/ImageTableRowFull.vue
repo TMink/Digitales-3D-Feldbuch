@@ -2,7 +2,7 @@
  * Created Date: 30.10.2024 10:56:52
  * Author: Julian Hardtung
  * 
- * Last Modified: 30.10.2024 16:46:01
+ * Last Modified: 06.11.2024 16:57:00
  * Modified By: Julian Hardtung
  * 
  * Description: Component for image table rows
@@ -10,16 +10,17 @@
 
 <template>
   <tr v-on:click="$emit('clickedRow', item._id)"
-    v-if="item.posType == 'image' || item.posType == 'drawing'">
+    v-if="item.posType == 'image' || item.posType == 'drawing' || item.posType == 'model'">
 
     <!-- OBJECT TYPE BUTTON -->
     <td>
       <v-btn icon color="secondary" variant="text">
         <v-tooltip activator="parent" location="bottom">
-          {{ item.posType == 'image' ? $t('photo') : $t('drawing') }}
+          {{ item.posType == 'image' ? $t('photo') : item.posType == 'drawing' ? $t('drawing') : $t('model') }}
         </v-tooltip>
         <v-icon v-if="item.posType == 'image'">mdi-image-outline</v-icon>
         <v-icon v-if="item.posType == 'drawing'">mdi-draw</v-icon>
+        <v-icon v-if="item.posType == 'model'">mdi-cube-outline</v-icon>
       </v-btn>
     </td>
 
@@ -47,7 +48,9 @@
             <template v-slot:placeholder>
               <v-card class="d-flex align-center justify-center fill-height"
               variant="tonal">
-              <v-icon size="x-large" icon="mdi-image-remove"></v-icon>
+              <v-icon v-if="item.posType == 'image'" size="x-large" icon="mdi-image-remove"></v-icon>
+              <v-icon v-if="item.posType == 'drawing'" size="x-large" icon="mdi-draw-pen"></v-icon>
+              <v-icon v-if="item.posType == 'model'" size="x-large" icon="mdi-cube-outline"></v-icon>
             </v-card> 
           </template>
         </v-img>
