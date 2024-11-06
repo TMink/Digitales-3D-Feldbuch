@@ -2,7 +2,7 @@
  Created Date: 23.09.2024 10:14:23
  Author: Tobias Mink
  
- Last Modified: 06.11.2024 01:11:11
+ Last Modified: 06.11.2024 19:34:29
  Modified By: Tobias Mink
  
  Description: 
@@ -13,9 +13,12 @@
     <Navigation active_tab_prop="2" />
     <v-card class="pa-1 background">
       <v-row no-gutters style="width:fit-content;">
-          
+        
+        <!-- > > > > > > ---- < < < < < < -->
         <!-- > > > > > > Left < < < < < < -->
+        <!-- > > > > > > ---- < < < < < < -->
         <div>
+
           <!-- Glossar & Hilfe -->
           <v-row no-gutters style="width: fit-content">
             <v-card class="d-flex align-center justify-center tile" height="100" width="400">
@@ -33,108 +36,113 @@
           <!-- Module -->
           <v-row no-gutters style="width: fit-content">
             <v-card class="pa-1 hollow" :height="windowHeight - 220" width="400">
-                <v-card height="92" class="pa-2 tile d-flex align-center justify-center">
+              <v-card height="92" class="pa-2 tile d-flex align-center justify-center">
+                <v-row no-gutters>
+                  <v-col cols="3" class="d-flex align-center justify-center">
+                    <v-btn variant="text" width="50%" height="100%" icon="mdi-arrow-left-bold" @click="changeModuleLeft()"></v-btn>
+                  </v-col>
+                  <v-col cols="6">
+                    <v-card-title width="100%" height="100%" class="d-flex align-center justify-center">{{ graphAktiveModuleName }}</v-card-title>
+                  </v-col>
+                  <v-col cols="3" class="d-flex align-center justify-center">
+                    <v-btn variant="text" width="50%" height="100%" icon="mdi-arrow-right-bold" @click="changeModuelRight()"></v-btn>
+                  </v-col>
+                </v-row>
+              </v-card>
+              <v-card class="pa-1 hollow" :height="windowHeight - 328">
+                
+                <!-- Screenshot-Modul -->
+                <v-card id="screenshot_module" class="pa-2 screenshot_module__base" :height="windowHeight - 345" width="367" style="position:absolute; z-index: 1; opacity: 1;">
+                  <v-card variant="text" width="100%">
+                    <!-- Image name -->
+                    <v-text>Dateiname:</v-text>
+                    <v-text-field hide-details class="pa-1 mb-5" v-model="imageFileName"></v-text-field>
+                    <!-- Image format -->
+                    <v-text>Dateinformat:</v-text>
+                    <v-row no-gutters style="height: 50px;">
+                      <v-col class="px-1">
+                        <v-btn class="infobereich__attributes_type_title_button" width="100%" height="100%" @click="takeScreenshot('png')">
+                          PNG
+                        </v-btn>
+                      </v-col>
+                      <v-col class="px-1">
+                        <v-btn class="infobereich__attributes_type_title_button" width="100%" height="100%" @click="takeScreenshot('jpeg')">
+                          JPEG
+                        </v-btn>
+                      </v-col>
+                      <v-col class="px-1">
+                        <v-btn class="infobereich__attributes_type_title_button" width="100%" height="100%" @click="takeScreenshot('svg')">
+                          SVG
+                        </v-btn>
+                      </v-col>
+                    </v-row>
+                  </v-card>
+                </v-card>
+                  
+                <!-- Group-Modul -->
+                <v-card id="group_module" class="pa-2 group_module__base d-flex align-center justify-center" :height="windowHeight - 345" width="367" style="position:absolute; z-index: 0; opacity: 1;">
+                  <img src="@/components/graph-editor-components/Images/work_in_progress_background.jpg" height="1010">
+                </v-card>
+
+                <!-- View-Modul -->
+                <v-card id="view_module" class="pa-2 view_module__base d-flex align-center justify-center" :height="windowHeight - 345" width="367" style="position:absolute; z-index: 0; opacity: 1;">
+                  <img src="@/components/graph-editor-components/Images/work_in_progress_background.jpg" height="1010">
+                </v-card>
+
+                <!-- Exp/Imp-Modul -->
+                <v-card id="exp/imp_module" class="pa-2 exp-imp_module__base" :height="windowHeight - 345" width="367" style="position:absolute; z-index: 0; opacity: 1;">
                   <v-row no-gutters>
-                    <v-col cols="3" class="d-flex align-center justify-center">
-                      <v-btn variant="text" width="50%" height="100%" icon="mdi-arrow-left-bold" @click="changeModuleLeft()"></v-btn>
-                    </v-col>
-                    <v-col cols="6">
-                      <v-card-title width="100%" height="100%" class="d-flex align-center justify-center">{{ graphAktiveModuleName }}</v-card-title>
-                    </v-col>
-                    <v-col cols="3" class="d-flex align-center justify-center">
-                      <v-btn variant="text" width="50%" height="100%" icon="mdi-arrow-right-bold" @click="changeModuelRight()"></v-btn>
-                    </v-col>
+                    <!-- Export -->
+                    <v-card class="pa-2" :height="windowHeight - 838" width="100%" variant="text" style="border: 1px; border-style: solid; border-color: white;">
+                      <v-card-title class="d-flex align-center justify-center pa-0 pb-2" >Export</v-card-title>
+                      <v-btn class="infobereich__attributes_type_title_button" width="100%" height="50" @click="exportData()">
+                        Press Me
+                      </v-btn>
+                    </v-card>
+                  </v-row>
+                  <v-row no-gutters>
+                    <!-- Import -->
+                    <v-card class="pa-2" :height="windowHeight - 838" width="100%" variant="text" style="border: 1px; border-style: solid; border-color: white;">
+                      <v-card-title class="d-flex align-center justify-center pa-0 pb-2" >Import</v-card-title>
+                      <v-btn class="infobereich__attributes_type_title_button" width="100%" height="50" @click="createImportDataDialog = true">
+                        Press Me
+                      </v-btn>
+                      <v-dialog v-model="createImportDataDialog" max-width="320" persistent>
+                        <v-card class="pa-4">
+                          <v-file-input show-size accept=".json" v-model="dataToBeImported" label="Datei auswählen"/>
+                          <v-card-actions class="justify-center">
+                            <v-btn icon color="success" v-on:click="importData()">
+                              <v-icon>mdi-check-circle</v-icon>
+                            </v-btn>
+                            <v-btn icon color="primary" @click="createImportDataDialog = false">
+                              <v-icon>mdi-close-circle</v-icon>
+                            </v-btn>
+                          </v-card-actions>
+                        </v-card>
+                      </v-dialog>
+                    </v-card>
                   </v-row>
                 </v-card>
-                <v-card class="pa-1 hollow" :height="windowHeight - 328">
-                  <!-- Screenshot -->
-                  <v-card id="screenshot_module" class="pa-2 screenshot_module__base" :height="windowHeight - 345" width="367" style="position:absolute; z-index: 1; opacity: 1;">
-                    <v-card variant="text" width="100%">
-                      <!-- Image name -->
-                      <v-text>Dateiname:</v-text>
-                      <v-text-field hide-details class="pa-1 mb-5" v-model="imageFileName"></v-text-field>
 
-                      <!-- Image format -->
-                      <v-text>Dateinformat:</v-text>
-                      <v-row no-gutters style="height: 50px;">
-                        <v-col class="px-1">
-                          <v-btn class="infobereich__attributes_type_title_button" width="100%" height="100%" @click="takeScreenshot('png')">
-                            PNG
-                          </v-btn>
-                        </v-col>
-                        <v-col class="px-1">
-                          <v-btn class="infobereich__attributes_type_title_button" width="100%" height="100%" @click="takeScreenshot('jpeg')">
-                            JPEG
-                          </v-btn>
-                        </v-col>
-                        <v-col class="px-1">
-                          <v-btn class="infobereich__attributes_type_title_button" width="100%" height="100%" @click="takeScreenshot('svg')">
-                            SVG
-                          </v-btn>
-                        </v-col>
-                      </v-row>
-                    </v-card>
-                  </v-card>
-                  
-                  <!-- Group -->
-                  <v-card id="group_module" class="pa-2 group_module__base d-flex align-center justify-center" :height="windowHeight - 345" width="367" style="position:absolute; z-index: 0; opacity: 1;">
-                    <img src="@/components/graph-editor-components/Images/work_in_progress_background.jpg" height="1010">
-                  </v-card>
-
-                  <!-- View -->
-                  <v-card id="view_module" class="pa-2 view_module__base d-flex align-center justify-center" :height="windowHeight - 345" width="367" style="position:absolute; z-index: 0; opacity: 1;">
-                    <img src="@/components/graph-editor-components/Images/work_in_progress_background.jpg" height="1010">
-                  </v-card>
-
-                  <!-- Exp/Imp -->
-                  <v-card id="exp/imp_module" class="pa-2 exp-imp_module__base" :height="windowHeight - 345" width="367" style="position:absolute; z-index: 0; opacity: 1;">
-                    <v-row no-gutters>
-                      <v-card class="pa-2" :height="windowHeight - 838" width="100%" variant="text" style="border: 1px; border-style: solid; border-color: white;">
-                        <v-card-title class="d-flex align-center justify-center pa-0 pb-2" >Export</v-card-title>
-                        <v-btn class="infobereich__attributes_type_title_button" width="100%" height="50" @click="exportData()">
-                          Press Me
-                        </v-btn>
-                      </v-card>
-                    </v-row>
-                    <v-row no-gutters>
-                      <v-card class="pa-2" :height="windowHeight - 838" width="100%" variant="text" style="border: 1px; border-style: solid; border-color: white;">
-                        <v-card-title class="d-flex align-center justify-center pa-0 pb-2" >Import</v-card-title>
-                        <v-btn class="infobereich__attributes_type_title_button" width="100%" height="50" @click="createImportDataDialog = true">
-                          Press Me
-                        </v-btn>
-                        <v-dialog v-model="createImportDataDialog" max-width="320" persistent>
-                          <v-card class="pa-4">
-                            <v-file-input show-size accept=".json" v-model="dataToBeImported" label="Datei auswählen"/>
-    
-                            <v-card-actions class="justify-center">
-                              <v-btn icon color="success" v-on:click="importData()">
-                                <v-icon>mdi-check-circle</v-icon>
-                              </v-btn>
-                              <v-btn icon color="primary" @click="createImportDataDialog = false">
-                                <v-icon>mdi-close-circle</v-icon>
-                              </v-btn>
-                            </v-card-actions>
-                          </v-card>
-                        </v-dialog>
-                      </v-card>
-                    </v-row>
-                  </v-card>
-
-                  <!-- Filter -->
-                  <v-card id="filter_module" class="pa-2 filter_module__base d-flex align-center justify-center" :height="windowHeight - 345" width="367" style="position:absolute; z-index: 0; opacity: 1;">
-                    <img src="@/components/graph-editor-components/Images/work_in_progress_background.jpg" height="1010">
-                  </v-card>
-                  
-                  <!-- Timemodel -->
-                  <v-card id="timemodel_module" class="pa-2 timemodel_module__base d-flex align-center justify-center" :height="windowHeight - 345" width="367" style="position:absolute; z-index: 0; opacity: 1;">
-                    <img src="@/components/graph-editor-components/Images/work_in_progress_background.jpg" height="1010">
-                  </v-card>
+                <!-- Filter -->
+                <v-card id="filter_module" class="pa-2 filter_module__base d-flex align-center justify-center" :height="windowHeight - 345" width="367" style="position:absolute; z-index: 0; opacity: 1;">
+                  <img src="@/components/graph-editor-components/Images/work_in_progress_background.jpg" height="1010">
                 </v-card>
+                  
+                <!-- Timemodel -->
+                <v-card id="timemodel_module" class="pa-2 timemodel_module__base d-flex align-center justify-center" :height="windowHeight - 345" width="367" style="position:absolute; z-index: 0; opacity: 1;">
+                  <img src="@/components/graph-editor-components/Images/work_in_progress_background.jpg" height="1010">
+                </v-card>
+                  
+              </v-card>
             </v-card>
-          </v-row>  
-        </div>
+          </v-row>
           
+        </div>
+        
+        <!-- > > > > > > ------ < < < < < < -->
         <!-- > > > > > > Middle < < < < < < -->
+        <!-- > > > > > > ------ < < < < < < -->
         <div>
           
           <!-- Harris-Matrizen -->
@@ -227,15 +235,15 @@
                               Auflistung aller Units
                             </v-card-title>
                           </v-card>
-                          <v-slide-group show-arrows="always">
-                            <v-row justify="center" align="center" class="my-2" no-gutters>
+                          <v-card class="pt-2" variant="text">
+                            <v-slide-group mandatory>
                               <v-slide-group-item v-for="n in unitListContent" :key="n">
-                                <v-btn :id=n.id class="mx-1 units__3d_list_button_notClicked" rounded v-on:click="fillInfoCard3d(n.id)">
+                                <v-btn :id=n.id class="mx-1 units__3d_list_button_notClicked" rounded v-on:click="fillInfoCard3d(n.id)" :style=n.style>
                                   {{ n.label }}
                                 </v-btn>
                               </v-slide-group-item>
-                            </v-row>
-                          </v-slide-group>
+                            </v-slide-group>
+                          </v-card>
                         </v-col>
                       </v-card>
                     </v-col>
@@ -284,7 +292,7 @@
                               Unit suchen
                             </v-card-title>
                           </v-card>
-                          <v-combobox class="mb-2" style="height: 52px; width: 250px" hide-selected :items="unitSearchDopDownMenueContent" persistent-hint :hide-no-data="true" v-model="unitSearchInput"></v-combobox>
+                          <v-combobox class="mb-2" style="height: 52px; width: 250px" hide-selected :items="unitSearchDropDownMenueItems" persistent-hint :hide-no-data="true" v-model="unitSearchInput"></v-combobox>
                         </v-col>
                       </v-card>
                     </v-col>
@@ -335,10 +343,14 @@
               </VueFlow>
             </v-card>
           </v-row>
+          
         </div>
   
+        <!-- > > > > > > ----- < < < < < < -->
         <!-- > > > > > > Right < < < < < < -->
+        <!-- > > > > > > ----- < < < < < < -->
         <div>
+          
           <!-- Modus Wechseln -->
           <v-row no-gutters style="width:fit-content;">
             <v-card class="d-flex align-center justify-center tile" height="100" width="400">
@@ -349,7 +361,6 @@
           <!-- Placeholder -->
           <v-row no-gutters style="width:fit-content;">
             <v-card class="d-flex align-center justify-center tile" height="100" width="400">
-              
             </v-card>
           </v-row>
             
@@ -431,13 +442,10 @@
 
                         <!-- Unit 3D-Object -->
                         <v-card class="py-2 pb-0 mb-3 infobereich__attributes_type" width="100%" height="130">
-                          
-                          <!-- Attribute-Header -->
                           <v-row no-gutters align-content="center">
                             <v-card class="pl-3 infobereich__attributes_type_title" elevation="0">3D-Objekt:</v-card>
                           </v-row>
-                          
-                          <!-- New 3D-Object creation -->
+                          <!-- Load new 3D-Object -->
                           <v-card id="infoCard_attributes_createNewObject" class="pt-3 px-16 visible" variant="text" width="100%">
                             <v-btn class="infobereich__attributes_description_button" height="60" min-width="100%" @click="createAddModelDialog = true">
                                 Neues 3D-Objekt<br>hinzufügen
@@ -445,11 +453,8 @@
                             <v-dialog v-model="createAddModelDialog" max-width="800" persistent>
                               <v-card class="pa-4">
                                 <v-card-title>{{ $t('add', { msg: $t('model') }) }}</v-card-title>
-    
                                 <v-text-field v-model="selectedNodeNewModelName" :label="$t('title')" :hint="$t('please_input', { msg: $t('title_of', { msg: $t('model') }) })"/>
-    
                                 <v-file-input show-size accept=".glb" v-model="selectedNodeNewModel" :label="$t('input', { msg: $t('model') })"/>
-    
                                 <v-card-actions class="justify-center">
                                   <v-btn icon color="success" v-on:click="addObject()">
                                     <v-icon>mdi-check-circle</v-icon>
@@ -461,7 +466,6 @@
                               </v-card>
                             </v-dialog>
                           </v-card>
-
                           <!-- Edit existing 3D-Object -->
                           <v-card id="infoCard_attributes_editExistingObject" variant="text" class="px-3 notVisible" width="100%">
                             <v-row no-gutters>
@@ -470,7 +474,6 @@
                               </v-card>
                             </v-row>
                             <v-row no-gutters>
-                              
                               <!-- Switch existing 3D-Object -->
                               <v-col cols="6">
                                 <v-btn class="infobereich__attributes_description_button" height="40" min-width="100%" @click="createSwitchObjektDiablog = true">
@@ -479,11 +482,8 @@
                                 <v-dialog v-model="createSwitchObjektDiablog" max-width="800" persistent>
                                   <v-card class="pa-4">
                                     <v-card-title>{{ $t('add', { msg: $t('model') }) }}</v-card-title>
-    
                                     <v-text-field v-model="selectedNodeNewModelName" :label="$t('title')" :hint="$t('please_input', { msg: $t('title_of', { msg: $t('model') }) })"/>
-    
                                     <v-file-input show-size accept=".glb" v-model="selectedNodeNewModel" :label="$t('input', { msg: $t('model') })"/>
-    
                                     <v-card-actions class="justify-center">
                                       <v-btn icon color="success" v-on:click="switchObject()">
                                         <v-icon>mdi-check-circle</v-icon>
@@ -495,7 +495,6 @@
                                   </v-card>
                                 </v-dialog>
                               </v-col>
-
                               <!-- Delete 3D-Object -->
                               <v-col cols="6">
                                 <v-btn class="infobereich__attributes_description_button" height="40" min-width="100%" @click="createDeleteModelDialog = true">
@@ -504,7 +503,6 @@
                                 <v-dialog v-model="createDeleteModelDialog" max-width="300" persistent>
                                   <v-card class="pa-4">
                                     <v-card-title class="text-wrap" style="word-break: break-word;">Wollen sie das 3D-objekt wirklich löschen?</v-card-title>
-                                    
                                     <v-card-actions class="justify-center">
                                       <v-btn icon color="success" v-on:click="deleteObject">
                                         <v-icon>mdi-check-circle</v-icon>
@@ -513,14 +511,11 @@
                                         <v-icon>mdi-close-circle</v-icon>
                                       </v-btn>
                                     </v-card-actions>
-                                    
                                   </v-card>
                                 </v-dialog>
                               </v-col>
-                              
                             </v-row>
                           </v-card>
-                          
                         </v-card>
                           
                         <!-- Unit Beziehungen -->
@@ -582,8 +577,9 @@
                     </v-btn>
                     <v-dialog v-model="createDeleteNodeDialog" max-width="320" persistent>
                       <v-card class="pa-4">
-                        <v-card-title class="text-wrap" style="word-break: break-word;">Wollen sie die Unit wirklich löschen?</v-card-title>
-    
+                        <v-card-title class="text-wrap" style="word-break: break-word;">
+                          Wollen sie die Unit wirklich löschen?
+                        </v-card-title>
                         <v-card-actions class="justify-center">
                           <v-btn icon color="success" v-on:click="deleteNode">
                             <v-icon>mdi-check-circle</v-icon>
@@ -595,10 +591,12 @@
                       </v-card>
                     </v-dialog>
                   </v-row>
+                  
                 </v-col>
               </v-card>
             </v-card>
           </v-row>
+          
         </div>
         
       </v-row>
@@ -610,7 +608,7 @@
   import * as THREE from 'three';
   import { ArcballControls } from 'three/addons/controls/ArcballControls.js';
   import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-  import { onMounted, onUnmounted, markRaw, ref, watch, toRaw} from 'vue';
+  import { onMounted, onUnmounted, markRaw, ref, watch, toRaw } from 'vue';
   import { useWindowSize } from 'vue-window-size';
   import { VueFlow, useVueFlow, MarkerType } from '@vue-flow/core';
   import * as img from 'html-to-image';
@@ -681,7 +679,7 @@
   var highestIndexOfDefaultNode = ref("0"); // string
   // -Subcomponent-> Unit Search (Graph-Editor)
   var unitSearchInput = ref(""); // string
-  var unitSearchDopDownMenueContent = ref([]); // array<string>
+  var unitSearchDropDownMenueItems = ref([]); // array<string>
   // -Subcomponent-> Unit List (3D-Editor)
   var unitListContent = ref([]); // array<string>
   // ----Component----> Editoren
@@ -711,7 +709,7 @@
   const { width, height } = useWindowSize();
   const windowHeight = height; // int
   const windowWidth = width; // int
-  var selectedNodeID = ""; // string
+  var currentlySelectedNodeID = ""; // string
   var connectionInProgress = false; // boolean
   var idOfCurrentStratiTool = ""; // string
   var alreadyCut = false; // boolean
@@ -770,6 +768,10 @@
       },
     }
   }
+  const unitListNodesStyles = {
+    clicked: "border: 4px; border-style: double; border-color: #1C2128; background-color: #485b7a;",
+    notClicked: "border: 4px; border-style: double; border-color: #1C2128; background-color: #2a394f;",
+  }
 
 
 
@@ -816,8 +818,8 @@
     const nodesInGraphLength = nodesInGraph.length;
     for( let a = 0; a < nodesInGraphLength; a++ ){
       if( nodesInGraph[a].data.label == userInput ){
-        if( selectedNodeID != "" ) {
-          changeUnitsListsButtonStyle( selectedNodeID, "notSelected" );
+        if( currentlySelectedNodeID != "" ) {
+          changeUnitsListsButtonStyle( currentlySelectedNodeID, "notSelected" );
         }
         zoomToNode(nodesInGraph[a].id);
         selectedNodeModelName.value = ""
@@ -826,7 +828,7 @@
         changeUnitsListsButtonStyle( nodesInGraph[a].id, "selected" )
         nodesInGraph[a].data.nodeStyle = "clicked_" + nodesInGraph[a].type;
         nodesInGraph[a].data.selected = true;
-      } else if( selectedNodeID != "" && currentMode.value != "3d" ) {
+      } else if( currentlySelectedNodeID != "" && currentMode.value != "3d" ) {
         nodesInGraph[a].data.nodeStyle = "notClicked_" + nodesInGraph[a].type;
         nodesInGraph[a].data.selected = false;
       }
@@ -889,75 +891,92 @@
    * =====>>> type: init
    * 
    */
-  onInit(async() => {
+  onInit(() => {
     if( getData.length > 0 ){
-      if( allProcessingSteps.value.length > 0 ){
-        const parsedProcessingStep = JSON.parse(allProcessingSteps.value[currentProcessingStep.value - 1].step);
-
-        if( currentProcessingStep.value > 1 && (allProcessingSteps.value[currentProcessingStep.value - 1].type === "addNewNode") ){
-          const lastNodeID = parsedProcessingStep.nodes[parsedProcessingStep.nodes.length - 1].id;
-          fromObject(parsedProcessingStep);
-          updateNode(lastNodeID, (node) => ({
-            position: {x: node.position.x - node.dimensions.width / 2, y: node.position.y - node.dimensions.height / 2},
-          }));
-        }
-        else {
-          fromObject(parsedProcessingStep);
-        }
-
-        if( currentProcessingStep.value > 1 ){
-          processStepBackButtonDisabled.value = false;
-        }
-        if( currentProcessingStep.value < allProcessingSteps.value.length ){
-          processStepForwardButtonDisabled.value = false;
-        }
-        
-        const nodesInGraph = getNodes.value;
-        const nodesInGraphLength = nodesInGraph.length;
-        for( let a = 0; a < nodesInGraphLength; a++ ){
-          if( nodesInGraph[a].data.selected === true ){
-            fillInfoCard(nodesInGraph[a]);
-          }
-          unitSearchDopDownMenueContent.value.push(nodesInGraph[a].data.label);
-          unitListContent.value.push({ id: nodesInGraph[a].id, label: nodesInGraph[a].data.label });
-        }
-      }
+      initGraph()
     } else {
       saveProcessingStep("init");
     }
   })
 
+  
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
   function initGraph() {
     if( allProcessingSteps.value.length > 0 ){
-      const parsedProcessingStep = JSON.parse(allProcessingSteps.value[currentProcessingStep.value - 1].step);
+      loadProcessingStep(currentProcessingStep.value - 1, "onInit")
+      enableOrDisableProcessingStepButtons()
+      addNodesToUnitSearchAndUnitList()
+    }
+  }
 
-      if( currentProcessingStep.value > 1 && (allProcessingSteps.value[currentProcessingStep.value - 1].type === "addNewNode") ){
-        const lastNodeID = parsedProcessingStep.nodes[parsedProcessingStep.nodes.length - 1].id;
-        fromObject(parsedProcessingStep);
+  function loadProcessingStep(whichStep, when) {
+    const parsedProcessingStep = JSON.parse(allProcessingSteps.value[whichStep].step);
+
+    if( currentProcessingStep.value > 1 && (allProcessingSteps.value[whichStep].type === "addNewNode") ){
+      const lastNodeID = parsedProcessingStep.nodes[parsedProcessingStep.nodes.length - 1].id;
+      fromObject(parsedProcessingStep);
+      if( when === "forward" ){
+        updateNode(lastNodeID, (node) => ({
+          position: { x: node.position.x - 100 / 2, y: node.position.y - 100 / 2 }
+        }))
+      } else {
         updateNode(lastNodeID, (node) => ({
           position: {x: node.position.x - node.dimensions.width / 2, y: node.position.y - node.dimensions.height / 2},
         }));
       }
-      else {
-        fromObject(parsedProcessingStep);
-      }
+    }
+    else {
+      fromObject(parsedProcessingStep);
+    }
+  }
 
-      if( currentProcessingStep.value > 1 ){
-        processStepBackButtonDisabled.value = false;
+  function enableOrDisableProcessingStepButtons() {
+    if( currentProcessingStep.value > 1 ){
+      processStepBackButtonDisabled.value = false;
+    } else {
+      processStepBackButtonDisabled.value = true;
+    }
+    if( currentProcessingStep.value < allProcessingSteps.value.length ){
+      processStepForwardButtonDisabled.value = false;
+    } else {
+      processStepForwardButtonDisabled.value = true;
+    }
+  }
+  
+  function addNodesToUnitSearchAndUnitList() {
+    const nodesInGraph = getNodes.value;
+    const nodesInGraphLength = nodesInGraph.length;
+    for( let a = 0; a < nodesInGraphLength; a++ ){
+      if( nodesInGraph[a].data.selected === true ){
+        fillInfoCard(nodesInGraph[a]);
       }
-      if( currentProcessingStep.value < allProcessingSteps.value.length ){
-        processStepForwardButtonDisabled.value = false;
-      }
-        
-      const nodesInGraph = getNodes.value;
-      const nodesInGraphLength = nodesInGraph.length;
-      for( let a = 0; a < nodesInGraphLength; a++ ){
-        if( nodesInGraph[a].data.selected === true ){
-          fillInfoCard(nodesInGraph[a]);
-        }
-        unitSearchDopDownMenueContent.value.push(nodesInGraph[a].data.label);
-        unitListContent.value.push({ id: nodesInGraph[a].id, label: nodesInGraph[a].data.label });
-      }
+      addNodeToUnitSearchDropDownMenue(nodesInGraph[a])
+      addNodeToUnitList(nodesInGraph[a])
+    }
+  }
+
+  function addNodeToUnitSearchDropDownMenue(node) {
+    unitSearchDropDownMenueItems.value.push(node.data.label);
+  }
+  
+  function addNodeToUnitList(node) {
+    let newUnitListEntry = createUnitListEntry(node)
+    unitListContent.value.push(newUnitListEntry);
+  }
+
+  function createUnitListEntry(node) {
+    if( node.data.selected === true ){
+      return { id: node.id, label: node.data.label, style: unitListNodesStyles.clicked }
+    } else {
+      return { id: node.id, label: node.data.label, style: unitListNodesStyles.notClicked }
     }
   }
 
@@ -1033,7 +1052,7 @@
     // Edge Case: If the currently selected node is part of the created 
     // relation, the relations-sub-component must be updated. Otherwise it will 
     // only be updated when the node is selected again.
-    if( selectedNodeID !== "" ){
+    if( currentlySelectedNodeID !== "" ){
       updateRelationsSubComponent(nodesInGraph, param.source, param.target)
     }
     
@@ -1062,21 +1081,21 @@
       const nonValidNodes = []
       const nonValidAfterReduction = []
       if( nodesInGraph[a].id == params.nodeId ) {
-        nodesInGraph[a].data.validConnections.top_middle = false;
-        nodesInGraph[a].data.validConnections.bottom_middle = false;
-        nodesInGraph[a].data.validConnections.left_middle = false;
-        nodesInGraph[a].data.validConnections.right_middle = false;
+        changeNodeHandleConnectionStatus(nodesInGraph[a], "top_middle", false)
+        changeNodeHandleConnectionStatus(nodesInGraph[a], "bottom_middle", false)
+        changeNodeHandleConnectionStatus(nodesInGraph[a], "left_middle", false)
+        changeNodeHandleConnectionStatus(nodesInGraph[a], "right_middle", false)
         
         switch( params.handleId ){
           case 'top_middle':
             nonValidNodes.push( ...checkRelationsBefore(nodesInGraph[a].data.relations, nodesInGraph[a].id, []));
             for( let b = 0; b < nodesInGraphLength; b++ ){
               if( nodesInGraph[b].id != params.nodeId ) {
-                nodesInGraph[b].data.validConnections.top_middle = false;
-                nodesInGraph[b].data.validConnections.left_middle = false;
-                nodesInGraph[b].data.validConnections.right_middle = false;
+                changeNodeHandleConnectionStatus(nodesInGraph[b], "top_middle", false)
+                changeNodeHandleConnectionStatus(nodesInGraph[b], "left_middle", false)
+                changeNodeHandleConnectionStatus(nodesInGraph[b], "right_middle", false)
                 if( nonValidNodes.includes(nodesInGraph[b].id) ){
-                  nodesInGraph[b].data.validConnections.bottom_middle = false;
+                  changeNodeHandleConnectionStatus(nodesInGraph[b], "bottom_middle", false)
                 }
               }
             }
@@ -1085,11 +1104,11 @@
             nonValidNodes.push( ...checkRelationsAfter( nodesInGraph[a].data.relations, nodesInGraph[a].id, [] ) );
             for( let b = 0; b < nodesInGraphLength; b++ ){
               if( nodesInGraph[b].id != params.nodeId ) {
-                nodesInGraph[b].data.validConnections.bottom_middle = false;
-                nodesInGraph[b].data.validConnections.left_middle = false;
-                nodesInGraph[b].data.validConnections.right_middle = false;
+                changeNodeHandleConnectionStatus(nodesInGraph[b], "bottom_middle", false)
+                changeNodeHandleConnectionStatus(nodesInGraph[b], "left_middle", false)
+                changeNodeHandleConnectionStatus(nodesInGraph[b], "right_middle", false)
                 if( nonValidNodes.includes(nodesInGraph[b].id) ){
-                  nodesInGraph[b].data.validConnections.top_middle = false;
+                  changeNodeHandleConnectionStatus(nodesInGraph[b], "top_middle", false)
                 }
               }
             }
@@ -1099,12 +1118,12 @@
             nonValidAfterReduction.push(...reduceNonValidIDsByRowIDs(nonValidNodes, nodesInGraph[a].id))
             for( let b = 0; b < nodesInGraphLength; b++ ){
               if( nodesInGraph[b].id != params.nodeId ) {
-                nodesInGraph[b].data.validConnections.top_middle = false;
-                nodesInGraph[b].data.validConnections.bottom_middle = false;
-                nodesInGraph[b].data.validConnections.left_middle = false;
+                changeNodeHandleConnectionStatus(nodesInGraph[b], "top_middle", false)
+                changeNodeHandleConnectionStatus(nodesInGraph[b], "bottom_middle", false)
+                changeNodeHandleConnectionStatus(nodesInGraph[b], "left_middle", false)
                 if( nonValidAfterReduction.includes(nodesInGraph[b].id) ){
-                  nodesInGraph[b].data.validConnections.left_middle = false;
-                  nodesInGraph[b].data.validConnections.right_middle = false;
+                  changeNodeHandleConnectionStatus(nodesInGraph[b], "left_middle", false)
+                  changeNodeHandleConnectionStatus(nodesInGraph[b], "right_middle", false)
                 }
               }
             }
@@ -1114,12 +1133,12 @@
             nonValidAfterReduction.push( ...reduceNonValidIDsByRowIDs(nonValidNodes) )
             for( let b = 0; b < nodesInGraphLength; b++ ){
               if( nodesInGraph[b].id != params.nodeId ) {
-                nodesInGraph[b].data.validConnections.top_middle = false;
-                nodesInGraph[b].data.validConnections.bottom_middle = false;
-                nodesInGraph[b].data.validConnections.right_middle = false;
+                changeNodeHandleConnectionStatus(nodesInGraph[b], "top_middle", false)
+                changeNodeHandleConnectionStatus(nodesInGraph[b], "bottom_middle", false)
+                changeNodeHandleConnectionStatus(nodesInGraph[b], "right_middle", false)
                 if( nonValidAfterReduction.includes(nodesInGraph[b].id) ){
-                  nodesInGraph[b].data.validConnections.left_middle = false;
-                  nodesInGraph[b].data.validConnections.right_middle = false;
+                  changeNodeHandleConnectionStatus(nodesInGraph[b], "left_middle", false)
+                  changeNodeHandleConnectionStatus(nodesInGraph[b], "right_middle", false)
                 }
               }
             }
@@ -1149,18 +1168,24 @@
     const nodesInGraph = getNodes.value;
     const nodesInGraphLength = nodesInGraph.length
     for( let a = 0; a < nodesInGraphLength; a++ ){
-      nodesInGraph[a].data.validConnections.top_middle = true;
-      nodesInGraph[a].data.validConnections.bottom_middle = true;
-      nodesInGraph[a].data.validConnections.left_middle = true;
-      nodesInGraph[a].data.validConnections.right_middle = true;
-      nodesInGraph[a].data.styles.top_middle = handleStyles[nodesInGraph[a].type].default.top_middle;
-      nodesInGraph[a].data.styles.bottom_middle = handleStyles[nodesInGraph[a].type].default.bottom_middle;
-      nodesInGraph[a].data.styles.left_middle = handleStyles[nodesInGraph[a].type].default.left_middle;
-      nodesInGraph[a].data.styles.right_middle = handleStyles[nodesInGraph[a].type].default.right_middle;
+      changeNodeHandleConnectionStatus(nodesInGraph[a], "top_middle", true)
+      changeNodeHandleConnectionStatus(nodesInGraph[a], "bottom_middle", true)
+      changeNodeHandleConnectionStatus(nodesInGraph[a], "left_middle", true)
+      changeNodeHandleConnectionStatus(nodesInGraph[a], "right_middle", true)
+      changeNodeHandleStyle(nodesInGraph[a], "top_middle", "default")
+      changeNodeHandleStyle(nodesInGraph[a], "bottom_middle", "default")
+      changeNodeHandleStyle(nodesInGraph[a], "left_middle", "default")
+      changeNodeHandleStyle(nodesInGraph[a], "right_middle", "default")
     }
   })
 
-
+  function changeNodeHandleConnectionStatus(node, handlePosition, status) {
+    node.data.validConnections[handlePosition] = status;
+  }
+  
+  function changeNodeHandleStyle(node, handlePosition, style) {
+    node.data.styles[handlePosition] = handleStyles[node.type][style][handlePosition]
+  }
 
 
 
@@ -1175,30 +1200,59 @@
    * 
    */
   onNodeClick( (params) => {
+    updateNodeStyleInUnitListSubcomponent(params.node);
+    updateNodeStylesInGraph(params.node);
+    saveProcessingStep("nodeInGraphClicked")
+  })
+
+  function updateNodeStylesInGraph(clickedNode) {
+    changeAllNodeStylesToNotClicked(clickedNode);
+    changeClickedNodeStyleToClickedAndFillInfoCard(clickedNode);
+  }
+
+  function updateNodeStyleInUnitListSubcomponent(clickedNode) {
+    if( currentlySelectedNodeID != "" ){
+      changeNodeInUnitsListToNotClickedStyle(currentlySelectedNodeID)
+    }
+    changeNodeInUnitsListToClickedStyle(clickedNode.id)
+  }
+
+  function changeAllNodeStylesToNotClicked(){
     const nodesInGraph = getNodes.value;
     const nodesInGraphLength = nodesInGraph.length;
     for( let a = 0; a < nodesInGraphLength; a++ ){
-      if( nodesInGraph[a].id == params.node.id ) {
-        if( selectedNodeID != "" ) {
-          changeUnitsListsButtonStyle( selectedNodeID, "notSelected" )
-        }
-        clearInfoCard()
-        fillInfoCard(nodesInGraph[a])
-        
-        changeUnitsListsButtonStyle( nodesInGraph[a].id, "selected" )
-        nodesInGraph[a].data.nodeStyle = "clicked_" + nodesInGraph[a].type;
-        nodesInGraph[a].data.selected = true;
-      } else {
-        nodesInGraph[a].data.nodeStyle = "notClicked_" + nodesInGraph[a].type;
-        nodesInGraph[a].data.selected = false;
-      } 
+      if( nodesInGraph[a].data.selected == true ) {
+        changeNodeInGraphToNotClickedStyle(nodesInGraph[a])
+        break;
+      }
     }
-    saveProcessingStep( "nodeClicked" )
-  })
+  }
 
+  function changeClickedNodeStyleToClickedAndFillInfoCard(clickedNode){
+    clearInfoCard()
+    fillInfoCard(clickedNode)
+    changeNodeInGraphToClickedStyle(clickedNode)
+  }
 
+  function changeNodeInGraphToClickedStyle(node) {
+    node.data.nodeStyle = "clicked_" + node.type;
+    node.data.selected = true;
+  }
 
+  function changeNodeInGraphToNotClickedStyle(node) {
+    node.data.nodeStyle = "notClicked_" + node.type;
+    node.data.selected = false;
+  }
 
+  function changeNodeInUnitsListToClickedStyle(nodeID) {
+    const node = document.getElementById(nodeID);
+    node.style = unitListNodesStyles.clicked;
+  }
+
+  function changeNodeInUnitsListToNotClickedStyle(nodeID) {
+    const node = document.getElementById(nodeID);
+    node.style = unitListNodesStyles.notClicked;
+  }
 
   /**                            Vue-flow function
    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1209,27 +1263,25 @@
    * =====>>> type: paneClicked
    * 
    */
-  onPaneClick( () => {
+  onPaneClick(() => {
     if( getNodes.value.length != 0 ) {
-      const nodesInGraph = getNodes.value;
-      const nodesInGraphLength = nodesInGraph.length;
-      for( let a = 0; a < nodesInGraphLength; a++ ){
-        if( nodesInGraph[a].id == selectedNodeID ) {
-          clearInfoCard()
-          
-          const button = document.getElementById(nodesInGraph[a].id)
-          button.style = "border: 4px; border-style: double; border-color: #1C2128; background-color: #2a394f;"
-          nodesInGraph[a].data.nodeStyle = "notClicked_" + nodesInGraph[a].type;
-          nodesInGraph[a].data.selected = false;
-          break;
-        }
-      }
-      
+      resetAllNodeStylesToNotClickedAndClearInfoCard()
       saveProcessingStep( "paneClicked" )
     }
   })
 
-
+  function resetAllNodeStylesToNotClickedAndClearInfoCard() {
+    const nodesInGraph = getNodes.value;
+      const nodesInGraphLength = nodesInGraph.length;
+      for( let a = 0; a < nodesInGraphLength; a++ ){
+        if( nodesInGraph[a].id == currentlySelectedNodeID ) {
+          clearInfoCard()
+          changeNodeInUnitsListToNotClickedStyle(nodesInGraph[a].id)
+          changeNodeInGraphToNotClickedStyle(nodesInGraph[a])
+          break;
+        }
+      }
+  }
 
 
 
@@ -1241,32 +1293,43 @@
    * 
    */
   onNodesChange((changes) => {
-    if( Object.hasOwn( changes[0], 'item' ) ){
-      if( changes[0].type == "add" ){
-        unitSearchDopDownMenueContent.value.push(changes[0].item.data.label)
-        unitListContent.value.push({ id: changes[0].item.id, label: changes[0].item.data.label });
-      }
+    if( changes[0].type == "add" ){
+      addNodeToUnitSearchDropDownMenue(changes[0].item)
+      addNodeToUnitList(changes[0].item)
     } else if( changes[0].type == "remove") {
-      const nodesInUnitListLength = unitListContent.value.length
-      for( let b = 0; b < nodesInUnitListLength; b++ ){
-        if( unitListContent.value[b].id == changes[0].id ){
-          if( unitSearchDopDownMenueContent.value.includes(unitListContent.value[b].label) ) {
-            let index = unitSearchDopDownMenueContent.value.indexOf(unitListContent.value[b].label);
-            unitSearchDopDownMenueContent.value.splice(index, 1);
-          }
-          unitListContent.value.splice(b, 1)
-          break;
-        }
-      }
-
-      const nodesInGraphLength = getNodes.value.length
-      if( nodesInGraphLength == 0 ){
-        highestIndexOfDefaultNode.value = '0'
-      }
+      removeNodesFromUnitSearchAndUnitList(changes[0].id)
+      resetDefaultNodeIndex()
     }
   })
   
+  function resetDefaultNodeIndex() {
+    const nodesInGraphLength = getNodes.value.length
+    if( nodesInGraphLength == 0 ){
+      highestIndexOfDefaultNode.value = '0'
+    }
+  }
 
+  function removeNodesFromUnitSearchAndUnitList(nodeID) {
+    const nodesInUnitListLength = unitListContent.value.length
+    for( let b = 0; b < nodesInUnitListLength; b++ ){
+      if( unitListContent.value[b].id == nodeID ){
+        removeNodeFromUnitSearchDropDownMenue(unitListContent.value[b])
+        removeNodeFromUnitList(b)
+        break;
+      }
+    }
+  }
+
+  function removeNodeFromUnitSearchDropDownMenue(node) {
+    if( unitSearchDropDownMenueItems.value.includes(node.label) ) {
+      let nodeIndex = unitSearchDropDownMenueItems.value.indexOf(node.label);
+      unitSearchDropDownMenueItems.value.splice(nodeIndex, 1);
+    }
+  }
+
+  function removeNodeFromUnitList(nodeIndex) {
+    unitListContent.value.splice(nodeIndex, 1)
+  }
 
 
   
@@ -1284,18 +1347,18 @@
       const nodesInGraph = getNodes.value;
       const nodesInGraphLength = nodesInGraph.length;
       for( let a = 0; a < nodesInGraphLength; a++ ){
-        if( param.node.id === nodesInGraph[a].id ) {
-          const validStatusTopMiddle = getValidStatus(param.node.data.validConnections.top_middle)
-          nodesInGraph[a].data.styles.top_middle = handleStyles[param.node.type][validStatusTopMiddle].top_middle
+        if( nodesInGraph[a].id === param.node.id ) {
+          const handleStatusTopMiddle = getHandleStatus(param.node.data.validConnections.top_middle)
+          changeNodeHandleStyle(nodesInGraph[a], "top_middle", handleStatusTopMiddle)
           
-          const validStatusBotomMiddle = getValidStatus(param.node.data.validConnections.bottom_middle)
-          nodesInGraph[a].data.styles.bottom_middle = handleStyles[param.node.type][validStatusBotomMiddle].bottom_middle
+          const handleStatusBotomMiddle = getHandleStatus(param.node.data.validConnections.bottom_middle)
+          changeNodeHandleStyle(nodesInGraph[a], "bottom_middle", handleStatusBotomMiddle)
           
-          const validStatusLeftMiddle = getValidStatus(param.node.data.validConnections.left_middle)
-          nodesInGraph[a].data.styles.left_middle = handleStyles[param.node.type][validStatusLeftMiddle].left_middle
+          const handleStatusLeftMiddle = getHandleStatus(param.node.data.validConnections.left_middle)
+          changeNodeHandleStyle(nodesInGraph[a], "left_middle", handleStatusLeftMiddle)
           
-          const validStatusRightMiddle = getValidStatus(param.node.data.validConnections.right_middle)
-          nodesInGraph[a].data.styles.right_middle = handleStyles[param.node.type][validStatusRightMiddle].right_middle
+          const handleStatusRightMiddle = getHandleStatus(param.node.data.validConnections.right_middle)
+          changeNodeHandleStyle(nodesInGraph[a], "right_middle", handleStatusRightMiddle)
           break;
         }
       }
@@ -1319,11 +1382,11 @@
       const nodesInGraph = getNodes.value;
       const nodesInGraphLength = nodesInGraph.length;
       for( let a = 0; a < nodesInGraphLength; a++ ){
-        if( param.node.id == nodesInGraph[a].id ) {
-          nodesInGraph[a].data.styles.top_middle = handleStyles[param.node.type].default.top_middle;
-          nodesInGraph[a].data.styles.bottom_middle = handleStyles[param.node.type].default.bottom_middle;
-          nodesInGraph[a].data.styles.left_middle = handleStyles[param.node.type].default.left_middle;
-          nodesInGraph[a].data.styles.right_middle = handleStyles[param.node.type].default.right_middle;
+        if( nodesInGraph[a].id === param.node.id ) {
+          changeNodeHandleStyle(nodesInGraph[a], "top_middle", "default")
+          changeNodeHandleStyle(nodesInGraph[a], "bottom_middle", "default")
+          changeNodeHandleStyle(nodesInGraph[a], "left_middle", "default")
+          changeNodeHandleStyle(nodesInGraph[a], "right_middle", "default")
           break;
         }
       }
@@ -1434,7 +1497,7 @@
    */
   function fillInfoCard(node) {
     // Note the id of the currently selected node and activate the InfoCard
-    selectedNodeID = node.id
+    currentlySelectedNodeID = node.id
     infoCardDisabled.value = false
     document.getElementById("infoCard").style.opacity = "1";
 
@@ -1486,7 +1549,7 @@
    * 
    */
   function clearInfoCard() {
-    selectedNodeID = "";
+    currentlySelectedNodeID = "";
     unitSearchInput.value = "";
     infoCardDisabled.value = true
     document.getElementById("infoCard").style.opacity = "0.5";
@@ -1520,25 +1583,19 @@
       allProcessingSteps.value.push( { type: changeType, step: JSON.stringify(toObject()) } );
       currentProcessingStep.value = currentProcessingStep.value + 1;
     } else {
-      // Wenn der aktuell ausgewählte Bearbeitungsschritt nicht der neuste ist, lösche alle die danach kamen und speicher den neuen und deaktiviere den Vor-Button
       if( currentProcessingStep.value != allProcessingSteps.value.length && !alreadyCut ) {
         alreadyCut = true;
         allProcessingSteps.value = allProcessingSteps.value.slice( 0, currentProcessingStep.value )
         allProcessingSteps.value.push( { type: changeType, step: JSON.stringify(toObject()) } );
         currentProcessingStep.value = currentProcessingStep.value + 1
-      } 
-      // Sonst speicher den neuen Bearbeitungsschritt und zähle den aktuellen Bearbeitungsschritt eins hoch
-      else {
+      } else {
         alreadyCut = false
         allProcessingSteps.value.push( { type: changeType, step: JSON.stringify(toObject()) } );
         currentProcessingStep.value = currentProcessingStep.value + 1;
       }
     }
-    // Sollte mehr als nur ein Bearbeitungsschritt vorhanden sein, blende den Button ein
-    if( currentProcessingStep.value > 1 ) {
-      processStepBackButtonDisabled.value = false;
-    }
-    processStepForwardButtonDisabled.value = true;
+    
+    enableOrDisableProcessingStepButtons()
   }
 
 
@@ -1555,43 +1612,20 @@
    */
   function goProcessingStepBack() {
     clearInfoCard()
-    unitSearchDopDownMenueContent.value = [];
+    unitSearchDropDownMenueItems.value = [];
     unitListContent.value = []
 
     currentProcessingStep.value = currentProcessingStep.value - 1
-    const parsedProcessingStep = JSON.parse( allProcessingSteps.value[currentProcessingStep.value - 1].step )
+    loadProcessingStep(currentProcessingStep.value - 1, "back")
     
-    if( ( currentProcessingStep.value > 1 ) && ( allProcessingSteps.value[ currentProcessingStep.value - 1 ].type == "addNewNode" ) ) {
-      const lastNodeID = parsedProcessingStep.nodes[parsedProcessingStep.nodes.length - 1].id
-      fromObject(parsedProcessingStep)
-      
-      updateNode(lastNodeID, (node) => ({
-        position: { x: node.position.x - node.dimensions.width / 2, y: node.position.y - node.dimensions.height / 2 }
-      }))
-    } else {
-      fromObject(parsedProcessingStep)
-    }
-    
-    processStepForwardButtonDisabled.value = false
-    if( currentProcessingStep.value == 1 ) {
-      processStepBackButtonDisabled.value = true
-    }
-
-    for( const[_, node] of Object.entries(getNodes.value) ) {
-      if( node.data.selected == true ) {
-        fillInfoCard(node)
-      }
-
-      unitSearchDopDownMenueContent.value.push(node.data.label)
-      unitListContent.value.push({ id: node.id, label: node.data.label });
-    }
-
+    enableOrDisableProcessingStepButtons()
+    addNodesToUnitSearchAndUnitList()
     createNewIndexForNextNode()
   }
 
+  
 
-
-
+  
   
   /**
    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1603,43 +1637,14 @@
    */
   function goProcessingStepForward() {
     clearInfoCard()
-    unitSearchDopDownMenueContent.value = [];
+    unitSearchDropDownMenueItems.value = [];
     unitListContent.value = [];
 
-    // Vermerke den neuen aktuellen Bearbeitungsschritt
     currentProcessingStep.value = currentProcessingStep.value + 1
-    // Lade den aktuell ausgewählten Bearbeitungsstand
-    const parsedProcessingStep = JSON.parse( allProcessingSteps.value[currentProcessingStep.value - 1].step )
+    loadProcessingStep(currentProcessingStep.value - 1, "forward")
     
-    if( allProcessingSteps.value[ currentProcessingStep.value - 1 ].type == "addNewNode" ) {
-      const lastNodeID = parsedProcessingStep.nodes[ parsedProcessingStep.nodes.length - 1 ].id
-      fromObject(parsedProcessingStep)
-      
-      updateNode(lastNodeID, (node) => ({
-        position: { x: node.position.x - 100 / 2, y: node.position.y - 100 / 2 }
-      }))
-    } else {
-      fromObject(parsedProcessingStep)
-    }
-    
-    // Blende den Zurück-Button ein
-    processStepBackButtonDisabled.value = false
-    // Blende den Vor-Button aus, wenn der aktuelle Bearbeitungsschritt der Letzte ist
-    if( currentProcessingStep.value == allProcessingSteps.value.length ) {
-      processStepForwardButtonDisabled.value = true
-    }
-
-    for( const[_, node] of Object.entries(getNodes.value) ) {
-      // Ive a node was selected, open the info card and fill it
-      if( node.data.selected == true ) {
-        fillInfoCard(node)
-      }
-
-      // Fill drop down menu of unit search
-      unitSearchDopDownMenueContent.value.push(node.data.label)
-      unitListContent.value.push({ id: node.id, label: node.data.label });
-    }
-
+    enableOrDisableProcessingStepButtons()
+    addNodesToUnitSearchAndUnitList()
     createNewIndexForNextNode()
   }
   
@@ -1793,7 +1798,7 @@
    * @param targetNodeID -
    */
   function updateRelationsSubComponent(nodesInGraph, sourceNodeID, targetNodeID) {
-    const selectedNodeRelations2 = nodesInGraph[ nodesInGraph.map( (x) => {return x.id} ).indexOf( selectedNodeID ) ].data.relations;
+    const selectedNodeRelations2 = nodesInGraph[ nodesInGraph.map( (x) => {return x.id} ).indexOf( currentlySelectedNodeID ) ].data.relations;
     const selectedNodeRelationsLength = selectedNodeRelations2.length;
     const nodesInGraphLength = nodesInGraph.length;
     selectedNodeRelations.value = [];
@@ -1954,7 +1959,7 @@
             if( nodesInGraph[b].id == relations[a].id ) {
               const nonValidIDs = checkRelationsBefore( nodesInGraph[b].data.relations, nodeID, nonValid )
               nonValid.push(... nonValidIDs );
-              nonValid = [ ...new Set(nonValid) ]
+              nonValid = [ ...new Set(nonValid) ];
               break nodes;
             }
           }
@@ -2078,7 +2083,7 @@
       }
       else {
         value.data.relations.forEach( ( relation, idx ) => {
-          if( relation.id == selectedNodeID ) {
+          if( relation.id == currentlySelectedNodeID ) {
             value.data.relations.splice(idx, 1);
           }
         })
@@ -2147,9 +2152,9 @@
           }
           
           // Update Unit-Search Drop-Down (Graph-Editor)
-          const index = unitSearchDopDownMenueContent.value.indexOf(node.data.label);
-          unitSearchDopDownMenueContent.value.splice(index, 1);
-          unitSearchDopDownMenueContent.value.push(input);
+          const index = unitSearchDropDownMenueItems.value.indexOf(node.data.label);
+          unitSearchDropDownMenueItems.value.splice(index, 1);
+          unitSearchDropDownMenueItems.value.push(input);
 
           // Update Unit-list (3D-Editor)
           const nodesInUnitListLength = unitListContent.value.length
@@ -2208,7 +2213,7 @@
   function updateType( newType ) {
     if( getNodes.value.length != 0 ) {
       for( const[_, node] of Object.entries(getNodes.value) ) {
-        if( node.id == selectedNodeID ) {
+        if( node.id == currentlySelectedNodeID ) {
           node.type = newType
           node.data.nodeStyle = "clicked_" + newType
         }
@@ -2426,7 +2431,7 @@
    * @param {} connection -
    * @returns {string} The contextual equivalent string.
    */
-  function getValidStatus(connection) { 
+  function getHandleStatus(connection) { 
     if( connection ){
       return 'isValid'
     }
@@ -2447,8 +2452,8 @@
     const nodesInGraphLength = nodesInGraph.length
     for( let a = 0; a < nodesInGraphLength; a++ ){
       if( nodesInGraph[a].id == nodeID && !nodesInGraph[a].data.selected ){
-        if( selectedNodeID != "" ) {
-          changeUnitsListsButtonStyle( selectedNodeID, 'notSelected' )
+        if( currentlySelectedNodeID != "" ) {
+          changeUnitsListsButtonStyle( currentlySelectedNodeID, 'notSelected' )
         }
         clearInfoCard()
         fillInfoCard(nodesInGraph[a])
@@ -2467,6 +2472,7 @@
         nodesInGraph[a].data.selected = false;
       }
     }
+    saveProcessingStep("nodeInUnitListClicked")
   }
 
   
@@ -2536,7 +2542,7 @@
       scale: null,
       rotation: null,
       loaderType: selectedNodeNewModel.value.name.split('.')[1],
-      nodeID: selectedNodeID,
+      nodeID: currentlySelectedNodeID,
     }
     
     allModelsInGraph.value.push(newObject);
@@ -2579,7 +2585,7 @@
     const nodesInGraph = getNodes.value;
     const nodesInGraphLength = nodesInGraph.length;
     for( let a = 0; a < nodesInGraphLength; a++ ){
-      if( nodesInGraph[a].id == selectedNodeID ){
+      if( nodesInGraph[a].id == currentlySelectedNodeID ){
         nodesInGraph[a].data.objectID = objectID;
       }
     }
@@ -2617,13 +2623,13 @@
    * 
    */
   function deleteObject() {
-    removeObject(selectedNodeID)
+    removeObject(currentlySelectedNodeID)
 
     // remove objectID from node
     const nodesInGraph = getNodes.value
     const nodesInGraphLength = nodesInGraph.length
     for( let a = 0; a < nodesInGraphLength; a++ ){
-      if( nodesInGraph[a].id == selectedNodeID ){
+      if( nodesInGraph[a].id == currentlySelectedNodeID ){
         nodesInGraph[a].data.objectID = ""
       }
     }
@@ -3215,6 +3221,16 @@
     }
   }
 
+  
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
   async function importData(){
 
     let parsedData = []
@@ -3224,8 +3240,8 @@
       let f = toRaw(dataToBeImported.value);
 
       reader.onload = e => {
-        const newString = e.target.result
-        resolve(newString)
+        const newString = e.target.result;
+        resolve(newString);
       }
 
       reader.readAsText(f);
@@ -3233,7 +3249,7 @@
     
     let cutString = output.split('|')
     for( let a = 0; a < cutString.length; a++ ){
-      parsedData.push(JSON.parse(cutString[a]))
+      parsedData.push(JSON.parse(cutString[a]));
     }
 
     idOfCurrentStratiTool = parsedData[0];
@@ -3242,32 +3258,45 @@
     enviromentParameter.scene = parsedData[3];
     enviromentParameter.savedCamera = parsedData[4];
 
-    clearInfoCard()
-    await initEnviroment()
-    initGraph()
+    clearInfoCard();
+    await initEnviroment();
+    initGraph();
     
   }
 
+
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
   function exportData() {
 
-    saveAll()
+    saveAll();
 
-    const idAsJson = JSON.stringify(idOfCurrentStratiTool)
+    const idAsJson = JSON.stringify(idOfCurrentStratiTool);
     
     const allProcessingStepsAsJson = JSON.stringify(allProcessingSteps.value);
     const currentProcessingStepAsJson = JSON.stringify(currentProcessingStep.value);
 
-    const sceneAsJson = JSON.stringify(convertSceneToJson())
-    const cameraAsJson = JSON.stringify(convertCameraToJson())
+    const sceneAsJson = JSON.stringify(convertSceneToJson());
+    const cameraAsJson = JSON.stringify(convertCameraToJson());
 
-    const wholeJsonString = idAsJson + "|" + allProcessingStepsAsJson + "|" + currentProcessingStepAsJson + "|" + sceneAsJson + "|" + cameraAsJson
+    const wholeJsonString = idAsJson + "|" + allProcessingStepsAsJson + "|" + currentProcessingStepAsJson + "|" + sceneAsJson + "|" + cameraAsJson;
 
-    const filename = "harris_matrix_export"
+    const filename = "harris_matrix_export";
 
     var blob = new Blob([wholeJsonString], { type: "application/json" });
     saveAs(blob, filename + ".json");
   }
 
+
+
+  
 
   /**                              Vue-Livecycle
    * /:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\
@@ -3275,11 +3304,9 @@
    * \:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::/
    * 
    */
-  onMounted(async () => {
-    
+   onMounted(async () => {
     await getDataFromIndexedDB();
-    initEnviroment()
-    
+    await initEnviroment()
   })
 
   /**                               Vue-Livecycle
@@ -3290,7 +3317,6 @@
    */
   onUnmounted(async() => {
     saveAll()
-    
   })
 </script>
 
