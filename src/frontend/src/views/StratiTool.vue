@@ -928,7 +928,39 @@
     }
   })
 
+  function initGraph() {
+    if( allProcessingSteps.value.length > 0 ){
+      const parsedProcessingStep = JSON.parse(allProcessingSteps.value[currentProcessingStep.value - 1].step);
 
+      if( currentProcessingStep.value > 1 && (allProcessingSteps.value[currentProcessingStep.value - 1].type === "addNewNode") ){
+        const lastNodeID = parsedProcessingStep.nodes[parsedProcessingStep.nodes.length - 1].id;
+        fromObject(parsedProcessingStep);
+        updateNode(lastNodeID, (node) => ({
+          position: {x: node.position.x - node.dimensions.width / 2, y: node.position.y - node.dimensions.height / 2},
+        }));
+      }
+      else {
+        fromObject(parsedProcessingStep);
+      }
+
+      if( currentProcessingStep.value > 1 ){
+        processStepBackButtonDisabled.value = false;
+      }
+      if( currentProcessingStep.value < allProcessingSteps.value.length ){
+        processStepForwardButtonDisabled.value = false;
+      }
+        
+      const nodesInGraph = getNodes.value;
+      const nodesInGraphLength = nodesInGraph.length;
+      for( let a = 0; a < nodesInGraphLength; a++ ){
+        if( nodesInGraph[a].data.selected === true ){
+          fillInfoCard(nodesInGraph[a]);
+        }
+        unitSearchDopDownMenueContent.value.push(nodesInGraph[a].data.label);
+        unitListContent.value.push({ id: nodesInGraph[a].id, label: nodesInGraph[a].data.label });
+      }
+    }
+  }
 
 
 
@@ -1101,39 +1133,7 @@
     }
   })
 
-  function initGraph() {
-    if( allProcessingSteps.value.length > 0 ){
-      const parsedProcessingStep = JSON.parse(allProcessingSteps.value[currentProcessingStep.value - 1].step);
 
-      if( currentProcessingStep.value > 1 && (allProcessingSteps.value[currentProcessingStep.value - 1].type === "addNewNode") ){
-        const lastNodeID = parsedProcessingStep.nodes[parsedProcessingStep.nodes.length - 1].id;
-        fromObject(parsedProcessingStep);
-        updateNode(lastNodeID, (node) => ({
-          position: {x: node.position.x - node.dimensions.width / 2, y: node.position.y - node.dimensions.height / 2},
-        }));
-      }
-      else {
-        fromObject(parsedProcessingStep);
-      }
-
-      if( currentProcessingStep.value > 1 ){
-        processStepBackButtonDisabled.value = false;
-      }
-      if( currentProcessingStep.value < allProcessingSteps.value.length ){
-        processStepForwardButtonDisabled.value = false;
-      }
-        
-      const nodesInGraph = getNodes.value;
-      const nodesInGraphLength = nodesInGraph.length;
-      for( let a = 0; a < nodesInGraphLength; a++ ){
-        if( nodesInGraph[a].data.selected === true ){
-          fillInfoCard(nodesInGraph[a]);
-        }
-        unitSearchDopDownMenueContent.value.push(nodesInGraph[a].data.label);
-        unitListContent.value.push({ id: nodesInGraph[a].id, label: nodesInGraph[a].data.label });
-      }
-    }
-  }
 
 
 
