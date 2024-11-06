@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 29.10.2024 13:17:32
+ * Last Modified: 06.11.2024 14:46:12
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -32,7 +32,9 @@
     <v-row>
       <v-spacer></v-spacer>
       <v-card class="pt-2" :min-width="windowWidth * 0.55">
-        <v-data-table-virtual 
+        <v-data-table-virtual
+        :sort-by="[{ key: 'branchOffice', order: 'desc' },{ key: 'year', order: 'desc' }, { key: 'number', order: 'desc' }]" 
+          multi-sort
           :headers="headers" fixed-header
           :items="utils.filteredObjects(activities, searchQuery, 'activity')" 
           :height="utils.getTableHeight(activities, windowHeight)">
