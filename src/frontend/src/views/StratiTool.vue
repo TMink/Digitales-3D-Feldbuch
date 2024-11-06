@@ -312,8 +312,8 @@
   
           <!-- Editoren -->
           <v-row no-gutters style="width:fit-content;">
-            <canvas id="canvas" class="tile" :height="windowHeight - 328" :width="windowWidth - 825" style="position:absolute; z-index: 0; opacity: 1;"></canvas>
-            <v-card id="graph" class="dnd-flow plato" @drop="onDrop" :height="windowHeight - 320" :width="windowWidth - 817" style="position:relative; z-index: 0; opacity: 1;" >
+            <canvas id="canvas_3d" class="tile notVisible" :height="windowHeight - 328" :width="windowWidth - 825"></canvas>
+            <v-card id="canvas_graph" class="dnd-flow plato visible" @drop="onDrop" :height="windowHeight - 320" :width="windowWidth - 817" style="position:relative; z-index: 0; opacity: 1;" >
               <VueFlow :maxZoom="1" :minZoom="0.2" :connectOnClick=false @dragover="onDragOver" @dragleave="onDragLeave" :nodeTypes="nodeTypes" deleteKeyCode="Backspace" :zoomOnDoubleClick=false>
                 <template #edge-custom="customEdgeProps">
                   <CustomEdge
@@ -717,18 +717,44 @@
           changeUnitsListsButtonStyle( selectedNodeID, "notSelected" );
         }
         zoomToNode(nodesInGraph[a].id);
+        selectedNodeModelName.value = ""
         fillInfoCard(nodesInGraph[a]);
 
         changeUnitsListsButtonStyle( nodesInGraph[a].id, "selected" )
         nodesInGraph[a].data.nodeStyle = "clicked_" + nodesInGraph[a].type;
         nodesInGraph[a].data.selected = true;
-      } else if( selectedNodeID != "" && currentMode != "3d" ) {
+      } else if( selectedNodeID != "" && currentMode.value != "3d" ) {
         nodesInGraph[a].data.nodeStyle = "notClicked_" + nodesInGraph[a].type;
         nodesInGraph[a].data.selected = false;
       }
     }
   })
 
+  /**                                 Watcher
+   * /=========================================================================\
+   * Switches the subcomponents of a component when changing the editor and 
+   * displays the corresponding subcomponents that are required for editing 
+   * while using the respective editor that was switched to.
+   * \=========================================================================/
+   * 
+   */
+  watch(currentMode, whichMode => {
+    if( whichMode == "graph" ){
+      enviromentParameter.renderer.setAnimationLoop(null);
+      changeVisibility("canvas_graph", "visible")
+      changeVisibility("units_graphTools", "visible")
+      
+      changeVisibility("canvas_3d", "notVisible")
+      changeVisibility("units_3dTools", "notVisible")
+    } else if( whichMode == "3d" ){
+      enviromentParameter.renderer.setAnimationLoop(animate);
+      changeVisibility("canvas_3d", "visible")
+      changeVisibility("units_3dTools", "visible")
+      
+      changeVisibility("canvas_graph", "notVisible")
+      changeVisibility("units_graphTools", "notVisible")
+    }
+  })
   
 
 
@@ -2116,22 +2142,10 @@
    * 
    */
   function changeEditor() {
-    const canvas = document.getElementById("canvas")
-    const graph = document.getElementById("graph")
-    const graphEditorTools = document.getElementById("graphEditorTools")
-
-    if( graph.style.opacity == "1" ) {
-      graph.style.opacity = "0"
-      graph.style.zIndex = "0"
-      graphEditorTools.style.opacity = "0"
-      graphEditorTools.style.zIndex = "0"
-      currentMode = "3d"
-    } else {
-      graph.style.opacity = "1"
-      graph.style.zIndex = "1"
-      graphEditorTools.style.opacity = "1"
-      graphEditorTools.style.zIndex = "1"
-      currentMode = "graph"
+    if( currentMode.value == "3d" ){
+      currentMode.value = "graph";
+    } else if( currentMode.value == "graph" ){
+      currentMode.value = "3d";
     }
   }
 
