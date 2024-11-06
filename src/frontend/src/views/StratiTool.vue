@@ -215,7 +215,7 @@
               <v-row no-gutters>
                 
                 <!-- 3D-Editor Tools -->
-                <v-card width="100%" height="100%" style="position: absolute; z-index: 1; opacity: 1;">
+                <v-card id="units_3dTools" width="100%" height="100%" class="notVisible">
                   <v-row no-gutters>
                     
                     <!-- Unit List -->
@@ -258,12 +258,12 @@
                 </v-card>
 
                 <!-- Graph-Editor Tools -->
-                <v-card id="graphEditorTools" width="100%" style="position: absolute; z-index: 1; opacity: 1;">
+                <v-card id="units_graphTools" width="100%" class="visible">
                   <v-row no-gutters>
                     
                     <!-- Unit creation -->
                     <v-col>
-                      <v-card id="unitCreation" class="px-5 py-0 units__graph_base" variant="text">
+                      <v-card id="unitCreation" class="px-5 py-0 units__graph_base" variant="text" height="100%">
                         <v-col class="pa-0" align="center">
                           <v-card class="pt-1 mb-1" variant="text">
                             <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
@@ -277,7 +277,7 @@
                       
                     <!-- Unit Search -->
                     <v-col>
-                      <v-card class="px-5 units__graph_base" variant="text">
+                      <v-card class="px-5 units__graph_base" variant="text" height="100%">
                         <v-col class="pa-0" align="center">
                           <v-card class="pt-1 mb-1" variant="text">
                             <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
@@ -285,6 +285,20 @@
                             </v-card-title>
                           </v-card>
                           <v-combobox class="mb-2" style="height: 52px; width: 250px" hide-selected :items="unitSearchDopDownMenueContent" persistent-hint :hide-no-data="true" v-model="unitSearchInput"></v-combobox>
+                        </v-col>
+                      </v-card>
+                    </v-col>
+                    
+                    <!-- Unit cleanup -->
+                    <v-col>
+                      <v-card class="px-5 units__graph_base" variant="text" height="100%">
+                        <v-col class="pa-0" align="center">
+                          <v-card class="pt-1 mb-3" variant="text">
+                            <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
+                              Unit aufräumen
+                            </v-card-title>
+                          </v-card>
+                          <v-btn @click="cleanUp">Harris-Matrix anordnen</v-btn>
                         </v-col>
                       </v-card>
                     </v-col>
@@ -810,16 +824,37 @@
     }
 
     // Create an entry of the new relation for both nodes and add the edge to the graph.
-    const entryExists = searchForEntry(sourceNodeRelations, param.target, sourceRelationType)
-    if( !entryExists ){
-      addNewRelationEntryToNode('source', param.source, param.target, sourceNodeRelations, targetRelationType, newEdge.id);
-      addNewRelationEntryToNode('target', param.source, param.target, targetNodeRelations, sourceRelationType, newEdge.id);
+    let entryExistsSource = 0
+    let entryExistsTarget = 0
+    entryExistsSource = searchForEntry(sourceNodeRelations, param.target, sourceRelationType)
+    entryExistsTarget = searchForEntry(targetNodeRelations, param.source, targetRelationType)
+    if( entryExistsSource == 0 ){
+      addNewRelationEntryToNode('source', param.source, param.target, param.sourceHandle, param.targetHandle, sourceNodeRelations, targetRelationType, newEdge.id);
+      addNewRelationEntryToNode('target', param.source, param.target, param.sourceHandle, param.targetHandle, targetNodeRelations, sourceRelationType, newEdge.id);
       addEdges([newEdge]);
     }
     // Edge case: If there is already a correlation-relation between the nodes, 
     // delete it and create the new one. This case occurs when the handles of 
     // the source and target nodes are swapped.
-    else if( entryExists && (param.sourceHandle == 'left_middle' || param.sourceHandle == 'right_middle') ){
+    else if( entryExistsSource && (param.sourceHandle == 'left_middle' || param.sourceHandle == 'right_middle') ){
+      const sourceNodeRelationsLength = sourceNodeRelations.length;
+      for( let a = 0; a < sourceNodeRelationsLength; a++ ){
+        if( entryExistsSource == sourceNodeRelations[a].id ){
+          sourceNodeRelations[a].sourceID = param.source
+          sourceNodeRelations[a].sourceHandle = param.sourceHandle
+          sourceNodeRelations[a].targetID = param.target
+          sourceNodeRelations[a].targetHandle = param.targetHandle
+        }
+      const targetNodeRelationsLength = targetNodeRelations.length;
+      for(let a = 0; a < targetNodeRelationsLength; a++ ){
+        if( entryExistsTarget == targetNodeRelations[a].id ){
+          targetNodeRelations[a].sourceID = param.source
+          targetNodeRelations[a].sourceHandle = param.sourceHandle
+          targetNodeRelations[a].targetID = param.target
+          targetNodeRelations[a].targetHandle = param.targetHandle
+        }
+      }
+      }
       removeDuplicateEdge(param)
       addEdges([newEdge]);
     }
@@ -1263,7 +1298,7 @@
     selectedNodeID = node.id
     infoCardDisabled.value = false
     document.getElementById("infoCard").style.opacity = "1";
-    
+
     // node title
     selectedNodeName.value = node.data.label
     // node description
@@ -1574,7 +1609,7 @@
    * @param relationType -
    * @param edgeID -
    */
-  function addNewRelationEntryToNode(type, sourceNodeID, targetNodeID, relations, relationType, edgeID) {
+  function addNewRelationEntryToNode(type, sourceNodeID, targetNodeID, sourceHandle, targetHandle, relations, relationType, edgeID) {
     switch( type ){
       case 'source':
         relations.push({
@@ -1583,6 +1618,8 @@
           edgeID: edgeID,
           sourceID: sourceNodeID,
           targetID: targetNodeID,
+          sourceHandle: sourceHandle,
+          targetHandle: targetHandle,
         })
         break;
       case 'target':
@@ -1592,6 +1629,8 @@
           edgeID: edgeID,
           sourceID: sourceNodeID,
           targetID: targetNodeID,
+          sourceHandle: sourceHandle,
+          targetHandle: targetHandle,
         })
         break;
       default:
@@ -1613,17 +1652,18 @@
    * @param targetNodeID -
    */
   function updateRelationsSubComponent(nodesInGraph, sourceNodeID, targetNodeID) {
-    const selectedNodeRelations = nodesInGraph[ nodesInGraph.map( (x) => {return x.id} ).indexOf( selectedNodeID ) ].data.relations;
-    const selectedNodeRelationsLength = selectedNodeRelations.length;
+    const selectedNodeRelations2 = nodesInGraph[ nodesInGraph.map( (x) => {return x.id} ).indexOf( selectedNodeID ) ].data.relations;
+    const selectedNodeRelationsLength = selectedNodeRelations2.length;
     const nodesInGraphLength = nodesInGraph.length;
     selectedNodeRelations.value = [];
     
     for( let a = 0; a < selectedNodeRelationsLength; a++ ){
       nodes: for( let b = 0; b < nodesInGraphLength; b++ ){
-        if( selectedNodeRelations[a].id == nodesInGraph[b].id ) {
+        if( selectedNodeRelations2[a].id == nodesInGraph[b].id ) {
+          
           selectedNodeRelations.value.push({
-            id: selectedNodeRelations[a].edgeID,
-            type: selectedNodeRelations[a].relationType,
+            id: selectedNodeRelations2[a].edgeID,
+            type: selectedNodeRelations2[a].relationType,
             targetLabel: nodesInGraph[b].data.label,
             sourceID: sourceNodeID,
             targetID: targetNodeID,
@@ -1653,10 +1693,12 @@
     if( relations.length ){
       for( let a = 0; a < relationsLength; a++ ) {
         if( relations[a].id == nodeID && relations[a].relationType == nodeRelationType ) {
-          return true;
+          // return true;
+          return nodeID;
         }
       }
     }
+    return 0;
   }
 
 
@@ -1890,6 +1932,7 @@
     for( const[_, value] of Object.entries(getNodes.value) ) {
       if( value.data.selected ) {
         removeNodes(value.id)
+        removeObject(value.id)
       }
       else {
         value.data.relations.forEach( ( relation, idx ) => {
@@ -2430,7 +2473,182 @@ export default {
 
 
 
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  function cleanUp() {
+    const nodesInGraph = getNodes.value
+    const nodesInGraphLength = nodesInGraph.length
+    if( nodesInGraphLength > 0 ){
+      rearangeNodesInGraph( [nodesInGraph[0].id], [{node: nodesInGraph[0], relations: nodesInGraph[0].data.relations}], [] )
+    }
+  }
+  
 
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * @param nodesInGraph 
+   * @param nodesInGraphLength 
+   * @param node 
+   * @param relations 
+   */
+  function createAfterBatch(nodesInGraph, nodesInGraphLength, node, relations) {
+    for( let a = 0; a < nodesInGraphLength; a++ ){
+      if( relations.id == nodesInGraph[a].id ){
+        let newX = node.position.x
+        let newY = node.position.y - 200
+        nodesInGraph[a].position.x = adjustPositionIfAlreadyOccupied(nodesInGraph[a].id, nodesInGraph, nodesInGraphLength, newX, newY);
+        nodesInGraph[a].position.y = newY;
+        return {node: nodesInGraph[a], relations: nodesInGraph[a].data.relations}
+      }
+    }
+  }
+
+
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  function createBeforeBatch(nodesInGraph, nodesInGraphLength, node, relations) {
+    for( let a = 0; a < nodesInGraphLength; a++ ){
+      if( relations.id == nodesInGraph[a].id ){
+        let newX = node.position.x;
+        let newY = node.position.y + 200;
+        nodesInGraph[a].position.x = adjustPositionIfAlreadyOccupied(nodesInGraph[a].id, nodesInGraph, nodesInGraphLength, newX, newY);
+        nodesInGraph[a].position.y = newY;
+        return {node: nodesInGraph[a], relations: nodesInGraph[a].data.relations};
+      }
+    }
+  }
+
+
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  function getNewXPosition(id, nodesInGraph, nodesInGraphLength, newX, newY) {
+    for( let a = 0; a < nodesInGraphLength; a++ ){
+      if( (nodesInGraph[a].position.x == newX && nodesInGraph[a].position.y == newY) && nodesInGraph[a].id != id ){
+        return false;
+      }
+    }
+    return true
+  }
+  
+
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * @param id 
+   * @param nodesInGraph 
+   * @param nodesInGraphLength 
+   * @param newX 
+   * @param newY 
+   */
+  function adjustPositionIfAlreadyOccupied(id, nodesInGraph, nodesInGraphLength, newX, newY) {
+    let done = false;
+    let xPosition = newX;
+    while( !done ){
+      done = getNewXPosition(id, nodesInGraph, nodesInGraphLength, xPosition, newY)
+      if( !done ){
+        xPosition += 200;
+      }
+    }
+    return xPosition;
+  }
+
+
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * @param alreadyRearangedNodeIDs 
+   * @param batchToBeRearanged 
+   */
+  function rearangeNodesInGraph( alreadyRearangedNodeIDs, batchToBeRearanged ) {
+    let nextBatch = [];
+    let rearangedNodes = alreadyRearangedNodeIDs;
+
+    const currentBatch = batchToBeRearanged;
+    const currentBatchLength = currentBatch.length;
+    for( let a = 0; a < currentBatchLength; a++ ){
+      const node = currentBatch[a].node;
+      const relations = currentBatch[a].relations;
+      const relationsLength = relations.length;
+      if( relationsLength > 0 ){
+        
+        const nodesInGraph = getNodes.value
+        const nodesInGraphLength = nodesInGraph.length
+        
+        for( let b = 0; b < relationsLength; b++ ){
+          if( (relations[b].relationType == 'after') && (relations[b].id != rearangedNodes[0]) && !rearangedNodes.includes(relations[b].id) ){
+            const newAfterBatch = createAfterBatch(nodesInGraph, nodesInGraphLength, node, relations[b]);
+            nextBatch.push(newAfterBatch);
+            rearangedNodes.push(relations[b].id);
+          }
+          else if( (relations[b].relationType == 'before') && (relations[b].id != rearangedNodes[0]) && !rearangedNodes.includes(relations[b].id)){
+            const newBeforeBatch = createBeforeBatch(nodesInGraph, nodesInGraphLength, node, relations[b])
+            nextBatch.push(newBeforeBatch);
+            rearangedNodes.push(relations[b].id);
+          }
+          else if( (relations[b].relationType == 'korrelation') && (relations[b].id != rearangedNodes[0]) && !rearangedNodes.includes(relations[b].id) ){
+            node: for( let c = 0; c < nodesInGraphLength; c++ ){
+              if( relations[b].id == nodesInGraph[c].id && !rearangedNodes.includes(relations[b].id)){
+                if( (relations[b].id == relations[b].sourceID && relations[b].sourceHandle == "right_middle") || (relations[b].id == relations[b].targetID && relations[b].targetHandle == "right_middle") ){
+                  nodesInGraph[c].position.x = node.position.x - 200
+                  nodesInGraph[c].position.y = node.position.y
+                  if( !rearangedNodes.includes(relations[b].id) ){
+                    nextBatch.push({node: nodesInGraph[c], relations: nodesInGraph[c].data.relations})
+                  }
+                  break node;
+                }
+                if( (relations[b].id == relations[b].sourceID && relations[b].sourceHandle == "left_middle") || (relations[b].id == relations[b].targetID && relations[b].targetHandle == "left_middle") ){
+                  nodesInGraph[c].position.x = node.position.x + 200
+                  nodesInGraph[c].position.y = node.position.y
+                  if( !rearangedNodes.includes(relations[b].id) ){
+                    nextBatch.push({node: nodesInGraph[c], relations: nodesInGraph[c].data.relations})
+                  }
+                  break node;
+                }
+              }
+            }
+            rearangedNodes.push(relations[b].id);
+          }
+        }
+        rearangeNodesInGraph(rearangedNodes, nextBatch)
+      }
+    }
+  }
+
+  async function importData(){
 
     let parsedData = []
 
