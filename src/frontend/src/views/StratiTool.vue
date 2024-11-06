@@ -707,6 +707,7 @@
    * [----------------------- Non-Reactive Variables --------------------------]
    * [-------------------------------------------------------------------------]
    */
+  const getData = await fromOfflineDB.getAllObjects("StratiToolDB", "stratiTool");
   const { width, height } = useWindowSize();
   const windowHeight = height; // int
   const windowWidth = width; // int
@@ -2293,7 +2294,7 @@
     switch( format ) {
       case 'png':
         img
-          .toPng(document.getElementById('graph'))
+          .toPng(document.getElementById('canvas_graph'))
           .then(function (dataUrl) {
             var link = document.createElement('a');
             link.download = imageFileName.value + '.png';
@@ -2303,7 +2304,7 @@
         break;
       case 'jpeg':
         img
-          .toJpeg(document.getElementById('graph'), { quality: 1 })
+          .toJpeg(document.getElementById('canvas_graph'), { quality: 1 })
           .then(function (dataUrl) {
             var link = document.createElement('a');
             link.download = imageFileName.value + '.jpeg';
@@ -2313,7 +2314,7 @@
         break;
       case 'svg':
         img
-          .toSvg(document.getElementById('graph'), { filter: filter })
+          .toSvg(document.getElementById('canvas_graph'), { filter: filter })
           .then(function (dataUrl) {
             var link = document.createElement('a');
             link.download = imageFileName.value + '.svg';
