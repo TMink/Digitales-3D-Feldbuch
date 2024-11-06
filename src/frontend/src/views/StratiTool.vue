@@ -2483,6 +2483,38 @@ export default {
     saveAs(blob, filename + ".json");
   }
 
+
+  /**                              Vue-Livecycle
+   * /:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\
+   * Equivalent semantic to mounted in <script>.
+   * \:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::/
+   * 
+   */
+  onMounted(async () => {
+    
+    await getDataFromIndexedDB();
+    initEnviroment()
+    
+  })
+
+  /**                               Vue-Livecycle
+   * /:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\
+   * Equivalent semantic to unmounted in <script>.
+   * \:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::/
+   * 
+   */
+  onUnmounted(async() => {
+    saveAll()
+    
+  })
+</script>
+
+<script>
+export default {
+  name: 'StratiTool',
+}
+</script>
+
 <style>
 @import '@vue-flow/core/dist/style.css';
 @import '../components/graph-editor-components/style.css';
