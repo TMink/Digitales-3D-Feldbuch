@@ -2,7 +2,7 @@
  * Created Date: 24.09.2024 14:53:58
  * Author: Tobias Mink
  * 
- * Last Modified: 03.10.2024 15:40:11
+ * Last Modified: 25.10.2024 18:30:28
  * Modified By: Tobias Mink
  * 
  * Description: 
@@ -117,7 +117,7 @@ export default function useDragAndDrop() {
           description: null, 
           relations: [], 
           groupIDs: null, 
-          volumeID: null, 
+          objectID: null, 
           findingID: null,
           nodeStyle: "notClicked_deposit",
           selected: false,
@@ -141,7 +141,7 @@ export default function useDragAndDrop() {
           description: null, 
           relations: [], 
           groupIDs: null, 
-          surfaceID: null,
+          objectID: null,
           nodeStyle: "notClicked_interface",
           selected: false,
           styles: {
