@@ -87,8 +87,37 @@
                   </v-card>
 
                   <!-- Exp/Imp -->
-                  <v-card id="exp/imp_module" class="pa-2 exp-imp_module__base d-flex align-center justify-center" :height="windowHeight - 345" width="367" style="position:absolute; z-index: 0; opacity: 1;">
-                    <img src="@/components/graph-editor-components/Images/work_in_progress_background.jpg" height="1010">
+                  <v-card id="exp/imp_module" class="pa-2 exp-imp_module__base" :height="windowHeight - 345" width="367" style="position:absolute; z-index: 0; opacity: 1;">
+                    <v-row no-gutters>
+                      <v-card class="pa-2" :height="windowHeight - 838" width="100%" variant="text" style="border: 1px; border-style: solid; border-color: white;">
+                        <v-card-title class="d-flex align-center justify-center pa-0 pb-2" >Export</v-card-title>
+                        <v-btn class="infobereich__attributes_type_title_button" width="100%" height="50" @click="exportData()">
+                          Press Me
+                        </v-btn>
+                      </v-card>
+                    </v-row>
+                    <v-row no-gutters>
+                      <v-card class="pa-2" :height="windowHeight - 838" width="100%" variant="text" style="border: 1px; border-style: solid; border-color: white;">
+                        <v-card-title class="d-flex align-center justify-center pa-0 pb-2" >Import</v-card-title>
+                        <v-btn class="infobereich__attributes_type_title_button" width="100%" height="50" @click="createImportDataDialog = true">
+                          Press Me
+                        </v-btn>
+                        <v-dialog v-model="createImportDataDialog" max-width="320" persistent>
+                          <v-card class="pa-4">
+                            <v-file-input show-size accept=".json" v-model="dataToBeImported" label="Datei auswählen"/>
+    
+                            <v-card-actions class="justify-center">
+                              <v-btn icon color="success" v-on:click="importData()">
+                                <v-icon>mdi-check-circle</v-icon>
+                              </v-btn>
+                              <v-btn icon color="primary" @click="createImportDataDialog = false">
+                                <v-icon>mdi-close-circle</v-icon>
+                              </v-btn>
+                            </v-card-actions>
+                          </v-card>
+                        </v-dialog>
+                      </v-card>
+                    </v-row>
                   </v-card>
 
                   <!-- Filter -->
@@ -483,6 +512,7 @@
   import { useWindowSize } from 'vue-window-size';
   import { VueFlow, useVueFlow, MarkerType } from '@vue-flow/core';
   import * as img from 'html-to-image';
+  import { saveAs } from 'file-saver';
   
   import Sidebar from '../components/graph-editor-components/Sidebar.vue';
   import Navigation from '../components/Navigation.vue';
@@ -530,6 +560,9 @@
   var graphAktiveModuleName = ref("Screenshot"); // string
   // ----> Screenshot-Tool (Graph-Editor)
   var imageFileName = ref(""); // string
+  // ----> Exp/Imp-Tool (Graph-Editor)
+  var createImportDataDialog = ref(false); // boolean
+  var dataToBeImported = ref(null); // string
   
   /** > > > > > > ------ < < < < < < **/
   /** > > > > > > Middle < < < < < < **/
@@ -893,7 +926,39 @@
     }
   })
 
+  function initGraph() {
+    if( allProcessingSteps.value.length > 0 ){
+      const parsedProcessingStep = JSON.parse(allProcessingSteps.value[currentProcessingStep.value - 1].step);
 
+      if( currentProcessingStep.value > 1 && (allProcessingSteps.value[currentProcessingStep.value - 1].type === "addNewNode") ){
+        const lastNodeID = parsedProcessingStep.nodes[parsedProcessingStep.nodes.length - 1].id;
+        fromObject(parsedProcessingStep);
+        updateNode(lastNodeID, (node) => ({
+          position: {x: node.position.x - node.dimensions.width / 2, y: node.position.y - node.dimensions.height / 2},
+        }));
+      }
+      else {
+        fromObject(parsedProcessingStep);
+      }
+
+      if( currentProcessingStep.value > 1 ){
+        processStepBackButtonDisabled.value = false;
+      }
+      if( currentProcessingStep.value < allProcessingSteps.value.length ){
+        processStepForwardButtonDisabled.value = false;
+      }
+        
+      const nodesInGraph = getNodes.value;
+      const nodesInGraphLength = nodesInGraph.length;
+      for( let a = 0; a < nodesInGraphLength; a++ ){
+        if( nodesInGraph[a].data.selected === true ){
+          fillInfoCard(nodesInGraph[a]);
+        }
+        unitSearchDopDownMenueContent.value.push(nodesInGraph[a].data.label);
+        unitListContent.value.push({ id: nodesInGraph[a].id, label: nodesInGraph[a].data.label });
+      }
+    }
+  }
 
 
 
@@ -2136,12 +2201,19 @@
    * 
    */
   async function saveAll() {
+    enviromentParameter.renderer.setAnimationLoop(null);
     if( idOfCurrentStratiTool != "" ) {
       const parsedModels = parseModelData( allModelsInGraph.value )
-      await fromOfflineDB.updateIndexedDBObject({ _id: idOfCurrentStratiTool, graph: {allProcessingSteps: JSON.parse(JSON.stringify(allProcessingSteps.value)), currentProcessingStep: currentProcessingStep.value}, threeD: {allModels: parsedModels}}, "StratiToolDB", "stratiTool" );
+      const sceneJSON = convertSceneToJson()
+      const savedCamera = convertCameraToJson()
+      await fromOfflineDB.updateIndexedDBObject({ _id: idOfCurrentStratiTool, graph: {allProcessingSteps: JSON.parse(JSON.stringify(allProcessingSteps.value)), currentProcessingStep: currentProcessingStep.value}, threeD: {allModels: parsedModels, scene: sceneJSON, camera: savedCamera}}, "StratiToolDB", "stratiTool" );
     } else {
+      const newID = String( Date.now() )
+      idOfCurrentStratiTool = newID;
       const parsedModels = parseModelData( allModelsInGraph.value )
-      await fromOfflineDB.addObject( {_id: String( Date.now() ), graph: {allProcessingSteps: JSON.parse(JSON.stringify(allProcessingSteps.value)), currentProcessingStep: currentProcessingStep.value}, threeD: {allModels: parsedModels}}, "StratiToolDB", "stratiTool" );
+      const sceneJSON = convertSceneToJson()
+      const savedCamera = convertCameraToJson()
+      await fromOfflineDB.addObject( {_id: newID, graph: {allProcessingSteps: JSON.parse(JSON.stringify(allProcessingSteps.value)), currentProcessingStep: currentProcessingStep.value}, threeD: {allModels: parsedModels, scene: sceneJSON, camera: savedCamera}}, "StratiToolDB", "stratiTool" );
     }
   }
   
@@ -2395,6 +2467,59 @@ export default {
   border-style: ridge;
   border-color: #171C23;
   background-color: #28303d;
+  async function importData(){
+
+    let parsedData = []
+
+    const output = await new Promise((resolve) => {
+      let reader = new FileReader();
+      let f = toRaw(dataToBeImported.value);
+
+      reader.onload = e => {
+        const newString = e.target.result
+        resolve(newString)
+      }
+
+      reader.readAsText(f);
+    });
+    
+    let cutString = output.split('|')
+    for( let a = 0; a < cutString.length; a++ ){
+      parsedData.push(JSON.parse(cutString[a]))
+    }
+
+    idOfCurrentStratiTool = parsedData[0];
+    allProcessingSteps.value = parsedData[1];
+    currentProcessingStep.value = parsedData[2];
+    enviromentParameter.scene = parsedData[3];
+    enviromentParameter.savedCamera = parsedData[4];
+
+    clearInfoCard()
+    await initEnviroment()
+    initGraph()
+    
+  }
+
+  function exportData() {
+
+    saveAll()
+
+    const idAsJson = JSON.stringify(idOfCurrentStratiTool)
+    
+    const allProcessingStepsAsJson = JSON.stringify(allProcessingSteps.value);
+    const currentProcessingStepAsJson = JSON.stringify(currentProcessingStep.value);
+
+    const sceneAsJson = JSON.stringify(convertSceneToJson())
+    const cameraAsJson = JSON.stringify(convertCameraToJson())
+
+    const wholeJsonString = idAsJson + "|" + allProcessingStepsAsJson + "|" + currentProcessingStepAsJson + "|" + sceneAsJson + "|" + cameraAsJson
+
+    const filename = "harris_matrix_export"
+
+    var blob = new Blob([wholeJsonString], { type: "application/json" });
+    saveAs(blob, filename + ".json");
+  }
+
 }
 
 /**
