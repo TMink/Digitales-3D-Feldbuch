@@ -429,33 +429,30 @@
                           </v-row>
                         </v-card>
 
-                        <!-- Unit Model -->
-                        <v-card class="py-2 mb-3 infobereich__attributes_type" width="100%">
-                          <v-row no-gutters class="py-0" align-content="center">
-                            <v-card class="pl-3 pb-1 infobereich__attributes_type_title" elevation=0>Model:</v-card>
+                        <!-- Unit 3D-Object -->
+                        <v-card class="py-2 pb-0 mb-3 infobereich__attributes_type" width="100%" height="130">
+                          
+                          <!-- Attribute-Header -->
+                          <v-row no-gutters align-content="center">
+                            <v-card class="pl-3 infobereich__attributes_type_title" elevation="0">3D-Objekt:</v-card>
                           </v-row>
-                          <v-row no-gutters class="px-3 pb-1">
-                            <v-card  variant="text">
-                              <v-card-subtitle class="px-0">
-                                Name: {{ selectedNodeModelName }}
-                              </v-card-subtitle>
-                            </v-card>
-                          </v-row>
-                          <v-row no-gutters class="px-3">
-                            <v-btn class="infobereich__attributes_description_button" height="40" min-width="100%" @click="createAddModelDialog = true">
-                              Modell ändern
+                          
+                          <!-- New 3D-Object creation -->
+                          <v-card id="infoCard_attributes_createNewObject" class="pt-3 px-16 visible" variant="text" width="100%">
+                            <v-btn class="infobereich__attributes_description_button" height="60" min-width="100%" @click="createAddModelDialog = true">
+                                Neues 3D-Objekt<br>hinzufügen
                             </v-btn>
                             <v-dialog v-model="createAddModelDialog" max-width="800" persistent>
                               <v-card class="pa-4">
                                 <v-card-title>{{ $t('add', { msg: $t('model') }) }}</v-card-title>
-
+    
                                 <v-text-field v-model="selectedNodeNewModelName" :label="$t('title')" :hint="$t('please_input', { msg: $t('title_of', { msg: $t('model') }) })"/>
-
+    
                                 <v-file-input show-size accept=".glb" v-model="selectedNodeNewModel" :label="$t('input', { msg: $t('model') })"/>
-
+    
                                 <v-card-actions class="justify-center">
-                                  <v-btn icon color="success" v-on:click="addModel()">
-                                    <v-icon>mdi-content-save-all</v-icon>
+                                  <v-btn icon color="success" v-on:click="addObject()">
+                                    <v-icon>mdi-check-circle</v-icon>
                                   </v-btn>
                                   <v-btn icon color="primary" @click="createAddModelDialog = false">
                                     <v-icon>mdi-close-circle</v-icon>
@@ -463,7 +460,67 @@
                                 </v-card-actions>
                               </v-card>
                             </v-dialog>
-                          </v-row>
+                          </v-card>
+
+                          <!-- Edit existing 3D-Object -->
+                          <v-card id="infoCard_attributes_editExistingObject" variant="text" class="px-3 notVisible" width="100%">
+                            <v-row no-gutters>
+                              <v-card variant="text">
+                                <v-card-title class="pa-1" >Name: {{ selectedNodeModelName }}</v-card-title>
+                              </v-card>
+                            </v-row>
+                            <v-row no-gutters>
+                              
+                              <!-- Switch existing 3D-Object -->
+                              <v-col cols="6">
+                                <v-btn class="infobereich__attributes_description_button" height="40" min-width="100%" @click="createSwitchObjektDiablog = true">
+                                  Wechseln
+                                </v-btn>
+                                <v-dialog v-model="createSwitchObjektDiablog" max-width="800" persistent>
+                                  <v-card class="pa-4">
+                                    <v-card-title>{{ $t('add', { msg: $t('model') }) }}</v-card-title>
+    
+                                    <v-text-field v-model="selectedNodeNewModelName" :label="$t('title')" :hint="$t('please_input', { msg: $t('title_of', { msg: $t('model') }) })"/>
+    
+                                    <v-file-input show-size accept=".glb" v-model="selectedNodeNewModel" :label="$t('input', { msg: $t('model') })"/>
+    
+                                    <v-card-actions class="justify-center">
+                                      <v-btn icon color="success" v-on:click="switchObject()">
+                                        <v-icon>mdi-check-circle</v-icon>
+                                      </v-btn>
+                                      <v-btn icon color="primary" @click="createSwitchObjektDiablog = false">
+                                        <v-icon>mdi-close-circle</v-icon>
+                                      </v-btn>
+                                    </v-card-actions>
+                                  </v-card>
+                                </v-dialog>
+                              </v-col>
+
+                              <!-- Delete 3D-Object -->
+                              <v-col cols="6">
+                                <v-btn class="infobereich__attributes_description_button" height="40" min-width="100%" @click="createDeleteModelDialog = true">
+                                  Löschen
+                                </v-btn>
+                                <v-dialog v-model="createDeleteModelDialog" max-width="300" persistent>
+                                  <v-card class="pa-4">
+                                    <v-card-title class="text-wrap" style="word-break: break-word;">Wollen sie das 3D-objekt wirklich löschen?</v-card-title>
+                                    
+                                    <v-card-actions class="justify-center">
+                                      <v-btn icon color="success" v-on:click="deleteObject">
+                                        <v-icon>mdi-check-circle</v-icon>
+                                      </v-btn>
+                                      <v-btn icon color="primary" @click="createDeleteModelDialog = false">
+                                        <v-icon>mdi-close-circle</v-icon>
+                                      </v-btn>
+                                    </v-card-actions>
+                                    
+                                  </v-card>
+                                </v-dialog>
+                              </v-col>
+                              
+                            </v-row>
+                          </v-card>
+                          
                         </v-card>
                           
                         <!-- Unit Beziehungen -->
@@ -475,14 +532,27 @@
                             <v-list class="px-2 infobereich__attributes_relations_list" height="200" min-width="100%" max-width="100%">
                               <v-list-item class="mb-7 pb-0 px-0" max-height="0" v-for="n in selectedNodeRelations" :key="n">
                                 <v-row no-gutters height="fit-content">
-                                    <v-card class="pa-2 infobereich__attributes_relations_list_item" width="87%" height="70">
-                                      Mit: {{ n.targetLabel }}<br>Art: {{ n.type }}
-                                    </v-card>
-                                    <v-btn class="infobereich__attributes_relations_list_button" height="70" min-width="0" max-width="0">
-                                      <v-icon icon="mdi-delete-empty" size="Large" @click="deleteEdge( n.id, n.sourceID, n.targetID )"></v-icon>
-                                    </v-btn>
+                                  <v-card class="pa-2 infobereich__attributes_relations_list_item" width="87%" height="70">
+                                    Mit: {{ n.targetLabel }}<br>Art: {{ n.type }}
+                                  </v-card>
+                                  <v-btn class="infobereich__attributes_relations_list_button" height="70" min-width="0" max-width="0">
+                                    <v-icon icon="mdi-delete-empty" size="Large" @click="createDeleteNodeRelationDialog = true; edgeToBeDeleted = n"></v-icon>
+                                  </v-btn>
                                 </v-row>
                               </v-list-item>
+                              <v-dialog v-model="createDeleteNodeRelationDialog" max-width="320" persistent>
+                                <v-card class="pa-4">
+                                  <v-card-title class="text-wrap" style="word-break: break-word;">Wollen sie die Beziehung {{ edgeToBeDeleted.id }} wirklich löschen?</v-card-title>
+                                  <v-card-actions class="justify-center">
+                                    <v-btn icon color="success" v-on:click="deleteEdge( edgeToBeDeleted.id, edgeToBeDeleted.sourceID, edgeToBeDeleted.targetID )">
+                                      <v-icon>mdi-check-circle</v-icon>
+                                    </v-btn>
+                                    <v-btn icon color="primary" @click="createDeleteNodeRelationDialog = false">
+                                      <v-icon>mdi-close-circle</v-icon>
+                                    </v-btn>
+                                  </v-card-actions>
+                                </v-card>
+                              </v-dialog>
                             </v-list>
                           </v-row>
                         </v-card>
@@ -507,7 +577,23 @@
                   
                   <!-- Unit löschen -->
                   <v-row no-gutters>
-                    <v-btn class="infobereich__delete_unit_button" height="50" width="100%" @click="deleteNode()">Unit Löschen</v-btn>
+                    <v-btn class="infobereich__delete_unit_button" height="50" width="100%" @click="createDeleteNodeDialog = true">
+                      Unit Löschen
+                    </v-btn>
+                    <v-dialog v-model="createDeleteNodeDialog" max-width="320" persistent>
+                      <v-card class="pa-4">
+                        <v-card-title class="text-wrap" style="word-break: break-word;">Wollen sie die Unit wirklich löschen?</v-card-title>
+    
+                        <v-card-actions class="justify-center">
+                          <v-btn icon color="success" v-on:click="deleteNode">
+                            <v-icon>mdi-check-circle</v-icon>
+                          </v-btn>
+                          <v-btn icon color="primary" @click="createDeleteNodeDialog = false">
+                            <v-icon>mdi-close-circle</v-icon>
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
                   </v-row>
                 </v-col>
               </v-card>
@@ -522,6 +608,8 @@
 
 <script setup>
   import * as THREE from 'three';
+  import { ArcballControls } from 'three/addons/controls/ArcballControls.js';
+  import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
   import { onMounted, onUnmounted, markRaw, ref, watch, toRaw} from 'vue';
   import { useWindowSize } from 'vue-window-size';
   import { VueFlow, useVueFlow, MarkerType } from '@vue-flow/core';
@@ -606,7 +694,12 @@
   // ----Component----> Placeholder
   // ----Component----> Infobereich
   var infoCardDisabled = ref(true); // boolean
+  var createDeleteNodeDialog = ref(false) // boolean
+  var createDeleteNodeRelationDialog = ref(false) // boolean
   var createAddModelDialog = ref(false) // boolean
+  var createDeleteModelDialog = ref(false) // boolean
+  var createSwitchObjektDiablog = ref(false) // boolean
+  var edgeToBeDeleted = ref(null) // array<>
   
 
   /**
@@ -621,6 +714,15 @@
   var connectionInProgress = false; // boolean
   var idOfCurrentStratiTool = ""; // string
   var alreadyCut = false; // boolean
+  var enviromentParameter = {
+    renderer: null,
+    scene: null,
+    camera: null,
+    savedCamera: null,
+    controls: null,
+    light: null,
+    objects: null,
+  }
   const nodeTypes = {
     deposit: markRaw(DepositNode),
     interface: markRaw(InterfaceNode)
@@ -756,8 +858,25 @@
     }
   })
   
+  /**                                 Watcher
+   * /=========================================================================\
+   * 
+   * \=========================================================================/
+   * 
+   */
+  watch(selectedNodeModelName, whichName => {
+    if( whichName == "" ){
+      changeVisibility("infoCard_attributes_createNewObject", "visible")
+      changeVisibility("infoCard_attributes_editExistingObject", "notVisible")
+    } else {
+      changeVisibility("infoCard_attributes_createNewObject", "notVisible")
+      changeVisibility("infoCard_attributes_editExistingObject", "visible")
+    }
+  })
 
 
+  
+  
 
   /**                            Vue-flow function
    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -773,11 +892,6 @@
     const getData = await fromOfflineDB.getAllObjects("StratiToolDB", "stratiTool");
     
     if( getData.length > 0 ){
-      idOfCurrentStratiTool = getData[0]._id;
-      allProcessingSteps.value = getData[0].graph.allProcessingSteps;
-      currentProcessingStep.value = getData[0].graph.currentProcessingStep;
-      allModelsInGraph.value = getData[0].threeD.allModels;
-  
       if( allProcessingSteps.value.length > 0 ){
         const parsedProcessingStep = JSON.parse(allProcessingSteps.value[currentProcessingStep.value - 1].step);
 
@@ -1336,10 +1450,13 @@
       selectedNodeType.value = 1;
     }
     // node model
-    const modelsInGraphLength = allModelsInGraph.value.length
-    for( let a = 0; a < modelsInGraphLength; a++){
-      if( allModelsInGraph.value[a].nodeID == node.id ){
-        selectedNodeModelName.value = allModelsInGraph.value[a].title;
+    if( enviromentParameter.scene.children.length ){
+      const objectsInScene = enviromentParameter.scene.children.slice(1, -1)
+      const objectsInSceneLength = objectsInScene.length
+      for( let a = 0; a < objectsInSceneLength; a++ ){
+        if( objectsInScene[a].userData.nodeID == node.id ){
+          selectedNodeModelName.value = objectsInScene[a].name
+        }
       }
     }
 
@@ -1493,7 +1610,6 @@
     // Vermerke den neuen aktuellen Bearbeitungsschritt
     currentProcessingStep.value = currentProcessingStep.value + 1
     // Lade den aktuell ausgewählten Bearbeitungsstand
-    console.log("Go forward and load: " + allProcessingSteps.value[currentProcessingStep.value - 1].type)
     const parsedProcessingStep = JSON.parse( allProcessingSteps.value[currentProcessingStep.value - 1].step )
     
     if( allProcessingSteps.value[ currentProcessingStep.value - 1 ].type == "addNewNode" ) {
@@ -1698,6 +1814,7 @@
         }
       }
     }
+
   }
 
 
@@ -1969,7 +2086,7 @@
       }
     }
     clearInfoCard()
-    
+    createDeleteNodeDialog.value = false
     saveProcessingStep( "deleteNode" )
   }
 
@@ -2004,7 +2121,7 @@
       }
     } )
     removeEdges( edgeID )
-
+    createDeleteNodeRelationDialog.value = false;
     saveProcessingStep( "deleteEdge" )
   }
 
@@ -2037,7 +2154,6 @@
 
           // Update Unit-list (3D-Editor)
           const nodesInUnitListLength = unitListContent.value.length
-          console.log(nodesInUnitListLength)
           for( let b = 0; b < nodesInUnitListLength; b++ ){
             if( unitListContent.value[b].id == node.id ){
               unitListContent.value[b].label = input;
@@ -2341,6 +2457,11 @@
         changeUnitsListsButtonStyle( nodesInGraph[a].id, 'selected' )
         nodesInGraph[a].data.nodeStyle = "clicked_" + nodesInGraph[a].type;
         nodesInGraph[a].data.selected = true;
+      } else if( nodesInGraph[a].id == nodeID && nodesInGraph[a].data.selected ) {
+        changeUnitsListsButtonStyle( nodesInGraph[a].id, 'notSelected' )
+        clearInfoCard()
+        nodesInGraph[a].data.nodeStyle = "notClicked_" + nodesInGraph[a].type;
+        nodesInGraph[a].data.selected = false;
       } else {
         changeUnitsListsButtonStyle( nodesInGraph[a].id, 'notSelected' )
         nodesInGraph[a].data.nodeStyle = "notClicked_" + nodesInGraph[a].type;
@@ -2396,6 +2517,7 @@
 
 
 
+  
 
   /**
    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -2403,13 +2525,10 @@
    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
    * 
    */
-  async function addModel() {
-    // add modelID to the object array of all models
-    const newModelID = String(Date.now());
-
+  async function addObject() {
     // new model data
-    const newModel = {
-      _id: newModelID,
+    const newObject = {
+      _id: String(Date.now()),
       title: selectedNodeNewModelName.value,
       model: await modelToArrayBuffer(toRaw(selectedNodeNewModel.value)),
       color: '#ffffff',
@@ -2420,67 +2539,247 @@
       loaderType: selectedNodeNewModel.value.name.split('.')[1],
       nodeID: selectedNodeID,
     }
-
-    // hide model creation dialog
+    
+    allModelsInGraph.value.push(newObject);
+    selectedNodeModelName.value = newObject.title;
     createAddModelDialog.value = false;
-
-    // add model to local data
-    allModelsInGraph.value.push(newModel);
-    selectedNodeModelName.value = newModel.title;
-
-    // add model to IndexedDB
+    
+    await addObjectToScene(newObject)
+    addObjectIdToNode(newObject._id)
+    reCenterControlsAndCamera()
   }
 
 
-  /**                              Vue-Livecycle
-   * /:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\
-   * Equivalent semantic to mounted in <script>.
-   * \:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::/
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
    * 
    */
-  onMounted(async () => {
-    const canvas = document.getElementById("canvas")
-    /**
-     * 3D-Editor
-     */
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera( 45, canvas.clientWidth / canvas.clientHeight, 0.01, 2000 );
-    const renderer = new THREE.WebGLRenderer({
-      canvas: canvas,
+  async function addObjectToScene(object) {
+    const loadedObject = await objLoader(object, selectedNodeNewModelName.value);
+    const gismo = enviromentParameter.scene.children.pop();
+    enviromentParameter.scene.add(loadedObject);
+    enviromentParameter.scene.add(gismo);
+  }
+
+
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  function addObjectIdToNode(objectID) {
+    const nodesInGraph = getNodes.value;
+    const nodesInGraphLength = nodesInGraph.length;
+    for( let a = 0; a < nodesInGraphLength; a++ ){
+      if( nodesInGraph[a].id == selectedNodeID ){
+        nodesInGraph[a].data.objectID = objectID;
+      }
+    }
+  }
+
+
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  function changeVisibility(elementID, status) {
+    const element = document.getElementById(elementID)
+    if( status == "visible" ){
+      element.classList.remove("notVisible")
+      element.classList.add(status)
+    } else if( status == "notVisible" ){
+      element.classList.remove("visible")
+      element.classList.add(status)
+    }
+  }
+
+
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  function deleteObject() {
+    removeObject(selectedNodeID)
+
+    // remove objectID from node
+    const nodesInGraph = getNodes.value
+    const nodesInGraphLength = nodesInGraph.length
+    for( let a = 0; a < nodesInGraphLength; a++ ){
+      if( nodesInGraph[a].id == selectedNodeID ){
+        nodesInGraph[a].data.objectID = ""
+      }
+    }
+
+    // remove object name from infoCard
+    selectedNodeModelName.value = ""
+
+    // hide model creation dialog
+    createDeleteModelDialog.value = false;
+  }
+
+
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  function switchObject() {
+    deleteObject()
+    addObject()
+
+    createSwitchObjektDiablog.value = false
+  }
+
+
+
+
+  
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  function removeObject(nodeID) {
+    const objectsInScene = enviromentParameter.scene.children.slice(1, -1)
+    
+    const objectsInSceneLength = objectsInScene.length
+    for( let a = 0; a < objectsInSceneLength; a++ ){
+      if( objectsInScene[a].userData.nodeID == nodeID ){
+        enviromentParameter.scene.remove(objectsInScene[a])
+      }
+    }
+
+    reCenterControlsAndCamera()
+  }
+
+  
+  
+
+  
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  async function initEnviroment() {
+    
+    let cameraPosition;
+    let cameraRotation;
+
+    createRenderer()
+    
+    if( enviromentParameter.scene == null ) {
+      createCamera()
+      createScene()
+      createIllumination()
+      createControls()
+      reCenterControls()
+    } else {
+      await loadCamera()
+      await loadScene()
+      cameraPosition = [ enviromentParameter.camera.position.x, enviromentParameter.camera.position.y, enviromentParameter.camera.position.z ]
+      cameraRotation = [ enviromentParameter.camera.rotation.x, enviromentParameter.camera.rotation.y, enviromentParameter.camera.rotation.z ]
+      enviromentParameter.scene.children.pop();
+      createControls()
+      reCenterControls()
+      enviromentParameter.camera.position.set( cameraPosition[ 0 ], cameraPosition[ 1 ], cameraPosition[ 2 ] );
+      enviromentParameter.camera.rotation.set( cameraRotation[ 0 ], cameraRotation[ 1 ], cameraRotation[ 2 ]);
+    }
+
+    // enviromentParameter.renderer.setAnimationLoop(animate);
+  }
+
+  
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  function createRenderer() {
+    const canvas3D = document.getElementById("canvas_3d");
+    
+    enviromentParameter.renderer = new THREE.WebGLRenderer({
+      canvas: canvas3D,
       antialias: true
     });
-    renderer.setPixelRatio( canvas.devicePixelratio )
-    renderer.setClearColor( 0x28303d, 1);
-    const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-    const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-    const cube = new THREE.Mesh( geometry, material );
-    scene.add( cube );
+    enviromentParameter.renderer.setPixelRatio( canvas3D.devicePixelratio );
+    enviromentParameter.renderer.setClearColor( 0x28303d, 1);
+  }
 
-    camera.position.z = 5;
-    function animate() {
-	    renderer.render( scene, camera );
-      cube.rotation.x += 0.01;
-      cube.rotation.y += 0.01;
-    }
-    renderer.setAnimationLoop( animate );
-  })
 
-  /**                               Vue-Livecycle
-   * /:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\
-   * Equivalent semantic to unmounted in <script>.
-   * \:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::/
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
    * 
    */
-  onUnmounted(async() => {
-    saveAll()
-  })
-</script>
+  function createCamera() {
+    const canvas3D = document.getElementById("canvas_3d");
+    enviromentParameter.camera = new THREE.PerspectiveCamera( 45, canvas3D.clientWidth / canvas3D.clientHeight, 0.01, 2000 );
+    enviromentParameter.camera.position.z = 10;
+  }
 
-<script>
-export default {
-  name: 'StratiTool',
-}
-</script>
+
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  function createScene() {
+    enviromentParameter.scene = new THREE.Scene();
+  }
+
+
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  function createIllumination() {
+    enviromentParameter.light = new THREE.AmbientLight( 0xd9d9d9 );
+    enviromentParameter.scene.add(enviromentParameter.light);
+  }
+
 
 
 
