@@ -2,7 +2,7 @@
  Created Date: 23.09.2024 10:14:23
  Author: Tobias Mink
  
- Last Modified: 23.10.2024 17:13:51
+ Last Modified: 06.11.2024 01:11:11
  Modified By: Tobias Mink
  
  Description: 
@@ -889,8 +889,6 @@
    * 
    */
   onInit(async() => {
-    const getData = await fromOfflineDB.getAllObjects("StratiToolDB", "stratiTool");
-    
     if( getData.length > 0 ){
       if( allProcessingSteps.value.length > 0 ){
         const parsedProcessingStep = JSON.parse(allProcessingSteps.value[currentProcessingStep.value - 1].step);
@@ -2680,6 +2678,27 @@
   
 
   
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  async function getDataFromIndexedDB() {
+    if( getData.length > 0 ){
+      idOfCurrentStratiTool = getData[0]._id;
+      allProcessingSteps.value = getData[0].graph.allProcessingSteps;
+      currentProcessingStep.value = getData[0].graph.currentProcessingStep;
+      allModelsInGraph.value = getData[0].threeD.allModels;
+      enviromentParameter.scene = getData[0].threeD.scene;
+      enviromentParameter.savedCamera = getData[0].threeD.camera;
+    }
+  }
+
+
+
+
+
   /**
    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
    * 
