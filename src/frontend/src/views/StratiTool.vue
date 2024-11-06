@@ -2784,6 +2784,240 @@
 
 
 
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  function createControls() {
+    enviromentParameter.controls = new ArcballControls( enviromentParameter.camera, enviromentParameter.renderer.domElement, enviromentParameter.scene );
+    enviromentParameter.controls.addEventListener( 'change', function() {
+      enviromentParameter.renderer.render( enviromentParameter.scene, enviromentParameter.camera );
+    } )
+    enviromentParameter.controls.enablePan = false;
+  }
+
+
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  async function loadCamera() {
+    enviromentParameter.camera = await jsonLoader(enviromentParameter.savedCamera)
+  }
+
+
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  async function loadScene() {
+    enviromentParameter.scene = await jsonLoader(enviromentParameter.scene)
+  }
+
+
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  function convertSceneToJson() {
+    enviromentParameter.scene.updateMatrixWorld()
+    const sceneJSON = enviromentParameter.scene.toJSON()
+    return sceneJSON
+  }
+
+
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  function convertCameraToJson() {
+    const cameraAsJSON = enviromentParameter.camera.toJSON()
+    return cameraAsJSON
+  }
+
+
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  function reCenterControls() {
+    const objectsInScene = enviromentParameter.scene.children.slice(1, -1)
+    if( objectsInScene.length ){
+      const barycenter = getBarycenter(objectsInScene)
+      
+      enviromentParameter.controls.target.set(barycenter.x, barycenter.y, barycenter.z)
+      enviromentParameter.controls.update()
+    }
+  }
+
+
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  function reCenterControlsAndCamera() {
+    const objectsInScene = enviromentParameter.scene.children.slice(1, -1)
+    if( objectsInScene.length ){
+      const barycenter = getBarycenter(objectsInScene)
+      
+      enviromentParameter.controls.target.set(barycenter.x, barycenter.y, barycenter.z)
+      enviromentParameter.camera.position.set(barycenter.x, barycenter.y - 15, barycenter.z);
+      enviromentParameter.controls.update()
+    }
+  }
+
+
+
+
+
+  
+  /**
+   * Gets the barycenter of an object/group of objects.
+   * @param {*} objects 
+   * @returns Vector3
+   */
+  function getBarycenter( arrayOfObjects ) {
+    
+    const groupCenter = new THREE.Vector3()
+
+    const howManyObjects = arrayOfObjects.length
+    for( let a = 0; a < howManyObjects; a++ ){
+      const howManyChildren = arrayOfObjects[a].children.length
+      for( let b = 0; b < howManyChildren; b++ ){
+        
+        const boundingBox = new THREE.Box3();
+        boundingBox.setFromObject( arrayOfObjects[a].children[b] );
+        const center = new THREE.Vector3();
+        boundingBox.getCenter( center );
+      
+        groupCenter.x += center.x
+        groupCenter.y += center.y
+        groupCenter.z += center.z
+      }
+    }
+
+    groupCenter.x = groupCenter.x / howManyObjects
+    groupCenter.y = groupCenter.y / howManyObjects
+    groupCenter.z = groupCenter.z / howManyObjects
+
+    return groupCenter
+  }
+  
+
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  function animate() {
+    enviromentParameter.renderer.render( enviromentParameter.scene, enviromentParameter.camera );
+  }
+
+  
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  async function objLoader(objectData) {
+    const loader = new GLTFLoader();
+    const object = await new Promise((resolve) => {
+      loader.parse(objectData.model, '', (glb) => {
+        resolve( glb.scene );
+      });
+    });
+    const newObject = traverseForName(object, "", objectData.title, objectData._id, objectData.nodeID)
+    return newObject;
+  }
+  
+
+
+
+
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  function traverseForName(object, idxDepth, name, id, nodeID) {
+    let count = 0;
+    
+    const adjustedObject = object
+    adjustedObject.name = name + idxDepth;
+    adjustedObject.userData.id = id;
+    adjustedObject.userData.nodeID = nodeID;
+
+    const length = adjustedObject.children.length;
+    if( length > 0 ){
+      for( let a = 0; a < length; a++ ){
+        const newIdxDepth = "_" + count;
+        adjustedObject.children[a] = traverseForName(adjustedObject.children[a], newIdxDepth, adjustedObject.name, id, nodeID)
+        count++
+      }
+    }
+    
+    return adjustedObject
+  }
+
+
+
+
+  
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * 
+   */
+  async function jsonLoader(objectAsJSON) {
+    const loader = new THREE.ObjectLoader()
+    const object = loader.parse(objectAsJSON)
+    return object
+  }
+
+  
+
 
 
   /**
