@@ -2,7 +2,7 @@
  * Created Date: 29.10.2024 13:57:08
  * Author: Julian Hardtung
  * 
- * Last Modified: 05.11.2024 11:19:24
+ * Last Modified: 06.11.2024 14:09:47
  * Modified By: Julian Hardtung
  * 
  * Description: 
@@ -10,7 +10,7 @@
 
 <template>
     <!--############### TOOLBAR ###############-->
-    <v-card>
+    <v-card :width="windowWidth-700">
       <v-row class="align-center" no-gutters>
         <v-card-title>{{ $t('drawing')}}</v-card-title>
         <v-divider vertical></v-divider>
@@ -27,25 +27,27 @@
         
         <v-divider vertical class="px-1 mr-1"></v-divider>
 
-        <v-file-input class="pa-1" :label="$t('backgroundImage')" 
-          density="compact" hide-details 
-          @click:clear="revertBackground()" 
-          @change="setBackgroundImage($event)" 
-          prepend-icon="mdi-image"
-          accept="image/tiff, image/jpeg">
-        </v-file-input>
+        <v-col cols="3">
+          <v-file-input class="pa-1" :label="$t('backgroundImage')" 
+            density="compact" hide-details 
+            @click:clear="revertBackground()" 
+            @change="setBackgroundImage($event)" 
+            prepend-icon="mdi-image"
+            accept="image/tiff, image/jpeg">
+          </v-file-input>
+        </v-col>
 
 
         <v-divider vertical class="px-1"></v-divider>
         <v-spacer/>
-        <v-btn @click="useAsImage()" class="mr-4" variant="outlined" color="secondary">
+        <v-btn @click="useAsImage()" class="ml-3 mr-4" width="80px" color="secondary">
           <v-tooltip activator="parent" location="bottom">
             {{ $t('addToPhoto') }}
           </v-tooltip>
           <v-icon>mdi-content-save-move</v-icon>
         </v-btn>
 
-        <v-btn @click="downloadImage()" variant="outlined" color="success">
+        <v-btn @click="downloadImage()" color="success" width="80px">
           <v-tooltip activator="parent" location="bottom">
             {{ $t('download', {object: "drawing"}) }}
           </v-tooltip>
@@ -158,7 +160,7 @@ export default {
 
       canvasSettings: {
         width: this.windowWidth-700,
-        height: this.windowHeight-200,
+        height: this.windowHeight-220,
         backgroundColor: "#fff",
         colorPickerVisible: false,
         lineWidthVisible: false,
