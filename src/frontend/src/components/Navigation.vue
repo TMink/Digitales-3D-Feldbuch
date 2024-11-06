@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 30.09.2024 18:06:31
+ * Last Modified: 06.11.2024 14:22:03
  * Modified By: Julian Hardtung
  * 
  * Description: Vue component with navigation-bar and extendable side-bar
@@ -194,7 +194,7 @@
             link 
             v-on:click="clearLocalData()">
             <v-list-item-title>
-              {{ $t('deletePhrase', { msg: 'All local data' }) }}
+              {{ $t('deletePhrase', { msg: $t('allLocalData') }) }}
             </v-list-item-title>
           </v-list-item>
         </v-card>

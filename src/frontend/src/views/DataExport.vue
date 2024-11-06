@@ -2,7 +2,7 @@
  * Created Date: 26.06.2023 15:10:20
  * Author: Julian Hardtung
  * 
- * Last Modified: 29.10.2024 13:11:44
+ * Last Modified: 06.11.2024 17:12:52
  * Modified By: Julian Hardtung
  * 
  * Description: export all (or only specified) data to .pdf or .csv
@@ -12,17 +12,24 @@
   <Navigation ref="navigationRef"/>
 
   <v-row no-gutters class="py-2">
-
     <v-spacer></v-spacer>
     <v-col cols="4">
 
-      <v-stepper next-text="Weiter" prev-text="Zurück" :items="['Schritt 1', 'Schritt 2', 'Schritt 3']">
+      <!--############### BODEON EXPORT ###############-->
+      <v-stepper :next-text="$t('next')" :prev-text="$t('prev')" :items="[$t('step', {nr: '1'}), $t('step', {nr: '2'}), $t('step', {nr: '3'})]">
+        
+        <!--############### BODEON EXPORT STEP 1 ###############  -->
         <template v-slot:item.1>
-          <v-card class="text-center pa-2">
-            <v-card-title>BODEON DATENEXPORT</v-card-title>     
+          <v-card class="text-center pa-0">
+            <v-card-title>{{ $t('bodeonExport') }}</v-card-title>     
             <v-spacer/>
             <v-row no-gutters class="justify-center py-2">
-              <v-card-subtitle class="text-wrap pb-2">Wähle die Daten aus, die exportiert werden sollen</v-card-subtitle>
+              <v-col cols="9">
+              <v-card-subtitle class="text-wrap pb-3"> 
+                {{ $t('chooseExportData') + ' ' + $t('thisExportedDataIsBodeonValid') }} 
+              </v-card-subtitle>
+
+              </v-col>
               <v-col cols="6">
                 <v-card variant="outlined" style="border: 1px; border-style: solid; border-color:darkgrey">
                   <v-btn-toggle v-model="toggle" divided multiple                    
@@ -42,19 +49,21 @@
                     </v-btn>
                   </v-btn-toggle>
                 </v-card>
-
-                <!-- <v-btn class="mt-4" color="secondary" @click="allDialog = true"> {{ $t('export') }}</v-btn> -->
               </v-col>
             </v-row>
             <v-spacer/>
           </v-card>
         </template>
 
+        <!--############### BODEON EXPORT STEP 2 ###############  -->
         <template v-slot:item.2>
           <v-card class="align-center">
-            <v-card-title>{{ $t('Aktivitätenliste') }}</v-card-title>
-            <v-card-subtitle>Wähle alle Aktivitäten aus, die exportiert werden sollen</v-card-subtitle>
-            
+            <v-card-title>{{ $t('activityList') }}</v-card-title>
+
+            <v-card-subtitle class="text-wrap">
+              {{ $t('chooseActivitiesToExport') }}
+            </v-card-subtitle>
+          
             <v-data-table-virtual 
               :headers="activityHeaders" 
               :items="activities" 
@@ -66,12 +75,12 @@
           </v-card>
         </template>
 
+        <!--############### BODEON EXPORT STEP 3 ###############  -->
         <template v-slot:item.3>
           <v-card class="align-center text-center">
-            <v-card-title>{{ $t('Export bestätigen') }}</v-card-title>
-            <v-card-subtitle>Wähle alle Aktivitäten aus, die exportiert werden sollen</v-card-subtitle>
-            
-            <v-btn class="ma-2" variant="outlined" color="secondary" @click="exportBodeonData()">
+            <v-card-title>{{ $t('confirmExport') }}</v-card-title>            
+            <v-btn class="ma-2" variant="outlined" color="secondary" 
+              @click="exportBodeonData()">
               {{ $t('exportObject', {msg: $t('data')}) }}
             </v-btn>
           </v-card>
@@ -79,15 +88,19 @@
       </v-stepper>
 
 
+      <!--############### EXPORT RAW DATA ###############  -->
       <v-card class="text-center pa-2 mt-4">
-
-        <v-card-title>EXPORT VON ROHDATEN</v-card-title>     
+        <v-card-title> {{ $t('exportRawData') }}</v-card-title>     
           <v-spacer/>
           <v-row no-gutters class="justify-center py-2">
-            <v-card-subtitle class="text-wrap pb-2">Wähle die Daten aus, die exportiert werden sollen</v-card-subtitle>
-            <v-col cols="6">
-
-                <v-btn class="mt-4" color="secondary" @click="allDialog = true"> {{ $t('export') }}</v-btn>
+            <v-col cols="9">
+            <v-card-subtitle class="text-wrap pb-2">
+              {{ $t('chooseActivitiesToExport') + ' ' + $t('thisExportedDataIsNotBodeonValid')}}
+            </v-card-subtitle>
+            
+              <v-btn class="mt-4" color="secondary" @click="allDialog = true"> 
+                {{ $t('export') }}
+              </v-btn>
             </v-col>
           </v-row>
           <v-spacer/>
@@ -170,7 +183,8 @@
         show-select>
       </v-data-table-virtual>
       
-      <v-btn class="ma-2" variant="outlined" color="secondary" @click="exportFindingSampleData()">
+      <v-btn class="ma-2" variant="outlined" color="secondary" 
+        @click="exportFindingSampleData()">
         {{ $t('exportObject', {msg: $t('findingSampleData')}) }}
       </v-btn>
     </v-card>
@@ -183,7 +197,7 @@
     @afterLeave="onExportDialogClosed">
     <v-card>
       <v-toolbar dark color="warning" dense flat>
-          <v-toolbar-title>Exportfehler</v-toolbar-title>
+          <v-toolbar-title>{{ $t('exportError')}}</v-toolbar-title>
       </v-toolbar>
       <v-card-subtitle class="text-wrap pa-4">
         Bei den exportierten Daten sind ein oder mehrere Pflichtfelder nicht ausgefüllt.<br> Soll der Export vortgesetzt werden, obwohl die resultierenden Daten nicht valide für einen Bodeon-Import sind?
@@ -193,49 +207,52 @@
         color="secondary" 
         v-model="showNotifyErrors" 
         class="px-3" 
-        label="Zeige nur kritische Fehler, die einen BODEON-Import verhindern.">
+        :label="$t('showOnlyCriticalErrors')">
       </v-switch>
 
       <v-list>
         <v-list-item style="padding-left: 0px"
           v-for="item in filterErrorMessages()"
           :key="item.title">
-          <v-row style="padding-left: 0px" no-gutters>
-            <v-row no-gutters class="justify-start align-center">
-                <v-col cols="9">
+          <v-row style="padding-left: 0px" no-gutters class="justify-start align-center">
+            <v-col cols="9">
               <v-card variant="tonal">
                 <v-row no-gutters class="justify-start align-center">
-                  <v-card-text class="pr-0">
-                    {{ $t(item.objectType) }}
-                  </v-card-text>
+                  <v-col cols="2">
+                    <v-card-text class="pr-0">
+                      {{ $t(item.objectType) }}
+                    </v-card-text>
+                  </v-col>
                   <v-card-text class="px-0 mx-0">
                     {{ item.title }}
                   </v-card-text>
-                  <v-spacer></v-spacer>
-                  <v-card-subtitle>
-                    {{ item.subtitle }}
-                  </v-card-subtitle>
+                  <v-col cols="7">
+                    <v-card-subtitle class="text-wrap">
+                      {{ item.subtitle }}
+                    </v-card-subtitle>
+                  </v-col>
                 </v-row>
               </v-card>
             </v-col>
-              <v-btn v-if="item.errType == 'warn'" @click="openObject(item.objectID, item.objectType)" 
+              <v-btn v-if="item.errType == 'warn'" 
+                @click="openObject(item.objectID, item.objectType)" 
                 variant="outlined" color="secondary" class="ml-4"> 
                 {{ $t('open') }}
                 <v-icon class="pl-1">mdi-open-in-new</v-icon>
               </v-btn>
             </v-row>
-          </v-row>
+
           <template v-slot:prepend>
             <v-btn icon flat v-if="item.errType == 'notify'" >
               <v-icon>mdi-help-circle</v-icon>
                 <v-tooltip activator="parent" location="bottom"
-                text="Ein Problem beim Export, aber kann so in BODEON importiert werden.">
+                :text="$t('problemForBodeonButCanExport')">
               </v-tooltip>
           </v-btn>
           <v-btn icon flat v-if="item.errType == 'warn'" >
             <v-icon color="warning">mdi-alert-circle</v-icon>
               <v-tooltip activator="parent" location="bottom"
-              text="Diese Daten können so nicht in BODEON importiert werden.">
+              :text="$t('canNotImportForBodeon')">
             </v-tooltip>
           </v-btn>
         </template>
@@ -659,7 +676,7 @@ export default {
             this.addErrorMessage(
               placesArrayEng[i][j].activityNumber + " " + 
               placesArrayEng[i][j].placeNumber,
-              "One or more required fieldd are not filled",
+              "One or more required fields for this place are not filled",
               placesArrayEng[i][j]._id, "place", "warn");
           } else {
             translatedPlacesOfActivity.push(translatedPlace)
@@ -676,17 +693,12 @@ export default {
      * @param placeENG a single place with english headers
      */
     translatePlaceHeadersToBODEON(placeENG) {
-      if (placeENG.title.length == 0) {
+      if (placeENG.title.length == 0
+        || placeENG.dating.length == 0
+      ) {
         this.addErrorMessage(
           placeENG.activityNumber + " " + placeENG.placeNumber,
-          "Required field `title` is not filled",
-          placeENG._id, "place", "warn");
-      }
-
-      if (placeENG.dating.length == 0) {
-        this.addErrorMessage(
-          placeENG.activityNumber + " " + placeENG.placeNumber,
-          "Required field `dating` is not filled",
+          this.$t('reqFieldsNotFilled', {obj: this.$t('place')}),
           placeENG._id, "place", "warn");
       }
       
@@ -846,7 +858,7 @@ export default {
           this.addErrorMessage(
             place.activityNumber + " " + place.placeNumber + " " + position.positionNumber,
             "This position has no imagefile to export.",
-            position._id, "position", "warn");
+            position._id, "position", "notify");
         }
         return position.posType == 'image' && position.image != ''
         });
@@ -915,7 +927,7 @@ export default {
         || photoENG.comment == 0
       ) {
         this.addErrorMessage(activityNumber + " " + placeNumber + " " + photoENG.positionNumber,
-          "Required field for this image is not filled",
+          "One or more required fields for this image are not filled",
           photoENG._id, "position", "warn");
         return;
       }
@@ -980,13 +992,27 @@ export default {
                     placeNumber, 
                     imagesOfPlace[k].positionNumber);
                     
-            const imgFileType = imagesOfPlace[k].image.type.split('/')[1];
+            const imageFileFinal = this.dataURLtoFile(imagesOfPlace[k].image, positionFileName);
+            const imgFileType = imageFileFinal.type.split('/')[1];
             const imgFileName = positionFileName + "." + imgFileType;
+            
 
-            zip.file(photoDirectory + imgFileName, imagesOfPlace[k].image);
+            zip.file(photoDirectory + imgFileName, imageFileFinal);
           }
         }
       }
+    },
+
+    dataURLtoFile(dataurl, filename) {
+      var arr = dataurl.split(','),
+        mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[arr.length - 1]),
+        n = bstr.length,
+        u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new File([u8arr], filename, { type: mime });
     },
 
     
@@ -999,6 +1025,8 @@ export default {
       const placesToExport = await this.getPlacesToExport();
       const activitiesCount = placesToExport.length;
       var findDataArray = [];
+
+      console.log(placesToExport)
       
       // go through all activities
       for (let i=0; i<activitiesCount; i++) {
@@ -1029,7 +1057,17 @@ export default {
             findDataArray = findDataArray.concat(translatedFinds)
           }
         }
-        this.addFindDataToZip(zip, findDataArray);
+        
+        if (findDataArray.length > 0) {
+          this.addFindDataToZip(zip, findDataArray);
+        } else {
+          console.log("####################")
+          console.log(placesToExport[i])
+          this.addErrorMessage(
+            placesToExport[i].activityNumber + " " + placesToExport[i].placeNumber,
+            "No finds in this place to export.",
+            place._id, "place", "notify");
+        }
       }
     },
 
@@ -1084,7 +1122,7 @@ export default {
         || findENG.dating.length == 0
       ) {
         this.addErrorMessage(activityNumber + " " + placeNumber + " " + findENG.positionNumber,
-          "Required field for this find is not filled",
+          "One or more required fields for this find are not filled",
           findENG._id, "position", "warn");
         return;
       }
