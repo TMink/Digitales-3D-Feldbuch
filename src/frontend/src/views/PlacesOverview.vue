@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 21.10.2024 17:34:51
+ * Last Modified: 06.11.2024 14:51:38
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -393,7 +393,7 @@ export default {
         },
         { title: this.$tc('title',2), align: 'start', key: 'title' },
         { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
-        { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status', width: "260px"},
+        { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status', width: "270px"},
       ],
       fullHeaders: [
         {

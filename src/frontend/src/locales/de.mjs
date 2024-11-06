@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 04.11.2024 14:15:12
+ * Last Modified: 06.11.2024 17:11:46
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -155,10 +155,16 @@ export default {
   stratiTool: "Stratigraphie-Tool",
   placesCatalog: "Stellenkatalog",
   photoList: "Fotoliste (Stellen)",
+  activityList: "Aktivitätenliste",
   photoDirectory: "Foto-Verzeichnis",
   findingSampleData: "Fund-/Probedaten",
   open: "Öffnen",
   backgroundImage: "Hintergrundbild",
+  bodeonExport: "Boden Datenexport",
+  next: "Weiter",
+  prev: "Zurück",
+  step: "Schritt {nr}",
+  exportError: "Exportfehler",
 
   // Phrases
   addMsg: "Neue {msg} hinzufügen",
@@ -270,4 +276,18 @@ export default {
   mandatoryFieldNotFilled: "Pflichtfelder wurden noch nicht eingetragen",
   continueExport: "Weiter exportieren?",
   addToPhoto: "Als Bild in dieser Position nutzen",
+  allLocalData: "Alle lokalen Daten",
+  chooseExportData: "Wähle die Daten aus, die exportiert werden sollen.",
+  chooseActivitiesToExport: "Wähle die Aktivitäten aus, die exportiert werden sollen.",
+  thisExportedDataIsNotBodeonValid:
+    "Diese exportierten Dateien sind nicht weiter formatiert und müssen selbst angepasst werden.",
+  thisExportedDataIsBodeonValid:
+    "Diese exportierten Dateien werden so formatiert, sodass sie für einen Import in BODEON valide sind.",
+  exportRawData: "Export von Rohdaten",
+  confirmExport: "Export bestätigen",
+  reqFieldsNotFilled: "Ein oder mehrere Pflichtfelder für diese {obj} sind nicht gefüllt.",
+  problemForBodeonButCanExport:
+    "Ein Problem beim Export, aber kann so in BODEON importiert werden.",
+  canNotImportForBodeon: "Diese Daten können so nicht in BODEON importiert werden.",
+  showOnlyCritialErrors: "Zeige nur kritische Fehler, die einen BODEON-Import verhindern.",
 };

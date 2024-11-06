@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 04.11.2024 14:15:23
+ * Last Modified: 06.11.2024 17:11:31
  * Modified By: Julian Hardtung
  * 
  * Description: english translations
@@ -155,10 +155,16 @@ export default {
   stratiTool: "Stratigraphy-Tool",
   placesCatalog: "Places Catalog",
   photoList: "Image List (Places)",
+  activityList: "Activity List",
   photoDirectory: "Photo Directory",
   findingSampleData: "Finding-/Sampledata",
   open: "Open",
   backgroundImage: "Background Image",
+  bodeonExport: "Boden Data Export",
+  next: "Next",
+  prev: "Previous",
+  step: "Step {nr}",
+  exportError: "Export Error",
 
   // Phrases
   addMsg: "Add new {msg}",
@@ -268,4 +274,18 @@ export default {
   mandatoryFieldNotFilled: "Mandatory data was not entered yet",
   continueExport: "Continue export?",
   addToPhoto: "Use as image in this position",
+  allLocalData: "all local data",
+  chooseExportData: "Select the data that you want to export.",
+  chooseActivitiesToExport: "Select the activities that you want to export.",
+  thisExportedDataIsNotBodeonValid:
+    "These exported files are not formatted and have to be adjusted to the users needs.",
+  thisExportedDataIsBodeonValid:
+    "These exported files are formatted, so that they can be imported into BODEON without issues.",
+  exportRawData: "Export Raw Data",
+  confirmExport: "Confirm Export",
+  reqFieldsNotFilled: "One or more required fields for this {obj} are not filled",
+  problemForBodeonButCanExport:
+    "A problem with the export, but this can still be imported into BODEON.",
+  canNotImportForBodeon: "This data can not be imported into BODEON.",
+  showOnlyCritialErrors: "Show only critical errors that hinder a BODEON import."
 };

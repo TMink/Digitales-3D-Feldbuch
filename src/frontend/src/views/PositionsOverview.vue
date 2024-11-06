@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 05.11.2024 13:50:50
+ * Last Modified: 06.11.2024 16:46:47
  * Modified By: Julian Hardtung
  * 
  * Description: lists all positions
@@ -84,7 +84,7 @@
               @clicked-row="handleRowClick" :item="item"/>
 
             <!--##################### IMAGE ROW FULL ####################-->
-            <ImageTableRowFull v-if="item.posType == 'image' || item.posType == 'drawing'" 
+            <ImageTableRowFull v-if="item.posType == 'image' || item.posType == 'drawing' || item.posType == 'model'" 
               @clicked-row="handleRowClick" :item="item"/>
           </template>
         </v-data-table-virtual>

@@ -2,7 +2,7 @@
  * Created Date: 06.09.2023 17:19:12
  * Author: Julian Hardtung
  * 
- * Last Modified: 05.11.2024 13:36:18
+ * Last Modified: 06.11.2024 10:09:01
  * Modified By: Julian Hardtung
  * 
  * Description: input module viewer that shows all modules that are 
@@ -29,7 +29,9 @@
         </v-col>  
       </v-row>
 
-    <v-row no-gutters v-if="object.posType == 'position'">      
+    <v-row no-gutters v-if="object.posType != 'image' 
+      && object.posType != 'drawing' 
+      && object.posType != 'model'">      
       <v-col cols="6">
         <ModuleGeneral
           :objectProp="object"
