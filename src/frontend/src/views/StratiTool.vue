@@ -2,7 +2,7 @@
  Created Date: 23.09.2024 10:14:23
  Author: Tobias Mink
  
- Last Modified: 06.11.2024 19:34:29
+ Last Modified: 06.11.2024 19:52:05
  Modified By: Tobias Mink
  
  Description: 
@@ -999,8 +999,8 @@
     const sourceNodeRelations = nodesInGraph[nodesInGraph.map((x) => {return x.id}).indexOf(param.source)].data.relations;
     const targetNodeRelations = nodesInGraph[nodesInGraph.map((x) => {return x.id}).indexOf(param.target)].data.relations;
     const relationPerHandle = {
-      'top_middle': 'before',
-      'bottom_middle': 'after',
+      'top_middle': 'after',
+      'bottom_middle': 'before',
       'left_middle': 'korrelation',
       'right_middle': 'korrelation',
     };
@@ -1079,7 +1079,7 @@
     const nodesInGraphLength = nodesInGraph.length;
     for( let a = 0; a < nodesInGraphLength; a++ ){
       const nonValidNodes = []
-      const nonValidAfterReduction = []
+      const nonValidBeforeReduction = []
       if( nodesInGraph[a].id == params.nodeId ) {
         changeNodeHandleConnectionStatus(nodesInGraph[a], "top_middle", false)
         changeNodeHandleConnectionStatus(nodesInGraph[a], "bottom_middle", false)
@@ -1088,7 +1088,7 @@
         
         switch( params.handleId ){
           case 'top_middle':
-            nonValidNodes.push( ...checkRelationsBefore(nodesInGraph[a].data.relations, nodesInGraph[a].id, []));
+            nonValidNodes.push( ...checkRelationsAfter(nodesInGraph[a].data.relations, nodesInGraph[a].id, []));
             for( let b = 0; b < nodesInGraphLength; b++ ){
               if( nodesInGraph[b].id != params.nodeId ) {
                 changeNodeHandleConnectionStatus(nodesInGraph[b], "top_middle", false)
@@ -1101,7 +1101,7 @@
             }
             break;
           case 'bottom_middle':
-            nonValidNodes.push( ...checkRelationsAfter( nodesInGraph[a].data.relations, nodesInGraph[a].id, [] ) );
+            nonValidNodes.push( ...checkRelationsBefore( nodesInGraph[a].data.relations, nodesInGraph[a].id, [] ) );
             for( let b = 0; b < nodesInGraphLength; b++ ){
               if( nodesInGraph[b].id != params.nodeId ) {
                 changeNodeHandleConnectionStatus(nodesInGraph[b], "bottom_middle", false)
@@ -1115,13 +1115,13 @@
             break;
           case 'left_middle':
             nonValidNodes.push(...checkRelationsCorrelating( nodesInGraph[a].data.relations, nodesInGraph[a].id, [] ) );
-            nonValidAfterReduction.push(...reduceNonValidIDsByRowIDs(nonValidNodes, nodesInGraph[a].id))
+            nonValidBeforeReduction.push(...reduceNonValidIDsByRowIDs(nonValidNodes, nodesInGraph[a].id))
             for( let b = 0; b < nodesInGraphLength; b++ ){
               if( nodesInGraph[b].id != params.nodeId ) {
                 changeNodeHandleConnectionStatus(nodesInGraph[b], "top_middle", false)
                 changeNodeHandleConnectionStatus(nodesInGraph[b], "bottom_middle", false)
                 changeNodeHandleConnectionStatus(nodesInGraph[b], "left_middle", false)
-                if( nonValidAfterReduction.includes(nodesInGraph[b].id) ){
+                if( nonValidBeforeReduction.includes(nodesInGraph[b].id) ){
                   changeNodeHandleConnectionStatus(nodesInGraph[b], "left_middle", false)
                   changeNodeHandleConnectionStatus(nodesInGraph[b], "right_middle", false)
                 }
@@ -1130,13 +1130,13 @@
             break;
           case 'right_middle':
             nonValidNodes.push( ...checkRelationsCorrelating( nodesInGraph[a].data.relations, nodesInGraph[a].id, [] ) );
-            nonValidAfterReduction.push( ...reduceNonValidIDsByRowIDs(nonValidNodes) )
+            nonValidBeforeReduction.push( ...reduceNonValidIDsByRowIDs(nonValidNodes) )
             for( let b = 0; b < nodesInGraphLength; b++ ){
               if( nodesInGraph[b].id != params.nodeId ) {
                 changeNodeHandleConnectionStatus(nodesInGraph[b], "top_middle", false)
                 changeNodeHandleConnectionStatus(nodesInGraph[b], "bottom_middle", false)
                 changeNodeHandleConnectionStatus(nodesInGraph[b], "right_middle", false)
-                if( nonValidAfterReduction.includes(nodesInGraph[b].id) ){
+                if( nonValidBeforeReduction.includes(nodesInGraph[b].id) ){
                   changeNodeHandleConnectionStatus(nodesInGraph[b], "left_middle", false)
                   changeNodeHandleConnectionStatus(nodesInGraph[b], "right_middle", false)
                 }
@@ -1864,7 +1864,7 @@
    * @param {} nonValidNodes - 
    * @returns {array<string>} - Ids of the non-matching nodes
    */
-  function checkRelationsAfter( relations, nodeID, nonValidNodes ) {
+  function checkRelationsBefore( relations, nodeID, nonValidNodes ) {
     let nonValid = nonValidNodes
     
     if( relations.length > 0 ) {
@@ -1872,11 +1872,11 @@
       const nodesInGraphLength = nodesInGraph.length
       const relationslength = relations.length
       for( let a = 0; a < relationslength; a++ ) {
-        if( (relations[a].relationType == 'after' || relations[a].relationType == 'korrelation') && !nonValid.includes(relations[a].id)){
+        if( (relations[a].relationType == 'before' || relations[a].relationType == 'korrelation') && !nonValid.includes(relations[a].id)){
           nonValid.push(relations[a].id)
           nodes: for( let b = 0; b < nodesInGraphLength; b++ ){
             if( nodesInGraph[b].id == relations[a].id ) {
-              const nonValidIDs = checkRelationsAfter( nodesInGraph[b].data.relations, nodeID, nonValid)
+              const nonValidIDs = checkRelationsBefore( nodesInGraph[b].data.relations, nodeID, nonValid)
               nonValid.push(... nonValidIDs );
               nonValid = [ ...new Set(nonValid) ]
               break nodes;
@@ -1904,7 +1904,7 @@
    * @param {} nonValidNodes - 
    * @returns {array<string>} - Ids of the non-matching nodes
    */
-  function checkRelationsBefore( relations, nodeID, nonValidNodes ) {
+  function checkRelationsAfter( relations, nodeID, nonValidNodes ) {
     let nonValid = nonValidNodes
     
     if( relations.length > 0 ) {
@@ -1912,11 +1912,11 @@
       const nodesInGraph = getNodes.value
       const nodesInGraphLength = nodesInGraph.length
       for( let a = 0; a < relationsLength; a++ ){
-        if( (relations[a].relationType == 'before' || relations[a].relationType == 'korrelation') && !nonValid.includes(relations[a].id)){
+        if( (relations[a].relationType == 'after' || relations[a].relationType == 'korrelation') && !nonValid.includes(relations[a].id)){
           nonValid.push(relations[a].id)
           nodes: for( let b = 0; b < nodesInGraphLength; b++ ) {
             if( nodesInGraph[b].id == relations[a].id ) {
-              const nonValidIDs = checkRelationsBefore( nodesInGraph[b].data.relations, nodeID, nonValid)
+              const nonValidIDs = checkRelationsAfter( nodesInGraph[b].data.relations, nodeID, nonValid)
               nonValid.push(... nonValidIDs );
               nonValid = [ ...new Set(nonValid) ]
               break nodes;
@@ -1953,21 +1953,21 @@
       const nodesInGraph = getNodes.value;
       const nodesInGraphLength = nodesInGraph.length;
       for( let a = 0; a < relationsLength; a++ ){
-        if( relations[a].relationType == 'before' && !nonValid.includes(relations[a].id) ){
+        if( relations[a].relationType == 'after' && !nonValid.includes(relations[a].id) ){
           nonValid.push(relations[a].id)
           nodes: for( let b = 0; b < nodesInGraphLength; b++ ){
             if( nodesInGraph[b].id == relations[a].id ) {
-              const nonValidIDs = checkRelationsBefore( nodesInGraph[b].data.relations, nodeID, nonValid )
+              const nonValidIDs = checkRelationsAfter( nodesInGraph[b].data.relations, nodeID, nonValid )
               nonValid.push(... nonValidIDs );
               nonValid = [ ...new Set(nonValid) ];
               break nodes;
             }
           }
-        } else if( relations[a].relationType == 'after' && !nonValid.includes(relations[a].id) ){
+        } else if( relations[a].relationType == 'before' && !nonValid.includes(relations[a].id) ){
           nonValid.push( relations[a].id )
           nodes: for( let b = 0; b < nodesInGraphLength; b++ ){
             if( nodesInGraph[b].id == relations[a].id ) {
-              const nonValidIDs = checkRelationsAfter( nodesInGraph[b].data.relations, nodeID, nonValid )
+              const nonValidIDs = checkRelationsBefore( nodesInGraph[b].data.relations, nodeID, nonValid )
               nonValid.push(... nonValidIDs );
               nonValid = [ ...new Set(nonValid) ];
               break nodes;
@@ -3074,7 +3074,7 @@
    * @param node 
    * @param relations 
    */
-  function createAfterBatch(nodesInGraph, nodesInGraphLength, node, relations) {
+  function createBeforeBatch(nodesInGraph, nodesInGraphLength, node, relations) {
     for( let a = 0; a < nodesInGraphLength; a++ ){
       if( relations.id == nodesInGraph[a].id ){
         let newX = node.position.x
@@ -3096,7 +3096,7 @@
    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
    * 
    */
-  function createBeforeBatch(nodesInGraph, nodesInGraphLength, node, relations) {
+  function createAfterBatch(nodesInGraph, nodesInGraphLength, node, relations) {
     for( let a = 0; a < nodesInGraphLength; a++ ){
       if( relations.id == nodesInGraph[a].id ){
         let newX = node.position.x;
@@ -3182,14 +3182,14 @@
         const nodesInGraphLength = nodesInGraph.length
         
         for( let b = 0; b < relationsLength; b++ ){
-          if( (relations[b].relationType == 'after') && (relations[b].id != rearangedNodes[0]) && !rearangedNodes.includes(relations[b].id) ){
-            const newAfterBatch = createAfterBatch(nodesInGraph, nodesInGraphLength, node, relations[b]);
-            nextBatch.push(newAfterBatch);
+          if( (relations[b].relationType == 'before') && (relations[b].id != rearangedNodes[0]) && !rearangedNodes.includes(relations[b].id) ){
+            const newBeforeBatch = createBeforeBatch(nodesInGraph, nodesInGraphLength, node, relations[b]);
+            nextBatch.push(newBeforeBatch);
             rearangedNodes.push(relations[b].id);
           }
-          else if( (relations[b].relationType == 'before') && (relations[b].id != rearangedNodes[0]) && !rearangedNodes.includes(relations[b].id)){
-            const newBeforeBatch = createBeforeBatch(nodesInGraph, nodesInGraphLength, node, relations[b])
-            nextBatch.push(newBeforeBatch);
+          else if( (relations[b].relationType == 'after') && (relations[b].id != rearangedNodes[0]) && !rearangedNodes.includes(relations[b].id)){
+            const newAfterBatch = createAfterBatch(nodesInGraph, nodesInGraphLength, node, relations[b])
+            nextBatch.push(newAfterBatch);
             rearangedNodes.push(relations[b].id);
           }
           else if( (relations[b].relationType == 'korrelation') && (relations[b].id != rearangedNodes[0]) && !rearangedNodes.includes(relations[b].id) ){
