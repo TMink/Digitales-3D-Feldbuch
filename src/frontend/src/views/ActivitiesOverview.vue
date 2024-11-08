@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.11.2024 14:46:12
+ * Last Modified: 07.11.2024 12:04:14
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -40,8 +40,7 @@
           :height="utils.getTableHeight(activities, windowHeight)">
 
           <template v-slot:item="{ item, index }">
-            <tr 
-              @mouseenter="setHoveredRow(index, true)"
+            <tr @mouseenter="setHoveredRow(index, true)"
               @mouseleave="setHoveredRow(index, false)">
               <!-- TOOLTIP -->
               <v-tooltip 
@@ -142,11 +141,12 @@
                 <!-- EDIT -->
                 <v-btn 
                   v-on:click="handleRowClick(item._id, false)"
+                  min-width="138px" class="justify-start"
                   style="margin-left: 3px;margin-top: 10px;margin-bottom: 10px;" 
                   color="secondary"
                   variant="outlined">
                   <v-icon class="pr-2">mdi-arrow-right-bold</v-icon>
-                  {{ $tc('place', 2) }}
+                  {{ item.places.length + ' ' + ( item.places.length == 1 ? $tc('place', 1) : $tc('place', 2)) }}
                 </v-btn>
               </td>
             </tr>
@@ -240,7 +240,7 @@ export default {
         { title: this.$t('year'), align: 'start', key: 'year' },
         { title: this.$t('number'), align: 'start', key: 'number'},
         { title: '', sortable: false, align: 'end', key: 'actions'},
-        { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status', width: '250px'},
+        { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status', width: '270px'},
       ],
     };
   },

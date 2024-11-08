@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.11.2024 14:51:38
+ * Last Modified: 07.11.2024 12:06:35
  * Modified By: Julian Hardtung
  * 
  * Description: lists all places
@@ -39,7 +39,7 @@
     <v-row>
       <v-spacer></v-spacer>
       <!--------------- PLACES TABLE SMALL --------------->
-      <v-card class="pt-2" :min-width="windowWidth * 0.6">
+      <v-card class="pt-2" :min-width="windowWidth * 0.7">
         <v-data-table-virtual v-show="!showAllInfo" 
           fixed-header :headers="headers"
           :items="utils.filteredObjects(places, searchQuery, 'place')" 
@@ -120,10 +120,12 @@
                 <!-- OPEN POSITION  -->
                 <v-btn 
                   v-on:click="handleRowClick(item._id, false)"
-                  style="margin-left: 3px;margin-top: 10px;margin-bottom: 10px;"  
+                  style="margin-left: 3px;margin-top: 10px;margin-bottom: 10px;"
+                  min-width="166px" class="justify-start"
                   color="secondary" variant="outlined">
                   <v-icon class="pr-2">mdi-arrow-right-bold</v-icon>
-                  {{ $tc('position', 2) }}
+                  <!-- {{ $tc('position', 2) }} -->
+                  {{ item.positions.length + ' ' + ( item.positions.length == 1 ? $tc('position', 1) : $tc('position', 2)) }}
                 </v-btn>
               </td>
             </tr>
@@ -292,9 +294,10 @@
                   v-on:click="handleRowClick(item._id, false)"
                   style="margin-left: 3px;margin-top: 10px;margin-bottom: 10px;" 
                   color="secondary"
+                  min-width="166px" class="justify-start"
                   variant="outlined">
                   <v-icon class="pr-2">mdi-arrow-right-bold</v-icon>
-                  {{ $tc('position', 2) }}
+                  {{ item.positions.length + ' ' + ( item.positions.length == 1 ? $tc('position', 1) : $tc('position', 2)) }}
                 </v-btn>
               </td>
             </tr>
@@ -393,7 +396,7 @@ export default {
         },
         { title: this.$tc('title',2), align: 'start', key: 'title' },
         { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
-        { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status', width: "270px"},
+        { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status', width: "280px"},
       ],
       fullHeaders: [
         {
@@ -413,7 +416,7 @@ export default {
         { title: this.$tc('dating', 1), align: 'start', key: 'dating', width: "100px" },
         { title: this.$tc('editor', 1), align: 'start', key: 'editor', width: "100px" },
         { title: this.$t('date'), align: 'start', key: 'date', width: "100px" },
-        { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status', width: "270px"},
+        { title: this.$t('syncStatus'), sortable: false, align: 'start', key: 'status', width: "280px"},
       ],
     };
   },
