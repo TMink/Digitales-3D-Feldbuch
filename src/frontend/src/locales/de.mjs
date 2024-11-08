@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.11.2024 17:11:46
+ * Last Modified: 07.11.2024 15:12:41
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -165,6 +165,12 @@ export default {
   prev: "Zurück",
   step: "Schritt {nr}",
   exportError: "Exportfehler",
+  lvrAmt: "LVR-Amt für Bodendenkmalpflege im Rheinland",
+  formSheet1: "Formblatt 1",
+  community: "Gemeinde",
+  district: "Kreis",
+  designation: "Bezeichnung",
+  prospection: "Prospektion",
 
   // Phrases
   addMsg: "Neue {msg} hinzufügen",
