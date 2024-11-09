@@ -1191,7 +1191,7 @@ export default {
       const rawSelectedActivities = toRaw(this.selectedActivities);
       const pdfBytes = await this.fetchPDF();
 
-      for (let i=0; i<= rawSelectedActivities.length; i++) {
+      for (let i=0; i< rawSelectedActivities.length; i++) {
         const pdfBytesFilled = await this.fillPDFForm(pdfBytes, rawSelectedActivities[i]);
         const blob = new Blob([pdfBytesFilled], { type: 'application/pdf' });
         const fileName = this.getActivityFileName(rawSelectedActivities[i].activityNumber);
