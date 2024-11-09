@@ -2,7 +2,7 @@
  * Created Date: 26.06.2023 15:10:20
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.11.2024 17:12:52
+ * Last Modified: 09.11.2024 19:19:31
  * Modified By: Julian Hardtung
  * 
  * Description: export all (or only specified) data to .pdf or .csv
@@ -34,7 +34,7 @@
                 <v-card variant="outlined" style="border: 1px; border-style: solid; border-color:darkgrey">
                   <v-btn-toggle v-model="toggle" divided multiple                    
                     class=" vertical-toggle"
-                    style="height:200px">
+                    style="height:250px">
                     <v-btn class=" btn-toggle" style="height: 50px" variant="outlined" base-color="secondary" color="success">
                       {{ $t('placesCatalog') }}
                     </v-btn>
@@ -46,6 +46,9 @@
                     </v-btn>
                     <v-btn class=" btn-toggle" style="height: 50px" variant="outlined" base-color="secondary" color="success">
                       {{ $t('findingSampleData') }}
+                    </v-btn>
+                    <v-btn class=" btn-toggle" style="height: 50px" variant="outlined" base-color="secondary" color="success">
+                      {{ $t('formSheet1') }}
                     </v-btn>
                   </v-btn-toggle>
                 </v-card>
@@ -143,7 +146,8 @@
         show-select>
       </v-data-table-virtual>
       
-      <v-btn class="ma-2" variant="outlined" color="secondary" @click="exportPhotoList()">
+      <v-btn class="ma-2" variant="outlined" color="secondary" 
+      @click="exportPhotoList()">
         {{ $t('exportObject', {msg: $t('photoList')}) }}
       </v-btn>
     </v-card>
@@ -163,7 +167,8 @@
         show-select>
       </v-data-table-virtual>
       
-      <v-btn class="ma-2" variant="outlined" color="secondary" @click="exportPhotoDirectory()">
+      <v-btn class="ma-2" variant="outlined" color="secondary" 
+        @click="exportPhotoDirectory()">
         {{ $t('exportObject', {msg: $t('photoDirectory')}) }}
       </v-btn>
     </v-card>
@@ -279,6 +284,7 @@ import autoTable from 'jspdf-autotable'
 import { useWindowSize } from 'vue-window-size';
 import { saveAs } from 'file-saver';
 import JSZip from 'jszip';
+import { PDFDocument } from 'pdf-lib'
 
 export default {
   name: 'DataExport',
@@ -556,6 +562,9 @@ export default {
           case 3:
             await this.exportFindingSampleData(zip);
             break;
+          case 4:
+            await this.exportFormSheet1(zip);
+            break;
           default:
             break;
         }
@@ -572,6 +581,7 @@ export default {
       if (this.errorMessageArray.length > 0) {
         await this.confirmContinueExport(zip);
       } else if (!hasError) {
+        console.log("noerrors")
         this.downloadExportedData(zip)
       }
     },
@@ -1021,12 +1031,14 @@ export default {
     ############# FINDING SAMPLE DATA################
     ################################################# */
     
+    /**
+     * Exports finding and sample data. This creates 
+     * @param zip 
+     */
     async exportFindingSampleData(zip){
       const placesToExport = await this.getPlacesToExport();
       const activitiesCount = placesToExport.length;
       var findDataArray = [];
-
-      console.log(placesToExport)
       
       // go through all activities
       for (let i=0; i<activitiesCount; i++) {
@@ -1061,8 +1073,6 @@ export default {
         if (findDataArray.length > 0) {
           this.addFindDataToZip(zip, findDataArray);
         } else {
-          console.log("####################")
-          console.log(placesToExport[i])
           this.addErrorMessage(
             placesToExport[i].activityNumber + " " + placesToExport[i].placeNumber,
             "No finds in this place to export.",
@@ -1070,6 +1080,7 @@ export default {
         }
       }
     },
+
 
     async getFindsFromPlace(place){
       if (place.positions.length == 0) {
@@ -1156,8 +1167,6 @@ export default {
       const cursor = Object.keys(findsOfPlace[0]);
       const header = JSON.parse(JSON.stringify(cursor));  
 
-      console.log(findsOfPlace)
-      console.log("_________________________")
       // prepare file data
       const csv = [header.join(this.separator), ...findsOfPlace.map(row => 
         cursor.map(fieldName => JSON.stringify(row[fieldName], replacer))
@@ -1171,6 +1180,224 @@ export default {
 
       //add to zip
       zip.file(findsFilename, csv);
+    },
+
+
+    /* ################################################
+    ################# FORM SHEET 1 ####################
+    ################################################# */
+
+    async exportFormSheet1(zip) {
+      const rawSelectedActivities = toRaw(this.selectedActivities);
+      const pdfBytes = await this.fetchPDF();
+
+      for (let i=0; i<= rawSelectedActivities.length; i++) {
+        const pdfBytesFilled = await this.fillPDFForm(pdfBytes, rawSelectedActivities[i]);
+        const blob = new Blob([pdfBytesFilled], { type: 'application/pdf' });
+        const fileName = this.getActivityFileName(rawSelectedActivities[i].activityNumber);
+        zip.file(fileName + "/Formblatt1.pdf", blob);
+      }
+    },
+
+    /**
+     * 
+     * @param {Bytes} pdfBytes Formblatt1.pdf
+     * @param {Object} act activityData to export
+     */
+    async fillPDFForm(pdfBytes, act){
+
+      const pdfDoc = await PDFDocument.load(pdfBytes);
+
+      const form = pdfDoc.getForm();
+
+      const activityNumberField = form.getTextField('Aktivitätsnummer');
+      activityNumberField.setText(act.activityNumber);
+
+      const rightField = form.getTextField('Rechts');
+      rightField.setText(act.right);
+
+      const rightToField = form.getTextField('Rechts-bis');
+      rightToField.setText(act.rightTo);
+
+      const designationField = form.getTextField('Bezeichnung');
+      designationField.setText(act.designation);
+
+      const upField = form.getTextField('Hoch');
+      upField.setText(act.up);
+
+      const upToField = form.getTextField('Hoch-bis');
+      upToField.setText(act.upTo);
+
+      const community1Field = form.getTextField('Gemeinde 1');
+      community1Field.setText(act.community1);
+      const community2Field = form.getTextField('Gemeinde 2');
+      community2Field.setText(act.community2);
+      const community3Field = form.getTextField('Gemeinde 3');
+      community3Field.setText(act.community3);
+
+      const district1Field = form.getTextField('Kreis 1');
+      district1Field.setText(act.district1);
+      const district2Field = form.getTextField('Kreis 2');
+      district2Field.setText(act.district2);
+      const district3Field = form.getTextField('Kreis 3');
+      district3Field.setText(act.district3);
+
+      const areaDescrField = form.getTextField('Ortsbeschreibung');
+      areaDescrField.setText(act.areaDescr);
+
+      const dateFromField = form.getTextField('Dauer_Von');
+      dateFromField.setText(act.dateFrom);
+      const dateToField = form.getTextField('Dauer_bis');
+      dateToField.setText(act.dateTo);
+      
+      const shortTitleField = form.getTextField('Kurzansprache');
+      shortTitleField.setText(act.shortTitle);
+
+      const excavationFirmField = form.getTextField('Grabungsfirma');
+      excavationFirmField.setText(act.excavationFirm);
+      
+      const siteDirectorField = form.getTextField('GRABUNGSLEITUNG');
+      siteDirectorField.setText(act.siteDirector);
+
+      /* ############### DONE MEASURES ############# */
+      const excavationCB = form.getCheckBox('Grabung');
+      act.doneMeasures.excavation ? excavationCB.check() : excavationCB.uncheck();
+      const noMeasureCB = form.getCheckBox('Übergeordnete Aktivität');
+      act.doneMeasures.excavation ? noMeasureCB.check() : noMeasureCB.uncheck();
+      const monitoringCB = form.getCheckBox('Baustellenbeobachtung');
+      act.doneMeasures.excavation ? monitoringCB.check() : monitoringCB.uncheck();
+      const paleoInvestigationCB = form.getCheckBox('Paläontologische Untersuchung');
+      act.doneMeasures.excavation ? paleoInvestigationCB.check() : paleoInvestigationCB.uncheck();
+      const changeOfLocationCB = form.getCheckBox('Standortveränderung');
+      act.doneMeasures.excavation ? changeOfLocationCB.check() : changeOfLocationCB.uncheck();
+      const surveyCB = form.getCheckBox('Vermessung');
+      act.doneMeasures.excavation ? surveyCB.check() : surveyCB.uncheck();
+      const photoDocumentationCB = form.getCheckBox('Fotodokumentation');
+      act.doneMeasures.excavation ? photoDocumentationCB.check() : photoDocumentationCB.uncheck();
+      const bdRecordingCB = form.getCheckBox('BD-Aufnahme');
+      act.doneMeasures.excavation ? bdRecordingCB.check() : bdRecordingCB.uncheck();
+      const observationCB = form.getCheckBox('Beobachtung');
+      act.doneMeasures.excavation ? observationCB.check() : observationCB.uncheck();
+      const technicalReportCB = form.getCheckBox('Fachliches Gutachten');
+      act.doneMeasures.excavation ? technicalReportCB.check() : technicalReportCB.uncheck();
+      const buildingSurveyCB = form.getCheckBox('Bauaufnahme');
+      act.doneMeasures.excavation ? buildingSurveyCB.check() : buildingSurveyCB.uncheck();
+      
+
+      /*############### PROSPECTION ###############*/
+      const roughInspectionCB = form.getCheckBox('Grobbegehung');
+      act.doneMeasures.excavation ? roughInspectionCB.check() : roughInspectionCB.uncheck();
+      const detailedInspectionCB = form.getCheckBox('Feinbegehung');
+      act.doneMeasures.excavation ? detailedInspectionCB.check() : detailedInspectionCB.uncheck();
+      const individualFindMeasurementCB = form.getCheckBox('Einzelfundeinmessung');
+      act.doneMeasures.excavation ? individualFindMeasurementCB.check() : individualFindMeasurementCB.uncheck();
+      const geoarchaeologicalInvestigationCB = form.getCheckBox('Geoarchäologie');
+      act.doneMeasures.excavation ? geoarchaeologicalInvestigationCB.check() : geoarchaeologicalInvestigationCB.uncheck();
+      const sondagesCB = form.getCheckBox('Sondagen');
+      act.doneMeasures.excavation ? sondagesCB.check() : sondagesCB.uncheck();
+      const noneProspectCB = form.getCheckBox('Übergeordnete Prospektion');
+      act.doneMeasures.excavation ? noneProspectCB.check() : noneProspectCB.uncheck();
+      const evalElevationDataCB = form.getCheckBox('Auswertung Höhendaten');
+      act.doneMeasures.excavation ? evalElevationDataCB.check() : evalElevationDataCB.uncheck();
+      const evalAerialImageCB = form.getCheckBox('Auswertung Luftbild');
+      act.doneMeasures.excavation ? evalAerialImageCB.check() : evalAerialImageCB.uncheck();
+      const metalDetectingCB = form.getCheckBox('Metalldetektorsuche');
+      act.doneMeasures.excavation ? metalDetectingCB.check() : metalDetectingCB.uncheck();
+      const geophysicsElectricalCB = form.getCheckBox('Geophysik-Elektrik');
+      act.doneMeasures.excavation ? geophysicsElectricalCB.check() : geophysicsElectricalCB.uncheck();
+      const geophysicsMagneticsCB = form.getCheckBox('Geophysik-Magnetik');
+      act.doneMeasures.excavation ? geophysicsMagneticsCB.check() : geophysicsMagneticsCB.uncheck();
+      const geophysicsOtherCB = form.getCheckBox('Geophysik-sonstiges');
+      act.doneMeasures.excavation ? geophysicsOtherCB.check() : geophysicsOtherCB.uncheck();
+
+
+      const conditionsProspectDD = form.getDropdown('PR-Bedingungen')
+
+      if (act.conditionsProspect == 0) {
+        conditionsProspectDD.select('schlecht');
+      } else if (act.conditionsProspect == 1) {
+        conditionsProspectDD.select('mittel');
+      } else if (act.conditionsProspect == 2) {
+        conditionsProspectDD.select('gut');
+      }
+
+      const landUsageHistDD = form.getDropdown('Nutzung-Alt')
+      landUsageHistDD.select(act.landUsageHist)
+      const landUsageHistYearField = form.getTextField('Nutzung-Alt-Jahr');
+      landUsageHistYearField.setText(act.landUsageHistYear.toString());
+      const landUsageCurDD = form.getDropdown('Nutzung-Neu')
+      landUsageCurDD.select(act.landUsageCur)
+
+
+      const groundType1DD = form.getDropdown('Bodenart1')
+      groundType1DD.select(act.groundType[0]);
+      const groundType2DD = form.getDropdown('Bodenart2')
+      groundType2DD.select(act.groundType[1]);
+      const groundType3DD = form.getDropdown('Bodenart3')
+      groundType3DD.select(act.groundType[2]);
+
+      const topography1DD = form.getDropdown('Topographie1')
+      topography1DD.select(act.topography[0]);
+      const topography2DD = form.getDropdown('Topographie2')
+      topography2DD.select(act.topography[1]);
+
+
+      /*############### RESULT OF MEASURE ############### */
+
+      const resultTitle1Field = form.getTextField('Ergebnis/Befundansprache 1');
+      resultTitle1Field.setText(act.resultMeasures.title1.title);
+      const resultTitle2Field = form.getTextField('Ergebnis/Befundansprache 2');
+      resultTitle2Field.setText(act.resultMeasures.title2.title);
+      const resultTitle3Field = form.getTextField('Ergebnis/Befundansprache 3');
+      resultTitle3Field.setText(act.resultMeasures.title3.title);
+      const resultTitle4Field = form.getTextField('Ergebnis/Befundansprache 4');
+      resultTitle4Field.setText(act.resultMeasures.title4.title);
+      const resultTitle5Field = form.getTextField('Ergebnis/Befundansprache 5');
+      resultTitle5Field.setText(act.resultMeasures.title5.title);
+
+      /*############### DATING OF MEASURE ############### */
+      const resultDating1Field = form.getTextField('DATIERUNG 1');
+      resultDating1Field.setText(act.resultMeasures.dating1.title);
+      const resultDating2Field = form.getTextField('DATIERUNG 2');
+      resultDating2Field.setText(act.resultMeasures.dating2.title);
+      const resultDating3Field = form.getTextField('DATIERUNG 3');
+      resultDating3Field.setText(act.resultMeasures.dating3.title);
+      const resultDating4Field = form.getTextField('DATIERUNG 4');
+      resultDating4Field.setText(act.resultMeasures.dating4.title);
+      const resultDating5Field = form.getTextField('DATIERUNG 5');
+      resultDating5Field.setText(act.resultMeasures.dating5.title);
+
+      const photosCB = form.getCheckBox('Fotos-da');
+      act.archiveMaterial.photos ? photosCB.check() : photosCB.uncheck();
+      const findDrawingsCB = form.getCheckBox('Fundzeichnung-da');
+      act.archiveMaterial.findDrawings ? findDrawingsCB.check() : findDrawingsCB.uncheck();
+      const excavationDrawingsCB = form.getCheckBox('Grabungszeichnung-da');
+      act.archiveMaterial.excavationDrawings ? excavationDrawingsCB.check() : excavationDrawingsCB.uncheck();
+      const miscCB = form.getCheckBox('SonstigesArchivMat-da');
+      act.archiveMaterial.misc ? miscCB.check() : miscCB.uncheck();
+      const noArchCB = form.getCheckBox('KeinArchivMat-da');
+      act.archiveMaterial.no ? noArchCB.check() : noArchCB.uncheck();
+
+
+      const findCB = form.getCheckBox('Funde-da');
+      act.material.find ? findCB.check() : findCB.uncheck();
+      const sampleCB = form.getCheckBox('Proben-da');
+      act.material.sample ? sampleCB.check() : sampleCB.uncheck();
+      const noMatCB = form.getCheckBox('KeinMat-da');
+      act.material.no ? noMatCB.check() : noMatCB.uncheck();
+
+      const maxPlaceNumberField = form.getTextField('Stellenzahl');
+      maxPlaceNumberField.setText(act.maxPlaceNumber.toString());
+
+      const findsDocumentedCB = form.getCheckBox('Befunde-da');
+      act.findsDocumented ? findsDocumentedCB.check() : findsDocumentedCB.uncheck();
+
+      return await pdfDoc.save();
+    },
+
+    async fetchPDF( ) {
+      const response = await fetch('/assets/Formblatt1_2020_Formular.pdf');
+      return await response.arrayBuffer()
     },
 
     /**

@@ -37,6 +37,7 @@
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.5.29",
     "jszip": "^3.10.1",
+    "pdf-lib": "^1.17.1",
     "pinia": "^2.1.7",
     "three": "^0.152.2",
     "three-bvh-csg": "^0.0.5",
