@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 08.11.2024 13:21:03
+ * Last Modified: 09.11.2024 17:49:19
  * Modified By: Julian Hardtung
  * 
  * Description: input page for activity data 
@@ -284,12 +284,12 @@
                 <!-- DONE MEASURES - COLUMN 1-->
                 <v-col>
                   <v-checkbox
-                    v-model="activity.excavation"
+                    v-model="activity.doneMeasures.excavation"
                     hide-details
                     label="Grabung"
                   ></v-checkbox>
                   <v-checkbox
-                    v-model="activity.noMeasure"
+                    v-model="activity.doneMeasures.noMeasure"
                     hide-details
                     label="Keine (übergeordnete Aktivität)"
                   ></v-checkbox>
@@ -297,17 +297,17 @@
                 <!-- DONE MEASURES - COLUMN 2-->
                 <v-col>
                   <v-checkbox
-                    v-model="activity.monitoring"
+                    v-model="activity.doneMeasures.monitoring"
                     hide-details
                     label="Baustellenbeobachtung/ Notbergung"
                   ></v-checkbox>
                   <v-checkbox
-                    v-model="activity.paleoInvestigation"
+                    v-model="activity.doneMeasures.paleoInvestigation"
                     hide-details
                     label="Paläontologische Untersuchung"
                   ></v-checkbox>
                   <v-checkbox
-                    v-model="activity.changeOfLocation"
+                    v-model="activity.doneMeasures.changeOfLocation"
                     hide-details
                     label="Standortveränderung"
                   ></v-checkbox>
@@ -315,17 +315,17 @@
                 <!-- DONE MEASURES - COLUMN 3-->
                 <v-col>
                   <v-checkbox
-                  v-model="activity.survey"
+                  v-model="activity.doneMeasures.survey"
                   hide-details
                   label="Vermessung (Hauptziel)"
                   ></v-checkbox>
                   <v-checkbox
-                  v-model="activity.photoDocumentation"
+                  v-model="activity.doneMeasures.photoDocumentation"
                   hide-details
                   label="Fotodokumentation (Hauptziel)"
                   ></v-checkbox>
                   <v-checkbox
-                  v-model="activity.bdRecording"
+                  v-model="activity.doneMeasures.bdRecording"
                   hide-details
                   label="BD-Aufnahme"
                   ></v-checkbox>
@@ -333,17 +333,17 @@
                 <!-- DONE MEASURES - COLUMN 4-->
                 <v-col>
                   <v-checkbox
-                    v-model="activity.observation"
+                    v-model="activity.doneMeasures.observation"
                     hide-details
                     label="Beobachtung/ Aufsammlung"
                   ></v-checkbox>
                   <v-checkbox
-                    v-model="activity.technicalReport"
+                    v-model="activity.doneMeasures.technicalReport"
                     hide-details
                     label="Fachliches Gutachten"
                   ></v-checkbox>
                   <v-checkbox
-                    v-model="activity.buildingSurvey"
+                    v-model="activity.doneMeasures.buildingSurvey"
                     hide-details
                     label="Bauaufnahme"
                   ></v-checkbox>
@@ -368,17 +368,17 @@
                     <!-- PROSPECTION - COLUMN 1-->
                     <v-col>
                       <v-checkbox
-                        v-model="activity.roughInspection"
+                        v-model="activity.prospection.roughInspection"
                         hide-details
                         label="Grobbegehung"
                       ></v-checkbox>
                       <v-checkbox
-                        v-model="activity.detailedInspection"
+                        v-model="activity.prospection.detailedInspection"
                         hide-details
                         label="Feinbegehung"
                       ></v-checkbox>
                       <v-checkbox
-                        v-model="activity.individualFindMeasurement"
+                        v-model="activity.prospection.individualFindMeasurement"
                         hide-details
                         label="Einzelfundeinmessung"
                       ></v-checkbox>
@@ -387,17 +387,17 @@
                     <!-- PROSPECTION - COLUMN 2-->
                     <v-col>
                       <v-checkbox
-                        v-model="activity.geoarchaeologicalInvestigation"
+                        v-model="activity.prospection.geoarchaeologicalInvestigation"
                         hide-details
                         label="Geoarchäologische Untersuchung"
                       ></v-checkbox>
                       <v-checkbox
-                        v-model="activity.sondages"
+                        v-model="activity.prospection.sondages"
                         hide-details
                         label="Sondagen"
                       ></v-checkbox>
                       <v-checkbox
-                        v-model="activity.noneProspect"
+                        v-model="activity.prospection.noneProspect"
                         hide-details
                         label="Keine (übergeordnete Aktivität)"
                       ></v-checkbox>
@@ -406,17 +406,17 @@
                     <!-- PROSPECTION - COLUMN 3-->
                     <v-col>
                       <v-checkbox
-                        v-model="activity.evalElevationData"
+                        v-model="activity.prospection.evalElevationData"
                         hide-details
                         label="Auswertung Höhendaten"
                       ></v-checkbox>
                       <v-checkbox
-                        v-model="activity.evalAerialImage"
+                        v-model="activity.prospection.evalAerialImage"
                         hide-details
                         label="Auswertung Luftbild"
                       ></v-checkbox>
                       <v-checkbox
-                        v-model="activity.metalDetecting"
+                        v-model="activity.prospection.metalDetecting"
                         hide-details
                         label="Metalldetektorsuche"
                       ></v-checkbox>
@@ -425,17 +425,17 @@
                     <!-- PROSPECTION - COLUMN 4-->
                     <v-col>
                       <v-checkbox
-                        v-model="activity.geophysicsElectrical"
+                        v-model="activity.prospection.geophysicsElectrical"
                         hide-details
                         label="Geophysik - Elektrik"
                       ></v-checkbox>
                       <v-checkbox
-                        v-model="activity.geophysicsMagnetics"
+                        v-model="activity.prospection.geophysicsMagnetics"
                         hide-details
                         label="Geophysik - Magnetik"
                       ></v-checkbox>
                       <v-checkbox
-                        v-model="activity.geophysicsOther"
+                        v-model="activity.prospection.geophysicsOther"
                         hide-details
                         label="Geophysik - Sonstiges"
                       ></v-checkbox>
@@ -468,7 +468,7 @@
             :ticks="tickLabels" 
             track-color="primary" 
             thumb-color="secondary" 
-            v-model="activity.conditions" 
+            v-model="activity.conditionsProspect" 
             style="padding-top:31px; padding-bottom:12px">
           </v-slider>
           
@@ -500,7 +500,7 @@
                   :max="curYear"
                   controlVariant="stacked"
                   :label="$t('year')"  
-                  v-model="activity.histLandUsageYear">
+                  v-model="activity.landUsageHistYear">
                 </v-number-input>
               </v-col>
             </v-row>
@@ -570,7 +570,7 @@
 
 
         <v-row class="text-center pa-2">
-          <!--############### RESULT OF ACTION ###############-->
+          <!--############### RESULT TITLE ###############-->
           <v-col cols="6">
             <v-card-text>
               {{ $t('resultOfAction') }}
@@ -581,7 +581,7 @@
               hide-details
               density="compact"
               :hint="getTitleHint()"
-              v-model="titleModel">
+              v-model="activity.resultMeasures.title1">
             </v-combobox>
             <v-combobox
               :label="$t('title')"
@@ -589,7 +589,7 @@
               hide-details
               density="compact"
               :hint="getTitleHint()"
-              v-model="titleModel">
+              v-model="activity.resultMeasures.title2">
             </v-combobox>
             <v-combobox
               :label="$t('title')"
@@ -597,7 +597,7 @@
               hide-details
               density="compact"
               :hint="getTitleHint()"
-              v-model="titleModel">
+              v-model="activity.resultMeasures.title3">
             </v-combobox>
             <v-combobox
               :label="$t('title')"
@@ -605,7 +605,7 @@
               hide-details
               density="compact"
               :hint="getTitleHint()"
-              v-model="titleModel">
+              v-model="activity.resultMeasures.title4">
             </v-combobox>
             <v-combobox
               :label="$t('title')"
@@ -613,13 +613,13 @@
               hide-details
               density="compact"
               :hint="getTitleHint()"
-              v-model="titleModel">
+              v-model="activity.resultMeasures.title5">
             </v-combobox>
           </v-col>
           
           <v-divider vertical />
 
-          <!--############### DATING ###############-->
+          <!--############### RESULT DATING ###############-->
           <v-col>
             <v-card-text>
               {{ $t('dating') }}
@@ -630,7 +630,7 @@
               hide-details
               density="compact"
               :hint="getDatingHint()"
-              v-model="datingModel">
+              v-model="activity.resultMeasures.dating1">
             </v-combobox>
             <v-combobox
               :label="$t('dating')"
@@ -638,7 +638,7 @@
               hide-details
               density="compact"
               :hint="getDatingHint()"
-              v-model="datingModel">
+              v-model="activity.resultMeasures.dating2">
             </v-combobox>
             <v-combobox
               :label="$t('dating')"
@@ -646,7 +646,7 @@
               hide-details
               density="compact"
               :hint="getDatingHint()"
-              v-model="datingModel">
+              v-model="activity.resultMeasures.dating3">
             </v-combobox>
             <v-combobox
               :label="$t('dating')"
@@ -654,7 +654,7 @@
               hide-details
               density="compact"
               :hint="getDatingHint()"
-              v-model="datingModel">
+              v-model="activity.resultMeasures.dating4">
             </v-combobox>
             <v-combobox
               :label="$t('dating')"
@@ -662,7 +662,7 @@
               hide-details
               density="compact"
               :hint="getDatingHint()"
-              v-model="datingModel">
+              v-model="activity.resultMeasures.dating5">
             </v-combobox>
           </v-col>
         </v-row>
@@ -817,29 +817,81 @@ export default {
         branchOffice: '',
         year: '',
         number: '',
+        places: '',
         lastChanged: '',
         lastSync: '',
-        places: [],
-        editor: [],
-        camera: '',
+        editor: '',
+        camera: null,
+
         
-        archiveNumber: '',
-        shortTitle: '',
-        title: '',
         right: '',
         rightTo: '',
         up: '',
         upTo: '',
+        community1: '',
+        community2: '',
+        community3: '',
+        district1: '',
+        district2: '',
+        district3: '',
         areaDescr: '',
+
+        designation: '',
+        archiveNumber: '',
+        shortTitle: '',
+
         dateFrom: '',
         dateTo: '',
         siteDirector: '',
         excavationFirm: '',
-        doneThing: '',
+
+        doneMeasures: {
+          excavation: false,
+          noMeasure: false,
+          monitoring: false,
+          paleoInvestigation: false,
+          changeOfLocation: false,
+          survey: false,
+          photoDocumentation: false,
+          bdRecording: false,
+          observation: false,
+          technicalReport: false,
+          buildingSurvey: false,
+        },
+        prospection: {
+          roughInspection: false,
+          detailedInspection: false,
+          individualFindMeasurement: false,
+          geoarchaeologicalInvestigation: false,
+          sondages: false,
+          noneProspect: false,
+          evalElevationData: false,
+          evalAerialImage: false,
+          metalDetecting: false,
+          geophysicsElectrical: false,
+          geophysicsMagnetics: false,
+          geophysicsOther: false,
+        },
+
+        conditionsProspect: '',
+
         landUsageHist: '',
-        histLandUsageYear: 0,
+        landUsageHistYear: 0,
         landUsageCur: '',
-        conditions: '',
+
+        resultMeasures: { 
+          title1: '',
+          title3: '',
+          title4: '',
+          title2: '',
+          title5: '',
+          dating1: '',
+          dating2: '',
+          dating3: '',
+          dating4: '',
+          dating5: '',
+        },
+
         groundType: [],
         topography: [],
         archiveMaterial: {
@@ -992,7 +1044,7 @@ export default {
       if (this.doneThingModel != '' && this.doneThingModel != undefined){
         inputActivity.doneThing = this.doneThingModel.title;
       }
-       if (this.landUsageHistModel != '' && this.landUsageHistModel != undefined){
+      if (this.landUsageHistModel != '' && this.landUsageHistModel != undefined){
         inputActivity.landUsageHist = this.landUsageHistModel.title;
       }
       if (this.landUsageCurModel != '' && this.landUsageCurModel != undefined){

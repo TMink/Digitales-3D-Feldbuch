@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 07.11.2024 12:04:14
+ * Last Modified: 09.11.2024 16:13:36
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -451,22 +451,75 @@ export default {
           editor: rawActivity.editor,
           camera: null,
 
-          archiveNumber: '',
-          title: '',
+          
           right: '',
           rightTo: '',
           up: '',
           upTo: '',
+          community1: '',
+          community2: '',
+          community3: '',
+          district1: '',
+          district2: '',
+          district3: '',
           areaDescr: '',
+
+          designation: '',
+          archiveNumber: '',
+          shortTitle: '',
+
           dateFrom: '',
           dateTo: '',
           siteDirector: '',
           excavationFirm: '',
-          doneThing: '',
+
+          doneMeasures: {
+            excavation: false,
+            noMeasure: false,
+            monitoring: false,
+            paleoInvestigation: false,
+            changeOfLocation: false,
+            survey: false,
+            photoDocumentation: false,
+            bdRecording: false,
+            observation: false,
+            technicalReport: false,
+            buildingSurvey: false,
+          },
+          prospection: {
+            roughInspection: false,
+            detailedInspection: false,
+            individualFindMeasurement: false,
+            geoarchaeologicalInvestigation: false,
+            sondages: false,
+            noneProspect: false,
+            evalElevationData: false,
+            evalAerialImage: false,
+            metalDetecting: false,
+            geophysicsElectrical: false,
+            geophysicsMagnetics: false,
+            geophysicsOther: false,
+          },
+
+          conditionsProspect: '',
+
           landUsageHist: '',
-          histLandUsageYear: 0,
+          landUsageHistYear: 0,
           landUsageCur: '',
-          conditions: '',
+
+          resultMeasures: { 
+            title1: '',
+            title3: '',
+            title4: '',
+            title2: '',
+            title5: '',
+            dating1: '',
+            dating2: '',
+            dating3: '',
+            dating4: '',
+            dating5: '',
+          },
+
           groundType: [],
           topography: [],
           archiveMaterial: {
