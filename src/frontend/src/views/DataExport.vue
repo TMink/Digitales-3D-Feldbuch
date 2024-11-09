@@ -2,7 +2,7 @@
  * Created Date: 26.06.2023 15:10:20
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.11.2024 19:19:31
+ * Last Modified: 09.11.2024 19:24:41
  * Modified By: Julian Hardtung
  * 
  * Description: export all (or only specified) data to .pdf or .csv
@@ -592,7 +592,7 @@ export default {
      */
     async downloadExportedData(zip) {
       const content = await zip.generateAsync({ type: 'blob' });
-      saveAs(content, 'ALL.zip');
+      saveAs(content, 'BodeonExport.zip');
       this.$root.vtoast.show({ message: 'Export successfull', color: 'success' });
     },
 
