@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.11.2024 17:49:19
+ * Last Modified: 10.11.2024 13:23:39
  * Modified By: Julian Hardtung
  * 
  * Description: input page for activity data 
@@ -789,10 +789,27 @@ export default {
   setup() {
     const { width, height } = useWindowSize();
     var year = new Date().getFullYear();
+
+    const doneThings = JSON.parse(import.meta.env.VITE_DONE_THINGS);
+    const landUsage = JSON.parse(import.meta.env.VITE_LAND_USAGE);
+    const groundTypes = JSON.parse(import.meta.env.VITE_GROUND_TYPES_SIMPLE);
+    const topography = JSON.parse(import.meta.env.VITE_TOPOGRAPHY);
+    const datingsList = JSON.parse(import.meta.env.VITE_DATINGS_FULL);
+    const titlesList = JSON.parse(import.meta.env.VITE_TITLES_FULL);
+
+
+
     return {
       windowWidth: width,
       windowHeight: height,
       curYear: year,
+
+      doneThings,
+      landUsage,
+      groundTypes,
+      topography,
+      datingsList,
+      titlesList,
     };
   },
 
@@ -932,18 +949,6 @@ export default {
       hasUnsavedChanges: false,
       componentHasLoaded: false,
 
-      datingsList: [],
-      editorsList: [],
-      titlesList: [],
-      doneThings: [],
-      landUsage: [],
-      
-      groundTypes: [],
-      groundTypeModel: [],
-      
-      topography: [],
-      topographyModel: [],
-
       doneThingModel: '',
       landUsageHistModel: '',
       landUsageCurModel: '',
@@ -983,12 +988,6 @@ export default {
    * Initialize data from localDB to the reactive Vue.js data
    */
   async created() {
-    this.doneThings = JSON.parse(import.meta.env.VITE_DONE_THINGS);
-    this.landUsage = JSON.parse(import.meta.env.VITE_LAND_USAGE);
-    this.groundTypes = JSON.parse(import.meta.env.VITE_GROUND_TYPES_SIMPLE);
-    this.topography = JSON.parse(import.meta.env.VITE_TOPOGRAPHY);
-    this.datingsList = JSON.parse(import.meta.env.VITE_DATINGS_FULL);
-    this.titlesList = JSON.parse(import.meta.env.VITE_TITLES_FULL);
     
     await fromOfflineDB.syncLocalDBs()
       .catch(err => console.error(err));
