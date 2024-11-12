@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 29.10.2024 13:24:26
+ * Last Modified: 10.11.2024 13:23:39
  * Modified By: Julian Hardtung
  * 
  * Description: input page for activity data 
@@ -33,458 +33,731 @@
         </v-card>
       </v-col>
 
-      <v-col cols="10">
-        <v-window v-model="tab">
+      <v-col cols="8">
           <!-- Tab item 'GENERAL' -->
-          <v-window-item value="one">
-            <v-card class="pa-4 mb-2">
-              <h2 class="text-h6 font-weight-medium pb-1">
-                {{  $t('generalInformation') }}
-              </h2>
-              <v-divider/>
+        <v-card class="pa-4 mb-2">
+          <h2 class="text-h6 font-weight-medium pb-1">
+            {{  $t('formSheet1') }}
+          </h2>
+          <v-divider/>
 
-              <v-row class="align-center pt-4">
-                <!-- ACT_NUMBER + ARCHIVE_NUMBER + SHORT TITLE -->
-                <v-col cols="4">
-                  <!-- <v-text-field
-                      class="py-2"
-                      color="primary"
-                      :label="$tc('actNumber', 2)"
-                      v-model="activity.activityNumber">
-                    </v-text-field> -->
-                  <v-row no-gutters>
-                    <v-text-field
-                      class="pr-1"
-                      color="primary"
-                      maxlength="2"
-                      :label="$t('branchOffice')"
-                      v-model="activity.branchOffice">
-                    </v-text-field>
-                    <v-text-field
-                      class="px-1"
-                      color="primary"
-                      :label="$t('year')"
-                      v-model="activity.year">
-                    </v-text-field>
-                    <v-text-field
-                      class="pl-1"
-                      color="primary"
-                      :label="$t('number')"
-                      v-model="activity.number">
-                    </v-text-field>
-                  </v-row>
+          <v-row class="align-center pt-4">
+            <v-col class="justify-end">
+              <v-card-title>
+                {{  $t('lvrAmt') }}
+              </v-card-title>
+            
+              <!-- LOCATION DESCRIPTION-->
+              <v-card variant="outlined" class="pa-1">
+                <!--############## RIGHT & RIGHT TO ###############-->
+                <v-row no-gutters class="align-center">
+                  <v-col cols="2">
+                    <v-card-text>
+                      {{ $t('right') }}
+                    </v-card-text>
+                  </v-col>
                   <v-text-field
-                    color="primary"
-                    :label="$tc('archiveNumber', 2)"
-                    disabled
-                    persistent-hint
-                    :hint="$t('filledByLVR')">
-                  </v-text-field>
-                  <v-textarea
-                    class="py-2"
+                    class="pa-2"
                     color="primary"
                     hide-details
-                    :label="$tc('title', 3)"
-                    v-model="activity.shortTitle">
-                  </v-textarea>
-                </v-col>
+                    density="compact"
+                    :label="$t('from')"
+                    v-model="activity.right">
+                  </v-text-field>
+                  - 
+                  <v-text-field
+                    class="pa-2"
+                    color="primary"
+                    hide-details
+                    density="compact"
+                    :label="$t('to')"
+                    v-model="activity.rightTo">
+                  </v-text-field>
+                </v-row>
 
-                <v-spacer></v-spacer>
+                <!--############## UP & UP TO ###############-->
+                <v-row no-gutters class="align-center">
+                  <v-col cols="2">
+                    <v-card-text>
+                      {{ $t('up') }}
+                    </v-card-text>
+                  </v-col>
+                  <v-text-field
+                    class="pa-2"
+                    color="primary"
+                    hide-details
+                    density="compact"
+                    :label="$t('from')"
+                    v-model="activity.up">
+                  </v-text-field>
+                  -
+                  <v-text-field
+                    class="px-2"
+                    color="primary"
+                    hide-details
+                    density="compact"
+                    :label="$t('to')"
+                    v-model="activity.upTo">
+                  </v-text-field>
+                </v-row>
 
-                <!-- LOCATION DESCRIPTION-->
-                <v-col class="justify-end" cols="6">
-                  <v-card variant="outlined">
-                    <v-row no-gutters class="align-center">
-                      <v-col cols="2">
-                        <v-card-text>
-                          {{ $t('right') }}
-                        </v-card-text>
-                      </v-col>
-                      <v-text-field
-                        class="pa-2"
-                        color="primary"
-                        hide-details
-                        :label="$t('from')"
-                        v-model="activity.right">
-                      </v-text-field>
-                      - 
-                      <v-text-field
-                        class="pa-2"
-                        color="primary"
-                        hide-details
-                        :label="$t('to')"
-                        v-model="activity.rightTo">
-                      </v-text-field>
-                    </v-row>
-
-                    <v-row no-gutters class="align-center">
-                      <v-col cols="2">
-                        <v-card-text>
-                          {{ $t('up') }}
-                        </v-card-text>
-                      </v-col>
-                      <v-text-field
-                        class="pa-2"
-                        color="primary"
-                        hide-details
-                        :label="$t('from')"
-                        v-model="activity.up">
-                      </v-text-field>
-                      -
-                      <v-text-field
-                        class="px-2"
-                        color="primary"
-                        hide-details
-                        :label="$t('to')"
-                        v-model="activity.upTo">
-                      </v-text-field>
-                    </v-row>
-
-                    <v-textarea
-                      class="pa-2"
+                <v-divider class="mt-2 pb-2"/>
+                
+                
+                <v-row no-gutters>
+                  <!--############## COMMUNITY 1-3 ###############-->
+                  <v-col>
+                    <v-card-text class="py-2">
+                      {{ $t('community') }}
+                    </v-card-text>
+                
+                    <v-text-field
+                      class="px-2"
                       color="primary"
                       hide-details
-                      :label="$t('areaDescr')"
-                      v-model="activity.areaDescr">
-                    </v-textarea>
-                  </v-card>
-                </v-col>
+                      density="compact"
+                      v-model="activity.community1">
+                    </v-text-field>
+                    <v-text-field
+                      class="px-2"
+                      color="primary"
+                      hide-details
+                      density="compact"
+                      v-model="activity.community2">
+                    </v-text-field>
+                    <v-text-field
+                      class="px-2"
+                      color="primary"
+                      hide-details
+                      density="compact"
+                      v-model="activity.community3">
+                    </v-text-field>
+                  </v-col>
+                  <!--############## DISTRICT 1-3 ###############-->
+                  <v-col>
+                    <v-card-text class="py-2">
+                      {{ $t('district') }}
+                    </v-card-text>
+                    <v-text-field
+                      class="px-2"
+                      color="primary"
+                      hide-details
+                      density="compact"
+                      v-model="activity.district1">
+                    </v-text-field>
+                    <v-text-field
+                      class="px-2"
+                      color="primary"
+                      hide-details
+                      density="compact"
+                      v-model="activity.district2">
+                    </v-text-field>
+                    <v-text-field
+                      class="px-2"
+                      color="primary"
+                      hide-details
+                      density="compact"
+                      v-model="activity.district3">
+                    </v-text-field>
+                  </v-col>
+                </v-row>
+
+                <v-divider class="mt-3 pb-2"/>
+
+                <!--############## AREA DESCR ###############-->
+                <v-textarea
+                  class="pa-2"
+                  color="primary"
+                  hide-details
+                  rows="2"
+                  :label="$t('areaDescr')"
+                  v-model="activity.areaDescr">
+                </v-textarea>
+              </v-card>
+            </v-col>
+
+
+            <!-- ACT_NUMBER + DESIGNATION + ARCHIVE_NUMBER + SHORT TITLE -->
+            <v-col>
+              <v-text-field
+                class="py-2"
+                color="primary"
+                :label="$tc('actNumber', 1)"
+                hide-details
+                v-model="activity.activityNumber">
+              </v-text-field>
+              <v-text-field
+                class="py-2"
+                color="primary"
+                :label="$tc('designation')"
+                hide-details
+                v-model="activity.designation">
+              </v-text-field>
+              <v-text-field
+                color="primary"
+                :label="$tc('archiveNumber', 2)"
+                disabled
+                variant="underlined"
+                persistent-hint
+                :hint="$t('filledByLVR')">
+              </v-text-field>
+              <v-textarea
+                class="pt-4"
+                color="primary"
+                hide-details
+                rows="8"
+                :label="$tc('title', 3)"
+                v-model="activity.shortTitle">
+              </v-textarea>
+            </v-col>
+          </v-row>
+
+
+          <!--############### ACTIVITY DURATION ###############-->
+          <v-row no-gutters class="align-center pt-2">
+            <v-card variant="text">
+              <v-card-text>
+                {{ $t('activityDuration') }}
+              </v-card-text>
+            </v-card>
+            <v-text-field
+              class="pl-5 pa-2"
+              hide-details
+              density="compact"
+              color="primary"
+              :label="$t('from')"
+              v-model="activity.dateFrom">
+            </v-text-field>
+            -
+            <v-text-field
+              class="pa-2"
+              hide-details
+              density="compact"
+              color="primary"
+              :label="$t('to')"
+              v-model="activity.dateTo">
+            </v-text-field>
+            <v-spacer></v-spacer>
+          </v-row>
+
+          <!--############### SITE DIRECTOR + EXCAVATION FIRM ###############-->
+          <v-row no-gutters class="align-center">
+            <v-card variant="text">
+              <v-card-text>
+                {{ $t('siteDirector') }}
+              </v-card-text>
+            </v-card>
+            <v-text-field
+              class="px-2"
+              hide-details
+              color="primary"
+              v-model="activity.siteDirector">
+            </v-text-field>
+            <v-card variant="text">
+              <v-card-text>
+                {{ $t('excavationFirm') }}
+              </v-card-text>
+            </v-card>
+            <v-text-field
+              class="pa-2"
+              hide-details
+              color="primary"
+              v-model="activity.excavationFirm">
+            </v-text-field>
+          </v-row>
+
+        <v-divider class="mt-3 py-3" :thickness="3"/>
+        
+        <!--############### DONE MEASURES ###############-->
+        <v-col>
+          <v-row>
+            <v-card class="d-flex" variant="text">
+              <v-row class="align-center">
+                <v-card-text class="vertical-text align-center">
+                  {{ $t('doneAction')}}
+                </v-card-text>
               </v-row>
             </v-card>
 
-            <v-row no-gutters class="align-center">
-              <!-- DATES + DIRECTOR -->
-              <v-col cols="6">
-                <v-card class="mb-2 mr-1">
-                  <v-row no-gutters class="align-center">
-                    <v-card-text>
-                      {{ $t('activityDuration') }}
-                    </v-card-text>
-                    <v-text-field
-                      class="pa-2"
-                      hide-details
-                      color="primary"
-                      :label="$t('from')"
-                      v-model="activity.dateFrom">
-                    </v-text-field>
-                    -
-                    <v-text-field
-                      class="pa-2"
-                      hide-details
-                      color="primary"
-                      :label="$t('to')"
-                      v-model="activity.dateTo">
-                    </v-text-field>
-                  </v-row>
-
-                  <v-row no-gutters class="align-center">
-                    <v-col cols="3">
-                      <v-card-text>
-                        {{ $t('siteDirector') }}
-                      </v-card-text>
-                    </v-col>
-                    <v-text-field
-                      class="px-2"
-                      hide-details
-                      color="primary"
-                      v-model="activity.siteDirector">
-                    </v-text-field>
-                  </v-row>
-
-                  <v-row no-gutters class="align-center">
-                    <v-col cols="3">
-                      <v-card-text>
-                        {{ $t('excavationFirm') }}
-                      </v-card-text>
-                    </v-col>
-                    
-                    <v-text-field
-                      class="pa-2"
-                      hide-details
-                      color="primary"
-                      v-model="activity.excavationFirm">
-                    </v-text-field>
-                  </v-row>
-                </v-card>
-              </v-col>
-              
-              <!-- DONE MEASURES -->
-              <v-col cols="6">
-                <v-card height="200px" class="mb-2 ml-1 pa-2">
-                  <v-card-title>
-                    {{  $t('doneAction') }}
-                  </v-card-title>
-                  <v-divider class="py-1"/>
-                  <v-combobox
-                    :label="$t('doneAction')"
-                    :items="doneThings"
+            <v-col>
+              <v-row>
+                <!-- DONE MEASURES - COLUMN 1-->
+                <v-col>
+                  <v-checkbox
+                    v-model="activity.doneMeasures.excavation"
                     hide-details
-                    v-model="doneThingModel">
-                  </v-combobox>
-                  <v-card-subtitle v-if="doneThingModel != undefined" class="text-wrap pa-2">
-                    {{ doneThingModel.descr }}
-                  </v-card-subtitle>
-                </v-card>
+                    label="Grabung"
+                  ></v-checkbox>
+                  <v-checkbox
+                    v-model="activity.doneMeasures.noMeasure"
+                    hide-details
+                    label="Keine (übergeordnete Aktivität)"
+                  ></v-checkbox>
+                </v-col>
+                <!-- DONE MEASURES - COLUMN 2-->
+                <v-col>
+                  <v-checkbox
+                    v-model="activity.doneMeasures.monitoring"
+                    hide-details
+                    label="Baustellenbeobachtung/ Notbergung"
+                  ></v-checkbox>
+                  <v-checkbox
+                    v-model="activity.doneMeasures.paleoInvestigation"
+                    hide-details
+                    label="Paläontologische Untersuchung"
+                  ></v-checkbox>
+                  <v-checkbox
+                    v-model="activity.doneMeasures.changeOfLocation"
+                    hide-details
+                    label="Standortveränderung"
+                  ></v-checkbox>
+                </v-col>
+                <!-- DONE MEASURES - COLUMN 3-->
+                <v-col>
+                  <v-checkbox
+                  v-model="activity.doneMeasures.survey"
+                  hide-details
+                  label="Vermessung (Hauptziel)"
+                  ></v-checkbox>
+                  <v-checkbox
+                  v-model="activity.doneMeasures.photoDocumentation"
+                  hide-details
+                  label="Fotodokumentation (Hauptziel)"
+                  ></v-checkbox>
+                  <v-checkbox
+                  v-model="activity.doneMeasures.bdRecording"
+                  hide-details
+                  label="BD-Aufnahme"
+                  ></v-checkbox>
+                </v-col>
+                <!-- DONE MEASURES - COLUMN 4-->
+                <v-col>
+                  <v-checkbox
+                    v-model="activity.doneMeasures.observation"
+                    hide-details
+                    label="Beobachtung/ Aufsammlung"
+                  ></v-checkbox>
+                  <v-checkbox
+                    v-model="activity.doneMeasures.technicalReport"
+                    hide-details
+                    label="Fachliches Gutachten"
+                  ></v-checkbox>
+                  <v-checkbox
+                    v-model="activity.doneMeasures.buildingSurvey"
+                    hide-details
+                    label="Bauaufnahme"
+                  ></v-checkbox>
+                </v-col>
+              </v-row>
+            
+              <!--_________________________________________________________________-->
+              <v-divider style="border-top: 3px dashed !important;" class="mt-2 pb-3"/>
+              <!--_________________________________________________________________-->
+
+              <v-row>
+                <v-col>
+                  <v-row class="justify-center mb-n6">
+                    <v-card variant="text">
+                      <v-card-text>
+                        {{ $t('prospection')}}
+                      </v-card-text>
+                    </v-card>
+                  </v-row>
+
+                  <v-row>
+                    <!-- PROSPECTION - COLUMN 1-->
+                    <v-col>
+                      <v-checkbox
+                        v-model="activity.prospection.roughInspection"
+                        hide-details
+                        label="Grobbegehung"
+                      ></v-checkbox>
+                      <v-checkbox
+                        v-model="activity.prospection.detailedInspection"
+                        hide-details
+                        label="Feinbegehung"
+                      ></v-checkbox>
+                      <v-checkbox
+                        v-model="activity.prospection.individualFindMeasurement"
+                        hide-details
+                        label="Einzelfundeinmessung"
+                      ></v-checkbox>
+                    </v-col>
+
+                    <!-- PROSPECTION - COLUMN 2-->
+                    <v-col>
+                      <v-checkbox
+                        v-model="activity.prospection.geoarchaeologicalInvestigation"
+                        hide-details
+                        label="Geoarchäologische Untersuchung"
+                      ></v-checkbox>
+                      <v-checkbox
+                        v-model="activity.prospection.sondages"
+                        hide-details
+                        label="Sondagen"
+                      ></v-checkbox>
+                      <v-checkbox
+                        v-model="activity.prospection.noneProspect"
+                        hide-details
+                        label="Keine (übergeordnete Aktivität)"
+                      ></v-checkbox>
+                    </v-col>
+
+                    <!-- PROSPECTION - COLUMN 3-->
+                    <v-col>
+                      <v-checkbox
+                        v-model="activity.prospection.evalElevationData"
+                        hide-details
+                        label="Auswertung Höhendaten"
+                      ></v-checkbox>
+                      <v-checkbox
+                        v-model="activity.prospection.evalAerialImage"
+                        hide-details
+                        label="Auswertung Luftbild"
+                      ></v-checkbox>
+                      <v-checkbox
+                        v-model="activity.prospection.metalDetecting"
+                        hide-details
+                        label="Metalldetektorsuche"
+                      ></v-checkbox>
+                    </v-col>
+
+                    <!-- PROSPECTION - COLUMN 4-->
+                    <v-col>
+                      <v-checkbox
+                        v-model="activity.prospection.geophysicsElectrical"
+                        hide-details
+                        label="Geophysik - Elektrik"
+                      ></v-checkbox>
+                      <v-checkbox
+                        v-model="activity.prospection.geophysicsMagnetics"
+                        hide-details
+                        label="Geophysik - Magnetik"
+                      ></v-checkbox>
+                      <v-checkbox
+                        v-model="activity.prospection.geophysicsOther"
+                        hide-details
+                        label="Geophysik - Sonstiges"
+                      ></v-checkbox>
+                    </v-col>
+                  </v-row>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+        </v-col>
+
+        <!--_________________________________________________________________-->
+        <v-divider style="border-top: 3px double !important;"/>
+        <!--_________________________________________________________________-->
+
+        <v-row no-gutters class="align-center pa-2 pb-0">
+          <!--############### CONDITIONS PROSPEKTION ###############-->
+          <v-card variant="text" width="120px">
+            <v-card-text class="text-wrap">
+              {{ $t('conditionsProspection') }}
+            </v-card-text>
+          </v-card>     
+          <v-slider 
+            :max="2" 
+            step="1"
+            class="px-2" 
+            tick-size="3" 
+            color="warning"
+            show-ticks="always" 
+            :ticks="tickLabels" 
+            track-color="primary" 
+            thumb-color="secondary" 
+            v-model="activity.conditionsProspect" 
+            style="padding-top:31px; padding-bottom:12px">
+          </v-slider>
+          
+          <!--_________________________________________________________________-->
+          <v-divider vertical/>
+
+          <v-card variant="text">
+            <v-card-text>
+              {{ $t('landUsage') }}
+            </v-card-text>
+          </v-card>
+
+          <v-col>
+            <!--############### LAND USAGE - HISTORICAL ###############-->   
+            <v-row no-gutters>
+              <v-combobox
+                :label="$t('historical')"
+                :items="landUsage"
+                density="compact"
+                hide-details
+                class="pr-2"
+                v-model="landUsageHistModel">
+              </v-combobox>
+              <v-col cols="3">
+                <v-number-input
+                  color="primary"
+                  density="compact" 
+                  hide-details
+                  :max="curYear"
+                  controlVariant="stacked"
+                  :label="$t('year')"  
+                  v-model="activity.landUsageHistYear">
+                </v-number-input>
               </v-col>
             </v-row>
 
-            <!-- LAND USAGE -->
-            <v-card class="pa-2 mb-2">
-              <v-card-title>
-                {{ $t('landUsage') }}
-              </v-card-title>
-              <v-divider/>
+            <v-divider class="pl-2 mr-2" vertical/>
 
-              <!-- HISTORICAL -->
-              <v-row no-gutters class="py-2">
-                <v-col cols="6" class="pa-2">
-                  <v-row no-gutters>
-                    <v-col cols="9">
-                      <v-combobox
-                        :label="$t('historical')"
-                        :items="landUsage"
-                        hide-details
-                        class="pr-2"
-                        v-model="landUsageHistModel">
-                    </v-combobox>
-                  </v-col>
-                  <v-col cols="3">
-                    <v-number-input
-                      color="primary" 
-                      hide-details
-                      :max="curYear"
-                      controlVariant="stacked"
-                      :label="$t('year')"  
-                      v-model="activity.histLandUsageYear">
-                  </v-number-input>
-                </v-col>
-              </v-row>
-                <v-card-subtitle v-if="landUsageHistModel != undefined" class="text-wrap">
-                  {{ landUsageHistModel.descr }}
-                </v-card-subtitle>
-                </v-col>
-                <v-divider vertical/>
+            <!--############### LAND USAGE - HISTORICAL ###############--> 
+            <v-combobox
+              :label="$t('current')"
+              :items="landUsage"
+              density="compact"
+              hide-details
+              v-model="landUsageCurModel">
+            </v-combobox>
+          </v-col>
+        </v-row>
 
-                <!-- CURRENT -->
-                <v-col cols="6" class="pa-2">
-                  <v-combobox
-                    :label="$t('current')"
-                    :items="landUsage"
-                    hide-details
-                    v-model="landUsageCurModel">
-                  </v-combobox>
-                  <v-card-subtitle v-if="landUsageCurModel != undefined" class="text-wrap">
-                    {{ landUsageCurModel.descr }}
-                  </v-card-subtitle>
-                </v-col>
-              </v-row>
-            </v-card>
+        <!--_________________________________________________________________-->
+        <v-divider style="border-top: 3px double !important;" class="mt-3 pb-2"/>
+        <!--_________________________________________________________________-->
 
-            <v-row no-gutters>
+        <!--############### GROUND TYPE ###############-->
+        <v-row no-gutters class="pa-2">
+          <v-col cols="3">
+            <v-card-text>
+              {{ $t('groundType') }}
+            </v-card-text>
+          </v-col>
+          <v-col cols="9">
+            <v-combobox
+              multiple
+              chips
+              persistent-hint
+              :items="groundTypes"
+              :hint="$t('chooseMax', {number: '3'})"
+              v-model="activity.groundType"
+              density="compact"
+              :model-value="activity.groundType" 
+              @update:modelValue="(e) => { (e.length > 3) && e.shift(); activity.groundType = e }">
+            </v-combobox>
+          </v-col>
+        </v-row>
 
-              <!-- CONDITIONS -->
-              <v-col cols="6">
-                <v-card class="mb-2 mr-1">
-                  <v-row no-gutters class="align-center pa-2 pb-0">
-                    <v-col cols="3">                      
-                      <v-card-text>
-                        {{ $t('conditionsProspection') }}
-                      </v-card-text>
-                    </v-col>
-                    
-                    <v-slider 
-                      :max="2" 
-                      step="1"
-                      tick-size="3" 
-                      :ticks="tickLabels" 
-                      show-ticks="always" 
-                      class="px-2"
-                      style="padding-top:31px; padding-bottom:12px"
-                      track-color="primary"
-                      thumb-color="secondary" 
-                      v-model="activity.conditions" 
-                      color="warning">
-                    </v-slider>
-                  </v-row>
+        <!--############### TOPOGRAPHY ###############-->
+        <v-row no-gutters class="pa-2">
+          <v-col cols="3">
+            <v-card-text>
+              {{ $t('topography') }}
+            </v-card-text>
+          </v-col>
+          <v-col cols="9">
+            <v-combobox
+              :items="topography"
+              :hint="$t('chooseMax', {number: '2'})"
+              multiple
+              chips
+              persistent-hint
+              density="compact"
+              v-model="activity.topography"
+              :model-value="activity.topography" 
+              @update:modelValue="(e) => { (e.length > 2) && e.shift(); activity.topography = e }">
+            </v-combobox>
+          </v-col>
+        </v-row>
 
-                  <!-- GROUND TYPE -->
-                  <v-row no-gutters class="pa-2">
-                    <v-col cols="3">
-                      <v-card-text>
-                        {{ $t('groundType') }}
-                      </v-card-text>
-                    </v-col>
-                    <v-col cols="9">
-                      <v-combobox
-                        multiple
-                        chips
-                        persistent-hint
-                        :items="groundTypes"
-                        :hint="$t('chooseMax', {number: '3'})"
-                        v-model="activity.groundType"
-                        density="compact"
-                        :model-value="activity.groundType" 
-                        @update:modelValue="(e) => { (e.length > 3) && e.shift(); activity.groundType = e }">
-                      </v-combobox>
-                    </v-col>
-                  </v-row>
-
-                  <!-- TOPOGRAPHY -->
-                  <v-row no-gutters class="pa-2">
-                    <v-col cols="3">
-                      <v-card-text>
-                        {{ $t('topography') }}
-                      </v-card-text>
-                    </v-col>
-                    <v-col cols="9">
-                      <v-combobox
-                        :items="topography"
-                        :hint="$t('chooseMax', {number: '2'})"
-                        multiple
-                        chips
-                        persistent-hint
-                        density="compact"
-                        v-model="activity.topography"
-                        :model-value="activity.topography" 
-                        @update:modelValue="(e) => { (e.length > 2) && e.shift(); activity.topography = e }">
-                      </v-combobox>
-                    </v-col>
-                  </v-row>
-                </v-card>
-              </v-col>
-
-              <!-- ARCHIVE MATERIAL + MATERIAL + MISC -->
-               <v-col cols="6">
-                <v-card class="ml-1">
-                  <v-row no-gutters>
-                    <v-col cols="4" class="pa-2 pb-1">
-                      <v-card-text>
-                        {{ $t('archiveMaterial') }}
-                      </v-card-text>
-
-                      <v-checkbox
-                        density="compact"
-                        hide-details
-                        v-model="activity.archiveMaterial.photos"
-                        :label="$tc('photo', 1)">
-                      </v-checkbox>
-                      <v-checkbox
-                        density="compact"
-                        hide-details
-                        v-model="activity.archiveMaterial.findDrawings"
-                        :label="$t('findDrawing')">
-                      </v-checkbox>
-                      <v-checkbox
-                        density="compact"
-                        hide-details
-                        v-model="activity.archiveMaterial.excavationDrawings"
-                        :label="$t('excavationDrawing')">
-                      </v-checkbox>
-                      <v-checkbox
-                        density="compact"
-                        hide-details
-                        v-model="activity.archiveMaterial.misc"
-                        :label="$t('misc')">
-                      </v-checkbox>
-                      <v-checkbox
-                        density="compact"
-                        hide-details
-                        v-model="activity.archiveMaterial.no"
-                        :label="$tc('no', 2)">
-                      </v-checkbox>
-                    </v-col>
-                    
-                    <v-divider vertical/>
-
-                    <v-col cols="3" class="pa-2">
-                      <v-card-text>
-                        {{ $t('material') }}
-                      </v-card-text>
-
-                      <v-checkbox
-                        density="compact"
-                        v-model="activity.material.find"
-                        :label="$tc('find', 2)">
-                      </v-checkbox>
-                      <v-checkbox
-                        density="compact"
-                        v-model="activity.material.sample"
-                        :label="$tc('sample', 2)">
-                      </v-checkbox>
-                      <v-checkbox
-                        density="compact"
-                        v-model="activity.material.no"
-                        :label="$tc('no', 1)">
-                      </v-checkbox>
-                    </v-col>
-
-                    <v-divider vertical/>
-
-                    <v-col cols="4" class="pa-2">
-                      <v-card-text>
-                        {{ $t('misc') }}
-                      </v-card-text>
-                      <v-number-input
-                        color="primary" 
-                        controlVariant="stacked"
-                        class="py-2 pl-1"
-                        density="compact"
-                        persistent-hint
-                        :hint="$t('maxPlaceNumber')"
-                        :label="$t('placeNumber')"  
-                        v-model="activity.maxPlaceNumber">
-                      </v-number-input>
-
-                      <v-checkbox
-                        density="compact"
-                        v-model="activity.findsDocumented"
-                        persistent-hint
-                        :hint="$t('findsDocumented')"
-                        :label="$tc('find', 3)">
-                      </v-checkbox>
-                    </v-col>
-                  </v-row>
-                </v-card>
-              </v-col>
-              </v-row>
+        <v-divider style="border-top: 3px double !important;" class="mt-3 pb-2"/>
 
 
-              <!-- RESULT OF MEASURE DONE -->
-              <v-card class="mb-2">
-                <v-row class="text-center pa-2">
-                  <v-col cols="6">
-                    <v-card-text>
-                      {{ $t('resultOfAction') }}
-                    </v-card-text>
-                    <v-combobox
-                      :label="$t('title')"
-                      :items="titlesList"
-                      persistent-hint
-                      :hint="getTitleHint()"
-                      v-model="titleModel">
-                    </v-combobox>
-                  </v-col>
-                  
-                  <v-divider vertical />
+        <v-row class="text-center pa-2">
+          <!--############### RESULT TITLE ###############-->
+          <v-col cols="6">
+            <v-card-text>
+              {{ $t('resultOfAction') }}
+            </v-card-text>
+            <v-combobox
+              :label="$t('title')"
+              :items="titlesList"
+              hide-details
+              density="compact"
+              :hint="getTitleHint()"
+              v-model="activity.resultMeasures.title1">
+            </v-combobox>
+            <v-combobox
+              :label="$t('title')"
+              :items="titlesList"
+              hide-details
+              density="compact"
+              :hint="getTitleHint()"
+              v-model="activity.resultMeasures.title2">
+            </v-combobox>
+            <v-combobox
+              :label="$t('title')"
+              :items="titlesList"
+              hide-details
+              density="compact"
+              :hint="getTitleHint()"
+              v-model="activity.resultMeasures.title3">
+            </v-combobox>
+            <v-combobox
+              :label="$t('title')"
+              :items="titlesList"
+              hide-details
+              density="compact"
+              :hint="getTitleHint()"
+              v-model="activity.resultMeasures.title4">
+            </v-combobox>
+            <v-combobox
+              :label="$t('title')"
+              :items="titlesList"
+              hide-details
+              density="compact"
+              :hint="getTitleHint()"
+              v-model="activity.resultMeasures.title5">
+            </v-combobox>
+          </v-col>
+          
+          <v-divider vertical />
 
-                  <!-- DATING -->
-                  <v-col>
-                    <v-card-text>
-                      {{ $t('dating') }}
-                    </v-card-text>
-                    <v-combobox
-                      :label="$t('dating')"
-                      :items="datingsList"
-                      persistent-hint
-                      :hint="getDatingHint()"
-                      v-model="datingModel">
-                    </v-combobox>
-                  </v-col>
-                </v-row>
-              </v-card>
+          <!--############### RESULT DATING ###############-->
+          <v-col>
+            <v-card-text>
+              {{ $t('dating') }}
+            </v-card-text>
+            <v-combobox
+              :label="$t('dating')"
+              :items="datingsList"
+              hide-details
+              density="compact"
+              :hint="getDatingHint()"
+              v-model="activity.resultMeasures.dating1">
+            </v-combobox>
+            <v-combobox
+              :label="$t('dating')"
+              :items="datingsList"
+              hide-details
+              density="compact"
+              :hint="getDatingHint()"
+              v-model="activity.resultMeasures.dating2">
+            </v-combobox>
+            <v-combobox
+              :label="$t('dating')"
+              :items="datingsList"
+              hide-details
+              density="compact"
+              :hint="getDatingHint()"
+              v-model="activity.resultMeasures.dating3">
+            </v-combobox>
+            <v-combobox
+              :label="$t('dating')"
+              :items="datingsList"
+              hide-details
+              density="compact"
+              :hint="getDatingHint()"
+              v-model="activity.resultMeasures.dating4">
+            </v-combobox>
+            <v-combobox
+              :label="$t('dating')"
+              :items="datingsList"
+              hide-details
+              density="compact"
+              :hint="getDatingHint()"
+              v-model="activity.resultMeasures.dating5">
+            </v-combobox>
+          </v-col>
+        </v-row>
+          
+        <v-divider style="border-top: 3px double !important;" class="mt-3 pb-2"/>
+
+          <v-row no-gutters>
+            <v-col cols="4" class="pa-2 pb-1">
+              <v-card-text>
+                {{ $t('archiveMaterial') }}
+              </v-card-text>
+
+              <v-checkbox
+                density="compact"
+                hide-details
+                v-model="activity.archiveMaterial.photos"
+                :label="$tc('photo', 1)">
+              </v-checkbox>
+              <v-checkbox
+                density="compact"
+                hide-details
+                v-model="activity.archiveMaterial.findDrawings"
+                :label="$t('findDrawing')">
+              </v-checkbox>
+              <v-checkbox
+                density="compact"
+                hide-details
+                v-model="activity.archiveMaterial.excavationDrawings"
+                :label="$t('excavationDrawing')">
+              </v-checkbox>
+              <v-checkbox
+                density="compact"
+                hide-details
+                v-model="activity.archiveMaterial.misc"
+                :label="$t('misc')">
+              </v-checkbox>
+              <v-checkbox
+                density="compact"
+                hide-details
+                v-model="activity.archiveMaterial.no"
+                :label="$tc('no', 2)">
+              </v-checkbox>
+            </v-col>
             
-          </v-window-item>
-        </v-window>
+            <v-divider vertical/>
+
+            <v-col cols="3" class="pa-2">
+              <v-card-text>
+                {{ $t('material') }}
+              </v-card-text>
+
+              <v-checkbox
+                density="compact"
+                v-model="activity.material.find"
+                :label="$tc('find', 2)">
+              </v-checkbox>
+              <v-checkbox
+                density="compact"
+                v-model="activity.material.sample"
+                :label="$tc('sample', 2)">
+              </v-checkbox>
+              <v-checkbox
+                density="compact"
+                v-model="activity.material.no"
+                :label="$tc('no', 1)">
+              </v-checkbox>
+            </v-col>
+
+            <v-divider vertical/>
+
+            <v-col cols="4" class="pa-2">
+              <v-card-text>
+                {{ $t('misc') }}
+              </v-card-text>
+              <v-number-input
+                color="primary" 
+                controlVariant="stacked"
+                class="py-2 pl-1"
+                density="compact"
+                persistent-hint
+                :hint="$t('maxPlaceNumber')"
+                :label="$t('placeNumber')"  
+                v-model="activity.maxPlaceNumber">
+              </v-number-input>
+
+              <v-checkbox
+                density="compact"
+                v-model="activity.findsDocumented"
+                persistent-hint
+                :hint="$t('findsDocumented')"
+                :label="$tc('find', 3)">
+              </v-checkbox>
+            </v-col>
+          </v-row>
+        </v-card>
       </v-col>
     </v-row>
   </v-container>
@@ -516,10 +789,27 @@ export default {
   setup() {
     const { width, height } = useWindowSize();
     var year = new Date().getFullYear();
+
+    const doneThings = JSON.parse(import.meta.env.VITE_DONE_THINGS);
+    const landUsage = JSON.parse(import.meta.env.VITE_LAND_USAGE);
+    const groundTypes = JSON.parse(import.meta.env.VITE_GROUND_TYPES_SIMPLE);
+    const topography = JSON.parse(import.meta.env.VITE_TOPOGRAPHY);
+    const datingsList = JSON.parse(import.meta.env.VITE_DATINGS_FULL);
+    const titlesList = JSON.parse(import.meta.env.VITE_TITLES_FULL);
+
+
+
     return {
       windowWidth: width,
       windowHeight: height,
       curYear: year,
+
+      doneThings,
+      landUsage,
+      groundTypes,
+      topography,
+      datingsList,
+      titlesList,
     };
   },
 
@@ -544,29 +834,81 @@ export default {
         branchOffice: '',
         year: '',
         number: '',
+        places: '',
         lastChanged: '',
         lastSync: '',
-        places: [],
-        editor: [],
-        camera: '',
+        editor: '',
+        camera: null,
+
         
-        archiveNumber: '',
-        shortTitle: '',
-        title: '',
         right: '',
         rightTo: '',
         up: '',
         upTo: '',
+        community1: '',
+        community2: '',
+        community3: '',
+        district1: '',
+        district2: '',
+        district3: '',
         areaDescr: '',
+
+        designation: '',
+        archiveNumber: '',
+        shortTitle: '',
+
         dateFrom: '',
         dateTo: '',
         siteDirector: '',
         excavationFirm: '',
-        doneThing: '',
+
+        doneMeasures: {
+          excavation: false,
+          noMeasure: false,
+          monitoring: false,
+          paleoInvestigation: false,
+          changeOfLocation: false,
+          survey: false,
+          photoDocumentation: false,
+          bdRecording: false,
+          observation: false,
+          technicalReport: false,
+          buildingSurvey: false,
+        },
+        prospection: {
+          roughInspection: false,
+          detailedInspection: false,
+          individualFindMeasurement: false,
+          geoarchaeologicalInvestigation: false,
+          sondages: false,
+          noneProspect: false,
+          evalElevationData: false,
+          evalAerialImage: false,
+          metalDetecting: false,
+          geophysicsElectrical: false,
+          geophysicsMagnetics: false,
+          geophysicsOther: false,
+        },
+
+        conditionsProspect: '',
+
         landUsageHist: '',
-        histLandUsageYear: 0,
+        landUsageHistYear: 0,
         landUsageCur: '',
-        conditions: '',
+
+        resultMeasures: { 
+          title1: '',
+          title3: '',
+          title4: '',
+          title2: '',
+          title5: '',
+          dating1: '',
+          dating2: '',
+          dating3: '',
+          dating4: '',
+          dating5: '',
+        },
+
         groundType: [],
         topography: [],
         archiveMaterial: {
@@ -607,18 +949,6 @@ export default {
       hasUnsavedChanges: false,
       componentHasLoaded: false,
 
-      datingsList: [],
-      editorsList: [],
-      titlesList: [],
-      doneThings: [],
-      landUsage: [],
-      
-      groundTypes: [],
-      groundTypeModel: [],
-      
-      topography: [],
-      topographyModel: [],
-
       doneThingModel: '',
       landUsageHistModel: '',
       landUsageCurModel: '',
@@ -658,12 +988,6 @@ export default {
    * Initialize data from localDB to the reactive Vue.js data
    */
   async created() {
-    this.doneThings = JSON.parse(import.meta.env.VITE_DONE_THINGS);
-    this.landUsage = JSON.parse(import.meta.env.VITE_LAND_USAGE);
-    this.groundTypes = JSON.parse(import.meta.env.VITE_GROUND_TYPES_SIMPLE);
-    this.topography = JSON.parse(import.meta.env.VITE_TOPOGRAPHY);
-    this.datingsList = JSON.parse(import.meta.env.VITE_DATINGS_FULL);
-    this.titlesList = JSON.parse(import.meta.env.VITE_TITLES_FULL);
     
     await fromOfflineDB.syncLocalDBs()
       .catch(err => console.error(err));
@@ -719,7 +1043,7 @@ export default {
       if (this.doneThingModel != '' && this.doneThingModel != undefined){
         inputActivity.doneThing = this.doneThingModel.title;
       }
-       if (this.landUsageHistModel != '' && this.landUsageHistModel != undefined){
+      if (this.landUsageHistModel != '' && this.landUsageHistModel != undefined){
         inputActivity.landUsageHist = this.landUsageHistModel.title;
       }
       if (this.landUsageCurModel != '' && this.landUsageCurModel != undefined){
@@ -926,4 +1250,9 @@ export default {
 
 </script>
 
-<style scoped></style>
+<style scoped>
+  .vertical-text {
+    transform: rotate(180deg);
+    writing-mode: vertical-lr;
+  }
+</style>

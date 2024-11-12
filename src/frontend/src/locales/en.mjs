@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.11.2024 17:11:31
+ * Last Modified: 07.11.2024 15:12:48
  * Modified By: Julian Hardtung
  * 
  * Description: english translations
@@ -165,6 +165,12 @@ export default {
   prev: "Previous",
   step: "Step {nr}",
   exportError: "Export Error",
+  lvrAmt: "LVR Office for Archaeological Heritage Conservation in the Rhineland.",
+  formSheet1: "Formsheet 1",
+  community: "Community",
+  district: "Disctrict",
+  designation: "Designation",
+  prospection: "Prospection",
 
   // Phrases
   addMsg: "Add new {msg}",
@@ -287,5 +293,5 @@ export default {
   problemForBodeonButCanExport:
     "A problem with the export, but this can still be imported into BODEON.",
   canNotImportForBodeon: "This data can not be imported into BODEON.",
-  showOnlyCritialErrors: "Show only critical errors that hinder a BODEON import."
+  showOnlyCritialErrors: "Show only critical errors that hinder a BODEON import.",
 };
