@@ -957,16 +957,21 @@
         <!-- > > > > > > ----- < < < < < < -->
         <div>
           
-          <!-- Modus Wechseln -->
+          <!-- Glossar -->
           <v-row no-gutters style="width:fit-content;">
-            <v-card class="d-flex align-center justify-center tile" height="100" width="400">
-              <v-btn class="pa-7 px-14 button" v-on:click="changeEditor">Modus wechsel</v-btn>
+            <v-card class="pa-1 d-flex align-center justify-center tile" height="100" width="400">
+              <v-btn class="pa-7 px-14 glossar__button" height="100%" width="100%" v-on:click="openGlossar">
+                Glossar
+              </v-btn>
             </v-card>
           </v-row>
   
-          <!-- Placeholder -->
+          <!-- Editor Wechseln -->
           <v-row no-gutters style="width:fit-content;">
-            <v-card class="d-flex align-center justify-center tile" height="100" width="400">
+            <v-card class="pa-1 d-flex align-center justify-center tile" height="100" width="400">
+              <v-btn class="pa-7 px-14 modus_wechseln__button" v-on:click="changeEditor" height="100%" width="100%">
+                {{ currentMode }} - Editor
+              </v-btn>
             </v-card>
           </v-row>
             
@@ -978,7 +983,7 @@
                     
                   <!-- Unit Titel -->
                   <v-row no-gutters class="pb-2" align-content="center">
-                    <v-card class="infobereich__titel_default" width="100%" height="50">
+                    <v-card width="100%" height="50">
                       <v-card-title class="justify-center">{{ selectedNodeName }}</v-card-title>
                     </v-card>
                   </v-row>
@@ -992,7 +997,7 @@
                     
                   <!-- Unit Attribute -->
                   <v-row no-gutters class="pb-3">
-                    <v-card class="py-0 infobreich__attributes_base_default" :max-height="windowHeight - 795" width="100%">
+                    <v-card class="py-0" :max-height="windowHeight - 795" width="100%">
                       <v-list class="py-1 pa-1 infobereich__attributes_list" max-height="100%">
                           
                         <!-- UnitName -->
@@ -1158,7 +1163,7 @@
                           </v-row>
                         </v-card>
                           
-                          <!-- Gruppenzugehörigkeit -->
+                        <!-- Gruppenzugehörigkeit -->
                         <v-card class="py-2 infobereich__attributes_groups" width="100%">
                           <v-row no-gutters class="py-0" align-content="center">
                             <v-card class="pl-3 pb-1 infobereich__attributes_groups_title" elevation=0>Unit Gruppenzugehörigkeit:</v-card>
@@ -1259,8 +1264,7 @@
   /** > > > > > > ---- < < < < < < **/
   /** > > > > > > Left < < < < < < **/
   /** > > > > > > ---- < < < < < < **/
-  // ----Component----> Glossar
-  // ----Component----> Help
+  // ----Component----> Hilfe
   var createHelpDialog = ref(false)
   var aktiveHelpPageComponent = ref({
     name: "",
@@ -1305,9 +1309,9 @@
   /** > > > > > > ----- < < < < < < **/
   /** > > > > > > Right < < < < < < **/
   /** > > > > > > ----- < < < < < < **/
+  // ----Component----> Glossar
   // ----Component----> Modus wechseln
-  var currentMode = ref("graph") // string
-  // ----Component----> Placeholder
+  var currentMode = ref("Graph") // string
   // ----Component----> Infobereich
   var infoCardDisabled = ref(true); // boolean
   var createDeleteNodeDialog = ref(false) // boolean
@@ -1675,7 +1679,7 @@
         changeUnitsListsButtonStyle( nodesInGraph[a].id, "selected" )
         nodesInGraph[a].data.nodeStyle = "clicked_" + nodesInGraph[a].type;
         nodesInGraph[a].data.selected = true;
-      } else if( currentlySelectedNodeID != "" && currentMode.value != "3d" ) {
+      } else if( currentlySelectedNodeID != "" && currentMode.value != "3D" ) {
         nodesInGraph[a].data.nodeStyle = "notClicked_" + nodesInGraph[a].type;
         nodesInGraph[a].data.selected = false;
       }
@@ -1691,14 +1695,14 @@
    * 
    */
   watch(currentMode, whichMode => {
-    if( whichMode == "graph" ){
+    if( whichMode == "Graph" ){
       enviromentParameter.renderer.setAnimationLoop(null);
       changeVisibility("canvas_graph", "visible")
       changeVisibility("units_graphTools", "visible")
       
       changeVisibility("canvas_3d", "notVisible")
       changeVisibility("units_3dTools", "notVisible")
-    } else if( whichMode == "3d" ){
+    } else if( whichMode == "3D" ){
       enviromentParameter.renderer.setAnimationLoop(animate);
       changeVisibility("canvas_3d", "visible")
       changeVisibility("units_3dTools", "visible")
@@ -3070,20 +3074,6 @@
     }
   }
 
-  
-
-
-
-  /**
-   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-   * TODO
-   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-   * 
-   */
-  function getHelp() {
-    // TODO
-  }
-
 
 
   
@@ -3109,10 +3099,10 @@
    * 
    */
   function changeEditor() {
-    if( currentMode.value == "3d" ){
-      currentMode.value = "graph";
-    } else if( currentMode.value == "graph" ){
-      currentMode.value = "3d";
+    if( currentMode.value == "3D" ){
+      currentMode.value = "Graph";
+    } else if( currentMode.value == "Graph" ){
+      currentMode.value = "3D";
     }
   }
 
