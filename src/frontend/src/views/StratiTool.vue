@@ -2,7 +2,7 @@
  Created Date: 23.09.2024 10:14:23
  Author: Tobias Mink
  
- Last Modified: 06.11.2024 19:52:05
+ Last Modified: 12.11.2024 13:56:54
  Modified By: Tobias Mink
  
  Description: 
@@ -19,17 +19,623 @@
         <!-- > > > > > > ---- < < < < < < -->
         <div>
 
-          <!-- Glossar & Hilfe -->
+          <!-- Hilfe -->
           <v-row no-gutters style="width: fit-content">
-            <v-card class="d-flex align-center justify-center tile" height="100" width="400">
-              <v-row no-gutters>
-                <v-col class="d-flex align-center justify-center">
-                  <v-btn class="button" width="150" height="50" v-on:click="openGlossar">Glossar</v-btn>
-                </v-col>
-                <v-col class="d-flex align-center justify-center">
-                    <v-btn class="button" width="150" height="50" v-on:click="getHelp">Hilfe</v-btn>
-                </v-col>
-              </v-row>
+            <v-card class="pa-1 tile" height="100" width="400">
+              <v-btn class="pa-7 px-14 help__button" height="100%" width="100%" @click="createHelpDialog = true" variant="text">
+                Hilfe
+              </v-btn>
+              <v-dialog v-model="createHelpDialog" persistent >
+                <v-card :height="windowHeight" class="tile">
+                  
+                  <!-- Pages navigation -->
+                  <v-row no-gutters style="max-height: 6%;">
+                    <!-- Hilfe Überschrift -->
+                    <v-col cols="11">
+                      <v-card class="tile d-flex align-center justify-center" height="100%">
+                        <v-card-Title>Hilfe</v-card-Title>
+                      </v-card>
+                    </v-col>
+                    
+                    <!-- Verlassen-button -->
+                    <v-col cols="1">
+                      <v-card class="pa-2 tile d-flex justify-center" height="100%">
+                        <v-btn icon color="blue" @click="createHelpDialog = false">
+                          <v-icon>mdi-close-circle</v-icon>
+                        </v-btn>
+                      </v-card>
+                    </v-col>
+                  </v-row>
+                  
+                  <!-- Pages -->
+                  <v-row no-gutters style="max-width: 100%;">
+                    
+                    <!-- Start Page -->
+                    <v-card id="helpOverview" class="tile d-flex align-center justify-center help_element__visible" :height="windowHeight - 131" width="100%">
+                      <v-card rounded="0" height="90%" width="90%">
+                        
+                        <!-- Header -->
+                        <v-card rounded="0" class="d-flex align-center justify-center text-h5 help__navigation" height="6%" width="100%">
+                          Header
+                        </v-card>
+                        
+                        <!-- Components -->
+                        <v-row no-gutters style="height: 88%">
+                          <v-col cols="3">
+                            <v-card class="d-flex align-center justify-center help__navigation" rounded="0" height="10%" width="100%">
+                              <v-card-title class="text-h5">
+                                Hilfe
+                              </v-card-title>
+                            </v-card>
+                            <v-btn class="text-h5 help__navigation" rounded="0" height=90% width="100%" @click="changeHelpPageComponent('module')">
+                              Module
+                            </v-btn>
+                          </v-col>
+                          <v-col>
+                            <v-btn class="text-h5 help__navigation" rounded="0" height="10%" width="100%" @click="changeHelpPageComponent('harrisMatrixTools')">
+                              Harris-Matrix - Tools
+                            </v-btn>
+                            <v-btn class="text-h5 help__navigation" rounded="0" height="10%" width="100%" @click="changeHelpPageComponent('graph3dTools')">
+                              Graph/3D - Tools
+                            </v-btn>
+                            <v-btn class="text-h5 help__navigation" rounded="0" height="80%" width="100%" @click="changeHelpPageComponent('graph3dEditor')">
+                              Graph/3D - Editor
+                            </v-btn>
+                          </v-col>
+                          <v-col cols="3">
+                            <v-btn class="text-h5 help__navigation" rounded="0" height="10%" width="100%" @click="changeHelpPageComponent('glossar')">
+                              Glossar
+                            </v-btn>
+                            <v-btn class="text-h5 help__navigation" rounded="0" height="10%" width="100%" @click="changeHelpPageComponent('changeEditor')">
+                              Editor wechseln
+                            </v-btn>
+                            <v-btn class="text-h5 help__navigation" rounded="0" height="80%" width="100%" @click="changeHelpPageComponent('infoCard')">
+                              Infobereich
+                            </v-btn>
+                          </v-col>
+                        </v-row>
+                        
+                        <!-- Footer -->
+                        <v-card rounded="0" class="d-flex align-center justify-center text-h5 help__navigation" height="6%" width="100%">
+                          Footer
+                        </v-card>
+                        
+                      </v-card>
+                    </v-card>
+
+                    <!-- Detail Ansicht -->
+                    <v-card id="helpDetailView" class="pa-3 tile help_element__notVisible" :height="windowHeight - 131" width="100%">
+                      <v-card class="d-flex" height="100%" rounded="0">
+                        <v-row no-gutters style="height: 100%">
+                          <v-col cols="3">
+                            
+                            <!-- Komponente -->
+                            <v-row no-gutters style="height: 55%">
+                              <v-card class="d-flex align-center justify-center" variant="text" rounded="0" height="100%" width="100%">
+                                <v-card class="tile" height="100%" width="100%" variant="text">
+                                  
+                                  <!-- Komponente Header -->
+                                  <v-card-title class="d-flex align-center justify-center">
+                                    Komponente
+                                  </v-card-title>
+
+                                  <!-- Komponente: Module -->
+                                  <v-card id="helpComponentModule" class="d-flex align-center justify-center help_element__notVisible" height="91%" width="100%" variant="text" >
+                                    <v-card class="pa-1 hollow" height="100%" width="50%">
+                                      <v-card class="pa-2 tile d-flex align-center justify-center" height="12%">
+                                        <v-row no-gutters>
+                                          <v-col cols="3" class="d-flex align-center justify-center">
+                                            <v-btn variant="text" width="50%" height="100%" icon="mdi-arrow-left-bold"></v-btn>
+                                          </v-col>
+                                          <v-col cols="6">
+                                            <v-card-title width="100%" height="100%" class="d-flex align-center justify-center">{{ aktiveHelpPageSubcomponentName  }}</v-card-title>
+                                          </v-col>
+                                          <v-col cols="3" class="d-flex align-center justify-center">
+                                            <v-btn variant="text" width="50%" height="100%" icon="mdi-arrow-right-bold" ></v-btn>
+                                          </v-col>
+                                        </v-row>
+                                      </v-card>
+                                      <v-card class="hollow" height="88%" width="100%">
+                                        
+                                        <!-- Screenshot-Modul -->
+                                        <v-card id="helpSubcomponentModulesScreenshotContainer" class="help_element__visible" height="100%" width="100%">
+                                          <v-card id="helpScreenshot" class="help_subcomponend__notFocus" height="100%" width="100%">
+                                            <v-card class="screenshot_module__base" height="100%" width="100%">
+                                              <!-- Image name -->
+                                              <v-text>Dateiname:</v-text>
+                                              <v-text-field hide-details class="pa-1 mb-5" v-model="imageFileName"></v-text-field>
+                                                
+                                              <!-- Image format -->
+                                              <v-text>Dateinformat:</v-text>
+                                              <v-row no-gutters style="height: 50px;">
+                                                <v-col class="px-1">
+                                                  <v-btn class="infobereich__attributes_type_title_button" width="100%" height="100%">
+                                                    PNG
+                                                  </v-btn>
+                                                </v-col>
+                                                <v-col class="px-1">
+                                                  <v-btn class="infobereich__attributes_type_title_button" width="100%" height="100%">
+                                                    JPEG
+                                                  </v-btn>
+                                                </v-col>
+                                                <v-col class="px-1">
+                                                  <v-btn class="infobereich__attributes_type_title_button" width="100%" height="100%">
+                                                    SVG
+                                                  </v-btn>
+                                                </v-col>
+                                              </v-row>
+                                            </v-card>
+                                          </v-card>
+                                        </v-card>
+                                        
+                                        <!-- Group-Modul -->
+                                        <v-card id="helpSubcomponentModulesGroupContainer" class="help_element__notVisible" height="100%" width="100%">
+                                          <v-card id="helpGroup" class="help_subcomponend__notFocus" height="100%" width="100%">
+                                            <v-card class="group_module__base d-flex align-center justify-center" height="100%" width="271">
+                                              <img src="@/components/graph-editor-components/Images/work_in_progress_background.jpg" height="490">
+                                            </v-card>
+                                          </v-card>
+                                        </v-card>
+                                      
+                                        <!-- View-Modul -->
+                                        <v-card id="helpSubcomponentModulesViewContainer" class="help_element__notVisible" height="100%" width="100%">
+                                          <v-card id="helpView" class="help_subcomponend__notFocus" height="100%" width="100%">
+                                            <v-card class="view_module__base d-flex align-center justify-center" height="100%" width="271">
+                                              <img src="@/components/graph-editor-components/Images/work_in_progress_background.jpg" height="490">
+                                            </v-card>
+                                          </v-card>
+                                        </v-card>
+                                      
+                                        <!-- Exp/Imp-Modul -->
+                                        <v-card id="helpSubcomponentModulesExpImpContainer" class="help_element__notVisible" height="100%" width="100%">
+                                          <v-card id="helpExpImp" class="help_subcomponend__notFocus" height="100%" width="100%">
+                                            <v-card class="pa-2 exp-imp_module__base" height="100%" width="271">
+                                              <v-row no-gutters>
+                                                
+                                                <!-- Export -->
+                                                <v-card class="pa-2" height="223" width="100%" variant="text" style="border: 1px; border-style: solid; border-color: white;">
+                                                  <v-card-title class="d-flex align-center justify-center pa-0 pb-2" >
+                                                    Export
+                                                  </v-card-title>
+                                                  <v-btn class="infobereich__attributes_type_title_button" width="100%" height="50">
+                                                    Press Me
+                                                  </v-btn>
+                                                </v-card>
+                                                
+                                              </v-row>
+                                              <v-row no-gutters>
+                                                
+                                                <!-- Import -->
+                                                <v-card class="pa-2" height="223" width="100%" variant="text" style="border: 1px; border-style: solid; border-color: white;">
+                                                  <v-card-title class="d-flex align-center justify-center pa-0 pb-2">
+                                                    Import
+                                                  </v-card-title>
+                                                  <v-btn class="infobereich__attributes_type_title_button" width="100%" height="50">
+                                                    Press Me
+                                                  </v-btn>
+                                                </v-card>
+                                                
+                                              </v-row>
+                                            </v-card>
+                                          </v-card>
+                                        </v-card>
+                                      
+                                        <!-- Filter -->
+                                        <v-card id="helpSubcomponentModulesFilterContainer" class="help_element__notVisible" height="100%" width="100%">
+                                          <v-card id="helpFilter" class="help_subcomponend__notFocus" height="100%" width="100%">
+                                            <v-card class="filter_module__base d-flex align-center justify-center" height="100%" width="271">
+                                              <img src="@/components/graph-editor-components/Images/work_in_progress_background.jpg" height="490">
+                                            </v-card>
+                                          </v-card>
+                                        </v-card>
+                                        
+                                        <!-- Timemodel -->
+                                        <v-card id="helpSubcomponentModulesTimemodelContainer" class="help_element__notVisible" height="100%" width="100%">
+                                          <v-card id="helpTimemodel" class="help_subcomponend__notFocus" height="100%" width="100%">
+                                            <v-card class="timemodel_module__base d-flex align-center justify-center" height="100%" width="272">
+                                              <img src="@/components/graph-editor-components/Images/work_in_progress_background.jpg" height="490">
+                                            </v-card>
+                                          </v-card>
+                                        </v-card>
+                                          
+                                      </v-card>
+                                    </v-card>
+                                  </v-card>
+
+                                  <!-- Komponente: Harris-Matrix - Tools -->
+                                  <v-card id="helpComponentHarrisMatrixTools" height="92.2%" width="100%" variant="text" class="px-2 d-flex align-center justify-center help_element__notVisible">
+                                    <v-card class="tile" height="106px" width="100%" variant="text">
+                                      <v-card id="helpSubcomponentHarrisMatrixToolsContainer" class="help_element__visible" height="100%" width="100%" variant="text">
+                                        <v-row no-gutters>
+
+                                          <!-- Harris-Matrix speichern -->
+                                          <v-col cols="6">
+                                            <v-card id="helpSaveGraph" class="help_subcomponend__notFocus" height="100%" variant="text">
+                                              <v-card class="px-5 py-0 units__graph_base" variant="text">
+                                                <v-col class="pa-0" align="center">
+                                                
+                                                  <!-- Subcomponent title -->
+                                                  <v-card class="pt-1" variant="text">
+                                                    <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
+                                                      Harris-Matrix Speichern
+                                                    </v-card-title>
+                                                  </v-card>
+                                                  
+                                                  <!-- Save -->
+                                                  <v-card class="pt-1 my-3" height="fit-content" variant="text">
+                                                    <v-btn width="100%">
+                                                      Speichern
+                                                    </v-btn>
+                                                  </v-card>
+                                                </v-col>
+                                              </v-card>
+                                            </v-card>
+                                          </v-col>
+
+                                          <!-- Arbeitsschritte wechseln -->
+                                          <v-col cols="6">
+                                            <v-card id="helpChangeProcessingStep" class="help_subcomponend__notFocus" height="100%" variant="text">
+                                              <v-card class="units__graph_base" variant="text">
+                                                <v-col class="pa-0" align="center">
+                                                  
+                                                  <!-- Subcomponent title -->
+                                                  <v-card class="pt-1" variant="text">
+                                                    <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
+                                                      Arbeitsschritte wechseln
+                                                    </v-card-title>
+                                                  </v-card>
+                                                  <v-card class="pt-2 nodes" variant="text" width="100%">
+                                                    <v-row no-gutters class="mb-4 d-flex justify-center">
+                                                        
+                                                      <!-- Back -->
+                                                      <v-col cols="2">
+                                                        <v-card variant="text">
+                                                          <v-card-text class="pa-0" style="text-align: center; line-height: 100%;">
+                                                            zurück
+                                                          </v-card-text>
+                                                        </v-card>
+                                                        <v-btn :disabled="true" variant="text" width="25%" height="40%" icon="mdi-arrow-u-left-top"></v-btn>
+                                                      </v-col>
+                                                        
+                                                      <!-- Forward -->
+                                                      <v-col cols="2">
+                                                        <v-card variant="text">
+                                                          <v-card-text class="pa-0" style="text-align: center; line-height: 100%;">
+                                                            vor
+                                                          </v-card-text>
+                                                        </v-card>
+                                                        <v-btn :disabled="true" variant="text" width="25%" height="40%" icon="mdi-arrow-u-right-top"></v-btn>
+                                                      </v-col>
+                                                        
+                                                    </v-row>
+                                                  </v-card>
+                                                </v-col>
+                                                               
+                                              </v-card>
+                                            </v-card>
+                                          </v-col>
+                                          
+                                        </v-row>
+                                      </v-card>
+                                    </v-card>
+                                  </v-card>
+
+                                  <!-- Komponente: Graph/3D - Tools -->
+                                  <v-card id="helpComponentGraph3dTools" height="91%" width="100%" variant="text" class="px-2 d-flex align-center justify-center help_element__notVisible">
+                                    <v-card class="tile" height="106px" width="100%" variant="text">
+                                      
+                                      <!-- 3D - Tools -->
+                                      <v-card id="helpSubcomponent3dToolsContainer" class="help_element__notVisible" height="100%" width="100%" variant="text">
+                                        <v-row no-gutters>
+                                          
+                                          <!-- Subkomponente: Unit Liste -->
+                                          <v-col cols="12">
+                                            <v-card id="helpUnitList" class="help_subcomponend__notFocus" height="100%" variant="text" width="100%">
+                                              <v-card class="pt-1" variant="text">
+                                                <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
+                                                  Auflistung aller Units
+                                                </v-card-title>
+                                              </v-card>
+                                              <v-card class="pt-2 pb-9" variant="text">
+                                                <v-slide-group mandatory show-arrows="always"></v-slide-group>
+                                              </v-card>
+                                            </v-card>
+                                          </v-col>
+                                          
+                                        </v-row>
+                                      </v-card>
+
+                                      <!-- Graph - Tools -->
+                                      <v-card id="helpSubcomponentGraphToolsContainer" class="help_element__visible" height=100% width="100%" variant="text">
+                                        <v-row no-gutters>
+                                            
+                                          <!-- Subkomponente: Neue Unit erstellen -->
+                                          <v-col cols="4">
+                                            <v-card id="helpUnitCreateUnit" class="help_subcomponend__notFocus" variant="text" height="100%">
+                                              <v-card class="units__graph_base" variant="text">
+                                                <v-col class="pa-0" align="center">
+                                                  <v-card class="pt-1 mb-1" variant="text">
+                                                    <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
+                                                      Neue Unit erstellen
+                                                    </v-card-title>
+                                                  </v-card>
+                                                  <v-card class="nodes mb-2" width="fit-content" variant="text">
+                                                    <v-row no-gutters style="width: fit-content">
+                                                      <v-col align="center">
+                                                        <v-card height="fit-content" width="fitcontent" variant="text">
+                                                          <v-card-text class="pa-1 deposit__dragable_name" style="text-align: center; line-height: 100%;">
+                                                            Deposit
+                                                          </v-card-text>
+                                                        </v-card>
+                                                        <div class="deposit__dragable">D</div>
+                                                      </v-col>
+                                                      <v-col align="center">
+                                                        <v-card class="d-flex align-center justify-center" height="fit-content" width="fitcontent" variant="text">
+                                                          <v-card-text class="pa-1 interface__dragable_name" style="text-align: center; line-height: 100%;">
+                                                            Interface
+                                                          </v-card-text>
+                                                        </v-card>
+                                                        <div class="interface__dragable">I</div>
+                                                      </v-col>
+                                                    </v-row>
+                                                  </v-card>
+                                                </v-col>
+                                              </v-card>
+                                            </v-card>
+                                          </v-col>
+                                            
+                                          <!-- Subkomponente: Unit suchen -->
+                                          <v-col cols="4">
+                                            <v-card id="helpUnitSearch" class="help_subcomponend__notFocus" height="100%" variant="text">
+                                              <v-card class="units__graph_base" variant="text" height="100%">
+                                                <v-col class="pa-0" align="center">
+                                                  <v-card class="pt-1 mb-1" variant="text">
+                                                    <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
+                                                      Unit suchen
+                                                    </v-card-title>
+                                                  </v-card>
+                                                  <v-combobox class="mb-2" style="height: 52px; width: 150px" hide-selected :items="unitSearchDropDownMenueItems" persistent-hint :hide-no-data="true" v-model="unitSearchInput"></v-combobox>
+                                                </v-col>
+                                              </v-card>
+                                            </v-card>
+                                          </v-col>
+                                            
+                                          <!-- Subkomponente: Unit aufräumen -->
+                                          <v-col cols="4">
+                                            <v-card id="helpUnitCleanUp" class="help_subcomponend__notFocus" height="100%" variant="text">
+                                              <v-card class="px-5 units__graph_base" variant="text" height="100%">
+                                                <v-col class="pa-0" align="center">
+                                                  <v-card class="pt-1 mb-3" variant="text">
+                                                    <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
+                                                      Unit aufräumen
+                                                    </v-card-title>
+                                                  </v-card>
+                                                  <v-btn >CleanUp</v-btn>
+                                                </v-col>
+                                              </v-card>
+                                            </v-card>
+                                          </v-col>
+                                            
+                                        </v-row>
+                                      </v-card>
+                                      
+                                    </v-card>
+                                  </v-card>
+
+                                  <!-- Komponente: Graph/3D - Editor -->
+                                  <v-card id="helpComponentGraph3dEditor" height="92.2%" width="100%" variant="text" class="px-2 d-flex align-center justify-center help_element__notVisible">
+                                    <v-card class="pb-15 d-flex align-center justify-center" height="100%" width="100%" variant="text">
+                                      <v-card id="helpGraphEditorContainer" class="tile help_element__visible" variant="text">
+                                        <v-card id="helpGraphEditor" class="tile help_componend__notFocus" variant="text">
+                                          <v-img width="550" src="assets/stratiTool/helpPages/graphEditor.jpg" ></v-img>
+                                        </v-card>
+                                      </v-card>
+                                      <v-card id="help3dEditorContainer" class="tile help_element__notVisible" variant="text">
+                                        <v-card id="help3dEditor" class="tile help_componend__notFocus" variant="text">
+                                          <v-img width="550" src="assets/stratiTool/helpPages/3dEditor.jpg" ></v-img>
+                                        </v-card>
+                                      </v-card>
+                                    </v-card>
+                                  </v-card>
+
+                                  <!-- Komponente: Glossar -->
+                                  <v-card id="helpComponentGlossar" height="92.2%" width="100%" variant="text" class="px-2 d-flex align-center justify-center help_element__notVisible">
+                                    <v-card id="helpGlossarContainer" class="help_element__visible" variant="text">
+                                      <v-card id="helpGlossar" class="help_componend__notFocus" variant="text">
+                                        <v-btn class="pa-7 px-14 glossar__button" height="100%" width="400">
+                                          Glossar
+                                        </v-btn>
+                                      </v-card>
+                                    </v-card>
+                                  </v-card>
+
+                                  <!-- Komponente: Editor wechsel -->
+                                  <v-card id="helpComponentChangeEditor" height="92.2%" width="100%" variant="text" class="px-2 d-flex align-center justify-center help_element__notVisible">
+                                    <v-card id="helpChangeEditorContainer" class="help_element__visible" variant="text">
+                                      <v-card id="helpChangeEditor" class="help_componend__notFocus" variant="text">
+                                        <v-btn class="pa-7 px-14 modus_wechseln__button" height="100%" width="400">
+                                          "Name des aktuellen Editors" - Editor
+                                        </v-btn>
+                                      </v-card>
+                                    </v-card>
+                                  </v-card>
+
+                                  <!-- Komponente: Infobereich -->
+                                  <v-card id="helpComponentInfoCard" height="91%" width="100%" variant="text" class="px-2 d-flex align-center justify-center help_element__notVisible">
+                                    <v-card id="helpInfoCardContainer" class="pa-1 hollow help_element__visible" height="100%" width="50%">
+                                      <v-card id="infoCard" class="pa-2 help_componend__infobereich__base" height="100%" width="100%">
+                                        <v-col class="pa-0">
+                                            
+                                          <!-- Unit Titel -->
+                                          <v-row no-gutters class="pb-2">
+                                            <v-card id="helpInfoCardUnitTitle" class="help_subcomponend__notFocus d-flex" width="100%" height="35">
+                                              <v-card-title class="d-flex align-center justify-center">Unit Name</v-card-title>
+                                            </v-card>
+                                          </v-row>
+                                            
+                                          <!-- Unit Bild -->
+                                          <v-row no-gutters class="pb-3">
+                                            <v-card id="helpInfoCardUnitImage" class="help_subcomponend__notFocus" width="100%" height="230">
+                                              <v-card  class="pa-2 infobereich__image_outside " width="100%" height="100%">
+                                                <v-card class="infobereich__image_inside" width="100%" height="200"></v-card>
+                                              </v-card>
+                                            </v-card>
+                                          </v-row>
+                                            
+                                          <!-- Unit Attribute -->
+                                          <v-row no-gutters class="pb-3">
+                                            <v-card id="helpInfoCardUnitAttributes" class="py-0 help_subcomponend__notFocus" height="188" width="100%">
+                                              <v-card class="py-1 pa-1 infobereich__attributes_list" height="100%"></v-card>
+                                            </v-card>
+                                          </v-row>
+                                          
+                                          <!-- Unit löschen -->
+                                          <v-row no-gutters>
+                                            <v-card id="helpInfoCardUnitDelete" class="help_subcomponend__notFocus" height="40" width="100%">
+                                              <v-btn class="infobereich__delete_unit_button" height="100%" width="100%">
+                                                Unit Löschen
+                                              </v-btn>
+                                            </v-card>
+                                          </v-row>
+                                          
+                                        </v-col>
+                                      </v-card>
+                                    </v-card>
+                                  </v-card>
+                                  
+                                </v-card>
+                              </v-card>
+                            </v-row>
+                            
+                            <!-- Subkomponenten -->
+                            <v-row no-gutters style="height: 45%">
+                              <v-card class="pa-2 tile" rounded="0" height="100%" width="100%">
+                                
+                                <!-- Subkomponente Header -->
+                                <v-card-title class="d-flex align-center justify-center">
+                                  Subkomponenten
+                                </v-card-title>
+                                
+                                <!-- Subkomponenten-Liste -->
+                                <v-list class="px-2 tile" max-height="90%" min-height="60%" min-width="100%" max-width="100%">
+                                  <v-list-item class="pb-1 px-0" v-for="n in aktiveHelpPageSubcomponents" :key="n">
+                                    <v-btn :id="n.id + 'Button'" class="help_subcomponent_button__notClicked" height="100" width="100%" @click="changeHelpPageSubcomponent(n)">
+                                      {{ n.name }}
+                                    </v-btn>
+                                  </v-list-item>
+                                </v-list>
+                                
+                              </v-card>
+                            </v-row>
+
+                          </v-col>
+                          <v-col>
+                            
+                            <!-- Name und Beschreibung der Komponente und Menü -->
+                            <v-row no-gutters style="height: 35%">
+                              
+                              <!-- Name und Beschreibung der Komponente -->
+                              <v-col cols="8">
+                                <v-card class="tile" rounded="0" height="100%" width="100%">
+                                  <v-card class="tile" height="100%" width="100%" rounded="0">
+                                    <v-card-title class="d-flex align-center justify-center text-h4">
+                                      {{ aktiveHelpPageComponent.name }}
+                                    </v-card-title>
+                                    <v-text class="px-5 d-flex align-center justify-center text-h6">{{ aktiveHelpPageComponent.description }}</v-text>
+                                  </v-card>
+                                </v-card>
+                              </v-col>
+                              
+                              <!-- Menü -->
+                              <v-col>
+                                <v-card class="px-3 pb-5 mx-auto flex-1-0 tile" rounded="0" height="100%" width="100%">
+                                  <v-card-title class="d-flex align-center justify-center">
+                                    Wählen sie eine Komponente aus
+                                  </v-card-title>
+                                  <v-card rounded="0" height="90%" width="100%" style="position: relative">
+                                    
+                                    <!-- Header -->
+                                    <v-row no-gutters style="height: 6%">
+                                      <v-card rounded="0" height="100%" width="100%" style="border: 1px; border-style: solid"></v-card>
+                                    </v-row>
+                                    
+                                    <!-- Components -->
+                                    <v-row no-gutters style="height: 88%">
+                                      <v-col cols="3" class="fill-height d-flex flex-column">
+                                        <v-card class="d-flex align-center justify-center help_componend__notFocus" rounded="0" height="10%" width="100%">
+                                          <v-card-title class="text-caption">
+                                            Hilfe
+                                          </v-card-title>
+                                        </v-card>
+                                        <v-btn id="helpSmallNavigationmodule" class="text-caption help_componend__notFocus" rounded="0" height=90% width="100%" @click="changeHelpPageComponent('module')">
+                                          Modul
+                                        </v-btn>
+                                      </v-col>
+                                      <v-col cols="6" class="fill-height d-flex flex-column">
+                                        <v-btn id="helpSmallNavigationharrisMatrixTools" class="text-caption help_componend__notFocus" rounded="0" height="10%" width="100%" @click="changeHelpPageComponent('harrisMatrixTools')">
+                                          Harris-Matrix - Tools
+                                        </v-btn>
+                                        <v-btn id="helpSmallNavigationgraph3dTools" class="text-caption help_componend__notFocus" rounded="0" height="10%" width="100%" @click="changeHelpPageComponent('graph3dTools')">
+                                          Graph/3D - Tools
+                                        </v-btn>
+                                        <v-btn id="helpSmallNavigationgraph3dEditor" class="text-caption help_componend__notFocus" rounded="0" height="80%" width="100%" @click="changeHelpPageComponent('graph3dEditor')">
+                                          Graph/3D - Editor
+                                        </v-btn>
+                                      </v-col>
+                                      <v-col cols="3" class="fill-height d-flex flex-column">
+                                        <v-btn id="helpSmallNavigationglossar" class="text-caption help_componend__notFocus" rounded="0" height="10%" width="100%" @click="changeHelpPageComponent('glossar')">
+                                          Glossar
+                                        </v-btn>
+                                        <v-btn id="helpSmallNavigationchangeEditor" class="text-caption help_componend__notFocus" rounded="0" height="10%" width="100%" @click="changeHelpPageComponent('changeEditor')">
+                                          Editor wechsel
+                                        </v-btn>
+                                        <v-btn id="helpSmallNavigationinfoCard" class="text-caption help_componend__notFocus" rounded="0" height="80%" width="100%" @click="changeHelpPageComponent('infoCard')">
+                                          Infobereich
+                                        </v-btn>
+                                      </v-col>
+                                    </v-row>
+                                    
+                                    <!-- Footer -->
+                                    <v-row no-gutters style="height: 6%">
+                                      <v-card rounded="0" height="100%" width="100%" style="border: 1px; border-style: solid"></v-card>
+                                    </v-row>
+                                    
+                                  </v-card>
+                                </v-card>
+                              </v-col>
+                              
+                            </v-row>
+                            
+                            <!-- Name und Beschreibung der Subkomponente -->
+                            <v-row no-gutters style="height: 65%">
+                              <v-card class="tile" rounded="0" height="100%" width="100%">
+
+                                <v-card id="defaultSubcomponentDescription" class="tile d-flex align-center justify-center help_element__visible" height="100%" width="100%" rounded="0">
+                                  <v-card-title class="text-h4">
+                                    Wählen sie eine der Subkomponenten aus um genauer Informationen zu erhalten
+                                  </v-card-title>
+                                </v-card>
+                                  
+                                <!-- Name und Beschreibung der Subkomponente -->
+                                <v-card id="subcomponentDescription" class="tile help_element__notVisible" height="100%" width="100%" rounded="0">
+                                  <v-card-title class="d-flex align-center justify-center text-h4">
+                                    {{ aktiveHelpPageSubcomponentName }}
+                                  </v-card-title>
+                                  <v-text class="pa-5 text-h6">{{ aktiveHelpPageSubcomponent.description }}</v-text>
+                                </v-card>
+
+                              </v-card>
+                            </v-row>
+                            
+                          </v-col>
+                        </v-row>
+                      </v-card>
+                    </v-card>
+                    
+                  </v-row>
+                  
+                </v-card>
+              </v-dialog>
             </v-card>  
           </v-row>
   
@@ -655,6 +1261,18 @@
   /** > > > > > > ---- < < < < < < **/
   // ----Component----> Glossar
   // ----Component----> Help
+  var createHelpDialog = ref(false)
+  var aktiveHelpPageComponent = ref({
+    name: "",
+    description: "",
+  }) // Object
+  var aktiveHelpPageSubcomponents = ref([]) // array<Object>
+  var aktiveHelpPageSubcomponent = ref({
+    id: "",
+    name: "",
+    description: "",
+  }) // Object
+  var aktiveHelpPageSubcomponentName = ref("")
   // ----Component----> Modules
   var graphModuleNames = ref(["Screenshot", "Group", "View", "Exp/Imp", "Filter", "Timemodel"]); // array<string>
   var graphAktiveModuleName = ref("Screenshot"); // string
@@ -772,11 +1390,240 @@
     clicked: "border: 4px; border-style: double; border-color: #1C2128; background-color: #485b7a;",
     notClicked: "border: 4px; border-style: double; border-color: #1C2128; background-color: #2a394f;",
   }
+  const helpComponents = {
+    module: {
+      component: {
+        id: "helpComponentModule",
+        name: "Module",
+        description: "Diese Komponente bietet allgemeine Funktionen für beispielsweise den Exp/Import des aktuellen Bearbeitungsstands oder die Erstellung einer momentanen Aufnahme eines eigens gewählten Ausschnits der Harris-Matrix. Der obere Bereich der Komponente ermöglicht über die beiden Pfeile durch die einzelnen Module zu wechseln und diese auszuwählen. Dabei wird der Name des aktuell ausgewählten Moduls in der Mitte zwischen beiden Pfeilen angezeigt. Der BEreich darunter beeinhaltet, je nach ausgewählten Modul, die gegebenene Funktionalität.",
+      },
+      subcomponents: [
+        {id: "helpScreenshot", containerID: "helpSubcomponentModulesScreenshotContainer", name: "Screenshot", description: "TODO", smallNavigationID: "helpSmallNavigationModule",},
+        {id: "helpGroup", containerID: "helpSubcomponentModulesGroupContainer", name: "Group", description: "TODO", smallNavigationID: "helpSmallNavigationModule",},
+        {id: "helpView", containerID: "helpSubcomponentModulesViewContainer", name: "View", description: "TODO", smallNavigationID: "helpSmallNavigationModule",},
+        {id: "helpExpImp", containerID: "helpSubcomponentModulesExpImpContainer", name: "Exp/Imp", description: "TODO", smallNavigationID: "helpSmallNavigationModule",},
+        {id: "helpFilter", containerID: "helpSubcomponentModulesFilterContainer", name: "Filter", description: "TODO", smallNavigationID: "helpSmallNavigationModule",},
+        {id: "helpTimemodel", containerID: "helpSubcomponentModulesTimemodelContainer", name: "Timemodel", description: "TODO", smallNavigationID: "helpSmallNavigationModule",},
+      ],
+      
+    },
+    harrisMatrixTools: {
+      component: {
+        id: "helpComponentHarrisMatrixTools",
+        name: "Harris-Matrix - Tools",
+        description: "TODO",
+      },
+      subcomponents: [
+        {id: "helpSaveGraph", containerID: "helpSubcomponentHarrisMatrixToolsContainer", name: "Harris-matrix speichern", description: "TODO"},
+        {id: "helpChangeProcessingStep", containerID: "helpSubcomponentHarrisMatrixToolsContainer", name: "Arbeitsschritt wechseln", description: "TODO"},
+      ],
+    },
+    graph3dTools: {
+      component: {
+        id: "helpComponentGraph3dTools",
+        name: "Graph/3D - Tools",
+        description: "TODO",
+      },
+      subcomponents: [
+        {id: "helpUnitCreateUnit", containerID: "helpSubcomponentGraphToolsContainer", name: "Neue Unit erstellen (Graph)", description: "TODO"},
+        {id: "helpUnitSearch", containerID: "helpSubcomponentGraphToolsContainer", name: "Unit suchen (Graph)", description: "TODO"},
+        {id: "helpUnitCleanUp", containerID: "helpSubcomponentGraphToolsContainer", name: "Unit aufräumen (Graph)", description: "TODO"},
+        {id: "helpUnitList", containerID: "helpSubcomponent3dToolsContainer", name: "Auflistung aller Units (3D)", description: "TODO"},
+      ],
+    },
+    graph3dEditor: {
+      component: {
+        id: "helpComponentGraph3dEditor",
+        name: "Graph/3D - Editor",
+        description: "TODO",
+      },
+      subcomponents: [
+        {id: "helpGraphEditor", containerID: "helpGraphEditorContainer", name: "Interaktion mit dem Graph", description: "TODO"},
+        {id: "help3dEditor", containerID: "help3dEditorContainer", name: "Interaktion mit 3D-Objekten", description: "TODO"},
+      ],
+    },
+    glossar: {
+      component: {
+        id: "helpComponentGlossar",
+        name: "Glossar",
+        description: "TODO",
+      },
+      subcomponents: [
+        {id: "helpGlossar", containerID: "helpGlossarContainer", name: "Bespaßigung ihrer Glossarität", description: "TODO"},
+      ],
+    },
+    changeEditor: {
+      component: {
+        id: "helpComponentChangeEditor",
+        name: "Editor wechseln",
+        description: "TODO",
+      },
+      subcomponents: [
+        {id: "helpChangeEditor", containerID: "helpChangeEditorContainer", name: "Wechsel zwischen beiden Editoren", description: "TODO"},
+      ],
+    },
+    infoCard: {
+      component: {
+        id: "helpComponentInfoCard",
+        name: "Infobereich",
+        description: "TODO",
+      },
+      subcomponents: [
+      {id: "helpInfoCardUnitTitle", containerID: "helpInfoCardContainer", name: "Name der Unit", description: "TODO"},
+      {id: "helpInfoCardUnitImage", containerID: "helpInfoCardContainer", name: "Bild der Unit", description: "TODO"},
+      {id: "helpInfoCardUnitAttributes", containerID: "helpInfoCardContainer", name: "Beschreibende Attribute der Unit", description: "TODO"},
+      {id: "helpInfoCardUnitDelete", containerID: "helpInfoCardContainer", name: "Löschen einer Unit", description: "TODO"},
+      ],
+    },
+  }
+  var lastHelpComponentClicked = "";
+  var lastHelpSubcomponentClicked = "";
+  var lastHelpSubcomponentContainerClicked = "";
+  var lastSmallNavigationComponentClicked = "";
+
+  function changeHelpPageComponent(selectedComponentName) {
+    for( const [ componentName, items ] of Object.entries(helpComponents) ){
+      if( componentName == selectedComponentName ){
+
+        let helpComponent = null;
+        let helpSubcomponent = null;
+        let helpSubcomponentContainer = null;
+
+        if( componentName === "module" ){
+          aktiveHelpPageSubcomponent.value.name = items.subcomponents[0].name
+        }
+        aktiveHelpPageSubcomponentName.value = ""
+        aktiveHelpPageSubcomponent.value.description = ""
+      
+        if( lastHelpComponentClicked != "" ){
+          helpComponent = document.getElementById(lastHelpComponentClicked)
+          helpComponent.classList.remove("help_element__visible")
+          helpComponent.classList.add("help_element__notVisible")
+          let helpSmallNavigation = document.getElementById(lastSmallNavigationComponentClicked)
+          helpSmallNavigation.classList.remove("help_componend__focus")
+          helpSmallNavigation.classList.add("help_componend__notFocus")
+          const smallNavigationID = "helpSmallNavigation" + selectedComponentName
+          helpSmallNavigation = document.getElementById(smallNavigationID)
+          helpSmallNavigation.classList.remove("help_componend__notFocus")
+          helpSmallNavigation.classList.add("help_componend__focus")
+          lastSmallNavigationComponentClicked = smallNavigationID
+        } else {
+          const smallNavigationID = "helpSmallNavigation" + selectedComponentName
+          let helpSmallNavigation = document.getElementById(smallNavigationID)
+          helpSmallNavigation.classList.remove("help_componend__notFocus")
+          helpSmallNavigation.classList.add("help_componend__focus")
+          lastSmallNavigationComponentClicked = smallNavigationID
+        }
+        lastHelpComponentClicked = items.component.id
+        
+        if( lastHelpSubcomponentClicked != "" ){
+          helpSubcomponent = document.getElementById(lastHelpSubcomponentClicked)
+          helpSubcomponent.classList.remove("help_subcomponend__focus")
+          helpSubcomponent.classList.add("help_subcomponend__notFocus")
+          let subcomponentDescription = document.getElementById("subcomponentDescription")
+          subcomponentDescription.classList.remove("help_element__visible")
+          subcomponentDescription.classList.add("help_element__notVisible")
+          let defaultSubcomponentDescription = document.getElementById("defaultSubcomponentDescription")
+          defaultSubcomponentDescription.classList.remove("help_element__notVisible")
+          defaultSubcomponentDescription.classList.add("help_element__visible")
+        } else {
+          let subcomponentDescription = document.getElementById("subcomponentDescription")
+          subcomponentDescription.classList.remove("help_element__visible")
+          subcomponentDescription.classList.add("help_element__notVisible")
+          let defaultSubcomponentDescription = document.getElementById("defaultSubcomponentDescription")
+          defaultSubcomponentDescription.classList.remove("help_element__notVisible")
+          defaultSubcomponentDescription.classList.add("help_element__visible")
+        }
+        let helpSubcomponentButton = document.getElementById(lastHelpSubcomponentClicked + 'Button')
+        if( helpSubcomponentButton != undefined ){
+          helpSubcomponentButton.classList.remove("help_subcomponent_button__clicked")
+          helpSubcomponentButton.classList.add("help_subcomponent_button__notClicked")
+        }
+        lastHelpSubcomponentClicked = items.subcomponents[0].id
+        
+        if( lastHelpSubcomponentContainerClicked != "" ){
+          helpSubcomponentContainer = document.getElementById(lastHelpSubcomponentContainerClicked)
+          helpSubcomponentContainer.classList.remove("help_element__visible")
+          helpSubcomponentContainer.classList.add("help_element__notVisible")
+        }
+        
+        if( items.subcomponents[0].containerID != undefined ){
+          helpSubcomponentContainer = document.getElementById(items.subcomponents[0].containerID)
+          helpSubcomponentContainer.classList.remove("help_element__notVisible")
+          helpSubcomponentContainer.classList.add("help_element__visible")
+          lastHelpSubcomponentContainerClicked = items.subcomponents[0].containerID
+        }
+
+        aktiveHelpPageComponent.value.name = items.component.name
+        aktiveHelpPageComponent.value.description = items.component.description
+
+        aktiveHelpPageSubcomponents.value = items.subcomponents
+        
+        helpComponent = document.getElementById(items.component.id)
+        helpComponent.classList.remove("help_element__notVisible")
+        helpComponent.classList.add("help_element__visible")
+        
+        const helpOverview = document.getElementById("helpOverview")
+        const helpDetailView = document.getElementById("helpDetailView")
+        helpOverview.classList.remove("help_element__visible")
+        helpOverview.classList.add("help_element__notVisible")
+        helpDetailView.classList.remove("help_element__notVisible")
+        helpDetailView.classList.add("help_element__visible")
+        break;
+      }
+    }
+  }
+
+  function changeHelpPageSubcomponent(selectedSubcomponent) {
+    let helpSubcomponent = null;
+    let helpSubcomponentContainer = null;
+
+    aktiveHelpPageSubcomponent.value.name = selectedSubcomponent.name
+    aktiveHelpPageSubcomponentName.value = selectedSubcomponent.name
+    aktiveHelpPageSubcomponent.value.description = selectedSubcomponent.description
+
+    let subcomponentDescription = document.getElementById("subcomponentDescription")
+    subcomponentDescription.classList.remove("help_element__notVisible")
+    subcomponentDescription.classList.add("help_element__visible")
+    
+    let defaultSubcomponentDescription = document.getElementById("defaultSubcomponentDescription")
+    defaultSubcomponentDescription.classList.remove("help_element__visible")
+    defaultSubcomponentDescription.classList.add("help_element__notVisible")
+
+    if(selectedSubcomponent.containerID != undefined){
+      if( lastHelpSubcomponentContainerClicked != "" && lastHelpSubcomponentContainerClicked != selectedSubcomponent.containerID ){
+        helpSubcomponentContainer = document.getElementById(lastHelpSubcomponentContainerClicked)
+        helpSubcomponentContainer.classList.remove("help_element__visible")
+        helpSubcomponentContainer.classList.add("help_element__notVisible")
+        lastHelpSubcomponentContainerClicked = selectedSubcomponent.containerID
+      }
+      helpSubcomponentContainer = document.getElementById(selectedSubcomponent.containerID)
+      helpSubcomponentContainer.classList.remove("help_element__notVisible")
+      helpSubcomponentContainer.classList.add("help_element__visible")
+    }
+
+    if( lastHelpSubcomponentClicked != "" && lastHelpSubcomponentClicked != selectedSubcomponent.id ){
+      helpSubcomponent = document.getElementById(lastHelpSubcomponentClicked)
+      helpSubcomponent.classList.remove("help_subcomponend__focus")
+      helpSubcomponent.classList.add("help_subcomponend__notFocus")
+      let helpSubcomponentButton = document.getElementById(lastHelpSubcomponentClicked + 'Button')
+      helpSubcomponentButton.classList.remove("help_subcomponent_button__clicked")
+      helpSubcomponentButton.classList.add("help_subcomponent_button__notClicked")
+      lastHelpSubcomponentClicked = selectedSubcomponent.id
+    }
+
+    let helpSubcomponentButton = document.getElementById(selectedSubcomponent.id + 'Button')
+    helpSubcomponentButton.classList.remove("help_subcomponent_button__notClicked")
+    helpSubcomponentButton.classList.add("help_subcomponent_button__clicked")
+    helpSubcomponent = document.getElementById(selectedSubcomponent.id)
+    helpSubcomponent.classList.remove("help_subcomponend__notFocus")
+    helpSubcomponent.classList.add("help_subcomponend__focus")
+  }
 
 
+  
 
-
-
+  
   /**                                 Watcher
    * /=========================================================================\
    * Saves the current state of the graph, after adding a new unit.
@@ -2370,6 +3217,7 @@
 
 
 
+  
 
   /**
    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -3384,6 +4232,107 @@ export default {
 
 /**
  *
+ * > > > > > > Help < < < < < <
+ *
+ */
+
+.help__button {
+  border: 9px;
+  border-style:double;
+  border-color: #452909;
+  background-color: #9c6439;
+}
+
+.help__navigation {
+  border: 1px; 
+  border-style: solid; 
+  border-color: #ffffff;
+}
+
+.help_element__visible {
+  position:absolute;
+  z-index: 1;
+  opacity: 1;
+}
+
+.help_element__notVisible {
+  position:absolute;
+  z-index: 0;
+  opacity: 0;
+}
+
+.help_componend__focus {
+  border: 5px; 
+  border-style: solid; 
+  border-color: #ff0000;
+}
+
+.help_componend__notFocus {
+  border: 1px; 
+  border-style: solid; 
+  border-color: #ffffff;
+}
+
+.help_componend__infobereich__base {
+  border: 4px;
+  border-style: ridge;
+  border-color: #0d2953;
+  background-color: #2a4375;
+  opacity: 1;
+}
+
+.help_subcomponent_button__clicked {
+  border: 3px; 
+  border-style: solid;
+  border-color: #ff0000;
+}
+
+.help_subcomponent_button__notClicked {
+  border: 3px; 
+  border-style: solid; 
+  border-color: #ffffff00;
+}
+
+.help_subcomponend__focus {
+  border: 3px; 
+  border-style: solid;
+  border-color: #ff0000;
+}
+
+.help_subcomponend__notFocus {
+  border: 3px; 
+  border-style: solid; 
+  border-color: #ffffff00;
+}
+
+/**
+ *
+ * > > > > > > Glossar < < < < < <
+ *
+ */
+
+.glossar__button {
+  border: 9px;
+  border-style:double;
+  border-color: #452909;
+  background-color: #9c6439;
+}
+
+/**
+ *
+ * > > > > > > Modus wechseln < < < < < <
+ *
+ */
+
+.modus_wechseln__button {
+  border: 9px;
+  border-style:double;
+  border-color: #452909;
+  background-color: #9c6439;
+}
+
+/**
+ *
  * > > > > > > Units < < < < < <
  *
  */
@@ -3666,5 +4615,7 @@ export default {
   border-color: #1C2128;
   background-color:#af1313;
 }
+
+
 
 </style>
