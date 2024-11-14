@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 07.11.2024 15:12:48
+ * Last Modified: 10.11.2024 13:14:31
  * Modified By: Julian Hardtung
  * 
  * Description: english translations
@@ -294,4 +294,5 @@ export default {
     "A problem with the export, but this can still be imported into BODEON.",
   canNotImportForBodeon: "This data can not be imported into BODEON.",
   showOnlyCritialErrors: "Show only critical errors that hinder a BODEON import.",
+  bodeonExportError: "Errors occurred while exporting data. You need to fix the errors listed below or otherwise you won't be able to import this data into BODEON.",
 };
