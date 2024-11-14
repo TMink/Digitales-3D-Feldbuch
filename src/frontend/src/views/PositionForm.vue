@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 05.11.2024 13:45:18
+ * Last Modified: 14.11.2024 14:52:05
  * Modified By: Julian Hardtung
  * 
  * Description: input page for positions data 
@@ -185,23 +185,6 @@ export default {
    * Initialize data from localDB and .env to the reactive Vue.js data
    */
   async created() {
-    /* const acID = this.$generalStore.getCurrentObject('activity');
-    var activity = await fromOfflineDB
-      .getObject(acID, 'Activities', 'activities')
-      .catch(err => console.error(err));
-    
-    const plID = this.$generalStore.getCurrentObject('place');
-    var place = await fromOfflineDB
-      .getObject(plID, 'Places', 'places')
-      .catch(err => console.error(err));
-    
-    const poID = this.$generalStore.getCurrentObject('position');
-    var position = await fromOfflineDB
-      .getObject(poID, 'Positions', 'positions')
-      .catch(err => console.error(err));
-    
-    this.$emit("view", activity.activityNumber + ' ' + place.placeNumber + ' ' + position.positionNumber);
- */
     this.materials = JSON.parse(import.meta.env.VITE_MATERIALS);
     this.titles = JSON.parse(import.meta.env.VITE_TITLES);
     this.datings = JSON.parse(import.meta.env.VITE_DATINGS);
@@ -373,6 +356,7 @@ export default {
         this.position = data;
       }
     },
+    
     /**
      * Save a Position to local storage for the current place
      */
@@ -406,7 +390,7 @@ export default {
 
 
     /** 
-     * Updatesd the autofill lists in case a user has entered a new term
+     * Updates the autofill lists in case a user has entered a new term
      * @param storeName 
      * @param item 
      * @param itemList 
@@ -502,7 +486,7 @@ export default {
         await fromOfflineDB.updateObject(place, 'Places', 'places')
           .catch(err => console.error(err));
       }
-    console.log(rawPosition)
+      
       // Delete the position itself
       await fromOfflineDB
         .deleteCascade( rawPosition._id, 'position', 'Positions', 'positions' )

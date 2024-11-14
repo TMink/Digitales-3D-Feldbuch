@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.11.2024 16:13:36
+ * Last Modified: 14.11.2024 13:55:10
  * Modified By: Julian Hardtung
  * 
  * Description: lists all activities + add/edit/delete functionality for them
@@ -33,7 +33,8 @@
       <v-spacer></v-spacer>
       <v-card class="pt-2" :min-width="windowWidth * 0.55">
         <v-data-table-virtual
-        :sort-by="[{ key: 'branchOffice', order: 'desc' },{ key: 'year', order: 'desc' }, { key: 'number', order: 'desc' }]" 
+        :sort-by="[{ key: 'branchOffice', order: 'desc' },
+          { key: 'year', order: 'desc' }, { key: 'number', order: 'desc' }]" 
           multi-sort
           :headers="headers" fixed-header
           :items="utils.filteredObjects(activities, searchQuery, 'activity')" 
@@ -80,7 +81,7 @@
               </td>
               
               <!-- v v v SYNC STATUS v v v -->
-                <td>
+              <td>
                 <v-btn icon variant="text" v-if="item.lastSync > 0">
                   <v-tooltip activator="parent" location="bottom">
                     {{ this.$t('lastSync') + new Date(item.lastSync).toLocaleString() }}
@@ -431,7 +432,6 @@ export default {
 
       const rawActivity = toRaw(proxyActivity);
 
-      //TODO: use form.validate() instead of != null 
       if (rawActivity.branchOffice != null
         && rawActivity.year != null
         && rawActivity.number != null) {

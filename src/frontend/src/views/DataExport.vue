@@ -2,7 +2,7 @@
  * Created Date: 26.06.2023 15:10:20
  * Author: Julian Hardtung
  * 
- * Last Modified: 09.11.2024 19:24:41
+ * Last Modified: 14.11.2024 14:43:23
  * Modified By: Julian Hardtung
  * 
  * Description: export all (or only specified) data to .pdf or .csv
@@ -16,7 +16,8 @@
     <v-col cols="4">
 
       <!--############### BODEON EXPORT ###############-->
-      <v-stepper :next-text="$t('next')" :prev-text="$t('prev')" :items="[$t('step', {nr: '1'}), $t('step', {nr: '2'}), $t('step', {nr: '3'})]">
+      <v-stepper :next-text="$t('next')" :prev-text="$t('prev')" 
+        :items="[$t('step', {nr: '1'}), $t('step', {nr: '2'}), $t('step', {nr: '3'})]">
         
         <!--############### BODEON EXPORT STEP 1 ###############  -->
         <template v-slot:item.1>
@@ -31,23 +32,29 @@
 
               </v-col>
               <v-col cols="6">
-                <v-card variant="outlined" style="border: 1px; border-style: solid; border-color:darkgrey">
+                <v-card variant="outlined" style="border: 1px; 
+                  border-style: solid; border-color:darkgrey">
                   <v-btn-toggle v-model="toggle" divided multiple                    
                     class=" vertical-toggle"
                     style="height:250px">
-                    <v-btn class=" btn-toggle" style="height: 50px" variant="outlined" base-color="secondary" color="success">
+                    <v-btn class=" btn-toggle" style="height: 50px" 
+                      variant="outlined" base-color="secondary" color="success">
                       {{ $t('placesCatalog') }}
                     </v-btn>
-                    <v-btn class=" btn-toggle" style="height: 50px" variant="outlined" base-color="secondary" color="success">
+                    <v-btn class=" btn-toggle" style="height: 50px" 
+                      variant="outlined" base-color="secondary" color="success">
                       {{ $t('photoList') }}
                     </v-btn>
-                    <v-btn class=" btn-toggle" style="height: 50px" variant="outlined" base-color="secondary" color="success">
+                    <v-btn class=" btn-toggle" style="height: 50px" 
+                      variant="outlined" base-color="secondary" color="success">
                       {{ $t('photoDirectory') }}
                     </v-btn>
-                    <v-btn class=" btn-toggle" style="height: 50px" variant="outlined" base-color="secondary" color="success">
+                    <v-btn class=" btn-toggle" style="height: 50px" 
+                      variant="outlined" base-color="secondary" color="success">
                       {{ $t('findingSampleData') }}
                     </v-btn>
-                    <v-btn class=" btn-toggle" style="height: 50px" variant="outlined" base-color="secondary" color="success">
+                    <v-btn class=" btn-toggle" style="height: 50px" 
+                      variant="outlined" base-color="secondary" color="success">
                       {{ $t('formSheet1') }}
                     </v-btn>
                   </v-btn-toggle>
@@ -112,89 +119,7 @@
     <v-spacer></v-spacer>
   </v-row>
 
-
-
-  <!-- PLACE CATALOG --> 
-  <v-dialog :width="windowWidth/3" v-model="placeCatalogDialog">
-    <v-card :title="$t('placesCatalog')" :subtitle="$t('placesCatalogExportDescr')">      
-      <v-data-table-virtual 
-        :headers="activityHeaders" 
-        :items="activities" 
-        v-model="selectedActivities" 
-        return-object 
-        height="400" 
-        show-select>
-      </v-data-table-virtual>
-      
-      <v-btn class="ma-2" variant="outlined" color="secondary" @click="exportPlacesCatalog()">
-        {{ $t('exportObject', {msg: $t('placesCatalog')}) }}
-      </v-btn>
-    </v-card>
-  </v-dialog>
-
-  <!-- PHOTOLIST --> 
-  <v-dialog :width="windowWidth/3" v-model="photoListDialog">
-    <v-card class="align-center">
-      <v-card-title>{{ $t('photoList') }}</v-card-title>
-      
-      <v-data-table-virtual 
-        :headers="activityHeaders" 
-        :items="activities" 
-        v-model="selectedActivities" 
-        return-object 
-        height="400" 
-        show-select>
-      </v-data-table-virtual>
-      
-      <v-btn class="ma-2" variant="outlined" color="secondary" 
-      @click="exportPhotoList()">
-        {{ $t('exportObject', {msg: $t('photoList')}) }}
-      </v-btn>
-    </v-card>
-  </v-dialog>
-
-  <!-- PHOTO DIRECTORY -->
-  <v-dialog :width="windowWidth/3" v-model="photoDirectoryDialog">
-    <v-card class="align-center">
-      <v-card-title>{{ $t('photoDirectory') }}</v-card-title>
-      
-      <v-data-table-virtual 
-        :headers="activityHeaders" 
-        :items="activities" 
-        v-model="selectedActivities" 
-        return-object 
-        height="400" 
-        show-select>
-      </v-data-table-virtual>
-      
-      <v-btn class="ma-2" variant="outlined" color="secondary" 
-        @click="exportPhotoDirectory()">
-        {{ $t('exportObject', {msg: $t('photoDirectory')}) }}
-      </v-btn>
-    </v-card>
-  </v-dialog>
-
-  <!-- FINDING SAMPLE DATA -->
-  <v-dialog :width="windowWidth/3" v-model="findingDampleDataDialog">
-    <v-card class="align-center">
-      <v-card-title>{{ $t('findingSampleData') }}</v-card-title>
-      
-      <v-data-table-virtual 
-        :headers="activityHeaders" 
-        :items="activities" 
-        v-model="selectedActivities" 
-        return-object 
-        height="400" 
-        show-select>
-      </v-data-table-virtual>
-      
-      <v-btn class="ma-2" variant="outlined" color="secondary" 
-        @click="exportFindingSampleData()">
-        {{ $t('exportObject', {msg: $t('findingSampleData')}) }}
-      </v-btn>
-    </v-card>
-  </v-dialog>
-
+  <!--############### ERROR HANDLING DIALOG ###############-->
   <v-dialog 
     v-model="confirmDialog" 
     :max-width="windowWidth/2.5" style="z-index: 3;" 
@@ -205,13 +130,11 @@
           <v-toolbar-title>{{ $t('exportError')}}</v-toolbar-title>
       </v-toolbar>
       <v-card-subtitle class="text-wrap pa-4">
-        Bei den exportierten Daten sind ein oder mehrere Pflichtfelder nicht ausgefüllt.<br> Soll der Export vortgesetzt werden, obwohl die resultierenden Daten nicht valide für einen Bodeon-Import sind?
+        {{ $t('bodeonExportError') }}
       </v-card-subtitle>
 
-      <v-switch 
-        color="secondary" 
+      <v-switch color="secondary" class="px-3"
         v-model="showNotifyErrors" 
-        class="px-3" 
         :label="$t('showOnlyCriticalErrors')">
       </v-switch>
 
@@ -219,7 +142,8 @@
         <v-list-item style="padding-left: 0px"
           v-for="item in filterErrorMessages()"
           :key="item.title">
-          <v-row style="padding-left: 0px" no-gutters class="justify-start align-center">
+          <v-row style="padding-left: 0px" no-gutters 
+            class="justify-start align-center">
             <v-col cols="9">
               <v-card variant="tonal">
                 <v-row no-gutters class="justify-start align-center">
@@ -265,14 +189,15 @@
       </v-list>
       <v-card-actions class="pt-0">
           <v-spacer></v-spacer>
-          <v-btn icon color="success"  @click="agree"><v-icon>mdi-check-circle</v-icon></v-btn>
-          <v-btn icon color="error" @click="cancel"><v-icon>mdi-close-circle</v-icon></v-btn>
+          <v-btn icon color="success"  @click="agree">
+            <v-icon>mdi-check-circle</v-icon>
+          </v-btn>
+          <v-btn icon color="error" @click="cancel">
+            <v-icon>mdi-close-circle</v-icon>
+          </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
-
-
-
 </template>
   
 <script>
@@ -307,9 +232,6 @@ export default {
       places: [],
       positions: [],
       selectedActivities: [],
-      selected_activity: '',
-      selected_activity_number: '',
-      selected_place: '',
       activity_open: false,
       place_open: false,
       separator: ';',
@@ -331,11 +253,6 @@ export default {
       allActivitiesCount: '',
       allPlacesCount: '',
       allPositionsCount: '',
-
-      placeCatalogDialog: false,
-      photoListDialog: false,
-      photoDirectoryDialog: false,
-      findingDampleDataDialog: false,
 
       allDialog: false,
       showNotifyErrors: true,
@@ -958,7 +875,7 @@ export default {
 
 
   /* ###############################################
-  ############### FOTO DIRECTORY ###################
+  ############### PHOTO DIRECTORY ###################
   ################################################## */
 
     /**
@@ -1013,6 +930,11 @@ export default {
       }
     },
 
+    /**
+     * Takes a data URL like an image and converts it to a proper file
+     * @param dataurl 
+     * @param filename 
+     */
     dataURLtoFile(dataurl, filename) {
       var arr = dataurl.split(','),
         mime = arr[0].match(/:(.*?);/)[1],
@@ -1082,6 +1004,10 @@ export default {
     },
 
 
+    /**
+     * Retrieves all positions from the type `find` from a single place
+     * @param place 
+     */
     async getFindsFromPlace(place){
       if (place.positions.length == 0) {
         this.addErrorMessage(
@@ -1110,6 +1036,14 @@ export default {
       return findPositions;
     },
 
+
+    /**
+     * Takes an array of positions with type `find` and 
+     * translates all headers to the german BODEON headers
+     * @param findsArrayEng 
+     * @param activityNumber 
+     * @param placeNumber 
+     */
     translateFindsArray(findsArrayEng, activityNumber, placeNumber) {
       var findsArrayGer = [];
 
@@ -1123,6 +1057,13 @@ export default {
       return findsArrayGer;
     },
 
+    /**
+     * Takes a single position with type `find` and 
+     * translates all headers to the german BODEON headers
+     * @param findENG 
+     * @param activityNumber 
+     * @param placeNumber 
+     */
     translateFindHeadersToBODEON(findENG, activityNumber, placeNumber) {
       //check if all BODEON required fields are filled
       if (activityNumber.length == 0
@@ -1162,6 +1103,12 @@ export default {
       return findGer;
     },
 
+    /**
+     * Adds the translated positions with type `find` 
+     * to the zip-folder which is to be exported
+     * @param zip 
+     * @param findsOfPlace 
+     */
     addFindDataToZip(zip, findsOfPlace) {
       const replacer = (key, value) => value === null ? '' : value;
       const cursor = Object.keys(findsOfPlace[0]);
@@ -1187,9 +1134,13 @@ export default {
     ################# FORM SHEET 1 ####################
     ################################################# */
 
+    /**
+     * Exports the BODEON formsheet1 for lal selected activities
+     * @param zip 
+     */
     async exportFormSheet1(zip) {
       const rawSelectedActivities = toRaw(this.selectedActivities);
-      const pdfBytes = await this.fetchPDF();
+      const pdfBytes = await this.fetchFormsheet1PDF();
 
       for (let i=0; i< rawSelectedActivities.length; i++) {
         const pdfBytesFilled = await this.fillPDFForm(pdfBytes, rawSelectedActivities[i]);
@@ -1200,14 +1151,14 @@ export default {
     },
 
     /**
-     * 
+     * Takes the fieldbook data for formsheet1, fills 
+     * out the Formblatt1.pdf and adds it to the 
+     * zip-folder which is to be exported
      * @param {Bytes} pdfBytes Formblatt1.pdf
      * @param {Object} act activityData to export
      */
     async fillPDFForm(pdfBytes, act){
-
       const pdfDoc = await PDFDocument.load(pdfBytes);
-
       const form = pdfDoc.getForm();
 
       const activityNumberField = form.getTextField('Aktivitätsnummer');
@@ -1343,7 +1294,6 @@ export default {
 
 
       /*############### RESULT OF MEASURE ############### */
-
       const resultTitle1Field = form.getTextField('Ergebnis/Befundansprache 1');
       resultTitle1Field.setText(act.resultMeasures.title1.title);
       const resultTitle2Field = form.getTextField('Ergebnis/Befundansprache 2');
@@ -1378,7 +1328,6 @@ export default {
       const noArchCB = form.getCheckBox('KeinArchivMat-da');
       act.archiveMaterial.no ? noArchCB.check() : noArchCB.uncheck();
 
-
       const findCB = form.getCheckBox('Funde-da');
       act.material.find ? findCB.check() : findCB.uncheck();
       const sampleCB = form.getCheckBox('Proben-da');
@@ -1395,7 +1344,11 @@ export default {
       return await pdfDoc.save();
     },
 
-    async fetchPDF( ) {
+
+    /**
+     * Fetches the Formsheet1.pdf
+     */
+    async fetchFormsheet1PDF() {
       const response = await fetch('/assets/Formblatt1_2020_Formular.pdf');
       return await response.arrayBuffer()
     },
