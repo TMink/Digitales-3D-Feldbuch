@@ -2,7 +2,7 @@
  * Created Date: 26.06.2023 15:10:20
  * Author: Julian Hardtung
  * 
- * Last Modified: 14.11.2024 14:43:23
+ * Last Modified: 03.12.2024 12:36:34
  * Modified By: Julian Hardtung
  * 
  * Description: export all (or only specified) data to .pdf or .csv
@@ -535,6 +535,7 @@ export default {
 
       // prepare
       var translatedItems = this.translatePlacesArray(placesToExport);
+      
       const replacer = (key, value) => value === null ? '' : value;
       const cursor = Object.keys(translatedItems[0][0]);
       let header = JSON.parse(JSON.stringify(cursor));
@@ -547,9 +548,12 @@ export default {
             .join(this.separator))
         ].join('\r\n');
 
+        //add UTF-8 BOM to csv
+        const csvWithBOM = "\uFEFF" + csv;
+
         const activityFileName = this.getActivityFileName(translatedItems[i][0].Aktivitaet);
         const placeFileName = this.getPlaceFileName(translatedItems[i][0].Aktivitaet, translatedItems[i][0].StellenNR);
-        zip.file(activityFileName + "/" + placeFileName + "_stellenkatalog.csv", csv);
+        zip.file(activityFileName + "/" + placeFileName + "_stellenkatalog.csv", csvWithBOM);
       }
     },
 
@@ -756,8 +760,11 @@ export default {
       const placeFileName = this.getPlaceFileName(activityNumber, placeNumber);
       const photoListFilename = activityFileName + '/' + placeFileName + '/' + placeFileName + "_fotoliste.csv";
 
+      //add UTF-8 BOM to csv
+      const csvWithBOM = "\uFEFF" + csv;
+
       //add to zip
-      zip.file(photoListFilename, csv);
+      zip.file(photoListFilename, csvWithBOM);
     },
 
     /**
@@ -1125,8 +1132,11 @@ export default {
       const activityFileName = this.getActivityFileName(activityNumber);
       const findsFilename = activityFileName + '/' + activityFileName + "_Fundliste.csv";
 
+      //add UTF-8 BOM to csv
+      const csvWithBOM = "\uFEFF" + csv;
+
       //add to zip
-      zip.file(findsFilename, csv);
+      zip.file(findsFilename, csvWithBOM);
     },
 
 
