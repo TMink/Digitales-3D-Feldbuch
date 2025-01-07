@@ -14,7 +14,7 @@ module.exports = {
         setupIcon: "icon.ico",
       },
     },
-    {
+    /* {
       name: "@electron-forge/maker-wix",
       config: {
         description: "Ein digitales Feldbuch zur Dokumentation von archaeologischen Ausgrabungen",
@@ -24,7 +24,7 @@ module.exports = {
         icon: "icon.ico",
         setupIcon: "icon.ico",
       },
-    },
+    }, */
     {
       name: "@electron-forge/maker-zip",
     },

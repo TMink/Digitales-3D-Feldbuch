@@ -835,7 +835,6 @@ export default {
         lastSync: '',
         editor: '',
         camera: null,
-
         
         right: '',
         rightTo: '',

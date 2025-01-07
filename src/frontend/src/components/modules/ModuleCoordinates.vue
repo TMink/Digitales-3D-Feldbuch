@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 02.12.2024 13:02:49
+ * Last Modified: 03.12.2024 16:06:00
  * Modified By: Julian Hardtung
  * 
  * Description: `coordinates` input module for places/positions
@@ -591,14 +591,17 @@
             }
           } else if (uint8Array[i] >= 0xE0 && uint8Array[i] <= 0xEF) {
             // 1110xxxx 10xxxxxx 10xxxxxx
-            if (uint8Array[i + 1] >= 0x80 && uint8Array[i + 1] <= 0xBF && uint8Array[i + 2] >= 0x80 && uint8Array[i + 2] <= 0xBF) {
+            if (uint8Array[i + 1] >= 0x80 && uint8Array[i + 1] <= 0xBF 
+              && uint8Array[i + 2] >= 0x80 && uint8Array[i + 2] <= 0xBF) {
               i += 3;
             } else {
               return false;
             }
           } else if (uint8Array[i] >= 0xF0 && uint8Array[i] <= 0xF4) {
             // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-            if (uint8Array[i + 1] >= 0x80 && uint8Array[i + 1] <= 0xBF && uint8Array[i + 2] >= 0x80 && uint8Array[i + 2] <= 0xBF && uint8Array[i + 3] >= 0x80 && uint8Array[i + 3] <= 0xBF) {
+            if (uint8Array[i + 1] >= 0x80 && uint8Array[i + 1] <= 0xBF 
+              && uint8Array[i + 2] >= 0x80 && uint8Array[i + 2] <= 0xBF 
+              && uint8Array[i + 3] >= 0x80 && uint8Array[i + 3] <= 0xBF) {
               i += 4;
             } else {
               return false;
