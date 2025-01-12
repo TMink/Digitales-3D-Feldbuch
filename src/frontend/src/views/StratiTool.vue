@@ -2,13 +2,13 @@
  Created Date: 23.09.2024 10:14:23
  Author: Tobias Mink
  
- Last Modified: 12.11.2024 13:56:54
+ Last Modified: 06.01.2025 01:18:31
  Modified By: Tobias Mink
  
  Description: 
  --> This system is being implemented as part of a master's thesis and enables 4D analysis and visualization of the stratigraphy of an excavation
 
-<template>
+ <template>
   <div id="wrapper">
     <Navigation active_tab_prop="2" />
     <v-card class="pa-1 background">
@@ -22,7 +22,7 @@
           <!-- Hilfe -->
           <v-row no-gutters style="width: fit-content">
             <v-card class="pa-1 tile" height="100" width="400">
-              <v-btn class="pa-7 px-14 help__button" height="100%" width="100%" @click="createHelpDialog = true" variant="text">
+              <v-btn class="pa-7 px-14 help__button" height="100%" width="100%" @click="createHelpDialog = true" variant="text" elevation="24">
                 Hilfe
               </v-btn>
               <v-dialog v-model="createHelpDialog" persistent >
@@ -32,16 +32,16 @@
                   <v-row no-gutters style="max-height: 6%;">
                     <!-- Hilfe Überschrift -->
                     <v-col cols="11">
-                      <v-card class="tile d-flex align-center justify-center" height="100%">
-                        <v-card-Title>Hilfe</v-card-Title>
+                      <v-card class="help__start_base d-flex align-center justify-center" height="100%">
+                        <v-card-Title>Wählen sie eine Komponente aus, über die Sie mehr erfahren möchten</v-card-Title>
                       </v-card>
                     </v-col>
                     
                     <!-- Verlassen-button -->
                     <v-col cols="1">
-                      <v-card class="pa-2 tile d-flex justify-center" height="100%">
-                        <v-btn icon color="blue" @click="createHelpDialog = false">
-                          <v-icon>mdi-close-circle</v-icon>
+                      <v-card class="pa-2 help__start_base d-flex justify-center" height="100%">
+                        <v-btn class="help__button" height="100%" width="100%" @click="createHelpDialog = false">
+                          <v-icon size="x-large">mdi-alpha-x-circle</v-icon>
                         </v-btn>
                       </v-card>
                     </v-col>
@@ -51,52 +51,52 @@
                   <v-row no-gutters style="max-width: 100%;">
                     
                     <!-- Start Page -->
-                    <v-card id="helpOverview" class="tile d-flex align-center justify-center help_element__visible" :height="windowHeight - 131" width="100%">
+                    <v-card id="helpOverview" class="help__start_base d-flex align-center justify-center help_element__visible" :height="windowHeight - 131" width="100%">
                       <v-card rounded="0" height="90%" width="90%">
                         
                         <!-- Header -->
-                        <v-card rounded="0" class="d-flex align-center justify-center text-h5 help__navigation" height="6%" width="100%">
+                        <v-card rounded="0" class="d-flex align-center justify-center text-h5 help__navigation_header" height="6%" width="100%">
                           Header
                         </v-card>
                         
                         <!-- Components -->
                         <v-row no-gutters style="height: 88%">
                           <v-col cols="3">
-                            <v-card class="d-flex align-center justify-center help__navigation" rounded="0" height="10%" width="100%">
+                            <v-card class="d-flex align-center justify-center help__navigation_hilfe" rounded="0" height="10%" width="100%">
                               <v-card-title class="text-h5">
                                 Hilfe
                               </v-card-title>
                             </v-card>
-                            <v-btn class="text-h5 help__navigation" rounded="0" height=90% width="100%" @click="changeHelpPageComponent('module')">
+                            <v-btn class="text-h5 help__navigation_module" rounded="0" height=90% width="100%" @click="changeHelpPageComponent('module')">
                               Module
                             </v-btn>
                           </v-col>
                           <v-col>
-                            <v-btn class="text-h5 help__navigation" rounded="0" height="10%" width="100%" @click="changeHelpPageComponent('harrisMatrixTools')">
-                              Harris-Matrix - Tools
+                            <v-btn class="text-h5 help__navigation_system_tools" rounded="0" height="10%" width="100%" @click="changeHelpPageComponent('systemTools')">
+                              System-Tools
                             </v-btn>
-                            <v-btn class="text-h5 help__navigation" rounded="0" height="10%" width="100%" @click="changeHelpPageComponent('graph3dTools')">
-                              Graph/3D - Tools
+                            <v-btn class="text-h5 help__navigation_graph-3d_tools" rounded="0" height="10%" width="100%" @click="changeHelpPageComponent('graph3dTools')">
+                              Graph/3D-Tools
                             </v-btn>
-                            <v-btn class="text-h5 help__navigation" rounded="0" height="80%" width="100%" @click="changeHelpPageComponent('graph3dEditor')">
-                              Graph/3D - Editor
+                            <v-btn class="text-h5 help__navigation_graph-3d_editor" rounded="0" height="80%" width="100%" @click="changeHelpPageComponent('graph3dEditor')">
+                              Graph/3D-Editor
                             </v-btn>
                           </v-col>
                           <v-col cols="3">
-                            <v-btn class="text-h5 help__navigation" rounded="0" height="10%" width="100%" @click="changeHelpPageComponent('glossar')">
+                            <v-btn class="text-h5 help__navigation_glossar" rounded="0" height="10%" width="100%" @click="changeHelpPageComponent('glossar')">
                               Glossar
                             </v-btn>
-                            <v-btn class="text-h5 help__navigation" rounded="0" height="10%" width="100%" @click="changeHelpPageComponent('changeEditor')">
+                            <v-btn class="text-h5 help__navigation_editor_wechseln" rounded="0" height="10%" width="100%" @click="changeHelpPageComponent('changeEditor')">
                               Editor wechseln
                             </v-btn>
-                            <v-btn class="text-h5 help__navigation" rounded="0" height="80%" width="100%" @click="changeHelpPageComponent('infoCard')">
+                            <v-btn class="text-h5 help__navigation_infobereich" rounded="0" height="80%" width="100%" @click="changeHelpPageComponent('infoCard')">
                               Infobereich
                             </v-btn>
                           </v-col>
                         </v-row>
                         
                         <!-- Footer -->
-                        <v-card rounded="0" class="d-flex align-center justify-center text-h5 help__navigation" height="6%" width="100%">
+                        <v-card rounded="0" class="d-flex align-center justify-center text-h5 help__navigation_footer" height="6%" width="100%">
                           Footer
                         </v-card>
                         
@@ -104,7 +104,7 @@
                     </v-card>
 
                     <!-- Detail Ansicht -->
-                    <v-card id="helpDetailView" class="pa-3 tile help_element__notVisible" :height="windowHeight - 131" width="100%">
+                    <v-card id="helpDetailView" class="pa-3 help__start_base help_element__notVisible" :height="windowHeight - 131" width="100%">
                       <v-card class="d-flex" height="100%" rounded="0">
                         <v-row no-gutters style="height: 100%">
                           <v-col cols="3">
@@ -120,7 +120,7 @@
                                   </v-card-title>
 
                                   <!-- Komponente: Module -->
-                                  <v-card id="helpComponentModule" class="d-flex align-center justify-center help_element__notVisible" height="91%" width="100%" variant="text" >
+                                  <v-card id="helpComponentModule" class="d-flex align-center justify-center help_element__notVisible" height="91%" width="100%" variant="text">
                                     <v-card class="pa-1 hollow" height="100%" width="50%">
                                       <v-card class="pa-2 tile d-flex align-center justify-center" height="12%">
                                         <v-row no-gutters>
@@ -138,9 +138,9 @@
                                       <v-card class="hollow" height="88%" width="100%">
                                         
                                         <!-- Screenshot-Modul -->
-                                        <v-card id="helpSubcomponentModulesScreenshotContainer" class="help_element__visible" height="100%" width="100%">
-                                          <v-card id="helpScreenshot" class="help_subcomponend__notFocus" height="100%" width="100%">
-                                            <v-card class="screenshot_module__base" height="100%" width="100%">
+                                        <v-card id="helpSubcomponentModulesScreenshotContainer" class="help_element__visible" height="100%" width="100%" variant="text">
+                                          <v-card id="helpScreenshot" class="help_subcomponend__notFocus" height="100%" width="100%" variant="text">
+                                            <v-card class="screenshot_module__base" height="100%" width="100%" variant="text">
                                               <!-- Image name -->
                                               <v-text>Dateiname:</v-text>
                                               <v-text-field hide-details class="pa-1 mb-5" v-model="imageFileName"></v-text-field>
@@ -169,32 +169,32 @@
                                         </v-card>
                                         
                                         <!-- Group-Modul -->
-                                        <v-card id="helpSubcomponentModulesGroupContainer" class="help_element__notVisible" height="100%" width="100%">
-                                          <v-card id="helpGroup" class="help_subcomponend__notFocus" height="100%" width="100%">
-                                            <v-card class="group_module__base d-flex align-center justify-center" height="100%" width="271">
+                                        <v-card id="helpSubcomponentModulesGroupContainer" class="help_element__notVisible" height="100%" width="100%" variant="text">
+                                          <v-card id="helpGroup" class="help_subcomponend__notFocus" height="100%" width="100%" variant="text">
+                                            <v-card class="group_module__base d-flex align-center justify-center" height="100%" width="271" variant="text">
                                               <img src="@/components/graph-editor-components/Images/work_in_progress_background.jpg" height="490">
                                             </v-card>
                                           </v-card>
                                         </v-card>
                                       
                                         <!-- View-Modul -->
-                                        <v-card id="helpSubcomponentModulesViewContainer" class="help_element__notVisible" height="100%" width="100%">
-                                          <v-card id="helpView" class="help_subcomponend__notFocus" height="100%" width="100%">
-                                            <v-card class="view_module__base d-flex align-center justify-center" height="100%" width="271">
+                                        <v-card id="helpSubcomponentModulesViewContainer" class="help_element__notVisible" height="100%" width="100%" variant="text">
+                                          <v-card id="helpView" class="help_subcomponend__notFocus" height="100%" width="100%" variant="text">
+                                            <v-card class="view_module__base d-flex align-center justify-center" height="100%" width="271" variant="text">
                                               <img src="@/components/graph-editor-components/Images/work_in_progress_background.jpg" height="490">
                                             </v-card>
                                           </v-card>
                                         </v-card>
                                       
                                         <!-- Exp/Imp-Modul -->
-                                        <v-card id="helpSubcomponentModulesExpImpContainer" class="help_element__notVisible" height="100%" width="100%">
-                                          <v-card id="helpExpImp" class="help_subcomponend__notFocus" height="100%" width="100%">
-                                            <v-card class="pa-2 exp-imp_module__base" height="100%" width="271">
+                                        <v-card id="helpSubcomponentModulesExpImpContainer" class="help_element__notVisible" height="100%" width="100%" variant="text">
+                                          <v-card id="helpExpImp" class="help_subcomponend__notFocus" height="100%" width="100%" variant="text">
+                                            <v-card class="pa-2 exp-imp_module__base" height="100%" width="271" variant="text">
                                               <v-row no-gutters>
                                                 
                                                 <!-- Export -->
                                                 <v-card class="pa-2" height="223" width="100%" variant="text" style="border: 1px; border-style: solid; border-color: white;">
-                                                  <v-card-title class="d-flex align-center justify-center pa-0 pb-2" >
+                                                  <v-card-title class="d-flex align-center justify-center pa-0 pb-2">
                                                     Export
                                                   </v-card-title>
                                                   <v-btn class="infobereich__attributes_type_title_button" width="100%" height="50">
@@ -221,18 +221,18 @@
                                         </v-card>
                                       
                                         <!-- Filter -->
-                                        <v-card id="helpSubcomponentModulesFilterContainer" class="help_element__notVisible" height="100%" width="100%">
-                                          <v-card id="helpFilter" class="help_subcomponend__notFocus" height="100%" width="100%">
-                                            <v-card class="filter_module__base d-flex align-center justify-center" height="100%" width="271">
+                                        <v-card id="helpSubcomponentModulesFilterContainer" class="help_element__notVisible" height="100%" width="100%" variant="text">
+                                          <v-card id="helpFilter" class="help_subcomponend__notFocus" height="100%" width="100%" variant="text">
+                                            <v-card class="filter_module__base d-flex align-center justify-center" height="100%" width="271" variant="text">
                                               <img src="@/components/graph-editor-components/Images/work_in_progress_background.jpg" height="490">
                                             </v-card>
                                           </v-card>
                                         </v-card>
                                         
                                         <!-- Timemodel -->
-                                        <v-card id="helpSubcomponentModulesTimemodelContainer" class="help_element__notVisible" height="100%" width="100%">
-                                          <v-card id="helpTimemodel" class="help_subcomponend__notFocus" height="100%" width="100%">
-                                            <v-card class="timemodel_module__base d-flex align-center justify-center" height="100%" width="272">
+                                        <v-card id="helpSubcomponentModulesTimemodelContainer" class="help_element__notVisible" height="100%" width="100%" variant="text">
+                                          <v-card id="helpTimemodel" class="help_subcomponend__notFocus" height="100%" width="100%" variant="text">
+                                            <v-card class="timemodel_module__base d-flex align-center justify-center" height="100%" width="272" variant="text">
                                               <img src="@/components/graph-editor-components/Images/work_in_progress_background.jpg" height="490">
                                             </v-card>
                                           </v-card>
@@ -242,7 +242,7 @@
                                     </v-card>
                                   </v-card>
 
-                                  <!-- Komponente: Harris-Matrix - Tools -->
+                                  <!-- Komponente: System-Tools -->
                                   <v-card id="helpComponentHarrisMatrixTools" height="92.2%" width="100%" variant="text" class="px-2 d-flex align-center justify-center help_element__notVisible">
                                     <v-card class="tile" height="106px" width="100%" variant="text">
                                       <v-card id="helpSubcomponentHarrisMatrixToolsContainer" class="help_element__visible" height="100%" width="100%" variant="text">
@@ -257,7 +257,7 @@
                                                   <!-- Subcomponent title -->
                                                   <v-card class="pt-1" variant="text">
                                                     <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
-                                                      Harris-Matrix Speichern
+                                                      Bearbeitungsstand Speichern
                                                     </v-card-title>
                                                   </v-card>
                                                   
@@ -320,7 +320,7 @@
                                     </v-card>
                                   </v-card>
 
-                                  <!-- Komponente: Graph/3D - Tools -->
+                                  <!-- Komponente: Graph/3D-Tools -->
                                   <v-card id="helpComponentGraph3dTools" height="91%" width="100%" variant="text" class="px-2 d-flex align-center justify-center help_element__notVisible">
                                     <v-card class="tile" height="106px" width="100%" variant="text">
                                       
@@ -329,15 +329,45 @@
                                         <v-row no-gutters>
                                           
                                           <!-- Subkomponente: Unit Liste -->
-                                          <v-col cols="12">
+                                          <v-col cols="6">
                                             <v-card id="helpUnitList" class="help_subcomponend__notFocus" height="100%" variant="text" width="100%">
-                                              <v-card class="pt-1" variant="text">
-                                                <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
-                                                  Auflistung aller Units
-                                                </v-card-title>
+                                              <v-card class="px-5 py-0 units__3d_base" variant="text">
+                                                
+                                                <!-- Subcomponent title -->
+                                                <v-card class="pt-1" variant="text">
+                                                  <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
+                                                    Auflistung aller Units
+                                                  </v-card-title>
+                                                </v-card>
+  
+                                                <!-- Unit Liste -->
+                                                <v-card class="pt-2 pb-8" variant="text">
+                                                  <v-slide-group mandatory show-arrows="always"></v-slide-group>
+                                                </v-card>
+                                                
                                               </v-card>
-                                              <v-card class="pt-2 pb-9" variant="text">
-                                                <v-slide-group mandatory show-arrows="always"></v-slide-group>
+                                            </v-card>
+                                          </v-col>
+                                          
+                                          <!-- Subkomponente: 3D-Objekt schneiden -->
+                                          <v-col cols="6">
+                                            <v-card id="help3dCut" class="help_subcomponend__notFocus" height="100%" variant="text" width="100%">
+                                              <v-card class="px-5 py-0 units__3d_base" variant="text">
+                                                
+                                                <!-- Subcomponent title -->
+                                                <v-card class="pt-1" variant="text">
+                                                  <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
+                                                    3D-Objekt schneiden
+                                                  </v-card-title>
+                                                </v-card>
+                                                
+                                                <!-- Schneiden starten -->
+                                                <v-card class="pt-1 my-3" height="fit-content" variant="text">
+                                                  <v-btn width="100%" @click="loadCutTool()">
+                                                    Schneidmodus starten
+                                                  </v-btn>
+                                                </v-card>
+                                                  
                                               </v-card>
                                             </v-card>
                                           </v-col>
@@ -422,7 +452,7 @@
                                     </v-card>
                                   </v-card>
 
-                                  <!-- Komponente: Graph/3D - Editor -->
+                                  <!-- Komponente: Graph/3D-Editor -->
                                   <v-card id="helpComponentGraph3dEditor" height="92.2%" width="100%" variant="text" class="px-2 d-flex align-center justify-center help_element__notVisible">
                                     <v-card class="pb-15 d-flex align-center justify-center" height="100%" width="100%" variant="text">
                                       <v-card id="helpGraphEditorContainer" class="tile help_element__visible" variant="text">
@@ -462,37 +492,37 @@
 
                                   <!-- Komponente: Infobereich -->
                                   <v-card id="helpComponentInfoCard" height="91%" width="100%" variant="text" class="px-2 d-flex align-center justify-center help_element__notVisible">
-                                    <v-card id="helpInfoCardContainer" class="pa-1 hollow help_element__visible" height="100%" width="50%">
-                                      <v-card id="infoCard" class="pa-2 help_componend__infobereich__base" height="100%" width="100%">
+                                    <v-card id="helpInfoCardContainer" class="pa-1 hollow help_element__visible" height="100%" width="50%" variant="text">
+                                      <v-card id="infoCard" class="pa-2 help__infobereich_base" height="100%" width="100%" variant="text">
                                         <v-col class="pa-0">
                                             
                                           <!-- Unit Titel -->
                                           <v-row no-gutters class="pb-2">
-                                            <v-card id="helpInfoCardUnitTitle" class="help_subcomponend__notFocus d-flex" width="100%" height="35">
-                                              <v-card-title class="d-flex align-center justify-center">Unit Name</v-card-title>
+                                            <v-card id="helpInfoCardUnitTitle" class="help_subcomponend__notFocus" width="100%" height="35" variant="text">
+                                              <v-card class="help__infobereich_title" width="100%" height="100%" variant="text"></v-card>
                                             </v-card>
                                           </v-row>
                                             
                                           <!-- Unit Bild -->
-                                          <v-row no-gutters class="pb-3">
-                                            <v-card id="helpInfoCardUnitImage" class="help_subcomponend__notFocus" width="100%" height="230">
-                                              <v-card  class="pa-2 infobereich__image_outside " width="100%" height="100%">
-                                                <v-card class="infobereich__image_inside" width="100%" height="200"></v-card>
+                                          <v-row no-gutters class="pb-2">
+                                            <v-card id="helpInfoCardUnitImage" class="help_subcomponend__notFocus" width="100%" height="230" variant="text">
+                                              <v-card class="pa-2 help__infobereich_image_outside" width="100%" height="100%" variant="text">
+                                                <v-card class="help__infobereich_image_inside" width="100%" height="200" variant="text"></v-card>
                                               </v-card>
                                             </v-card>
                                           </v-row>
                                             
                                           <!-- Unit Attribute -->
-                                          <v-row no-gutters class="pb-3">
-                                            <v-card id="helpInfoCardUnitAttributes" class="py-0 help_subcomponend__notFocus" height="188" width="100%">
-                                              <v-card class="py-1 pa-1 infobereich__attributes_list" height="100%"></v-card>
+                                          <v-row no-gutters class="pb-2">
+                                            <v-card id="helpInfoCardUnitAttributes" class="py-0 help_subcomponend__notFocus" height="188" width="100%" variant="text">
+                                              <v-card class="py-1 pa-1 help__infobereich_attributes_list" height="100%" variant="text"></v-card>
                                             </v-card>
                                           </v-row>
                                           
                                           <!-- Unit löschen -->
                                           <v-row no-gutters>
-                                            <v-card id="helpInfoCardUnitDelete" class="help_subcomponend__notFocus" height="40" width="100%">
-                                              <v-btn class="infobereich__delete_unit_button" height="100%" width="100%">
+                                            <v-card id="helpInfoCardUnitDelete" class="help_subcomponend__notFocus" height="40" width="100%" variant="text">
+                                              <v-btn class="help__infobereich_delete_unit_button" height="100%" width="100%">
                                                 Unit Löschen
                                               </v-btn>
                                             </v-card>
@@ -556,40 +586,50 @@
                                     
                                     <!-- Header -->
                                     <v-row no-gutters style="height: 6%">
-                                      <v-card rounded="0" height="100%" width="100%" style="border: 1px; border-style: solid"></v-card>
+                                      <v-card class="help__navigation_header" rounded="0" height="100%" width="100%"></v-card>
                                     </v-row>
                                     
                                     <!-- Components -->
                                     <v-row no-gutters style="height: 88%">
                                       <v-col cols="3" class="fill-height d-flex flex-column">
-                                        <v-card class="d-flex align-center justify-center help_componend__notFocus" rounded="0" height="10%" width="100%">
-                                          <v-card-title class="text-caption">
-                                            Hilfe
-                                          </v-card-title>
+                                        <!-- Hilfe -->
+                                        <v-card class="help_componend__notFocus" rounded="0" height="10%" width="100%">
+                                          <v-card class="d-flex align-center justify-center help__navigation_hilfe" height="100%" width="100%">
+                                            <v-card-title class="text-caption">
+                                              Hilfe
+                                            </v-card-title>
+                                          </v-card>
                                         </v-card>
-                                        <v-btn id="helpSmallNavigationmodule" class="text-caption help_componend__notFocus" rounded="0" height=90% width="100%" @click="changeHelpPageComponent('module')">
-                                          Modul
+                                        <!-- module -->
+                                        <v-btn id="helpSmallNavigationmodule" class="help__navigation_module text-caption help_componend__notFocus" rounded="0" height=90% width="100%" @click="changeHelpPageComponent('module')">
+                                            Modul
                                         </v-btn>
                                       </v-col>
                                       <v-col cols="6" class="fill-height d-flex flex-column">
-                                        <v-btn id="helpSmallNavigationharrisMatrixTools" class="text-caption help_componend__notFocus" rounded="0" height="10%" width="100%" @click="changeHelpPageComponent('harrisMatrixTools')">
-                                          Harris-Matrix - Tools
+                                        <!-- System-Tools -->
+                                        <v-btn id="helpSmallNavigationharrisMatrixTools" class="help__navigation_system_tools text-caption help_componend__notFocus" rounded="0" height="10%" width="100%" @click="changeHelpPageComponent('systemTools')">
+                                          System-Tools
                                         </v-btn>
-                                        <v-btn id="helpSmallNavigationgraph3dTools" class="text-caption help_componend__notFocus" rounded="0" height="10%" width="100%" @click="changeHelpPageComponent('graph3dTools')">
-                                          Graph/3D - Tools
+                                        <!-- Graph/3D-Tools -->
+                                        <v-btn id="helpSmallNavigationgraph3dTools" class="help__navigation_graph-3d_tools text-caption help_componend__notFocus" rounded="0" height="10%" width="100%" @click="changeHelpPageComponent('graph3dTools')">
+                                          Graph/3D-Tools
                                         </v-btn>
-                                        <v-btn id="helpSmallNavigationgraph3dEditor" class="text-caption help_componend__notFocus" rounded="0" height="80%" width="100%" @click="changeHelpPageComponent('graph3dEditor')">
-                                          Graph/3D - Editor
+                                        <!-- Graph/3D-Editor -->
+                                        <v-btn id="helpSmallNavigationgraph3dEditor" class="help__navigation_graph-3d_editor text-caption help_componend__notFocus" rounded="0" height="80%" width="100%" @click="changeHelpPageComponent('graph3dEditor')">
+                                          Graph/3D-Editor
                                         </v-btn>
                                       </v-col>
                                       <v-col cols="3" class="fill-height d-flex flex-column">
-                                        <v-btn id="helpSmallNavigationglossar" class="text-caption help_componend__notFocus" rounded="0" height="10%" width="100%" @click="changeHelpPageComponent('glossar')">
+                                        <!-- Glossar -->
+                                        <v-btn id="helpSmallNavigationglossar" class="help__navigation_glossar text-caption help_componend__notFocus" rounded="0" height="10%" width="100%" @click="changeHelpPageComponent('glossar')">
                                           Glossar
                                         </v-btn>
-                                        <v-btn id="helpSmallNavigationchangeEditor" class="text-caption help_componend__notFocus" rounded="0" height="10%" width="100%" @click="changeHelpPageComponent('changeEditor')">
+                                        <!-- Editor wechseln -->
+                                        <v-btn id="helpSmallNavigationchangeEditor" class="help__navigation_editor_wechseln text-caption help_componend__notFocus" rounded="0" height="10%" width="100%" @click="changeHelpPageComponent('changeEditor')">
                                           Editor wechsel
                                         </v-btn>
-                                        <v-btn id="helpSmallNavigationinfoCard" class="text-caption help_componend__notFocus" rounded="0" height="80%" width="100%" @click="changeHelpPageComponent('infoCard')">
+                                        <!-- Infobereich -->
+                                        <v-btn id="helpSmallNavigationinfoCard" class="help__navigation_infobereich text-caption help_componend__notFocus" rounded="0" height="80%" width="100%" @click="changeHelpPageComponent('infoCard')">
                                           Infobereich
                                         </v-btn>
                                       </v-col>
@@ -597,7 +637,7 @@
                                     
                                     <!-- Footer -->
                                     <v-row no-gutters style="height: 6%">
-                                      <v-card rounded="0" height="100%" width="100%" style="border: 1px; border-style: solid"></v-card>
+                                      <v-card class="help__navigation_footer" rounded="0" height="100%" width="100%" style="border: 1px; border-style: solid"></v-card>
                                     </v-row>
                                     
                                   </v-card>
@@ -618,10 +658,56 @@
                                   
                                 <!-- Name und Beschreibung der Subkomponente -->
                                 <v-card id="subcomponentDescription" class="tile help_element__notVisible" height="100%" width="100%" rounded="0">
+                                  <!-- Name -->
                                   <v-card-title class="d-flex align-center justify-center text-h4">
                                     {{ aktiveHelpPageSubcomponentName }}
                                   </v-card-title>
-                                  <v-text class="pa-5 text-h6">{{ aktiveHelpPageSubcomponent.description }}</v-text>
+                                  <!-- Beschreibung -->
+                                  <v-card class="pl-5" variant="text">
+                                    <v-text class="text-h6">{{ aktiveHelpPageSubcomponent.description }}</v-text>
+                                  </v-card>
+                                  <v-card class="pa-2" variant="text" elevation="0">
+                                    <v-list max-height="592" class="help_subcomponend_info__liste">
+                                      <v-list-item variant="text">
+                                        <v-row no-gutters>
+                                          <v-col cols="5">
+                                            <v-card class="help_subcomponend_info__base d-flex align-center justify-center" elevation="0" height="200">
+                                              <img src="@/components/graph-editor-components/Images/hover.jpg" height="102">
+                                            </v-card>
+                                          </v-col>  
+                                          <v-col cols="7">
+                                            <v-card class="pt-4 help_subcomponend_info__base" elevation="0">
+                                              <v-text class="text-h5">1. Um eine der beiden Unit-typen (Deposit links und Interface rechts) auszuwählen, hovert man mit der Maus über einen der beiden Bereiche. Danach wählt man über eine der beiden Unit-Typen über einen Klick mit der linken Maustatste aus und hält diese dabei gedrückt.</v-text>
+                                            </v-card>
+                                          </v-col>  
+                                        </v-row>
+                                      </v-list-item>
+                                      <v-list-item variant="text">
+                                        <v-row no-gutters>
+                                          <v-col cols="5">
+                                            <v-card class="help_subcomponend_info__base d-flex align-center justify-center" elevation="0">
+                                              <img src="@/components/graph-editor-components/Images/bewegen.jpg" height="400">
+                                            </v-card>
+                                          </v-col>
+                                          <v-col cols="7">
+                                            <v-text class="text-h5">2. Jetzt zieht man den zuvor gewählten Unit-Typ in den Bereich der Graph/3D-Editor Komponente. Eine Verfärbung des Bereichs signalisiert, dass eine Unit des ausgewählten Typs erstellt werden kann.</v-text>
+                                          </v-col>
+                                        </v-row>
+                                      </v-list-item>
+                                      <v-list-item variant="text">
+                                        <v-row no-gutters>
+                                          <v-col cols="5">
+                                            <v-card class="help_subcomponend_info__base d-flex align-center justify-center" elevation="0">
+                                              <img src="@/components/graph-editor-components/Images/fertig.jpg" height="400">
+                                            </v-card>
+                                          </v-col>
+                                          <v-col cols="7">
+                                            <v-text class="text-h5">3. Abschließend lässt man die linke Maustatse los, worauf eine neue Unit an der Position des Mauszeigers erstellt wird.</v-text>
+                                          </v-col>
+                                        </v-row>
+                                      </v-list-item>
+                                    </v-list>
+                                  </v-card>
                                 </v-card>
 
                               </v-card>
@@ -655,29 +741,29 @@
                   </v-col>
                 </v-row>
               </v-card>
-              <v-card class="pa-1 hollow" :height="windowHeight - 328">
+              <v-card class="px-0 hollow" :height="windowHeight - 328">
                 
                 <!-- Screenshot-Modul -->
-                <v-card id="screenshot_module" class="pa-2 screenshot_module__base" :height="windowHeight - 345" width="367" style="position:absolute; z-index: 1; opacity: 1;">
+                <v-card id="screenshot_module" class="pa-2 screenshot_module__base" height="100%" width="100%" style="position:absolute; z-index: 1; opacity: 1;">
                   <v-card variant="text" width="100%">
                     <!-- Image name -->
                     <v-text>Dateiname:</v-text>
-                    <v-text-field hide-details class="pa-1 mb-5" v-model="imageFileName"></v-text-field>
+                    <v-text-field hide-details class="mb-5 module__textfield" v-model="imageFileName"></v-text-field>
                     <!-- Image format -->
                     <v-text>Dateinformat:</v-text>
                     <v-row no-gutters style="height: 50px;">
                       <v-col class="px-1">
-                        <v-btn class="infobereich__attributes_type_title_button" width="100%" height="100%" @click="takeScreenshot('png')">
+                        <v-btn class="module__button" width="100%" height="100%" @click="takeScreenshot('png')">
                           PNG
                         </v-btn>
                       </v-col>
                       <v-col class="px-1">
-                        <v-btn class="infobereich__attributes_type_title_button" width="100%" height="100%" @click="takeScreenshot('jpeg')">
+                        <v-btn class="module__button" width="100%" height="100%" @click="takeScreenshot('jpeg')">
                           JPEG
                         </v-btn>
                       </v-col>
                       <v-col class="px-1">
-                        <v-btn class="infobereich__attributes_type_title_button" width="100%" height="100%" @click="takeScreenshot('svg')">
+                        <v-btn class="module__button" width="100%" height="100%" @click="takeScreenshot('svg')">
                           SVG
                         </v-btn>
                       </v-col>
@@ -686,32 +772,38 @@
                 </v-card>
                   
                 <!-- Group-Modul -->
-                <v-card id="group_module" class="pa-2 group_module__base d-flex align-center justify-center" :height="windowHeight - 345" width="367" style="position:absolute; z-index: 0; opacity: 1;">
+                <v-card id="group_module" class="pa-2 group_module__base d-flex align-center justify-center" height="100%" width="100%" style="position:absolute; z-index: 0; opacity: 1;">
                   <img src="@/components/graph-editor-components/Images/work_in_progress_background.jpg" height="1010">
                 </v-card>
 
                 <!-- View-Modul -->
-                <v-card id="view_module" class="pa-2 view_module__base d-flex align-center justify-center" :height="windowHeight - 345" width="367" style="position:absolute; z-index: 0; opacity: 1;">
+                <v-card id="view_module" class="pa-2 view_module__base d-flex align-center justify-center" height="100%" width="100%" style="position:absolute; z-index: 0; opacity: 1;">
                   <img src="@/components/graph-editor-components/Images/work_in_progress_background.jpg" height="1010">
                 </v-card>
 
                 <!-- Exp/Imp-Modul -->
-                <v-card id="exp/imp_module" class="pa-2 exp-imp_module__base" :height="windowHeight - 345" width="367" style="position:absolute; z-index: 0; opacity: 1;">
+                <v-card id="exp/imp_module" class="pa-2 exp-imp_module__base" height="100%" width="100%" style="position:absolute; z-index: 0; opacity: 1;">
                   <v-row no-gutters>
                     <!-- Export -->
-                    <v-card class="pa-2" :height="windowHeight - 838" width="100%" variant="text" style="border: 1px; border-style: solid; border-color: white;">
+                    <v-card class="pa-5" :height="windowHeight - 838" width="100%" variant="text" style="border: 1px; border-style: solid; border-color: white;">
                       <v-card-title class="d-flex align-center justify-center pa-0 pb-2" >Export</v-card-title>
-                      <v-btn class="infobereich__attributes_type_title_button" width="100%" height="50" @click="exportData()">
-                        Press Me
+                      <v-btn class="mb-2 module__button" width="100%" height="100" @click="exportData()">
+                        Harris-Matrix
+                      </v-btn>
+                      <v-btn class="module__button" width="100%" height="100" @click="exportData()">
+                        Harris-Matrix + Modelle
                       </v-btn>
                     </v-card>
                   </v-row>
                   <v-row no-gutters>
                     <!-- Import -->
-                    <v-card class="pa-2" :height="windowHeight - 838" width="100%" variant="text" style="border: 1px; border-style: solid; border-color: white;">
+                    <v-card class="pa-5" :height="windowHeight - 838" width="100%" variant="text" style="border: 1px; border-style: solid; border-color: white;">
                       <v-card-title class="d-flex align-center justify-center pa-0 pb-2" >Import</v-card-title>
-                      <v-btn class="infobereich__attributes_type_title_button" width="100%" height="50" @click="createImportDataDialog = true">
-                        Press Me
+                      <v-btn class="mb-2 module__button" width="100%" height="100" @click="createImportDataDialog = true">
+                        Harris-Matrix
+                      </v-btn>
+                      <v-btn class="module__button" width="100%" height="100" @click="createImportDataDialog = true">
+                        Harris-Matrix + Modelle
                       </v-btn>
                       <v-dialog v-model="createImportDataDialog" max-width="320" persistent>
                         <v-card class="pa-4">
@@ -731,12 +823,12 @@
                 </v-card>
 
                 <!-- Filter -->
-                <v-card id="filter_module" class="pa-2 filter_module__base d-flex align-center justify-center" :height="windowHeight - 345" width="367" style="position:absolute; z-index: 0; opacity: 1;">
+                <v-card id="filter_module" class="pa-2 filter_module__base d-flex align-center justify-center" height="100%" width="100%" style="position:absolute; z-index: 0; opacity: 1;">
                   <img src="@/components/graph-editor-components/Images/work_in_progress_background.jpg" height="1010">
                 </v-card>
                   
                 <!-- Timemodel -->
-                <v-card id="timemodel_module" class="pa-2 timemodel_module__base d-flex align-center justify-center" :height="windowHeight - 345" width="367" style="position:absolute; z-index: 0; opacity: 1;">
+                <v-card id="timemodel_module" class="pa-2 timemodel_module__base d-flex align-center justify-center" height="100%" width="100%" style="position:absolute; z-index: 0; opacity: 1;">
                   <img src="@/components/graph-editor-components/Images/work_in_progress_background.jpg" height="1010">
                 </v-card>
                   
@@ -751,36 +843,37 @@
         <!-- > > > > > > ------ < < < < < < -->
         <div>
           
-          <!-- Harris-Matrizen -->
+          <!-- System-Tools -->
           <v-row no-gutters style="width:fit-content">
-            <v-card class="tile" height="100px" :width="windowWidth - 816">
+            <v-card class="tile" height="100" :width="windowWidth - 816">
               <v-row no-gutters>
                 
-                <!-- Manuell save -->
+                <!-- Bearbeitungsstand speichern -->
                 <v-col>
-                  <v-card class="px-5 py-0 units__graph_base" variant="text">
+                  <v-card class="px-5 py-0 system_tools__base" variant="text" height="100%">
                     <v-col class="pa-0" align="center">
 
                       <!-- Subcomponent title -->
                       <v-card class="pt-1" variant="text">
                         <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
-                          Harris-Matrix Speichern
+                          Bearbeitungsstand Speichern
                         </v-card-title>
                       </v-card>
                       
                       <!-- Save -->
                       <v-card class="pt-1 my-3" height="fit-content" variant="text">
-                        <v-btn width="100%" @click="saveAll()">
+                        <v-btn class="system_tools__button" width="100%" @click="saveAll()">
                           Speichern
                         </v-btn>
                       </v-card>
+                      
                     </v-col>
                   </v-card>
                 </v-col>
                 
                 <!-- Switch processing steps -->
                 <v-col>
-                  <v-card class="px-5 py-0 units__graph_base" variant="text">
+                  <v-card class="px-5 py-0 system_tools__base" variant="text" height="100%">
                     <v-col class="pa-0" align="center">
                       
                       <!-- Subcomponent title -->
@@ -823,9 +916,9 @@
             </v-card>   
           </v-row>
           
-          <!-- Units -->
+          <!-- Graph/3D-Tools -->
           <v-row no-gutters style="width:fit-content">
-            <v-card class="tile" height="100px" :width="windowWidth - 816">
+            <v-card class="tile" height="100" :width="windowWidth - 816">
               <v-row no-gutters>
                 
                 <!-- 3D-Editor Tools -->
@@ -833,7 +926,7 @@
                   <v-row no-gutters>
                     
                     <!-- Unit List -->
-                    <v-col>
+                    <v-col cols="6">
                       <v-card class="px-5 py-0 units__3d_base" variant="text" height="92">
                         <v-col class="pa-0" align="center">
                           <v-card class="pt-1 mb-1" variant="text">
@@ -844,7 +937,7 @@
                           <v-card class="pt-2" variant="text">
                             <v-slide-group mandatory>
                               <v-slide-group-item v-for="n in unitListContent" :key="n">
-                                <v-btn :id=n.id class="mx-1 units__3d_list_button_notClicked" rounded v-on:click="fillInfoCard3d(n.id)" :style=n.style>
+                                <v-btn :id=n.id :class=n.class rounded v-on:click="fillInfoCard3d(n.id)">
                                   {{ n.label }}
                                 </v-btn>
                               </v-slide-group-item>
@@ -854,66 +947,89 @@
                       </v-card>
                     </v-col>
                     
-                    <!-- Next Tool -->
-                    <!-- <v-col>
-                      <v-card class="px-5 py-0 units__3d_base" variant="text">
+                    <!-- Modelle schneiden -->
+                    <v-col cols="6">
+                      <v-card class="px-5 py-0 units__3d_base" variant="text" height="92">
                         <v-col class="pa-0" align="center">
-                          <v-card class="pt-1 mb-1" variant="text">
+
+                          <!-- Subcomponent title -->
+                          <v-card class="pt-1" variant="text">
                             <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
-                              Auflistung aller Units2
+                              Modelle schneiden
                             </v-card-title>
                           </v-card>
-                          <Sidebar :highestIndexOfDefaultNode="highestIndexOfDefaultNode"/>
+
+                          <!-- Schneiden starten -->
+                          <v-card class="pt-1 my-3" height="fit-content" variant="text">
+                            <v-btn class="units__3d_cut_button" width="100%" @click="loadCutTool()">
+                              Schneidmodus starten
+                            </v-btn>
+                          </v-card>
+                          
                         </v-col>
                       </v-card>
-                    </v-col> -->
+                    </v-col>
                     
                   </v-row>
                 </v-card>
 
                 <!-- Graph-Editor Tools -->
-                <v-card id="units_graphTools" width="100%" class="visible">
+                <v-card id="units_graphTools" width="100%" height="100%" class="visible">
                   <v-row no-gutters>
                     
                     <!-- Unit creation -->
                     <v-col>
-                      <v-card id="unitCreation" class="px-5 py-0 units__graph_base" variant="text" height="100%">
-                        <v-col class="pa-0" align="center">
-                          <v-card class="pt-1 mb-1" variant="text">
-                            <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
-                              Neue Unit erstellen
-                            </v-card-title>
-                          </v-card>
+                      <v-card id="unitCreation" class="units__graph_base" variant="text" height="92">
+                        <v-card class="pt-1 mb-1" variant="text">
+                          <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
+                            Neue Unit erstellen
+                          </v-card-title>
+                        </v-card>
+                        <v-card align="center" variant="text" height="100%">
                           <Sidebar :highestIndexOfDefaultNode="highestIndexOfDefaultNode"/>
-                        </v-col>
+                        </v-card>
                       </v-card>
                     </v-col>
                       
                     <!-- Unit Search -->
                     <v-col>
-                      <v-card class="px-5 units__graph_base" variant="text" height="100%">
+                      <v-card class="px-5 units__graph_base" variant="text" height="92">
                         <v-col class="pa-0" align="center">
                           <v-card class="pt-1 mb-1" variant="text">
                             <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
                               Unit suchen
                             </v-card-title>
                           </v-card>
-                          <v-combobox class="mb-2" style="height: 52px; width: 250px" hide-selected :items="unitSearchDropDownMenueItems" persistent-hint :hide-no-data="true" v-model="unitSearchInput"></v-combobox>
+                          <v-combobox class="mb-2 units__graph_search_field" style="height: 52px; width: 250px" hide-selected :items="unitSearchDropDownMenueItems" persistent-hint :hide-no-data="true" v-model="unitSearchInput"></v-combobox>
                         </v-col>
                       </v-card>
                     </v-col>
                     
-                    <!-- Unit cleanup -->
+                    <!-- Unit Sort -->
                     <v-col>
                       <v-card class="px-5 units__graph_base" variant="text" height="100%">
-                        <v-col class="pa-0" align="center">
+                        <v-row no-gutters class="d-flex justify-center">
                           <v-card class="pt-1 mb-3" variant="text">
                             <v-card-title class="pa-0" style="text-align: center; line-height: 100%;">
-                              Unit aufräumen
+                              Units sortieren
                             </v-card-title>
                           </v-card>
-                          <v-btn @click="cleanUp">Harris-Matrix anordnen</v-btn>
-                        </v-col>
+                        </v-row>
+                        <v-row no-gutters>
+                          <v-col class="ml-6" align="right" cols="7">
+                            <v-btn class="units__graph_sort_button" @click="cleanUp">Sortieren</v-btn>
+                          </v-col>
+                          <v-col class="ml-4" cols="4" align="right">
+                            <v-btn height="100%" width="50%" class="units__graph_sort_button">
+                              <v-icon size="x-large">mdi-table-eye-off</v-icon>
+                            </v-btn>
+                          </v-col>
+                          <!-- <v-col class="ml-4" cols="4" align="right">
+                            <v-btn height="100%" width="50%" class="units__graph_sort_button_clicked">
+                              <v-icon size="x-large">mdi-table-eye</v-icon>
+                            </v-btn>
+                          </v-col> -->
+                        </v-row>
                       </v-card>
                     </v-col>
                     
@@ -926,8 +1042,8 @@
   
           <!-- Editoren -->
           <v-row no-gutters style="width:fit-content;">
-            <canvas id="canvas_3d" class="tile notVisible" :height="windowHeight - 328" :width="windowWidth - 825"></canvas>
-            <v-card id="canvas_graph" class="dnd-flow plato visible" @drop="onDrop" :height="windowHeight - 320" :width="windowWidth - 817" style="position:relative; z-index: 0; opacity: 1;" >
+            <canvas id="canvas_3d" class="notVisible model_editor__background" :height="windowHeight - 328" :width="windowWidth - 825"></canvas>
+            <v-card id="canvas_graph" class="dnd-flow visible graph_editor__background" @drop="onDrop" :height="windowHeight - 320" :width="windowWidth - 817" style="position:relative; z-index: 0; opacity: 1;">
               <VueFlow :maxZoom="1" :minZoom="0.2" :connectOnClick=false @dragover="onDragOver" @dragleave="onDragLeave" :nodeTypes="nodeTypes" deleteKeyCode="Backspace" :zoomOnDoubleClick=false>
                 <template #edge-custom="customEdgeProps">
                   <CustomEdge
@@ -948,6 +1064,176 @@
                 </DropzoneBackground>
               </VueFlow>
             </v-card>
+            
+            <!-- <v-card class="ma-5" height="945" width="200" style="position:absolute; z-index: 2; opacity: 1; border-radius: 0%;">
+              <v-card height="100%" width="100%" style="border: 8px; border-style: ridge; border-radius: 0%; border-color: #874e1c; background-color: #866345;">
+                
+                <v-card variant="text" height="100%" width="100%" class="d-flex justify-center">
+                  <v-row no-gutters>
+                    <v-col cols="12" class="pa-0 mt-9 d-flex justify-center">
+                      
+                      <v-card style="height: 100px; width: 100px; line-height: 86px; text-align: center; color: black; background-color:rgb(30, 154, 30); border: 2px solid #ffffff; border-radius: 10%; padding: 6px;">
+                        <Handle style="height: 8px; width: 18px; border: 2px; border-style: solid; border-color: #FFFFFF; border-radius: 0%;" :position="Position.Top"/>
+                        <Handle style="height: 18px; width: 8px; border: 2px; border-style: solid; border-color: #FFFFFF; border-radius: 0%;" :position="Position.Left"/>
+                        <v-card class="d-flex align-center justify-center" height="100%" width="100%" variant="outlined">
+                          <v-card-text class="pa-1" style="text-align: center; line-height: 100%;">Neue Unit_0</v-card-text>
+                        </v-card>
+                        <Handle style="height: 18px; width: 8px; border: 2px; border-style: solid; border-color: #FFFFFF; border-radius: 0%;" :isValidConnection=testForValidConnection type="target" :position="Position.Right"/>
+                        <Handle style="height: 8px; width: 18px; border: 2px; border-style: solid; border-color: #FFFFFF; border-radius: 0%;" :isValidConnection=testForValidConnection type="target" :position="Position.Bottom"/>
+                      </v-card>
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0 d-flex justify-center">
+                      
+                      <v-card style="height: 100px; width: 100px; line-height: 86px; text-align: center; color: black; background-color:rgb(30, 154, 30); border: 2px solid #ffffff; border-radius: 10%; padding: 6px;">
+                        <Handle style="height: 8px; width: 18px; border: 2px; border-style: solid; border-color: #FFFFFF; border-radius: 0%;" :position="Position.Top"/>
+                        <Handle style="height: 18px; width: 8px; border: 2px; border-style: solid; border-color: #FFFFFF; border-radius: 0%;" :position="Position.Left"/>
+                        <v-card class="d-flex align-center justify-center" height="100%" width="100%" variant="outlined">
+                          <v-card-text class="pa-1" style="text-align: center; line-height: 100%;">Neue Unit_3</v-card-text>
+                        </v-card>
+                        <Handle style="height: 18px; width: 8px; border: 2px; border-style: solid; border-color: #FFFFFF; border-radius: 0%;" :isValidConnection=testForValidConnection type="target" :position="Position.Right"/>
+                        <Handle style="height: 8px; width: 18px; border: 2px; border-style: solid; border-color: #FFFFFF; border-radius: 0%;" :isValidConnection=testForValidConnection type="target" :position="Position.Bottom"/>
+                      </v-card>
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0 d-flex justify-center">
+                      
+                      <v-card style="height: 100px; width: 100px; line-height: 100px; text-align: center; color: black; background-color:rgb(172, 108, 24); border: 2px solid #ffffff; border-radius: 100%; padding: 7%;">
+                        <Handle style="height: 8px; width: 18px; border: 2px; border-style: solid; border-color: #FFFFFF; border-radius: 0%; border-top-left-radius: 100%; border-top-right-radius: 100%;" :position="Position.Top"/>
+                        <Handle style="height: 18px; width: 8px; border: 2px; border-style: solid; border-color: #FFFFFF; border-radius: 0%; border-bottom-left-radius: 100%; border-top-left-radius: 100%;" :position="Position.Left"/>
+                        <v-card class="d-flex align-center justify-center" height="100%" width="100%" variant="outlined" style="border-radius: 100%;">
+                          <v-card-text class="pa-1" style="text-align: center; line-height: 100%;">Neue Unit_4</v-card-text>
+                        </v-card>
+                        <Handle style="height: 18px; width: 8px; border: 2px; border-style: solid; border-color: #FFFFFF; border-radius: 0%; border-bottom-right-radius: 100%; border-top-right-radius: 100%;" :position="Position.Right"/>
+                        <Handle style="height: 8px; width: 18px; border: 2px; border-style: solid; border-color: #FFFFFF; border-radius: 0%; border-bottom-left-radius: 100%; border-bottom-right-radius: 100%;" :position="Position.Bottom"/>
+                      </v-card>
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0 d-flex justify-center">
+
+                      <v-card style="height: 100px; width: 100px; line-height: 100px; text-align: center; color: black; background-color:rgb(172, 108, 24); border: 2px solid #ffffff; border-radius: 100%; padding: 7%;">
+                        <Handle style="height: 8px; width: 18px; border: 2px; border-style: solid; border-color: #FFFFFF; border-radius: 0%; border-top-left-radius: 100%; border-top-right-radius: 100%;" :position="Position.Top"/>
+                        <Handle style="height: 18px; width: 8px; border: 2px; border-style: solid; border-color: #FFFFFF; border-radius: 0%; border-bottom-left-radius: 100%; border-top-left-radius: 100%;" :position="Position.Left"/>
+                        <v-card class="d-flex align-center justify-center" height="100%" width="100%" variant="outlined" style="border-radius: 100%;">
+                          <v-card-text class="pa-1" style="text-align: center; line-height: 100%;">Neue Unit_7</v-card-text>
+                        </v-card>
+                        <Handle style="height: 18px; width: 8px; border: 2px; border-style: solid; border-color: #FFFFFF; border-radius: 0%; border-bottom-right-radius: 100%; border-top-right-radius: 100%;" :position="Position.Right"/>
+                        <Handle style="height: 8px; width: 18px; border: 2px; border-style: solid; border-color: #FFFFFF; border-radius: 0%; border-bottom-left-radius: 100%; border-bottom-right-radius: 100%;" :position="Position.Bottom"/>
+                      </v-card>
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0 d-flex justify-center">
+
+                      <v-card style="height: 100px; width: 100px; line-height: 86px; text-align: center; color: black; background-color:rgb(30, 154, 30); border: 2px solid #ffffff; border-radius: 10%; padding: 6px;">
+                        <Handle style="height: 8px; width: 18px; border: 2px; border-style: solid; border-color: #FFFFFF; border-radius: 0%;" :position="Position.Top"/>
+                        <Handle style="height: 18px; width: 8px; border: 2px; border-style: solid; border-color: #FFFFFF; border-radius: 0%;" :position="Position.Left"/>
+                        <v-card class="d-flex align-center justify-center" height="100%" width="100%" variant="outlined">
+                          <v-card-text class="pa-1" style="text-align: center; line-height: 100%;">Neue Unit_9</v-card-text>
+                        </v-card>
+                        <Handle style="height: 18px; width: 8px; border: 2px; border-style: solid; border-color: #FFFFFF; border-radius: 0%;" :isValidConnection=testForValidConnection type="target" :position="Position.Right"/>
+                        <Handle style="height: 8px; width: 18px; border: 2px; border-style: solid; border-color: #FFFFFF; border-radius: 0%;" :isValidConnection=testForValidConnection type="target" :position="Position.Bottom"/>
+                      </v-card>
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                    <v-col cols="12" class="pa-0">
+                      
+                    </v-col>
+                  </v-row>
+                </v-card>
+                
+              </v-card>
+            </v-card> -->
+            
           </v-row>
           
         </div>
@@ -960,17 +1246,94 @@
           <!-- Glossar -->
           <v-row no-gutters style="width:fit-content;">
             <v-card class="pa-1 d-flex align-center justify-center tile" height="100" width="400">
-              <v-btn class="pa-7 px-14 glossar__button" height="100%" width="100%" v-on:click="openGlossar">
+              <v-btn class="pa-7 px-14 glossar__button" height="100%" width="100%" @click="createGlossarDialog = true" elevation="24" >
                 Glossar
               </v-btn>
             </v-card>
+            <v-dialog v-model="createGlossarDialog" persistent >
+              <v-card :height="windowHeight" class="tile">
+                  
+                <!-- Pages navigation -->
+                <v-row no-gutters style="max-height: 6%;">
+                  <!-- Hilfe Überschrift -->
+                  <v-col cols="11">
+                    <v-card class="glossar__base d-flex align-center justify-center" height="100%">
+                      <v-card-Title>Wählen sie einen fachbegriff aus, über die Sie mehr erfahren möchten</v-card-Title>
+                    </v-card>
+                  </v-col>
+                    
+                  <!-- Verlassen-button -->
+                  <v-col cols="1">
+                    <v-card class="pa-2 glossar__base d-flex justify-center" height="100%">
+                      <v-btn class="help__button" width="100%" height="100%" @click="createGlossarDialog = false">
+                        <v-icon size="x-large">mdi-alpha-x-circle</v-icon>
+                      </v-btn>
+                    </v-card>
+                  </v-col>
+                </v-row>
+
+                <!-- Pages -->
+                <v-row no-gutters style="max-width: 100%;">
+                  <v-card class="pa-12 glossar__base" height="100%" width="100%">
+                    <v-expansion-panels>
+                      <v-expansion-panel class="system_tools__button" title="Stratifikation">
+                        <v-expansion-panel-text>
+                          The science dealing with the description of all rock bodies forming the Earth’s crust— sedimentary, igneous, and metamorphic— and their organization into distinctive, useful, mappable units based on their inherent properties or attributes. Stratigraphic procedures include the description, classification, naming, and correlation of these units for the purpose of establishing their relationship in space and their succession in time. <a href="https://watermark.silverchair.com/9780813759388_backmatter.pdf?token=AQECAHi208BE49Ooan9kkhW_Ercy7Dm3ZL_9Cf3qfKAc485ysgAAAx8wggMbBgkqhkiG9w0BBwagggMMMIIDCAIBADCCAwEGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMrRv6SHjACAPG6l4KAgEQgIIC0vhd_zeH4BXSk6i6_Ov3cJJXdrUeZKL849WBn1pbSApdk04b3zinb3YtbFFJSc9eK8OK689qL5npDzhjnyq-nxPImmYwyToVb--zRPgDvjr8d5ui6Ee6KdAFLYBYscN3j6UHULarR25C3QZ2c1X6l8jENPqKjnqZNbmNsFJfrhVlcekHZro11jbQqH0Dj7oSjIkVxTtDKBPJx0w_CM0OVVPLcsyl8tqMZxJmsdanKu5M1b3dTbHIi6QZThwyN4N_NKftc_nSyPz5IQfShq9AaG7cTOyyeWJM0XVrEMRR7uLc2F0idKDwYBYcEyJfsGOna2ayZtvIADSB-B3lDP-sDj3m5Wf2Llbcqw9azNvAPGsp9C7YO6b4faUfjjh2kGAlij-6lw9FaYD1RkDCtfVptSVYz64Zb9PO1hdn_KBjNWvcZ9rvT82ZJ9K9_8SyJHfreGpmV6K01aeDsZm27Y-ZOW1hmlPiBTGxT8rC8KwVgGiXe1VW5wX0cLXMNZhZplXAtGzDujAv1Jwu9taJqadqIICWkinLKFALHffJlUGF4G8xprjgaiGf0nRsKHtvBhFrH5i1MUamoXn__A_S96axYnrrnj5CgNeka3NSCUvDmLahusnUL4gpOTesrqm1805O0beVRzaxARG7B9eXqKZhn5RSiR68P5e0AQSYUro1qi4R2jg6iBHMPqDpDHhO4xOvDDVcDZT_wFuHGo5tLXI8GkJj1eLktL8NlU92AlSxtudcq4ak1Hd3pIrIcOBeGEdgFADUhPSC-fOXF05XXOZiUMG8NSfzpsyKGkv0fLt3bkosIE6_23HHZV0WFeMj-26k1Yw1skWmd33ooA_-qTla4Dv-HF_A-ZN7io5-ZA0JnvT30rToGtgvcYXKowRx61gJTGZxX4GMo9PiluUisjF6aWHYCUNVijBj-SxrDHJf16RjtBzwxC0WhKVLCmphTcky-bsZ"> => Quelle</a>
+                        </v-expansion-panel-text>
+                      </v-expansion-panel>
+                      <v-expansion-panel class="system_tools__button" title="Einheit (Harris-Matrix)">
+                        <v-expansion-panel-text>
+                          A body of rock recognized as a unit (distinct entity) in the classification of the Earth’s rocks, based on any of the many properties and attributes that rocks possess. Stratigraphic units based on one property will not necessarily coincide with those based on another. <a href="https://watermark.silverchair.com/9780813759388_backmatter.pdf?token=AQECAHi208BE49Ooan9kkhW_Ercy7Dm3ZL_9Cf3qfKAc485ysgAAAx8wggMbBgkqhkiG9w0BBwagggMMMIIDCAIBADCCAwEGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMrRv6SHjACAPG6l4KAgEQgIIC0vhd_zeH4BXSk6i6_Ov3cJJXdrUeZKL849WBn1pbSApdk04b3zinb3YtbFFJSc9eK8OK689qL5npDzhjnyq-nxPImmYwyToVb--zRPgDvjr8d5ui6Ee6KdAFLYBYscN3j6UHULarR25C3QZ2c1X6l8jENPqKjnqZNbmNsFJfrhVlcekHZro11jbQqH0Dj7oSjIkVxTtDKBPJx0w_CM0OVVPLcsyl8tqMZxJmsdanKu5M1b3dTbHIi6QZThwyN4N_NKftc_nSyPz5IQfShq9AaG7cTOyyeWJM0XVrEMRR7uLc2F0idKDwYBYcEyJfsGOna2ayZtvIADSB-B3lDP-sDj3m5Wf2Llbcqw9azNvAPGsp9C7YO6b4faUfjjh2kGAlij-6lw9FaYD1RkDCtfVptSVYz64Zb9PO1hdn_KBjNWvcZ9rvT82ZJ9K9_8SyJHfreGpmV6K01aeDsZm27Y-ZOW1hmlPiBTGxT8rC8KwVgGiXe1VW5wX0cLXMNZhZplXAtGzDujAv1Jwu9taJqadqIICWkinLKFALHffJlUGF4G8xprjgaiGf0nRsKHtvBhFrH5i1MUamoXn__A_S96axYnrrnj5CgNeka3NSCUvDmLahusnUL4gpOTesrqm1805O0beVRzaxARG7B9eXqKZhn5RSiR68P5e0AQSYUro1qi4R2jg6iBHMPqDpDHhO4xOvDDVcDZT_wFuHGo5tLXI8GkJj1eLktL8NlU92AlSxtudcq4ak1Hd3pIrIcOBeGEdgFADUhPSC-fOXF05XXOZiUMG8NSfzpsyKGkv0fLt3bkosIE6_23HHZV0WFeMj-26k1Yw1skWmd33ooA_-qTla4Dv-HF_A-ZN7io5-ZA0JnvT30rToGtgvcYXKowRx61gJTGZxX4GMo9PiluUisjF6aWHYCUNVijBj-SxrDHJf16RjtBzwxC0WhKVLCmphTcky-bsZ"> => Quelle</a>
+                        </v-expansion-panel-text>
+                      </v-expansion-panel>
+                      <v-expansion-panel class="system_tools__button" title="Befund">
+                        <v-expansion-panel-text>
+                          Features are non-portable artifacts such as monuments, graves, floors, hearths and other structural edifices that cannot be removed or recovered from their original cultural matrix. Later on Archaeologist started to give importance to eco facts in addition to artifacts and features. <a href="https://archaeology.assam.gov.in/frontimpotentdata/identification-and-exploration-archaeological-sites-and-monuments#:~:text=Features%20are%20non%2Dportable%20artifacts,addition%20to%20artifacts%20and%20features."> => Quelle</a>
+                        </v-expansion-panel-text>
+                      </v-expansion-panel>
+                      <v-expansion-panel class="system_tools__button" title="Schicht">
+                        <v-expansion-panel-text>
+                          A layer (generally tabular body) of rock characterized by certain lithologic properties or attributes that distinguish it from adjacent layers from which it is separated by visible planes of bedding. <a href="https://watermark.silverchair.com/9780813759388_backmatter.pdf?token=AQECAHi208BE49Ooan9kkhW_Ercy7Dm3ZL_9Cf3qfKAc485ysgAAAx8wggMbBgkqhkiG9w0BBwagggMMMIIDCAIBADCCAwEGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMrRv6SHjACAPG6l4KAgEQgIIC0vhd_zeH4BXSk6i6_Ov3cJJXdrUeZKL849WBn1pbSApdk04b3zinb3YtbFFJSc9eK8OK689qL5npDzhjnyq-nxPImmYwyToVb--zRPgDvjr8d5ui6Ee6KdAFLYBYscN3j6UHULarR25C3QZ2c1X6l8jENPqKjnqZNbmNsFJfrhVlcekHZro11jbQqH0Dj7oSjIkVxTtDKBPJx0w_CM0OVVPLcsyl8tqMZxJmsdanKu5M1b3dTbHIi6QZThwyN4N_NKftc_nSyPz5IQfShq9AaG7cTOyyeWJM0XVrEMRR7uLc2F0idKDwYBYcEyJfsGOna2ayZtvIADSB-B3lDP-sDj3m5Wf2Llbcqw9azNvAPGsp9C7YO6b4faUfjjh2kGAlij-6lw9FaYD1RkDCtfVptSVYz64Zb9PO1hdn_KBjNWvcZ9rvT82ZJ9K9_8SyJHfreGpmV6K01aeDsZm27Y-ZOW1hmlPiBTGxT8rC8KwVgGiXe1VW5wX0cLXMNZhZplXAtGzDujAv1Jwu9taJqadqIICWkinLKFALHffJlUGF4G8xprjgaiGf0nRsKHtvBhFrH5i1MUamoXn__A_S96axYnrrnj5CgNeka3NSCUvDmLahusnUL4gpOTesrqm1805O0beVRzaxARG7B9eXqKZhn5RSiR68P5e0AQSYUro1qi4R2jg6iBHMPqDpDHhO4xOvDDVcDZT_wFuHGo5tLXI8GkJj1eLktL8NlU92AlSxtudcq4ak1Hd3pIrIcOBeGEdgFADUhPSC-fOXF05XXOZiUMG8NSfzpsyKGkv0fLt3bkosIE6_23HHZV0WFeMj-26k1Yw1skWmd33ooA_-qTla4Dv-HF_A-ZN7io5-ZA0JnvT30rToGtgvcYXKowRx61gJTGZxX4GMo9PiluUisjF6aWHYCUNVijBj-SxrDHJf16RjtBzwxC0WhKVLCmphTcky-bsZ"> => Quelle</a>
+                        </v-expansion-panel-text>
+                      </v-expansion-panel>
+                      <v-expansion-panel class="system_tools__button" title="Profil">
+                        <v-expansion-panel-text>
+                          When digging, if an archaeologist is creating an artificial edge (like the edges of a trench or a section through a feature) then the edges have to be vertical – as straight as possible. This edge is called the profile. The archaeologist can then study the profile to understand the stratigraphy. The profile provides a picture of what is happening with the soil at that spot. Part of the recording process is then drawing and photographing this profile. <a href="https://www.archaeologic.org/archaeology-glossary} [Accessed: (26 November 2024"> => Quelle</a>
+                        </v-expansion-panel-text>
+                      </v-expansion-panel>
+                      <v-expansion-panel class="system_tools__button" title="Schichtprofil">
+                        <v-expansion-panel-text>
+                          A section gives archaeologists a view of what is happening in the stratigraphy at a certain point, in this way it is similar to a profile. A common method of excavation (especially in commercial archaeology) is to half-section a feature. This means that the archaeologist cuts the feature in half. The remaining artificial edge is the section. This section is then photographed and drawn. <a href="https://www.archaeologic.org/archaeology-glossary} [Accessed: (26 November 2024"> => Quelle</a>
+                        </v-expansion-panel-text>
+                      </v-expansion-panel>
+                      <v-expansion-panel class="system_tools__button" title="Sequenz">
+                        <v-expansion-panel-text>
+                          The study of rock relationships within a chronostratigraphic framework of repetitive, genetically related strata bounded by surfaces of erosion or nondeposition or their correlative conformities. <a href="https://watermark.silverchair.com/9780813759388_backmatter.pdf?token=AQECAHi208BE49Ooan9kkhW_Ercy7Dm3ZL_9Cf3qfKAc485ysgAAAx8wggMbBgkqhkiG9w0BBwagggMMMIIDCAIBADCCAwEGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMrRv6SHjACAPG6l4KAgEQgIIC0vhd_zeH4BXSk6i6_Ov3cJJXdrUeZKL849WBn1pbSApdk04b3zinb3YtbFFJSc9eK8OK689qL5npDzhjnyq-nxPImmYwyToVb--zRPgDvjr8d5ui6Ee6KdAFLYBYscN3j6UHULarR25C3QZ2c1X6l8jENPqKjnqZNbmNsFJfrhVlcekHZro11jbQqH0Dj7oSjIkVxTtDKBPJx0w_CM0OVVPLcsyl8tqMZxJmsdanKu5M1b3dTbHIi6QZThwyN4N_NKftc_nSyPz5IQfShq9AaG7cTOyyeWJM0XVrEMRR7uLc2F0idKDwYBYcEyJfsGOna2ayZtvIADSB-B3lDP-sDj3m5Wf2Llbcqw9azNvAPGsp9C7YO6b4faUfjjh2kGAlij-6lw9FaYD1RkDCtfVptSVYz64Zb9PO1hdn_KBjNWvcZ9rvT82ZJ9K9_8SyJHfreGpmV6K01aeDsZm27Y-ZOW1hmlPiBTGxT8rC8KwVgGiXe1VW5wX0cLXMNZhZplXAtGzDujAv1Jwu9taJqadqIICWkinLKFALHffJlUGF4G8xprjgaiGf0nRsKHtvBhFrH5i1MUamoXn__A_S96axYnrrnj5CgNeka3NSCUvDmLahusnUL4gpOTesrqm1805O0beVRzaxARG7B9eXqKZhn5RSiR68P5e0AQSYUro1qi4R2jg6iBHMPqDpDHhO4xOvDDVcDZT_wFuHGo5tLXI8GkJj1eLktL8NlU92AlSxtudcq4ak1Hd3pIrIcOBeGEdgFADUhPSC-fOXF05XXOZiUMG8NSfzpsyKGkv0fLt3bkosIE6_23HHZV0WFeMj-26k1Yw1skWmd33ooA_-qTla4Dv-HF_A-ZN7io5-ZA0JnvT30rToGtgvcYXKowRx61gJTGZxX4GMo9PiluUisjF6aWHYCUNVijBj-SxrDHJf16RjtBzwxC0WhKVLCmphTcky-bsZ"> => Quelle</a>
+                        </v-expansion-panel-text>
+                      </v-expansion-panel>
+                      <v-expansion-panel class="system_tools__button" title="Oberfläche">
+                        <v-expansion-panel-text>
+                          This term refers to the point of contact between different stratigraphic layers or units. Interfaces can be the result of natural processes such as erosion or deposition, or they can be the result of human activity, such as the construction of a wall or the digging of a pit. In the stratigraphic record, interfaces often represent points of change or transition, and studying them can provide important insights into the sequence and timing of events at an archaeological site. Apart from cuts (which form a special type of interface) interfaces are not commonly numbered as separate contexts, or recorded in the Matrix as a matter of course. <a href="https://archgoodpractice.com/glossary/#:~:text=be%20separately%20subgrouped.-,Deposit,waste%20products%2C%20or%20other%20debris."> => Quelle</a>
+                        </v-expansion-panel-text>
+                      </v-expansion-panel>
+                      <v-expansion-panel class="system_tools__button" title="Sediment">
+                        <v-expansion-panel-text>
+                          In archaeology, a ‘deposit’ refers to the material left behind by a human activity, or sometimes natural processes. It can be a single event or the accumulated result of many. Often discussed as being either a layer or a fill, this material can include soil, artefacts, waste products, or other debris. <a href="https://archgoodpractice.com/glossary/#:~:text=be%20separately%20subgrouped.-,Deposit,waste%20products%2C%20or%20other%20debris."> => Quelle</a>
+                        </v-expansion-panel-text>
+                      </v-expansion-panel>
+                    </v-expansion-panels>
+                  </v-card>
+                </v-row>
+                
+              </v-card>
+            </v-dialog>
           </v-row>
   
           <!-- Editor Wechseln -->
           <v-row no-gutters style="width:fit-content;">
             <v-card class="pa-1 d-flex align-center justify-center tile" height="100" width="400">
-              <v-btn class="pa-7 px-14 modus_wechseln__button" v-on:click="changeEditor" height="100%" width="100%">
-                {{ currentMode }} - Editor
+              <v-btn class="px-14 modus_wechseln__button" v-on:click="changeEditor" height="100%" width="100%" elevation="24">
+                Wechseln zu <br> {{ currentModeDisplayed }}-Editor
               </v-btn>
             </v-card>
           </v-row>
@@ -983,27 +1346,29 @@
                     
                   <!-- Unit Titel -->
                   <v-row no-gutters class="pb-2" align-content="center">
-                    <v-card width="100%" height="50">
-                      <v-card-title class="justify-center">{{ selectedNodeName }}</v-card-title>
+                    <v-card class="infobereich__title" width="100%" height="50" elevation="0">
+                      <v-card-title class="pa-1">{{ selectedNodeName }}</v-card-title>
                     </v-card>
                   </v-row>
                     
                   <!-- Unit Bild -->
                   <v-row no-gutters class="pb-3">
-                    <v-card class="pa-2 infobereich__image_outside" width="100%" height="300">
+                    <v-card class="pa-2 infobereich__image_outside" width="100%" height="300" elevation="0">
                       <v-card class="infobereich__image_inside" width="100%" height="272">{{  }}</v-card>
                     </v-card>
                   </v-row>
                     
                   <!-- Unit Attribute -->
                   <v-row no-gutters class="pb-3">
-                    <v-card class="py-0" :max-height="windowHeight - 795" width="100%">
+                    <v-card class="py-0" :max-height="windowHeight - 795" width="100%" elevation="0">
                       <v-list class="py-1 pa-1 infobereich__attributes_list" max-height="100%">
                           
                         <!-- UnitName -->
                         <v-card class="py-2 mb-3 infobereich__attributes_name" width="100%">
-                          <v-row no-gutters class="py-0" align-content="center">
-                            <v-card class="pl-3 pb-1 infobereich__attributes_name_title" elevation=0>Name:</v-card>
+                          <v-row no-gutters class="mb-2">
+                            <v-card class="pl-3 pb-1 infobereich__attributes_name_title" elevation=0 width="100%">
+                              <v-card-title class="pt-0 pl-0 pr-0 pb-1" style="text-align: center; line-height: 100%;">Name</v-card-title>
+                            </v-card>
                           </v-row>
                           <v-row no-gutters class="pr-3 px-2">
                             <v-col class="px-1" cols="10">
@@ -1019,8 +1384,10 @@
                           
                         <!-- Unit Type -->
                         <v-card class="py-2 mb-3 infobereich__attributes_type" width="100%">
-                          <v-row no-gutters class="py-0" align-content="center">
-                            <v-card class="pl-3 pb-1 infobereich__attributes_type_title" elevation=0>Type:</v-card>
+                          <v-row no-gutters class="mb-2">
+                            <v-card class="pl-3 pb-1 infobereich__attributes_type_title" elevation=0 width="100%">
+                              <v-card-title class="pt-0 pl-0 pr-0 pb-1" style="text-align: center; line-height: 100%;">Typ</v-card-title>
+                            </v-card>
                           </v-row>
                           <v-row no-gutters class="pr-2 pl-1">
                             <v-btn-toggle class="px-10" v-model="selectedNodeType">
@@ -1036,8 +1403,10 @@
                           
                         <!-- Unit Beschreibung -->
                         <v-card class="py-2 mb-3 infobereich__attributes_description" width="100%">
-                          <v-row no-gutters class="py-0" align-content="center">
-                            <v-card class="pl-3 pb-1 infobereich__attributes_description_title" elevation=0>Beschreibung:</v-card>
+                          <v-row no-gutters class="mb-2">
+                            <v-card class="pl-3 pb-1 infobereich__attributes_description_title" elevation=0 width="100%">
+                              <v-card-title class="pt-0 pl-0 pr-0 pb-1" style="text-align: center; line-height: 100%;">Beschreibung</v-card-title>
+                            </v-card>
                           </v-row>
                           <v-row no-gutters class="pr-3 pl-2">
                             <v-col class="px-1" cols="10">
@@ -1052,17 +1421,19 @@
                         </v-card>
 
                         <!-- Unit 3D-Object -->
-                        <v-card class="py-2 pb-0 mb-3 infobereich__attributes_type" width="100%" height="130">
-                          <v-row no-gutters align-content="center">
-                            <v-card class="pl-3 infobereich__attributes_type_title" elevation="0">3D-Objekt:</v-card>
+                        <v-card class="py-2 pb-0 mb-3 infobereich__attributes_type" width="100%" height="405">
+                          <v-row no-gutters class="mb-2">
+                            <v-card class="pl-3 infobereich__attributes_type_title" elevation="0" width="100%">
+                              <v-card-title class="pt-0 pl-0 pr-0 pb-1" style="text-align: center; line-height: 100%;">Modell</v-card-title>
+                            </v-card>
                           </v-row>
                           <!-- Load new 3D-Object -->
                           <v-card id="infoCard_attributes_createNewObject" class="pt-3 px-16 visible" variant="text" width="100%">
-                            <v-btn class="infobereich__attributes_description_button" height="60" min-width="100%" @click="createAddModelDialog = true">
-                                Neues 3D-Objekt<br>hinzufügen
+                            <v-btn class="infobereich__attributes_model_create_button" height="60" min-width="100%" @click="createAddModelDialog = true">
+                                Neues Modell<br>hinzufügen
                             </v-btn>
                             <v-dialog v-model="createAddModelDialog" max-width="800" persistent>
-                              <v-card class="pa-4">
+                              <v-card class="pa-4 tile">
                                 <v-card-title>{{ $t('add', { msg: $t('model') }) }}</v-card-title>
                                 <v-text-field v-model="selectedNodeNewModelName" :label="$t('title')" :hint="$t('please_input', { msg: $t('title_of', { msg: $t('model') }) })"/>
                                 <v-file-input show-size accept=".glb" v-model="selectedNodeNewModel" :label="$t('input', { msg: $t('model') })"/>
@@ -1079,16 +1450,77 @@
                           </v-card>
                           <!-- Edit existing 3D-Object -->
                           <v-card id="infoCard_attributes_editExistingObject" variant="text" class="px-3 notVisible" width="100%">
-                            <v-row no-gutters>
+                            <!-- Ansprache -->
+                            <v-row no-gutters class="mb-1">
                               <v-card variant="text">
-                                <v-card-title class="pa-1" >Name: {{ selectedNodeModelName }}</v-card-title>
+                                <v-card-title class="pa-1 text-subtitle-1" >Ansprache:</v-card-title>
+                                <v-card-subtitle>{{ selectedNodeModelName }}</v-card-subtitle>
                               </v-card>
+                            </v-row>
+                            <!-- Funde -->
+                            <v-row no-gutters class="mb-1">
+                              <v-card variant="text">
+                                <v-card-title class="pa-1 text-subtitle-1">Funde:</v-card-title>
+                              </v-card>
+                            </v-row>
+                            <v-row no-gutters class="mb-4 mx-3">
+                              <v-list class="px-2 infobereich__attributes_model_finds_list" height="200" min-width="100%" max-width="100%">
+                                <v-list-item class="mb-6 pa-0"  min-height="100" max-height="0" v-for="n in selectedFinds" :key="n">
+                                  <v-row no-gutters>
+                                    <v-col cols="10">
+                                      <v-card class="pt-1 pl-3 pb-1 infobereich__attributes_model_list_item">
+                                        <v-card-title class="pa-0 text-subtitle-1">
+                                          Bezeichner: {{ n.findName }}<br/>Koordinaten:<br/> x: {{ n.findCorrds.x }}, y: {{ n.findCorrds.x }}, z: {{ n.findCorrds.x }}<br/>Modell vorhanden: {{ n.modelPresent }}
+                                        </v-card-title>
+                                      </v-card>
+                                    </v-col>
+                                    <v-col>
+                                      <v-row no-gutters>
+                                        <v-btn class="infobereich__attributes_model_finds_modify_button" height="58" min-width="0" max-width="0">
+                                          <v-icon icon="mdi-wrench-cog" size="Large" @click="createModifyFindDialog = true;"></v-icon>
+                                        </v-btn>
+                                      </v-row>
+                                      <v-row no-gutters>
+                                        <v-btn class="infobereich__attributes_model_finds_delete_button" height="58" min-width="0" max-width="0">
+                                          <v-icon icon="mdi-delete-empty" size="Large" @click="createDeleteFindDialog = true;"></v-icon>
+                                        </v-btn>
+                                      </v-row>
+                                    </v-col>
+                                  </v-row>
+                                </v-list-item>
+                                <v-dialog v-model="createDeleteFindDialog" max-width="320" persistent>
+                                  <v-card class="pa-4">
+                                    <v-card-title class="text-wrap" style="word-break: break-word;">Wollen sie den Fund {{ findToBeDeleted.id }} wirklich löschen?</v-card-title>
+                                    <v-card-actions class="justify-center">
+                                      <v-btn icon color="success" v-on:click="deleteFind( findToBeDeleted.id )">
+                                        <v-icon>mdi-check-circle</v-icon>
+                                      </v-btn>
+                                      <v-btn icon color="primary" @click="createDeleteFindDialog = false">
+                                        <v-icon>mdi-close-circle</v-icon>
+                                      </v-btn>
+                                    </v-card-actions>
+                                  </v-card>
+                                </v-dialog>
+                                <v-dialog v-model="createModifyFindDialog" max-width="320" persistent>
+                                  <v-card class="pa-4">
+                                    <v-card-title class="text-wrap" style="word-break: break-word;">Wollen sie den Fund {{ findToBeDeleted.id }} wirklich löschen?</v-card-title>
+                                    <v-card-actions class="justify-center">
+                                      <v-btn icon color="success" v-on:click="deleteFind( findToBeDeleted.id )">
+                                        <v-icon>mdi-check-circle</v-icon>
+                                      </v-btn>
+                                      <v-btn icon color="primary" @click="createModifyFindDialog = false">
+                                        <v-icon>mdi-close-circle</v-icon>
+                                      </v-btn>
+                                    </v-card-actions>
+                                  </v-card>
+                                </v-dialog>
+                              </v-list>
                             </v-row>
                             <v-row no-gutters>
                               <!-- Switch existing 3D-Object -->
                               <v-col cols="6">
-                                <v-btn class="infobereich__attributes_description_button" height="40" min-width="100%" @click="createSwitchObjektDiablog = true">
-                                  Wechseln
+                                <v-btn class="infobereich__attributes_model_switch_button" height="40" min-width="100%">
+                                  <v-icon icon="mdi-wrench-cog" size="Large" @click="createSwitchObjektDiablog = true"></v-icon>
                                 </v-btn>
                                 <v-dialog v-model="createSwitchObjektDiablog" max-width="800" persistent>
                                   <v-card class="pa-4">
@@ -1108,8 +1540,8 @@
                               </v-col>
                               <!-- Delete 3D-Object -->
                               <v-col cols="6">
-                                <v-btn class="infobereich__attributes_description_button" height="40" min-width="100%" @click="createDeleteModelDialog = true">
-                                  Löschen
+                                <v-btn class="infobereich__attributes_model_delete_button" height="40" min-width="100%">
+                                  <v-icon icon="mdi-delete-empty" size="Large" @click="createDeleteModelDialog = true"></v-icon>
                                 </v-btn>
                                 <v-dialog v-model="createDeleteModelDialog" max-width="300" persistent>
                                   <v-card class="pa-4">
@@ -1131,17 +1563,22 @@
                           
                         <!-- Unit Beziehungen -->
                         <v-card class="py-2 mb-3 infobereich__attributes_relations" width="100%">
-                          <v-row no-gutters class="py-0" align-content="center">
-                            <v-card class="pl-3 pb-1 infobereich__attributes_relations_title" elevation=0>Stratigraphische Beziehungen:</v-card>
+                          <v-row no-gutters class="mb-2">
+                            <v-card class="pl-0 infobereich__attributes_type_title" elevation="0" width="100%">
+                              <v-card-title class="pt-0 pl-0 pr-0 pb-1" style="text-align: center; line-height: 100%;">Stratigraphische Beziehungen</v-card-title>
+                            </v-card>
                           </v-row>
+                          <!-- <v-row no-gutters class="py-0" align-content="center">
+                            <v-card class="pl-3 pb-1 infobereich__attributes_relations_title" elevation=0>:</v-card>
+                          </v-row> -->
                           <v-row no-gutters class="px-2">
                             <v-list class="px-2 infobereich__attributes_relations_list" height="200" min-width="100%" max-width="100%">
                               <v-list-item class="mb-7 pb-0 px-0" max-height="0" v-for="n in selectedNodeRelations" :key="n">
                                 <v-row no-gutters height="fit-content">
-                                  <v-card class="pa-2 infobereich__attributes_relations_list_item" width="87%" height="70">
-                                    Mit: {{ n.targetLabel }}<br>Art: {{ n.type }}
+                                  <v-card class="pa-2 infobereich__attributes_relations_list_item" width="86%" height="70">
+                                    Mit: {{ n.targetLabel }}<br/>Art: {{ n.type }}
                                   </v-card>
-                                  <v-btn class="infobereich__attributes_relations_list_button" height="70" min-width="0" max-width="0">
+                                  <v-btn class="infobereich__attributes_relations_list_delete_button" height="70" min-width="0" max-width="0">
                                     <v-icon icon="mdi-delete-empty" size="Large" @click="createDeleteNodeRelationDialog = true; edgeToBeDeleted = n"></v-icon>
                                   </v-btn>
                                 </v-row>
@@ -1183,7 +1620,7 @@
                   
                   <!-- Unit löschen -->
                   <v-row no-gutters>
-                    <v-btn class="infobereich__delete_unit_button" height="50" width="100%" @click="createDeleteNodeDialog = true">
+                    <v-btn class="infobereich__delete_unit_button" height="50" width="100%" @click="createDeleteNodeDialog = true" elevation="8">
                       Unit Löschen
                     </v-btn>
                     <v-dialog v-model="createDeleteNodeDialog" max-width="320" persistent>
@@ -1216,9 +1653,19 @@
 </template>
 
 <script setup>
+  import { Handle, Position } from '@vue-flow/core'
+
   import * as THREE from 'three';
+  import { SUBTRACTION, Brush, Evaluator, GridMaterial } from 'three-bvh-csg'
   import { ArcballControls } from 'three/addons/controls/ArcballControls.js';
+  import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
   import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+  import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+  import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+  import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js';
+  import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
+  import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js';
+  import { GammaCorrectionShader } from 'three/examples/jsm/shaders/GammaCorrectionShader.js';
   import { onMounted, onUnmounted, markRaw, ref, watch, toRaw } from 'vue';
   import { useWindowSize } from 'vue-window-size';
   import { VueFlow, useVueFlow, MarkerType } from '@vue-flow/core';
@@ -1234,6 +1681,8 @@
   import InterfaceNode from '../components/graph-editor-components/CustomNodes/InterfaceNode.vue';
   
   import { fromOfflineDB } from '../ConnectionToOfflineDB.js';
+  import { BufferGeometry } from 'three/src/Three.js';
+  import { MeshStandardMaterial } from 'three/src/Three.js';
   
   // Sync with IndexedDB
   await fromOfflineDB.syncLocalDBs();
@@ -1260,6 +1709,14 @@
   var selectedNodeNewModelName = ref("") // string
   var selectedNodeNewModel = ref(null) // null
   var selectedNodeModelName = ref("Noch kein Model hinzugefügt") // string
+  var selectedFinds = ref([
+    { findName: "Keramik", findCorrds: { x: "100", y: "100", z:"100" }, modelPresent: "Ja", model: null },
+    { findName: "Fiebel", findCorrds: { x: "100", y: "100", z:"100" }, modelPresent: "Ja", model: null },
+    { findName: "Fund 3", findCorrds: { x: "100", y: "100", z:"100" }, modelPresent: "Ja", model: null },
+    { findName: "Fund 4", findCorrds: { x: "100", y: "100", z:"100" }, modelPresent: "Ja", model: null },
+    { findName: "Fund 5", findCorrds: { x: "100", y: "100", z:"100" }, modelPresent: "Ja", model: null },
+    { findName: "Fund 6", findCorrds: { x: "100", y: "100", z:"100" }, modelPresent: "Ja", model: null },
+  ]); // array
 
   /** > > > > > > ---- < < < < < < **/
   /** > > > > > > Left < < < < < < **/
@@ -1310,8 +1767,10 @@
   /** > > > > > > Right < < < < < < **/
   /** > > > > > > ----- < < < < < < **/
   // ----Component----> Glossar
+  var createGlossarDialog = ref(false)
   // ----Component----> Modus wechseln
   var currentMode = ref("Graph") // string
+  var currentModeDisplayed = ref("3D") // string
   // ----Component----> Infobereich
   var infoCardDisabled = ref(true); // boolean
   var createDeleteNodeDialog = ref(false) // boolean
@@ -1320,6 +1779,9 @@
   var createDeleteModelDialog = ref(false) // boolean
   var createSwitchObjektDiablog = ref(false) // boolean
   var edgeToBeDeleted = ref(null) // array<>
+  var createDeleteFindDialog = ref(false) //boolean
+  var findToBeDeleted = ref(null) // int
+  var createModifyFindDialog = ref(false) //boolean
   
 
   /**
@@ -1332,6 +1794,7 @@
   const windowHeight = height; // int
   const windowWidth = width; // int
   var currentlySelectedNodeID = ""; // string
+  var currentlySelectedNodeType = ""; // string
   var connectionInProgress = false; // boolean
   var idOfCurrentStratiTool = ""; // string
   var alreadyCut = false; // boolean
@@ -1340,9 +1803,24 @@
     scene: null,
     camera: null,
     savedCamera: null,
-    controls: null,
-    light: null,
+    arcballControls: null,
+    transformControls: null,
+    ambientLight: null,
+    directionalLight: null,
     objects: null,
+    needsUpdate: true,
+    csgEvaluator: null,
+    brushToCutWith: null,
+    brushesToBeCut: [],
+    effectComposer: null,
+    renderPass: null,
+    outlinePass: null,
+    fxaaShader: null,
+    gammaCorrectionShader: null,
+    params: {
+      arcballControlsShowGizmo: true,
+      transformControlsShowGizmo: false,
+    }
   }
   const nodeTypes = {
     deposit: markRaw(DepositNode),
@@ -1390,10 +1868,6 @@
       },
     }
   }
-  const unitListNodesStyles = {
-    clicked: "border: 4px; border-style: double; border-color: #1C2128; background-color: #485b7a;",
-    notClicked: "border: 4px; border-style: double; border-color: #1C2128; background-color: #2a394f;",
-  }
   const helpComponents = {
     module: {
       component: {
@@ -1402,37 +1876,107 @@
         description: "Diese Komponente bietet allgemeine Funktionen für beispielsweise den Exp/Import des aktuellen Bearbeitungsstands oder die Erstellung einer momentanen Aufnahme eines eigens gewählten Ausschnits der Harris-Matrix. Der obere Bereich der Komponente ermöglicht über die beiden Pfeile durch die einzelnen Module zu wechseln und diese auszuwählen. Dabei wird der Name des aktuell ausgewählten Moduls in der Mitte zwischen beiden Pfeilen angezeigt. Der BEreich darunter beeinhaltet, je nach ausgewählten Modul, die gegebenene Funktionalität.",
       },
       subcomponents: [
-        {id: "helpScreenshot", containerID: "helpSubcomponentModulesScreenshotContainer", name: "Screenshot", description: "TODO", smallNavigationID: "helpSmallNavigationModule",},
-        {id: "helpGroup", containerID: "helpSubcomponentModulesGroupContainer", name: "Group", description: "TODO", smallNavigationID: "helpSmallNavigationModule",},
-        {id: "helpView", containerID: "helpSubcomponentModulesViewContainer", name: "View", description: "TODO", smallNavigationID: "helpSmallNavigationModule",},
-        {id: "helpExpImp", containerID: "helpSubcomponentModulesExpImpContainer", name: "Exp/Imp", description: "TODO", smallNavigationID: "helpSmallNavigationModule",},
-        {id: "helpFilter", containerID: "helpSubcomponentModulesFilterContainer", name: "Filter", description: "TODO", smallNavigationID: "helpSmallNavigationModule",},
-        {id: "helpTimemodel", containerID: "helpSubcomponentModulesTimemodelContainer", name: "Timemodel", description: "TODO", smallNavigationID: "helpSmallNavigationModule",},
+        { id: "helpScreenshot", 
+          containerID: "helpSubcomponentModulesScreenshotContainer", 
+          name: "Screenshot", 
+          description: "TODO", 
+          smallNavigationID: "helpSmallNavigationModule",
+        },
+        {
+          id: "helpGroup", 
+          containerID: "helpSubcomponentModulesGroupContainer", 
+          name: "Group", 
+          description: "TODO", 
+          smallNavigationID: "helpSmallNavigationModule",
+        },
+        {
+          id: "helpView", 
+          containerID: "helpSubcomponentModulesViewContainer", 
+          name: "View", 
+          description: "TODO", 
+          smallNavigationID: "helpSmallNavigationModule",
+        },
+        {
+          id: "helpExpImp", 
+          containerID: "helpSubcomponentModulesExpImpContainer", 
+          name: "Exp/Imp", 
+          description: "TODO", 
+          smallNavigationID: "helpSmallNavigationModule",
+        },
+        {
+          id: "helpFilter", 
+          containerID: "helpSubcomponentModulesFilterContainer", 
+          name: "Filter", 
+          description: "TODO", 
+          smallNavigationID: "helpSmallNavigationModule",
+        },
+        {
+          id: "helpTimemodel", 
+          containerID: "helpSubcomponentModulesTimemodelContainer", 
+          name: "Timemodel", 
+          description: "TODO", 
+          smallNavigationID: "helpSmallNavigationModule",
+        },
       ],
       
     },
-    harrisMatrixTools: {
+    systemTools: {
       component: {
         id: "helpComponentHarrisMatrixTools",
-        name: "Harris-Matrix - Tools",
+        name: "System - Tools",
         description: "TODO",
       },
       subcomponents: [
-        {id: "helpSaveGraph", containerID: "helpSubcomponentHarrisMatrixToolsContainer", name: "Harris-matrix speichern", description: "TODO"},
-        {id: "helpChangeProcessingStep", containerID: "helpSubcomponentHarrisMatrixToolsContainer", name: "Arbeitsschritt wechseln", description: "TODO"},
+        {
+          id: "helpSaveGraph", 
+          containerID: "helpSubcomponentHarrisMatrixToolsContainer", 
+          name: "Harris-matrix speichern", 
+          description: "TODO"},
+        {
+          id: "helpChangeProcessingStep", 
+          containerID: "helpSubcomponentHarrisMatrixToolsContainer", 
+          name: "Arbeitsschritt wechseln", 
+          description: "TODO"
+        },
       ],
     },
     graph3dTools: {
       component: {
         id: "helpComponentGraph3dTools",
         name: "Graph/3D - Tools",
-        description: "TODO",
+        description: "Innerhalb dieser Komponente werden Funktionen für die Interaktion mit den beiden Editoren bereitgestellt. Dabei ändern sich die bereitsgestellten Tools je nachdem welcher Editor aktuell ausgewählt ist.",
       },
       subcomponents: [
-        {id: "helpUnitCreateUnit", containerID: "helpSubcomponentGraphToolsContainer", name: "Neue Unit erstellen (Graph)", description: "TODO"},
-        {id: "helpUnitSearch", containerID: "helpSubcomponentGraphToolsContainer", name: "Unit suchen (Graph)", description: "TODO"},
-        {id: "helpUnitCleanUp", containerID: "helpSubcomponentGraphToolsContainer", name: "Unit aufräumen (Graph)", description: "TODO"},
-        {id: "helpUnitList", containerID: "helpSubcomponent3dToolsContainer", name: "Auflistung aller Units (3D)", description: "TODO"},
+        {
+          id: "helpUnitCreateUnit", 
+          containerID: "helpSubcomponentGraphToolsContainer", 
+          name: "Neue Unit erstellen (Graph)", 
+          description: "Mittels dieser Subkomponente lassen sich neue Units dem Graphen hinzufügen. Jede neu erstellte Unit wird dabei mit dem Namen: 'Neue Unit_' + einem Index erstellt. Dieser kann im nachhinein über den Infobereich angepasst werden. Die Erstellung einer neuen Unit erfolgt in drei Schritten:"
+        },
+        {
+          id: "helpUnitSearch", 
+          containerID: "helpSubcomponentGraphToolsContainer", 
+          name: "Unit suchen (Graph)", 
+          description: "TODO",
+        },
+        {
+          id: "helpUnitCleanUp", 
+          containerID: "helpSubcomponentGraphToolsContainer", 
+          name: "Unit aufräumen (Graph)", 
+          description: "TODO",
+        },
+        {
+          id: "helpUnitList", 
+          containerID: "helpSubcomponent3dToolsContainer", 
+          name: "Auflistung aller Units (3D)", 
+          description: "TODO",
+        },
+        {
+          id: "help3dCut", 
+          containerID: "helpSubcomponent3dToolsContainer", 
+          name: "Schneiden von 3D-Objekten (3D)", 
+          description: "TODO",
+        },
       ],
     },
     graph3dEditor: {
@@ -1442,8 +1986,18 @@
         description: "TODO",
       },
       subcomponents: [
-        {id: "helpGraphEditor", containerID: "helpGraphEditorContainer", name: "Interaktion mit dem Graph", description: "TODO"},
-        {id: "help3dEditor", containerID: "help3dEditorContainer", name: "Interaktion mit 3D-Objekten", description: "TODO"},
+        {
+          id: "helpGraphEditor", 
+          containerID: "helpGraphEditorContainer", 
+          name: "Interaktion mit dem Graph", 
+          description: "TODO",
+        },
+        {
+          id: "help3dEditor", 
+          containerID: "help3dEditorContainer", 
+          name: "Interaktion mit 3D-Objekten", 
+          description: "TODO",
+        },
       ],
     },
     glossar: {
@@ -1453,7 +2007,12 @@
         description: "TODO",
       },
       subcomponents: [
-        {id: "helpGlossar", containerID: "helpGlossarContainer", name: "Bespaßigung ihrer Glossarität", description: "TODO"},
+        {
+          id: "helpGlossar", 
+          containerID: "helpGlossarContainer", 
+          name: "Bespaßigung ihrer Glossarität", 
+          description: "TODO",
+        },
       ],
     },
     changeEditor: {
@@ -1463,7 +2022,12 @@
         description: "TODO",
       },
       subcomponents: [
-        {id: "helpChangeEditor", containerID: "helpChangeEditorContainer", name: "Wechsel zwischen beiden Editoren", description: "TODO"},
+        {
+          id: "helpChangeEditor", 
+          containerID: "helpChangeEditorContainer", 
+          name: "Wechsel zwischen beiden Editoren", 
+          description: "TODO",
+        },
       ],
     },
     infoCard: {
@@ -1473,10 +2037,30 @@
         description: "TODO",
       },
       subcomponents: [
-      {id: "helpInfoCardUnitTitle", containerID: "helpInfoCardContainer", name: "Name der Unit", description: "TODO"},
-      {id: "helpInfoCardUnitImage", containerID: "helpInfoCardContainer", name: "Bild der Unit", description: "TODO"},
-      {id: "helpInfoCardUnitAttributes", containerID: "helpInfoCardContainer", name: "Beschreibende Attribute der Unit", description: "TODO"},
-      {id: "helpInfoCardUnitDelete", containerID: "helpInfoCardContainer", name: "Löschen einer Unit", description: "TODO"},
+      {
+        id: "helpInfoCardUnitTitle", 
+        containerID: "helpInfoCardContainer", 
+        name: "Name der Unit", 
+        description: "TODO",
+      },
+      {
+        id: "helpInfoCardUnitImage", 
+        containerID: "helpInfoCardContainer", 
+        name: "Bild der Unit", 
+        description: "TODO",
+      },
+      {
+        id: "helpInfoCardUnitAttributes", 
+        containerID: "helpInfoCardContainer", 
+        name: "Beschreibende Attribute der Unit", 
+        description: "TODO",
+      },
+      {
+        id: "helpInfoCardUnitDelete", 
+        containerID: "helpInfoCardContainer", 
+        name: "Löschen einer Unit", 
+        description: "TODO",
+      },
       ],
     },
   }
@@ -1670,13 +2254,24 @@
     for( let a = 0; a < nodesInGraphLength; a++ ){
       if( nodesInGraph[a].data.label == userInput ){
         if( currentlySelectedNodeID != "" ) {
-          changeUnitsListsButtonStyle( currentlySelectedNodeID, "notSelected" );
+          changeNodeInUnitsListToNotClickedStyle( currentlySelectedNodeID )
         }
         zoomToNode(nodesInGraph[a].id);
         selectedNodeModelName.value = ""
         fillInfoCard(nodesInGraph[a]);
 
-        changeUnitsListsButtonStyle( nodesInGraph[a].id, "selected" )
+        enviromentParameter.outlinePass.selectedObjects.pop()
+        const objectsInScene = enviromentParameter.scene.children.slice(3, -2)
+        const objectsInSceneLength = objectsInScene.length
+        const nodeID = nodesInGraph[a].id
+        for( let a = 0; a < objectsInSceneLength; a++ ){
+          if( objectsInScene[a].userData.nodeID == nodeID ){
+            if( objectsInScene[a].name.indexOf('Result') > -1 ){
+              enviromentParameter.outlinePass.selectedObjects.push(objectsInScene[a])
+            }
+          }
+        }
+        changeNodeInUnitsListToClickedStyle(nodesInGraph[a].id)
         nodesInGraph[a].data.nodeStyle = "clicked_" + nodesInGraph[a].type;
         nodesInGraph[a].data.selected = true;
       } else if( currentlySelectedNodeID != "" && currentMode.value != "3D" ) {
@@ -1696,6 +2291,7 @@
    */
   watch(currentMode, whichMode => {
     if( whichMode == "Graph" ){
+      currentModeDisplayed.value = "3D"
       enviromentParameter.renderer.setAnimationLoop(null);
       changeVisibility("canvas_graph", "visible")
       changeVisibility("units_graphTools", "visible")
@@ -1703,6 +2299,7 @@
       changeVisibility("canvas_3d", "notVisible")
       changeVisibility("units_3dTools", "notVisible")
     } else if( whichMode == "3D" ){
+      currentModeDisplayed.value = "Harris-Matrix"
       enviromentParameter.renderer.setAnimationLoop(animate);
       changeVisibility("canvas_3d", "visible")
       changeVisibility("units_3dTools", "visible")
@@ -1825,9 +2422,9 @@
 
   function createUnitListEntry(node) {
     if( node.data.selected === true ){
-      return { id: node.id, label: node.data.label, style: unitListNodesStyles.clicked }
+      return { id: node.id, label: node.data.label, class: "mx-1 units__3d_list_button_clicked" }
     } else {
-      return { id: node.id, label: node.data.label, style: unitListNodesStyles.notClicked }
+      return { id: node.id, label: node.data.label, class: "mx-1 units__3d_list_button_notClicked" }
     }
   }
 
@@ -2097,12 +2694,14 @@
 
   function changeNodeInUnitsListToClickedStyle(nodeID) {
     const node = document.getElementById(nodeID);
-    node.style = unitListNodesStyles.clicked;
+    node.classList.remove("units__3d_list_button_notClicked");
+    node.classList.add("units__3d_list_button_clicked");
   }
 
   function changeNodeInUnitsListToNotClickedStyle(nodeID) {
     const node = document.getElementById(nodeID);
-    node.style = unitListNodesStyles.notClicked;
+    node.classList.remove("units__3d_list_button_clicked");
+    node.classList.add("units__3d_list_button_notClicked");
   }
 
   /**                            Vue-flow function
@@ -2349,6 +2948,7 @@
   function fillInfoCard(node) {
     // Note the id of the currently selected node and activate the InfoCard
     currentlySelectedNodeID = node.id
+    currentlySelectedNodeType = node.type
     infoCardDisabled.value = false
     document.getElementById("infoCard").style.opacity = "1";
 
@@ -2364,11 +2964,15 @@
     }
     // node model
     if( enviromentParameter.scene.children.length ){
-      const objectsInScene = enviromentParameter.scene.children.slice(1, -1)
+      const objectsInScene = enviromentParameter.scene.children.slice(3, -2)
       const objectsInSceneLength = objectsInScene.length
       for( let a = 0; a < objectsInSceneLength; a++ ){
         if( objectsInScene[a].userData.nodeID == node.id ){
-          selectedNodeModelName.value = objectsInScene[a].name
+          if( objectsInScene[a].name.indexOf('Result') > -1 ){
+            enviromentParameter.outlinePass.selectedObjects.push(objectsInScene[a])
+          } else {
+            selectedNodeModelName.value = objectsInScene[a].name
+          }
         }
       }
     }
@@ -2401,6 +3005,7 @@
    */
   function clearInfoCard() {
     currentlySelectedNodeID = "";
+    currentlySelectedNodeType = "";
     unitSearchInput.value = "";
     infoCardDisabled.value = true
     document.getElementById("infoCard").style.opacity = "0.5";
@@ -2415,6 +3020,7 @@
     selectedNodeRelations.value = [];
     // node model
     selectedNodeModelName.value = ""
+    enviromentParameter.outlinePass.selectedObjects.pop()
   }
 
 
@@ -2983,6 +3589,22 @@
   
 
   
+  /**
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * Deletes a find and its corresponding 3D-model, if one is present
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   * ================>>>> saves the current processing step <<<<================
+   * ====>>> type: deleteFind
+   * 
+   * @param findID 
+   */
+  function deleteFind( findID ) {
+    console.log("WORK IN PROGRESS")
+  }
+
+
+
+
   
   /**
    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -3065,8 +3687,9 @@
     if( getNodes.value.length != 0 ) {
       for( const[_, node] of Object.entries(getNodes.value) ) {
         if( node.id == currentlySelectedNodeID ) {
-          node.type = newType
-          node.data.nodeStyle = "clicked_" + newType
+          currentlySelectedNodeType = newType;
+          node.type = newType;
+          node.data.nodeStyle = "clicked_" + newType;
         }
       }
       
@@ -3291,46 +3914,26 @@
     for( let a = 0; a < nodesInGraphLength; a++ ){
       if( nodesInGraph[a].id == nodeID && !nodesInGraph[a].data.selected ){
         if( currentlySelectedNodeID != "" ) {
-          changeUnitsListsButtonStyle( currentlySelectedNodeID, 'notSelected' )
+          changeNodeInUnitsListToNotClickedStyle( currentlySelectedNodeID )
         }
         clearInfoCard()
         fillInfoCard(nodesInGraph[a])
         
-        changeUnitsListsButtonStyle( nodesInGraph[a].id, 'selected' )
+        changeNodeInUnitsListToClickedStyle(nodesInGraph[a].id)
         nodesInGraph[a].data.nodeStyle = "clicked_" + nodesInGraph[a].type;
         nodesInGraph[a].data.selected = true;
       } else if( nodesInGraph[a].id == nodeID && nodesInGraph[a].data.selected ) {
-        changeUnitsListsButtonStyle( nodesInGraph[a].id, 'notSelected' )
+        changeNodeInUnitsListToNotClickedStyle( nodesInGraph[a].id )
         clearInfoCard()
         nodesInGraph[a].data.nodeStyle = "notClicked_" + nodesInGraph[a].type;
         nodesInGraph[a].data.selected = false;
       } else {
-        changeUnitsListsButtonStyle( nodesInGraph[a].id, 'notSelected' )
+        changeNodeInUnitsListToNotClickedStyle( nodesInGraph[a].id )
         nodesInGraph[a].data.nodeStyle = "notClicked_" + nodesInGraph[a].type;
         nodesInGraph[a].data.selected = false;
       }
     }
     saveProcessingStep("nodeInUnitListClicked")
-  }
-
-  
-
-
-
-  /**
-   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-   * 
-   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-   * 
-   */
-  function changeUnitsListsButtonStyle(buttonID, mode) {
-    if( mode === 'selected' ) {
-      const button = document.getElementById(buttonID)
-      button.style = "border: 4px; border-style: double; border-color: #1C2128; background-color: #485b7a;"
-    } else if( mode === 'notSelected' ){
-      const button = document.getElementById(buttonID)
-      button.style = "border: 4px; border-style: double; border-color: #1C2128; background-color: #2a394f;"
-    }
   }
 
 
@@ -3404,12 +4007,176 @@
    */
   async function addObjectToScene(object) {
     const loadedObject = await objLoader(object, selectedNodeNewModelName.value);
-    const gismo = enviromentParameter.scene.children.pop();
-    enviromentParameter.scene.add(loadedObject);
-    enviromentParameter.scene.add(gismo);
+    const gismos = cutControls()
+    
+    const newBrushObject = {
+      brush: new Brush( new THREE.BoxGeometry(), new GridMaterial() ),
+      materialMap: new Map(),
+      resultObjectFromCsgOperation: resultObjectsFromCsgOperation(loadedObject),
+      operationType: getOperationType(),
+    }
+    newBrushObject.brush.name = loadedObject.name
+    newBrushObject.brush.userData.id = loadedObject.userData.id
+    newBrushObject.brush.userData.nodeID = loadedObject.userData.nodeID
+    
+    
+    updateBrush( newBrushObject.brush, 'mesh', brushParams.brush1Complexity, loadedObject.children[0].geometry )
+    updateMaterialOfBrushToBeCut( newBrushObject.brush, loadedObject.children[0].material )
+    updateMaterialMap( newBrushObject )
+    
+    enviromentParameter.scene.add( newBrushObject.brush )
+    enviromentParameter.scene.add( newBrushObject.resultObjectFromCsgOperation.resultObject )
+
+    pasteControls(gismos)
+    enviromentParameter.outlinePass.selectedObjects.pop()
+    enviromentParameter.outlinePass.selectedObjects.push(newBrushObject.resultObjectFromCsgOperation.resultObject)
+    enviromentParameter.brushesToBeCut.push(newBrushObject);
   }
 
+  const someColors = [ 0xC2F970, 0x44344F, 0x564D80, 0x98A6D4, 0xD3FCD5, 0xA8763E, 0x6F1A07, 0x2B2118 ]
+  let countForColors = 0
 
+  const brushParams = {
+    brush1Shape: 'box',
+	  brush1Complexity: 1,
+	  brush1Color: '#2a4375',
+
+    brush2Shape: 'box',
+	  brush2Complexity: 1,
+	  brush2Color: '#E91E63',
+  }
+
+  function getOperationType() {
+    if( currentlySelectedNodeType == "deposit" ){
+      return SUBTRACTION;
+    } else if( currentlySelectedNodeType == "interface" ){
+      return HOLLOW_SUBTRACTION;
+    }
+  }
+
+  function createCsgEvaluator() {
+    enviromentParameter.csgEvaluator = new Evaluator();
+  }
+
+  function createBrushToCutWith() {
+    enviromentParameter.brushToCutWith = new Brush(new THREE.BoxGeometry(), new GridMaterial());
+    enviromentParameter.brushToCutWith.position.set(0, -4, 20);
+    updateBrush(enviromentParameter.brushToCutWith, brushParams.brush2Shape, brushParams.brush2Complexity)
+    updateMaterialOfBrushToBeCutWith(enviromentParameter.brushToCutWith)
+    const gismos = cutControls()
+    enviromentParameter.scene.add(enviromentParameter.brushToCutWith)
+    pasteControls(gismos)
+  }
+  
+  function resultObjectsFromCsgOperation(loadedObject) {
+    const resultObject = new THREE.Mesh(new BufferGeometry(), new MeshStandardMaterial({
+      flatShading: false,
+		  polygonOffset: true,
+		  polygonOffsetUnits: 0.1,
+		  polygonOffsetFactor: 0.1,
+    }))
+    resultObject.castShadow = true;
+    resultObject.receiveShadow = true;
+    resultObject.frustumCulled = false;
+    resultObject.name = loadedObject.name + "Result";
+    resultObject.userData.id = loadedObject.userData.id;
+    resultObject.userData.nodeID = loadedObject.userData.nodeID;
+    const originalMaterial = resultObject.material
+    return { resultObject: resultObject, originalMaterial: originalMaterial }
+  }
+
+  function updateMaterialMap(brushObject) {
+    let mat;
+	  mat = brushObject.brush.material.clone();
+	  mat.side = THREE.FrontSide;
+	  mat.opacity = 1;
+	  mat.transparent = false;
+	  mat.depthWrite = true;
+	  brushObject.materialMap.set( brushObject.brush.material, mat );
+    
+	  mat = enviromentParameter.brushToCutWith.material.clone();
+	  mat.side = THREE.FrontSide;
+	  mat.opacity = 1;
+	  mat.transparent = false;
+	  mat.depthWrite = true;
+    mat.color.set(someColors[countForColors]);
+    countForColors++;
+	  brushObject.materialMap.set( enviromentParameter.brushToCutWith.material, mat );
+    
+	  brushObject.materialMap.forEach( ( m1, m2 ) => {
+	  	m1.enableGrid = false;
+	  	m2.enableGrid = false;
+	  } );
+  }
+
+  function updateBrush( brush, type, complexity, loadedObjectGeometry ) {
+    brush.geometry.dispose()
+
+    switch( type ){
+      case 'box':
+        const dim = Math.round( THREE.MathUtils.lerp( 1, 10, complexity ) );
+			  brush.geometry = new THREE.BoxGeometry( 9, 20, 17, dim, dim, dim );
+			  break;
+      case 'mesh':
+        brush.geometry = loadedObjectGeometry.clone();
+			  break;
+      default:
+        console.log("ERROR")
+    }
+
+    brush.geometry = brush.geometry.toNonIndexed();
+
+    const position = brush.geometry.attributes.position;
+	  const array = new Float32Array( position.count * 3 );
+	  for ( let i = 0, l = array.length; i < l; i += 9 ) {
+        
+	  	array[ i + 0 ] = 1;
+	  	array[ i + 1 ] = 0;
+	  	array[ i + 2 ] = 0;
+    
+	  	array[ i + 3 ] = 0;
+	  	array[ i + 4 ] = 1;
+	  	array[ i + 5 ] = 0;
+    
+	  	array[ i + 6 ] = 0;
+	  	array[ i + 7 ] = 0;
+	  	array[ i + 8 ] = 1;
+    
+	  }
+  
+	  brush.geometry.setAttribute( 'color', new THREE.BufferAttribute( array, 3 ) );
+	  brush.prepareGeometry();
+	  enviromentParameter.needsUpdate = true;
+  }
+
+  function updateMaterialOfBrushToBeCut(brush, loadedObjectMaterial) {
+    brush.material = loadedObjectMaterial
+    brush.material.opacity = 1;
+	  brush.material.transparent = true;
+	  brush.material.depthWrite = false;
+	  brush.material.polygonOffset = true;
+	  brush.material.polygonOffsetFactor = 0.2;
+	  brush.material.polygonOffsetUnits = 0.2;
+	  brush.material.side = THREE.DoubleSide;
+	  brush.material.premultipliedAlpha = true;
+    brush.material.color.set( 0x2a4375 )
+    brush.frustumCulled = false
+  }
+
+  function updateMaterialOfBrushToBeCutWith(brush) {
+    brush.material.opacity = 0;
+	  brush.material.transparent = true;
+	  brush.material.depthWrite = false;
+	  brush.material.polygonOffset = true;
+	  brush.material.polygonOffsetFactor = 0.2;
+	  brush.material.polygonOffsetUnits = 0.2;
+	  brush.material.side = THREE.DoubleSide;
+	  brush.material.premultipliedAlpha = true;
+	  brush.material.roughness = 0.25;
+	  brush.material.color.set( 0xffffff );
+    brush.frustumCulled = false
+    enviromentParameter.transformControls.attach( brush );
+  }
 
 
 
@@ -3507,7 +4274,7 @@
    * 
    */
   function removeObject(nodeID) {
-    const objectsInScene = enviromentParameter.scene.children.slice(1, -1)
+    const objectsInScene = enviromentParameter.scene.children.slice(3, -2)
     
     const objectsInSceneLength = objectsInScene.length
     for( let a = 0; a < objectsInSceneLength; a++ ){
@@ -3572,13 +4339,65 @@
       createControls()
       reCenterControls()
       enviromentParameter.camera.position.set( cameraPosition[ 0 ], cameraPosition[ 1 ], cameraPosition[ 2 ] );
-      enviromentParameter.camera.rotation.set( cameraRotation[ 0 ], cameraRotation[ 1 ], cameraRotation[ 2 ]);
+      enviromentParameter.camera.rotation.set( cameraRotation[ 0 ], cameraRotation[ 1 ], cameraRotation[ 2 ] );
     }
 
-    // enviromentParameter.renderer.setAnimationLoop(animate);
+    createCsgEvaluator()
+    createBrushToCutWith()
+    
+    createEffectComposer()
+    createRenderPass()
+    createOutlinePass()
+    createFxaaShader()
+    createGammeCorrectionShader()
   }
 
-  
+  function cutControls() {
+    const gismoArcball = enviromentParameter.scene.children.pop();
+    const gismoTransform = enviromentParameter.scene.children.pop();
+
+    return { transform: gismoTransform, arcball: gismoArcball }
+  }
+
+  function pasteControls(gismos) {
+    enviromentParameter.scene.add(gismos.transform);
+    enviromentParameter.scene.add(gismos.arcball);
+  }
+
+  function createEffectComposer() {
+    enviromentParameter.effectComposer = new EffectComposer(enviromentParameter.renderer)
+  }
+
+  function createRenderPass() {
+    enviromentParameter.renderPass = new RenderPass(enviromentParameter.scene, enviromentParameter.camera)
+
+    enviromentParameter.effectComposer.addPass(enviromentParameter.renderPass)
+  }
+
+  function createOutlinePass() {
+    const canvas3D = document.getElementById("canvas_3d");
+    enviromentParameter.outlinePass = new OutlinePass(new THREE.Vector2(canvas3D.clientWidth, canvas3D.clientHeight), enviromentParameter.scene, enviromentParameter.camera);
+    enviromentParameter.outlinePass.edgeThickness = 1.0;
+    enviromentParameter.outlinePass.edgeStrength = 3.0;
+    enviromentParameter.outlinePass.edgeGlow = 1;
+    enviromentParameter.outlinePass.renderToScreen = true;
+    enviromentParameter.outlinePass.visibleEdgeColor.set(0xffffff);
+    
+    enviromentParameter.effectComposer.addPass(enviromentParameter.outlinePass)
+  }
+
+  function createFxaaShader() {
+    const canvas3D = document.getElementById("canvas_3d");
+    enviromentParameter.fxaaShader = new ShaderPass(FXAAShader);
+    enviromentParameter.fxaaShader.uniforms["resolution"].value.set(1 / canvas3D.clientWidth, 1 / canvas3D.clientHeight);
+    
+    enviromentParameter.effectComposer.addPass(enviromentParameter.fxaaShader);
+  }
+
+  function createGammeCorrectionShader() {
+    enviromentParameter.gammaCorrectionShader = new ShaderPass(GammaCorrectionShader);
+    enviromentParameter.effectComposer.addPass(enviromentParameter.gammaCorrectionShader)
+  }
 
 
 
@@ -3596,7 +4415,14 @@
       antialias: true
     });
     enviromentParameter.renderer.setPixelRatio( canvas3D.devicePixelratio );
-    enviromentParameter.renderer.setClearColor( 0x28303d, 1);
+    enviromentParameter.renderer.setClearColor( 0x28303d, 0);
+    enviromentParameter.renderer.shadowMap.enabled = true;
+    enviromentParameter.renderer.shadowMap.type = 1;
+    enviromentParameter.renderer.toneMapping = 0;
+    enviromentParameter.renderer.toneMappingExposure = 1.3;
+    // enviromentParameter.renderer.outputEncoding = THREE.GammaEncoding
+    enviromentParameter.renderer.gammaOutput = true;
+    enviromentParameter.renderer.gammaFactor = 1.45;
   }
 
 
@@ -3640,8 +4466,12 @@
    * 
    */
   function createIllumination() {
-    enviromentParameter.light = new THREE.AmbientLight( 0xd9d9d9 );
-    enviromentParameter.scene.add(enviromentParameter.light);
+    enviromentParameter.ambientLight = new THREE.AmbientLight( 0xF2F2F2  );
+    enviromentParameter.scene.add(enviromentParameter.ambientLight);
+    
+    enviromentParameter.directionalLight = new THREE.DirectionalLight( 0x404040, 2 );
+    enviromentParameter.ambientLight.position.set(-1, 2, 3)
+    enviromentParameter.scene.add(enviromentParameter.directionalLight);
   }
 
 
@@ -3655,11 +4485,23 @@
    * 
    */
   function createControls() {
-    enviromentParameter.controls = new ArcballControls( enviromentParameter.camera, enviromentParameter.renderer.domElement, enviromentParameter.scene );
-    enviromentParameter.controls.addEventListener( 'change', function() {
-      enviromentParameter.renderer.render( enviromentParameter.scene, enviromentParameter.camera );
+    enviromentParameter.arcballControls = new ArcballControls( enviromentParameter.camera, enviromentParameter.renderer.domElement, enviromentParameter.scene );
+    enviromentParameter.arcballControls.addEventListener( 'change', function() {
+      enviromentParameter.effectComposer.render();
     } )
-    enviromentParameter.controls.enablePan = false;
+    enviromentParameter.arcballControls.enablePan = false;
+
+    enviromentParameter.transformControls = new TransformControls( enviromentParameter.camera, enviromentParameter.renderer.domElement );
+    enviromentParameter.transformControls.setSize( 0.75 );
+    enviromentParameter.transformControls.addEventListener('dragging-changed', e => {
+      enviromentParameter.arcballControls.enabled = !e.value;
+    });
+    enviromentParameter.transformControls.addEventListener('objectChange', () => {
+      enviromentParameter.needsUpdate = true;
+    });
+    const arcballGismo = enviromentParameter.scene.children.pop()
+    enviromentParameter.scene.add(enviromentParameter.transformControls)
+    enviromentParameter.scene.add(arcballGismo)
   }
 
 
@@ -3732,12 +4574,12 @@
    * 
    */
   function reCenterControls() {
-    const objectsInScene = enviromentParameter.scene.children.slice(1, -1)
+    const objectsInScene = enviromentParameter.scene.children.slice(3, -2)
     if( objectsInScene.length ){
       const barycenter = getBarycenter(objectsInScene)
       
-      enviromentParameter.controls.target.set(barycenter.x, barycenter.y, barycenter.z)
-      enviromentParameter.controls.update()
+      enviromentParameter.arcballControls.target.set(barycenter.x, barycenter.y, barycenter.z)
+      enviromentParameter.arcballControls.update()
     }
   }
 
@@ -3752,13 +4594,13 @@
    * 
    */
   function reCenterControlsAndCamera() {
-    const objectsInScene = enviromentParameter.scene.children.slice(1, -1)
+    const objectsInScene = enviromentParameter.scene.children.slice(3, -2)
     if( objectsInScene.length ){
       const barycenter = getBarycenter(objectsInScene)
       
-      enviromentParameter.controls.target.set(barycenter.x, barycenter.y, barycenter.z)
+      enviromentParameter.arcballControls.target.set(barycenter.x, barycenter.y, barycenter.z)
       enviromentParameter.camera.position.set(barycenter.x, barycenter.y - 15, barycenter.z);
-      enviromentParameter.controls.update()
+      enviromentParameter.arcballControls.update()
     }
   }
 
@@ -3810,7 +4652,36 @@
    * 
    */
   function animate() {
-    enviromentParameter.renderer.render( enviromentParameter.scene, enviromentParameter.camera );
+    if( enviromentParameter.needsUpdate && enviromentParameter.brushesToBeCut[0] != null && enviromentParameter.brushToCutWith != null ){
+      enviromentParameter.needsUpdate = false;
+      
+      const brushesToBeCutLength = enviromentParameter.brushesToBeCut.length
+      for( let a = 0; a < brushesToBeCutLength; a++ ){
+        enviromentParameter.brushesToBeCut[a].brush.updateMatrixWorld();
+        enviromentParameter.brushToCutWith.updateMatrixWorld();
+  
+        enviromentParameter.csgEvaluator.useGroups = true
+        enviromentParameter.csgEvaluator.evaluate( enviromentParameter.brushesToBeCut[a].brush, enviromentParameter.brushToCutWith, enviromentParameter.brushesToBeCut[a].operationType, enviromentParameter.brushesToBeCut[a].resultObjectFromCsgOperation.resultObject);
+
+        enviromentParameter.brushesToBeCut[a].resultObjectFromCsgOperation.resultObject.material = enviromentParameter.brushesToBeCut[a].resultObjectFromCsgOperation.resultObject.material.map( m => enviromentParameter.brushesToBeCut[a].materialMap.get( m ) );
+      }
+    }
+
+    const brushesToBeCutLength = enviromentParameter.brushesToBeCut.length
+    for( let a = 0; a < brushesToBeCutLength; a++ ){
+      enviromentParameter.brushesToBeCut[a].brush.visible = false;
+    }
+
+    enviromentParameter.arcballControls.setGizmosVisible(enviromentParameter.params.arcballControlsShowGizmo);
+    enviromentParameter.transformControls.showX = enviromentParameter.params.transformControlsShowGizmo
+    enviromentParameter.transformControls.showY = enviromentParameter.params.transformControlsShowGizmo
+    enviromentParameter.transformControls.showZ = enviromentParameter.params.transformControlsShowGizmo
+    
+    enviromentParameter.brushToCutWith.visible = true;
+    enviromentParameter.transformControls.enabled = true;
+    enviromentParameter.transformControls.visible = true;
+
+    enviromentParameter.effectComposer.render()
   }
 
   
@@ -4134,6 +5005,24 @@
 
 
 
+
+
+  /**
+   * 
+   */
+  function loadCutTool() {
+    if( !enviromentParameter.params.transformControlsShowGizmo ){
+      enviromentParameter.params.transformControlsShowGizmo = true;
+      enviromentParameter.brushToCutWith.material.opacity = 0.005;
+    } else {
+      enviromentParameter.params.transformControlsShowGizmo = false;
+      enviromentParameter.brushToCutWith.position.set(0, -4, 20);
+      enviromentParameter.brushToCutWith.material.opacity = 0;
+      enviromentParameter.needsUpdate = true;
+    }
+  }
+
+
   
 
   /**                              Vue-Livecycle
@@ -4142,7 +5031,7 @@
    * \:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::/
    * 
    */
-   onMounted(async () => {
+  onMounted(async () => {
     await getDataFromIndexedDB();
     await initEnviroment()
   })
@@ -4175,21 +5064,21 @@ export default {
  */
 
 .background {
-  background-color: #171C23;
+  background-color: #000000;
 }
 
 .hollow {
   border: 4px;
   border-style: ridge;
-  border-color: #171C23;
-  background-color: #171C23;
+  border-color: #5c4430;
+  background-color: #000000;
 }
 
 .tile {
   border: 4px;
   border-style: ridge;
-  border-color: #171C23;
-  background-color: #303d52
+  border-color: #5c4430;
+  background-color: #866345;
 }
 
 .button {
@@ -4198,14 +5087,14 @@ export default {
   border-color: #1C2128;
   text-align: center;
   line-height: 0px;
-  background-color: #485b7a;
+  background-color: #0d3c88;
 }
 
 .plato {
   border: 4px;
   border-style: ridge;
   border-color: #171C23;
-  background-color: #28303d;
+  background-color: #283d2d;
 }
 
 .visible {
@@ -4227,16 +5116,87 @@ export default {
  */
 
 .help__button {
-  border: 9px;
-  border-style:double;
-  border-color: #452909;
-  background-color: #9c6439;
+  border: 4px;
+  border-style: outset;
+  border-color: #2d0e06;
+  background-color: #b23918;
 }
 
-.help__navigation {
+.help__navigation_header {
   border: 1px; 
   border-style: solid; 
   border-color: #ffffff;
+  background-color: #5C4646;
+}
+
+.help__navigation_footer {
+  border: 1px; 
+  border-style: solid; 
+  border-color: #ffffff;
+  background-color: #27303d;
+}
+
+.help__navigation_hilfe {
+  border: 1px; 
+  border-style: solid;
+  border-radius: 0%;
+  border-color: #ffffff;
+  background-color: #b23918;
+}
+
+.help__navigation_module {
+  border: 1px; 
+  border-style: solid; 
+  border-color: #ffffff;
+  background-color: #866345;
+}
+
+.help__navigation_system_tools {
+  border: 1px; 
+  border-style: solid;
+  border-radius: 0%; 
+  border-color: #ffffff;
+  background-color: #866345;
+}
+
+.help__navigation_graph-3d_tools {
+  border: 1px; 
+  border-style: solid;
+  border-radius: 0%; 
+  border-color: #ffffff;
+  background-color: #5d5d48;
+}
+
+.help__navigation_graph-3d_editor {
+  border: 1px; 
+  border-style: solid;
+  border-radius: 0%;
+  border-color: #ffffff;
+  background-color: #5d5d48;
+}
+
+.help__navigation_glossar {
+  border: 1px; 
+  border-style: solid;
+  border-radius: 0%;
+  border-color: #ffffff;
+  background-color: #b23918;
+}
+
+.help__navigation_editor_wechseln {
+  border: 1px; 
+  border-style: solid;
+  border-radius: 0%;
+  border-color: #ffffff;
+  background-color: #6f2510;
+}
+
+.help__navigation_infobereich {
+  border: 1px; 
+  border-style: solid;
+  border-radius: 0%;
+  border-color: #ffffff;
+  background-color: #866345;
 }
 
 .help_element__visible {
@@ -4263,24 +5223,20 @@ export default {
   border-color: #ffffff;
 }
 
-.help_componend__infobereich__base {
-  border: 4px;
-  border-style: ridge;
-  border-color: #0d2953;
-  background-color: #2a4375;
-  opacity: 1;
-}
-
 .help_subcomponent_button__clicked {
   border: 3px; 
-  border-style: solid;
+  border-style: outset; 
   border-color: #ff0000;
+  border-color: #592b02;
+  background-color: #994a04;
 }
 
 .help_subcomponent_button__notClicked {
   border: 3px; 
-  border-style: solid; 
+  border-style: outset; 
   border-color: #ffffff00;
+  border-color: #592b02;
+  background-color: #994a04;
 }
 
 .help_subcomponend__focus {
@@ -4295,17 +5251,89 @@ export default {
   border-color: #ffffff00;
 }
 
+.help__start_base {
+  border: 4px;
+  border-style: ridge;
+  border-color: #64472c;
+  background-color: #64472c;
+}
+
+.help__infobereich_base {
+  border: 10px;
+  border-style: ridge;
+  border-color: #6c523c;
+  background-color: #6c523c;
+  opacity: 0.5;
+}
+
+.help__infobereich_title {
+  text-align: center;
+  border: 4px;
+  border-style: ridge;
+  border-color: #9f7652;
+  background-color: #8c6848;
+}
+
+.help__infobereich_attributes_list {
+  border: 4px;
+  border-style: ridge;
+  border-color: #9f7652;
+  background-color: #8c6848;
+}
+
+.help__infobereich_image_outside {
+  border: 4px;
+  border-style: ridge;
+  border-color: #9f7652;
+  background-color: #8c6848;
+}
+
+.help__infobereich_image_inside {
+  border: 3px; 
+  border-style: ridge;
+  border-radius: 2%;
+  border-color: #906743;
+  text-align: center;
+  background-color: #906743;
+}
+
+.help__infobereich_delete_unit_button {
+  border: 4px;
+  border-style: outset;
+  border-color: #592b02;
+  background-color: #994a04;
+}
+
+.help_subcomponend_info__base {
+  border-radius: 0%;
+  background-color: #8c6848;
+}
+
+.help_subcomponend_info__liste {
+  border: 4px;
+  border-style: ridge;
+  border-color: #9f7652;
+  background-color: #8c6848;
+}
+
 /**
  *
  * > > > > > > Glossar < < < < < <
  *
  */
 
+.glossar__base {
+  border: 4px;
+  border-style: ridge;
+  border-color: #64472c;
+  background-color: #64472c;
+}
+
 .glossar__button {
-  border: 9px;
-  border-style:double;
-  border-color: #452909;
-  background-color: #9c6439;
+  border: 4px;
+  border-style: outset;
+  border-color: #2d0e06;
+  background-color: #b23918;
 }
 
 /**
@@ -4315,15 +5343,34 @@ export default {
  */
 
 .modus_wechseln__button {
-  border: 9px;
-  border-style:double;
-  border-color: #452909;
-  background-color: #9c6439;
+  border: 4px;
+  border-style: outset;
+  border-color: #2d0e06;
+  background-color: #6f2510;
 }
 
 /**
  *
- * > > > > > > Units < < < < < <
+ * > > > > > > System-Tools < < < < < <
+ * 
+*/
+.system_tools__base {
+  border: 2px;
+  border-style: outset;
+  border-color: #874e1c;
+  background-color: #866345;
+}
+
+.system_tools__button {
+  border: 2px;
+  border-style: outset;
+  border-color: #592b02;
+  background-color: #994a04;
+}
+
+/**
+ *
+ * > > > > > > Graph/3D-Tools < < < < < <
  *
  */
 
@@ -4331,36 +5378,75 @@ export default {
  * < < < 3D-Editor > > >
  */
 
+.model_editor__background {
+  border: 4px;
+  border-style: ridge;
+  border-color: #4f5d48;
+  background-color: #4f5d48;
+}
+
 .units__3d_base {
-  border: 2px;
+  border: 3px;
   border-style: outset;
-  border-color: #171C23;
-  background-color: #303d52
+  border-color: #34422c;
+  background-color: #4f5d48;
+}
+
+.units__3d_cut_button {
+  border: 3px;
+  border-style: outset;
+  border-color: #34422c;
+  background-color: #3e4939;
 }
 
 .units__3d_list_button_notClicked {
   border: 4px;
-  border-style: double;
-  border-color: #1C2128;
-  background-color: #2a394f;
+  border-style: outset;
+  border-color: #34422c;
+  background-color: #4f5d48;
 }
 
 .units__3d_list_button_clicked {
   border: 4px;
-  border-style: double;
-  border-color: #1C2128;
-  background-color: #485b7a;
+  border-style: outset;
+  border-color: #34422c;
+  background-color: #738769;
 }
  
 /**
  * < < < Graph-Editor > > >
  */
 
+.graph_editor__background {
+  border: 4px;
+  border-style: ridge;
+  border-color: #5d5d48;
+  background-color: #5d5d48;
+}
+
 .units__graph_base {
-  border: 2px;
+  border: 3px;
   border-style: outset;
-  border-color: #171C23;
-  background-color: #303d52
+  border-color: #3a3a2b;
+  background-color: #5d5d48;
+}
+
+.units__graph_search_field {
+  background-color: #464637;
+}
+
+.units__graph_sort_button {
+  border: 3px;
+  border-style: outset;
+  border-color: #464637;
+  background-color: #464637;
+}
+
+.units__graph_sort_button_clicked {
+  border: 3px;
+  border-style: outset;
+  border-color: #464637;
+  background-color: #5d5d49;
 }
 
 /**
@@ -4369,51 +5455,62 @@ export default {
  *
  */
 
+.module__button {
+  border: 2px;
+  border-style: outset;
+  border-color: #592b02;
+  background-color: #994a04;
+}
+
+.module__textfield {
+  background-color: #6e5239;
+}
+
 .screenshot_module__base {
-  border: 4px;
+  border: 1px;
   border-style: ridge;
-  border-color: #0d2953;
-  background-color: #2a4375;
+  border-color: #5c4430;
+  background-color: #866345;
   opacity: 0.5;
 }
 
 .group_module__base {
-  border: 4px;
+  border: 1px;
   border-style: ridge;
-  border-color: #0d2953;
-  background-color: #2a4375;
+  border-color: #5c4430;
+  background-color: #866345;
   opacity: 0.5;
 }
 
 .view_module__base {
-  border: 4px;
+  border: 1px;
   border-style: ridge;
-  border-color: #0d2953;
-  background-color: #2a4375;
+  border-color: #5c4430;
+  background-color: #866345;
   opacity: 0.5;
 }
 
 .exp-imp_module__base {
-  border: 4px;
+  border: 1px;
   border-style: ridge;
-  border-color: #0d2953;
-  background-color: #2a4375;
+  border-color: #5c4430;
+  background-color: #866345;
   opacity: 0.5;
 }
 
 .filter_module__base {
-  border: 4px;
+  border: 1px;
   border-style: ridge;
-  border-color: #0d2953;
-  background-color: #2a4375;
+  border-color: #5c4430;
+  background-color: #866345;
   opacity: 0.5;
 }
 
 .timemodel_module__base {
-  border: 4px;
+  border: 1px;
   border-style: ridge;
-  border-color: #0d2953;
-  background-color: #2a4375;
+  border-color: #5c4430;
+  background-color: #866345;
   opacity: 0.5;
 }
  
@@ -4424,188 +5521,236 @@ export default {
  */
 
 .infobereich__base {
-  border: 4px;
+  border: 10px;
   border-style: ridge;
-  border-color: #0d2953;
-  background-color: #2a4375;
+  border-color: #6c523c;
+  background-color: #6c523c;
   opacity: 0.5;
 }
 
 .infobereich__title {
   text-align: center;
-  line-height: 37px;
-}
-
-.infobreich__attributes {
-  background-color: #485c7b;
+  border: 7px;
+  border-style: ridge;
+  border-color: #9f7652;
+  background-color: #8c6848;
 }
 
 .infobereich__attributes_list {
-  border: 6px;
+  border: 7px;
   border-style: ridge;
-  border-color: #0d2953;
-  background-color: #677893;
+  border-color: #9f7652;
+  background-color: #8c6848;
 }
 
 .infobereich__image_outside {
-  border: 6px;
+  border: 7px;
   border-style: ridge;
-  border-color: #0d2953;
-  background-color: #677893;
+  border-color: #9f7652;
+  background-color: #8c6848;
 }
 
 .infobereich__image_inside {
   border: 3px; 
   border-style: ridge;
   border-radius: 2%;
-  border-color: #0d2953;
+  border-color: #906743;
   text-align: center;
-  background-color: #779fe1
+  background-color: #906743;
 }
 
 .infobereich__attributes_name {
-  border: 5px;
+  border: 4px;
   border-style: ridge;
-  border-color: #0d2953;
-  background-color: #3c557d;
+  border-color: #bc804c;
+  background-color: #bc804c;
 }
 
 .infobereich__attributes_name_title {
-  background-color: #3c557d;
+  background-color: #bc804c;
 }
 
 .infobereich__attributes_name_text-field {
-  border: 1px; 
-  border-style: solid; 
-  border-color: #0d2953;
-  background-color: #3c557d;
+  border: 4px;
+  border-style: ridge;
+  border-color: #ab672b;
+  background-color: #c99568;
 }
 
 .infobereich__attributes_name_button {
-  border: 4px;
-  border-style: double;
-  border-color: #1C2128;
-  background-color: #485b7a;
+  border: 2px;
+  border-style: outset;
+  border-color: #592b02;
+  background-color: #994a04;
 }
 
 .infobereich__attributes_type {
   border: 5px;
   border-style: ridge;
-  border-color: #0d2953;
-  background-color: #3c557d;
+  border-color: #bc804c;
+  background-color: #bc804c;
 }
 
 .infobereich__attributes_type_title {
-  background-color: #3c557d;
+  background-color: #bc804c;
 }
 
 .infobereich__attributes_type_title_button {
   border: 4px;
   border-style: double;
-  border-color: #1C2128;
-  background-color: #485b7a;
+  border-color: #592b02;
+  background-color: #994a04;
 }
 
 .infobereich__attributes_description {
   border: 5px;
   border-style: ridge;
-  border-color: #0d2953;
-  background-color: #3c557d;
+  border-color: #bc804c;
+  background-color: #bc804c;
 }
 
 .infobereich__attributes_description_title {
-  background-color: #3c557d;
+  background-color: #bc804c;
 }
 
 .infobereich__attributes_description_textarea {
-  border: 1px;
-  border-style: solid;
-  border-color: #0d2953;
-  background-color: #3c557d;
+  border: 5px;
+  border-style: ridge;
+  border-color: #ab672b;
+  background-color: #c99568;
 }
 
 .infobereich__attributes_description_button {
-  border: 4px;
-  border-style: double;
-  border-color: #1C2128;
-  background-color: #485b7a;
+  border: 2px;
+  border-style: outset;
+  border-color: #592b02;
+  background-color: #994a04;
+}
+
+.infobereich__attributes_model_create_button {
+  border: 2px;
+  border-style: outset;
+  border-color: #592b02;
+  background-color: #994a04;
+}
+
+.infobereich__attributes_model_switch_button {
+  border: 2px;
+  border-style: outset;
+  border-color: #592b02;
+  background-color: #994a04;
+}
+
+.infobereich__attributes_model_delete_button {
+  border: 2px;
+  border-style: outset;
+  border-color: #592b02;
+  background-color: #994a04;
+}
+
+.infobereich__attributes_model_finds_list {
+  border: 3px;
+  border-style: solid;
+  border-radius: 1%;
+  border-color: #ab672b;
+  background-color: #c99568;
+}
+
+.infobereich__attributes_model_list_item {
+  border: 2px;
+  border-style: solid;
+  border-radius: 1%;
+  border-color: #a05f26;
+  background-color: #c67228;
+}
+
+.infobereich__attributes_model_finds_modify_button {
+  border: 2px;
+  border-style: outset;
+  border-color: #592b02;
+  background-color: #994a04;
+}
+
+.infobereich__attributes_model_finds_delete_button {
+  border: 2px;
+  border-style: outset;
+  border-color: #592b02;
+  background-color: #994a04;
 }
 
 .infobereich__attributes_relations {
   border: 5px;
   border-style: ridge;
-  border-color: #0d2953;
-  background-color: #3c557d;
+  border-color: #bc804c;
+  background-color: #bc804c;
 }
 
 .infobereich__attributes_relations_title {
-  background-color: #3c557d;
+  background-color: #bc804c;
 }
 
 .infobereich__attributes_relations_list {
   border: 2px;
   border-style: ridge;
   border-radius: 1%;
-  border-color: #0d2953;
-  background-color: #3c557d;
+  border-color: #ab672b;
+  background-color: #c99568;
 }
 
 .infobereich__attributes_relations_list_item {
   border: 2px;
   border-style: solid;
   border-radius: 1%;
-  border-color: #0d2953;
-  background-color: #3c557d;
+  border-color: #a05f26;
+  background-color: #c67228;
 }
 
-.infobereich__attributes_relations_list_button {
+.infobereich__attributes_relations_list_delete_button {
   border: 2px;
-  border-style: double;
-  border-color: #1C2128;
-  background-color: #af1313;
+  border-style: outset;
+  border-color: #592b02;
+  background-color: #994a04;
 }
 
 .infobereich__attributes_groups {
   border: 5px;
   border-style: ridge;
-  border-color: #0d2953;
-  background-color: #3c557d;
+  border-color: #bc804c;
+  background-color: #bc804c;
 }
 
 .infobereich__attributes_groups_title {
-  background-color: #3c557d;
+  background-color: #bc804c;
 }
 
 .infobereich__attributes_groups_list {
   border: 2px;
   border-style: ridge;
   border-radius: 1%;
-  border-color: #0d2953;
-  background-color: #3c557d;
+  border-color: #ab672b;
+  background-color: #c99568;
 }
 
 .infobereich__attributes_groups_list_item {
   border: 2px;
   border-style: solid;
   border-radius: 1%;
-  border-color: #0d2953;
-  background-color: #3c557d;
+  border-color: #ab672b;
+  background-color: #c99568;
 }
 
 .infobereich__attributes_groups_list_button {
   border: 2px;
-  border-style: double;
-  border-color: #1C2128;
-  background-color: #3c557d;
+  border-style: outset;
+  border-color: #592b02;
+  background-color: #994a04;
 }
 
 .infobereich__delete_unit_button {
-  border: 4px;
-  border-style: solid;
-  border-color: #1C2128;
-  background-color:#af1313;
+  border: 2px;
+  border-style: outset;
+  border-color: #592b02;
+  background-color: #994a04;
 }
-
-
 
 </style>
