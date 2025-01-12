@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 07.11.2024 15:12:41
+ * Last Modified: 02.12.2024 12:59:14
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -295,5 +295,9 @@ export default {
   problemForBodeonButCanExport:
     "Ein Problem beim Export, aber kann so in BODEON importiert werden.",
   canNotImportForBodeon: "Diese Daten können so nicht in BODEON importiert werden.",
-  showOnlyCritialErrors: "Zeige nur kritische Fehler, die einen BODEON-Import verhindern.",
+  showOnlyCriticalErrors: "Zeige nur kritische Fehler, die einen BODEON-Import verhindern.",
+  bodeonExportError:
+    "Es sind Fehler bei den zu exportierenden Daten aufgetreten. Die unten aufgelisteten Fehler müssen behoben werden, sonst können die exportierten Daten nicht problemlos in BODEON importiert werden.",
+  errorDeterminingDelimiter:
+    "Es ist ein Fehler bei der Bestimmung des Trennzeichens der importierten Datei aufgetreten.",
 };

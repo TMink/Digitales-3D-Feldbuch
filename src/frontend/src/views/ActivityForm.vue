@@ -2,7 +2,7 @@
  * Created Date: 03.06.2023 10:25:57
  * Author: Julian Hardtung
  * 
- * Last Modified: 10.11.2024 13:23:39
+ * Last Modified: 14.11.2024 14:26:23
  * Modified By: Julian Hardtung
  * 
  * Description: input page for activity data 
@@ -28,7 +28,6 @@
             </v-btn>
 
             <ConfirmDialog ref="confirm" />
-
           </v-tabs>
         </v-card>
       </v-col>
@@ -101,8 +100,7 @@
                   </v-text-field>
                 </v-row>
 
-                <v-divider class="mt-2 pb-2"/>
-                
+                <v-divider class="mt-2 pb-2"/> 
                 
                 <v-row no-gutters>
                   <!--############## COMMUNITY 1-3 ###############-->
@@ -568,7 +566,6 @@
 
         <v-divider style="border-top: 3px double !important;" class="mt-3 pb-2"/>
 
-
         <v-row class="text-center pa-2">
           <!--############### RESULT TITLE ###############-->
           <v-col cols="6">
@@ -796,8 +793,7 @@ export default {
     const topography = JSON.parse(import.meta.env.VITE_TOPOGRAPHY);
     const datingsList = JSON.parse(import.meta.env.VITE_DATINGS_FULL);
     const titlesList = JSON.parse(import.meta.env.VITE_TITLES_FULL);
-
-
+    
 
     return {
       windowWidth: width,
@@ -839,7 +835,6 @@ export default {
         lastSync: '',
         editor: '',
         camera: null,
-
         
         right: '',
         rightTo: '',
@@ -984,11 +979,11 @@ export default {
       next();
     }
   },
+  
   /**
    * Initialize data from localDB to the reactive Vue.js data
    */
   async created() {
-    
     await fromOfflineDB.syncLocalDBs()
       .catch(err => console.error(err));
     await this.updateActivity()
@@ -1069,7 +1064,7 @@ export default {
       this.$router.push({ name: "ActivitiesOverview" });
     },
 
-        /**
+    /**
      * Removes a place from the IndexedDB and the Cookies
      */
      async deleteActivity() {
@@ -1168,7 +1163,6 @@ export default {
         return false;
       }
     },
-
 
     /**
      * Sets the AppBarTitle to the current ActivityNumber + PlaceNumber

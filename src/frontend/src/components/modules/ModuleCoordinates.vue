@@ -2,7 +2,7 @@
  * Created Date: 12.08.2023 11:57:15
  * Author: Tobias Mink
  * 
- * Last Modified: 18.10.2024 14:09:12
+ * Last Modified: 03.12.2024 16:06:00
  * Modified By: Julian Hardtung
  * 
  * Description: `coordinates` input module for places/positions
@@ -341,18 +341,22 @@
           reader.onload = (e) => {
             const arrayBuffer = e.target.result;
             var decodedText = null;
-            var delimiter = null;
 
             // change parsing setting if utf-8 or ansi encoded
             if (this.isValidUTF8(arrayBuffer)) {
               //UTF-8
               const headers = "PtNr\tOst\tNord\tHöhe\tCode";
               decodedText = [headers, new TextDecoder('utf-8').decode(arrayBuffer)].join('\n');
-              delimiter = '\t'
             } else {
               //ANSI or something else
               decodedText = new TextDecoder('windows-1252').decode(arrayBuffer);
-              delimiter = ';'
+            }
+
+            // determine delimiter
+            const delimiter = this.detectSeparator(decodedText);
+
+            if (delimiter == null) {
+              this.$root.vtoast.show({ message: this.$t('saveError') + ' ' + this.$t('errorDeterminingDelimiter'), color: 'error' });
             }
 
             var parsedText = this.parseCSV(decodedText, delimiter);
@@ -377,6 +381,34 @@
             reader.readAsArrayBuffer(this.coordinatesFile);
           }
         });
+      },
+
+      /**
+       * Determines the separator of a .csv-File.
+       * 
+       * (Takes the first 5 lines of the file, 
+       * counts the occurance of the separators and 
+       * return the separator that was counted the most)
+       * @param csvContent decoded Text from .csv-File
+       */
+      detectSeparator(csvContent) {
+        const lines = csvContent.split('\n').slice(0, 5);
+        const separators = [',', ';', '\t', '|'];
+
+        // Count occurrences of each separator in the lines
+        const counts = separators.map((sep) => {
+          return {
+            separator: sep,
+            count: lines.reduce((acc, line) => acc + (line.split(sep).length - 1), 0),
+          };
+        });
+
+        // Return the separator with the highest count
+        const bestMatch = counts.reduce((max, current) =>
+          current.count > max.count ? current : max
+        );
+
+        return bestMatch.count > 0 ? bestMatch.separator : null;
       },
 
       /**
@@ -559,14 +591,17 @@
             }
           } else if (uint8Array[i] >= 0xE0 && uint8Array[i] <= 0xEF) {
             // 1110xxxx 10xxxxxx 10xxxxxx
-            if (uint8Array[i + 1] >= 0x80 && uint8Array[i + 1] <= 0xBF && uint8Array[i + 2] >= 0x80 && uint8Array[i + 2] <= 0xBF) {
+            if (uint8Array[i + 1] >= 0x80 && uint8Array[i + 1] <= 0xBF 
+              && uint8Array[i + 2] >= 0x80 && uint8Array[i + 2] <= 0xBF) {
               i += 3;
             } else {
               return false;
             }
           } else if (uint8Array[i] >= 0xF0 && uint8Array[i] <= 0xF4) {
             // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-            if (uint8Array[i + 1] >= 0x80 && uint8Array[i + 1] <= 0xBF && uint8Array[i + 2] >= 0x80 && uint8Array[i + 2] <= 0xBF && uint8Array[i + 3] >= 0x80 && uint8Array[i + 3] <= 0xBF) {
+            if (uint8Array[i + 1] >= 0x80 && uint8Array[i + 1] <= 0xBF 
+              && uint8Array[i + 2] >= 0x80 && uint8Array[i + 2] <= 0xBF 
+              && uint8Array[i + 3] >= 0x80 && uint8Array[i + 3] <= 0xBF) {
               i += 4;
             } else {
               return false;

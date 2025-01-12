@@ -2,7 +2,7 @@
  * Created Date: 30.10.2024 10:56:52
  * Author: Julian Hardtung
  * 
- * Last Modified: 06.11.2024 15:04:11
+ * Last Modified: 04.12.2024 12:46:52
  * Modified By: Julian Hardtung
  * 
  * Description: Component for image table rows
@@ -123,6 +123,18 @@
       && position.dating != ''){
         return true;
     } else if (position.posType == 'image'
+      && position.editor != ''
+      && position.comment != ''
+      && position.date != ''
+    ) {
+      return true;
+    } else if (position.posType == 'drawing'
+      && position.editor != ''
+      && position.comment != ''
+      && position.date != ''
+    ) {
+      return true;
+    } else if (position.posType == 'model'
       && position.editor != ''
       && position.comment != ''
       && position.date != ''
