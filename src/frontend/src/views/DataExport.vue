@@ -2,7 +2,7 @@
  * Created Date: 26.06.2023 15:10:20
  * Author: Julian Hardtung
  * 
- * Last Modified: 03.12.2024 12:36:34
+ * Last Modified: 03.02.2025 10:32:26
  * Modified By: Julian Hardtung
  * 
  * Description: export all (or only specified) data to .pdf or .csv
@@ -91,7 +91,7 @@
             <v-card-title>{{ $t('confirmExport') }}</v-card-title>            
             <v-btn class="ma-2" variant="outlined" color="secondary" 
               @click="exportBodeonData()">
-              {{ $t('exportObject', {msg: $t('data')}) }}
+              {{ $t('exportObject', {msg: $tc('data', 2)}) }}
             </v-btn>
           </v-card>
         </template>
@@ -108,13 +108,93 @@
               {{ $t('chooseActivitiesToExport') + ' ' + $t('thisExportedDataIsNotBodeonValid')}}
             </v-card-subtitle>
             
-              <v-btn class="mt-4" color="secondary" @click="allDialog = true"> 
+              <v-btn class="mt-4" color="secondary" @click="export_overlay = true"> 
                 {{ $t('export') }}
               </v-btn>
             </v-col>
           </v-row>
           <v-spacer/>
       </v-card>
+
+    <v-dialog 
+          v-model="export_overlay" 
+          max-width="800" 
+          persistent>
+          <v-card>
+            <v-card-title> {{ $t('export') }} </v-card-title>
+            <v-card-text>
+              <v-row class="text-center">
+
+                <!-- ACTIVITIES -->
+                <v-col class="align-center" hide-details>
+                  <v-card-title>{{ $t('activityList') }}</v-card-title>
+
+                  <v-card-subtitle class="text-wrap">
+                    {{ $t('chooseActivitiesToExport') }}
+                  </v-card-subtitle>
+          
+                  <v-data-table-virtual 
+                    :headers="activityHeaders" 
+                    :items="activities" 
+                    v-model="selectedActivities" 
+                    return-object 
+                    height="300" 
+                    show-select>
+                  </v-data-table-virtual>
+                </v-col>
+              </v-row>
+
+              <v-divider class="mt-3" />
+
+              <v-row 
+                no-gutters 
+                class="justify-center align-center">
+                <v-col cols="3">
+
+                  <v-combobox 
+                    class="pa-4" 
+                    :label="$t('dataFormat')" 
+                    v-model="fileFormat" 
+                    :items="['.pdf', '.csv']">
+                  </v-combobox>
+                </v-col>
+                <v-col cols="4">
+
+                  <v-radio-group 
+                    v-model="separator" 
+                    class="ma-2" 
+                    :label="$t('separator')" 
+                    v-if="fileFormat == '.csv'">
+                    <v-radio :label="$t('objectSeparated', {
+                      object: $t('comma')
+                    })" value=",">
+                    </v-radio>
+                    <v-radio :label="$t('objectSeparated', {
+                      object: $t('semicolon')
+                    })" value=";">
+                    </v-radio>
+                  </v-radio-group>
+                </v-col>
+              </v-row>
+
+            </v-card-text>
+
+            <v-card-actions class="justify-center">
+              <v-btn 
+                icon 
+                color="success" 
+                v-on:click="startRawExport()"
+                :disabled="!exportActivities && !exportPlaces && !exportPositions">
+                <v-icon>mdi-content-save-all</v-icon>
+              </v-btn>
+              <v-btn 
+                icon 
+                color="primary" @click="export_overlay = false">
+                <v-icon>mdi-close-circle</v-icon>
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
     </v-col>
     <v-spacer></v-spacer>
   </v-row>
@@ -254,7 +334,6 @@ export default {
       allPlacesCount: '',
       allPositionsCount: '',
 
-      allDialog: false,
       showNotifyErrors: true,
 
       resolve: null,
@@ -573,7 +652,7 @@ export default {
 
         if (placesOfOneActivity.length == 0) {
           this.addErrorMessage( rawActivitiesToExport[i].activityNumber,
-            "This activity has no places to export.",
+            this.$t('emptyData',  {msg: this.$t('activity'), msg2: this.$tc('place', 2)}),
             rawActivitiesToExport[i].activityNumber, "activity", "notify");
         } else {
           placesToExport.push(this.addActivityNumberToPlaces(
@@ -761,7 +840,7 @@ export default {
       const photoListFilename = activityFileName + '/' + placeFileName + '/' + placeFileName + "_fotoliste.csv";
 
       //add UTF-8 BOM to csv
-      const csvWithBOM = "\uFEFF" + csv;
+      const csvWithBOM = "\uFEFF" + csv; 
 
       //add to zip
       zip.file(photoListFilename, csvWithBOM);
@@ -776,7 +855,7 @@ export default {
       if (place.positions.length == 0) {
         this.addErrorMessage(
             place.activityNumber + " " + place.placeNumber,
-            "This place has no positions to export.",
+            this.$t('emptyData',  {msg: this.$t('place'), msg2: this.$tc('position', 2)}),
             place._id, "place", "notify");
         return;
       }
@@ -791,7 +870,7 @@ export default {
         if (position.image == '') {
           this.addErrorMessage(
             place.activityNumber + " " + place.placeNumber + " " + position.positionNumber,
-            "This position has no imagefile to export.",
+            this.$t('emptyData',  {msg: this.$t('position'), msg2: this.$t('image')}),
             position._id, "position", "notify");
         }
         return position.posType == 'image' && position.image != ''
@@ -800,7 +879,7 @@ export default {
       if (imagePositions.length == 0) {
         this.addErrorMessage(
           place.activityNumber + " " + place.placeNumber,
-          "This place has no images to export.",
+          this.$t('emptyData',  {msg: this.$t('place'), msg2: this.$tc('image', 2)}),
           place._id, "place", "notify");
         return;
       }
@@ -1452,6 +1531,8 @@ export default {
           continue;
         }
 
+        console.log(data[i])
+
         let items = data[i].coordinates;
 
         const replacer = (key, value) => value === null ? '' : value;
@@ -1478,6 +1559,137 @@ export default {
       }
     },
     
+
+    /**
+     * Starts the export process and checks 
+     * which data format has to be exported
+     */
+    startRawExport() {
+      if (this.fileFormat == '.pdf') {
+        this.startPDFExport();
+      } else if (this.fileFormat == '.csv') {
+        this.startCSVExport();
+      }
+
+      console.log("ENDE")
+
+      this.$root.vtoast.show({ message: 'Export successfull', color: 'success' });
+      this.export_overlay = false;
+    },
+
+    /**
+     * Starts the CSV export process
+     */
+    async startCSVExport() {
+      // TODO: create one function das dynamically exports 
+      // activities/places/positions depending on input parameters
+
+      if (this.exportActivities) {
+        this.createCSV(this.activities, "activitylist");
+      }
+
+      if (this.exportPlaces) {
+        this.createCSV(this.places, "placeslist");
+      }
+
+      if (this.exportPositions) {
+        this.createCSV(this.positions, "positionslist");
+      }
+    },
+
+
+    /**
+     * Creates and saves a .csv file
+     * @param {[ProxyObject]} data 
+     * @param {String} filename 
+     */
+     createCSV(data, filename) {
+      const items = toRaw(data);
+
+      if (items.length == 0) {
+        return;
+      }
+      
+      const replacer = (key, value) => value === null ? '' : value;
+      const cursor = Object.keys(items[0]);
+      let header = null;
+      
+      // remove unwanted fields
+      let index = cursor.indexOf("lastSync");
+      cursor.splice(index, 1);
+      index = cursor.indexOf("lastChanged");
+      cursor.splice(index, 1);
+      index = cursor.indexOf("_id");
+      cursor.splice(index, 1);
+
+
+      if (filename == "activitylist") {
+        index = cursor.indexOf("camera");
+        cursor.splice(index, 1);
+
+        header = JSON.parse(JSON.stringify(cursor))
+        let index2 = header.indexOf( "activityNumber" )
+        header[ index2 ] = "activity"
+      }
+
+      if (filename == "placeslist") {
+
+        this.exportCoordsFile(data);
+
+        index = cursor.indexOf("activity");
+        cursor.splice(index, 1);
+        index = cursor.indexOf("modulePreset");
+        cursor.splice(index, 1);
+        index = cursor.indexOf("activityID");
+        cursor[index] = "activity"
+
+        header = JSON.parse(JSON.stringify(cursor))
+        let index2 = header.indexOf( "acitivityID" )
+        header[ index2 ] = "activity"
+        index2 = header.indexOf( "placeNumber" )
+        header[ index2 ] = "place"
+      }
+
+      if (filename == "positionslist") {
+
+        if (data.posType == 'position') {
+          this.exportCoordsFile(data);
+        }
+
+        index = cursor.indexOf("activity");
+        cursor.splice(index, 1);
+        index = cursor.indexOf("place");
+        cursor.splice(index, 1);
+        index = cursor.indexOf("placeID");
+        cursor.splice(index, 1);
+        index = cursor.indexOf("modulePreset");
+        cursor.splice(index, 1);
+
+        cursor.unshift("activity", "place")
+
+        header = JSON.parse(JSON.stringify(cursor))
+        let index2 = header.indexOf( "positionNumber" )
+        header[ index2 ] = "position"
+      }
+
+      // TODO: reformat the export output of fields 
+      //    - boolean fields should show `x` or `` instead of `true` and `false`
+      //    - arrays should be shortened to a `(not sure yet)` separated string of the IDs
+
+      // build ',' or ';' separated string
+      const csv = [header.join(this.separator), ...items.map(row => 
+        cursor.map(fieldName => JSON.stringify(row[fieldName], replacer))
+          .join(this.separator))
+      ].join('\r\n')
+
+      // create ',' or ';' separated blob
+      var blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      // save .csv file
+      saveAs(blob, filename + ".csv");
+
+    },
+
+
     /**
      * Starts the PDF export process
      */

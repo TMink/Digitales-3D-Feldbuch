@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 02.12.2024 12:59:14
+ * Last Modified: 24.01.2025 17:14:23
  * Modified By: Julian Hardtung
  * 
  * Description: german translations
@@ -58,6 +58,7 @@ export default {
   material: "Material",
   isSeparate: "Trennen",
   plane: "Planum",
+  data: "Datei | Daten",
   profile: "Profil",
   sample: "Probe | Proben",
   find: "Fund | Funde | Befund | Befunde",
@@ -212,6 +213,7 @@ export default {
   saveSuccess: "Speichern erfolgreich",
   saveError: "Speichern fehlgeschlagen.",
   emptyFile: "Die angegebene Datei enthält keine Daten.",
+  emptyData: "Diese {msg} hat keine {msg2}, die exportiert werden können.",
   wrongFormat: "Die Daten sind im falschen Format.",
   syncSuccess: "Hochladen der Daten erfolgreich",
   duplicationMode: "Duplikationsmodus",

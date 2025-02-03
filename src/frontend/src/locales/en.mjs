@@ -2,7 +2,7 @@
  * Created Date: 07.06.2023 17:36:09
  * Author: Julian Hardtung
  * 
- * Last Modified: 02.12.2024 12:57:41
+ * Last Modified: 24.01.2025 17:14:30
  * Modified By: Julian Hardtung
  * 
  * Description: english translations
@@ -58,6 +58,7 @@ export default {
   material: "Material",
   isSeparate: "Is Separate",
   plane: "Plane",
+  data: "Data | Data",
   profile: "Profile",
   sample: "Sample | Samples",
   find: "Find | Finds | Finding | Findings",
@@ -211,6 +212,7 @@ export default {
   saveSuccess: "Saving successful",
   saveError: "Saving failed",
   emptyFile: "The file doesn't contain any data",
+  emptyData: "This {msg} has no {msg2} to export.",
   wrongFormat: "The data is in the wrong format.",
   syncSuccess: "Data upload successful",
   duplicationMode: "Duplicationmode",
@@ -294,6 +296,8 @@ export default {
     "A problem with the export, but this can still be imported into BODEON.",
   canNotImportForBodeon: "This data can not be imported into BODEON.",
   showOnlyCritialErrors: "Show only critical errors that hinder a BODEON import.",
-  bodeonExportError: "Errors occurred while exporting data. You need to fix the errors listed below or otherwise you won't be able to import this data into BODEON.",
-  errorDeterminingDelimiter: "An error occured while trying to determine the delimiter of the imported file.",
+  bodeonExportError:
+    "Errors occurred while exporting data. You need to fix the errors listed below or otherwise you won't be able to import this data into BODEON.",
+  errorDeterminingDelimiter:
+    "An error occured while trying to determine the delimiter of the imported file.",
 };
